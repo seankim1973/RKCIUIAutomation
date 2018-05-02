@@ -124,19 +124,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\BaseClass.cs" />
+    <Compile Include="Base\BaseUtils.cs" />
+    <Compile Include="Base\ExtentManager.cs" />
+    <Compile Include="Base\ExtentTestManager.cs" />
     <Compile Include="Base\WebDriverFactory.cs" />
     <Compile Include="Config\ConfigUtils.cs" />
     <Compile Include="Config\Properties.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Test\JUnitTest.cs" />
     <Compile Include="Test\UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Page\" />
+    <Folder Include="Report\ErrorScreenshots\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -149,6 +159,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="extent-config.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

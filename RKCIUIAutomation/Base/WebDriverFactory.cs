@@ -11,10 +11,6 @@ namespace RKCIUIAutomation
 {
     public class WebDriverFactory : ConfigUtil
     {
-        public WebDriverFactory()
-        {
-            IWebDriver Driver;
-        }
         public IWebDriver Driver { get; set; }
 
         protected IWebDriver GetRemoteWebDriver(TestPlatform platform, BrowserType browser, String siteUrl)
