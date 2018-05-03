@@ -2,10 +2,12 @@
 using RKCIUIAutomation.Base;
 using System;
 using System.Reflection;
+using System.Threading;
 
 namespace RKCIUIAutomation
 {
     [TestFixture]
+    [Parallelizable]
     [Category("TestFixture Category")]
     public class UnitTest1 : BaseClass
     {
@@ -14,12 +16,14 @@ namespace RKCIUIAutomation
         public void TestMethod1()
         {
             //driver.Navigate().GoToUrl("http://www.google.com");
+            Thread.Sleep(5000);
             Assert.True(true);
         }
 
         [Test(Description = "test description - inline")]
         public void testmethod2()
         {
+            Thread.Sleep(5000);
             Assert.True(false);
         }
 

@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 using System.IO;
+using RKCIUIAutomation.Base;
+using RKCIUIAutomation.Config;
+using System.Configuration;
+using System.Collections.Specialized;
 
 namespace RKCIUIAutomation.Test
 {
@@ -11,7 +15,7 @@ namespace RKCIUIAutomation.Test
     /// Summary description for JUnitTest
     /// </summary>
     [TestClass]
-    public class JUnitTest
+    public class JUnitTest : BaseClass
     {
         public JUnitTest()
         {
@@ -63,8 +67,23 @@ namespace RKCIUIAutomation.Test
         [TestMethod]
         public void JUnitTest1()
         {
-            Directory.SetCurrentDirectory(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString());
-            Console.Out.WriteLine("#######" + Directory.GetParent(Directory.GetCurrentDirectory().ToString()));
+            //Directory.SetCurrentDirectory(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString());
+            //Console.Out.WriteLine("#######" + Directory.GetParent(Directory.GetCurrentDirectory().ToString()));
+
+            //var proj = GetSiteUrl(TestEnv.Prod, Project.SMF202);
+            //var user = GetUser(UserType.SysAdmin);
+            //Console.Out.WriteLine(proj);
+            //Console.Out.WriteLine(user);
+            //Console.Out.WriteLine();
+
+            //var collection = ConfigurationManager.GetSection($"TestConfigs/UserType") as NameValueCollection;
+            //var userPw = collection["SysAdminUsername"].Split(',');
+
+            string[] userPw = GetUser(UserType.ProjAdmin);
+            string username = userPw[0];
+            string password = userPw[1];
+            Console.Out.WriteLine($"Username : {username} and Password : {password}");
+
         }
     }
 }

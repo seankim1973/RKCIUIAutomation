@@ -40,7 +40,7 @@ namespace RKCIUIAutomation.Base
             testEnv = (TestEnv)Enum.Parse(typeof(TestEnv), _testEnv);
             projectSite = (Project)Enum.Parse(typeof(Project), _projectSite);
 
-            String siteUrl = DetermineSiteUrl(testEnv, projectSite);
+            string siteUrl = GetSiteUrl(testEnv, projectSite);
 
             if (testPlatform == TestPlatform.Local)
             {
