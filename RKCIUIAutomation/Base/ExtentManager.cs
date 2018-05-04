@@ -1,7 +1,6 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
 using AventStack.ExtentReports.Reporter.Configuration;
-using NUnit.Framework;
 using System;
 using System.IO;
 

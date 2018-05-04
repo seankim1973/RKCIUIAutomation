@@ -1,12 +1,7 @@
-﻿
-
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using System;
-using System.Configuration;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Reflection;
 
 namespace RKCIUIAutomation.Base
 {
@@ -20,7 +15,7 @@ namespace RKCIUIAutomation.Base
 
         public string CaptureScreenshot(string fileName)
         {
-            string uniqueFileName = fileName + DateTime.Now.Ticks;
+            string uniqueFileName = fileName + DateTime.Now.Second;
             var filePath = Directory.GetParent(GetCodeBasePath()) + "\\Report\\ErrorScreenshots\\" + uniqueFileName + ".png";
             var screenshot = Driver.TakeScreenshot();
             screenshot.SaveAsFile(filePath, ScreenshotImageFormat.Png);

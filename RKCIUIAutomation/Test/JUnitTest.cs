@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Reflection;
-using System.IO;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
-using System.Configuration;
-using System.Collections.Specialized;
 
 namespace RKCIUIAutomation.Test
 {

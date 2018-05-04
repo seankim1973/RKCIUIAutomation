@@ -13,10 +13,10 @@ namespace RKCIUIAutomation
     {
         public IWebDriver Driver { get; set; }
 
-        protected IWebDriver GetRemoteWebDriver(TestPlatform platform, BrowserType browser, String siteUrl)
+        protected IWebDriver GetRemoteWebDriver(TestPlatform platform, BrowserType browser)
         {
             DesiredCapabilities caps = DetermineCapabilities(platform, browser);
-            return Driver = new RemoteWebDriver(new Uri(siteUrl), caps);
+            return Driver = new RemoteWebDriver(new Uri("http://127.0.0.1/wd/hub"), caps);
         }
 
         protected IWebDriver GetLocalWebDriver(BrowserType browser)

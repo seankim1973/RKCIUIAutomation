@@ -3,7 +3,6 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using RKCIUIAutomation.Config;
 using System;
-using System.IO;
 
 namespace RKCIUIAutomation.Base
 {
@@ -30,9 +29,9 @@ namespace RKCIUIAutomation.Base
         [SetUp]
         public void BeforeTest()
         {
-            var _testPlatform = TestContext.Parameters.Get("Platform", "Local");
-            var _browserType = TestContext.Parameters.Get("Browser", "Chrome");
-            var _testEnv = TestContext.Parameters.Get("Env", "Test");
+            var _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Local}");
+            var _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Edge}");
+            var _testEnv = TestContext.Parameters.Get("Env", $"{TestEnv.Test}");
             var _projectSite = TestContext.Parameters.Get("Project");
 
             testPlatform = (TestPlatform)Enum.Parse(typeof(TestPlatform), _testPlatform);
@@ -49,7 +48,8 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                Driver = GetRemoteWebDriver(testPlatform, browserType, siteUrl);
+                Driver = GetRemoteWebDriver(testPlatform, browserType);
+                Driver.Navigate().GoToUrl(siteUrl);
             }
 
             ExtentTestManager.CreateTest(TestContext.CurrentContext.Test.Name);
