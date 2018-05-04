@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Configuration;
-using System.Reflection;
 
 namespace RKCIUIAutomation.Config
-{    
+{
     public class ConfigUtil
     {
         public string GetSiteUrl(TestEnv testEnv, Project project)

@@ -9,9 +9,9 @@ namespace RKCIUIAutomation.Test
     /// Summary description for JUnitTest
     /// </summary>
     [TestClass]
-    public class JUnitTest : BaseClass
+    public class MSUnitTest : BaseClass
     {
-        public JUnitTest()
+        public MSUnitTest()
         {
             //
             // TODO: Add constructor logic here
@@ -59,7 +59,7 @@ namespace RKCIUIAutomation.Test
         #endregion
 
         [TestMethod]
-        public void JUnitTest1()
+        public void MSUnitTest1()
         {
             //Directory.SetCurrentDirectory(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString());
             //Console.Out.WriteLine("#######" + Directory.GetParent(Directory.GetCurrentDirectory().ToString()));

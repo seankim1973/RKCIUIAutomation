@@ -6,6 +6,7 @@ using System;
 
 namespace RKCIUIAutomation.Base
 {
+    [TestFixture]
     public class BaseClass : BaseUtils
     {
         private TestPlatform testPlatform;
@@ -24,7 +25,6 @@ namespace RKCIUIAutomation.Base
         {
             ExtentManager.Instance.Flush();
         }
-
 
         [SetUp]
         public void BeforeTest()
@@ -54,7 +54,6 @@ namespace RKCIUIAutomation.Base
 
             ExtentTestManager.CreateTest(TestContext.CurrentContext.Test.Name);
         }
-
 
         [TearDown]
         public void AfterTest()
