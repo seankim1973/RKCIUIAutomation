@@ -1,7 +1,6 @@
 ﻿using AventStack.ExtentReports;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
 
@@ -30,8 +29,8 @@ namespace RKCIUIAutomation.Base
         [SetUp]
         public void BeforeTest()
         {
-            var _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Linux}");
-            var _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Chrome}");
+            var _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Local}");
+            var _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Edge}");
             var _testEnv = TestContext.Parameters.Get("Env", $"{TestEnv.Test}");
             var _projectSite = TestContext.Parameters.Get("Project");
 
@@ -66,12 +65,10 @@ namespace RKCIUIAutomation.Base
             Status logstatus;
 
             string screenshotPath = null;
-            Cookie cookie = null;
 
             switch (status)
             {
                 case TestStatus.Failed:
-                    cookie = new Cookie("zaleniumTestPassed", "false");
                     screenshotPath = CaptureScreenshot(TestContext.CurrentContext.Test.Name);
                     logstatus = Status.Fail;
                     break;
@@ -82,14 +79,12 @@ namespace RKCIUIAutomation.Base
                     logstatus = Status.Skip;
                     break;
                 default:
-                    cookie = new Cookie("zaleniumTestPassed", "true");
                     logstatus = Status.Pass;
                     break;
             }
-                        
+
             ExtentTestManager.GetTest().Log(logstatus, "Test ended with " + logstatus + stacktrace).AddScreenCaptureFromPath(screenshotPath);
 
-            Driver.Manage().Cookies.AddCookie(cookie);
             Driver.Quit();
         }
 

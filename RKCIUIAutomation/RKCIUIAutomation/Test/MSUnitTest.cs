@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Configuration;
-using System.IO;
-using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
@@ -76,10 +73,10 @@ namespace RKCIUIAutomation.Test
             //var collection = ConfigurationManager.GetSection($"TestConfigs/UserType") as NameValueCollection;
             //var userPw = collection["SysAdminUsername"].Split(',');
 
-            //string[] userPw = GetUser(UserType.ProjAdmin);
-            //string username = userPw[0];
-            //string password = userPw[1];
-            //Console.Out.WriteLine($"Username : {username} and Password : {password}");
+            string[] userPw = GetUser(UserType.ProjAdmin);
+            string username = userPw[0];
+            string password = userPw[1];
+            Console.Out.WriteLine($"Username : {username} and Password : {password}");
 
         }
     }

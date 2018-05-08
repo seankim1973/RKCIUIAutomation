@@ -22,12 +22,11 @@
 
     public enum TestPlatform
     {
-        Windows,
+        Win10,
         Mac,
         Android,
         IOS,
-        Local,
-        Linux
+        Local
     }
 
     public enum BrowserType

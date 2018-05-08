@@ -8,6 +8,7 @@ namespace RKCIUIAutomation
     [Category("TestFixture Category")]
     public class UnitTest1 : BaseClass
     {
+        [Parallelizable]
         [Test]
         [Category("Test Category")]
         public void TestMethod1()
@@ -17,6 +18,7 @@ namespace RKCIUIAutomation
             Assert.True(true);
         }
 
+        [Parallelizable]
         [Test(Description = "test description - inline")]
         public void testmethod2()
         {

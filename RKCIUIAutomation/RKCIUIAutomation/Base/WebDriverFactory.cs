@@ -16,7 +16,7 @@ namespace RKCIUIAutomation
         protected IWebDriver GetRemoteWebDriver(TestPlatform platform, BrowserType browser)
         {
             DesiredCapabilities caps = DetermineCapabilities(platform, browser);
-            return Driver = new RemoteWebDriver(new Uri("http://localhost:4444/wd/hub"), caps);
+            return Driver = new RemoteWebDriver(new Uri("http://127.0.0.1/wd/hub"), caps);
         }
 
         protected IWebDriver GetLocalWebDriver(BrowserType browser)
@@ -52,31 +52,26 @@ namespace RKCIUIAutomation
             caps = new DesiredCapabilities();
             caps = DeterminePlatformType(platform);
             caps = DetermineBrowserType(browser);
-            caps.SetCapability("tz", "America/Chicago");
             return caps;
         }
 
         private DesiredCapabilities DeterminePlatformType(TestPlatform platform)
         {
-            if (platform == TestPlatform.Windows)
+            if (platform == TestPlatform.Win10)
             {
-                caps.SetCapability(CapabilityType.PlatformName, PlatformType.Windows);
+                caps.SetCapability("Platform", PlatformType.Windows);
             }
             else if (platform == TestPlatform.Mac)
             {
-                caps.SetCapability(CapabilityType.PlatformName, PlatformType.Mac);
+                caps.SetCapability("Platform", PlatformType.Mac);
             }
             else if (platform == TestPlatform.Android)
             {
-                caps.SetCapability(CapabilityType.PlatformName, PlatformType.Android);
+                caps.SetCapability("Platform", PlatformType.Android);
             }
             else if (platform == TestPlatform.IOS)
             {
-                caps.SetCapability(CapabilityType.PlatformName, PlatformType.Mac);
-            }
-            else if (platform == TestPlatform.Linux)
-            {
-                caps.SetCapability(CapabilityType.PlatformName, PlatformType.Linux);
+                caps.SetCapability("Platform", PlatformType.Mac);
             }
             else
             {
@@ -90,19 +85,19 @@ namespace RKCIUIAutomation
         {
             if (browser == BrowserType.Chrome)
             {
-                caps.SetCapability(CapabilityType.BrowserName, "chrome");
+                caps.SetCapability("browserName", "chrome");
             }
             else if (browser == BrowserType.Edge)
             {
-                caps.SetCapability(CapabilityType.BrowserName, "edge");
+                caps.SetCapability("browserName", "edge");
             }
             else if (browser == BrowserType.Firefox)
             {
-                caps.SetCapability(CapabilityType.BrowserName, "firefox");
+                caps.SetCapability("browserName", "firefox");
             }
             else if (browser == BrowserType.Safari)
             {
-                caps.SetCapability(CapabilityType.BrowserName, "safari");
+                caps.SetCapability("browserName", "safari");
             }
             else
             {
