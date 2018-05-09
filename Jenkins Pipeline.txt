@@ -1,0 +1,19 @@
+node {
+    stage 'Checkout code'
+	git 'https://github.com/...'
+    stage 'Restore Nuget'
+        bat '"C:/buildtools/nuget.exe" restore RKCIUIAutomation.sln'
+    stage 'Build'
+	bat "\"${tool 'MSBuild'}\" RKCIUIAutomation.sln p:Configuration=Debug /p:Platform=\"Any CPU\" /p:ProductVersion=1.0.0.$(env.BUILD_NUMBER}"
+    }
+    
+stage 'Parllel Test'
+parallel Garnet: {
+    node('master') {
+        bat '"C:/buildtools/nunit3-console.exe" --params:Project=Garnet --params:Browser=Chrome RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll'
+    }
+},I15_Southern_Corridor': {
+    node('agentName'){
+	bat '"C:/buildtools/nunit3-console.exe" --params:Project=I15_Southern_Corridor --params:Browser=Chrome RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll'
+    }
+}
