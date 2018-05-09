@@ -150,11 +150,11 @@
     <Compile Include="Test\MSUnitTest.cs" />
     <Compile Include="Test\UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\JiraUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Page\" />
     <Folder Include="Report\ErrorScreenshots\" />
-    <Folder Include="Tools\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -166,6 +166,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".gitattributes" />
+    <Content Include=".gitignore" />
     <Content Include="extent-config.xml" />
   </ItemGroup>
   <ItemGroup>
