@@ -52,7 +52,6 @@ namespace RKCIUIAutomation
             caps = new DesiredCapabilities();
             caps = DeterminePlatformType(platform);
             caps = DetermineBrowserType(browser);
-            caps.SetCapability("tz", "America/Chicago");
             return caps;
         }
 
