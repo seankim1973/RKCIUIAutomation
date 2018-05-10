@@ -50,8 +50,9 @@ namespace RKCIUIAutomation
         private DesiredCapabilities DetermineCapabilities(TestPlatform platform, BrowserType browser)
         {
             caps = new DesiredCapabilities();
-            caps = DeterminePlatformType(platform);
-            caps = DetermineBrowserType(browser);
+            DeterminePlatformType(platform);
+            DetermineBrowserType(browser);
+            caps.SetCapability("tz", "America/Chicago");
             return caps;
         }
 

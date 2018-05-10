@@ -4,6 +4,7 @@ using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
+using System.Drawing;
 
 namespace RKCIUIAutomation.Base
 {
@@ -51,7 +52,7 @@ namespace RKCIUIAutomation.Base
             else
             {
                 Driver = GetRemoteWebDriver(testPlatform, browserType);
-                Driver.Manage().Window.FullScreen();
+                Driver.Manage().Window.Size = new Size(1680, 1050);
                 Driver.Navigate().GoToUrl(siteUrl);
             }
 
