@@ -16,7 +16,7 @@
         I15_Tech_Corridor,
         SH249_Extension,
         Southern_Gateway,
-        SR202_South_Mountain_Loop,
+        SR202_South_Mountain_Fwy,
         Tappan_Zee_Bridge
     }
 
