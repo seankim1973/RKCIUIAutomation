@@ -14,6 +14,7 @@ namespace RKCIUIAutomation.Base
         private BrowserType browserType;
         private TestEnv testEnv;
         private Project projectSite;
+        private Cookie cookie;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -50,6 +51,7 @@ namespace RKCIUIAutomation.Base
             else
             {
                 Driver = GetRemoteWebDriver(testPlatform, browserType);
+                Driver.Manage().Window.FullScreen();
                 Driver.Navigate().GoToUrl(siteUrl);
             }
 
@@ -65,15 +67,14 @@ namespace RKCIUIAutomation.Base
                     : string.Format("<pre>{0}</pre>", TestContext.CurrentContext.Result.StackTrace);
             Status logstatus;
 
-            string screenshotPath = null;
-            Cookie cookie = null;
+            string screenshotPath = null;            
 
             switch (status)
             {
                 case TestStatus.Failed:
-                    cookie = new Cookie("zaleniumTestPassed", "false");
                     screenshotPath = CaptureScreenshot(TestContext.CurrentContext.Test.Name);
                     logstatus = Status.Fail;
+                    cookie = new Cookie("zaleniumTestPassed", "false");
                     break;
                 case TestStatus.Inconclusive:
                     logstatus = Status.Warning;
@@ -82,14 +83,14 @@ namespace RKCIUIAutomation.Base
                     logstatus = Status.Skip;
                     break;
                 default:
-                    cookie = new Cookie("zaleniumTestPassed", "true");
                     logstatus = Status.Pass;
+                    cookie = new Cookie("zaleniumTestPassed", "true");
                     break;
             }
-                        
-            ExtentTestManager.GetTest().Log(logstatus, "Test ended with " + logstatus + stacktrace).AddScreenCaptureFromPath(screenshotPath);
 
             Driver.Manage().Cookies.AddCookie(cookie);
+            ExtentTestManager.GetTest().Log(logstatus, "Test ended with " + logstatus + stacktrace).AddScreenCaptureFromPath(screenshotPath);
+                        
             Driver.Quit();
         }
 

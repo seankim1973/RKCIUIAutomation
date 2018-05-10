@@ -52,7 +52,6 @@ namespace RKCIUIAutomation
             caps = new DesiredCapabilities();
             caps = DeterminePlatformType(platform);
             caps = DetermineBrowserType(browser);
-            caps.SetCapability("tz", "America/Chicago");
             return caps;
         }
 
@@ -60,23 +59,23 @@ namespace RKCIUIAutomation
         {
             if (platform == TestPlatform.Windows)
             {
-                caps.SetCapability(CapabilityType.PlatformName, PlatformType.Windows);
+                caps.SetCapability(CapabilityType.PlatformName, "Windows");
             }
             else if (platform == TestPlatform.Mac)
             {
-                caps.SetCapability(CapabilityType.PlatformName, PlatformType.Mac);
+                caps.SetCapability(CapabilityType.PlatformName, "Mac");
             }
             else if (platform == TestPlatform.Android)
             {
-                caps.SetCapability(CapabilityType.PlatformName, PlatformType.Android);
+                caps.SetCapability(CapabilityType.PlatformName, "Android");
             }
             else if (platform == TestPlatform.IOS)
             {
-                caps.SetCapability(CapabilityType.PlatformName, PlatformType.Mac);
+                caps.SetCapability(CapabilityType.PlatformName, "Mac");
             }
             else if (platform == TestPlatform.Linux)
             {
-                caps.SetCapability(CapabilityType.PlatformName, PlatformType.Linux);
+                caps.SetCapability(CapabilityType.PlatformName, "Linux");
             }
             else
             {
