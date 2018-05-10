@@ -33,7 +33,7 @@ namespace RKCIUIAutomation.Base
         {
             var _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Linux}");
             var _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            var _testEnv = TestContext.Parameters.Get("Env", $"{TestEnv.Test}");
+            var _testEnv = TestContext.Parameters.Get("TestEnv", $"{TestEnv.Test}");
             var _projectSite = TestContext.Parameters.Get("Project");
 
             testPlatform = (TestPlatform)Enum.Parse(typeof(TestPlatform), _testPlatform);

@@ -14,10 +14,10 @@
         Green_Line_Extension,
         I15_Southbound,
         I15_Tech_Corridor,
-        SH249,
-        SMF202,
+        SH249_Extension,
         Southern_Gateway,
-        Tappan_Zee
+        SR202_South_Mountain_Loop,
+        Tappan_Zee_Bridge
     }
 
     public enum TestPlatform
@@ -42,7 +42,6 @@
     {
         ProjAdmin,
         SysAdmin,
-        ProjManager,
         ProjUser
     }
 }
