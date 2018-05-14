@@ -21,7 +21,7 @@ namespace RKCIUIAutomation
         public void testmethod2()
         {
             Thread.Sleep(5000);
-            Assert.True(false);
+            Assert.True(1==1);
         }
 
         //[Test, Description("test description - comma seperated")]
