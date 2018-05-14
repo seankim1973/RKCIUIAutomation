@@ -136,6 +136,10 @@
     <Compile Include="Base\WebDriverFactory.cs" />
     <Compile Include="Config\ConfigUtils.cs" />
     <Compile Include="Config\Properties.cs" />
+    <Compile Include="Page\PageBase.cs" />
+    <Compile Include="Page\Locators.cs" />
+    <Compile Include="Page\LoginPage.cs" />
+    <Compile Include="Page\PageNav.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -152,7 +156,6 @@
     <Compile Include="Tools\JiraUtil.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Page\" />
     <Folder Include="Report\ErrorScreenshots\" />
   </ItemGroup>
   <ItemGroup>
