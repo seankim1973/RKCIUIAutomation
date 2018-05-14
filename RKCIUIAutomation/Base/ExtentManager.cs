@@ -25,10 +25,10 @@ namespace RKCIUIAutomation.Base
             klov.InitMongoDbConnection("localhost", 27017);
             klov.ProjectName = "RKCIUIAutomationReport";
             klov.ReportName = "Build " + DateTime.Now.ToString();
-            klov.KlovUrl = "http://localhost//extentreport";
+            klov.KlovUrl = "http://localhost";
             Instance.AttachReporter(klov);
 
-            Instance.AttachReporter(htmlReporter);
+            //Instance.AttachReporter(htmlReporter);
             Console.Out.WriteLine("#### Created HTML Report at : \n" + filePath);
         }
 
