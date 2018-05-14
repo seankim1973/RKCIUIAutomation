@@ -16,9 +16,7 @@ namespace RKCIUIAutomation.Test
     {
         public MSUnitTest()
         {
-            //
-            // TODO: Add constructor logic here
-            //
+            
         }
 
         private TestContext testContextInstance;
