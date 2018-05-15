@@ -136,10 +136,13 @@
     <Compile Include="Base\WebDriverFactory.cs" />
     <Compile Include="Config\ConfigUtils.cs" />
     <Compile Include="Config\Properties.cs" />
+    <Compile Include="Page\Locators\CommonLocators.cs" />
+    <Compile Include="Page\Locators\MainNavLocators.cs" />
     <Compile Include="Page\PageBase.cs" />
-    <Compile Include="Page\Locators.cs" />
-    <Compile Include="Page\LoginPage.cs" />
-    <Compile Include="Page\PageNav.cs" />
+    <Compile Include="Page\Locators\LocatorsImpl.cs" />
+    <Compile Include="Page\Login\LoginPage.cs" />
+    <Compile Include="Page\Navigation\PageNav.cs" />
+    <Compile Include="Page\PageHelper.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -151,6 +154,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Test\MSUnitTest.cs" />
+    <Compile Include="Test\TestBase.cs" />
     <Compile Include="Test\UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\JiraUtil.cs" />

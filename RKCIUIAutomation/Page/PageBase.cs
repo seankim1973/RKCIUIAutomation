@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using RKCIUIAutomation.Base;
 using System;
@@ -7,7 +8,6 @@ namespace RKCIUIAutomation.Page
 {
     public class PageBase : BaseClass
     {
-
         private static By link_Login = By.LinkText("Login");
 
         public LoginPage ClickLoginLink()
@@ -16,6 +16,13 @@ namespace RKCIUIAutomation.Page
             return new LoginPage();
         }
 
+
+        public void HoverOverElement(By elementByLocator)
+        {
+            WaitForElement(elementByLocator);
+            Actions action = new Actions(Driver);
+            action.MoveToElement(GetElement(elementByLocator)).Perform();
+        }
 
         public IWebElement GetElement(By elementByLocator)
         {
