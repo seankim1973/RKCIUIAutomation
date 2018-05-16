@@ -8,9 +8,22 @@ namespace RKCIUIAutomation.Base
 {
     public class BaseUtils : WebDriverFactory
     {
-        public static string iisExtentPath = "C:\\inetpub\\wwwroot\\extentreport";
-        //public static string reportFilePath = $"{GetCodeBasePath()}\\Report";
-        public static string screenshotFullPath = $"{iisExtentPath}\\errorscreenshots\\";
+        public static string extentReportPath = null;
+        public static string screenshotReferencePath = null;
+
+        public void DetermineFilePath(string _testPlatform)
+        {
+            if (_testPlatform.Equals("Local"))
+            {
+                extentReportPath = $"{GetCodeBasePath()}\\Report";
+                screenshotReferencePath = "errorscreenshots/";
+            } else
+            {
+                extentReportPath = "C:\\inetpub\\wwwroot\\extentreport";
+                screenshotReferencePath = "errorscreenshots\\";
+            }
+        }
+
         public static string GetCodeBasePath()
         {
             Directory.SetCurrentDirectory(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString());
@@ -21,10 +34,10 @@ namespace RKCIUIAutomation.Base
         public string CaptureScreenshot(string fileName)
         {
             string uniqueFileName = $"{fileName}{DateTime.Now.Second}.png";
-            var screenshotSavePath = $"{screenshotFullPath}{uniqueFileName}";
+            var screenshotSavePath = $"{extentReportPath}\\errorscreenshots\\{uniqueFileName}";
             var screenshot = Driver.TakeScreenshot();
             screenshot.SaveAsFile(screenshotSavePath, ScreenshotImageFormat.Png);
-            return $"/extentreport/errorscreenshots/{uniqueFileName}";
+            return $"{screenshotReferencePath}{uniqueFileName}";
         }
 
     }

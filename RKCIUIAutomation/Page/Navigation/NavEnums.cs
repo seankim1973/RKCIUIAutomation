@@ -1,8 +1,9 @@
 ﻿namespace RKCIUIAutomation.Page.Navigation
 {
-    public class PageNav : PageBase
+    public class NavEnums : PageHelper
     {
-        public enum NavMainMenu
+        //Main Navigation Enums
+        public enum MainNav_e
         {
             [StringValue("Project")] Project,
             [StringValue("QA Lab")] QA_Lab,
@@ -22,14 +23,16 @@
             [StringValue("ELVIS")] ELVIS
         }
 
-        public enum NavProject
+        //Project Menu Navigation Enums
+        public enum Project_e
         {
             [StringValue("My Details")] My_Details,
             [StringValue("Qms Document")] Qms_Document,
             [StringValue("Administration")] Administration
         }
 
-        public enum NavProject_Administration
+        //Project >>Administration Menu Navigation Enums
+        public enum Proj_Administration_e
         {
             [StringValue("Project Details")] Project_Details,
             [StringValue("Companies")] Companies,
@@ -39,14 +42,16 @@
             [StringValue("System Configuration")] System_Configuration
         }
 
-        public enum NavProject_Admin_UserManagement
+        //Project >>Administration >>User Management Menu Navigation Enums
+        public enum Proj_Admin_UserManagement_e
         {
             [StringValue("Roles")] Roles,
             [StringValue("Users")] Users,
             [StringValue("Access Rights")] Access_Rights
         }
 
-        public enum NavProject_Admin_SystemConfiguration
+        //Project >>Administration >>System Configuration Menu Navigation Enums
+        public enum Proj_Admin_SystemConfiguration_e
         {
             [StringValue("Disciplines")] Disciplines,
             [StringValue("Submittal Actions")] Submittal_Actions,
@@ -61,22 +66,23 @@
             [StringValue("Grade Management")] Grade_Management
         }
 
-        public enum NavProject_Admin_SysConfig_Equipment
+        //Project >>Administration >>System Configuration >>Equipment Menu Navigation Enums
+        public enum Proj_Admin_SysConfig_Equipment_e
         {
             [StringValue("Equipment Makes")] Equipment_Makes,
             [StringValue("Equipment Types")] Equipment_Types,
             [StringValue("Equipment Models")] Equipment_Models
         }
-
-        public enum NavProject_Admin_SysConfig_GradeManagement
+        
+        //Project >>Administration >>SystemConfiguration >>Grade Management Menu Navigation Enums
+        public enum Proj_Admin_SysConfig_GradeManagement_e
         {
             [StringValue("Grade Types")] Grade_Types,
             [StringValue("Grades")] Grades
         }
 
-
-
-        public enum QALab
+        //QA Lab Menu Navigation Enums
+        public enum QALab_e
         {
             [StringValue("Technician Random")] Technician_Random,
             [StringValue("BreakSheet Creation")] BreakSheet_Creation,
@@ -84,7 +90,8 @@
             [StringValue("Equipment Management")] Equipment_Management
         }
 
-        public enum QARecordControl
+        //QA Record Control Menu Navigation Enums
+        public enum QARecordControl_e
         {
             [StringValue("QA Test - Original Report")] QA_Test_Original_Report,
             [StringValue("QA Test - All")] QA_Test_All,
@@ -98,7 +105,8 @@
             [StringValue("Girder Tracker")] Girder_Tracker
         }
 
-        public enum QAEngineer
+        //QA Engineer Menu Navigation Enums
+        public enum QAEngineer_e
         {
             [StringValue("QA Test - Lab Supervisor Review")] QA_Test_Lab_Supervisor_Review,
             [StringValue("QA Test - Field Supervisor Review")] QA_Test_Field_Supervisor_Review,
@@ -106,15 +114,17 @@
             [StringValue("DIR QA Review/Approval")] DIR_QA_Review_Approval
         }
 
-        public enum ReportsNotices
+        //Report & Notices Menu Navigation Enums
+        public enum ReportsNotices_e
         {
             [StringValue("General NCR")] General_NCR,
             [StringValue("General DN")] General_DN
         }
 
-        public enum QASearch
+        //QA Search Menu Navigation Enums
+        public enum QASearch_e
         {
-            [StringValue("QA Test")] QA_Test,
+            [StringValue("QA Tests")] QA_Tests,
             [StringValue("QA Test Summary Search")] QA_Test_Summary_Search,
             [StringValue("QA Guide Schedule Summary Report")] QA_Guide_Schedule_Summary_Report,
             [StringValue("Inspection Deficiency Log Report")] Inspection_Deficiency_Log_Report,
@@ -122,20 +132,23 @@
             [StringValue("DIR Summary Report")] DIR_Summary_Report
         }
 
-        public enum QAField
+        //QA Field Menu Navigation Enums
+        public enum QAField_e
         {
             [StringValue("QA Test")] QA_Test,
             [StringValue("QA DIRs")] QA_DIRs,
             [StringValue("QA Technician Random Search")] QA_Technician_Random_Search
         }
 
-        public enum Owner
+        //Owner Menu Navigation Enums
+        public enum Owner_e
         {
             [StringValue("Owner_DIRs")] Owner_DIRs,
             [StringValue("Owner_NCRs")] Owner_NCRs
         }
 
-        public enum MaterialMixCodes
+        //Material/Mix Codes Menu Navigation Enums
+        public enum MaterialMixCodes_e
         {
             [StringValue("Mix Design - PCC")] Mix_Design_PCC,
             [StringValue("Mix Design - HMA")] Mix_Design_HMA,
@@ -147,7 +160,8 @@
             [StringValue("Material Code - Raw Material")] Material_Code_Raw_Material
         }
 
-        public enum RMCenter
+        //RM Center Menu Navigation Enums
+        public enum RMCenter_e
         {
             [StringValue("Search")] Search,
             [StringValue("Upload QA Submittal")] Upload_QA_Submittal,
@@ -161,36 +175,42 @@
             [StringValue("Comment Summary")] Comment_Summary
         }
 
-        public enum QAInbox
+        //QA Inbox Menu Navigation Enums
+        public enum QAInbox_e
         {
             [StringValue("Pending Comments")] Pending_Comments,
-            [StringValue("My Inbox (Not for comment)")] My_Inbox_Not_for_comment
+            [StringValue("My Inbox (Not for comment)")] My_Inbox
         }
 
-        public enum DOTInbox
+        //DOT Inbox Menu Navigation Enums
+        public enum DOTInbox_e
         {
             [StringValue("Pending Comments")] Pending_Comments
         }
 
-        public enum OwnerInbox
+        //Owner Inbox Menu Navigation Enums
+        public enum OwnerInbox_e
         {
             [StringValue("Pending Comments")] Pending_Comments
         }
 
-        public enum DevInbox
+        //Dev Inbox Menu Navigation Enums
+        public enum DevInbox_e
         {
             [StringValue("Pending Comments")] Pending_Comments,
             [StringValue("Pending Resolution")] Pending_Resolution,
             [StringValue("Pending Comments Other")] Pending_Comments_Other
         }
 
-        public enum RFI
+        //RFI Menu Navigation Enums
+        public enum RFI_e
         {
             [StringValue("List")] List,
             [StringValue("Create")] Create
         }
 
-        public enum ELVIS
+        //ELVIS Menu Navigation Enums
+        public enum ELVIS_e
         {
             [StringValue("About")] About
         }

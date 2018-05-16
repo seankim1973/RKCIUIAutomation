@@ -1,63 +1,51 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
-using OpenQA.Selenium.Support.UI;
-using RKCIUIAutomation.Base;
-using System;
+using RKCIUIAutomation.Page.Main;
+using RKCIUIAutomation.Page.Project;
 
 namespace RKCIUIAutomation.Page
 {
-    public class PageBase : BaseClass
+    public class PageBase : PageRefs
     {
-        private static By link_Login = By.LinkText("Login");
+        private static By link_Login = By.XPath("//a[text()=' Login']");
+        private static By link_Logout = By.XPath("//a[text()=' Log out']");
+
+        public PageBase() : base(Driver)
+        {
+        }
 
         public LoginPage ClickLoginLink()
         {
             ClickElement(link_Login);
-            return new LoginPage();
+            return new LoginPage(Driver);
         }
 
-
-        public void HoverOverElement(By elementByLocator)
+        public LandingPage ClickLogoutLink()
         {
-            WaitForElement(elementByLocator);
-            Actions action = new Actions(Driver);
-            action.MoveToElement(GetElement(elementByLocator)).Perform();
+            ClickElement(link_Logout);
+            return new LandingPage();
         }
 
-        public IWebElement GetElement(By elementByLocator)
+
+
+    }
+
+    public class PageRefs : PageHelper
+    {
+        public PageRefs()
         {
-            IWebElement elem = Driver.FindElement(elementByLocator);
-            return elem;
+
         }
-        
-        private void WaitForElement(By elementByLocator)
+        public PageRefs(IWebDriver driver)
         {
-            DefaultWait<IWebDriver> fluentWait = new DefaultWait<IWebDriver>(Driver);
-            fluentWait.Timeout = TimeSpan.FromSeconds(30);
-            fluentWait.PollingInterval = TimeSpan.FromMilliseconds(250);
-            fluentWait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-            fluentWait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-            IWebElement webElem = fluentWait.Until(x => x.FindElement(elementByLocator));
         }
 
-        public void ClickElement(By elementByLocator)
-        {
-            WaitForElement(elementByLocator);
-            GetElement(elementByLocator).Click();
-        }
+        private MyDetails _MyDetails { get => new MyDetails(Driver); set { } }
+        // MyDetails MyDetails() => _MyDetails;
 
-        public void EnterText(By elementByLocator, string text)
-        {
-            WaitForElement(elementByLocator);
-            GetElement(elementByLocator).SendKeys(text);
-        }
+        private LandingPage _landingPage { get => new LandingPage(); set { } }
+        public LandingPage LandingPage() => _landingPage;
 
-        public string GetText(By elementByLocator)
-        {
-            WaitForElement(elementByLocator);
-            string text = GetElement(elementByLocator).Text;
-            return text;
-        }
-
+        private LoginPage _loginPage { get => new LoginPage(Driver); set { } }
+        public LoginPage LoginPage() => _loginPage;
     }
 }

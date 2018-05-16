@@ -11,7 +11,7 @@ namespace RKCIUIAutomation.Test
     /// <summary>
     /// Summary description for JUnitTest
     /// </summary>
-    [TestClass]
+    //[TestClass]
     public class MSUnitTest : BaseClass
     {
         public MSUnitTest()
@@ -61,7 +61,7 @@ namespace RKCIUIAutomation.Test
         //
         #endregion
 
-        [TestMethod]
+        //[TestMethod]
         public void MSUnitTest1()
         {
             //Directory.SetCurrentDirectory(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString());

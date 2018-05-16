@@ -8,7 +8,7 @@ namespace RKCIUIAutomation.Base
 {
     public class ExtentManager : BaseUtils
     {
-        private static readonly string filePath = $"{iisExtentPath}\\extent.html";
+        private static readonly string filePath = $"{extentReportPath}\\extent.html";
         private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
 
         public static ExtentReports Instance { get { return _lazy.Value; } }
