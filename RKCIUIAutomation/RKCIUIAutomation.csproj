@@ -168,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Report\errorscreenshots\" />
+    <Folder Include="Test\Report\errorscreenshots\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -9,7 +9,7 @@ namespace RKCIUIAutomation.Page
 {
     public class PageHelper : Action
     {
-        public static string GetATagXpathString(Enum @enum) => $"//a[text()='{@enum.GetString()}']";
+        private static string GetATagXpathString(Enum @enum) => $"//a[text()='{@enum.GetString()}']";
         public static By SetLocatorXpath(Enum @enum) => By.XPath(GetATagXpathString(@enum));
     }
 
@@ -23,16 +23,23 @@ namespace RKCIUIAutomation.Page
         public string Value { get; }
     }
 
-    public static class EnumHelper
+    public static class BaseHelper
     {
         public static string GetString(this Enum value)
         {
             string output = null;
-            Type type = value.GetType();
 
-            FieldInfo fi = type.GetField(value.ToString());
-            StringValueAttribute[] attrs = fi.GetCustomAttributes(false) as StringValueAttribute[];
-            output = attrs[0].Value;
+            try
+            {
+                Type type = value.GetType();
+                FieldInfo fi = type.GetField(value.ToString());
+                StringValueAttribute[] attrs = fi.GetCustomAttributes(false) as StringValueAttribute[];
+                output = attrs[0].Value;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             return output;
         }
     }
@@ -41,14 +48,31 @@ namespace RKCIUIAutomation.Page
     {
         public void HoverOverElement(By elementByLocator)
         {
-            WaitForElement(elementByLocator);
-            Actions action = new Actions(Driver);
-            action.MoveToElement(GetElement(elementByLocator)).Perform();
+            try
+            {
+                WaitForElement(elementByLocator);
+                Actions action = new Actions(Driver);
+                action.MoveToElement(GetElement(elementByLocator)).Perform();
+                LogInfo($"MouseOver action on element - {elementByLocator}");
+            }
+            catch (Exception e)
+            {
+                LogInfo($"Error occured for mouseover action on element - {elementByLocator}", e);
+            }
         }
 
         public IWebElement GetElement(By elementByLocator)
         {
-            IWebElement elem = Driver.FindElement(elementByLocator);
+            IWebElement elem = null;
+            try
+            {
+                elem = Driver.FindElement(elementByLocator);
+                LogInfo($"Found element - {elementByLocator}");
+            }
+            catch (Exception e)
+            {
+                LogInfo($"Unable to locate element - {elementByLocator}", e);
+            }
             return elem;
         }
 
@@ -56,8 +80,8 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(30));
-                wait.PollingInterval = TimeSpan.FromMilliseconds(250);
+                WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
+                wait.PollingInterval = TimeSpan.FromMilliseconds(500);
                 wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
                 IWebElement webElem = wait.Until(x => x.FindElement(elementByLocator));
@@ -65,7 +89,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                Console.Out.WriteLine(e.Message);
+                LogInfo($"WaitForElement timeout occured for element - {elementByLocator}", e);
             }
             return false;
         }
@@ -74,23 +98,31 @@ namespace RKCIUIAutomation.Page
         {
             if (WaitForElement(elementByLocator))
             {
-                GetElement(elementByLocator).Click();
-            }
-            else
-            {
-                Console.Out.WriteLine("Click element not found");
-            }
+                try
+                {
+                    GetElement(elementByLocator).Click();
+                    LogInfo($"Clicked element - {elementByLocator}");
+                }
+                catch (Exception e)
+                {
+                    LogInfo($"Unable to click element - {elementByLocator}", e);
+                }
+            }    
         }
 
         public void EnterText(By elementByLocator, string text)
         {
             if (WaitForElement(elementByLocator))
             {
-                GetElement(elementByLocator).SendKeys(text);
-            }
-            else
-            {
-                Console.Out.WriteLine("TextField element not found");
+                try
+                {
+                    GetElement(elementByLocator).SendKeys(text);
+                    LogInfo($"Entered {text} in field - {elementByLocator}");
+                }
+                catch (Exception e)
+                {
+                    LogInfo($"Unable to enter text in field - {elementByLocator}", e);
+                }
             }
         }
 
@@ -100,14 +132,18 @@ namespace RKCIUIAutomation.Page
 
             if (WaitForElement(elementByLocator))
             {
-                text = GetElement(elementByLocator).Text;
+                try
+                {
+                    text = GetElement(elementByLocator).Text;
+                    LogInfo($"Retrieved text {text} from element - {elementByLocator}");
+                }
+                catch (Exception e)
+                {
+                    LogInfo($"Unable to retrieve text from element - {elementByLocator}", e);
+                }
             }
-            else
-            {
-                Console.Out.WriteLine("TextField element not found");
-            }
+            
             return text;
         }
-
     }
 }

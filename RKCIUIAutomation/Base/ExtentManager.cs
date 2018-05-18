@@ -8,21 +8,17 @@ namespace RKCIUIAutomation.Base
 {
     public class ExtentManager : BaseUtils
     {
-        private static readonly string filePath = $"{extentReportPath}\\extent.html";
+        public static readonly string reportFilePath = $"{extentReportPath}\\extent.html";
         private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
 
         public static ExtentReports Instance { get { return _lazy.Value; } }
 
         static ExtentManager()
-        {
-            var htmlReporter = new ExtentHtmlReporter(filePath);
-            htmlReporter.Configuration().ChartLocation = ChartLocation.Top;
-            htmlReporter.Configuration().ChartVisibilityOnOpen = true;
-            htmlReporter.Configuration().DocumentTitle = "RKCI UI Automation";
-            htmlReporter.Configuration().ReportName = "RKCI Test Report";
-            htmlReporter.Configuration().Theme = Theme.Standard;
+        {            
+            ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(reportFilePath);
+            htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
+
             Instance.AttachReporter(htmlReporter);
-            Console.Out.WriteLine("#### Created HTML Report at : \n" + filePath);
         }
 
         private ExtentManager()

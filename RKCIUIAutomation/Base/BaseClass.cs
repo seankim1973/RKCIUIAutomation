@@ -1,10 +1,14 @@
 ﻿using AventStack.ExtentReports;
+using AventStack.ExtentReports.Model;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Test;
 using System;
 using System.Drawing;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace RKCIUIAutomation.Base
 {
@@ -31,12 +35,14 @@ namespace RKCIUIAutomation.Base
             projectSite = (Project)Enum.Parse(typeof(Project), _projectSite);
 
             DetermineFilePath(_testPlatform);
+
             ExtentTestManager.CreateParentTest(GetType().Name);
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
+            Console.Out.WriteLine($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
             ExtentManager.Instance.Flush();
         }
 
@@ -54,11 +60,16 @@ namespace RKCIUIAutomation.Base
                 Driver = GetRemoteWebDriver(testPlatform, browserType);
             }
 
-            Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
+            Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
             Driver.Manage().Window.Size = new Size(1680, 1050);
             Driver.Navigate().GoToUrl(siteUrl);
 
-            ExtentTestManager.CreateTest(TestContext.CurrentContext.Test.Name);
+            var testInstance = TestContext.CurrentContext.Test;
+            var testCategory = testInstance.Properties.Get("Category");
+
+            ExtentTestManager
+                .CreateTest(testInstance.Name)
+                .AssignCategory(testCategory.ToString());
         }
 
         [TearDown]

@@ -111,6 +111,5 @@ namespace RKCIUIAutomation
 
             return caps;
         }
-
     }
 }
