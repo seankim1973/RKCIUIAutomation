@@ -17,12 +17,13 @@ namespace RKCIUIAutomation.Base
         {            
             ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(reportFilePath);
             htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
-
             Instance.AttachReporter(htmlReporter);
         }
 
-        private ExtentManager()
+        private ExtentManager(string path, bool existing)
         {
+            String filePath = path;
+            bool overwrite = existing;
         }
     }
 }

@@ -28,6 +28,12 @@ namespace RKCIUIAutomation.Base
             }
         }
 
+        public string[] GetTestContext(string fullTestName)
+        {
+            string[] testNameArray = fullTestName.Split('.');
+            return testNameArray;
+        }
+
         public static string GetCodeBasePath()
         {
             Directory.SetCurrentDirectory(Directory.GetParent(TestContext.CurrentContext.TestDirectory).ToString());

@@ -44,7 +44,7 @@
         <ul id='nav-mobile' class='right hide-on-med-and-down nav-right'>
 
             <a>
-                <span class='suite-start-time label blue darken-3'>5/17/2018 7:48:27 PM Central Standard Time</span>
+                <span class='suite-start-time label blue darken-3'>5/18/2018 3:37:25 PM Central Standard Time</span>
             </a>
             <a>
                 <span class="label blue darken-3">3.1.0</span>
@@ -84,8 +84,11 @@
                         <i class='material-icons'>local_offer</i> Category
                     </a>
                     <ul id='category-toggle' class='dropdown-content'>
-                            <li><a href='#'>Regression</a></li>
+                            <li><a href='#'>Priority1</a></li>
+                            <li><a href='#'>RMCenter</a></li>
                             <li><a href='#'>Smoke</a></li>
+                            <li><a href='#'>Priority2</a></li>
+                            <li><a href='#'>QATest</a></li>
                         <li class='divider'></li>
                         <li class='clear'><a href='#!' clear='true'>Clear Filters</a></li>
                     </ul>
@@ -170,88 +173,27 @@
 
                     <li class='test displayed active has-leaf pass' status='pass' test-id='1'>
                         <div class='test-heading'>
-                            <span class='test-name'>Smoke</span>
-                            <span class='test-time'>5/17/2018 7:48:28 PM</span>
+                            <span class='test-name'>GenericTest</span>
+                            <span class='test-time'>5/18/2018 3:37:25 PM</span>
                             <span class='test-status right pass'>Pass</span>
                         </div>
                         <div class='test-content hide'>
                                 <div class='test-time-info'>
-                                    <span class='label start-time'>5/17/2018 7:48:28 PM</span>
-                                    <span class='label end-time'>5/17/2018 7:48:55 PM</span>
-                                    <span class='label time-taken grey lighten-1 white-text'>00:00:27.2227600</span>
+                                    <span class='label start-time'>5/18/2018 3:37:25 PM</span>
+                                    <span class='label end-time'>5/18/2018 3:37:30 PM</span>
+                                    <span class='label time-taken grey lighten-1 white-text'>00:00:04.3806928</span>
                                 </div>
                                     <ul class='collapsible node-list' data-collapsible='accordion'>
                                             <li class='node level-1 pass' status='pass' test-id='2'>
                                                 <div class='collapsible-header'>
-                                                    <div class='node-name'>GenericTest</div>
-                                                    <span class='node-time'>5/17/2018 7:48:35 PM</span>
+                                                    <div class='node-name'><font size=3>TestCase# : ELVS3456 - GenericTest</font><br><font size=2>Verify user can login successfully using project - user account</font></div>
+                                                    <span class='node-time'>5/18/2018 3:37:25 PM</span>
                                                     <span class='test-status right pass'>Pass</span>
                                                 </div>
                                                 <div class='collapsible-body'>
                                                         <div class='category-list'>
-                                                                <span class='category label white-text'>Regression</span>
-                                                        </div>
-                                                    <div class='node-steps'>
-                                                        <table class='bordered table-results'>
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Status</th>
-                                                                    <th>Timestamp</th>
-                                                                    <th>Details</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:35 PM</td>
-                                                                        <td class='step-details'>Found element - By.Name: Email</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:35 PM</td>
-                                                                        <td class='step-details'>Entered QAProjectAdmin@rkci.com in field - By.Name: Email</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:35 PM</td>
-                                                                        <td class='step-details'>Found element - By.Name: Password</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:36 PM</td>
-                                                                        <td class='step-details'>Entered Password@123 in field - By.Name: Password</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:36 PM</td>
-                                                                        <td class='step-details'>Found element - By.XPath: //input[@type='submit']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:37 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //input[@type='submit']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='pass'>
-                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:37 PM</td>
-                                                                        <td class='step-details'>Test ended with Pass</td>
-                                                                    </tr>
-                                                            </tbody>
-                                                        </table>
-                                                            <ul class='screenshots'>
-                                                                    <li><img data-featherlight='' class='step-img' src='' data-src=''></li>
-                                                            </ul>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class='node level-1 pass' status='pass' test-id='3'>
-                                                <div class='collapsible-header'>
-                                                    <div class='node-name'>VerifyUserCanLogin_ProjAdmin</div>
-                                                    <span class='node-time'>5/17/2018 7:48:44 PM</span>
-                                                    <span class='test-status right pass'>Pass</span>
-                                                </div>
-                                                <div class='collapsible-body'>
-                                                        <div class='category-list'>
+                                                                <span class='category label white-text'>Priority1</span>
+                                                                <span class='category label white-text'>RMCenter</span>
                                                                 <span class='category label white-text'>Smoke</span>
                                                         </div>
                                                     <div class='node-steps'>
@@ -266,37 +208,37 @@
                                                             <tbody>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:44 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:25 PM</td>
                                                                         <td class='step-details'>Found element - By.Name: Email</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:44 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:25 PM</td>
                                                                         <td class='step-details'>Entered QAProjectAdmin@rkci.com in field - By.Name: Email</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:44 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:26 PM</td>
                                                                         <td class='step-details'>Found element - By.Name: Password</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:45 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:26 PM</td>
                                                                         <td class='step-details'>Entered Password@123 in field - By.Name: Password</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:45 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:26 PM</td>
                                                                         <td class='step-details'>Found element - By.XPath: //input[@type='submit']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:45 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:30 PM</td>
                                                                         <td class='step-details'>Clicked element - By.XPath: //input[@type='submit']</td>
                                                                     </tr>
                                                                     <tr class='log' status='pass'>
                                                                         <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:45 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:30 PM</td>
                                                                         <td class='step-details'>Test ended with Pass</td>
                                                                     </tr>
                                                             </tbody>
@@ -307,14 +249,33 @@
                                                     </div>
                                                 </div>
                                             </li>
+                                    </ul>
+
+                        </div>
+                    </li>
+                    <li class='test displayed active has-leaf pass' status='pass' test-id='3'>
+                        <div class='test-heading'>
+                            <span class='test-name'>VerifyUserCanLogin_ProjAdmin</span>
+                            <span class='test-time'>5/18/2018 3:37:44 PM</span>
+                            <span class='test-status right pass'>Pass</span>
+                        </div>
+                        <div class='test-content hide'>
+                                <div class='test-time-info'>
+                                    <span class='label start-time'>5/18/2018 3:37:44 PM</span>
+                                    <span class='label end-time'>5/18/2018 3:37:46 PM</span>
+                                    <span class='label time-taken grey lighten-1 white-text'>00:00:01.7233606</span>
+                                </div>
+                                    <ul class='collapsible node-list' data-collapsible='accordion'>
                                             <li class='node level-1 pass' status='pass' test-id='4'>
                                                 <div class='collapsible-header'>
-                                                    <div class='node-name'>VerifyUserCanLogin_ProjUser</div>
-                                                    <span class='node-time'>5/17/2018 7:48:54 PM</span>
+                                                    <div class='node-name'><font size=3>TestCase# : ELVS2345 - VerifyUserCanLogin_ProjAdmin</font><br><font size=2>Verify user can login successfully using project - admin account</font></div>
+                                                    <span class='node-time'>5/18/2018 3:37:44 PM</span>
                                                     <span class='test-status right pass'>Pass</span>
                                                 </div>
                                                 <div class='collapsible-body'>
                                                         <div class='category-list'>
+                                                                <span class='category label white-text'>Priority1</span>
+                                                                <span class='category label white-text'>RMCenter</span>
                                                                 <span class='category label white-text'>Smoke</span>
                                                         </div>
                                                     <div class='node-steps'>
@@ -329,37 +290,119 @@
                                                             <tbody>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:54 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:44 PM</td>
                                                                         <td class='step-details'>Found element - By.Name: Email</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:54 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:45 PM</td>
                                                                         <td class='step-details'>Entered QAProjectAdmin@rkci.com in field - By.Name: Email</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:54 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:45 PM</td>
                                                                         <td class='step-details'>Found element - By.Name: Password</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:54 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:45 PM</td>
                                                                         <td class='step-details'>Entered Password@123 in field - By.Name: Password</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:54 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:45 PM</td>
                                                                         <td class='step-details'>Found element - By.XPath: //input[@type='submit']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:55 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:46 PM</td>
                                                                         <td class='step-details'>Clicked element - By.XPath: //input[@type='submit']</td>
                                                                     </tr>
                                                                     <tr class='log' status='pass'>
                                                                         <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/17/2018 7:48:55 PM</td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:46 PM</td>
+                                                                        <td class='step-details'>Test ended with Pass</td>
+                                                                    </tr>
+                                                            </tbody>
+                                                        </table>
+                                                            <ul class='screenshots'>
+                                                                    <li><img data-featherlight='' class='step-img' src='' data-src=''></li>
+                                                            </ul>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                    </ul>
+
+                        </div>
+                    </li>
+                    <li class='test displayed active has-leaf pass' status='pass' test-id='5'>
+                        <div class='test-heading'>
+                            <span class='test-name'>VerifyUserCanLogin_ProjUser</span>
+                            <span class='test-time'>5/18/2018 3:37:58 PM</span>
+                            <span class='test-status right pass'>Pass</span>
+                        </div>
+                        <div class='test-content hide'>
+                                <div class='test-time-info'>
+                                    <span class='label start-time'>5/18/2018 3:37:58 PM</span>
+                                    <span class='label end-time'>5/18/2018 3:37:59 PM</span>
+                                    <span class='label time-taken grey lighten-1 white-text'>00:00:01.3860426</span>
+                                </div>
+                                    <ul class='collapsible node-list' data-collapsible='accordion'>
+                                            <li class='node level-1 pass' status='pass' test-id='6'>
+                                                <div class='collapsible-header'>
+                                                    <div class='node-name'><font size=3>TestCase# : ELVS1234 - VerifyUserCanLogin_ProjUser</font><br><font size=2>Verify user can login successfully using project - user account</font></div>
+                                                    <span class='node-time'>5/18/2018 3:37:58 PM</span>
+                                                    <span class='test-status right pass'>Pass</span>
+                                                </div>
+                                                <div class='collapsible-body'>
+                                                        <div class='category-list'>
+                                                                <span class='category label white-text'>Priority2</span>
+                                                                <span class='category label white-text'>QATest</span>
+                                                                <span class='category label white-text'>Smoke</span>
+                                                        </div>
+                                                    <div class='node-steps'>
+                                                        <table class='bordered table-results'>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Status</th>
+                                                                    <th>Timestamp</th>
+                                                                    <th>Details</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:58 PM</td>
+                                                                        <td class='step-details'>Found element - By.Name: Email</td>
+                                                                    </tr>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:58 PM</td>
+                                                                        <td class='step-details'>Entered QAProjectAdmin@rkci.com in field - By.Name: Email</td>
+                                                                    </tr>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:58 PM</td>
+                                                                        <td class='step-details'>Found element - By.Name: Password</td>
+                                                                    </tr>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:58 PM</td>
+                                                                        <td class='step-details'>Entered Password@123 in field - By.Name: Password</td>
+                                                                    </tr>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:58 PM</td>
+                                                                        <td class='step-details'>Found element - By.XPath: //input[@type='submit']</td>
+                                                                    </tr>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:59 PM</td>
+                                                                        <td class='step-details'>Clicked element - By.XPath: //input[@type='submit']</td>
+                                                                    </tr>
+                                                                    <tr class='log' status='pass'>
+                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
+                                                                        <td class='timestamp'>5/18/2018 3:37:59 PM</td>
                                                                         <td class='step-details'>Test ended with Pass</td>
                                                                     </tr>
                                                             </tbody>
@@ -425,37 +468,7 @@
 
                         <li class='category displayed active'>
                             <div class='category-heading'>
-                                <span class='category-name'>Regression</span>
-                                <span class='category-status right'>
- <span class='label pass'>1</span>                                                                                                         </span>
-                            </div>
-                            <div class='category-content hide'>
-                                <div class='category-status-counts'>
- <span class='label green accent-4 white-text'>Passed: 1</span>                                                                                                         </div>
-
-                                <div class='category-tests'>
-                                    <table class='bordered table-results'>
-                                        <thead>
-                                            <tr>
-                                                <th>Timestamp</th>
-                                                <th>TestName</th>
-                                                <th>Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                    <td>5/17/2018 7:48:35 PM</td>
-                                                    <td class='linked' test-id='2'>Smoke.GenericTest</td>
-                                                    <td><span class='test-status pass'>Pass</span></td>
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </li>
-                        <li class='category displayed active'>
-                            <div class='category-heading'>
-                                <span class='category-name'>Smoke</span>
+                                <span class='category-name'>Priority1</span>
                                 <span class='category-status right'>
  <span class='label pass'>2</span>                                                                                                         </span>
                             </div>
@@ -474,13 +487,148 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                    <td>5/17/2018 7:48:44 PM</td>
-                                                    <td class='linked' test-id='3'>Smoke.VerifyUserCanLogin_ProjAdmin</td>
+                                                    <td>5/18/2018 3:37:25 PM</td>
+                                                    <td class='linked' test-id='2'>GenericTest.<font size=3>TestCase# : ELVS3456 - GenericTest</font><br><font size=2>Verify user can login successfully using project - user account</font></td>
                                                     <td><span class='test-status pass'>Pass</span></td>
                                                 </tr>
                                                 <tr>
-                                                    <td>5/17/2018 7:48:54 PM</td>
-                                                    <td class='linked' test-id='4'>Smoke.VerifyUserCanLogin_ProjUser</td>
+                                                    <td>5/18/2018 3:37:44 PM</td>
+                                                    <td class='linked' test-id='4'>VerifyUserCanLogin_ProjAdmin.<font size=3>TestCase# : ELVS2345 - VerifyUserCanLogin_ProjAdmin</font><br><font size=2>Verify user can login successfully using project - admin account</font></td>
+                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                        <li class='category displayed active'>
+                            <div class='category-heading'>
+                                <span class='category-name'>RMCenter</span>
+                                <span class='category-status right'>
+ <span class='label pass'>2</span>                                                                                                         </span>
+                            </div>
+                            <div class='category-content hide'>
+                                <div class='category-status-counts'>
+ <span class='label green accent-4 white-text'>Passed: 2</span>                                                                                                         </div>
+
+                                <div class='category-tests'>
+                                    <table class='bordered table-results'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>TestName</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                    <td>5/18/2018 3:37:25 PM</td>
+                                                    <td class='linked' test-id='2'>GenericTest.<font size=3>TestCase# : ELVS3456 - GenericTest</font><br><font size=2>Verify user can login successfully using project - user account</font></td>
+                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>5/18/2018 3:37:44 PM</td>
+                                                    <td class='linked' test-id='4'>VerifyUserCanLogin_ProjAdmin.<font size=3>TestCase# : ELVS2345 - VerifyUserCanLogin_ProjAdmin</font><br><font size=2>Verify user can login successfully using project - admin account</font></td>
+                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                        <li class='category displayed active'>
+                            <div class='category-heading'>
+                                <span class='category-name'>Smoke</span>
+                                <span class='category-status right'>
+ <span class='label pass'>3</span>                                                                                                         </span>
+                            </div>
+                            <div class='category-content hide'>
+                                <div class='category-status-counts'>
+ <span class='label green accent-4 white-text'>Passed: 3</span>                                                                                                         </div>
+
+                                <div class='category-tests'>
+                                    <table class='bordered table-results'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>TestName</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                    <td>5/18/2018 3:37:25 PM</td>
+                                                    <td class='linked' test-id='2'>GenericTest.<font size=3>TestCase# : ELVS3456 - GenericTest</font><br><font size=2>Verify user can login successfully using project - user account</font></td>
+                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>5/18/2018 3:37:44 PM</td>
+                                                    <td class='linked' test-id='4'>VerifyUserCanLogin_ProjAdmin.<font size=3>TestCase# : ELVS2345 - VerifyUserCanLogin_ProjAdmin</font><br><font size=2>Verify user can login successfully using project - admin account</font></td>
+                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>5/18/2018 3:37:58 PM</td>
+                                                    <td class='linked' test-id='6'>VerifyUserCanLogin_ProjUser.<font size=3>TestCase# : ELVS1234 - VerifyUserCanLogin_ProjUser</font><br><font size=2>Verify user can login successfully using project - user account</font></td>
+                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                        <li class='category displayed active'>
+                            <div class='category-heading'>
+                                <span class='category-name'>Priority2</span>
+                                <span class='category-status right'>
+ <span class='label pass'>1</span>                                                                                                         </span>
+                            </div>
+                            <div class='category-content hide'>
+                                <div class='category-status-counts'>
+ <span class='label green accent-4 white-text'>Passed: 1</span>                                                                                                         </div>
+
+                                <div class='category-tests'>
+                                    <table class='bordered table-results'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>TestName</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                    <td>5/18/2018 3:37:58 PM</td>
+                                                    <td class='linked' test-id='6'>VerifyUserCanLogin_ProjUser.<font size=3>TestCase# : ELVS1234 - VerifyUserCanLogin_ProjUser</font><br><font size=2>Verify user can login successfully using project - user account</font></td>
+                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                        <li class='category displayed active'>
+                            <div class='category-heading'>
+                                <span class='category-name'>QATest</span>
+                                <span class='category-status right'>
+ <span class='label pass'>1</span>                                                                                                         </span>
+                            </div>
+                            <div class='category-content hide'>
+                                <div class='category-status-counts'>
+ <span class='label green accent-4 white-text'>Passed: 1</span>                                                                                                         </div>
+
+                                <div class='category-tests'>
+                                    <table class='bordered table-results'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>TestName</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                    <td>5/18/2018 3:37:58 PM</td>
+                                                    <td class='linked' test-id='6'>VerifyUserCanLogin_ProjUser.<font size=3>TestCase# : ELVS1234 - VerifyUserCanLogin_ProjUser</font><br><font size=2>Verify user can login successfully using project - user account</font></td>
                                                     <td><span class='test-status pass'>Pass</span></td>
                                                 </tr>
                                         </tbody>
@@ -559,22 +707,46 @@
             <div class='col s2'>
                 <div class='card-panel r'>
                     Start
-                    <div class='panel-lead'>5/17/2018 7:48:27 PM</div>
+                    <div class='panel-lead'>5/18/2018 3:37:25 PM</div>
                 </div>
             </div>
             <div class='col s2'>
                 <div class='card-panel r'>
                     End
-                    <div class='panel-lead'>5/17/2018 7:48:57 PM</div>
+                    <div class='panel-lead'>5/18/2018 3:38:02 PM</div>
                 </div>
             </div>
             <div class='col s2'>
                 <div class='card-panel r'>
                     Time Taken
-                    <div class='panel-lead'>00:00:30.0949890</div>
+                    <div class='panel-lead'>00:00:36.8594299</div>
                 </div>
             </div>
 
+                <div class='col s4'>
+                    <div class='card-panel'>
+                        <span class='right label cyan white-text'>Environment</span><p>&nbsp;</p>
+
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <th>Value</th>
+                            </tr>
+                                <tr>
+                                    <td>Project</td>
+                                    <td>Garnet</td>
+                                </tr>
+                                <tr>
+                                    <td>Test Environment</td>
+                                    <td>Test</td>
+                                </tr>
+                                <tr>
+                                    <td>Browser</td>
+                                    <td>Chrome</td>
+                                </tr>
+                        </table>
+                    </div>
+                </div>
 
                 <div class='col s6'>
                     <div class='card-panel'>
@@ -589,15 +761,36 @@
 								<th>Passed %</th>
                             </tr>
                                 <tr>
-                                    <td>Regression</td>
-                                    <td>1</td>
+                                    <td>Priority1</td>
+                                    <td>2</td>
+                                    <td>0</td>
+                                    <td>0</td>
+									<td>100%</td>
+                                </tr>
+                                <tr>
+                                    <td>RMCenter</td>
+                                    <td>2</td>
                                     <td>0</td>
                                     <td>0</td>
 									<td>100%</td>
                                 </tr>
                                 <tr>
                                     <td>Smoke</td>
-                                    <td>2</td>
+                                    <td>3</td>
+                                    <td>0</td>
+                                    <td>0</td>
+									<td>100%</td>
+                                </tr>
+                                <tr>
+                                    <td>Priority2</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>0</td>
+									<td>100%</td>
+                                </tr>
+                                <tr>
+                                    <td>QATest</td>
+                                    <td>1</td>
                                     <td>0</td>
                                     <td>0</td>
 									<td>100%</td>

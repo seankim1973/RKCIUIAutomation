@@ -34,16 +34,20 @@ namespace RKCIUIAutomation.Base
             testEnv = (TestEnv)Enum.Parse(typeof(TestEnv), _testEnv);
             projectSite = (Project)Enum.Parse(typeof(Project), _projectSite);
 
-            DetermineFilePath(_testPlatform);
-
-            ExtentTestManager.CreateParentTest(GetType().Name);
+            DetermineFilePath(testPlatform.ToString());
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
             Console.Out.WriteLine($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
+
+            ExtentManager.Instance.AddSystemInfo("Project", projectSite.ToString());
+            ExtentManager.Instance.AddSystemInfo("Test Environment", testEnv.ToString());
+            ExtentManager.Instance.AddSystemInfo("Browser", browserType.ToString());
             ExtentManager.Instance.Flush();
+
+            Driver.Quit();
         }
 
         [SetUp]
@@ -65,11 +69,18 @@ namespace RKCIUIAutomation.Base
             Driver.Navigate().GoToUrl(siteUrl);
 
             var testInstance = TestContext.CurrentContext.Test;
-            var testCategory = testInstance.Properties.Get("Category");
+            string testComponent = testInstance.Properties.Get("Category").ToString();
+            string testDescription = testInstance.Properties.Get("Description").ToString();
+            string testPriority = testInstance.Properties.Get("Priority").ToString();
+            string testCaseNumber = testInstance.Properties.Get("TC#").ToString();
+            string testSuite = GetTestContext(testInstance.FullName)[2];
 
+            ExtentTestManager.CreateParentTest(testInstance.Name);
             ExtentTestManager
-                .CreateTest(testInstance.Name)
-                .AssignCategory(testCategory.ToString());
+                .CreateTest($"<font size=3>TestCase# : {testCaseNumber} - {testInstance.Name}</font><br><font size=2>{testDescription}</font>")
+                .AssignCategory(testPriority)
+                .AssignCategory(testComponent)
+                .AssignCategory(testSuite);
         }
 
         [TearDown]
@@ -104,8 +115,8 @@ namespace RKCIUIAutomation.Base
 
             Driver.Manage().Cookies.AddCookie(cookie);
             ExtentTestManager.GetTest().Log(logstatus, "Test ended with " + logstatus + stacktrace).AddScreenCaptureFromPath(screenshotPath);
-                        
-            Driver.Quit();
+
+            Driver.Close();
         }
 
     }
