@@ -33,7 +33,7 @@ namespace RKCIUIAutomation.Page
             {
                 Type type = value.GetType();
                 FieldInfo fi = type.GetField(value.ToString());
-                StringValueAttribute[] attrs = fi.GetCustomAttributes(false) as StringValueAttribute[];
+                StringValueAttribute[] attrs = fi.GetCustomAttributes(typeof(StringValueAttribute),false) as StringValueAttribute[];
                 output = attrs[0].Value;
             }
             catch (Exception)
@@ -46,20 +46,23 @@ namespace RKCIUIAutomation.Page
 
     public class Action : BaseClass
     {
-        public void HoverOverElement(By elementByLocator)
+        public void Hover(By elementByLocator)
         {
-            try
-            {
-                WaitForElement(elementByLocator);
-                Actions action = new Actions(Driver);
-                action.MoveToElement(GetElement(elementByLocator)).Perform();
-                LogInfo($"MouseOver action on element - {elementByLocator}");
-            }
-            catch (Exception e)
-            {
-                LogInfo($"Error occured for mouseover action on element - {elementByLocator}", e);
-            }
+            WaitForElement(elementByLocator);
+            Actions action = new Actions(Driver);
+            IWebElement elemHover = Driver.FindElement(elementByLocator);
+            action.MoveToElement(elemHover).Perform();
         }
+
+        public void HoverAndClick(By elemByToHover, By elemByToClick)
+        {
+            WaitForElement(elemByToHover);
+            Actions action = new Actions(Driver);
+            IWebElement elemHover = Driver.FindElement(elemByToHover);
+            IWebElement elemClick = Driver.FindElement(elemByToClick);
+            action.MoveToElement(elemHover).Click(elemClick).Build().Perform();
+        }
+
 
         public IWebElement GetElement(By elementByLocator)
         {

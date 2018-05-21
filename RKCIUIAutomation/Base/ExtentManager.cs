@@ -20,10 +20,8 @@ namespace RKCIUIAutomation.Base
             Instance.AttachReporter(htmlReporter);
         }
 
-        private ExtentManager(string path, bool existing)
+        private ExtentManager()
         {
-            String filePath = path;
-            bool overwrite = existing;
         }
     }
 }

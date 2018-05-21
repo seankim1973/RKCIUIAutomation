@@ -1,18 +1,13 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.Navigation;
 
-namespace RKCIUIAutomation.Page.Main
+namespace RKCIUIAutomation.Page.PageObjects
 {
     public class LoginPage : PageBase
     {
         public LoginPage()
-        {
-
-        }
-        public LoginPage(IWebDriver driver)
-        {
-        }
+        { }
+        public LoginPage(IWebDriver driver) => Driver = driver;
 
         private static By field_Email = By.Name("Email");
         private static By field_Password = By.Name("Password");

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RKCIUIAutomation.Page.Project
 {
-    public class QMSDocuments
+    public class QmsDocuments
     {
     }
 }

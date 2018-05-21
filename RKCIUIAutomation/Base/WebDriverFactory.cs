@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
@@ -27,6 +28,7 @@ namespace RKCIUIAutomation
             }
             else if (browser == BrowserType.Edge)
             {
+                //Console.WriteLine("Edge browser currently not implemented");
                 Driver = new EdgeDriver();
             }
             else if (browser == BrowserType.Firefox)
@@ -60,23 +62,23 @@ namespace RKCIUIAutomation
         {
             if (platform == TestPlatform.Windows)
             {
-                caps.SetCapability(CapabilityType.PlatformName, "Windows");
+                caps.SetCapability(CapabilityType.Platform, "Windows");
             }
             else if (platform == TestPlatform.Mac)
             {
-                caps.SetCapability(CapabilityType.PlatformName, "Mac");
+                caps.SetCapability(CapabilityType.Platform, "Mac");
             }
             else if (platform == TestPlatform.Android)
             {
-                caps.SetCapability(CapabilityType.PlatformName, "Android");
+                caps.SetCapability(CapabilityType.Platform, "Android");
             }
             else if (platform == TestPlatform.IOS)
             {
-                caps.SetCapability(CapabilityType.PlatformName, "Mac");
+                caps.SetCapability(CapabilityType.Platform, "Mac");
             }
             else if (platform == TestPlatform.Linux)
             {
-                caps.SetCapability(CapabilityType.PlatformName, "Linux");
+                caps.SetCapability(CapabilityType.Platform, "Linux");
             }
             else
             {

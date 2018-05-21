@@ -21,6 +21,12 @@ namespace RKCIUIAutomation.Base
         public static Project projectSite;
         private Cookie cookie;
 
+        string testComponent;
+        string testDescription;
+        string testPriority;
+        string testCaseNumber;
+        string testSuite;
+
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
@@ -68,19 +74,27 @@ namespace RKCIUIAutomation.Base
             Driver.Manage().Window.Size = new Size(1680, 1050);
             Driver.Navigate().GoToUrl(siteUrl);
 
-            var testInstance = TestContext.CurrentContext.Test;
-            string testComponent = testInstance.Properties.Get("Category").ToString();
-            string testDescription = testInstance.Properties.Get("Description").ToString();
-            string testPriority = testInstance.Properties.Get("Priority").ToString();
-            string testCaseNumber = testInstance.Properties.Get("TC#").ToString();
-            string testSuite = GetTestContext(testInstance.FullName)[2];
+            try
+            {
+                var testInstance = TestContext.CurrentContext.Test;
+                ExtentTestManager.CreateParentTest(testInstance.Name);
 
-            ExtentTestManager.CreateParentTest(testInstance.Name);
-            ExtentTestManager
-                .CreateTest($"<font size=3>TestCase# : {testCaseNumber} - {testInstance.Name}</font><br><font size=2>{testDescription}</font>")
-                .AssignCategory(testPriority)
-                .AssignCategory(testComponent)
-                .AssignCategory(testSuite);
+                testComponent = testInstance.Properties.Get("Category").ToString();
+                testDescription = testInstance.Properties.Get("Description").ToString();
+                testPriority = testInstance.Properties.Get("Priority").ToString();
+                testCaseNumber = testInstance.Properties.Get("TC#").ToString();
+                testSuite = GetTestContext(testInstance.FullName)[2];
+
+                ExtentTestManager
+                    .CreateTest($"<font size=3>TestCase# : {testCaseNumber} - {testInstance.Name}</font><br><font size=2>{testDescription}</font>")
+                    .AssignCategory(testPriority)
+                    .AssignCategory(testComponent)
+                    .AssignCategory(testSuite);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [TearDown]
