@@ -26,16 +26,16 @@ namespace RKCIUIAutomation.Test
             loginPage.LoginUser(UserType.ProjAdmin);
         }
 
-        public void MoveToElem(IWebElement webElement)
-        {
-            string javaScript = "var evObj = document.createEvent('MouseEvents');" +
-            "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
-            "arguments[0].dispatchEvent(evObj);";
+        //public void MoveToElem(IWebElement webElement)
+        //{
+        //    string javaScript = "var evObj = document.createEvent('MouseEvents');" +
+        //    "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
+        //    "arguments[0].dispatchEvent(evObj);";
 
-            //IWebElement webElement = Driver.FindElement(elemByLocator);
-            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
-            executor.ExecuteScript(javaScript, webElement);
-        }
+        //    IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+        //    executor.ExecuteScript(javaScript, webElement);
+        //    Thread.Sleep(1000);
+        //}
 
         [Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
         [Category("RM Center")]
@@ -43,21 +43,8 @@ namespace RKCIUIAutomation.Test
         public void GenericTest()
         {
             loginPage.LoginUser(UserType.ProjAdmin);
-            //projectMenu.NavigateToMyDetails();
+            projectMenu.NavigateToMyDetails();
 
-            //Actions actions = new Actions(Driver);
-            //ActionBuilder builder = new ActionBuilder();
-
-            IWebElement projMenu = Driver.FindElement(By.XPath("//a[text()='Project']"));
-            IWebElement myDetailsMenu = Driver.FindElement(By.XPath("//a[text()='My Details']"));
-
-            MoveToElem(projMenu);
-            Thread.Sleep(1000);
-            MoveToElem(myDetailsMenu);
-            Thread.Sleep(1000);
-            myDetailsMenu.Click();
-            
-            //actions.MoveToElement(projMenu).Click(myDetailsMenu).Build().Perform();
             Thread.Sleep(3000);
         }
 

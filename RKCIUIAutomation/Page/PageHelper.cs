@@ -4,6 +4,7 @@ using OpenQA.Selenium.Support.UI;
 using RKCIUIAutomation.Base;
 using System;
 using System.Reflection;
+using System.Threading;
 
 namespace RKCIUIAutomation.Page
 {
@@ -46,23 +47,22 @@ namespace RKCIUIAutomation.Page
 
     public class Action : BaseClass
     {
-        public void Hover(By elementByLocator)
-        {
-            WaitForElement(elementByLocator);
-            Actions action = new Actions(Driver);
-            IWebElement elemHover = Driver.FindElement(elementByLocator);
-            action.MoveToElement(elemHover).Perform();
-        }
-
         public void HoverAndClick(By elemByToHover, By elemByToClick)
         {
-            WaitForElement(elemByToHover);
-            Actions action = new Actions(Driver);
-            IWebElement elemHover = Driver.FindElement(elemByToHover);
-            IWebElement elemClick = Driver.FindElement(elemByToClick);
-            action.MoveToElement(elemHover).Click(elemClick).Build().Perform();
+            Hover(elemByToHover);
+            ClickElement(elemByToClick);
         }
 
+        public void Hover(By elementByLocator)
+        {
+            string javaScript = "var evObj = document.createEvent('MouseEvents');" +
+            "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
+            "arguments[0].dispatchEvent(evObj);";
+
+            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+            executor.ExecuteScript(javaScript, GetElement(elementByLocator));
+            Thread.Sleep(1000);
+        }
 
         public IWebElement GetElement(By elementByLocator)
         {
