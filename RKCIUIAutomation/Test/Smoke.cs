@@ -2,6 +2,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page.Navigation;
 using System.Threading;
 
 namespace RKCIUIAutomation.Test
@@ -43,8 +44,13 @@ namespace RKCIUIAutomation.Test
         public void GenericTest()
         {
             loginPage.LoginUser(UserType.ProjAdmin);
-            projectMenu.NavigateToMyDetails();
-
+            navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            navigate.Menu(NavEnums.RMCenter_e.Review_Revise_Submittal);
+            navigate.Menu(NavEnums.RMCenter_e.RFC_Management);
+            navigate.Menu(NavEnums.RMCenter_e.DOT_Project_Correspondence_Log);
+            navigate.Menu(NavEnums.RMCenter_e.Upload_DEV_Submittal);
+            navigate.Menu(NavEnums.RMCenter_e.Upload_Owner_Submittal);
+            navigate.Menu(NavEnums.RMCenter_e.Search);
             Thread.Sleep(3000);
         }
 

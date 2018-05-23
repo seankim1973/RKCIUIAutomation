@@ -10,8 +10,15 @@ namespace RKCIUIAutomation.Page
 {
     public class PageHelper : Action
     {
-        private static string GetATagXpathString(Enum @enum) => $"//a[text()='{@enum.GetString()}']";
-        public static By SetLocatorXpath(Enum @enum) => By.XPath(GetATagXpathString(@enum));
+        private static string GetATagXpathString(Enum @enum) => $"//a[contains(text(),'{@enum.GetString()}')]";
+        private static string GetInputFieldXpathString(string InputFieldLabel) => $"//label[contains(text(),'{InputFieldLabel}')]/following::input[1]";
+        private static string GetDDListXpathString(string DropDownListLabel) => $"//label[contains(text(),'{DropDownListLabel}')]/following::span[@role='listbox'][1]";
+        internal static string DDLSelectAarowXpathString = $"//span[@class='kl-select']";
+
+        public static By SetATagLocatorXpath(Enum @enum) => By.XPath(GetATagXpathString(@enum));
+        public static By SetInputLocatorXpath(string InputFieldLabel) => By.XPath(GetInputFieldXpathString(InputFieldLabel));
+        public static By SetDDListLocatorXpath(string DDListLabel) => By.XPath(GetDDListXpathString(DDListLabel));
+
     }
 
     public class StringValueAttribute : Attribute
@@ -47,6 +54,8 @@ namespace RKCIUIAutomation.Page
 
     public class Action : BaseClass
     {
+        internal string GetWebElementName(IWebElement webElement) => webElement.GetType().Name;
+
         public void HoverAndClick(By elemByToHover, By elemByToClick)
         {
             Hover(elemByToHover);
@@ -61,7 +70,7 @@ namespace RKCIUIAutomation.Page
 
             IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
             executor.ExecuteScript(javaScript, GetElement(elementByLocator));
-            Thread.Sleep(1000);
+            Thread.Sleep(2000);
         }
 
         public IWebElement GetElement(By elementByLocator)
@@ -77,6 +86,22 @@ namespace RKCIUIAutomation.Page
                 LogInfo($"Unable to locate element - {elementByLocator}", e);
             }
             return elem;
+        }
+
+        public void ExpandDDL(string ddlLabel)
+        {
+            IWebElement elem = null;
+            By ddlByLocator = null;
+            try
+            {
+                ddlByLocator = PageHelper.SetDDListLocatorXpath(ddlLabel);
+                elem = GetElement(ddlByLocator).FindElement(By.XPath(PageHelper.DDLSelectAarowXpathString));
+                ClickElement(elem);
+            }
+            catch (Exception e)
+            {
+                LogInfo($"Unable to expand drop down list - {ddlLabel}", e);
+            }
         }
 
         private bool WaitForElement(By elementByLocator)
@@ -97,7 +122,26 @@ namespace RKCIUIAutomation.Page
             return false;
         }
 
-        public void ClickElement(By elementByLocator)
+        private bool WaitForElement(IWebElement webElement)
+        {
+            try
+            {
+                WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20))
+                {
+                    PollingInterval = TimeSpan.FromMilliseconds(500)
+                };
+                wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                return webElement.Displayed;
+            }
+            catch (Exception e)
+            {
+                LogInfo($"WaitForElement timeout occured for element - {GetWebElementName(webElement)}", e);
+            }
+            return false;
+        }
+
+        public void ClickElement(By elementByLocator = null)
         {
             if (WaitForElement(elementByLocator))
             {
@@ -111,6 +155,22 @@ namespace RKCIUIAutomation.Page
                     LogInfo($"Unable to click element - {elementByLocator}", e);
                 }
             }    
+        }
+
+        public void ClickElement(IWebElement webElement)
+        {
+            if (WaitForElement(webElement))
+            {
+                try
+                {
+                    ClickElement(webElement);
+                    LogInfo($"Clicked element - {GetWebElementName(webElement)}");
+                }
+                catch (Exception e)
+                {
+                    LogInfo($"Unable to click element - {GetWebElementName(webElement)}", e);
+                }
+            }
         }
 
         public void EnterText(By elementByLocator, string text)

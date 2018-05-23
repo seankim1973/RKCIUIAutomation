@@ -3,8 +3,11 @@ using System.Configuration;
 using System.IO;
 using System.Web;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page.Navigation;
+using static RKCIUIAutomation.Page.Navigation.NavEnums;
 
 namespace RKCIUIAutomation.Test
 {
@@ -61,7 +64,7 @@ namespace RKCIUIAutomation.Test
         //
         #endregion
 
-        //[TestMethod]
+        [TestMethod]
         public void MSUnitTest1()
         {
             //Directory.SetCurrentDirectory(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString());
@@ -80,6 +83,13 @@ namespace RKCIUIAutomation.Test
             //string username = userPw[0];
             //string password = userPw[1];
             //Console.Out.WriteLine($"Username : {username} and Password : {password}");
+
+
+            var locator = RMCenter_e.Search;
+
+            Console.WriteLine(locator.GetType());
+            //Assert.IsTrue(locator.GetType().Equals(typeof(Project_By)));
+
 
         }
     }

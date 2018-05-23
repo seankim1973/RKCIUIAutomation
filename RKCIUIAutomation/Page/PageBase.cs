@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects;
+using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using RKCIUIAutomation.Page.Project;
 
 namespace RKCIUIAutomation.Page
@@ -46,10 +47,13 @@ namespace RKCIUIAutomation.Page
         public LoginPage loginPage => _loginPage;
 
         private NavMenu _navMenu { get => new NavMenu(Driver); set{ } }
-        public NavMenu navigateMenu => _navMenu;
+        public NavMenu navigate => _navMenu;
 
-        private NavMenu.ProjectMenu _projectMenu { get => new NavMenu.ProjectMenu(Driver); set { } }
-        public NavMenu.ProjectMenu projectMenu => _projectMenu;
+        private NavEnums _navEnums { get => new NavEnums(Driver); set { } }
+        public NavEnums menuEnum => _navEnums;
+
+        private RMCenter _rmCenter { get => new RMCenter(Driver); set { } }
+        public RMCenter RMCenter => _rmCenter;
 
     }
 }

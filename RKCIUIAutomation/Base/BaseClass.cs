@@ -18,7 +18,7 @@ namespace RKCIUIAutomation.Base
         public static TestPlatform testPlatform;
         public static BrowserType browserType;
         public static TestEnv testEnv;
-        public static Project projectSite;
+        public static ProjectSite projectSite;
         private Cookie cookie;
 
         string testComponent;
@@ -38,7 +38,7 @@ namespace RKCIUIAutomation.Base
             testPlatform = (TestPlatform)Enum.Parse(typeof(TestPlatform), _testPlatform);
             browserType = (BrowserType)Enum.Parse(typeof(BrowserType), _browserType);
             testEnv = (TestEnv)Enum.Parse(typeof(TestEnv), _testEnv);
-            projectSite = (Project)Enum.Parse(typeof(Project), _projectSite);
+            projectSite = (ProjectSite)Enum.Parse(typeof(ProjectSite), _projectSite);
 
             DetermineFilePath(testPlatform.ToString());
         }

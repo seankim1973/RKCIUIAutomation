@@ -1,7 +1,13 @@
-﻿namespace RKCIUIAutomation.Page.Navigation
+﻿using OpenQA.Selenium;
+
+namespace RKCIUIAutomation.Page.Navigation
 {
-    public class NavEnums : PageHelper
+    public class NavEnums : PageBase
     {
+        public NavEnums()
+        { }
+        public NavEnums(IWebDriver driver) => Driver = driver;
+        
         //Main Navigation Enums
         public enum MainNav_e
         {
@@ -23,62 +29,72 @@
             [StringValue("ELVIS")] ELVIS
         }
 
-        //Project Menu Navigation Enums
-        public enum Project_e
+        public class Project_eClass
         {
-            [StringValue("My Details")] My_Details,
-            [StringValue("Qms Document")] Qms_Document,
-            [StringValue("Administration")] Administration
-        }
+            //Project Menu Navigation Enums
+            public enum Project_e
+            {
+                [StringValue("My Details")] My_Details,
+                [StringValue("Qms Document")] Qms_Document,
+                [StringValue("Administration")] Administration
+            }
 
-        //Project >>Administration Menu Navigation Enums
-        public enum Proj_Administration_e
-        {
-            [StringValue("Project Details")] Project_Details,
-            [StringValue("Companies")] Companies,
-            [StringValue("Contracts")] Contracts,
-            [StringValue("User Management")] User_Management,
-            [StringValue("Menu Editor")] Menu_Editor,
-            [StringValue("System Configuration")] System_Configuration
-        }
+            //Project >>Administration Menu Navigation Enums
+            public enum Administration_e
+            {
+                [StringValue("Project Details")] Project_Details,
+                [StringValue("Companies")] Companies,
+                [StringValue("Contracts")] Contracts,
+                [StringValue("User Management")] User_Management,
+                [StringValue("Menu Editor")] Menu_Editor,
+                [StringValue("System Configuration")] System_Configuration,
+                [StringValue("Admin Tools")] Admin_Tools
+            }
 
-        //Project >>Administration >>User Management Menu Navigation Enums
-        public enum Proj_Admin_UserManagement_e
-        {
-            [StringValue("Roles")] Roles,
-            [StringValue("Users")] Users,
-            [StringValue("Access Rights")] Access_Rights
-        }
+            //Project >>Administration >>User Management Menu Navigation Enums
+            public enum Admin_UserManagement_e
+            {
+                [StringValue("Roles")] Roles,
+                [StringValue("Users")] Users,
+                [StringValue("Access Rights")] Access_Rights
+            }
 
-        //Project >>Administration >>System Configuration Menu Navigation Enums
-        public enum Proj_Admin_SystemConfiguration_e
-        {
-            [StringValue("Disciplines")] Disciplines,
-            [StringValue("Submittal Actions")] Submittal_Actions,
-            [StringValue("Submittal Requirements")] Submittal_Requirements,
-            [StringValue("Submittal Types")] Submittal_Types,
-            [StringValue("CVL Lists")] CVL_Lists,
-            [StringValue("CVL Lists Items")] CVL_Lists_Items,
-            [StringValue("Notifications")] Notifications,
-            [StringValue("Sieves")] Sieves,
-            [StringValue("Gradations")] Gradations,
-            [StringValue("Equipment")] Equipment,
-            [StringValue("Grade Management")] Grade_Management
-        }
+            //Project >>Administration >>System Configuration Menu Navigation Enums
+            public enum Admin_SystemConfiguration_e
+            {
+                [StringValue("Disciplines")] Disciplines,
+                [StringValue("Submittal Actions")] Submittal_Actions,
+                [StringValue("Submittal Requirements")] Submittal_Requirements,
+                [StringValue("Submittal Types")] Submittal_Types,
+                [StringValue("CVL Lists")] CVL_Lists,
+                [StringValue("CVL Lists Items")] CVL_Lists_Items,
+                [StringValue("Notifications")] Notifications,
+                [StringValue("Sieves")] Sieves,
+                [StringValue("Gradations")] Gradations,
+                [StringValue("Equipment")] Equipment,
+                [StringValue("Grade Management")] Grade_Management
+            }
 
-        //Project >>Administration >>System Configuration >>Equipment Menu Navigation Enums
-        public enum Proj_Admin_SysConfig_Equipment_e
-        {
-            [StringValue("Equipment Makes")] Equipment_Makes,
-            [StringValue("Equipment Types")] Equipment_Types,
-            [StringValue("Equipment Models")] Equipment_Models
-        }
-        
-        //Project >>Administration >>SystemConfiguration >>Grade Management Menu Navigation Enums
-        public enum Proj_Admin_SysConfig_GradeManagement_e
-        {
-            [StringValue("Grade Types")] Grade_Types,
-            [StringValue("Grades")] Grades
+            //Project >>Administration >>System Configuration >>Equipment Menu Navigation Enums
+            public enum Admin_SysConfig_Equipment_e
+            {
+                [StringValue("Equipment Makes")] Equipment_Makes,
+                [StringValue("Equipment Types")] Equipment_Types,
+                [StringValue("Equipment Models")] Equipment_Models
+            }
+
+            //Project >>Administration >>SystemConfiguration >>Grade Management Menu Navigation Enums
+            public enum Admin_SysConfig_GradeManagement_e
+            {
+                [StringValue("Grade Types")] Grade_Types,
+                [StringValue("Grades")] Grades
+            }
+
+            public enum Admin_AdminTools_e
+            {
+                [StringValue("Locked Records")] Locked_Records
+            }
+
         }
 
         //QA Lab Menu Navigation Enums

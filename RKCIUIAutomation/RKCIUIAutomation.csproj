@@ -143,11 +143,11 @@
     <Compile Include="Page\PageObjects\LoginPage.cs" />
     <Compile Include="Page\Navigation\NavEnums.cs" />
     <Compile Include="Page\PageHelper.cs" />
-    <Compile Include="Page\PageObjects\Project.cs" />
+    <Compile Include="Page\PageObjects\Project\MyDetails.cs" />
+    <Compile Include="Page\PageObjects\Project\ProjectDetails.cs" />
+    <Compile Include="Page\PageObjects\Project\QmsDocuments.cs" />
     <Compile Include="Page\PageObjects\RMCenter.cs" />
-    <Compile Include="Page\Project\MyDetails.cs" />
-    <Compile Include="Page\Project\ProjectDetails.cs" />
-    <Compile Include="Page\Project\QmsDocuments.cs" />
+    <Compile Include="Page\PageObjects\RMCenter\SubmittalDetails.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
