@@ -43,6 +43,9 @@
     <Reference Include="Atlassian.Jira, Version=10.2.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Atlassian.SDK.10.2.2\lib\net452\Atlassian.Jira.dll</HintPath>
     </Reference>
+    <Reference Include="AutoItX3.Assembly, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a646454c8d475470, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoItX.Dotnet.3.3.14.2\lib\AutoItX3.Assembly.dll</HintPath>
+    </Reference>
     <Reference Include="Carbon.Data.Protection, Version=0.18.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Carbon.Data.Protection.0.18.0\lib\netstandard2.0\Carbon.Data.Protection.dll</HintPath>
     </Reference>
@@ -133,6 +136,7 @@
     <Compile Include="Base\WebDriverFactory.cs" />
     <Compile Include="Config\ConfigUtils.cs" />
     <Compile Include="Config\Properties.cs" />
+    <Compile Include="Page\Action.cs" />
     <Compile Include="Page\Locators\CommonLocators.cs" />
     <Compile Include="Page\PageObjects\LandingPage.cs" />
     <Compile Include="Page\Navigation\INavMenu.cs" />
@@ -144,9 +148,11 @@
     <Compile Include="Page\Navigation\NavEnums.cs" />
     <Compile Include="Page\PageHelper.cs" />
     <Compile Include="Page\PageObjects\Project\MyDetails.cs" />
+    <Compile Include="Page\PageObjects\Project\Project.cs" />
     <Compile Include="Page\PageObjects\Project\ProjectDetails.cs" />
     <Compile Include="Page\PageObjects\Project\QmsDocuments.cs" />
-    <Compile Include="Page\PageObjects\RMCenter.cs" />
+    <Compile Include="Page\PageObjects\RMCenter\RMCenter.cs" />
+    <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittals.cs" />
     <Compile Include="Page\PageObjects\RMCenter\SubmittalDetails.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -167,7 +173,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Report\errorscreenshots\" />
-    <Folder Include="Test\Report\errorscreenshots\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -177,11 +182,21 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="UploadFiles\test.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
     <Content Include="extent-config.xml" />
+    <Content Include="Lib\AutoItX3.Assembly.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lib\AutoItX3.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lib\AutoItX3_x64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -203,10 +218,12 @@
     <Error Condition="!Exists('..\packages\Selenium.WebDriver.GeckoDriver.0.20.1\build\Selenium.WebDriver.GeckoDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.GeckoDriver.0.20.1\build\Selenium.WebDriver.GeckoDriver.targets'))" />
     <Error Condition="!Exists('..\packages\Selenium.WebDriver.GeckoDriver.Win64.0.20.1\build\Selenium.WebDriver.GeckoDriver.Win64.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.GeckoDriver.Win64.0.20.1\build\Selenium.WebDriver.GeckoDriver.Win64.targets'))" />
     <Error Condition="!Exists('..\packages\Selenium.WebDriver.MicrosoftDriver.17.17134.0\build\Selenium.WebDriver.MicrosoftDriver.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Selenium.WebDriver.MicrosoftDriver.17.17134.0\build\Selenium.WebDriver.MicrosoftDriver.targets'))" />
+    <Error Condition="!Exists('..\packages\AutoItX.Dotnet.3.3.14.2\build\AutoItX.Dotnet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AutoItX.Dotnet.3.3.14.2\build\AutoItX.Dotnet.targets'))" />
   </Target>
   <Import Project="..\packages\MSTest.TestAdapter.1.3.0\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\packages\MSTest.TestAdapter.1.3.0\build\net45\MSTest.TestAdapter.targets')" />
   <Import Project="..\packages\Selenium.WebDriver.ChromeDriver.2.38.0.1\build\Selenium.WebDriver.ChromeDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.ChromeDriver.2.38.0.1\build\Selenium.WebDriver.ChromeDriver.targets')" />
   <Import Project="..\packages\Selenium.WebDriver.GeckoDriver.0.20.1\build\Selenium.WebDriver.GeckoDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.GeckoDriver.0.20.1\build\Selenium.WebDriver.GeckoDriver.targets')" />
   <Import Project="..\packages\Selenium.WebDriver.GeckoDriver.Win64.0.20.1\build\Selenium.WebDriver.GeckoDriver.Win64.targets" Condition="Exists('..\packages\Selenium.WebDriver.GeckoDriver.Win64.0.20.1\build\Selenium.WebDriver.GeckoDriver.Win64.targets')" />
   <Import Project="..\packages\Selenium.WebDriver.MicrosoftDriver.17.17134.0\build\Selenium.WebDriver.MicrosoftDriver.targets" Condition="Exists('..\packages\Selenium.WebDriver.MicrosoftDriver.17.17134.0\build\Selenium.WebDriver.MicrosoftDriver.targets')" />
+  <Import Project="..\packages\AutoItX.Dotnet.3.3.14.2\build\AutoItX.Dotnet.targets" Condition="Exists('..\packages\AutoItX.Dotnet.3.3.14.2\build\AutoItX.Dotnet.targets')" />
 </Project>

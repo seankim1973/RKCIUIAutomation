@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Configuration;
 using System.IO;
+using System.Reflection;
 using System.Web;
+using AutoIt;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Navigation;
+using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using static RKCIUIAutomation.Page.Navigation.NavEnums;
+using static RKCIUIAutomation.Page.PageObjects.RMCenter.SubmittalDetails;
 
 namespace RKCIUIAutomation.Test
 {
     /// <summary>
     /// Summary description for JUnitTest
     /// </summary>
-    //[TestClass]
+    [TestClass]
     public class MSUnitTest : BaseClass
     {
         public MSUnitTest()
@@ -85,12 +91,31 @@ namespace RKCIUIAutomation.Test
             //Console.Out.WriteLine($"Username : {username} and Password : {password}");
 
 
-            var locator = RMCenter_e.Search;
+            //By locator = PageHelper.GetExpandDDListByLocator(DDListID.Action);
+            //string locatorName = locator.GetType().Namespace;
 
-            Console.WriteLine(locator.GetType());
-            //Assert.IsTrue(locator.GetType().Equals(typeof(Project_By)));
+            //IWebDriver driver = new ChromeDriver();
+            //try
+            //{
+            //    driver.Navigate().GoToUrl("http://stage.garnet.elvispmc.com/");
+            //    IWebElement elem = driver.FindElement(By.XPath("//img[@title='Garnet Interchange']"));
 
+            //    Console.WriteLine(elem.GetType().Name);
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e.Message);
+            //}
 
+            //driver.Quit();
+
+            //AutoItX.Run("notepad.exe", "C:\\Windows");
+            //AutoItX.WinWaitActive("Untitled");
+            //AutoItX.Send("Testing 1 2 3 4 5");
+            //IntPtr winHandle = AutoItX.WinGetHandle("Untitled");
+            //AutoItX.WinKill(winHandle);
+
+            Console.WriteLine($"{GetCodeBasePath()}\\UploadFiles\\test.xlsx");
         }
     }
 }

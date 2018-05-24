@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenQA.Selenium;
 
-namespace RKCIUIAutomation.Page.Project
+namespace RKCIUIAutomation.Page.PageObjects.Project
 {
-    public class MyDetails : PageBase
+    public class MyDetails : Project
     {
         public MyDetails()
         { }

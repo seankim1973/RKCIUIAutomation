@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RKCIUIAutomation.Page.Project
+namespace RKCIUIAutomation.Page.PageObjects.Project
 {
     public class QmsDocuments
     {

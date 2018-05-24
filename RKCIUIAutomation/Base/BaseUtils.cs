@@ -10,9 +10,6 @@ namespace RKCIUIAutomation.Base
 {
     public class BaseUtils : WebDriverFactory
     {
-        public ExtentTest reportTestInstance = ExtentTestManager.GetTest();
-        public IMarkup reportMarkup;
-
         public static string extentReportPath = $"{GetCodeBasePath()}\\Report";
         public static string screenshotReferencePath = null;
 
@@ -56,15 +53,14 @@ namespace RKCIUIAutomation.Base
         //ExtentReports Helpers
         public void LogInfo(string info)
         {
-            reportTestInstance.Info(info);
-            //reportTestInstance.Log(Status.Info, CreateReportMarkupLabel(info));
+            ExtentTestManager.GetTest().Info(info);
             Console.Out.WriteLine(info);
         }
 
         public void LogInfo(string info, Exception e)
         {
-            reportTestInstance.Log(Status.Fatal, CreateReportMarkupLabel(info, ExtentColor.Red));
-            reportTestInstance.Log(Status.Fatal, CreateReportMarkupCodeBlock(e));
+            ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupLabel(info, ExtentColor.Red));
+            ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupCodeBlock(e));
             Console.Out.WriteLine(e.Message);
         }
 

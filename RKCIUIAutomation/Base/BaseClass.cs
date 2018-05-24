@@ -71,7 +71,8 @@ namespace RKCIUIAutomation.Base
             }
 
             Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
-            Driver.Manage().Window.Size = new Size(1680, 1050);
+            //Driver.Manage().Window.Size = new Size(1680, 1050);
+            Driver.Manage().Window.Maximize();
             Driver.Navigate().GoToUrl(siteUrl);
 
             try

@@ -1,4 +1,4 @@
-﻿using RKCIUIAutomation.Page.Project;
+﻿using RKCIUIAutomation.Page.PageObjects.Project;
 
 namespace RKCIUIAutomation.Page.Navigation
 {

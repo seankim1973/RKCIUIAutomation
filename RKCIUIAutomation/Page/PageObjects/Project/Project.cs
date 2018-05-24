@@ -7,11 +7,10 @@ using System.Threading.Tasks;
 
 namespace RKCIUIAutomation.Page.PageObjects.Project
 {
-    public class ProjectDetails : PageBase
+    public class Project : PageBase
     {
-        public ProjectDetails()
+        public Project()
         { }
-        public ProjectDetails(IWebDriver driver) => Driver = driver;
-
+        public Project(IWebDriver driver) => Driver = driver;
     }
 }

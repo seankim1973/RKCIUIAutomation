@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using System;
+using System.Threading;
 
 namespace RKCIUIAutomation.Page.Navigation
 {
@@ -9,24 +10,21 @@ namespace RKCIUIAutomation.Page.Navigation
         { }
         public NavMenu(IWebDriver driver) => Driver = driver;
 
-        private Object ConvertType(object navEnum, Type pageType) => Convert.ChangeType(navEnum, pageType);
-
         Type pageType = null;
         By mainNavByLocator = null;
         By adminByLocator = null;
         By subAdminByLocator = null;
         By subAdminSysConfigByLocator = null;
         By clickByLocator = null;
-        //Object switchObj;
 
-        public void Menu<TNav>(TNav navEnum)
+        public void Menu<T>(T navEnum)
         {
             pageType = navEnum.GetType();
             
             if (pageType == typeof(Project_eClass.Project_e))
             {
                 mainNavByLocator = MainNav_By.Project;
-                var project = (Project_eClass.Project_e)ConvertType(navEnum, pageType);
+                Project_eClass.Project_e project = (Project_eClass.Project_e)Convert.ChangeType(navEnum, pageType);
                 switch (project)
                 {
                     case Project_eClass.Project_e.My_Details:
@@ -40,7 +38,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 if (pageType == typeof(Project_eClass.Administration_e))
                 {
                     adminByLocator = Project_By.Administration;
-                    var administration = (Project_eClass.Administration_e)ConvertType(navEnum, pageType);
+                    Project_eClass.Administration_e administration = (Project_eClass.Administration_e)Convert.ChangeType(navEnum, pageType);
                     switch (administration)
                     {
                         case Project_eClass.Administration_e.Project_Details:
@@ -60,7 +58,7 @@ namespace RKCIUIAutomation.Page.Navigation
                     if (pageType == typeof(Project_eClass.Admin_UserManagement_e))
                     {
                         subAdminByLocator = Project_By.Administration_By.User_Management;
-                        var userMgmt = (Project_eClass.Admin_UserManagement_e)ConvertType(navEnum, pageType);
+                        Project_eClass.Admin_UserManagement_e userMgmt = (Project_eClass.Admin_UserManagement_e)Convert.ChangeType(navEnum, pageType);
                         switch (userMgmt)
                         {
                             case Project_eClass.Admin_UserManagement_e.Roles:
@@ -77,7 +75,7 @@ namespace RKCIUIAutomation.Page.Navigation
                     else if (pageType == typeof(Project_eClass.Admin_SystemConfiguration_e))
                     {
                         subAdminByLocator = Project_By.Administration_By.System_Configuration;
-                        var sysConfig = (Project_eClass.Admin_SystemConfiguration_e)ConvertType(navEnum, pageType);
+                        Project_eClass.Admin_SystemConfiguration_e sysConfig = (Project_eClass.Admin_SystemConfiguration_e)Convert.ChangeType(navEnum, pageType);
                         switch (sysConfig)
                         {
                             case Project_eClass.Admin_SystemConfiguration_e.Disciplines:
@@ -112,7 +110,7 @@ namespace RKCIUIAutomation.Page.Navigation
                         if (pageType == typeof(Project_eClass.Admin_SysConfig_Equipment_e))
                         {
                             subAdminSysConfigByLocator = Project_By.Administration_By.SystemConfiguration_By.Equipment;
-                            var sysConfigEquip = (Project_eClass.Admin_SysConfig_Equipment_e)ConvertType(navEnum, pageType);
+                            Project_eClass.Admin_SysConfig_Equipment_e sysConfigEquip = (Project_eClass.Admin_SysConfig_Equipment_e)Convert.ChangeType(navEnum, pageType);
                             switch (sysConfigEquip)
                             {
                                 case Project_eClass.Admin_SysConfig_Equipment_e.Equipment_Makes:
@@ -129,8 +127,8 @@ namespace RKCIUIAutomation.Page.Navigation
                         else if (pageType == typeof(Project_eClass.Admin_SysConfig_GradeManagement_e))
                         {
                             subAdminSysConfigByLocator = Project_By.Administration_By.SystemConfiguration_By.Grade_Management;
-                            var sysConfigEquip = (Project_eClass.Admin_SysConfig_GradeManagement_e)ConvertType(navEnum, pageType);
-                            switch (sysConfigEquip)
+                            Project_eClass.Admin_SysConfig_GradeManagement_e sysConfigGradeMgmt = (Project_eClass.Admin_SysConfig_GradeManagement_e)Convert.ChangeType(navEnum, pageType);
+                            switch (sysConfigGradeMgmt)
                             {
                                 case Project_eClass.Admin_SysConfig_GradeManagement_e.Grade_Types:
                                     clickByLocator = Project_By.Administration_By.SystemConfiguration_By.GradeManagement_By.Grade_Types;
@@ -183,7 +181,7 @@ namespace RKCIUIAutomation.Page.Navigation
             else if (pageType == typeof(RMCenter_e))
             {
                 mainNavByLocator = MainNav_By.RM_Center;
-                var rmCenter = (RMCenter_e)ConvertType(navEnum, pageType);
+                RMCenter_e rmCenter = (RMCenter_e)Convert.ChangeType(navEnum, pageType);
 
                 switch (rmCenter)
                 {
@@ -241,7 +239,6 @@ namespace RKCIUIAutomation.Page.Navigation
                 mainNavByLocator = MainNav_By.ELVIS;
             }
 
-
             Hover(mainNavByLocator);
 
             if (adminByLocator != null)
@@ -260,6 +257,7 @@ namespace RKCIUIAutomation.Page.Navigation
             }
 
             ClickElement(clickByLocator);
+            Thread.Sleep(2000);
         }
     }
 }

@@ -9,10 +9,10 @@ namespace RKCIUIAutomation.Page.PageObjects
         { }
         public LoginPage(IWebDriver driver) => Driver = driver;
 
-        private static By field_Email = By.Name("Email");
-        private static By field_Password = By.Name("Password");
-        private static By chkbx_RememberMe = By.Name("RememberMe");
-        private static By btn_Login = By.XPath("//input[@type='submit']");
+        private static readonly By field_Email = By.Name("Email");
+        private static readonly By field_Password = By.Name("Password");
+        private static readonly By chkbx_RememberMe = By.Name("RememberMe");
+        private static readonly By btn_Login = By.XPath("//input[@type='submit']");
 
         public void LoginUser(UserType userType)
         {
