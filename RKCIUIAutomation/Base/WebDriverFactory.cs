@@ -11,7 +11,7 @@ namespace RKCIUIAutomation
 {
     public class WebDriverFactory : ConfigUtil
     {
-        public IWebDriver Driver { get; set; }
+        public static IWebDriver Driver { get; set; }
 
         protected IWebDriver GetRemoteWebDriver(TestPlatform platform, BrowserType browser)
         {
@@ -27,6 +27,7 @@ namespace RKCIUIAutomation
             }
             else if (browser == BrowserType.Edge)
             {
+                //Console.WriteLine("Edge browser currently not implemented");
                 Driver = new EdgeDriver();
             }
             else if (browser == BrowserType.Firefox)
@@ -60,23 +61,23 @@ namespace RKCIUIAutomation
         {
             if (platform == TestPlatform.Windows)
             {
-                caps.SetCapability(CapabilityType.PlatformName, "Windows");
+                caps.SetCapability(CapabilityType.Platform, "Windows");
             }
             else if (platform == TestPlatform.Mac)
             {
-                caps.SetCapability(CapabilityType.PlatformName, "Mac");
+                caps.SetCapability(CapabilityType.Platform, "Mac");
             }
             else if (platform == TestPlatform.Android)
             {
-                caps.SetCapability(CapabilityType.PlatformName, "Android");
+                caps.SetCapability(CapabilityType.Platform, "Android");
             }
             else if (platform == TestPlatform.IOS)
             {
-                caps.SetCapability(CapabilityType.PlatformName, "Mac");
+                caps.SetCapability(CapabilityType.Platform, "Mac");
             }
             else if (platform == TestPlatform.Linux)
             {
-                caps.SetCapability(CapabilityType.PlatformName, "Linux");
+                caps.SetCapability(CapabilityType.Platform, "Linux");
             }
             else
             {
@@ -111,6 +112,5 @@ namespace RKCIUIAutomation
 
             return caps;
         }
-
     }
 }

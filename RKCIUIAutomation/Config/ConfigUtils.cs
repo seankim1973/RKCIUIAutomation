@@ -5,7 +5,7 @@ namespace RKCIUIAutomation.Config
 {
     public class ConfigUtil
     {
-        public string GetSiteUrl(TestEnv testEnv, Project project)
+        public string GetSiteUrl(TestEnv testEnv, ProjectSite project)
         {
             string siteKey = $"{project}_{testEnv}";
             return GetValueFromConfigManager(siteUrlKey:siteKey);

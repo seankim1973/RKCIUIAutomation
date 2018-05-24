@@ -8,7 +8,7 @@
         Prod
     }
 
-    public enum Project
+    public enum ProjectSite
     {
         Garnet,
         Green_Line_Extension,
@@ -16,8 +16,6 @@
         I15_Tech_Corridor,
         SH249_Extension,
         Southern_Gateway,
-        SR202_South_Mountain_Fwy,
-        Tappan_Zee_Bridge
     }
 
     public enum TestPlatform

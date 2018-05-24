@@ -4,11 +4,11 @@ using System.Threading;
 
 namespace RKCIUIAutomation
 {
-    [TestFixture]
+    //[TestFixture]
     [Category("TestFixture Category")]
     public class UnitTest1 : BaseClass
     {
-        [Test]
+        //[Test]
         [Category("Test Category")]
         public void TestMethod1()
         {
@@ -17,11 +17,11 @@ namespace RKCIUIAutomation
             Assert.True(true);
         }
 
-        [Test(Description = "test description - inline")]
+        //[Test(Description = "test description - inline")]
         public void testmethod2()
         {
             Thread.Sleep(5000);
-            Assert.True(false);
+            Assert.True(1==1);
         }
 
         //[Test, Description("test description - comma seperated")]
