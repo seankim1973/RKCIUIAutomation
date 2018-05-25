@@ -1,14 +1,9 @@
 ﻿using AventStack.ExtentReports;
-using AventStack.ExtentReports.Model;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Test;
 using System;
-using System.Drawing;
-using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace RKCIUIAutomation.Base
 {

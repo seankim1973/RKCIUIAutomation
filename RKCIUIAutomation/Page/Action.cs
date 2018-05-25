@@ -200,7 +200,20 @@ namespace RKCIUIAutomation.Page
             return uploadPath;
         }
 
+        public bool VerifyFieldErrorIsDisplayed(By elementByLocator )
+        {
+            IWebElement elem = GetElement(elementByLocator);
+            bool elementDisplayed = elem.Displayed;
+            var not = String.Empty;
 
+            if (!elementDisplayed)
+            {
+                not = " not";
+            }
+                LogInfo($"Field error is{not} displayed for - {elementByLocator}", elementDisplayed);
+
+            return elementDisplayed;
+        }
     }
 }
 

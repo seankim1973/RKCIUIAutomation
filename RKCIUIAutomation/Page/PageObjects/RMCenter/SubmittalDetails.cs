@@ -20,6 +20,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("QuantityUnitId")] QuantityUnit
         }
 
+        public static By Err_Name { get; } = By.Id("SubmittalNo-error");
+        public static By Err_SubmittalTitle { get; } = By.Id("SubmittalTitle-error");
+        public static By Err_DDListAction { get; } = By.XPath("//span[@data-valmsg-for='SubmittalActionId']");
+        public static By Err_DDListSegmentArea { get; } = By.XPath("//span[@data-valmsg-for='SegmentId']");
+        public static By Err_DDListFeatureId { get; } = By.XPath("//span[@data-valmsg-for='FeatureId']");
+        public static By Err_DDListGradeId { get; } = By.XPath("//span[@data-valmsg-for='GradeId']");
+        public static By Err_DDListSpecificationId { get; } = By.XPath("//span[@data-valmsg-for='SpecificationId']");
+        public static By Err_DDListQuantity { get; } = By.XPath("//span[@data-valmsg-for='Quantity']");
+        public static By Err_DDListQuantityUnitId { get; } = By.XPath("//span[@data-valmsg-for='QuantityUnitId']");
+        public static By Err_Attachments { get; } = By.XPath("//span[@data-valmsg-for='UploadFiles[0].Files']");
+
+
         public static By Txt_PageTitle { get; } = By.XPath("//h3[1]");
         public static By Input_Name { get; } = By.Id("SubmittalNo");
         public static By Txt_SubmittalType { get; } = By.XPath("//span[@data-valmsg-for='SubmittalTypeId']");
