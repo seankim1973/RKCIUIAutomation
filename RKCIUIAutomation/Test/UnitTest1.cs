@@ -18,7 +18,7 @@ namespace RKCIUIAutomation
         }
 
         //[Test(Description = "test description - inline")]
-        public void testmethod2()
+        public void Testmethod2()
         {
             Thread.Sleep(5000);
             Assert.True(1==1);

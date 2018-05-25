@@ -26,7 +26,7 @@ namespace RKCIUIAutomation.Test
             LoginPg.LoginUser(UserType.ProjAdmin);
         }
 
-        [Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
+        //[Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
         [Category("RM Center")]
         [Description("Verify user can login successfully using project - user account")]
         public void GenericTest()
@@ -48,7 +48,42 @@ namespace RKCIUIAutomation.Test
             UploadFile("test.xlsx");
             ClickElement(SubmittalDetails.Btn_SubmitForward);
 
-            Thread.Sleep(10000);
+            Thread.Sleep(5000);
+        }
+
+        [Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
+        [Category("RM Center")]
+        [Description("Verify proper required fields show error when clicking Save button without Submittal Name and Title")]
+        public void VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle()
+        {
+            LoginPg.LoginUser(UserType.ProjAdmin);
+            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            ClickElement(SubmittalDetails.Btn_Save);
+            Assert.Multiple(testDelegate: () =>
+               {
+                   Assert.True(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_Name));
+                   Assert.True(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_SubmittalTitle));
+                   
+                   /**uncomment Assert statement below to fail test*/
+                   //Assert.True(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_DDListAction));  
+               });
+
+            Thread.Sleep(5000);
+        }
+
+        [Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
+        [Category("RM Center")]
+        [Description("Verify proper required fields show error when clicking Save button with Submittal Name and Title")]
+        public void VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle()
+        {
+            LoginPg.LoginUser(UserType.ProjAdmin);
+            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            EnterText(SubmittalDetails.Input_Name, "Test Name");
+            EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
+            ClickElement(SubmittalDetails.Btn_Save);
+            Assert.True(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_DDListAction));
+
+            Thread.Sleep(5000);
         }
 
     }

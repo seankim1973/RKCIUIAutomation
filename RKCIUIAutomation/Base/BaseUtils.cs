@@ -51,22 +51,36 @@ namespace RKCIUIAutomation.Base
 
 
         //ExtentReports Helpers
-        public void LogInfo(string info)
+        public void LogInfo(string details)
         {
-            ExtentTestManager.GetTest().Info(info);
-            Console.Out.WriteLine(info);
+            ExtentTestManager.GetTest().Info(details);
+            Console.Out.WriteLine(details);
         }
 
-        public void LogInfo(string info, Exception e)
+        public void LogInfo(string details, Exception e)
         {
-            ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupLabel(info, ExtentColor.Red));
+            ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupLabel(details, ExtentColor.Red));
             ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupCodeBlock(e));
             Console.Out.WriteLine(e.Message);
         }
 
-        private IMarkup CreateReportMarkupLabel(string info, ExtentColor extentColor = ExtentColor.Blue)
+        public void LogInfo(string details, bool assertion, Exception e = null)
         {
-            return MarkupHelper.CreateLabel($"Info : {info}", extentColor);
+            if (assertion)
+            {
+                ExtentTestManager.GetTest().Log(Status.Pass, CreateReportMarkupLabel(details, ExtentColor.Green));
+                Console.Out.WriteLine(details);
+            }
+            else
+            {
+                ExtentTestManager.GetTest().Log(Status.Fail, CreateReportMarkupLabel(details, ExtentColor.Red));
+                Console.Out.WriteLine(e.Message);
+            }     
+        }
+
+        private IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
+        {
+            return MarkupHelper.CreateLabel($"Info : {details}", extentColor);
         }
 
         private IMarkup CreateReportMarkupCodeBlock(Exception e)
