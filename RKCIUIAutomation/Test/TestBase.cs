@@ -5,10 +5,7 @@ namespace RKCIUIAutomation.Test
 {
     public class TestBase : PageBase
     {
-        public TestBase()
-        {
-
-        }
+        public TestBase(){}
 
     }
 }

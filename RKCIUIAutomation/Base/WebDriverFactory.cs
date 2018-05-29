@@ -27,7 +27,6 @@ namespace RKCIUIAutomation
             }
             else if (browser == BrowserType.Edge)
             {
-                //Console.WriteLine("Edge browser currently not implemented");
                 Driver = new EdgeDriver();
             }
             else if (browser == BrowserType.Firefox)

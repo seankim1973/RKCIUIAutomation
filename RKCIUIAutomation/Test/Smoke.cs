@@ -46,7 +46,7 @@ namespace RKCIUIAutomation.Test
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.QuantityUnit, 1);
             ClickElement(SubmittalDetails.Btn_SelectFiles);
             UploadFile("test.xlsx");
-            ClickElement(SubmittalDetails.Btn_SubmitForward);
+            ClickSubmitForward();
 
             Thread.Sleep(5000);
         }
@@ -58,7 +58,7 @@ namespace RKCIUIAutomation.Test
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
             Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
-            ClickElement(SubmittalDetails.Btn_Save);
+            ClickSave();
             Assert.Multiple(testDelegate: () =>
                {
                    Assert.True(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_Name));
@@ -80,7 +80,7 @@ namespace RKCIUIAutomation.Test
             Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
-            ClickElement(SubmittalDetails.Btn_Save);
+            ClickSave();
             Assert.True(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_DDListAction));
 
             Thread.Sleep(5000);
@@ -97,7 +97,7 @@ namespace RKCIUIAutomation.Test
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Action, 1);
-            ClickElement(SubmittalDetails.Btn_Save);
+            ClickSave();
             Assert.True(VerifySuccessMessageIsDisplayed());
 
             Thread.Sleep(5000);
