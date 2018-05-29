@@ -140,7 +140,6 @@
     <Compile Include="Page\Locators\CommonLocators.cs" />
     <Compile Include="Page\PageObjects\LandingPage.cs" />
     <Compile Include="Page\Navigation\INavMenu.cs" />
-    <Compile Include="Page\Navigation\NavLocators.cs" />
     <Compile Include="Page\Navigation\NavMenu.cs" />
     <Compile Include="Page\PageBase.cs" />
     <Compile Include="Page\Locators\LocatorsImpl.cs" />

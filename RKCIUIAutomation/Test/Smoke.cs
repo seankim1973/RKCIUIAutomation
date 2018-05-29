@@ -26,7 +26,7 @@ namespace RKCIUIAutomation.Test
             LoginPg.LoginUser(UserType.ProjAdmin);
         }
 
-        //[Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
+        [Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
         [Category("RM Center")]
         [Description("Verify user can login successfully using project - user account")]
         public void GenericTest()
@@ -82,6 +82,23 @@ namespace RKCIUIAutomation.Test
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
             ClickElement(SubmittalDetails.Btn_Save);
             Assert.True(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_DDListAction));
+
+            Thread.Sleep(5000);
+        }
+
+
+        [Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
+        [Category("RM Center")]
+        [Description("Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL")]
+        public void VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL()
+        {
+            LoginPg.LoginUser(UserType.ProjAdmin);
+            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            EnterText(SubmittalDetails.Input_Name, "Test Name");
+            EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
+            ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Action, 1);
+            ClickElement(SubmittalDetails.Btn_Save);
+            Assert.True(VerifySuccessMessageIsDisplayed());
 
             Thread.Sleep(5000);
         }

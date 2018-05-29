@@ -214,6 +214,22 @@ namespace RKCIUIAutomation.Page
 
             return elementDisplayed;
         }
+
+        public bool VerifySuccessMessageIsDisplayed()
+        {
+            By elementByLocator = By.XPath("//div[contains(@class,'bootstrap-growl')]");
+            IWebElement msg = GetElement(elementByLocator);
+            bool elementDisplayed = msg.Displayed;
+            var not = String.Empty;
+
+            if (!elementDisplayed)
+            {
+                not = " not";
+            }
+            LogInfo($"Success Message is{not} displayed for - {elementByLocator}", elementDisplayed);
+
+            return elementDisplayed;
+        }
     }
 }
 
