@@ -20,8 +20,6 @@ namespace RKCIUIAutomation.Base
             Instance.AttachReporter(htmlReporter);
         }
 
-        private ExtentManager()
-        {
-        }
+        private ExtentManager() { }
     }
 }

@@ -46,13 +46,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public static By Btn_ActionBy_Filter { get; } = By.XPath("//th[@data-title='Action By']/a[1]");
         public static By Btn_ActionBy_Column { get; } = By.XPath("//th[@data-title='Action By']/a[2]");
         public static By Form_ColumnFilterBox { get; } = By.XPath("//form[@data-role='popup'][contains(@style,'display: block;')]");
-        public static By Btn_GoToFirstPg { get; } = By.XPath("//a[@aria-label='Go to the first page']");
-        public static By Btn_GoToPrevPg { get; } = By.XPath("//a[@aria-label='Go to the previous page']");
-        public static By Btn_GoToNextPg { get; } = By.XPath("//a[@aria-label='Go to the next page']");
-        public static By Btn_GoToLastPg { get; } = By.XPath("//a[@aria-label='Go to the last page']");
-        public static By Btn_Cancel { get; } = By.Id("CancelSubmittal");
-        public static By Btn_Save { get; } = By.Id("SaveSubmittal");
-        public static By Btn_SubmitForward { get; } = By.Id("SaveForwardSubmittal");
+
+
+
 
     }
 }

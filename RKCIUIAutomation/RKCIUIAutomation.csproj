@@ -137,12 +137,10 @@
     <Compile Include="Config\ConfigUtils.cs" />
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\Action.cs" />
-    <Compile Include="Page\Locators\CommonLocators.cs" />
     <Compile Include="Page\PageObjects\LandingPage.cs" />
     <Compile Include="Page\Navigation\INavMenu.cs" />
     <Compile Include="Page\Navigation\NavMenu.cs" />
     <Compile Include="Page\PageBase.cs" />
-    <Compile Include="Page\Locators\LocatorsImpl.cs" />
     <Compile Include="Page\PageObjects\LoginPage.cs" />
     <Compile Include="Page\Navigation\NavEnums.cs" />
     <Compile Include="Page\PageHelper.cs" />
@@ -153,6 +151,7 @@
     <Compile Include="Page\PageObjects\RMCenter\RMCenter.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittals.cs" />
     <Compile Include="Page\PageObjects\RMCenter\SubmittalDetails.cs" />
+    <Compile Include="Page\TableHelper.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

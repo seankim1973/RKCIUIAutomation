@@ -33,9 +33,7 @@ namespace RKCIUIAutomation.Page
 
     public class PageRefs : PageHelper
     {
-        public PageRefs()
-        {
-        }
+        public PageRefs(){ }
 
         private MyDetails _MyDetails { get => new MyDetails(Driver); set { } }
         public MyDetails MyDetailsPage() => _MyDetails;

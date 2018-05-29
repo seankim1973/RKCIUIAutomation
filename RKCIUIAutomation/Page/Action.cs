@@ -230,6 +230,16 @@ namespace RKCIUIAutomation.Page
 
             return elementDisplayed;
         }
+
+        private static By Btn_Cancel { get; } = By.Id("CancelSubmittal");
+        private static By Btn_Save { get; } = By.Id("SaveSubmittal");
+        private static By Btn_SubmitForward { get; } = By.Id("SaveForwardSubmittal");
+
+        public void ClickCancel() => ClickElement(Btn_Cancel);
+        public void ClickSave() => ClickElement(Btn_Save);
+        public void ClickSubmitForward() => ClickElement(Btn_SubmitForward);
+
+
     }
 }
 
