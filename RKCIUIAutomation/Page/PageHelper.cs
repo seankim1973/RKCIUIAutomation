@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Page.Navigation;
 using System;
 using System.Reflection;
 
@@ -6,14 +7,15 @@ namespace RKCIUIAutomation.Page
 {
     public class PageHelper : Action
     {
-        private static string SetNavMenuXpath(Enum tagEnum) => $"//li/a[contains(text(),'{tagEnum.GetString()}')]";
+        private static string SetNavMenuXpath(Enum navEnum) => $"//li/a[contains(text(),'{navEnum.GetString()}')]";
         private static string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
         private static string SetDDListFieldXpath(Enum ddListID) => $"//span[@aria-owns='{ddListID.GetString()}_listbox']";
         private static string SetDDListFieldExpandArrowXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']";
         private static string SetDDListItemsXpath(Enum ddListID, string itemName) => $"//div[@id='{ddListID.GetString()}-list']//li[text()={itemName}]";
         private static string SetDDListItemsXpath(Enum ddListID, int itemIndex) => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";
-
-        public static By GetNavMenuByLocator(Enum tagEnum) => By.XPath(SetNavMenuXpath(tagEnum));
+        public static Enum ConvertToEnumType<T>(T navEnum) => (Enum)Convert.ChangeType(navEnum, typeof(Enum));
+         
+        public static By GetNavMenuByLocator(Enum navEnum) => By.XPath(SetNavMenuXpath(navEnum));
         public static By GetInputFieldByLocator(string inputFieldLabel) => By.XPath(SetInputFieldXpath(inputFieldLabel));
         public static By GetDDListByLocator(Enum ddListID) => By.XPath(SetDDListFieldXpath(ddListID));
         public static By GetExpandDDListButtonByLocator(Enum ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
