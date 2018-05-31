@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Web;
 using AutoIt;
@@ -12,6 +14,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
+using static RKCIUIAutomation.Config.ProjectProperties;
 using static RKCIUIAutomation.Page.Navigation.NavEnums;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.SubmittalDetails;
 
@@ -70,7 +73,7 @@ namespace RKCIUIAutomation.Test
         //
         #endregion
 
-        [TestMethod]
+        //[TestMethod]
         public void MSUnitTest1()
         {
             //Directory.SetCurrentDirectory(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString());
@@ -116,6 +119,23 @@ namespace RKCIUIAutomation.Test
             //AutoItX.WinKill(winHandle);
 
             Console.WriteLine($"{GetCodeBasePath()}\\UploadFiles\\test.xlsx");
+        }
+
+        [TestMethod]
+        public void MSUnitTest2()
+        {
+            List<string> components = GetComponentsForProject(ProjectName.Garnet);
+            int componentCount = components.Count;
+           
+            Console.WriteLine($"Component count is {componentCount}");
+            
+            foreach (var component in components)
+            {
+                Console.WriteLine(component.ToString());
+            }
+
+            Assert.IsTrue(componentCount.Equals(4));
+            Assert.IsFalse(components.Contains(Component.DIR));
         }
     }
 }

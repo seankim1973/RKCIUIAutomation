@@ -7,9 +7,9 @@ using OpenQA.Selenium.Safari;
 using RKCIUIAutomation.Config;
 using System;
 
-namespace RKCIUIAutomation
+namespace RKCIUIAutomation.Base
 {
-    public class WebDriverFactory : ConfigUtil
+    public class WebDriverFactory
     {
         public static IWebDriver Driver { get; set; }
 

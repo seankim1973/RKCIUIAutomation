@@ -1,19 +1,15 @@
 ﻿using OpenQA.Selenium;
-using RKCIUIAutomation.Page.Navigation;
+using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Page.PageObjects;
-using RKCIUIAutomation.Page.PageObjects.Project;
-using RKCIUIAutomation.Page.PageObjects.RMCenter;
+
+using static RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Page
 {
-    public class PageBase : PageRefs
+    public class PageBase : BaseClass
     {
-        private static readonly By link_Login = By.XPath("//a[text()=' Login']");
-        private static readonly By link_Logout = By.XPath("//a[text()=' Log out']");
-
-        public PageBase() : base()
-        {
-        }
+        private readonly By link_Login = By.XPath("//a[text()=' Login']");
+        private readonly By link_Logout = By.XPath("//a[text()=' Log out']");
 
         public LoginPage ClickLoginLink()
         {
@@ -31,27 +27,4 @@ namespace RKCIUIAutomation.Page
 
     }
 
-    public class PageRefs : PageHelper
-    {
-        public PageRefs(){ }
-
-        private MyDetails _MyDetails { get => new MyDetails(Driver); set { } }
-        public MyDetails MyDetailsPage() => _MyDetails;
-
-        private LandingPage _landingPage { get => new LandingPage(); set { } }
-        public LandingPage LandingPage() => _landingPage;
-
-        private LoginPage _loginPage { get => new LoginPage(Driver); set { } }
-        public LoginPage LoginPg => _loginPage;
-
-        private NavMenu _navMenu { get => new NavMenu(Driver); set{ } }
-        public NavMenu Navigate => _navMenu;
-
-        private NavEnums _navEnums { get => new NavEnums(Driver); set { } }
-        public NavEnums MenuEnums => _navEnums;
-
-        private RMCenter _rmCenter { get => new RMCenter(Driver); set { } }
-        public RMCenter RMCenter => _rmCenter;
-
-    }
 }

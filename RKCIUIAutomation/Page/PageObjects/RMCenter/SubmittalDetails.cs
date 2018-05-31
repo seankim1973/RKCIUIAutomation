@@ -1,11 +1,12 @@
 ﻿using OpenQA.Selenium;
 
+using static RKCIUIAutomation.Base.WebDriverFactory;
+
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
     public class SubmittalDetails : RMCenter
     {
-        public SubmittalDetails()
-        { }
+        public SubmittalDetails(){ }
         public SubmittalDetails(IWebDriver driver) => Driver = driver;
 
         public enum DDListID
@@ -40,7 +41,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public static By Input_SubmittalTitle { get; } = By.Id("SubmittalTitle");
         public static By Input_SubmittalDate { get; } = By.Id("SubmittalDate");
         public static By Chkbx_IsMaterialCertified { get; } = By.Id("IsMaterialCert");
-        public static By Input_Quantity { get; } = By.XPath("//input[@id='Quantity']/preceding-sibling::input");
+        public static By Input_Quantity { get; } = By.XPath("//input[@id='Quantity']");
         public static By Btn_SelectFiles { get; } = By.XPath("//div[@aria-label='Select files...']");
         public static By Input_ActivityLogNotes { get; } = By.Id("SubmittalNote");
         public static By Btn_ActionBy_Filter { get; } = By.XPath("//th[@data-title='Action By']/a[1]");

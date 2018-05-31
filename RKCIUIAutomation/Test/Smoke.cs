@@ -1,16 +1,23 @@
 ﻿using NUnit.Framework;
+using System.Threading;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
-using System.Threading;
+
+using static RKCIUIAutomation.Page.Action;
+using static RKCIUIAutomation.Config.ProjectProperties;
+using System;
 
 namespace RKCIUIAutomation.Test
 {
     [TestFixture]
     public class Smoke : TestBase
     {
-        //[Test, Property("TC#", "ELVS2345"), Property("Priority", "Priority 1")]
-        [Category("RM Center")]
+        //[Test]
+        //[Category("")]
+        [Property("TC#", "ELVS2345")]
+        [Property("Priority", "Priority 1")]
         [Description("Verify user can login successfully using project - admin account")]
         public void VerifyUserCanLogin_ProjAdmin()
         {
@@ -18,16 +25,20 @@ namespace RKCIUIAutomation.Test
         }
 
 
-        //[Test, Property("TC#","ELVS1234"), Property("Priority", "Priority 2")]
-        [Category("QA Test")]
+        //[Test]
+        //[Category("")]
+        [Property("TC#", "ELVS1234")]
+        [Property("Priority", "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
         public void VerifyUserCanLogin_ProjUser()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
         }
 
-        [Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
-        [Category("RM Center")]
+        //[Test]
+        //[Category("")]
+        [Property("TC#", "ELVS3456")]
+        [Property("Priority", "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
         public void GenericTest()
         {
@@ -51,8 +62,10 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
-        [Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
-        [Category("RM Center")]
+        //[Test]
+        //[Category("")]
+        [Property("TC#", "ELVS8988")]
+        [Property("Priority", "Priority 1")]
         [Description("Verify proper required fields show error when clicking Save button without Submittal Name and Title")]
         public void VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle()
         {
@@ -71,8 +84,10 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
-        [Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
-        [Category("RM Center")]
+        //[Test]
+        //[Category("")]
+        [Property("TC#", "ELVS1111")]
+        [Property("Priority", "Priority 1")]
         [Description("Verify proper required fields show error when clicking Save button with Submittal Name and Title")]
         public void VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle()
         {
@@ -87,8 +102,10 @@ namespace RKCIUIAutomation.Test
         }
 
 
-        [Test, Property("TC#", "ELVS3456"), Property("Priority", "Priority 1")]
-        [Category("RM Center")]
+        //[Test]
+        //[Category("")]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
         [Description("Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL")]
         public void VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL()
         {
@@ -103,5 +120,25 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
+
+        [Test]
+        [Category(Component.Control_Point)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void VerifyComponentTestIsSkipped()
+        {
+            LogInfo($"Breaksheet component test - This test should be skipped");
+        }
+
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void VerifyComponentTestRuns()
+        {
+            LogInfo($"Other component test - This test should run");
+        }
     }
 }

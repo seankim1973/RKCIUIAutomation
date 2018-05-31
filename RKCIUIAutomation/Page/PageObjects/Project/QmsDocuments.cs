@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RKCIUIAutomation.Page.PageObjects.Project
+﻿namespace RKCIUIAutomation.Page.PageObjects.Project
 {
-    public class QmsDocuments
+    public class QmsDocuments : PageBase
     {
     }
 }

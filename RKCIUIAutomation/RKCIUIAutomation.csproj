@@ -135,6 +135,7 @@
     <Compile Include="Base\ExtentTestManager.cs" />
     <Compile Include="Base\WebDriverFactory.cs" />
     <Compile Include="Config\ConfigUtils.cs" />
+    <Compile Include="Config\ProjectProperties.cs" />
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\Action.cs" />
     <Compile Include="Page\PageObjects\LandingPage.cs" />
