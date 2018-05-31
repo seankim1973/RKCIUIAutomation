@@ -36,9 +36,6 @@ namespace RKCIUIAutomation.Base
             Directory.SetCurrentDirectory(Directory.GetParent(TestContext.CurrentContext.TestDirectory).ToString());
             string baseDir = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
             return baseDir;
-            //Directory.SetCurrentDirectory(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString());
-            //var currentDir = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
-            //return Directory.GetParent(currentDir).ToString();
         }
 
         public string CaptureScreenshot(string fileName)
@@ -51,20 +48,25 @@ namespace RKCIUIAutomation.Base
 
 
         //ExtentReports Helpers
-        public void LogInfo(string details)
+        public static void LogSkipped(string msg)
+        {
+            ExtentTestManager.GetTest().Log(Status.Skip, CreateReportMarkupLabel(msg, ExtentColor.Orange));
+            Console.Out.WriteLine(msg);
+        }
+        public static void LogInfo(string details)
         {
             ExtentTestManager.GetTest().Info(details);
             Console.Out.WriteLine(details);
         }
 
-        public void LogInfo(string details, Exception e)
+        public static void LogInfo(string details, Exception e)
         {
             ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupLabel(details, ExtentColor.Red));
             ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupCodeBlock(e));
             Console.Out.WriteLine(e.Message);
         }
 
-        public void LogInfo(string details, bool assertion, Exception e = null)
+        public static void LogInfo(string details, bool assertion, Exception e = null)
         {
             if (assertion)
             {
@@ -78,12 +80,12 @@ namespace RKCIUIAutomation.Base
             }     
         }
 
-        private IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
+        private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
         {
             return MarkupHelper.CreateLabel($"Info : {details}", extentColor);
         }
 
-        private IMarkup CreateReportMarkupCodeBlock(Exception e)
+        private static IMarkup CreateReportMarkupCodeBlock(Exception e)
         {
             return MarkupHelper.CreateCodeBlock($"Exception : \n{e.Message}");
         }

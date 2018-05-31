@@ -1,6 +1,10 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 
+using static RKCIUIAutomation.Base.WebDriverFactory;
+using static RKCIUIAutomation.Config.ConfigUtil;
+using static RKCIUIAutomation.Page.Action;
+
 namespace RKCIUIAutomation.Page.PageObjects
 {
     public class LoginPage : PageBase

@@ -2,17 +2,20 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
-using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
+using static RKCIUIAutomation.Base.WebDriverFactory;
+using static RKCIUIAutomation.Base.BaseClass;
+using static RKCIUIAutomation.Base.BaseUtils;
+
 namespace RKCIUIAutomation.Page
 {
-    public class Action : BaseClass
+    public static class Action
     {
-        private bool WaitForElement(By elementByLocator)
+        private static bool WaitForElement(By elementByLocator)
         {
             try
             {
@@ -33,7 +36,7 @@ namespace RKCIUIAutomation.Page
             return false;
         }
 
-        public IWebElement GetElement(By elementByLocator)
+        private static IWebElement GetElement(By elementByLocator)
         {
             IWebElement elem = null;
             if (WaitForElement(elementByLocator))
@@ -51,7 +54,7 @@ namespace RKCIUIAutomation.Page
             return elem;
         }
 
-        public IList<IWebElement> GetElements(By elementByLocator)
+        private static IList<IWebElement> GetElements(By elementByLocator)
         {
             IList<IWebElement> elements = null;
             if (WaitForElement(elementByLocator))
@@ -69,7 +72,7 @@ namespace RKCIUIAutomation.Page
             return elements;
         }
 
-        public void ClickElement(By elementByLocator)
+        public static void ClickElement(By elementByLocator)
         {
             try
             {
@@ -82,13 +85,13 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void HoverAndClick(By elemByToHover, By elemByToClick)
+        public static void HoverAndClick(By elemByToHover, By elemByToClick)
         {
             Hover(elemByToHover);
             ClickElement(elemByToClick);
         }
 
-        public void Hover(By elementByLocator)
+        public static void Hover(By elementByLocator)
         {
             try
             {
@@ -107,7 +110,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void EnterText(By elementByLocator, string text)
+        public static void EnterText(By elementByLocator, string text)
         {
             try
             {
@@ -120,7 +123,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public string GetText(By elementByLocator)
+        public static string GetText(By elementByLocator)
         {
             string text = String.Empty;
             try
@@ -136,8 +139,8 @@ namespace RKCIUIAutomation.Page
             return text;
         }
 
-        public string GetTextFromDDL(Enum ddListID) => $"{GetText(PageHelper.GetDDListByLocator(ddListID))}//span[@class='k-input']";
-        public void ExpandDDL(Enum ddListID)
+        public static string GetTextFromDDL(Enum ddListID) => $"{GetText(PageHelper.GetDDListByLocator(ddListID))}//span[@class='k-input']";
+        public static void ExpandDDL(Enum ddListID)
         {
             By locator = null;
             try
@@ -153,20 +156,20 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void ExpandAndSelectFromDDList(Enum ddListID, int selectItemIndex)
+        public static void ExpandAndSelectFromDDList(Enum ddListID, int selectItemIndex)
         {
             ExpandDDL(ddListID);
             ClickElement(PageHelper.GetDDListItemsByLocator(ddListID, selectItemIndex));
         }
 
-        private void UploadUsingAutoItX(string filePath)
+        private static void UploadUsingAutoItX(string filePath)
         {
             AutoItX.WinWaitActive("Open");
             AutoItX.ControlSend("Open", "", "Edit1", filePath);
             AutoItX.ControlClick("Open", "&Open", "Button1");
         }
 
-        public void UploadFile(string fileName)
+        public static void UploadFile(string fileName)
         {
             string filePath = null;
             if (testPlatform == TestPlatform.Local)
@@ -185,7 +188,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
+        public static string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
         {
             string uploadPath = string.Empty;
             if (isRemoteUpload == false)
@@ -200,7 +203,7 @@ namespace RKCIUIAutomation.Page
             return uploadPath;
         }
 
-        public bool VerifyFieldErrorIsDisplayed(By elementByLocator )
+        public static bool VerifyFieldErrorIsDisplayed(By elementByLocator )
         {
             IWebElement elem = GetElement(elementByLocator);
             bool elementDisplayed = elem.Displayed;
@@ -215,7 +218,7 @@ namespace RKCIUIAutomation.Page
             return elementDisplayed;
         }
 
-        public bool VerifySuccessMessageIsDisplayed()
+        public static bool VerifySuccessMessageIsDisplayed()
         {
             By elementByLocator = By.XPath("//div[contains(@class,'bootstrap-growl')]");
             IWebElement msg = GetElement(elementByLocator);
@@ -231,13 +234,13 @@ namespace RKCIUIAutomation.Page
             return elementDisplayed;
         }
 
-        private static By Btn_Cancel { get; } = By.Id("CancelSubmittal");
-        private static By Btn_Save { get; } = By.Id("SaveSubmittal");
-        private static By Btn_SubmitForward { get; } = By.Id("SaveForwardSubmittal");
+        private static readonly By Btn_Cancel = By.Id("CancelSubmittal");
+        private static readonly By Btn_Save = By.Id("SaveSubmittal");
+        private static readonly By Btn_SubmitForward = By.Id("SaveForwardSubmittal");
 
-        public void ClickCancel() => ClickElement(Btn_Cancel);
-        public void ClickSave() => ClickElement(Btn_Save);
-        public void ClickSubmitForward() => ClickElement(Btn_SubmitForward);
+        public static void ClickCancel() => ClickElement(Btn_Cancel);
+        public static void ClickSave() => ClickElement(Btn_Save);
+        public static void ClickSubmitForward() => ClickElement(Btn_SubmitForward);
 
 
     }

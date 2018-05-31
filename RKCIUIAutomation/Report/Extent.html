@@ -44,7 +44,7 @@
         <ul id='nav-mobile' class='right hide-on-med-and-down nav-right'>
 
             <a>
-                <span class='suite-start-time label blue darken-3'>5/29/2018 2:28:46 PM Central Standard Time</span>
+                <span class='suite-start-time label blue darken-3'>5/30/2018 8:16:04 PM Central Standard Time</span>
             </a>
             <a>
                 <span class="label blue darken-3">3.1.0</span>
@@ -85,8 +85,9 @@
                     </a>
                     <ul id='category-toggle' class='dropdown-content'>
                             <li><a href='#'>Priority1</a></li>
-                            <li><a href='#'>RMCenter</a></li>
+                            <li><a href='#'>Control_Point</a></li>
                             <li><a href='#'>Smoke</a></li>
+                            <li><a href='#'>Other</a></li>
                         <li class='divider'></li>
                         <li class='clear'><a href='#!' clear='true'>Clear Filters</a></li>
                     </ul>
@@ -136,10 +137,10 @@
                     <canvas id='parent-analysis' width='100' height='80'></canvas>
                 </div>
                 <div class='block text-small'>
-                    <span><span class='strong'>4</span> test(s) passed</span>
+                    <span><span class='strong'>1</span> test(s) passed</span>
                 </div>
                 <div class='block text-small'>
-                    <span class='strong'>0</span> test(s) failed, <span class='strong'>0</span> others
+                    <span class='strong'>0</span> test(s) failed, <span class='strong'>1</span> others
                 </div>
             </div>
         </div>
@@ -151,10 +152,10 @@
                         <canvas id='child-analysis' width='100' height='80'></canvas>
                     </div>
                     <div class='block text-small'>
-                        <span><span class='strong'>8</span> step(s) passed</span>
+                        <span><span class='strong'>1</span> step(s) passed</span>
                     </div>
                     <div class='block text-small'>
-                        <span class='strong'>0</span> step(s) failed, <span class='strong'>109</span> others
+                        <span class='strong'>0</span> step(s) failed, <span class='strong'>4</span> others
                     </div>
                 </div>
             </div>
@@ -169,29 +170,29 @@
             <ul id='test-collection' class='test-collection'>
 
 
-                    <li class='test displayed active has-leaf pass' status='pass' test-id='1'>
+                    <li class='test displayed active has-leaf warning' status='warning' test-id='1'>
                         <div class='test-heading'>
-                            <span class='test-name'>GenericTest</span>
-                            <span class='test-time'>5/29/2018 2:28:46 PM</span>
-                            <span class='test-status right pass'>Pass</span>
+                            <span class='test-name'>VerifyComponentTestIsSkipped</span>
+                            <span class='test-time'>5/30/2018 8:16:04 PM</span>
+                            <span class='test-status right warning'>Warning</span>
                         </div>
                         <div class='test-content hide'>
                                 <div class='test-time-info'>
-                                    <span class='label start-time'>5/29/2018 2:28:46 PM</span>
-                                    <span class='label end-time'>5/29/2018 2:29:10 PM</span>
-                                    <span class='label time-taken grey lighten-1 white-text'>00:00:23.6909603</span>
+                                    <span class='label start-time'>5/30/2018 8:16:04 PM</span>
+                                    <span class='label end-time'>5/30/2018 8:16:12 PM</span>
+                                    <span class='label time-taken grey lighten-1 white-text'>00:00:07.6033859</span>
                                 </div>
                                     <ul class='collapsible node-list' data-collapsible='accordion'>
-                                            <li class='node level-1 pass' status='pass' test-id='2'>
+                                            <li class='node level-1 warning' status='warning' test-id='2'>
                                                 <div class='collapsible-header'>
-                                                    <div class='node-name'><font size=3>TestCase# : ELVS3456 - GenericTest</font><br><font size=2>Verify user can login successfully using project - user account</font></div>
-                                                    <span class='node-time'>5/29/2018 2:28:46 PM</span>
-                                                    <span class='test-status right pass'>Pass</span>
+                                                    <div class='node-name'><font size=3>TestCase# : ELVS2222 - VerifyComponentTestIsSkipped</font><br><font size=2>Verify Component Name</font></div>
+                                                    <span class='node-time'>5/30/2018 8:16:04 PM</span>
+                                                    <span class='test-status right warning'>Warning</span>
                                                 </div>
                                                 <div class='collapsible-body'>
                                                         <div class='category-list'>
                                                                 <span class='category label white-text'>Priority1</span>
-                                                                <span class='category label white-text'>RMCenter</span>
+                                                                <span class='category label white-text'>Control_Point</span>
                                                                 <span class='category label white-text'>Smoke</span>
                                                         </div>
                                                     <div class='node-steps'>
@@ -204,290 +205,21 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:46 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Name: Email</td>
+                                                                    <tr class='log' status='skip'>
+                                                                        <td class='status skip' title='skip' alt='skip'><i class='material-icons'>redo</i></td>
+                                                                        <td class='timestamp'>5/30/2018 8:16:04 PM</td>
+                                                                        <td class='step-details'><span class='label white-text orange'>Info : TEST SKIPPED : Project (Garnet) does not have implementation of the component (Control_Point).</span></td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:46 PM</td>
-                                                                        <td class='step-details'>Entered 'QAProjectAdmin@rkci.com' in field - By.Name: Email</td>
+                                                                        <td class='timestamp'>5/30/2018 8:16:12 PM</td>
+                                                                        <td class='step-details'>Breaksheet component test - This test should be skipped</td>
                                                                     </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:46 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Name: Password</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:46 PM</td>
-                                                                        <td class='step-details'>Entered 'Password@123' in field - By.Name: Password</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:46 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //input[@type='submit']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:48 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //input[@type='submit']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:48 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //li/a[contains(text(),'RM Center')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:48 PM</td>
-                                                                        <td class='step-details'>Hover mouse over element - By.XPath: //li/a[contains(text(),'RM Center')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:50 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //li/a[contains(text(),'Upload QA Submittal')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:51 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //li/a[contains(text(),'Upload QA Submittal')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:53 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SubmittalNo</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:53 PM</td>
-                                                                        <td class='step-details'>Entered 'Test Name' in field - By.Id: SubmittalNo</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:53 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SubmittalTitle</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:53 PM</td>
-                                                                        <td class='step-details'>Entered 'Test Title' in field - By.Id: SubmittalTitle</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:53 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //span[@aria-owns='SubmittalActionId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:54 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //span[@aria-owns='SubmittalActionId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:55 PM</td>
-                                                                        <td class='step-details'>Expanded DDList - Action</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:55 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //div[@id='SubmittalActionId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:55 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //div[@id='SubmittalActionId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:55 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //span[@aria-owns='SegmentId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:55 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //span[@aria-owns='SegmentId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:56 PM</td>
-                                                                        <td class='step-details'>Expanded DDList - Segment_Area</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:56 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //div[@id='SegmentId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:56 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //div[@id='SegmentId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:56 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //span[@aria-owns='FeatureId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:56 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //span[@aria-owns='FeatureId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:57 PM</td>
-                                                                        <td class='step-details'>Expanded DDList - Feature</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:57 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //div[@id='FeatureId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:57 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //div[@id='FeatureId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:57 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //span[@aria-owns='GradeId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:57 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //span[@aria-owns='GradeId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:58 PM</td>
-                                                                        <td class='step-details'>Expanded DDList - Grade</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:58 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //div[@id='GradeId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:58 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //div[@id='GradeId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:58 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //span[@aria-owns='SupplierId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:28:59 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //span[@aria-owns='SupplierId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:00 PM</td>
-                                                                        <td class='step-details'>Expanded DDList - Supplier</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:00 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //div[@id='SupplierId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:00 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //div[@id='SupplierId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:00 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //span[@aria-owns='SpecificationId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:00 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //span[@aria-owns='SpecificationId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:01 PM</td>
-                                                                        <td class='step-details'>Expanded DDList - Specification</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:01 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //div[@id='SpecificationId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:01 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //div[@id='SpecificationId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:01 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //input[@id='Quantity']/preceding-sibling::input</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:01 PM</td>
-                                                                        <td class='step-details'>Entered '50' in field - By.XPath: //input[@id='Quantity']/preceding-sibling::input</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:01 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //span[@aria-owns='QuantityUnitId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:01 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //span[@aria-owns='QuantityUnitId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:02 PM</td>
-                                                                        <td class='step-details'>Expanded DDList - QuantityUnit</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:02 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //div[@id='QuantityUnitId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:02 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //div[@id='QuantityUnitId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:02 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //div[@aria-label='Select files...']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:02 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //div[@aria-label='Select files...']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:02 PM</td>
-                                                                        <td class='step-details'>Uploading files in local environment</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:04 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SaveForwardSubmittal</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:05 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.Id: SaveForwardSubmittal</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='pass'>
-                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:10 PM</td>
-                                                                        <td class='step-details'>Test ended with Pass</td>
+                                                                    <tr class='log' status='warning'>
+                                                                        <td class='status warning' title='warning' alt='warning'><i class='material-icons'>warning</i></td>
+                                                                        <td class='timestamp'>5/30/2018 8:16:12 PM</td>
+                                                                        <td class='step-details'>Test ended with Warning <pre>   at RKCIUIAutomation.Base.BaseClass.BeforeTest() in C:\Users\schong\source\repos\RKCIUIAutomation\RKCIUIAutomation\Base\BaseClass.cs:line 89
+</pre></td>
                                                                     </tr>
                                                             </tbody>
                                                         </table>
@@ -503,27 +235,27 @@
                     </li>
                     <li class='test displayed active has-leaf pass' status='pass' test-id='3'>
                         <div class='test-heading'>
-                            <span class='test-name'>VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle</span>
-                            <span class='test-time'>5/29/2018 2:29:17 PM</span>
+                            <span class='test-name'>VerifyComponentTestRuns</span>
+                            <span class='test-time'>5/30/2018 8:16:12 PM</span>
                             <span class='test-status right pass'>Pass</span>
                         </div>
                         <div class='test-content hide'>
                                 <div class='test-time-info'>
-                                    <span class='label start-time'>5/29/2018 2:29:17 PM</span>
-                                    <span class='label end-time'>5/29/2018 2:29:30 PM</span>
-                                    <span class='label time-taken grey lighten-1 white-text'>00:00:12.7720295</span>
+                                    <span class='label start-time'>5/30/2018 8:16:12 PM</span>
+                                    <span class='label end-time'>5/30/2018 8:16:19 PM</span>
+                                    <span class='label time-taken grey lighten-1 white-text'>00:00:07.3854083</span>
                                 </div>
                                     <ul class='collapsible node-list' data-collapsible='accordion'>
                                             <li class='node level-1 pass' status='pass' test-id='4'>
                                                 <div class='collapsible-header'>
-                                                    <div class='node-name'><font size=3>TestCase# : ELVS3456 - VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle</font><br><font size=2>Verify proper required fields show error when clicking Save button with Submittal Name and Title</font></div>
-                                                    <span class='node-time'>5/29/2018 2:29:17 PM</span>
+                                                    <div class='node-name'><font size=3>TestCase# : ELVS2222 - VerifyComponentTestRuns</font><br><font size=2>Verify Component Name</font></div>
+                                                    <span class='node-time'>5/30/2018 8:16:12 PM</span>
                                                     <span class='test-status right pass'>Pass</span>
                                                 </div>
                                                 <div class='collapsible-body'>
                                                         <div class='category-list'>
                                                                 <span class='category label white-text'>Priority1</span>
-                                                                <span class='category label white-text'>RMCenter</span>
+                                                                <span class='category label white-text'>Other</span>
                                                                 <span class='category label white-text'>Smoke</span>
                                                         </div>
                                                     <div class='node-steps'>
@@ -538,396 +270,12 @@
                                                             <tbody>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:17 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Name: Email</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:17 PM</td>
-                                                                        <td class='step-details'>Entered 'QAProjectAdmin@rkci.com' in field - By.Name: Email</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:17 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Name: Password</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:17 PM</td>
-                                                                        <td class='step-details'>Entered 'Password@123' in field - By.Name: Password</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:17 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //input[@type='submit']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:18 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //input[@type='submit']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:18 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //li/a[contains(text(),'RM Center')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:18 PM</td>
-                                                                        <td class='step-details'>Hover mouse over element - By.XPath: //li/a[contains(text(),'RM Center')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:20 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //li/a[contains(text(),'Upload QA Submittal')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:21 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //li/a[contains(text(),'Upload QA Submittal')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:23 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SubmittalNo</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:24 PM</td>
-                                                                        <td class='step-details'>Entered 'Test Name' in field - By.Id: SubmittalNo</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:24 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SubmittalTitle</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:24 PM</td>
-                                                                        <td class='step-details'>Entered 'Test Title' in field - By.Id: SubmittalTitle</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:24 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SaveSubmittal</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:25 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.Id: SaveSubmittal</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:25 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //span[@data-valmsg-for='SubmittalActionId']</td>
+                                                                        <td class='timestamp'>5/30/2018 8:16:19 PM</td>
+                                                                        <td class='step-details'>Other component test - This test should run</td>
                                                                     </tr>
                                                                     <tr class='log' status='pass'>
                                                                         <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:25 PM</td>
-                                                                        <td class='step-details'><span class='label white-text green'>Info : Field error is displayed for - By.XPath: //span[@data-valmsg-for='SubmittalActionId']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='pass'>
-                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:30 PM</td>
-                                                                        <td class='step-details'>Test ended with Pass</td>
-                                                                    </tr>
-                                                            </tbody>
-                                                        </table>
-                                                            <ul class='screenshots'>
-                                                                    <li><img data-featherlight='' class='step-img' src='' data-src=''></li>
-                                                            </ul>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                    </ul>
-
-                        </div>
-                    </li>
-                    <li class='test displayed active has-leaf pass' status='pass' test-id='5'>
-                        <div class='test-heading'>
-                            <span class='test-name'>VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle</span>
-                            <span class='test-time'>5/29/2018 2:29:38 PM</span>
-                            <span class='test-status right pass'>Pass</span>
-                        </div>
-                        <div class='test-content hide'>
-                                <div class='test-time-info'>
-                                    <span class='label start-time'>5/29/2018 2:29:38 PM</span>
-                                    <span class='label end-time'>5/29/2018 2:29:49 PM</span>
-                                    <span class='label time-taken grey lighten-1 white-text'>00:00:11.8526836</span>
-                                </div>
-                                    <ul class='collapsible node-list' data-collapsible='accordion'>
-                                            <li class='node level-1 pass' status='pass' test-id='6'>
-                                                <div class='collapsible-header'>
-                                                    <div class='node-name'><font size=3>TestCase# : ELVS3456 - VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle</font><br><font size=2>Verify proper required fields show error when clicking Save button without Submittal Name and Title</font></div>
-                                                    <span class='node-time'>5/29/2018 2:29:38 PM</span>
-                                                    <span class='test-status right pass'>Pass</span>
-                                                </div>
-                                                <div class='collapsible-body'>
-                                                        <div class='category-list'>
-                                                                <span class='category label white-text'>Priority1</span>
-                                                                <span class='category label white-text'>RMCenter</span>
-                                                                <span class='category label white-text'>Smoke</span>
-                                                        </div>
-                                                    <div class='node-steps'>
-                                                        <table class='bordered table-results'>
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Status</th>
-                                                                    <th>Timestamp</th>
-                                                                    <th>Details</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:38 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Name: Email</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:38 PM</td>
-                                                                        <td class='step-details'>Entered 'QAProjectAdmin@rkci.com' in field - By.Name: Email</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:38 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Name: Password</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:38 PM</td>
-                                                                        <td class='step-details'>Entered 'Password@123' in field - By.Name: Password</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:38 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //input[@type='submit']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:39 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //input[@type='submit']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:39 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //li/a[contains(text(),'RM Center')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:39 PM</td>
-                                                                        <td class='step-details'>Hover mouse over element - By.XPath: //li/a[contains(text(),'RM Center')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:41 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //li/a[contains(text(),'Upload QA Submittal')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:42 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //li/a[contains(text(),'Upload QA Submittal')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:44 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SaveSubmittal</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:44 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.Id: SaveSubmittal</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:44 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SubmittalNo-error</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='pass'>
-                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:44 PM</td>
-                                                                        <td class='step-details'><span class='label white-text green'>Info : Field error is displayed for - By.Id: SubmittalNo-error</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:44 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SubmittalTitle-error</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='pass'>
-                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:44 PM</td>
-                                                                        <td class='step-details'><span class='label white-text green'>Info : Field error is displayed for - By.Id: SubmittalTitle-error</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='pass'>
-                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:49 PM</td>
-                                                                        <td class='step-details'>Test ended with Pass</td>
-                                                                    </tr>
-                                                            </tbody>
-                                                        </table>
-                                                            <ul class='screenshots'>
-                                                                    <li><img data-featherlight='' class='step-img' src='' data-src=''></li>
-                                                            </ul>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                    </ul>
-
-                        </div>
-                    </li>
-                    <li class='test displayed active has-leaf pass' status='pass' test-id='7'>
-                        <div class='test-heading'>
-                            <span class='test-name'>VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL</span>
-                            <span class='test-time'>5/29/2018 2:29:56 PM</span>
-                            <span class='test-status right pass'>Pass</span>
-                        </div>
-                        <div class='test-content hide'>
-                                <div class='test-time-info'>
-                                    <span class='label start-time'>5/29/2018 2:29:56 PM</span>
-                                    <span class='label end-time'>5/29/2018 2:30:10 PM</span>
-                                    <span class='label time-taken grey lighten-1 white-text'>00:00:14.0639901</span>
-                                </div>
-                                    <ul class='collapsible node-list' data-collapsible='accordion'>
-                                            <li class='node level-1 pass' status='pass' test-id='8'>
-                                                <div class='collapsible-header'>
-                                                    <div class='node-name'><font size=3>TestCase# : ELVS3456 - VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL</font><br><font size=2>Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL</font></div>
-                                                    <span class='node-time'>5/29/2018 2:29:56 PM</span>
-                                                    <span class='test-status right pass'>Pass</span>
-                                                </div>
-                                                <div class='collapsible-body'>
-                                                        <div class='category-list'>
-                                                                <span class='category label white-text'>Priority1</span>
-                                                                <span class='category label white-text'>RMCenter</span>
-                                                                <span class='category label white-text'>Smoke</span>
-                                                        </div>
-                                                    <div class='node-steps'>
-                                                        <table class='bordered table-results'>
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Status</th>
-                                                                    <th>Timestamp</th>
-                                                                    <th>Details</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:56 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Name: Email</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:56 PM</td>
-                                                                        <td class='step-details'>Entered 'QAProjectAdmin@rkci.com' in field - By.Name: Email</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:56 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Name: Password</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:57 PM</td>
-                                                                        <td class='step-details'>Entered 'Password@123' in field - By.Name: Password</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:57 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //input[@type='submit']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:58 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //input[@type='submit']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:58 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //li/a[contains(text(),'RM Center')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:29:58 PM</td>
-                                                                        <td class='step-details'>Hover mouse over element - By.XPath: //li/a[contains(text(),'RM Center')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:00 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //li/a[contains(text(),'Upload QA Submittal')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:01 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //li/a[contains(text(),'Upload QA Submittal')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:03 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SubmittalNo</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:03 PM</td>
-                                                                        <td class='step-details'>Entered 'Test Name' in field - By.Id: SubmittalNo</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:03 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SubmittalTitle</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:03 PM</td>
-                                                                        <td class='step-details'>Entered 'Test Title' in field - By.Id: SubmittalTitle</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:03 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //span[@aria-owns='SubmittalActionId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:03 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //span[@aria-owns='SubmittalActionId_listbox']//span[@class='k-select']</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:04 PM</td>
-                                                                        <td class='step-details'>Expanded DDList - Action</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:04 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //div[@id='SubmittalActionId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:05 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.XPath: //div[@id='SubmittalActionId-list']//li[1]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:05 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.Id: SaveSubmittal</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:05 PM</td>
-                                                                        <td class='step-details'>Clicked element - By.Id: SaveSubmittal</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:05 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //div[contains(@class,'bootstrap-growl')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='pass'>
-                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:05 PM</td>
-                                                                        <td class='step-details'><span class='label white-text green'>Info : Success Message is displayed for - By.XPath: //div[contains(@class,'bootstrap-growl')]</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='pass'>
-                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
-                                                                        <td class='timestamp'>5/29/2018 2:30:10 PM</td>
+                                                                        <td class='timestamp'>5/30/2018 8:16:19 PM</td>
                                                                         <td class='step-details'>Test ended with Pass</td>
                                                                     </tr>
                                                             </tbody>
@@ -995,11 +343,11 @@
                             <div class='category-heading'>
                                 <span class='category-name'>Priority1</span>
                                 <span class='category-status right'>
- <span class='label pass'>4</span>                                                                                                         </span>
+ <span class='label pass'>1</span>                                                                          <span class='label others'>1</span>                                 </span>
                             </div>
                             <div class='category-content hide'>
                                 <div class='category-status-counts'>
- <span class='label green accent-4 white-text'>Passed: 4</span>                                                                                                         </div>
+ <span class='label green accent-4 white-text'>Passed: 1</span>                                                                          <span class='label yellow darken-2 white-text'>Others: 1</span>                                 </div>
 
                                 <div class='category-tests'>
                                     <table class='bordered table-results'>
@@ -1012,23 +360,13 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                    <td>5/29/2018 2:28:46 PM</td>
-                                                    <td class='linked' test-id='2'>GenericTest.<font size=3>TestCase# : ELVS3456 - GenericTest</font><br><font size=2>Verify user can login successfully using project - user account</font></td>
-                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                    <td>5/30/2018 8:16:04 PM</td>
+                                                    <td class='linked' test-id='2'>VerifyComponentTestIsSkipped.<font size=3>TestCase# : ELVS2222 - VerifyComponentTestIsSkipped</font><br><font size=2>Verify Component Name</font></td>
+                                                    <td><span class='test-status warning'>Warning</span></td>
                                                 </tr>
                                                 <tr>
-                                                    <td>5/29/2018 2:29:17 PM</td>
-                                                    <td class='linked' test-id='4'>VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle.<font size=3>TestCase# : ELVS3456 - VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle</font><br><font size=2>Verify proper required fields show error when clicking Save button with Submittal Name and Title</font></td>
-                                                    <td><span class='test-status pass'>Pass</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>5/29/2018 2:29:38 PM</td>
-                                                    <td class='linked' test-id='6'>VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle.<font size=3>TestCase# : ELVS3456 - VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle</font><br><font size=2>Verify proper required fields show error when clicking Save button without Submittal Name and Title</font></td>
-                                                    <td><span class='test-status pass'>Pass</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>5/29/2018 2:29:56 PM</td>
-                                                    <td class='linked' test-id='8'>VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL.<font size=3>TestCase# : ELVS3456 - VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL</font><br><font size=2>Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL</font></td>
+                                                    <td>5/30/2018 8:16:12 PM</td>
+                                                    <td class='linked' test-id='4'>VerifyComponentTestRuns.<font size=3>TestCase# : ELVS2222 - VerifyComponentTestRuns</font><br><font size=2>Verify Component Name</font></td>
                                                     <td><span class='test-status pass'>Pass</span></td>
                                                 </tr>
                                         </tbody>
@@ -1038,13 +376,13 @@
                         </li>
                         <li class='category displayed active'>
                             <div class='category-heading'>
-                                <span class='category-name'>RMCenter</span>
+                                <span class='category-name'>Control_Point</span>
                                 <span class='category-status right'>
- <span class='label pass'>4</span>                                                                                                         </span>
+                                                                         <span class='label others'>1</span>                                 </span>
                             </div>
                             <div class='category-content hide'>
                                 <div class='category-status-counts'>
- <span class='label green accent-4 white-text'>Passed: 4</span>                                                                                                         </div>
+                                                                         <span class='label yellow darken-2 white-text'>Others: 1</span>                                 </div>
 
                                 <div class='category-tests'>
                                     <table class='bordered table-results'>
@@ -1057,24 +395,9 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                    <td>5/29/2018 2:28:46 PM</td>
-                                                    <td class='linked' test-id='2'>GenericTest.<font size=3>TestCase# : ELVS3456 - GenericTest</font><br><font size=2>Verify user can login successfully using project - user account</font></td>
-                                                    <td><span class='test-status pass'>Pass</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>5/29/2018 2:29:17 PM</td>
-                                                    <td class='linked' test-id='4'>VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle.<font size=3>TestCase# : ELVS3456 - VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle</font><br><font size=2>Verify proper required fields show error when clicking Save button with Submittal Name and Title</font></td>
-                                                    <td><span class='test-status pass'>Pass</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>5/29/2018 2:29:38 PM</td>
-                                                    <td class='linked' test-id='6'>VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle.<font size=3>TestCase# : ELVS3456 - VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle</font><br><font size=2>Verify proper required fields show error when clicking Save button without Submittal Name and Title</font></td>
-                                                    <td><span class='test-status pass'>Pass</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>5/29/2018 2:29:56 PM</td>
-                                                    <td class='linked' test-id='8'>VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL.<font size=3>TestCase# : ELVS3456 - VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL</font><br><font size=2>Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL</font></td>
-                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                    <td>5/30/2018 8:16:04 PM</td>
+                                                    <td class='linked' test-id='2'>VerifyComponentTestIsSkipped.<font size=3>TestCase# : ELVS2222 - VerifyComponentTestIsSkipped</font><br><font size=2>Verify Component Name</font></td>
+                                                    <td><span class='test-status warning'>Warning</span></td>
                                                 </tr>
                                         </tbody>
                                     </table>
@@ -1085,11 +408,11 @@
                             <div class='category-heading'>
                                 <span class='category-name'>Smoke</span>
                                 <span class='category-status right'>
- <span class='label pass'>4</span>                                                                                                         </span>
+ <span class='label pass'>1</span>                                                                          <span class='label others'>1</span>                                 </span>
                             </div>
                             <div class='category-content hide'>
                                 <div class='category-status-counts'>
- <span class='label green accent-4 white-text'>Passed: 4</span>                                                                                                         </div>
+ <span class='label green accent-4 white-text'>Passed: 1</span>                                                                          <span class='label yellow darken-2 white-text'>Others: 1</span>                                 </div>
 
                                 <div class='category-tests'>
                                     <table class='bordered table-results'>
@@ -1102,23 +425,43 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                    <td>5/29/2018 2:28:46 PM</td>
-                                                    <td class='linked' test-id='2'>GenericTest.<font size=3>TestCase# : ELVS3456 - GenericTest</font><br><font size=2>Verify user can login successfully using project - user account</font></td>
-                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                    <td>5/30/2018 8:16:04 PM</td>
+                                                    <td class='linked' test-id='2'>VerifyComponentTestIsSkipped.<font size=3>TestCase# : ELVS2222 - VerifyComponentTestIsSkipped</font><br><font size=2>Verify Component Name</font></td>
+                                                    <td><span class='test-status warning'>Warning</span></td>
                                                 </tr>
                                                 <tr>
-                                                    <td>5/29/2018 2:29:17 PM</td>
-                                                    <td class='linked' test-id='4'>VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle.<font size=3>TestCase# : ELVS3456 - VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle</font><br><font size=2>Verify proper required fields show error when clicking Save button with Submittal Name and Title</font></td>
+                                                    <td>5/30/2018 8:16:12 PM</td>
+                                                    <td class='linked' test-id='4'>VerifyComponentTestRuns.<font size=3>TestCase# : ELVS2222 - VerifyComponentTestRuns</font><br><font size=2>Verify Component Name</font></td>
                                                     <td><span class='test-status pass'>Pass</span></td>
                                                 </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                        <li class='category displayed active'>
+                            <div class='category-heading'>
+                                <span class='category-name'>Other</span>
+                                <span class='category-status right'>
+ <span class='label pass'>1</span>                                                                                                         </span>
+                            </div>
+                            <div class='category-content hide'>
+                                <div class='category-status-counts'>
+ <span class='label green accent-4 white-text'>Passed: 1</span>                                                                                                         </div>
+
+                                <div class='category-tests'>
+                                    <table class='bordered table-results'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>TestName</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
                                                 <tr>
-                                                    <td>5/29/2018 2:29:38 PM</td>
-                                                    <td class='linked' test-id='6'>VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle.<font size=3>TestCase# : ELVS3456 - VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle</font><br><font size=2>Verify proper required fields show error when clicking Save button without Submittal Name and Title</font></td>
-                                                    <td><span class='test-status pass'>Pass</span></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>5/29/2018 2:29:56 PM</td>
-                                                    <td class='linked' test-id='8'>VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL.<font size=3>TestCase# : ELVS3456 - VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL</font><br><font size=2>Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL</font></td>
+                                                    <td>5/30/2018 8:16:12 PM</td>
+                                                    <td class='linked' test-id='4'>VerifyComponentTestRuns.<font size=3>TestCase# : ELVS2222 - VerifyComponentTestRuns</font><br><font size=2>Verify Component Name</font></td>
                                                     <td><span class='test-status pass'>Pass</span></td>
                                                 </tr>
                                         </tbody>
@@ -1186,30 +529,30 @@
         <div class='row'>
             <div class='col s2'>
                 <div class='card-panel r'>
- <span>Tests</span>                     <div class='panel-lead'>4</div>
+ <span>Tests</span>                     <div class='panel-lead'>2</div>
                 </div>
             </div>
             <div class='col s2'>
                 <div class='card-panel r'>
- <span>Steps</span>                     <div class='panel-lead'>117</div>
+ <span>Steps</span>                     <div class='panel-lead'>5</div>
                 </div>
             </div>
             <div class='col s2'>
                 <div class='card-panel r'>
                     Start
-                    <div class='panel-lead'>5/29/2018 2:28:46 PM</div>
+                    <div class='panel-lead'>5/30/2018 8:16:04 PM</div>
                 </div>
             </div>
             <div class='col s2'>
                 <div class='card-panel r'>
                     End
-                    <div class='panel-lead'>5/29/2018 2:30:13 PM</div>
+                    <div class='panel-lead'>5/30/2018 8:16:22 PM</div>
                 </div>
             </div>
             <div class='col s2'>
                 <div class='card-panel r'>
                     Time Taken
-                    <div class='panel-lead'>00:01:26.8981692</div>
+                    <div class='panel-lead'>00:00:18.0193505</div>
                 </div>
             </div>
 
@@ -1252,21 +595,28 @@
                             </tr>
                                 <tr>
                                     <td>Priority1</td>
-                                    <td>4</td>
+                                    <td>1</td>
                                     <td>0</td>
-                                    <td>0</td>
-									<td>100%</td>
+                                    <td>1</td>
+									<td>50%</td>
                                 </tr>
                                 <tr>
-                                    <td>RMCenter</td>
-                                    <td>4</td>
+                                    <td>Control_Point</td>
                                     <td>0</td>
                                     <td>0</td>
-									<td>100%</td>
+                                    <td>1</td>
+									<td>0%</td>
                                 </tr>
                                 <tr>
                                     <td>Smoke</td>
-                                    <td>4</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>1</td>
+									<td>50%</td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>1</td>
                                     <td>0</td>
                                     <td>0</td>
 									<td>100%</td>
@@ -1288,20 +638,20 @@
 
 		<script>
 			var statusGroup = {
-			    passParent: 4,
+			    passParent: 1,
 			    failParent: 0,
 			    fatalParent: 0,
 			    errorParent: 0,
-			    warningParent: 0,
+			    warningParent: 1,
 			    skipParent: 0,
 				
-			    passChild: 8,
+			    passChild: 1,
 			    failChild: 0,
 			    fatalChild: 0,
 			    errorChild: 0,
-			    warningChild: 0,
-			    skipChild: 0,
-			    infoChild: 109,
+			    warningChild: 1,
+			    skipChild: 1,
+			    infoChild: 2,
 				
 			    passGrandChild: 0,
 			    failGrandChild: 0,

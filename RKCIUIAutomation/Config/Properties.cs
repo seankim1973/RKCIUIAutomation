@@ -8,7 +8,7 @@
         Prod
     }
 
-    public enum ProjectSite
+    public enum ProjectName
     {
         Garnet,
         Green_Line_Extension,

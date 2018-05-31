@@ -1,28 +1,28 @@
 ﻿using OpenQA.Selenium;
-using RKCIUIAutomation.Base;
+
+using static RKCIUIAutomation.Page.Action;
+using static RKCIUIAutomation.Page.PageHelper;
 
 namespace RKCIUIAutomation.Page
 {
-    public class TableHelper : PageHelper
+    public static class TableHelper
     {
-        public TableHelper(){}
-        public TableHelper(IWebDriver driver) => Driver = driver;
-
-        private static By Btn_GoToFirstPg { get; } = By.XPath("//a[@aria-label='Go to the first page']");
-        private static By Btn_GoToPrevPg { get; } = By.XPath("//a[@aria-label='Go to the previous page']");
-        private static By Btn_GoToNextPg { get; } = By.XPath("//a[@aria-label='Go to the next page']");
-        private static By Btn_GoToLastPg { get; } = By.XPath("//a[@aria-label='Go to the last page']");
+        private static By GetTablePageNavButton(string pageDestination) => By.XPath($"//a[@aria-label='Go to the {pageDestination} page']");
+        private static string GetTableRowXpath<ColumnName,RowValue>(ColumnName columnName, RowValue rowValue) => $""; //TODO - review different types of tables to come up with logic
 
         private static readonly string xpathExt_btnView = "//a[text()='View']";
         private static readonly string xpathExt_btnDelete = "//a[text()='Delete']";
         private static readonly string xpathExt_btnEdit = "//a[text()='Edit']";
 
-        public void GoToFirstPage() => ClickElement(Btn_GoToFirstPg);
-        public void GoToPreviousPage() => ClickElement(Btn_GoToPrevPg);
-        public void GoToNextPage() => ClickElement(Btn_GoToNextPg);
-        public void GoToLastPage() => ClickElement(Btn_GoToLastPg);
-        public void GoToPageNumber(int pageNumber) => ClickElement(GetTableNavByLocator(pageNumber));
-        public void SelectTableTab<T>(T tabEnum) => ClickElement(GetTableTabByLocator(ConvertToEnumType(tabEnum)));
+        public static void GoToFirstPage() => ClickElement(GetTablePageNavButton("first"));
+        public static void GoToPreviousPage() => ClickElement(GetTablePageNavButton("previous"));
+        public static void GoToNextPage() => ClickElement(GetTablePageNavButton("next"));
+        public static void GoToLastPage() => ClickElement(GetTablePageNavButton("last"));
+        public static void GoToPageNumber(int pageNumber) => ClickElement(GetTableNavByLocator(pageNumber));
+
+        public static void SelectTableTab<T>(T tabEnum) => ClickElement(GetTableTabByLocator(ConvertToEnumType(tabEnum)));
+
+        //public static void ClickViewButtonForRow() => ClickElement();
 
     }
 }

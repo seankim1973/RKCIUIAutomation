@@ -1,41 +1,52 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Configuration;
+
+using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Config
 {
-    public class ConfigUtil
+    public static class ConfigUtil
     {
-        public string GetSiteUrl(TestEnv testEnv, ProjectSite project)
+        public static string GetSiteUrl(TestEnv testEnv, ProjectName project)
         {
             string siteKey = $"{project}_{testEnv}";
             return GetValueFromConfigManager(siteUrlKey:siteKey);
         }
 
         //return string array of username[0] and password[1]
-        public string[] GetUser(UserType userType)
+        public static string[] GetUser(UserType userType)
         {
             string userKey = $"{userType}";
             string[] usernamePassword = GetValueFromConfigManager(userTypeKey:userKey).Split(',');
             return usernamePassword;
         }
 
-        internal string GetValueFromConfigManager(string siteUrlKey = "", string userTypeKey = "")
+        private static string GetValueFromConfigManager(string siteUrlKey = "", string userTypeKey = "")
         {
             string sectionType = null;
             string key = null;
+            NameValueCollection collection = null;
 
-            if (!string.IsNullOrWhiteSpace(userTypeKey))
+            try
             {
-                sectionType = "UserType";
-                key = userTypeKey;
-            }
-            else if (!string.IsNullOrWhiteSpace(siteUrlKey))
-            {
-                sectionType = "SiteUrl";
-                key = siteUrlKey;
-            }
+                if (!string.IsNullOrWhiteSpace(userTypeKey))
+                {
+                    sectionType = "UserType";
+                    key = userTypeKey;
+                }
+                else if (!string.IsNullOrWhiteSpace(siteUrlKey))
+                {
+                    sectionType = "SiteUrl";
+                    key = siteUrlKey;
+                }
 
-            var collection = ConfigurationManager.GetSection($"TestConfigs/{sectionType}") as NameValueCollection;
+                collection = ConfigurationManager.GetSection($"TestConfigs/{sectionType}") as NameValueCollection;
+            }
+            catch (Exception e)
+            {
+                LogInfo($"Exception occured in GetValueFromConfigManager method - ", e);
+            }
             return collection[$"{key}"];
         }
     }
