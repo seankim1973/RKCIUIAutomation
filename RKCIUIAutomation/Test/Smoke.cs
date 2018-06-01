@@ -1,13 +1,11 @@
 ﻿using NUnit.Framework;
 using System.Threading;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 
 using static RKCIUIAutomation.Page.Action;
 using static RKCIUIAutomation.Config.ProjectProperties;
-using System;
 
 namespace RKCIUIAutomation.Test
 {
@@ -36,14 +34,14 @@ namespace RKCIUIAutomation.Test
         }
 
         //[Test]
-        //[Category("")]
+        [Category(Component.Submittals)]
         [Property("TC#", "ELVS3456")]
         [Property("Priority", "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
         public void GenericTest()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");            
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Action, 1);
@@ -70,7 +68,7 @@ namespace RKCIUIAutomation.Test
         public void VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             ClickSave();
             Assert.Multiple(testDelegate: () =>
                {
@@ -92,7 +90,7 @@ namespace RKCIUIAutomation.Test
         public void VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
             ClickSave();
@@ -103,14 +101,14 @@ namespace RKCIUIAutomation.Test
 
 
         //[Test]
-        //[Category("")]
+        [Category(Component.Submittals)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL")]
         public void VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Action, 1);
@@ -120,7 +118,6 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
-
         [Test]
         [Category(Component.Control_Point)]
         [Property("TC#", "ELVS2222")]
@@ -128,7 +125,10 @@ namespace RKCIUIAutomation.Test
         [Description("Verify Component Name")]
         public void VerifyComponentTestIsSkipped()
         {
-            LogInfo($"Breaksheet component test - This test should be skipped");
+            LogInfo($"Control Point component test - This test should be skipped");
+            LoginPg.LoginUser(UserType.ProjAdmin);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
+            Thread.Sleep(5000);
         }
 
         [Test]
@@ -139,6 +139,10 @@ namespace RKCIUIAutomation.Test
         public void VerifyComponentTestRuns()
         {
             LogInfo($"Other component test - This test should run");
+            LoginPg.LoginUser(UserType.ProjAdmin);
+            Navigate.Menu(NavMenu.Project.Administration.UserManagement.Menu.Roles);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Gradations);
+            Thread.Sleep(5000);
         }
     }
 }

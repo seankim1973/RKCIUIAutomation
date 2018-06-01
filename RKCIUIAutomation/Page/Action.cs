@@ -93,6 +93,7 @@ namespace RKCIUIAutomation.Page
 
         public static void Hover(By elementByLocator)
         {
+            IWebElement element = GetElement(elementByLocator);
             try
             {
                 string javaScript = "var evObj = document.createEvent('MouseEvents');" +
@@ -100,9 +101,9 @@ namespace RKCIUIAutomation.Page
                     "arguments[0].dispatchEvent(evObj);";
 
                 IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
-                executor.ExecuteScript(javaScript, GetElement(elementByLocator));
+                executor.ExecuteScript(javaScript, element);
                 LogInfo($"Hover mouse over element - {elementByLocator}");
-                Thread.Sleep(2000);
+                Thread.Sleep(1000);
             }
             catch (Exception e)
             {

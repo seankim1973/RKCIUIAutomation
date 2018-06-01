@@ -29,9 +29,6 @@ namespace RKCIUIAutomation.Test
         private NavMenu _navMenu { get => new NavMenu(Driver); set { } }
         public NavMenu Navigate => _navMenu;
 
-        private NavEnums _navEnums { get => new NavEnums(Driver); set { } }
-        public NavEnums MenuEnums => _navEnums;
-
         private RMCenter _rmCenter { get => new RMCenter(Driver); set { } }
         public RMCenter RMCenter => _rmCenter;
     }
