@@ -11,7 +11,6 @@ namespace RKCIUIAutomation.Page
         private static string SetDDListFieldXpath(Enum ddListID) => $"//span[@aria-owns='{ddListID.GetString()}_listbox']";
         private static string SetDDListFieldExpandArrowXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']";
         private static string SetNavMenuXpath(Enum navEnum) => $"//li/a[contains(text(),'{navEnum.GetString()}')]";
-        private static string NavMenuDisplayedXpath => $"//ancestor::ul[@class='dropdown-menu'][@style='display: block;']";
         private static string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
         private static string SetDDListItemsXpath(Enum ddListID, string itemName) => $"//div[@id='{ddListID.GetString()}-list']//li[text()={itemName}]";
         private static string SetDDListItemsXpath(Enum ddListID, int itemIndex) => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";
@@ -19,7 +18,6 @@ namespace RKCIUIAutomation.Page
         private static string SetTableNavPageXpath(int pageNumber) => $"//div[@id='TestGrid_New']//div[@data-role='pager']/ul/li/a[text()='{pageNumber.ToString()}']";
 
         public static By GetNavMenuByLocator(Enum navEnum) => By.XPath(SetNavMenuXpath(navEnum));
-        public static By GetNavMenuDisplayedByLocator(Enum navEnum) => By.XPath($"{SetNavMenuXpath(navEnum)}{NavMenuDisplayedXpath}");
         public static By GetInputFieldByLocator(string inputFieldLabel) => By.XPath(SetInputFieldXpath(inputFieldLabel));
         public static By GetDDListByLocator(Enum ddListID) => By.XPath(SetDDListFieldXpath(ddListID));
         public static By GetExpandDDListButtonByLocator(Enum ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));

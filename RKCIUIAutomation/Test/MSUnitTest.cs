@@ -15,7 +15,7 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using static RKCIUIAutomation.Config.ProjectProperties;
-using static RKCIUIAutomation.Page.Navigation.NavEnums;
+using static RKCIUIAutomation.Page.Navigation.NavMenu;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.SubmittalDetails;
 
 namespace RKCIUIAutomation.Test

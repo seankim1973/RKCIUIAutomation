@@ -1,13 +1,11 @@
 ﻿using NUnit.Framework;
 using System.Threading;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 
 using static RKCIUIAutomation.Page.Action;
 using static RKCIUIAutomation.Config.ProjectProperties;
-using System;
 
 namespace RKCIUIAutomation.Test
 {
@@ -35,7 +33,7 @@ namespace RKCIUIAutomation.Test
             LoginPg.LoginUser(UserType.ProjAdmin);
         }
 
-        [Test]
+        //[Test]
         [Category(Component.Submittals)]
         [Property("TC#", "ELVS3456")]
         [Property("Priority", "Priority 1")]
@@ -43,7 +41,7 @@ namespace RKCIUIAutomation.Test
         public void GenericTest()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter.Menu.Upload_QA_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");            
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Action, 1);
@@ -70,7 +68,7 @@ namespace RKCIUIAutomation.Test
         public void VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter.Menu.Upload_QA_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             ClickSave();
             Assert.Multiple(testDelegate: () =>
                {
@@ -92,7 +90,7 @@ namespace RKCIUIAutomation.Test
         public void VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter.Menu.Upload_QA_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
             ClickSave();
@@ -110,7 +108,7 @@ namespace RKCIUIAutomation.Test
         public void VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter.Menu.Upload_QA_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Action, 1);
@@ -120,8 +118,7 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
-
-        //[Test]
+        [Test]
         [Category(Component.Control_Point)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -130,10 +127,11 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Control Point component test - This test should be skipped");
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter.Menu.Upload_QA_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
+            Thread.Sleep(5000);
         }
 
-        //[Test]
+        [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -142,7 +140,9 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Other component test - This test should run");
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.Project.Administration.UserManagement.Menu.Roles);
+            Navigate.Menu(NavMenu.Project.Administration.UserManagement.Menu.Roles);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Gradations);
+            Thread.Sleep(5000);
         }
     }
 }
