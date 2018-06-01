@@ -2,7 +2,6 @@
 using System;
 using System.Threading;
 
-using static RKCIUIAutomation.Base.WebDriverFactory;
 using static RKCIUIAutomation.Page.Action;
 using static RKCIUIAutomation.Page.PageHelper;
 
@@ -11,132 +10,148 @@ namespace RKCIUIAutomation.Page.Navigation
     public class NavMenu : NavEnums
     {
         public NavMenu() { }
-        public NavMenu(IWebDriver driver) => driver = Driver;
+        public NavMenu(IWebDriver driver) => Driver = driver;
 
         Type pageType = null;
         Enum mainNavEnum = null;
         Enum adminByEnum = null;
         Enum subAdminEnum = null;
         Enum subAdminSysConfigEnum = null;
-
+        bool projectSubMenu = false;
         private By SetNavClickLocator<T>(T navEnum) => GetNavMenuByLocator(ConvertToEnumType(navEnum));
 
         public void Menu<T>(T navEnum)
         {
             pageType = navEnum.GetType();
+            var reflectedPageType = pageType.ReflectedType;
 
-            if (pageType == typeof(Project_eClass.Project_e))
+            if (reflectedPageType.Equals(typeof(Project)) ||  reflectedPageType.IsSubclassOf(typeof(Project)))
             {
-                mainNavEnum = MainNav_e.Project;
+                projectSubMenu = true;
+                mainNavEnum = MainNav.Menu.Project;
 
-                if (pageType == typeof(Project_eClass.Administration_e))
+                if (reflectedPageType.Equals(typeof(Project.Administration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration)))
                 {
-                    adminByEnum = Project_eClass.Project_e.Administration;
-                    
-                    if (pageType == typeof(Project_eClass.Admin_UserManagement_e))
-                    {
-                        subAdminEnum = Project_eClass.Administration_e.User_Management;
-                    }
-                    else if (pageType == typeof(Project_eClass.Admin_SystemConfiguration_e))
-                    {
-                        subAdminEnum = Project_eClass.Administration_e.System_Configuration;
+                    adminByEnum = Project.Menu.Administration;
 
-                        if (pageType == typeof(Project_eClass.Admin_SysConfig_Equipment_e))
+                    if (reflectedPageType.Equals(typeof(Project.Administration.UserManagement)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration.UserManagement)))
+                    {
+                        subAdminEnum = Project.Administration.Menu.User_Management;
+                    }
+                    else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration.SystemConfiguration)))
+                    {
+                        subAdminEnum = Project.Administration.Menu.System_Configuration;
+
+                        if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.Equipment)))
                         {
-                            subAdminSysConfigEnum = Project_eClass.Admin_SystemConfiguration_e.Equipment;
+                            subAdminSysConfigEnum = Project.Administration.SystemConfiguration.Menu.Equipment;
                         }
-                        else if (pageType == typeof(Project_eClass.Admin_SysConfig_GradeManagement_e))
+                        else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.GradeManagement)))
                         {
-                            subAdminSysConfigEnum = Project_eClass.Admin_SystemConfiguration_e.Grade_Management;
+                            subAdminSysConfigEnum = Project.Administration.SystemConfiguration.Menu.Grade_Management;
                         }
                     }
-                    else if (pageType == typeof(Project_eClass.Admin_AdminTools_e))
+                    else if (reflectedPageType.Equals(typeof(Project.Administration.AdminTools)))
                     {
-                        subAdminEnum = Project_eClass.Administration_e.Admin_Tools;
+                        subAdminEnum = Project.Administration.Menu.Admin_Tools;
                     }
                 }
             }
-            else if (pageType == typeof(QALab_e))
+            else if (reflectedPageType.Equals(typeof(QALab)))
             {
-                mainNavEnum = MainNav_e.QA_Lab;
+                mainNavEnum = MainNav.Menu.QA_Lab;
             }
-            else if (pageType == typeof(QARecordControl_e))
+            else if (reflectedPageType.Equals( typeof(QARecordControl)))
             {
-                mainNavEnum = MainNav_e.QA_Record_Control;
+                mainNavEnum = MainNav.Menu.QA_Record_Control;
             }
-            else if (pageType == typeof(QAEngineer_e))
+            else if (reflectedPageType.Equals( typeof(QAEngineer)))
             {
-                mainNavEnum = MainNav_e.QA_Engineer;
+                mainNavEnum = MainNav.Menu.QA_Engineer;
             }
-            else if (pageType == typeof(ReportsNotices_e))
+            else if (reflectedPageType.Equals( typeof(ReportsNotices)))
             {
-                mainNavEnum = MainNav_e.Reports_Notices;
+                mainNavEnum = MainNav.Menu.Reports_Notices;
             }
-            else if (pageType == typeof(QASearch_e))
+            else if (reflectedPageType.Equals( typeof(QASearch)))
             {
-                mainNavEnum = MainNav_e.QA_Search;
+                mainNavEnum = MainNav.Menu.QA_Search;
             }
-            else if (pageType == typeof(QAField_e))
+            else if (reflectedPageType.Equals( typeof(QAField)))
             {
-                mainNavEnum = MainNav_e.QA_Field;
+                mainNavEnum = MainNav.Menu.QA_Field;
             }
-            else if (pageType == typeof(Owner_e))
+            else if (reflectedPageType.Equals( typeof(Owner)))
             {
-                mainNavEnum = MainNav_e.Owner;
+                mainNavEnum = MainNav.Menu.Owner;
             }
-            else if (pageType == typeof(MaterialMixCodes_e))
+            else if (reflectedPageType.Equals( typeof(MaterialMixCodes)))
             {
-                mainNavEnum = MainNav_e.Material_Mix_Codes;
+                mainNavEnum = MainNav.Menu.Material_Mix_Codes;
             }
-            else if (pageType == typeof(RMCenter_e))
+            else if (reflectedPageType.Equals( typeof(RMCenter)))
             {
-                mainNavEnum = MainNav_e.RM_Center;
+                mainNavEnum = MainNav.Menu.RM_Center;
             }
-            else if (pageType == typeof(QAInbox_e))
+            else if (reflectedPageType.Equals( typeof(QAInbox)))
             {
-                mainNavEnum = MainNav_e.QA_Inbox;
+                mainNavEnum = MainNav.Menu.QA_Inbox;
             }
-            else if (pageType == typeof(DOTInbox_e))
+            else if (reflectedPageType.Equals( typeof(DOTInbox)))
             {
-                mainNavEnum = MainNav_e.DOT_Inbox;
+                mainNavEnum = MainNav.Menu.DOT_Inbox;
             }
-            else if (pageType == typeof(OwnerInbox_e))
+            else if (reflectedPageType.Equals( typeof(OwnerInbox)))
             {
-                mainNavEnum = MainNav_e.Owner_Inbox;
+                mainNavEnum = MainNav.Menu.Owner_Inbox;
             }
-            else if (pageType == typeof(DevInbox_e))
+            else if (reflectedPageType.Equals( typeof(DevInbox)))
             {
-                mainNavEnum = MainNav_e.Dev_Inbox;
+                mainNavEnum = MainNav.Menu.Dev_Inbox;
             }
-            else if (pageType == typeof(RFI_e))
+            else if (reflectedPageType.Equals( typeof(RFI)))
             {
-                mainNavEnum = MainNav_e.RFI;
+                mainNavEnum = MainNav.Menu.RFI;
             }
-            else if (pageType == typeof(ELVIS_e))
+            else if (reflectedPageType.Equals( typeof(ELVIS)))
             {
-                mainNavEnum = MainNav_e.ELVIS;
+                mainNavEnum = MainNav.Menu.ELVIS;
             }
 
 
-            Hover(GetNavMenuByLocator(mainNavEnum));
-
-            if (adminByEnum != null)
+            if (projectSubMenu)
             {
-                Hover(GetNavMenuByLocator(adminByEnum));
-
-                if (subAdminEnum != null)
+                Hover(GetNavMenuByLocator(mainNavEnum));
+                //SetProjectNavMenuDisplayAttribute(mainNavEnum);
+                //Thread.Sleep(2000);
+                if (adminByEnum != null)
                 {
-                    Hover(GetNavMenuByLocator(subAdminEnum));
-
-                    if (subAdminSysConfigEnum != null)
+                    Hover(GetNavMenuByLocator(adminByEnum));
+                    //ClickElement(GetNavMenuByLocator(adminByEnum));
+                    //SetProjectNavMenuDisplayAttribute(adminByEnum);
+                    //Thread.Sleep(2000);
+                    if (subAdminEnum != null)
                     {
-                        Hover(GetNavMenuByLocator(subAdminSysConfigEnum));
+                        Hover(GetNavMenuByLocator(subAdminEnum));
+                        //ClickElement(GetNavMenuByLocator(subAdminEnum));
+                        //SetProjectNavMenuDisplayAttribute(subAdminEnum);
+                        //Thread.Sleep(2000);
+                        if (subAdminSysConfigEnum != null)
+                        {
+                            Hover(GetNavMenuByLocator(subAdminSysConfigEnum));
+                            //ClickElement(GetNavMenuByLocator(subAdminSysConfigEnum));
+                            //SetProjectNavMenuDisplayAttribute(subAdminSysConfigEnum);
+                            //Thread.Sleep(2000);
+                        }
                     }
                 }
+            }
+            else
+            {
+                Hover(GetNavMenuByLocator(mainNavEnum));
             }
 
             ClickElement(SetNavClickLocator(navEnum));
-            Thread.Sleep(2000);
         }
     }
 }

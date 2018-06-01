@@ -121,7 +121,7 @@ namespace RKCIUIAutomation.Test
             Console.WriteLine($"{GetCodeBasePath()}\\UploadFiles\\test.xlsx");
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void MSUnitTest2()
         {
             List<string> components = GetComponentsForProject(ProjectName.Garnet);
@@ -136,6 +136,32 @@ namespace RKCIUIAutomation.Test
 
             Assert.IsTrue(componentCount.Equals(4));
             Assert.IsFalse(components.Contains(Component.DIR));
+        }
+
+        [TestMethod]
+        public void MSUnitTest3()
+        {
+            var project = Project.Administration.UserManagement.Menu.Roles;
+            Type projectType = project.GetType();
+            var reflectedType = projectType.ReflectedType;
+            var reflectedTypeName = reflectedType.Name;
+
+            Console.WriteLine($"ProjectType: {projectType.ToString()}");
+            Console.WriteLine($"ReflectedType: {reflectedType}");
+            Console.WriteLine($"ReflectedType Name: {reflectedTypeName}");
+            Console.WriteLine(typeof(Project).ToString());
+
+            //Assert.IsTrue(reflectedType.IsSubclassOf(typeof(Project)));
+            Assert.IsTrue(reflectedType.Equals(typeof(Project.Administration.UserManagement)));
+            //try
+            //{
+                
+            //    //Assert.IsTrue(reflectedTypeName == typeof(Project).ToString());
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e.Message);
+            //}
         }
     }
 }

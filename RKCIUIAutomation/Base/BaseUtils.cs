@@ -52,6 +52,7 @@ namespace RKCIUIAutomation.Base
         {
             ExtentTestManager.GetTest().Log(Status.Skip, CreateReportMarkupLabel(msg, ExtentColor.Orange));
             Console.Out.WriteLine(msg);
+            Assert.Warn(msg);
         }
         public static void LogInfo(string details)
         {

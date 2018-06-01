@@ -10,6 +10,7 @@ using System.Threading;
 using static RKCIUIAutomation.Base.WebDriverFactory;
 using static RKCIUIAutomation.Base.BaseClass;
 using static RKCIUIAutomation.Base.BaseUtils;
+using static RKCIUIAutomation.Page.Navigation.NavEnums;
 
 namespace RKCIUIAutomation.Page
 {
@@ -91,8 +92,48 @@ namespace RKCIUIAutomation.Page
             ClickElement(elemByToClick);
         }
 
+        public static void SetProjectNavMenuDisplayAttribute<T>(T projectNavMenu)
+        {
+            int menuIndex = 0;
+
+            int indexProject = 0;
+            int indexAdmin = 1;
+            int indexUserMgmt = 2;
+            int indexSysConfig = 3;
+            
+            if (projectNavMenu.Equals(MainNav.Menu.Project))
+            {
+                menuIndex = indexProject;
+            }
+            else if (projectNavMenu.Equals(Project.Menu.Administration))
+            {
+                menuIndex = indexAdmin;
+            }
+            else if (projectNavMenu.Equals(Project.Administration.Menu.User_Management))
+            {
+                menuIndex = indexUserMgmt;
+            }
+            else if (projectNavMenu.Equals(Project.Administration.Menu.System_Configuration))
+            {
+                menuIndex = indexSysConfig;
+            }
+
+
+            try
+            {
+                string javaScript = "document.getElementsByClassName('dropdown-menu')['"+ menuIndex +"'].style.display = 'block'";
+                IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+                executor.ExecuteScript(javaScript);
+            }
+            catch (Exception e)
+            {
+                LogInfo($"Exception occured at SetNavMenuDisplayAttribute method", e);
+            }
+        }
+
         public static void Hover(By elementByLocator)
         {
+            IWebElement element = GetElement(elementByLocator);
             try
             {
                 string javaScript = "var evObj = document.createEvent('MouseEvents');" +
@@ -100,13 +141,18 @@ namespace RKCIUIAutomation.Page
                     "arguments[0].dispatchEvent(evObj);";
 
                 IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
-                executor.ExecuteScript(javaScript, GetElement(elementByLocator));
+                executor.ExecuteScript(javaScript, element);
                 LogInfo($"Hover mouse over element - {elementByLocator}");
-                Thread.Sleep(2000);
             }
             catch (Exception e)
             {
                 LogInfo($"Unsuccessful attempt to hover mouse over element {elementByLocator}", e);
+            }
+            finally
+            {
+                if (element != null)
+                    element = null;
+                Thread.Sleep(2000);
             }
         }
 

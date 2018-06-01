@@ -18,7 +18,7 @@ namespace RKCIUIAutomation.Base
         public static TestEnv testEnv;
         public static ProjectName projectName;
 
-        private Cookie cookie;
+        private Cookie cookie = null;
         private static string tenantName;
         private TestStatus testStatus;
 
@@ -75,33 +75,35 @@ namespace RKCIUIAutomation.Base
                     .AssignCategory(testPriority)
                     .AssignCategory(testComponent)
                     .AssignCategory(testSuite);
+
+                if (GetComponentsForProject(projectName).Contains(testComponent))
+                {
+                    switch (testPlatform)
+                    {
+                        case TestPlatform.Local:
+                            Driver = GetLocalWebDriver(browserType);
+                            break;
+                        //TODO - case for appium (mobile) ?
+                        default:
+                            Driver = GetRemoteWebDriver(testPlatform, browserType);
+                            break;
+                    }
+
+                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
+                    Driver.Manage().Window.Maximize();
+                    Driver.Navigate().GoToUrl(GetSiteUrl(testEnv, projectName));
+                }
+                else
+                {
+                    testStatus = TestStatus.Skipped;
+                    string msg = $"TEST SKIPPED : Project ({projectName}) does not have implementation of the component ({testComponent}).";
+                    LogSkipped(msg);
+                }
             }
             catch (Exception e)
             {
-                LogInfo("Exception occured during ExtentTestManager CreateTest method", e);
+                LogInfo("Exception occured during BeforeTest method", e);
             }
-
-            if (!GetComponentsForProject(projectName).Contains(testComponent))
-            {
-                testStatus = TestStatus.Skipped;
-                string msg = $"TEST SKIPPED : Project ({projectName}) does not have implementation of the component ({testComponent}).";
-                LogSkipped(msg);
-                Assert.Warn(msg);
-            }
-
-            switch (testPlatform)
-            {
-                case TestPlatform.Local:
-                    Driver = GetLocalWebDriver(browserType);
-                    break;
-                default:
-                    Driver = GetRemoteWebDriver(testPlatform, browserType);
-                    break;
-            }
-                        
-            Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
-            Driver.Manage().Window.Maximize();
-            Driver.Navigate().GoToUrl(GetSiteUrl(testEnv, projectName));
         }
 
         [TearDown]
@@ -111,35 +113,55 @@ namespace RKCIUIAutomation.Base
             string screenshotPath = null;
             var stacktrace = string.Empty;
 
-            testStatus = TestContext.CurrentContext.Result.Outcome.Status;
-            stacktrace = string.IsNullOrEmpty(TestContext.CurrentContext.Result.StackTrace)
-                ? ""
-                : string.Format("<pre>{0}</pre>", TestContext.CurrentContext.Result.StackTrace);
-
-            switch (testStatus)
+            try
             {
-                case TestStatus.Failed:
-                    screenshotPath = CaptureScreenshot(TestContext.CurrentContext.Test.Name);
-                    logstatus = Status.Fail;
-                    cookie = new Cookie("zaleniumTestPassed", "false");
-                    Driver.Manage().Cookies.AddCookie(cookie);
-                    break;
-                case TestStatus.Passed:
-                    logstatus = Status.Pass;
-                    cookie = new Cookie("zaleniumTestPassed", "true");
-                    Driver.Manage().Cookies.AddCookie(cookie);
-                    break;
-                case TestStatus.Skipped:
-                    logstatus = Status.Skip;
-                    break;
-                default:
-                    logstatus = Status.Warning;
-                    break;
+                testStatus = TestContext.CurrentContext.Result.Outcome.Status;
+
+                if (testStatus != TestStatus.Passed || testStatus != TestStatus.Skipped)
+                {    
+                    stacktrace = string.IsNullOrEmpty(TestContext.CurrentContext.Result.StackTrace)
+                        ? ""
+                        : string.Format("<pre>{0}</pre>", TestContext.CurrentContext.Result.StackTrace); 
+                }
             }
+            catch (Exception e)
+            {
+                LogInfo($"Exception occured during AfterTest method", e);
+            }
+            finally
+            {
+                switch (testStatus)
+                {
+                    case TestStatus.Failed:
+                        screenshotPath = CaptureScreenshot(TestContext.CurrentContext.Test.Name);
+                        logstatus = Status.Fail;
+                        cookie = new Cookie("zaleniumTestPassed", "false");
+                        break;
+                    case TestStatus.Passed:
+                        logstatus = Status.Pass;
+                        cookie = new Cookie("zaleniumTestPassed", "true");
+                        break;
+                    case TestStatus.Skipped:
+                        logstatus = Status.Skip;
+                        break;
+                    default:
+                        logstatus = Status.Warning;
+                        break;
+                }
 
-            ExtentTestManager.GetTest().Log(logstatus, $"Test ended with {logstatus} {stacktrace}").AddScreenCaptureFromPath(screenshotPath);
-            Driver.Close();
+                try
+                {
+                    if (cookie != null)
+                    {
+                        Driver.Manage().Cookies.AddCookie(cookie); 
+                    }
+                }
+                finally
+                {
+                    ExtentTestManager.GetTest().Log(logstatus, $"Test ended with {logstatus} {stacktrace}").AddScreenCaptureFromPath(screenshotPath);
+                    Driver.Close();
+                }
+            }
         }
-
     }
 }

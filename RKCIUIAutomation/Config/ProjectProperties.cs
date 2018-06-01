@@ -6,35 +6,6 @@ namespace RKCIUIAutomation.Config
 {
     public static class ProjectProperties
     {
-        //public enum Components
-        //{
-        //    Breaksheet,
-        //    CDR,
-        //    Control_Point, //??
-        //    Correspondence_Log,
-        //    CVL_List_Item,
-        //    Design_Comment_Review,
-        //    DIR,
-        //    Document_Repository, //??
-        //    Environmental, //??
-        //    Equipment,
-        //    Girder_Tracker,
-        //    Material_Mix_Codes,
-        //    MPL_Tracker,
-        //    NCR,
-        //    Notifications,
-        //    Other, //??
-        //    Project_Configuration, //??
-        //    QMS,
-        //    Quantity_Tracker,
-        //    Random_Number, //??
-        //    RFC,
-        //    RFI,
-        //    Search,
-        //    Testing_Module,
-        //    User_Mgmt
-        //}
-
         public class Component
         {
             public const string Breaksheet = "Breaksheet";
@@ -62,6 +33,8 @@ namespace RKCIUIAutomation.Config
             public const string Search = "Search";
             public const string Testing_Module = "Testing_Module";
             public const string User_Mgmt = "User_Mgmt";
+            public const string Submittals = "Submittals";
+            public const string Guide_Schedule = "Guide_Schedule";
         }
 
         private static List<string> additionalComponents;
@@ -112,7 +85,8 @@ namespace RKCIUIAutomation.Config
 
         private static readonly List<string> Components_Garnet = new List<string>
         {
-            Component.Other
+            Component.Other,
+            Component.Submittals
         };
 
         private static readonly List<string> Components_GreenLineExt = new List<string>

@@ -35,15 +35,15 @@ namespace RKCIUIAutomation.Test
             LoginPg.LoginUser(UserType.ProjAdmin);
         }
 
-        //[Test]
-        //[Category("")]
+        [Test]
+        [Category(Component.Submittals)]
         [Property("TC#", "ELVS3456")]
         [Property("Priority", "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
         public void GenericTest()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            Navigate.Menu(NavEnums.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");            
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Action, 1);
@@ -70,7 +70,7 @@ namespace RKCIUIAutomation.Test
         public void VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            Navigate.Menu(NavEnums.RMCenter.Menu.Upload_QA_Submittal);
             ClickSave();
             Assert.Multiple(testDelegate: () =>
                {
@@ -92,7 +92,7 @@ namespace RKCIUIAutomation.Test
         public void VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            Navigate.Menu(NavEnums.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
             ClickSave();
@@ -103,14 +103,14 @@ namespace RKCIUIAutomation.Test
 
 
         //[Test]
-        //[Category("")]
+        [Category(Component.Submittals)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL")]
         public void VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL()
         {
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavEnums.RMCenter_e.Upload_QA_Submittal);
+            Navigate.Menu(NavEnums.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Action, 1);
@@ -121,17 +121,19 @@ namespace RKCIUIAutomation.Test
         }
 
 
-        [Test]
+        //[Test]
         [Category(Component.Control_Point)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
         public void VerifyComponentTestIsSkipped()
         {
-            LogInfo($"Breaksheet component test - This test should be skipped");
+            LogInfo($"Control Point component test - This test should be skipped");
+            LoginPg.LoginUser(UserType.ProjAdmin);
+            Navigate.Menu(NavEnums.RMCenter.Menu.Upload_QA_Submittal);
         }
 
-        [Test]
+        //[Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -139,6 +141,8 @@ namespace RKCIUIAutomation.Test
         public void VerifyComponentTestRuns()
         {
             LogInfo($"Other component test - This test should run");
+            LoginPg.LoginUser(UserType.ProjAdmin);
+            Navigate.Menu(NavEnums.Project.Administration.UserManagement.Menu.Roles);
         }
     }
 }
