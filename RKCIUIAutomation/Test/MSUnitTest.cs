@@ -138,7 +138,7 @@ namespace RKCIUIAutomation.Test
             Assert.IsFalse(components.Contains(Component.DIR));
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void MSUnitTest3()
         {
             var project = Project.Administration.UserManagement.Menu.Roles;
@@ -162,6 +162,12 @@ namespace RKCIUIAutomation.Test
             //{
             //    Console.WriteLine(e.Message);
             //}
+        }
+
+        [TestMethod]
+        public void MSUnitTest4()
+        {
+
         }
     }
 }

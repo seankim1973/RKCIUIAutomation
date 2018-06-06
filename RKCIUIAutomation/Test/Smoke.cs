@@ -6,6 +6,9 @@ using RKCIUIAutomation.Page.PageObjects.RMCenter;
 
 using static RKCIUIAutomation.Page.Action;
 using static RKCIUIAutomation.Config.ProjectProperties;
+using System.Collections.Generic;
+using OpenQA.Selenium;
+using System;
 
 namespace RKCIUIAutomation.Test
 {
@@ -118,7 +121,7 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
-        [Test]
+        //[Test]
         [Category(Component.Control_Point)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -126,12 +129,12 @@ namespace RKCIUIAutomation.Test
         public void VerifyComponentTestIsSkipped()
         {
             LogInfo($"Control Point component test - This test should be skipped");
-            LoginPg.LoginUser(UserType.ProjAdmin);
+            LoginPg.LoginUser(UserType.Bhoomi);
             Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             Thread.Sleep(5000);
         }
 
-        [Test]
+        //[Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -144,5 +147,31 @@ namespace RKCIUIAutomation.Test
             Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Gradations);
             Thread.Sleep(5000);
         }
+
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void GetSiteNavigation()
+        {
+            LogInfo($"Other component test - This test should run");
+            LoginPg.LoginUser(UserType.Bhoomi);
+
+            //var env = TestEnv.Stage;
+            //List<ProjectName> projects = new List<ProjectName>
+            //{
+            //    ProjectName.Garnet,
+            //    ProjectName.Green_Line_Extension,
+            //    ProjectName.I15_Southbound,
+            //    ProjectName.I15_Tech_Corridor,
+            //    ProjectName.SH249_Extension,
+            //    ProjectName.Southern_Gateway
+            //};
+
+            TestUtils.LoopThroughNavMenu(projectName.ToString());
+        }
+
+
     }
 }

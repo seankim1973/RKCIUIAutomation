@@ -65,59 +65,63 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     mainNavEnum = MainNav.Menu.QA_Lab;
                 }
-                else if (reflectedPageType.Equals( typeof(QARecordControl)))
+                else if (reflectedPageType.Equals(typeof(QARecordControl)))
                 {
                     mainNavEnum = MainNav.Menu.QA_Record_Control;
                 }
-                else if (reflectedPageType.Equals( typeof(QAEngineer)))
+                else if (reflectedPageType.Equals(typeof(QAEngineer)))
                 {
                     mainNavEnum = MainNav.Menu.QA_Engineer;
                 }
-                else if (reflectedPageType.Equals( typeof(ReportsNotices)))
+                else if (reflectedPageType.Equals(typeof(ReportsNotices)))
                 {
                     mainNavEnum = MainNav.Menu.Reports_Notices;
                 }
-                else if (reflectedPageType.Equals( typeof(QASearch)))
+                else if (reflectedPageType.Equals(typeof(QASearch)))
                 {
                     mainNavEnum = MainNav.Menu.QA_Search;
                 }
-                else if (reflectedPageType.Equals( typeof(QAField)))
+                else if (reflectedPageType.Equals(typeof(QAField)))
                 {
                     mainNavEnum = MainNav.Menu.QA_Field;
                 }
-                else if (reflectedPageType.Equals( typeof(Owner)))
+                else if (reflectedPageType.Equals(typeof(Owner)))
                 {
                     mainNavEnum = MainNav.Menu.Owner;
                 }
-                else if (reflectedPageType.Equals( typeof(MaterialMixCodes)))
+                else if (reflectedPageType.Equals(typeof(MaterialMixCodes)))
                 {
                     mainNavEnum = MainNav.Menu.Material_Mix_Codes;
                 }
-                else if (reflectedPageType.Equals( typeof(RMCenter)))
+                else if (reflectedPageType.Equals(typeof(ControlPoint)))
+                {
+                    mainNavEnum = MainNav.Menu.Control_Point;
+                }
+                else if (reflectedPageType.Equals(typeof(RMCenter)))
                 {
                     mainNavEnum = MainNav.Menu.RM_Center;
                 }
-                else if (reflectedPageType.Equals( typeof(QAInbox)))
+                else if (reflectedPageType.Equals(typeof(QAInbox)))
                 {
                     mainNavEnum = MainNav.Menu.QA_Inbox;
                 }
-                else if (reflectedPageType.Equals( typeof(DOTInbox)))
+                else if (reflectedPageType.Equals(typeof(DOTInbox)))
                 {
                     mainNavEnum = MainNav.Menu.DOT_Inbox;
                 }
-                else if (reflectedPageType.Equals( typeof(OwnerInbox)))
+                else if (reflectedPageType.Equals(typeof(OwnerInbox)))
                 {
                     mainNavEnum = MainNav.Menu.Owner_Inbox;
                 }
-                else if (reflectedPageType.Equals( typeof(DevInbox)))
+                else if (reflectedPageType.Equals(typeof(DevInbox)))
                 {
                     mainNavEnum = MainNav.Menu.Dev_Inbox;
                 }
-                else if (reflectedPageType.Equals( typeof(RFI)))
+                else if (reflectedPageType.Equals(typeof(RFI)))
                 {
                     mainNavEnum = MainNav.Menu.RFI;
                 }
-                else if (reflectedPageType.Equals( typeof(ELVIS)))
+                else if (reflectedPageType.Equals(typeof(ELVIS)))
                 {
                     mainNavEnum = MainNav.Menu.ELVIS;
                 }
@@ -187,6 +191,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QA Field")] QA_Field,
                 [StringValue("Owner")] Owner,
                 [StringValue("Material/Mix Codes")] Material_Mix_Codes,
+                [StringValue("Control Point")] Control_Point,
                 [StringValue("RM Center")] RM_Center,
                 [StringValue("QA Inbox")] QA_Inbox,
                 [StringValue("DOT Inbox")] DOT_Inbox,
@@ -393,6 +398,16 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Material Code - Base Aggregate")] Material_Code_Base_Aggregate,
                 [StringValue("Material Code - HMA Aggregate")] Material_Code_HMA_Aggregate,
                 [StringValue("Material Code - Raw Material")] Material_Code_Raw_Material
+            }
+        }
+
+        //Control Point Menu Navigation Enums
+        public class ControlPoint
+        {
+            public enum Menu
+            {
+                [StringValue("Control Point Scheduler")] Control_Point_Scheduler,
+                [StringValue("Control Point Log")] Control_Point_Log
             }
         }
 

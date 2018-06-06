@@ -11,11 +11,11 @@
     public enum ProjectName
     {
         Garnet,
-        Green_Line_Extension,
-        I15_Southbound,
-        I15_Tech_Corridor,
-        SH249_Extension,
-        Southern_Gateway,
+        GLX,
+        I15South,
+        I15Tech,
+        SH249,
+        SGWay,
     }
 
     public enum TestPlatform
@@ -40,6 +40,7 @@
     {
         ProjAdmin,
         SysAdmin,
-        ProjUser
+        ProjUser,
+        Bhoomi
     }
 }
