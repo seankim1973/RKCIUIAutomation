@@ -64,19 +64,19 @@ namespace RKCIUIAutomation.Config
                 case ProjectName.Garnet:
                     additionalComponents = Components_Garnet;
                     break;
-                case ProjectName.Green_Line_Extension:
+                case ProjectName.GLX:
                     additionalComponents = Components_GreenLineExt;
                     break;
-                case ProjectName.I15_Southbound:
+                case ProjectName.I15South:
                     additionalComponents = Components_I15Southbound;
                     break;
-                case ProjectName.I15_Tech_Corridor:
+                case ProjectName.I15Tech:
                     additionalComponents = Components_I15TechCorridor;
                     break;
-                case ProjectName.SH249_Extension:
+                case ProjectName.SH249:
                     additionalComponents = Components_SH249Ext;
                     break;
-                case ProjectName.Southern_Gateway:
+                case ProjectName.SGWay:
                     additionalComponents = Components_SouthernGateway;
                     break;
             }
@@ -85,7 +85,6 @@ namespace RKCIUIAutomation.Config
 
         private static readonly List<string> Components_Garnet = new List<string>
         {
-            Component.Other,
             Component.Submittals
         };
 
@@ -113,7 +112,9 @@ namespace RKCIUIAutomation.Config
         {
             Component.Breaksheet,
             Component.CDR,
-            Component.CVL_List_Item
+            Component.CVL_List_Item,
+            Component.Other,
+
         };
     }
 }

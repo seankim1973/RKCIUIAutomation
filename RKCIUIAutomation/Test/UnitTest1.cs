@@ -1,5 +1,11 @@
 ﻿using NUnit.Framework;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Base;
+using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Test;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 
 namespace RKCIUIAutomation
@@ -17,11 +23,12 @@ namespace RKCIUIAutomation
             Assert.True(true);
         }
 
+
+
         //[Test(Description = "test description - inline")]
         public void Testmethod2()
         {
-            Thread.Sleep(5000);
-            Assert.True(1==1);
+
         }
 
         //[Test, Description("test description - comma seperated")]
