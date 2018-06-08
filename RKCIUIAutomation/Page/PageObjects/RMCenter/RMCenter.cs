@@ -9,5 +9,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         { }
         public RMCenter(IWebDriver driver) => Driver = driver;
 
+
     }
 }

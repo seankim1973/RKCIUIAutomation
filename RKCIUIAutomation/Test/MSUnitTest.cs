@@ -167,7 +167,19 @@ namespace RKCIUIAutomation.Test
         [TestMethod]
         public void MSUnitTest4()
         {
+            var stringOne = "one";
+            var numberOne = 1;
+            Type stringOneType = null;
+            stringOneType = stringOne.GetType();
+            Type numberOneType = null;
+            numberOneType = numberOne.GetType();
+
+            Console.WriteLine(stringOne.GetType().ToString());
+            Assert.IsTrue(stringOneType.Equals(typeof(string)));
+            Console.WriteLine(numberOne.GetType().ToString());
+            Assert.IsTrue(numberOneType.Equals(typeof(int)));
 
         }
     }
+
 }

@@ -59,14 +59,12 @@ namespace RKCIUIAutomation.Base
             ExtentTestManager.GetTest().Info(details);
             Console.Out.WriteLine(details);
         }
-
         public static void LogInfo(string details, Exception e)
         {
             ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupLabel(details, ExtentColor.Red));
             ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupCodeBlock(e));
             Console.Out.WriteLine(e.Message);
         }
-
         public static void LogInfo(string details, bool assertion, Exception e = null)
         {
             if (assertion)
@@ -85,7 +83,6 @@ namespace RKCIUIAutomation.Base
         {
             return MarkupHelper.CreateLabel($"Info : {details}", extentColor);
         }
-
         private static IMarkup CreateReportMarkupCodeBlock(Exception e)
         {
             return MarkupHelper.CreateCodeBlock($"Exception : \n{e.Message}");
