@@ -9,6 +9,8 @@ using static RKCIUIAutomation.Config.ProjectProperties;
 using System.Collections.Generic;
 using OpenQA.Selenium;
 using System;
+using RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
+using RKCIUIAutomation.Page;
 
 namespace RKCIUIAutomation.Test
 {
@@ -153,25 +155,16 @@ namespace RKCIUIAutomation.Test
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
-        public void GetSiteNavigation()
+        public void LatestTest()
         {
             LogInfo($"Other component test - This test should run");
-            LoginPg.LoginUser(UserType.Bhoomi);
+            LoginPg.LoginUser(UserType.ProjAdmin);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Search);
 
-            //var env = TestEnv.Stage;
-            //List<ProjectName> projects = new List<ProjectName>
-            //{
-            //    ProjectName.Garnet,
-            //    ProjectName.Green_Line_Extension,
-            //    ProjectName.I15_Southbound,
-            //    ProjectName.I15_Tech_Corridor,
-            //    ProjectName.SH249_Extension,
-            //    ProjectName.Southern_Gateway
-            //};
-
-            TestUtils.LoopThroughNavMenu(projectName.ToString());
+            ISearch search = (ISearch)Search_Impl.SetPageClassBasedOnTenant(Driver); 
+            search.PopulateAllSearchCriteriaFields();
+            Thread.Sleep(5000);
         }
-
 
     }
 }

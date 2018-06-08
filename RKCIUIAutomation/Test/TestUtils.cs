@@ -2,11 +2,7 @@
 using RKCIUIAutomation.Base;
 using System;
 using System.Collections.Generic;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 using System.IO;
-using RKCIUIAutomation.Config;
 
 namespace RKCIUIAutomation.Test
 {
@@ -22,8 +18,6 @@ namespace RKCIUIAutomation.Test
             IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
             return $"{anchorElem.GetAttribute("href")}";
         }
-
-
         private static void WriteToFile(string fileName, string text)
         {
             string path = $"c:\\Temp\\{fileName}.txt";
@@ -44,9 +38,9 @@ namespace RKCIUIAutomation.Test
             }
         }
 
-
-        public static void LoopThroughNavMenu(string fileName)
+        public static void LoopThroughNavMenu()
         {
+            string fileName = BaseClass.projectName.ToString();
             IList<IWebElement> elements = new List<IWebElement>();
             elements = WebDriverFactory.Driver.FindElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
 
@@ -123,37 +117,7 @@ namespace RKCIUIAutomation.Test
                 }
             }
         }
-    }
 
-
-    public class DocxUtil
-    {
-        public static void CreateDoc()
-        {
-            var stream = new MemoryStream();
-            using (WordprocessingDocument doc = WordprocessingDocument.Create(stream, WordprocessingDocumentType.Document, true))
-            {
-                MainDocumentPart mainPart = doc.AddMainDocumentPart();
-
-                new Document(new Body()).Save(mainPart);
-
-                Body body = mainPart.Document.Body;
-                body.Append(new Paragraph(
-                            new Run(
-                                new Text("Hello World!"))));
-
-                mainPart.Document.Save();
-
-                //if you don't use the using you should close the WordprocessingDocument here
-                doc.Close();
-            }
-
-            stream.Seek(0, SeekOrigin.Begin);
-            //return File(stream, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "test.docx");
-
-        }
 
     }
-
-
 }

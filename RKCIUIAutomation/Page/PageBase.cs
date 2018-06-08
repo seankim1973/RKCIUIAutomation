@@ -1,12 +1,14 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Base;
+using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects;
-
+using RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
+using System;
 using static RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Page
 {
-    public class PageBase : BaseClass
+    public abstract class PageBase : BaseClass
     {
         private readonly By link_Login = By.XPath("//a[text()=' Login']");
         private readonly By link_Logout = By.XPath("//a[text()=' Log out']");
@@ -24,7 +26,7 @@ namespace RKCIUIAutomation.Page
         }
 
 
-
+        
     }
 
 }

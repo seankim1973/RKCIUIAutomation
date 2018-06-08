@@ -129,7 +129,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
             try
             {
-                Hover(GetNavMenuByLocator(mainNavEnum));
+                Hover(GetMainNavMenuByLocator(mainNavEnum));
 
                 if (adminEnum != null)
                 {
@@ -175,6 +175,8 @@ namespace RKCIUIAutomation.Page.Navigation
                 Thread.Sleep(1000);
             }
         }
+
+
 
 
         //Main Navigation Enums

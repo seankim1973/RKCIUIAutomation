@@ -26,6 +26,8 @@ namespace RKCIUIAutomation.Page
                 };
                 wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
+                wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
                 IWebElement webElem = wait.Until(x => x.FindElement(elementByLocator));
                 return true;
             }
@@ -143,12 +145,11 @@ namespace RKCIUIAutomation.Page
         public static string GetTextFromDDL(Enum ddListID) => $"{GetText(PageHelper.GetDDListByLocator(ddListID))}//span[@class='k-input']";
         public static void ExpandDDL(Enum ddListID)
         {
-            By locator = null;
+            By locator = PageHelper.GetExpandDDListButtonByLocator(ddListID);
             try
             {
-                locator = PageHelper.GetExpandDDListButtonByLocator(ddListID);
                 ClickElement(locator);
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
                 LogInfo($"Expanded DDList - {ddListID}");
             }
             catch (Exception e)
@@ -157,10 +158,10 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public static void ExpandAndSelectFromDDList(Enum ddListID, int selectItemIndex)
+        public static void ExpandAndSelectFromDDList<T>(Enum ddListID, T itemIndexOrName)
         {
             ExpandDDL(ddListID);
-            ClickElement(PageHelper.GetDDListItemsByLocator(ddListID, selectItemIndex));
+            ClickElement(PageHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName));
         }
 
         private static void UploadUsingAutoItX(string filePath)
