@@ -164,7 +164,7 @@ namespace RKCIUIAutomation.Test
             //}
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void MSUnitTest4()
         {
             var stringOne = "one";
@@ -179,6 +179,15 @@ namespace RKCIUIAutomation.Test
             Console.WriteLine(numberOne.GetType().ToString());
             Assert.IsTrue(numberOneType.Equals(typeof(int)));
 
+        }
+
+        [TestMethod]
+        public void MSUnitTest5()
+        {
+            var lockedRecords = Project.Administration.AdminTools.Menu.Locked_Records;
+            var reflectedPageType = lockedRecords.GetType().ReflectedType;
+
+            Assert.IsTrue(reflectedPageType.IsSubclassOf(typeof(Project)));
         }
     }
 

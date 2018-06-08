@@ -177,12 +177,10 @@ namespace RKCIUIAutomation.Page.Navigation
         }
 
 
-
-
         //Main Navigation Enums
-        public class MainNav
+        private class MainNav
         {
-            public enum Menu
+            internal enum Menu
             {
                 [StringValue("Project")] Project,
                 [StringValue("QA Lab")] QA_Lab,
@@ -207,7 +205,7 @@ namespace RKCIUIAutomation.Page.Navigation
         //Project Menu Navigation Enums
         public class Project
         {
-            public enum SubMenu_Project
+            internal enum SubMenu_Project
             {
                 [StringValue("Administration")] Administration,
             }
@@ -220,7 +218,7 @@ namespace RKCIUIAutomation.Page.Navigation
             //Project >>Administration Menu Navigation Enums
             public class Administration : Project
             {
-                public enum SubMenu_Administration
+                internal enum SubMenu_Administration
                 {
                     [StringValue("User Management")] User_Management,
                     [StringValue("System Configuration")] System_Configuration,
@@ -248,7 +246,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 //Project >>Administration >>System Configuration Menu Navigation Enums
                 public class SystemConfiguration : Administration
                 {
-                    public enum SubMenu_SystemConfiguration
+                    internal enum SubMenu_SystemConfiguration
                     {
                         [StringValue("Equipment")] Equipment,
                         [StringValue("Grade Management")] Grade_Management
@@ -308,7 +306,10 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Technician Random")] Technician_Random,
                 [StringValue("BreakSheet Creation")] BreakSheet_Creation,
                 [StringValue("BreakSheet Legacy")] BreakSheet_Legacy,
-                [StringValue("Equipment Management")] Equipment_Management
+                [StringValue("Equipment Management")] Equipment_Management,
+                [StringValue("BreakSheet Forecast")] BreakSheet_Forecast,
+                [StringValue("Cylinder Pick-Up List")] Cylinder_PickUp_List,
+                [StringValue("Early Break Calendar")] Early_Break_Calendar
             }
         }
 

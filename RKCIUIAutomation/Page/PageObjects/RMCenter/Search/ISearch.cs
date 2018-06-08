@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenQA.Selenium;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter.Search
 {
     interface ISearch
     {
+        By GetPageTitleByLocator();
         void SelectDDL_DocumentType<T>(T itemIndexOrName);
         void SelectDDL_Status<T>(T itemIndexOrName);
         void SelectDDL_Category<T>(T itemIndexOrName);

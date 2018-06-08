@@ -155,16 +155,34 @@ namespace RKCIUIAutomation.Test
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
+        public void TestNewGWQALabMenu()
+        {
+            LogInfo($"Other component test - This test should run");
+            LoginPg.LoginUser(UserType.Bhoomi);
+            Navigate.Menu(NavMenu.QALab.Menu.BreakSheet_Forecast);
+            Navigate.Menu(NavMenu.QALab.Menu.Cylinder_PickUp_List);
+            Navigate.Menu(NavMenu.QALab.Menu.Early_Break_Calendar);
+
+            Thread.Sleep(5000);
+        }
+
+        //[Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
         public void LatestTest()
         {
             LogInfo($"Other component test - This test should run");
             LoginPg.LoginUser(UserType.ProjAdmin);
             Navigate.Menu(NavMenu.RMCenter.Menu.Search);
 
-            ISearch search = (ISearch)Search_Impl.SetPageClassBasedOnTenant(Driver); 
+            var search = Search.SetClass<ISearch>(); 
             search.PopulateAllSearchCriteriaFields();
             Thread.Sleep(5000);
         }
+
+
 
     }
 }
