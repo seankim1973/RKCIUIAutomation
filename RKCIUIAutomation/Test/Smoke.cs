@@ -183,7 +183,101 @@ namespace RKCIUIAutomation.Test
             Assert.True(VerifyPageTitle("RM Center Search"));
         }
 
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name- Link Covereage")]
+        public void VerifyLinkCoverage()
+        {
+           
+            LoginPg.LoginUser(UserType.Bhoomi);
 
+            //Project Menu
+            Navigate.Menu(NavMenu.Project.Menu.My_Details);
+            Navigate.Menu(NavMenu.Project.Administration.Menu.Companies);
+            Navigate.Menu(NavMenu.Project.Administration.Menu.Contracts);
+            Navigate.Menu(NavMenu.Project.Administration.Menu.Project_Details);
+            Navigate.Menu(NavMenu.Project.Administration.UserManagement.Menu.Access_Rights);
+
+            //QA Lab Menu
+            Navigate.Menu(NavMenu.QALab.Menu.BreakSheet_Creation);
+            Navigate.Menu(NavMenu.QALab.Menu.BreakSheet_Legacy);
+            Navigate.Menu(NavMenu.QALab.Menu.Equipment_Management);
+            Navigate.Menu(NavMenu.QALab.Menu.Technician_Random);
+
+            //QA Records Control Menu
+            Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Original_Report);
+            Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Correction_Report);
+            Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_All);
+            Navigate.Menu(NavMenu.QARecordControl.Menu.QA_DIRs);
+            Navigate.Menu(NavMenu.QARecordControl.Menu.General_NCR);
+            Navigate.Menu(NavMenu.QARecordControl.Menu.General_CDR);
+            Navigate.Menu(NavMenu.QARecordControl.Menu.Retaining_Wall_BackFill_Quantity_Tracker);
+            Navigate.Menu(NavMenu.QARecordControl.Menu.Concrete_Paving_Quantity_Tracker);
+            Navigate.Menu(NavMenu.QARecordControl.Menu.MPL_Tracker);
+            Navigate.Menu(NavMenu.QARecordControl.Menu.Girder_Tracker);
+            Navigate.Menu(NavMenu.Project.Menu.Qms_Document); //Create a method to go to QMS, for ex: GotoQMSDocs()
+
+            //QA Engineer Menu
+            Navigate.Menu(NavMenu.QAEngineer.Menu.QA_Test_Lab_Supervisor_Review);
+            Navigate.Menu(NavMenu.QAEngineer.Menu.QA_Test_Field_Supervisor_Review);
+            Navigate.Menu(NavMenu.QAEngineer.Menu.QA_Test_Authorization);
+            Navigate.Menu(NavMenu.QAEngineer.Menu.DIR_QA_Review_Approval);
+
+            //Reports & Notices Menu
+            Navigate.Menu(NavMenu.ReportsNotices.Menu.General_NCR);
+            Navigate.Menu(NavMenu.ReportsNotices.Menu.General_DN);
+
+            //QA Search
+            Navigate.Menu(NavMenu.QASearch.Menu.QA_Tests);
+            Navigate.Menu(NavMenu.QASearch.Menu.QA_Test_Summary_Search);
+            Navigate.Menu(NavMenu.QASearch.Menu.QA_Guide_Schedule_Summary_Report);
+            Navigate.Menu(NavMenu.QASearch.Menu.Inspection_Deficiency_Log_Report);
+            Navigate.Menu(NavMenu.QASearch.Menu.Daily_Inspection_Report);
+            Navigate.Menu(NavMenu.QASearch.Menu.DIR_Summary_Report);
+            // Navigate.Menu(NavMenu.QASearch.Menu);//Add DIR Checklist Search under this menu)
+            //Navigate.Menu(NavMenu.QASearch.Menu.Qm);--Add QMS Document Search under this menu)
+
+            //QA Field Menu
+            Navigate.Menu(NavMenu.QAField.Menu.QA_Test);
+            Navigate.Menu(NavMenu.QAField.Menu.QA_DIRs);
+            Navigate.Menu(NavMenu.QAField.Menu.QA_Technician_Random_Search);
+            //Add Weekly Environmental Inspection, Weekly Envorinmental Monitoring, Daily Environmental Inspection
+
+            //Control Point Menu
+            Navigate.Menu(NavMenu.ControlPoint.Menu.Control_Point_Log);
+            Navigate.Menu(NavMenu.ControlPoint.Menu.Control_Point_Scheduler);
+
+            //Owner Menu
+            Navigate.Menu(NavMenu.Owner.Menu.Owner_DIRs);
+            Navigate.Menu(NavMenu.Owner.Menu.Owner_NCRs);
+
+            //Material Mix Code Menu
+            Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Mix_Design_PCC);
+            Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Mix_Design_HMA);
+           // Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Mix); Add mix design JMF menu item.
+           // Navigate.Menu(NavMenu.MaterialMixCodes.Menu.m); -- Add Mix design IOC menu item
+            Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Material_Code_Base_Aggregate);
+            Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Material_Code_Concrete_Aggregate);
+            Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Material_Code_HMA_Aggregate);
+            Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Material_Code_Raw_Material);
+
+            //RM Center Menu
+            Navigate.Menu(NavMenu.RMCenter.Menu.Search);
+            //Navigate.Menu(NavMenu.RMCenter.Menu.);-- Add Design Document Menu Item
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_Owner_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Upload_DEV_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.DOT_Project_Correspondence_Log);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Review_Revise_Submittal);
+            Navigate.Menu(NavMenu.RMCenter.Menu.RFC_Management);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Project_Transmittal_Log);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Project_Correspondence_Log);
+            Navigate.Menu(NavMenu.RMCenter.Menu.Comment_Summary);
+
+            Thread.Sleep(5000);
+        }
 
     }
 }
