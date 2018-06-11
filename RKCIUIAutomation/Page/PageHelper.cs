@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using System;
 using System.Reflection;
+using static RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Page
 {
@@ -44,6 +45,11 @@ namespace RKCIUIAutomation.Page
         public static By GetTableNavByLocator(int pageNumber) => By.XPath(SetTableNavPageXpath(pageNumber));
         public static By GetTableTabByLocator(Enum tableTab) => By.XPath(SetTableTabXpath(tableTab));
         public static By GetTextInputFieldByLocator(Enum inputEnum) => By.XPath(SetTextInputFieldByLocator(inputEnum));
+        public static bool VerifyPageTitle(string expectedPageTitle)
+        {
+            string titleXPath = $"//div[@id='pageContent']/*[contains(text(),'{expectedPageTitle}')]";
+            return GetElement(By.XPath(titleXPath)).Displayed;
+        }
 
         public static string GetString(this Enum value)
         {

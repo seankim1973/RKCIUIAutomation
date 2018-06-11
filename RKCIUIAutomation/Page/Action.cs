@@ -38,7 +38,7 @@ namespace RKCIUIAutomation.Page
             return false;
         }
 
-        private static IWebElement GetElement(By elementByLocator)
+        internal static IWebElement GetElement(By elementByLocator)
         {
             IWebElement elem = null;
             if (WaitForElement(elementByLocator))
