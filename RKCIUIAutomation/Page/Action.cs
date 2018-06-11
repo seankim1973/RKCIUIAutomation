@@ -20,7 +20,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 LogInfo($"...waiting for element {elementByLocator}");
-                WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20))
+                WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(8))
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(500)
                 };
@@ -38,7 +38,7 @@ namespace RKCIUIAutomation.Page
             return false;
         }
 
-        internal static IWebElement GetElement(By elementByLocator)
+        private static IWebElement GetElement(By elementByLocator)
         {
             IWebElement elem = null;
             if (WaitForElement(elementByLocator))
@@ -234,6 +234,25 @@ namespace RKCIUIAutomation.Page
             LogInfo($"Success Message is{not} displayed for - {elementByLocator}", elementDisplayed);
 
             return elementDisplayed;
+        }
+
+        public static bool VerifyPageTitle(string expectedPageTitle)
+        {
+            string h2XPath = $"//h2[contains(text(),'{expectedPageTitle}')]";
+            string h3XPath = $"//h3[contains(text(),'{expectedPageTitle}')]";
+
+            IWebElement titleElement = GetElement(By.XPath(h2XPath));
+            if (titleElement == null || !titleElement.Displayed)
+            {
+                LogInfo($"Page Title element with H2 tag is not displayed");
+                titleElement = GetElement(By.XPath(h3XPath));
+                if (titleElement == null || !titleElement.Displayed)
+                {
+                    LogInfo($"Page Title element with H3 tag is not displayed");
+                }
+            }
+            LogInfo($"## Expect Page Title: {expectedPageTitle} <br> ## Actual Page Title: {titleElement.Text}");
+            return titleElement.Displayed;
         }
 
         private static readonly By Btn_Cancel = By.Id("CancelSubmittal");

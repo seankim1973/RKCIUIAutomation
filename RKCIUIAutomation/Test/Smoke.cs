@@ -136,7 +136,7 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
-        //[Test]
+        [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -145,12 +145,15 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Other component test - This test should run");
             LoginPg.LoginUser(UserType.ProjAdmin);
+            Navigate.Menu(NavMenu.Project.Menu.My_Details);
+            Assert.True(VerifyPageTitle("Account Details"));
             Navigate.Menu(NavMenu.Project.Administration.UserManagement.Menu.Roles);
+            Assert.True(VerifyPageTitle("Roles"));
             Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Gradations);
-            Thread.Sleep(5000);
+            Assert.True(VerifyPageTitle("Gradations"));
         }
 
-        [Test]
+        //[Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -162,8 +165,6 @@ namespace RKCIUIAutomation.Test
             Navigate.Menu(NavMenu.QALab.Menu.BreakSheet_Forecast);
             Navigate.Menu(NavMenu.QALab.Menu.Cylinder_PickUp_List);
             Navigate.Menu(NavMenu.QALab.Menu.Early_Break_Calendar);
-
-            Thread.Sleep(5000);
         }
 
         //[Test]
@@ -179,7 +180,7 @@ namespace RKCIUIAutomation.Test
 
             var search = Search.SetClass<ISearch>(); 
             search.PopulateAllSearchCriteriaFields();
-            Thread.Sleep(5000);
+            Assert.True(VerifyPageTitle("RM Center Search"));
         }
 
 
