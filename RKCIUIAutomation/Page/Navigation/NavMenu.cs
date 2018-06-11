@@ -172,7 +172,7 @@ namespace RKCIUIAutomation.Page.Navigation
             finally
             {
                 ClickElement(clickLocator);
-                Thread.Sleep(1000);
+                Thread.Sleep(2000);
             }
         }
 
@@ -213,6 +213,7 @@ namespace RKCIUIAutomation.Page.Navigation
             {
                 [StringValue("My Details")] My_Details,
                 [StringValue("Qms Document")] Qms_Document,
+                [StringValue("QMS Documents")] QMS_Documents
             }
 
             //Project >>Administration Menu Navigation Enums
@@ -230,6 +231,7 @@ namespace RKCIUIAutomation.Page.Navigation
                     [StringValue("Companies")] Companies,
                     [StringValue("Contracts")] Contracts,
                     [StringValue("Menu Editor")] Menu_Editor,
+                    [StringValue("Support")] Support
                 }
 
                 //Project >>Administration >>User Management Menu Navigation Enums
@@ -259,7 +261,7 @@ namespace RKCIUIAutomation.Page.Navigation
                         [StringValue("Submittal Requirements")] Submittal_Requirements,
                         [StringValue("Submittal Types")] Submittal_Types,
                         [StringValue("CVL Lists")] CVL_Lists,
-                        [StringValue("CVL Lists Items")] CVL_Lists_Items,
+                        [StringValue("CVL List Items")] CVL_List_Items,
                         [StringValue("Notifications")] Notifications,
                         [StringValue("Sieves")] Sieves,
                         [StringValue("Gradations")] Gradations,
@@ -327,7 +329,8 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Retaining Wall BackFill Quantity Tracker")] Retaining_Wall_BackFill_Quantity_Tracker,
                 [StringValue("Concrete Paving Quantity Tracker")] Concrete_Paving_Quantity_Tracker,
                 [StringValue("MPL Tracker")] MPL_Tracker,
-                [StringValue("Girder Tracker")] Girder_Tracker
+                [StringValue("Girder Tracker")] Girder_Tracker,
+                [StringValue("Qms Document")] Qms_Document
             }
         }
 
@@ -363,7 +366,10 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QA Guide Schedule Summary Report")] QA_Guide_Schedule_Summary_Report,
                 [StringValue("Inspection Deficiency Log Report")] Inspection_Deficiency_Log_Report,
                 [StringValue("Daily Inspection Report")] Daily_Inspection_Report,
-                [StringValue("DIR Summary Report")] DIR_Summary_Report
+                [StringValue("DIR Summary Report")] DIR_Summary_Report,
+                [StringValue("DIR Checklist Search")] DIR_Checklist_Search,
+                [StringValue("Ncr Log View")] Ncr_Log_View,
+                [StringValue("QMS Document Search")] QMS_Document_Search
             }
         }
 
@@ -374,7 +380,10 @@ namespace RKCIUIAutomation.Page.Navigation
             {
                 [StringValue("QA Test")] QA_Test,
                 [StringValue("QA DIRs")] QA_DIRs,
-                [StringValue("QA Technician Random Search")] QA_Technician_Random_Search
+                [StringValue("QA Technician Random Search")] QA_Technician_Random_Search,
+                [StringValue("Weekly Environmental Monitoring")] Weekly_Environmental_Monitoring,
+                [StringValue("Daily Environmental Inspection")] Daily_Environmental_Inspection,
+                [StringValue("Weekly Environmental Inspection")] Weekly_Environmental_Inspection
             }
         }
 
@@ -420,6 +429,7 @@ namespace RKCIUIAutomation.Page.Navigation
             public enum Menu
             {
                 [StringValue("Search")] Search,
+                [StringValue("Design Documents")] Design_Documents,
                 [StringValue("Upload QA Submittal")] Upload_QA_Submittal,
                 [StringValue("Upload Owner Submittal")] Upload_Owner_Submittal,
                 [StringValue("Upload DEV Submittal")] Upload_DEV_Submittal,

@@ -9,14 +9,7 @@ using System.Threading.Tasks;
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter.Search
 {
     public abstract class Search : PageBase, ISearch
-    {
-        private static ProjectName tenant;
-
-        //public Search() { }
-        //public Search(IWebDriver driver) => Driver = driver;
-        public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-
-        public abstract By GetPageTitleByLocator();
+    {        
         public abstract void EnterDate_From(string fromDate);
         public abstract void EnterDate_To(string toDate);
         public abstract void EnterText_Attention(string text);
@@ -32,24 +25,23 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter.Search
         public abstract void SelectDDL_SegmentArea<T>(T itemIndexOrName);
         public abstract void SelectDDL_Status<T>(T itemIndexOrName);
 
+        public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
         private static object SetPageClassBasedOnTenant()
-        {
-            tenant = projectName;
-            
+        {            
             var instance = new Search_Impl();
 
-            if (tenant == ProjectName.GLX)
+            if (projectName == ProjectName.GLX)
             {
-                Console.WriteLine("###### using Search_GLX instance");
+                LogInfo("###### using Search_GLX instance");
                 instance = new Search_GLX();
             }
-            else if (tenant == ProjectName.I15Tech)
+            else if (projectName == ProjectName.I15Tech)
             {
-                Console.WriteLine("###### using Search_I15Tech instance");
+                LogInfo("###### using Search_I15Tech instance");
                 instance = new Search_I15Tech();
             }
             else
-                Console.WriteLine("###### using Search_Impl (Common) instance");
+                LogInfo("###### using Search_Impl (Common) instance");
 
             return instance;
         }

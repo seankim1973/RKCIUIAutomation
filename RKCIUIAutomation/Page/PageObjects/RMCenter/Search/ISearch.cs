@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter.Search
 {
-    interface ISearch
+    public interface ISearch
     {
-        By GetPageTitleByLocator();
         void SelectDDL_DocumentType<T>(T itemIndexOrName);
         void SelectDDL_Status<T>(T itemIndexOrName);
         void SelectDDL_Category<T>(T itemIndexOrName);
