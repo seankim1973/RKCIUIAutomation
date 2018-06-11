@@ -15,10 +15,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter.Search
     /// </summary>
     public class Search_Impl : Search, ISearch
     {
-        //public Search_Impl() { }
-        //public Search_Impl(IWebDriver driver) => Driver = driver;
-
-        public override By GetPageTitleByLocator() => By.XPath("//h3");
         //Page workflow common to all tenants
         public override void SelectDDL_DocumentType<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.DocumentType, itemIndexOrName);
         public override void SelectDDL_Status<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.Status, itemIndexOrName);

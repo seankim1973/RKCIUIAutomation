@@ -3,6 +3,7 @@ using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using RKCIUIAutomation.Page.PageObjects.Project;
+using RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
 
 namespace RKCIUIAutomation.Test
 {
@@ -24,5 +25,8 @@ namespace RKCIUIAutomation.Test
 
         private RMCenter _rmCenter { get => new RMCenter(Driver); set { } }
         public RMCenter RMCenter => _rmCenter;
+
+        
+
     }
 }

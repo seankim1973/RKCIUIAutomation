@@ -3,14 +3,11 @@ using System.Threading;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
+using RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
 
 using static RKCIUIAutomation.Page.Action;
 using static RKCIUIAutomation.Config.ProjectProperties;
-using System.Collections.Generic;
-using OpenQA.Selenium;
-using System;
-using RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
-using RKCIUIAutomation.Page;
+
 
 namespace RKCIUIAutomation.Test
 {
@@ -136,7 +133,7 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
-        [Test]
+        //[Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -177,13 +174,12 @@ namespace RKCIUIAutomation.Test
             LogInfo($"Other component test - This test should run");
             LoginPg.LoginUser(UserType.ProjAdmin);
             Navigate.Menu(NavMenu.RMCenter.Menu.Search);
-
-            var search = Search.SetClass<ISearch>(); 
-            search.PopulateAllSearchCriteriaFields();
+            var SearchPage = Search.SetClass<ISearch>();
+            SearchPage.PopulateAllSearchCriteriaFields();
             Assert.True(VerifyPageTitle("RM Center Search"));
         }
 
-        [Test]
+        //[Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -195,10 +191,42 @@ namespace RKCIUIAutomation.Test
 
             //Project Menu
             Navigate.Menu(NavMenu.Project.Menu.My_Details);
+              //Qms Document - based on Tenant
+            //Project>Administration
+            Navigate.Menu(NavMenu.Project.Administration.Menu.Project_Details);
             Navigate.Menu(NavMenu.Project.Administration.Menu.Companies);
             Navigate.Menu(NavMenu.Project.Administration.Menu.Contracts);
-            Navigate.Menu(NavMenu.Project.Administration.Menu.Project_Details);
+            Navigate.Menu(NavMenu.Project.Administration.Menu.Menu_Editor);
+            Navigate.Menu(NavMenu.Project.Administration.Menu.Support);
+
+            //Project>Administration>User Management
+            Navigate.Menu(NavMenu.Project.Administration.UserManagement.Menu.Roles);
+            Navigate.Menu(NavMenu.Project.Administration.UserManagement.Menu.Users);
             Navigate.Menu(NavMenu.Project.Administration.UserManagement.Menu.Access_Rights);
+
+            //Project>Administration>System Configuration
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Disciplines);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Submittal_Actions);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Submittal_Requirements);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Submittal_Types);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.CVL_Lists);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.CVL_List_Items);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Notifications);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Sieves);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Menu.Gradations);
+
+            //Project>Administration>System Configuration>Equipment
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Equipment.Menu.Equipment_Makes);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Equipment.Menu.Equipment_Types);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.Equipment.Menu.Equipment_Models);
+
+            //Project>Administration>System Configuration>Grade Management
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.GradeManagement.Menu.Grade_Types);
+            Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.GradeManagement.Menu.Grades);
+
+            //Project>Administration>Admin Tools
+            Navigate.Menu(NavMenu.Project.Administration.AdminTools.Menu.Locked_Records);
+
 
             //QA Lab Menu
             Navigate.Menu(NavMenu.QALab.Menu.BreakSheet_Creation);
@@ -217,7 +245,7 @@ namespace RKCIUIAutomation.Test
             Navigate.Menu(NavMenu.QARecordControl.Menu.Concrete_Paving_Quantity_Tracker);
             Navigate.Menu(NavMenu.QARecordControl.Menu.MPL_Tracker);
             Navigate.Menu(NavMenu.QARecordControl.Menu.Girder_Tracker);
-            Navigate.Menu(NavMenu.Project.Menu.Qms_Document); //Create a method to go to QMS, for ex: GotoQMSDocs()
+            Navigate.Menu(NavMenu.QARecordControl.Menu.Qms_Document); //DONE - Create a method to go to QMS, for ex: GotoQMSDocs()
 
             //QA Engineer Menu
             Navigate.Menu(NavMenu.QAEngineer.Menu.QA_Test_Lab_Supervisor_Review);
@@ -236,14 +264,17 @@ namespace RKCIUIAutomation.Test
             Navigate.Menu(NavMenu.QASearch.Menu.Inspection_Deficiency_Log_Report);
             Navigate.Menu(NavMenu.QASearch.Menu.Daily_Inspection_Report);
             Navigate.Menu(NavMenu.QASearch.Menu.DIR_Summary_Report);
-            // Navigate.Menu(NavMenu.QASearch.Menu);//Add DIR Checklist Search under this menu)
-            //Navigate.Menu(NavMenu.QASearch.Menu.Qm);--Add QMS Document Search under this menu)
+            Navigate.Menu(NavMenu.QASearch.Menu.DIR_Checklist_Search); //DONE - Add DIR Checklist Search under this menu)
+            Navigate.Menu(NavMenu.QASearch.Menu.Ncr_Log_View); //DONE - Add Ncr Log View - I15South, I15Tech
+            Navigate.Menu(NavMenu.QASearch.Menu.QMS_Document_Search); //DONE - Add QMS Document Search under this menu)
 
             //QA Field Menu
             Navigate.Menu(NavMenu.QAField.Menu.QA_Test);
             Navigate.Menu(NavMenu.QAField.Menu.QA_DIRs);
             Navigate.Menu(NavMenu.QAField.Menu.QA_Technician_Random_Search);
-            //Add Weekly Environmental Inspection, Weekly Envorinmental Monitoring, Daily Environmental Inspection
+            Navigate.Menu(NavMenu.QAField.Menu.Weekly_Environmental_Monitoring); //DONE - Add Weekly Environmental Inspection
+            Navigate.Menu(NavMenu.QAField.Menu.Daily_Environmental_Inspection); //DONE - Add Weekly Envorinmental Monitoring
+            Navigate.Menu(NavMenu.QAField.Menu.Weekly_Environmental_Inspection); //DONE - Add Daily Environmental Inspection
 
             //Control Point Menu
             Navigate.Menu(NavMenu.ControlPoint.Menu.Control_Point_Log);
@@ -256,8 +287,8 @@ namespace RKCIUIAutomation.Test
             //Material Mix Code Menu
             Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Mix_Design_PCC);
             Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Mix_Design_HMA);
-           // Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Mix); Add mix design JMF menu item.
-           // Navigate.Menu(NavMenu.MaterialMixCodes.Menu.m); -- Add Mix design IOC menu item
+            Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Sieve_Analyses_JMF); //DONE - Add mix design JMF menu item.
+            Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Sieve_Analyses_IOC); //DONE - Add Mix design IOC menu item
             Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Material_Code_Base_Aggregate);
             Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Material_Code_Concrete_Aggregate);
             Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Material_Code_HMA_Aggregate);
@@ -265,7 +296,7 @@ namespace RKCIUIAutomation.Test
 
             //RM Center Menu
             Navigate.Menu(NavMenu.RMCenter.Menu.Search);
-            //Navigate.Menu(NavMenu.RMCenter.Menu.);-- Add Design Document Menu Item
+            Navigate.Menu(NavMenu.RMCenter.Menu.Design_Documents); //DONE - Add Design Document Menu Item
             Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             Navigate.Menu(NavMenu.RMCenter.Menu.Upload_Owner_Submittal);
             Navigate.Menu(NavMenu.RMCenter.Menu.Upload_DEV_Submittal);
@@ -279,5 +310,19 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
+
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void TestDynamicNavigation()
+        {
+            LogInfo($"Other component test - This test should run");
+            LoginPg.LoginUser(UserType.Bhoomi);
+            var NavigateToPage = Navigation.SetClass<INavigation>();
+            NavigateToPage.Qms_Document();
+            Assert.True(VerifyPageTitle("QMS Documents"));
+        }
     }
 }
