@@ -51,31 +51,39 @@ namespace RKCIUIAutomation.Base
         public static void LogSkipped(string msg)
         {
             ExtentTestManager.GetTest().Log(Status.Skip, CreateReportMarkupLabel(msg, ExtentColor.Orange));
-            Console.Out.WriteLine(msg);
+            Console.WriteLine(msg);
             Assert.Warn(msg);
         }
         public static void LogInfo(string details)
         {
             ExtentTestManager.GetTest().Info(details);
-            Console.Out.WriteLine(details);
+            if (details.Contains("<br>"))
+            {
+                var value = details.Split('<');
+                Console.WriteLine($" {value[0]}");
+                value = details.Split('>');
+                Console.WriteLine(value[1]);
+            }
+            else
+                Console.WriteLine(details);
         }
         public static void LogInfo(string details, Exception e)
         {
-            ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupLabel(details, ExtentColor.Red));
-            ExtentTestManager.GetTest().Log(Status.Fatal, CreateReportMarkupCodeBlock(e));
-            Console.Out.WriteLine(e.Message);
+            ExtentTestManager.GetTest().Log(Status.Info, CreateReportMarkupLabel(details, ExtentColor.Orange));
+            ExtentTestManager.GetTest().Log(Status.Info, CreateReportMarkupCodeBlock(e));
+            Console.WriteLine(e.Message);
         }
         public static void LogInfo(string details, bool assertion, Exception e = null)
         {
             if (assertion)
             {
                 ExtentTestManager.GetTest().Log(Status.Pass, CreateReportMarkupLabel(details, ExtentColor.Green));
-                Console.Out.WriteLine(details);
+                Console.WriteLine(details);
             }
             else
             {
                 ExtentTestManager.GetTest().Log(Status.Fail, CreateReportMarkupLabel(details, ExtentColor.Red));
-                Console.Out.WriteLine(e.Message);
+                Console.WriteLine(e.Message);
             }     
         }
 
@@ -85,7 +93,7 @@ namespace RKCIUIAutomation.Base
         }
         private static IMarkup CreateReportMarkupCodeBlock(Exception e)
         {
-            return MarkupHelper.CreateCodeBlock($"Exception : \n{e.Message}");
+            return MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");
         }
     }
 }

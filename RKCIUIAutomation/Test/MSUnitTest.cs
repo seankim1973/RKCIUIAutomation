@@ -164,7 +164,7 @@ namespace RKCIUIAutomation.Test
             //}
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void MSUnitTest4()
         {
             var stringOne = "one";
@@ -178,6 +178,22 @@ namespace RKCIUIAutomation.Test
             Assert.IsTrue(stringOneType.Equals(typeof(string)));
             Console.WriteLine(numberOne.GetType().ToString());
             Assert.IsTrue(numberOneType.Equals(typeof(int)));
+
+        }
+
+        [TestMethod]
+        public void MSUnitTest5()
+        {
+            //var lockedRecords = Project.Administration.AdminTools.Menu.Locked_Records;
+            //var reflectedPageType = lockedRecords.GetType().ReflectedType;
+
+            //Assert.IsTrue(reflectedPageType.IsSubclassOf(typeof(Project)));
+
+            string value = "## Actual : 1234 <br> ## Expected : 45678";
+            var splitVal = value.Split('<');
+            Console.WriteLine($" {splitVal[0]}");
+            splitVal = value.Split('>');
+            Console.WriteLine(splitVal[1]);
 
         }
     }

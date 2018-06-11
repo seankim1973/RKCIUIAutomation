@@ -1,15 +1,8 @@
 ﻿using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects;
-
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using RKCIUIAutomation.Page.PageObjects.Project;
-using static RKCIUIAutomation.Base.WebDriverFactory;
-using static RKCIUIAutomation.Config.ProjectProperties;
-using RKCIUIAutomation.Config;
-using NUnit.Framework;
-using System;
-using NUnit.Framework.Internal;
 
 namespace RKCIUIAutomation.Test
 {

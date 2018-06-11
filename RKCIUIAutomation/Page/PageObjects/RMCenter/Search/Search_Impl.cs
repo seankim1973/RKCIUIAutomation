@@ -1,64 +1,109 @@
 ﻿using OpenQA.Selenium;
-using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RKCIUIAutomation.Config;
+using static RKCIUIAutomation.Page.Action;
+using static RKCIUIAutomation.Page.PageHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter.Search
 {
-    public abstract class Search_Impl : PageBase, ISearch
+    /// <summary>
+    /// Implementation of Search page class objects and workflows
+    /// </summary>
+    public class Search_Impl : Search, ISearch
     {
-        private static ProjectName tenant;
+        //public Search_Impl() { }
+        //public Search_Impl(IWebDriver driver) => Driver = driver;
 
-        public Search_Impl() { }
-        public Search_Impl(IWebDriver driver)
+        public override By GetPageTitleByLocator() => By.XPath("//h3");
+        //Page workflow common to all tenants
+        public override void SelectDDL_DocumentType<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.DocumentType, itemIndexOrName);
+        public override void SelectDDL_Status<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.Status, itemIndexOrName);
+        public override void EnterText_Title(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.Title), text);
+        public override void EnterText_TransmittalNumber(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalNumber), text);
+        public override void EnterText_From(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.From), text);
+        public override void EnterText_Attention(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.Attention), text);
+
+        /// <summary>
+        /// Date value in string format (i.e. MM/DD/YYYY)
+        /// </summary>
+        /// <param name="date"></param>
+        public override void EnterDate_From(string fromDate) => EnterText(GetTextInputFieldByLocator(SearchCriteria.Transmittal_FromDate), fromDate);
+
+        /// <summary>
+        /// Date value in string format (i.e. MM/DD/YYYY)
+        /// </summary>
+        /// <param name="toDate"></param>
+        public override void EnterDate_To(string toDate) => EnterText(GetTextInputFieldByLocator(SearchCriteria.Transmittal_ToDate), toDate);
+
+        public override void PopulateAllSearchCriteriaFields()
         {
-            Driver = driver;
-            SetPageClassBasedOnTenant(driver);
+            SelectDDL_DocumentType(1);
+            EnterText_Number("Common Test Number");
+            EnterText_TransmittalNumber("Common Test Transmittal Number");
+            EnterText_Title("Common Test Title");
+            EnterText_From("From Common Test");
+            EnterText_MSLNumber("Common Test MSL Number");
+            EnterText_Attention("Attention Common Test");
         }
 
-        public abstract void EnterDate_From(string fromDate);
-        public abstract void EnterDate_To(string toDate);
-        public abstract void EnterText_Attention(string text);
-        public abstract void EnterText_From(string text);
-        public abstract void EnterText_MSLNumber(string text);
-        public abstract void EnterText_Number(string text);
-        public abstract void EnterText_OriginatorDocumentRef(string text);
-        public abstract void EnterText_Title(string text);
-        public abstract void EnterText_TransmittalNumber(string text);
-        public abstract void PopulateAllSearchCriteriaFields();
-        public abstract void SelectDDL_Category<T>(T itemIndexOrName);
-        public abstract void SelectDDL_DocumentType<T>(T itemIndexOrName);
-        public abstract void SelectDDL_SegmentArea<T>(T itemIndexOrName);
-        public abstract void SelectDDL_Status<T>(T itemIndexOrName);
+        //Not used in tenant(s): GLX
+        public override void EnterText_Number(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.Number), text);
+        
+        //Not used in tenant(s): GLX, I15Tech
+        public override void EnterText_MSLNumber(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.MSLNumber), text);
+        
+        //Used only in GLX
+        public override void SelectDDL_Category<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.Category, itemIndexOrName);
+        public override void SelectDDL_SegmentArea<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.SegmentArea, itemIndexOrName);
+        public override void EnterText_OriginatorDocumentRef(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.OriginatorDocumentRef), text);
 
-        public static object SetPageClassBasedOnTenant(IWebDriver driver)
+
+    }//end of general Search page Implementation
+
+
+    /// <summary>
+    /// Workflow methods specific to GLX Tenant
+    /// </summary>
+    public class Search_GLX : Search_Impl
+    {
+        public override void PopulateAllSearchCriteriaFields()
         {
-            object classInstance;
-            tenant = projectName;
-
-            if (tenant == ProjectName.GLX)
-            {
-                Console.WriteLine("###### using Search_GLX instance");
-                Search_GLX instance = new Search_GLX();
-                classInstance = instance.GetGLXInstance(driver);
-            }
-            else if (tenant == ProjectName.I15Tech)
-            {
-                Console.WriteLine("###### using Search_I15Tech instance");
-                Search_I15Tech instance = new Search_I15Tech();
-                classInstance = instance.GetI15TechInstance(driver);
-            }
-            else
-            {
-                Console.WriteLine("###### using Search_Base instance");
-                Search instance = new Search();
-                classInstance = instance.GetCommonInstance(driver);
-            }
-
-            return classInstance;
+            SelectDDL_DocumentType(1);
+            EnterText_Title("GLX Test Title");
+            EnterText_TransmittalNumber("GLX Test1234");
+            EnterText_From("GLX From Test");
+            EnterText_Attention("GLX Test Attention");
+            SelectDDL_SegmentArea(1);
+            EnterDate_From("1/1/2018");
+            EnterDate_To("6/6/2018");
+            SelectDDL_Category(1);
+            EnterText_OriginatorDocumentRef("GLX Test Originator Ref.");
         }
-    }
-}
+
+
+    } //end of Implementation for GLX
+
+
+    /// <summary>
+    /// Workflow methods specific to I15Tech Tenant
+    /// </summary>
+    public class Search_I15Tech : Search_Impl
+    {
+        public override void PopulateAllSearchCriteriaFields()
+        {
+            SelectDDL_DocumentType(1);
+            EnterText_Number("I15Tech Test Number");
+            EnterText_From("From I15Tech Test");
+            EnterText_Title("I15Tech Test Title");
+            EnterText_Attention("I15Tech Attention");
+            EnterText_TransmittalNumber("I15Tech Transmittal Number");
+        }
+
+
+    } //end of Implementation for I15Tech
+
+} //end of namespace
