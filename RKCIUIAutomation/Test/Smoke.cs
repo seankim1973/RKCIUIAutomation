@@ -21,7 +21,7 @@ namespace RKCIUIAutomation.Test
         [Description("Verify user can login successfully using project - admin account")]
         public void VerifyUserCanLogin_ProjAdmin()
         {
-            LoginPg.LoginUser(UserType.ProjAdmin);
+            LoginAs(UserType.ProjAdmin);
         }
 
 
@@ -32,7 +32,7 @@ namespace RKCIUIAutomation.Test
         [Description("Verify user can login successfully using project - user account")]
         public void VerifyUserCanLogin_ProjUser()
         {
-            LoginPg.LoginUser(UserType.ProjAdmin);
+            LoginAs(UserType.ProjAdmin);
         }
 
         //[Test]
@@ -42,7 +42,7 @@ namespace RKCIUIAutomation.Test
         [Description("Verify user can login successfully using project - user account")]
         public void GenericTest()
         {
-            LoginPg.LoginUser(UserType.ProjAdmin);
+            LoginAs(UserType.ProjAdmin);
             Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");            
@@ -69,7 +69,7 @@ namespace RKCIUIAutomation.Test
         [Description("Verify proper required fields show error when clicking Save button without Submittal Name and Title")]
         public void VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle()
         {
-            LoginPg.LoginUser(UserType.ProjAdmin);
+            LoginAs(UserType.ProjAdmin);
             Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             ClickSave();
             Assert.Multiple(testDelegate: () =>
@@ -91,7 +91,7 @@ namespace RKCIUIAutomation.Test
         [Description("Verify proper required fields show error when clicking Save button with Submittal Name and Title")]
         public void VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle()
         {
-            LoginPg.LoginUser(UserType.ProjAdmin);
+            LoginAs(UserType.ProjAdmin);
             Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
@@ -109,7 +109,7 @@ namespace RKCIUIAutomation.Test
         [Description("Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL")]
         public void VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL()
         {
-            LoginPg.LoginUser(UserType.ProjAdmin);
+            LoginAs(UserType.ProjAdmin);
             Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
@@ -128,7 +128,7 @@ namespace RKCIUIAutomation.Test
         public void VerifyComponentTestIsSkipped()
         {
             LogInfo($"Control Point component test - This test should be skipped");
-            LoginPg.LoginUser(UserType.Bhoomi);
+            LoginAs(UserType.Bhoomi);
             Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
             Thread.Sleep(5000);
         }
@@ -141,7 +141,7 @@ namespace RKCIUIAutomation.Test
         public void VerifyComponentTestRuns()
         {
             LogInfo($"Other component test - This test should run");
-            LoginPg.LoginUser(UserType.ProjAdmin);
+            LoginAs(UserType.ProjAdmin);
             Navigate.Menu(NavMenu.Project.Menu.My_Details);
             Assert.True(VerifyPageTitle("Account Details"));
             Navigate.Menu(NavMenu.Project.Administration.UserManagement.Menu.Roles);
@@ -158,7 +158,7 @@ namespace RKCIUIAutomation.Test
         public void TestNewGWQALabMenu()
         {
             LogInfo($"Other component test - This test should run");
-            LoginPg.LoginUser(UserType.Bhoomi);
+            LoginAs(UserType.Bhoomi);
             Navigate.Menu(NavMenu.QALab.Menu.BreakSheet_Forecast);
             Navigate.Menu(NavMenu.QALab.Menu.Cylinder_PickUp_List);
             Navigate.Menu(NavMenu.QALab.Menu.Early_Break_Calendar);
@@ -172,7 +172,7 @@ namespace RKCIUIAutomation.Test
         public void LatestTest()
         {
             LogInfo($"Other component test - This test should run");
-            LoginPg.LoginUser(UserType.ProjAdmin);
+            LoginAs(UserType.ProjAdmin);
             NavigateToPage.RMCenter_Search();
             RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
             Assert.True(VerifyPageTitle("RM Center Search"));
@@ -185,8 +185,7 @@ namespace RKCIUIAutomation.Test
         [Description("Verify Component Name- Link Covereage")]
         public void VerifyLinkCoverage()
         {
-           
-            LoginPg.LoginUser(UserType.Bhoomi);
+            LoginAs(UserType.Bhoomi);
 
             //Project Menu
             NavigateToPage.My_Details();
@@ -323,9 +322,8 @@ namespace RKCIUIAutomation.Test
         public void TestDynamicNavigation()
         {
             LogInfo($"Other component test - This test should run");
-            LoginPg.LoginUser(UserType.Bhoomi);
-            NavigateToPage.Qms_Document();
-            
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Qms_Document();           
             Assert.True(VerifyPageTitle("QMS Documents"));
         }
 

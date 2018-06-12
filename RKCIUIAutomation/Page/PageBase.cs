@@ -1,32 +1,12 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Base;
-using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.PageObjects;
-using RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
-using System;
 using static RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Page
 {
-    public abstract class PageBase : BaseClass
+    public class PageBase : BaseClass
     {
-        private readonly By link_Login = By.XPath("//a[text()=' Login']");
-        private readonly By link_Logout = By.XPath("//a[text()=' Log out']");
-
-        public LoginPage ClickLoginLink()
-        {
-            ClickElement(link_Login);
-            return new LoginPage(Driver);
-        }
-
-        public LandingPage ClickLogoutLink()
-        {
-            ClickElement(link_Logout);
-            return new LandingPage();
-        }
-
-
-        
+        public static void ClickLoginLink() => ClickElement(By.XPath("//a[text()=' Login']"));
+        public static void ClickLogoutLink() => ClickElement(By.XPath("//a[text()=' Log out']"));
     }
-
 }
