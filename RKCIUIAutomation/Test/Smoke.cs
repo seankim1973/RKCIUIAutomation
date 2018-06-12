@@ -164,7 +164,7 @@ namespace RKCIUIAutomation.Test
             Navigate.Menu(NavMenu.QALab.Menu.Early_Break_Calendar);
         }
 
-        //[Test]
+        [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -173,9 +173,8 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Other component test - This test should run");
             LoginPg.LoginUser(UserType.ProjAdmin);
-            Navigate.Menu(NavMenu.RMCenter.Menu.Search);
-            var SearchPage = Search.SetClass<ISearch>();
-            SearchPage.PopulateAllSearchCriteriaFields();
+            NavigateToPage.RMCenter_Search();
+            RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
             Assert.True(VerifyPageTitle("RM Center Search"));
         }
 
@@ -188,10 +187,16 @@ namespace RKCIUIAutomation.Test
         {
            
             LoginPg.LoginUser(UserType.Bhoomi);
+            var NavigateToPage = PageNavigation.SetClass<IPageNavigation>();
 
             //Project Menu
-            Navigate.Menu(NavMenu.Project.Menu.My_Details);
-              //Qms Document - based on Tenant
+            NavigateToPage.My_Details();
+            Assert.True(VerifyPageTitle("My Details"));
+
+            NavigateToPage.Qms_Document();
+            Assert.True(VerifyPageTitle("QMS Documents"));
+            
+            
             //Project>Administration
             Navigate.Menu(NavMenu.Project.Administration.Menu.Project_Details);
             Navigate.Menu(NavMenu.Project.Administration.Menu.Companies);
@@ -320,7 +325,6 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Other component test - This test should run");
             LoginPg.LoginUser(UserType.Bhoomi);
-            var NavigateToPage = Navigation.SetClass<INavigation>();
             NavigateToPage.Qms_Document();
             Assert.True(VerifyPageTitle("QMS Documents"));
         }

@@ -229,9 +229,9 @@
     <Compile Include="Config\ProjectProperties.cs" />
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\Action.cs" />
-    <Compile Include="Page\Navigation\INavigation.cs" />
-    <Compile Include="Page\Navigation\Navigation.cs" />
-    <Compile Include="Page\Navigation\Navigation_Impl.cs" />
+    <Compile Include="Page\Navigation\IPageNavigation.cs" />
+    <Compile Include="Page\Navigation\PageNavigation.cs" />
+    <Compile Include="Page\Navigation\PageNavigation_Impl.cs" />
     <Compile Include="Page\Navigation\NavMenu.cs" />
     <Compile Include="Page\PageObjects\IPageBase.cs" />
     <Compile Include="Page\PageObjects\Project\Administration\AdminTools\LockedRecords.cs" />

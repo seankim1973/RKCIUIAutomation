@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RKCIUIAutomation.Page.Navigation
 {
-    public interface INavigation
+    public interface IPageNavigation
     {
         //Project Menu
         void My_Details();
