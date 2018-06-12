@@ -337,7 +337,7 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Other component test - This test should run");
             LoginPg.LoginUser(UserType.Bhoomi);
-            var NavigateToPage = Navigation.SetClass<INavigation>();
+            
 
             NavigateToPage.My_Details();
             Assert.True(VerifyPageTitle("Account Details"));
@@ -415,7 +415,7 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Other component test - This test should run");
             LoginPg.LoginUser(UserType.Bhoomi);
-            var NavigateToPage = Navigation.SetClass<INavigation>();
+          
 
             NavigateToPage.QALab_Technician_Random();
             Assert.True(VerifyPageTitle("Technician Random"));
@@ -446,7 +446,7 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Other component test - This test should run");
             LoginPg.LoginUser(UserType.Bhoomi);
-            var NavigateToPage = Navigation.SetClass<INavigation>();
+            
 
           
         }
