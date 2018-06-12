@@ -15,7 +15,7 @@ namespace RKCIUIAutomation.Test
         public void GetSiteNavigation()
         {
             LogInfo($"Other component test - This test should run");
-            LoginPg.LoginUser(UserType.Bhoomi);
+            LoginAs(UserType.Bhoomi);
             TestUtils.LoopThroughNavMenu();
         }
     }
