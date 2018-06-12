@@ -52,6 +52,9 @@ namespace RKCIUIAutomation.Page.Navigation
         void QALab_BreakSheet_Legacy();
         void QALab_Equipment_Management();
         void QALab_Technician_Random();
+        void QALab_BreakSheet_Forecast();
+        void QALab_Cylinder_PickUp_List();
+        void QALab_Early_Break_Calendar();
 
         //Reports & Notices Menu
         void ReportsNotices_General_NCR();
