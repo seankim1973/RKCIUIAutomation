@@ -335,7 +335,7 @@ namespace RKCIUIAutomation.Test
         public void NavigateToVerifyProjectConfigurationMenu()
         {
             LogInfo($"Other component test - This test should run");
-            LoginPg.LoginUser(UserType.Bhoomi);
+            LoginAs(UserType.Bhoomi);
             
 
             NavigateToPage.My_Details();
@@ -413,7 +413,7 @@ namespace RKCIUIAutomation.Test
         public void NavigateToVerifyQALabMenu()
         {
             LogInfo($"Other component test - This test should run");
-            LoginPg.LoginUser(UserType.Bhoomi);
+            LoginAs(UserType.Bhoomi);
           
 
             NavigateToPage.QALab_Technician_Random();
@@ -444,7 +444,7 @@ namespace RKCIUIAutomation.Test
         public void NavigateToVerifyQARecordControlMenu()
         {
             LogInfo($"Other component test - This test should run");
-            LoginPg.LoginUser(UserType.Bhoomi);
+            LoginAs(UserType.Bhoomi);
             
 
           
