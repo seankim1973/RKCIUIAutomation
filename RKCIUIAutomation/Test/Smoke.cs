@@ -326,6 +326,7 @@ namespace RKCIUIAutomation.Test
             LogInfo($"Other component test - This test should run");
             LoginPg.LoginUser(UserType.Bhoomi);
             NavigateToPage.Qms_Document();
+            
             Assert.True(VerifyPageTitle("QMS Documents"));
         }
     }
