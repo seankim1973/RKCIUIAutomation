@@ -61,7 +61,7 @@ namespace RKCIUIAutomation.Base
 
         public static void LogError(string details)
         {
-            ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
+            ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));
         }
 
         public static void LogInfo(string details)
@@ -82,10 +82,10 @@ namespace RKCIUIAutomation.Base
 
         public static void LogInfo(string details, Exception e)
         {
-            ExtentTestManager.GetTest().Warning(CreateReportMarkupLabel(details, ExtentColor.Orange));           
+            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));           
             if(e != null)
             {
-                ExtentTestManager.GetTest().Warning(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
+                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
                 log.Debug(e.Message);
             }
         }
@@ -111,7 +111,7 @@ namespace RKCIUIAutomation.Base
 
                 if (e != null)
                 {
-                    log.Debug(e.Message);
+                    log.Fatal(e.Message);
                 }
             }
         }

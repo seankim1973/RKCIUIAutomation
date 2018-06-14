@@ -248,7 +248,6 @@ namespace RKCIUIAutomation.Page
                     log.Debug(e.Message);
                 }
             }
-            
 
             return isDisplayed;
         }
