@@ -336,9 +336,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\JiraUtil.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <None Include="app.config" />
+    <Folder Include="Report\errorscreenshots\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="license" />
     <None Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -348,12 +352,16 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="UploadFiles\test.xlsx" />
+    <None Include="UploadFiles\test.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitattributes" />
     <Content Include=".gitignore" />
-    <Content Include="extent-config.xml" />
+    <Content Include="extent-config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Lib\AutoItX3.Assembly.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -363,6 +371,7 @@
     <Content Include="Lib\AutoItX3_x64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Report\Extent.html" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -176,7 +176,7 @@ namespace RKCIUIAutomation.Test
             Assert.True(VerifyPageTitle("RM Center Search"));
         }
 
-        //[Test]
+        [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -267,7 +267,7 @@ namespace RKCIUIAutomation.Test
             Assert.True(VerifyPageTitle("Locked Records"));
         }
 
-        //[Test]
+        [Test]
         [Category(Component.Project_Configuration)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
