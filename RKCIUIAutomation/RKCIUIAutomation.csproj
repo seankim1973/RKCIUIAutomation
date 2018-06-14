@@ -79,6 +79,9 @@
     <Reference Include="HtmlAgilityPack, Version=1.8.2.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.1.8.2\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.3.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
     </Reference>
@@ -230,8 +233,8 @@
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\Action.cs" />
     <Compile Include="Page\Navigation\IPageNavigation.cs" />
-    <Compile Include="Page\Navigation\PageNavigation.cs" />
     <Compile Include="Page\Navigation\PageNavigation_Impl.cs" />
+    <Compile Include="Page\Navigation\PageNavigation.cs" />
     <Compile Include="Page\Navigation\NavMenu.cs" />
     <Compile Include="Page\PageObjects\IPageBase.cs" />
     <Compile Include="Page\PageObjects\Project\Administration\AdminTools\LockedRecords.cs" />
@@ -301,14 +304,14 @@
     <Compile Include="Page\PageObjects\RFI\List.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DesignDocument.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DOTProjectCorrespondenceLog.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\Search\Search.cs" />
+    <Compile Include="Page\PageObjects\RMCenter\Search\Search_Impl.cs" />
     <Compile Include="Page\PageObjects\RMCenter\Search\ISearch.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\RFCManagement.cs" />
     <Compile Include="Page\PageObjects\RMCenter\RMCenter.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittals.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\Search\Search_Impl.cs" />
+    <Compile Include="Page\PageObjects\RMCenter\Search\Search.cs" />
     <Compile Include="Page\PageObjects\RMCenter\SubmittalDetails.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadDEVSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadOwnerSubmittal.cs" />
@@ -333,12 +336,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\JiraUtil.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Report\errorscreenshots\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="app.config" />
     <None Include="license" />
+    <None Include="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

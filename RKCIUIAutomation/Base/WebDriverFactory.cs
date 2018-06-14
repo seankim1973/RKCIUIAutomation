@@ -6,6 +6,7 @@ using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Safari;
 using RKCIUIAutomation.Config;
 using System;
+using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Base
 {
@@ -39,7 +40,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                Console.Out.WriteLine("Local browser type is not implemented.");
+                log.Debug("Local browser type is not implemented.");
             }
 
             return Driver;
@@ -80,7 +81,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                Console.Out.WriteLine("Test Platform is not implemented.");
+                log.Debug("Test Platform is not implemented.");
             }
 
             return caps;
@@ -106,7 +107,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                Console.Out.WriteLine("Browser type is not implemented.");
+                log.Debug("Browser type is not implemented.");
             }
 
             return caps;

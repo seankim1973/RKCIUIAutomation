@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Web;
 using AutoIt;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -77,13 +78,13 @@ namespace RKCIUIAutomation.Test
         public void MSUnitTest1()
         {
             //Directory.SetCurrentDirectory(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).ToString());
-            //Console.Out.WriteLine("#######" + Directory.GetParent(Directory.GetCurrentDirectory().ToString()));
+            //log.Info("#######" + Directory.GetParent(Directory.GetCurrentDirectory().ToString()));
 
             //var proj = GetSiteUrl(TestEnv.Prod, Project.SMF202);
             //var user = GetUser(UserType.SysAdmin);
-            //Console.Out.WriteLine(proj);
-            //Console.Out.WriteLine(user);
-            //Console.Out.WriteLine();
+            //log.Info(proj);
+            //log.Info(user);
+            //log.Info();
 
             //var collection = ConfigurationManager.GetSection($"TestConfigs/UserType") as NameValueCollection;
             //var userPw = collection["SysAdminUsername"].Split(',');
@@ -91,7 +92,7 @@ namespace RKCIUIAutomation.Test
             //string[] userPw = GetUser(UserType.ProjAdmin);
             //string username = userPw[0];
             //string password = userPw[1];
-            //Console.Out.WriteLine($"Username : {username} and Password : {password}");
+            //log.Info($"Username : {username} and Password : {password}");
 
 
             //By locator = PageHelper.GetExpandDDListByLocator(DDListID.Action);
@@ -103,11 +104,11 @@ namespace RKCIUIAutomation.Test
             //    driver.Navigate().GoToUrl("http://stage.garnet.elvispmc.com/");
             //    IWebElement elem = driver.FindElement(By.XPath("//img[@title='Garnet Interchange']"));
 
-            //    Console.WriteLine(elem.GetType().Name);
+            //    log.Info(elem.GetType().Name);
             //}
             //catch (Exception e)
             //{
-            //    Console.WriteLine(e.Message);
+            //    log.Info(e.Message);
             //}
 
             //driver.Quit();
@@ -118,7 +119,7 @@ namespace RKCIUIAutomation.Test
             //IntPtr winHandle = AutoItX.WinGetHandle("Untitled");
             //AutoItX.WinKill(winHandle);
 
-            Console.WriteLine($"{GetCodeBasePath()}\\UploadFiles\\test.xlsx");
+            log.Error($"{GetCodeBasePath()}\\UploadFiles\\test.xlsx");
         }
 
         //[TestMethod]
@@ -127,11 +128,11 @@ namespace RKCIUIAutomation.Test
             List<string> components = GetComponentsForProject(ProjectName.Garnet);
             int componentCount = components.Count;
            
-            Console.WriteLine($"Component count is {componentCount}");
+            log.Error($"Component count is {componentCount}");
             
             foreach (var component in components)
             {
-                Console.WriteLine(component.ToString());
+                log.Error(component.ToString());
             }
 
             Assert.IsTrue(componentCount.Equals(4));
@@ -146,10 +147,10 @@ namespace RKCIUIAutomation.Test
             var reflectedType = projectType.ReflectedType;
             var reflectedTypeName = reflectedType.Name;
 
-            Console.WriteLine($"ProjectType: {projectType.ToString()}");
-            Console.WriteLine($"ReflectedType: {reflectedType}");
-            Console.WriteLine($"ReflectedType Name: {reflectedTypeName}");
-            Console.WriteLine(typeof(Project).ToString());
+            log.Error($"ProjectType: {projectType.ToString()}");
+            log.Error($"ReflectedType: {reflectedType}");
+            log.Error($"ReflectedType Name: {reflectedTypeName}");
+            log.Error(typeof(Project).ToString());
 
             //Assert.IsTrue(reflectedType.IsSubclassOf(typeof(Project)));
             Assert.IsTrue(reflectedType.Equals(typeof(Project.Administration.UserManagement)));
@@ -160,7 +161,7 @@ namespace RKCIUIAutomation.Test
             //}
             //catch (Exception e)
             //{
-            //    Console.WriteLine(e.Message);
+            //    log.Error(e.Message);
             //}
         }
 
@@ -174,9 +175,9 @@ namespace RKCIUIAutomation.Test
             Type numberOneType = null;
             numberOneType = numberOne.GetType();
 
-            Console.WriteLine(stringOne.GetType().ToString());
+            log.Error(stringOne.GetType().ToString());
             Assert.IsTrue(stringOneType.Equals(typeof(string)));
-            Console.WriteLine(numberOne.GetType().ToString());
+            log.Error(numberOne.GetType().ToString());
             Assert.IsTrue(numberOneType.Equals(typeof(int)));
 
         }
@@ -189,11 +190,10 @@ namespace RKCIUIAutomation.Test
 
             //Assert.IsTrue(reflectedPageType.IsSubclassOf(typeof(Project)));
 
-            string value = "## Actual : 1234 <br> ## Expected : 45678";
-            var splitVal = value.Split('<');
-            Console.WriteLine($" {splitVal[0]}");
-            splitVal = value.Split('>');
-            Console.WriteLine(splitVal[1]);
+            string value = "<br> ## Actual : 1234 <br> ## Expected : 45678";
+            string[] result = Regex.Split(value, "<br>");
+            log.Error(result[1]);
+            log.Error(result[2]);
 
         }
     }
