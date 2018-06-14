@@ -260,5 +260,8 @@ paket-files/
 __pycache__/
 *.pyc
 
-# Extent Report Error Screenshots
+# Extent Report & Error Screenshots
 Report
+Report/Extent.html
+Report/errorscreenshots
+Report/errorscreenshots/*.png
