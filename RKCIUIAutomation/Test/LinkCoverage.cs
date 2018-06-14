@@ -117,7 +117,7 @@ namespace RKCIUIAutomation.Test
             Assert.True(VerifyPageTitle("Break Sheet Forecast"));
            
             NavigateToPage.QALab_Cylinder_PickUp_List();
-           Assert.True(VerifyPageTitle("Cylinder Pick-Up Status:"));
+            Assert.True(VerifyPageTitle("Cylinder Pick-Up Status:"));
    
             NavigateToPage.QALab_Early_Break_Calendar();
             Assert.True(VerifyPageTitle(""));
@@ -134,8 +134,8 @@ namespace RKCIUIAutomation.Test
             LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
            //Navigate.Menu(Navigate)
-   //avigate.Menu(.Menu.QA_Test_Original_Report);
-           Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Correction_Report);
+           //Navigate.Menu(.Menu.QA_Test_Original_Report);
+           //Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Correction_Report);
            
     
            // Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_All);
