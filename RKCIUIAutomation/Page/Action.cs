@@ -10,6 +10,8 @@ using System.Threading;
 using static RKCIUIAutomation.Base.WebDriverFactory;
 using static RKCIUIAutomation.Base.BaseClass;
 using static RKCIUIAutomation.Base.BaseUtils;
+using NUnit.Framework;
+using RKCIUIAutomation.Base;
 
 namespace RKCIUIAutomation.Page
 {
@@ -20,7 +22,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 LogInfo($"...waiting for element {elementByLocator}");
-                WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(8))
+                WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(5))
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(500)
                 };
@@ -167,8 +169,11 @@ namespace RKCIUIAutomation.Page
         private static void UploadUsingAutoItX(string filePath)
         {
             AutoItX.WinWaitActive("Open");
+            LogInfo("...Waiting for File Open Dialog Window");
             AutoItX.ControlSend("Open", "", "Edit1", filePath);
+            LogInfo($"Entered filepath {filePath}");
             AutoItX.ControlClick("Open", "&Open", "Button1");
+            LogInfo("Clicked Open button on the File Open Dialog Window");
         }
 
         public static void UploadFile(string fileName)
@@ -209,14 +214,8 @@ namespace RKCIUIAutomation.Page
         {
             IWebElement elem = GetElement(elementByLocator);
             bool elementDisplayed = elem.Displayed;
-            var not = String.Empty;
-
-            if (!elementDisplayed)
-            {
-                not = " not";
-            }
-                LogInfo($"Field error is{not} displayed for - {elementByLocator}", elementDisplayed);
-
+            string not = !elementDisplayed ? " not" : "";
+            LogInfo($"Field error is{not} displayed for - {elementByLocator}", elementDisplayed);
             return elementDisplayed;
         }
 
@@ -225,34 +224,84 @@ namespace RKCIUIAutomation.Page
             By elementByLocator = By.XPath("//div[contains(@class,'bootstrap-growl')]");
             IWebElement msg = GetElement(elementByLocator);
             bool elementDisplayed = msg.Displayed;
-            var not = String.Empty;
-
-            if (!elementDisplayed)
-            {
-                not = " not";
-            }
-            LogInfo($"Success Message is{not} displayed for - {elementByLocator}", elementDisplayed);
-
+            string not = !elementDisplayed ? " not" : "";
+            LogInfo($"Success Message is{not} displayed", elementDisplayed);
             return elementDisplayed;
+        }
+
+        private static bool IsElementDisplayed(IWebElement element)
+        {
+            bool isDisplayed = false;
+            if (element != null)
+            {
+                try
+                {
+                    isDisplayed = element.Displayed;
+                }
+                catch (Exception e)
+                {
+                    LogInfo("", e);
+                }
+            }
+            return isDisplayed;
         }
 
         public static bool VerifyPageTitle(string expectedPageTitle)
         {
-            string h2XPath = $"//h2[contains(text(),'{expectedPageTitle}')]";
-            string h3XPath = $"//h3[contains(text(),'{expectedPageTitle}')]";
-
-            IWebElement titleElement = GetElement(By.XPath(h2XPath));
-            if (titleElement == null || !titleElement.Displayed)
+            By validLocator = null;
+            By headingElement = By.XPath($"//h2[contains(text(),'{expectedPageTitle}')]");
+            IWebElement titleElement = GetElement(headingElement);
+            bool isDisplayed = IsElementDisplayed(titleElement);
+            bool matchingTitle = false;
+            if (titleElement == null || !isDisplayed)
             {
-                LogInfo($"Page Title element with H2 tag is not displayed");
-                titleElement = GetElement(By.XPath(h3XPath));
-                if (titleElement == null || !titleElement.Displayed)
+                headingElement = By.XPath($"//h3[contains(text(),'{expectedPageTitle}')]");
+                titleElement = GetElement(headingElement);
+                isDisplayed = IsElementDisplayed(titleElement);
+                if (titleElement == null || !isDisplayed)
                 {
-                    LogInfo($"Page Title element with H3 tag is not displayed");
+                    LogInfo($"Page Title element with {expectedPageTitle} was not found with h2 or h3 tag", isDisplayed);
+                    headingElement = By.XPath("//h2");
+                    titleElement = GetElement(headingElement);
+                    isDisplayed = IsElementDisplayed(titleElement);
+                    if (titleElement == null || !isDisplayed)
+                    {
+                        headingElement = By.XPath("//h3");
+                        titleElement = GetElement(headingElement);
+                        isDisplayed = IsElementDisplayed(titleElement);
+                        if (titleElement == null || !isDisplayed)
+                        {
+                            LogInfo($"Could not find any Page element with h2 or h3 tag", isDisplayed);
+                        }
+                    }
                 }
+                else
+                    matchingTitle = true;
             }
-            LogInfo($"## Expect Page Title: {expectedPageTitle} <br> ## Actual Page Title: {titleElement.Text}");
-            return titleElement.Displayed;
+            else
+                matchingTitle = true;
+
+
+            validLocator = headingElement;
+
+            if (validLocator != null)
+            {
+                LogInfo($"<br> ## Expect Page Title: {expectedPageTitle} <br> ## Actual Page Title: {GetText(validLocator)}", matchingTitle);
+            }
+            else
+            {
+                LogInfo($"Error occured");
+            }
+            return isDisplayed;
+        }
+
+        public static bool VerifySchedulerIsDisplayed()
+        {
+            IWebElement scheduler = GetElement(By.Id("scheduler"));
+            bool isDisplayed = scheduler.Displayed;
+            string not = isDisplayed == false ? " not" : "";
+            LogInfo($"Scheduler is{not} displayed", isDisplayed);
+            return isDisplayed;
         }
 
         private static readonly By Btn_Cancel = By.Id("CancelSubmittal");

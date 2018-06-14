@@ -47,7 +47,7 @@ namespace RKCIUIAutomation.Base
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            Console.Out.WriteLine($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
+            log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
 
             ExtentManager.Instance.AddSystemInfo("Project", tenantName);
             ExtentManager.Instance.AddSystemInfo("Test Environment", testEnv.ToString());
