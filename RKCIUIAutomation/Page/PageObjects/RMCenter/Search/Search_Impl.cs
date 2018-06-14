@@ -72,16 +72,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter.Search
 
             if (projectName == ProjectName.GLX)
             {
-                LogInfo("###### using Search_GLX instance");
+                LogInfo($"###### using Search_GLX instance ###### ");
                 instance = new Search_GLX();
             }
             else if (projectName == ProjectName.I15Tech)
             {
-                LogInfo("###### using Search_I15Tech instance");
+                LogInfo($"###### using Search_I15Tech instance ###### ");
                 instance = new Search_I15Tech();
             }
             else
-                LogInfo("###### using Search_Impl (Common) instance");
+                LogInfo($"###### using Search_Impl (Common) instance ###### ");
 
             return instance;
         }

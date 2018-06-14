@@ -173,16 +173,16 @@ namespace RKCIUIAutomation.Page.Navigation
 
             if (projectName == Config.ProjectName.SGWay)
             {
-                LogInfo("###### using Navigation_SGWay instance");
+                LogInfo($"###### using Navigation_SGWay instance ###### ");
                 instance = new PageNavigation_SGWay();
             }
             else if (projectName == Config.ProjectName.SH249)
             {
-                LogInfo("###### using Navigation_SH249 instance");
+                LogInfo($"###### using Navigation_SH249 instance ###### ");
                 instance = new PageNavigation_SH249();
             }
             else
-                LogInfo("###### using Navigation_Impl instance");
+                LogInfo($"###### using Navigation_Impl instance ###### ");
 
             return instance;
         }

@@ -190,10 +190,10 @@ namespace RKCIUIAutomation.Test
 
             //Assert.IsTrue(reflectedPageType.IsSubclassOf(typeof(Project)));
 
-            string value = "<br> ## Actual : 1234 <br> ## Expected : 45678";
-            string[] result = Regex.Split(value, "<br>");
-            log.Error(result[1]);
-            log.Error(result[2]);
+            string value = "## Actual : 1234 <br>&nbsp;&nbsp;## Expected : 45678";
+            string[] result = Regex.Split(value, " <br>&nbsp;&nbsp;");
+            log.Info(result[0]);
+            log.Info(result[1]);
 
         }
     }

@@ -4,6 +4,7 @@ using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
+using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Config.ConfigUtil;
 using static RKCIUIAutomation.Config.ProjectProperties;
 
@@ -22,11 +23,13 @@ namespace RKCIUIAutomation.Base
         private static string tenantName;
         private TestStatus testStatus;
 
+        string testName;
         string testComponent;
         string testDescription;
         string testPriority;
         string testCaseNumber;
         string testSuite;
+        string siteUrl;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -63,6 +66,7 @@ namespace RKCIUIAutomation.Base
             TestContext.TestAdapter testInstance = TestContext.CurrentContext.Test;
             try
             {
+                testName = testInstance.Name;
                 testComponent = testInstance.Properties.Get("Category").ToString();
                 testDescription = testInstance.Properties.Get("Description").ToString();
                 testPriority = testInstance.Properties.Get("Priority").ToString();
@@ -71,7 +75,7 @@ namespace RKCIUIAutomation.Base
 
                 ExtentTestManager.CreateParentTest(testInstance.Name);
                 ExtentTestManager
-                    .CreateTest($"<font size=3>TestCase# : {testCaseNumber} - {testInstance.Name}</font><br><font size=2>{testDescription}</font>")
+                    .CreateTest($"<font size=3>TestCase# : {testCaseNumber} - {testName}</font><br><font size=2>{testDescription}</font>")
                     .AssignCategory(testPriority)
                     .AssignCategory(testComponent)
                     .AssignCategory(testSuite);
@@ -88,10 +92,12 @@ namespace RKCIUIAutomation.Base
                             Driver = GetRemoteWebDriver(testPlatform, browserType);
                             break;
                     }
-
+                    siteUrl = GetSiteUrl(testEnv, projectName);
                     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
                     Driver.Manage().Window.Maximize();
-                    Driver.Navigate().GoToUrl(GetSiteUrl(testEnv, projectName));
+                    Driver.Navigate().GoToUrl(siteUrl);
+
+                    LogTestDetails(projectName, testEnv, siteUrl, browserType, testName, testCaseNumber, testSuite, testDescription, testComponent, testPriority);
                 }
                 else
                 {
@@ -105,6 +111,30 @@ namespace RKCIUIAutomation.Base
                 LogInfo("Exception occured during BeforeTest method", e);
             }
         }
+
+        private void LogTestDetails(ProjectName projectName, TestEnv testEnv, string siteUrl, BrowserType browserType,
+            string tcName, string tcNumber, string suite, string tcDesc, string component, string priority)
+        {
+            string[] url = Regex.Split(siteUrl, "/Account");
+
+            Console.WriteLine("");
+            log.Info($"########################################################################");
+            log.Info($"#                   RKCI ELVIS UI Test Automation");
+            log.Info($"########################################################################");
+            log.Info($"#  -->> Test Configuration <<--");
+            log.Info($"#  Tenant: {projectName}  TestEnv: {testEnv}");
+            log.Info($"#  Site URL: {url[0]}");
+            log.Info($"#  Browser: {browserType}");
+            log.Info($"#");
+            log.Info($"#  -->> Test Case Details <<--");
+            log.Info($"#  Name: {tcName}");
+            log.Info($"#  Desription: {tcDesc}");
+            log.Info($"#  TC#: {tcNumber}, {priority}");
+            log.Info($"#  Suite: {suite}, Component: {component}");
+            log.Info($"#");
+            log.Info($"########################################################################\n");
+        }
+
 
         [TearDown]
         public void AfterTest()

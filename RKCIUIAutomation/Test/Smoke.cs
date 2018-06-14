@@ -176,7 +176,7 @@ namespace RKCIUIAutomation.Test
             Assert.True(VerifyPageTitle("RM Center Search"));
         }
 
-        //[Test]
+        [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -266,43 +266,7 @@ namespace RKCIUIAutomation.Test
             NavigateToPage.AdminTools_Locked_Records();
             Assert.True(VerifyPageTitle("Locked Records"));
         }
-
-        //[Test]
-        [Category(Component.Project_Configuration)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name- for QA Lab Menu only")]
-        public void NavigateToVerifyQALabMenu()
-        {
-            LoginAs(UserType.Bhoomi);
-
-            NavigateToPage.QALab_Technician_Random();
-            bool techRandomTitleDisplayed = VerifyPageTitle("TEST FAIL - Technician Random");
-            NavigateToPage.QALab_BreakSheet_Creation();
-            bool breaksheetCreationTitleDisplayed = VerifyPageTitle("Create Break Sheet");
-            NavigateToPage.QALab_BreakSheet_Legacy();
-            bool breaksheetLegacyTitleDisplayed = VerifyPageTitle("Break Sheet Legacy");
-            NavigateToPage.QALab_Equipment_Management();
-            bool equipMgmtTitleDisplayed = VerifyPageTitle("Equipment");
-            NavigateToPage.QALab_BreakSheet_Forecast();
-            bool breaksheetForecastTitleDisplayed = VerifyPageTitle("Break Sheet Forecast");
-            NavigateToPage.QALab_Cylinder_PickUp_List();
-            bool cylinderPickupListTitleDisplayed = VerifyPageTitle("Cylinder Pick-Up Status:");
-            NavigateToPage.QALab_Early_Break_Calendar();
-            bool earlyBreakCalendarDisplayed = VerifySchedulerIsDisplayed();
-
-            Assert.Multiple(testDelegate: () =>
-            {
-                Assert.True(techRandomTitleDisplayed);
-                Assert.True(breaksheetCreationTitleDisplayed);
-                Assert.True(breaksheetLegacyTitleDisplayed);
-                Assert.True(equipMgmtTitleDisplayed);
-                Assert.True(breaksheetForecastTitleDisplayed);
-                Assert.True(cylinderPickupListTitleDisplayed);
-                Assert.True(earlyBreakCalendarDisplayed);
-            });
-        }
-
+  
         //[Test]
         [Category(Component.Project_Configuration)]
         [Property("TC#", "ELVS2222")]

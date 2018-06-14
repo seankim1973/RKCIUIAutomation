@@ -58,6 +58,12 @@ namespace RKCIUIAutomation.Base
             log.Warn(msg);
             Assert.Warn(msg);
         }
+
+        public static void LogError(string details)
+        {
+            ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));
+        }
+
         public static void LogInfo(string details)
         {
             if (details.Contains("#####"))
@@ -76,10 +82,10 @@ namespace RKCIUIAutomation.Base
 
         public static void LogInfo(string details, Exception e)
         {
-            ExtentTestManager.GetTest().Warning(CreateReportMarkupLabel(details, ExtentColor.Orange));           
+            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));           
             if(e != null)
             {
-                ExtentTestManager.GetTest().Warning(CreateReportMarkupLabel(e.Message, ExtentColor.Transparent));
+                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
                 log.Debug(e.Message);
             }
         }
@@ -91,14 +97,12 @@ namespace RKCIUIAutomation.Base
 
                 if (details.Contains("<br>"))
                 {
-                    string[] result = Regex.Split(details, "<br>");
+                    string[] result = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                    log.Info(result[0]);
                     log.Info(result[1]);
-                    log.Info(result[2]);
                 }
                 else
-                {
                     log.Info(details);
-                }
             }
             else
             {
@@ -107,14 +111,14 @@ namespace RKCIUIAutomation.Base
 
                 if (e != null)
                 {
-                    log.Debug(e.Message);
+                    log.Fatal(e.Message);
                 }
             }
         }
 
         private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
         {
-            return MarkupHelper.CreateLabel($"Info : {details}", extentColor);
+            return MarkupHelper.CreateLabel(details, extentColor);
         }
         private static IMarkup CreateReportMarkupCodeBlock(Exception e)
         {
