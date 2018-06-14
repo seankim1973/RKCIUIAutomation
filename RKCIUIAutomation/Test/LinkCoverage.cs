@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static RKCIUIAutomation.Page.Action;
+﻿using static RKCIUIAutomation.Page.Action;
 using static RKCIUIAutomation.Config.ProjectProperties;
 using NUnit.Framework;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.Navigation;
 
 namespace RKCIUIAutomation.Test
 {
     [TestFixture]
-
     public class LinkCoverage :TestBase
     {
         [Test]
@@ -100,28 +93,33 @@ namespace RKCIUIAutomation.Test
         [Description("Verify Component Name- for QA Lab Menu only")]
         public void NavigateToVerifyQALabMenu()
         {
-            LogInfo($"Project Configuration component test - This test should run");
             LoginAs(UserType.Bhoomi);
 
-
             NavigateToPage.QALab_Technician_Random();
-            Assert.True(VerifyPageTitle("Technician Random"));
+            bool techRandomTitleDisplayed = VerifyPageTitle("Technician Random");
             NavigateToPage.QALab_BreakSheet_Creation();
-            Assert.True(VerifyPageTitle("Create Break Sheet"));
+            bool breaksheetCreationTitleDisplayed = VerifyPageTitle("Create Break Sheet");
             NavigateToPage.QALab_BreakSheet_Legacy();
-            Assert.True(VerifyPageTitle("Break Sheet Legacy"));
+            bool breaksheetLegacyTitleDisplayed = VerifyPageTitle("Break Sheet Legacy");
             NavigateToPage.QALab_Equipment_Management();
-            Assert.True(VerifyPageTitle("Equipment"));
-    
+            bool equipMgmtTitleDisplayed = VerifyPageTitle("Equipment");
             NavigateToPage.QALab_BreakSheet_Forecast();
-            Assert.True(VerifyPageTitle("Break Sheet Forecast"));
-           
+            bool breaksheetForecastTitleDisplayed = VerifyPageTitle("Break Sheet Forecast");
             NavigateToPage.QALab_Cylinder_PickUp_List();
-            Assert.True(VerifyPageTitle("Cylinder Pick-Up Status:"));
-   
+            bool cylinderPickupListTitleDisplayed = VerifyPageTitle("Cylinder Pick-Up Status:");
             NavigateToPage.QALab_Early_Break_Calendar();
-            Assert.True(VerifyPageTitle(""));
+            bool earlyBreakCalendarDisplayed = VerifySchedulerIsDisplayed();
 
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(techRandomTitleDisplayed);
+                Assert.True(breaksheetCreationTitleDisplayed);
+                Assert.True(breaksheetLegacyTitleDisplayed);
+                Assert.True(equipMgmtTitleDisplayed);
+                Assert.True(breaksheetForecastTitleDisplayed);
+                Assert.True(cylinderPickupListTitleDisplayed);
+                Assert.True(earlyBreakCalendarDisplayed);
+            });
         }
 
         [Test]
