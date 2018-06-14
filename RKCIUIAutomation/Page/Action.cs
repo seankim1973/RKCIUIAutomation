@@ -229,70 +229,70 @@ namespace RKCIUIAutomation.Page
             return elementDisplayed;
         }
 
-        private static bool IsElementDisplayed(IWebElement element)
+        private static string PageTitle = string.Empty;
+        private static bool IsElementDisplayed(By elementByLocator)
         {
+            IWebElement element = GetElement(elementByLocator);
             bool isDisplayed = false;
+
             if (element != null)
             {
                 try
                 {
                     isDisplayed = element.Displayed;
+                    if (isDisplayed)
+                        PageTitle = element.Text;
                 }
                 catch (Exception e)
                 {
-                    LogInfo("", e);
+                    log.Debug(e.Message);
                 }
             }
+            
+
             return isDisplayed;
         }
 
         public static bool VerifyPageTitle(string expectedPageTitle)
         {
-            By validLocator = null;
-            By headingElement = By.XPath($"//h2[contains(text(),'{expectedPageTitle}')]");
-            IWebElement titleElement = GetElement(headingElement);
-            bool isDisplayed = IsElementDisplayed(titleElement);
-            bool matchingTitle = false;
-            if (titleElement == null || !isDisplayed)
+            bool isMatchingTitle = false;
+            bool isDisplayed = false;
+            By headingElement = null;
+
+            headingElement = By.XPath($"//h2[contains(text(),'{expectedPageTitle}')]");
+            isDisplayed = IsElementDisplayed(headingElement);
+            if (!isDisplayed)
             {
                 headingElement = By.XPath($"//h3[contains(text(),'{expectedPageTitle}')]");
-                titleElement = GetElement(headingElement);
-                isDisplayed = IsElementDisplayed(titleElement);
-                if (titleElement == null || !isDisplayed)
+                isDisplayed = IsElementDisplayed(headingElement);
+                if (!isDisplayed)
                 {
-                    LogInfo($"Page Title element with {expectedPageTitle} was not found with h2 or h3 tag", isDisplayed);
+                    LogError($"Page Title element with h2 or h3 tag containing text '{expectedPageTitle}' was not found.");
+
                     headingElement = By.XPath("//h2");
-                    titleElement = GetElement(headingElement);
-                    isDisplayed = IsElementDisplayed(titleElement);
-                    if (titleElement == null || !isDisplayed)
+                    isDisplayed = IsElementDisplayed(headingElement);
+                    if (!isDisplayed)
                     {
                         headingElement = By.XPath("//h3");
-                        titleElement = GetElement(headingElement);
-                        isDisplayed = IsElementDisplayed(titleElement);
-                        if (titleElement == null || !isDisplayed)
-                        {
-                            LogInfo($"Could not find any Page element with h2 or h3 tag", isDisplayed);
-                        }
+                        isDisplayed = IsElementDisplayed(headingElement);
                     }
                 }
                 else
-                    matchingTitle = true;
+                    isMatchingTitle = true;
             }
             else
-                matchingTitle = true;
+                isMatchingTitle = true;
 
 
-            validLocator = headingElement;
-
-            if (validLocator != null)
+            if (isDisplayed)
             {
-                LogInfo($"<br> ## Expect Page Title: {expectedPageTitle} <br> ## Actual Page Title: {GetText(validLocator)}", matchingTitle);
+                LogInfo($"## Expect Page Title: {expectedPageTitle} <br>&nbsp;&nbsp;## Actual Page Title: {PageTitle}", isMatchingTitle);
             }
             else
             {
-                LogInfo($"Error occured");
+                LogInfo($"Could not find any Page element with h2 or h3 tag", isMatchingTitle);
             }
-            return isDisplayed;
+            return isMatchingTitle;
         }
 
         public static bool VerifySchedulerIsDisplayed()
