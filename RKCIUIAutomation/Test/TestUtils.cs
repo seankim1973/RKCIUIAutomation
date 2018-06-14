@@ -3,6 +3,7 @@ using RKCIUIAutomation.Base;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Test
 {
@@ -48,7 +49,7 @@ namespace RKCIUIAutomation.Test
             {
                 string mainNavMenuText = mainNavElem.FindElement(By.XPath("./a")).Text;
                 string mainNavMsg = $">{mainNavMenuText}";
-                Console.WriteLine(mainNavMsg); //i.e. Project
+                log.Info(mainNavMsg); //i.e. Project
                 WriteToFile(fileName, mainNavMsg);
                 IList<IWebElement> subMainNavElements = mainNavElem.FindElements(By.XPath("./ul/li"));
 
@@ -59,13 +60,13 @@ namespace RKCIUIAutomation.Test
                     if (!subMainNavElem.GetAttribute("class").Contains("dropdown-submenu"))
                     {
                         subMainNavMsg = $"  --{GetInnerText(subMainNavElem)} ({GetElementHref(subMainNavElem)})";
-                        Console.WriteLine(subMainNavMsg); //i.e. Project>>MyDetails
+                        log.Info(subMainNavMsg); //i.e. Project>>MyDetails
                         WriteToFile(fileName, subMainNavMsg);
                     }
                     else
                     {
                         subMainNavMsg = $"  > {GetInnerText(subMainNavElem)}";
-                        Console.WriteLine(); //i.e. Project>>Administration 
+                        log.Info(subMainNavMsg); //i.e. Project>>Administration 
                         WriteToFile(fileName, subMainNavMsg);
 
                         IList<IWebElement> subMenuElements = subMainNavElem.FindElements(By.XPath("./ul/li"));
@@ -76,13 +77,13 @@ namespace RKCIUIAutomation.Test
                             if (!subMenuElem.GetAttribute("class").Contains("dropdown-submenu"))
                             {
                                 subMenuMsg = $"    --{GetInnerText(subMenuElem)} ({GetElementHref(subMenuElem)})";
-                                Console.WriteLine(subMenuMsg); //i.e. Project>>Administration>>Project Details
+                                log.Info(subMenuMsg); //i.e. Project>>Administration>>Project Details
                                 WriteToFile(fileName, subMenuMsg);
                             }
                             else
                             {
                                 subMenuMsg = $"    > {GetInnerText(subMenuElem)}";
-                                Console.WriteLine(subMenuMsg); //i.e. Project>>Administration>>User Management
+                                log.Info(subMenuMsg); //i.e. Project>>Administration>>User Management
                                 WriteToFile(fileName, subMenuMsg);
 
                                 IList<IWebElement> subSubMenuElements = subMenuElem.FindElements(By.XPath("./ul/li"));
@@ -93,20 +94,20 @@ namespace RKCIUIAutomation.Test
                                     if (!subSubMenuElem.GetAttribute("class").Contains("dropdown-submenu"))
                                     {
                                         subSubMenuMsg = $"       --{GetInnerText(subSubMenuElem)} ({GetElementHref(subSubMenuElem)})";
-                                        Console.WriteLine(subSubMenuMsg);
+                                        log.Info(subSubMenuMsg);
                                         WriteToFile(fileName, subSubMenuMsg);
                                     }
                                     else
                                     {
                                         subSubMenuMsg = $"       > {GetInnerText(subSubMenuElem)}";
-                                        Console.WriteLine(subSubMenuMsg);
+                                        log.Info(subSubMenuMsg);
                                         WriteToFile(fileName, subSubMenuMsg);
 
                                         IList<IWebElement> subSubMenuItems = subSubMenuElem.FindElements(By.XPath("./ul/li"));
                                         foreach (IWebElement subSubMenuItem in subSubMenuItems)
                                         {
                                             string subSubMenuItemMsg = $"         --{GetInnerText(subSubMenuItem)} ({GetElementHref(subSubMenuItem)})";
-                                            Console.WriteLine(subSubMenuItemMsg);
+                                            log.Info(subSubMenuItemMsg);
                                             WriteToFile(fileName, subSubMenuItemMsg);
                                         }
                                     }

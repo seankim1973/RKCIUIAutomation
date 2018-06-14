@@ -176,7 +176,6 @@ namespace RKCIUIAutomation.Page.Navigation
             }
         }
 
-
         //Main Navigation Enums
         private class MainNav
         {
@@ -330,7 +329,9 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Concrete Paving Quantity Tracker")] Concrete_Paving_Quantity_Tracker,
                 [StringValue("MPL Tracker")] MPL_Tracker,
                 [StringValue("Girder Tracker")] Girder_Tracker,
-                [StringValue("Qms Document")] Qms_Document
+                [StringValue("Qms Document")] Qms_Document,
+                [StringValue("QA Test - Retest Report")] QA_Test_Retest_Report,
+                [StringValue("Environmental Document")] Environmental_Document
             }
         }
 

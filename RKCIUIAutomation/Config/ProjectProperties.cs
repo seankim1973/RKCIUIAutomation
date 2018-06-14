@@ -1,6 +1,7 @@
 ﻿using RKCIUIAutomation.Base;
 using System;
 using System.Collections.Generic;
+using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Config
 {
@@ -50,7 +51,7 @@ namespace RKCIUIAutomation.Config
             }
             catch (Exception e)
             {
-                BaseUtils.LogInfo("Exception occured during GetComponentsForProject method", e);
+                LogInfo("Exception occured during GetComponentsForProject method", e);
             }
 
             return components;
@@ -85,7 +86,6 @@ namespace RKCIUIAutomation.Config
 
         private static readonly List<string> Components_Garnet = new List<string>
         {
-            Component.Submittals
         };
 
         private static readonly List<string> Components_GreenLineExt = new List<string>
@@ -114,7 +114,8 @@ namespace RKCIUIAutomation.Config
             Component.CDR,
             Component.CVL_List_Item,
             Component.Other,
-
+            Component.Project_Configuration,
+            Component.Submittals
         };
     }
 }

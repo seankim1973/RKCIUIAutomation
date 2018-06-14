@@ -1,10 +1,12 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.MarkupUtils;
+using log4net;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace RKCIUIAutomation.Base
 {
@@ -12,6 +14,8 @@ namespace RKCIUIAutomation.Base
     {
         public static string extentReportPath = $"{GetCodeBasePath()}\\Report";
         public static string screenshotReferencePath = null;
+        internal static readonly string methodName = TestContext.CurrentContext.Test.MethodName;
+        internal static readonly ILog log = LogManager.GetLogger("");
 
         public void DetermineFilePath(string _testPlatform)
         {
@@ -38,7 +42,7 @@ namespace RKCIUIAutomation.Base
             return baseDir;
         }
 
-        public string CaptureScreenshot(string fileName)
+        public static string CaptureScreenshot(string fileName)
         {
             string uniqueFileName = $"{fileName}{DateTime.Now.Second}.png";
             var screenshot = Driver.TakeScreenshot();
@@ -51,40 +55,61 @@ namespace RKCIUIAutomation.Base
         public static void LogSkipped(string msg)
         {
             ExtentTestManager.GetTest().Log(Status.Skip, CreateReportMarkupLabel(msg, ExtentColor.Orange));
-            Console.WriteLine(msg);
+            log.Warn(msg);
             Assert.Warn(msg);
         }
         public static void LogInfo(string details)
         {
-            ExtentTestManager.GetTest().Info(details);
-            if (details.Contains("<br>"))
+            if (details.Contains("#####"))
             {
-                var value = details.Split('<');
-                Console.WriteLine($" {value[0]}");
-                value = details.Split('>');
-                Console.WriteLine(value[1]);
+                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details));
             }
             else
-                Console.WriteLine(details);
+                ExtentTestManager.GetTest().Info(details);
+            log.Info(details);    
         }
+        public static void LogErrorWithScreenshot()
+        {
+            string screenshotPath = CaptureScreenshot(methodName);
+            ExtentTestManager.GetTest().Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
+        }
+
         public static void LogInfo(string details, Exception e)
         {
-            ExtentTestManager.GetTest().Log(Status.Info, CreateReportMarkupLabel(details, ExtentColor.Orange));
-            ExtentTestManager.GetTest().Log(Status.Info, CreateReportMarkupCodeBlock(e));
-            Console.WriteLine(e.Message);
+            ExtentTestManager.GetTest().Warning(CreateReportMarkupLabel(details, ExtentColor.Orange));           
+            if(e != null)
+            {
+                ExtentTestManager.GetTest().Warning(CreateReportMarkupLabel(e.Message, ExtentColor.Transparent));
+                log.Debug(e.Message);
+            }
         }
         public static void LogInfo(string details, bool assertion, Exception e = null)
         {
             if (assertion)
             {
-                ExtentTestManager.GetTest().Log(Status.Pass, CreateReportMarkupLabel(details, ExtentColor.Green));
-                Console.WriteLine(details);
+                ExtentTestManager.GetTest().Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
+
+                if (details.Contains("<br>"))
+                {
+                    string[] result = Regex.Split(details, "<br>");
+                    log.Info(result[1]);
+                    log.Info(result[2]);
+                }
+                else
+                {
+                    log.Info(details);
+                }
             }
             else
             {
-                ExtentTestManager.GetTest().Log(Status.Fail, CreateReportMarkupLabel(details, ExtentColor.Red));
-                Console.WriteLine(e.Message);
-            }     
+                ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
+                LogErrorWithScreenshot();
+
+                if (e != null)
+                {
+                    log.Debug(e.Message);
+                }
+            }
         }
 
         private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
