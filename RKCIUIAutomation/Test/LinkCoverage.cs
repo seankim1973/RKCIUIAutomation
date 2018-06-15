@@ -15,6 +15,7 @@ namespace RKCIUIAutomation.Test
 
         [Test]
         [Category(Component.Link_Coverage)]
+        [Property("Component2",Component.OV_Test)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for OV Menu only")]

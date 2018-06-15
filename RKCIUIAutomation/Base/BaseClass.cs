@@ -24,7 +24,8 @@ namespace RKCIUIAutomation.Base
         private TestStatus testStatus;
 
         string testName;
-        string testComponent;
+        string testComponent1;
+        string testComponent2;
         string testDescription;
         string testPriority;
         string testCaseNumber;
@@ -67,7 +68,8 @@ namespace RKCIUIAutomation.Base
             try
             {
                 testName = testInstance.Name;
-                testComponent = testInstance.Properties.Get("Category").ToString();
+                testComponent1 = testInstance.Properties.Get("Category").ToString();
+                testComponent2 = testInstance.Properties.Get("Component2").ToString();
                 testDescription = testInstance.Properties.Get("Description").ToString();
                 testPriority = testInstance.Properties.Get("Priority").ToString();
                 testCaseNumber = testInstance.Properties.Get("TC#").ToString();
@@ -77,11 +79,16 @@ namespace RKCIUIAutomation.Base
                 ExtentTestManager
                     .CreateTest($"<font size=3>TestCase# : {testCaseNumber} - {testName}</font><br><font size=2>{testDescription}</font>")
                     .AssignCategory(testPriority)
-                    .AssignCategory(testComponent)
+                    .AssignCategory(testComponent1)
                     .AssignCategory(testSuite);
 
-                if (GetComponentsForProject(projectName).Contains(testComponent))
+                var tenantContainsComponent1 = GetComponentsForProject(projectName).Contains(testComponent1);
+                
+                if (tenantContainsComponent1)
                 {
+                    var tenantContainsComponent2 = GetComponentsForProject(projectName).Contains(testComponent2);
+
+                    if (tenantContainsComponent2 || tenantContainsComponent2.Equals(null))
                     switch (testPlatform)
                     {
                         case TestPlatform.Local:
@@ -97,12 +104,12 @@ namespace RKCIUIAutomation.Base
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl(siteUrl);
 
-                    LogTestDetails(projectName, testEnv, siteUrl, browserType, testName, testCaseNumber, testSuite, testDescription, testComponent, testPriority);
+                    LogTestDetails(projectName, testEnv, siteUrl, browserType, testName, testCaseNumber, testSuite, testDescription, testComponent1, testPriority);
                 }
                 else
                 {
                     testStatus = TestStatus.Skipped;
-                    string msg = $"TEST SKIPPED : Project ({projectName}) does not have implementation of the component ({testComponent}).";
+                    string msg = $"TEST SKIPPED : Project ({projectName}) does not have implementation of the component ({testComponent1}).";
                     LogSkipped(msg);
                 }
             }
