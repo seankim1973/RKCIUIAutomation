@@ -10,7 +10,7 @@ namespace RKCIUIAutomation.Page.Navigation
     /// <summary>
     /// Common pageObjects and workflows are inherited from abstract _Impl class
     /// </summary>
-    public class PageNavigation : PageNavigation_Impl, IPageNavigation
+    public class PageNavigation : PageNavigation_Impl//, IPageNavigation
     { }
 
     public class PageNavigation_SGWay : PageNavigation

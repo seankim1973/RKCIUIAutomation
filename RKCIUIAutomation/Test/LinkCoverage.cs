@@ -5,15 +5,94 @@ using RKCIUIAutomation.Config;
 
 namespace RKCIUIAutomation.Test
 {
+    //NUnit Test Case Methods
     [TestFixture]
-    public class LinkCoverage :TestBase
+    public class LinkCoverage : LinkCoverage_Impl
     {
+        ILinkCoverage Instance => SetClass<ILinkCoverage>();
+
         [Test]
         [Category(Component.Project_Configuration)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name- for Project Configuration Menu only")]
-        public void NavigateToVerifyProjectConfigurationMenu()
+        public override void NavigateToVerifyProjectConfigurationMenu() => Instance._NavigateToVerifyProjectConfigurationMenu();
+
+        [Test]
+        [Category(Component.Testing_Module)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name- for QA Engineer Menu only")]
+        public override void NavigateToVerifyQAEngineerMenu() => Instance._NavigateToVerifyQAEngineerMenu();
+
+        [Test]
+        [Category(Component.Project_Configuration)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name- for QA Lab Menu only")]
+        public override void NavigateToVerifyQALabMenu() => Instance._NavigateToVerifyQALabMenu();
+
+        [Test]
+        [Category(Component.Project_Configuration)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name- for QA Record Control Menu only")]
+        public override void NavigateToVerifyQARecordControlMenu() => Instance._NavigateToVerifyQARecordControlMenu();
+    }
+
+
+
+    //Workflow interfaces
+    public interface ILinkCoverage
+    {
+        void _NavigateToVerifyProjectConfigurationMenu();
+        void _NavigateToVerifyQALabMenu();
+        void _NavigateToVerifyQARecordControlMenu();
+        void _NavigateToVerifyQAEngineerMenu();
+    }
+
+
+
+    // Common workflow implementations
+    public abstract class LinkCoverage_Impl : TestBase, ILinkCoverage
+    {
+        public abstract void NavigateToVerifyQARecordControlMenu();
+        public virtual void _NavigateToVerifyQARecordControlMenu()
+        {
+            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
+            LoginAs(UserType.Bhoomi);
+            //Navigate.Menu(Navigate)
+            //Navigate.Menu(.Menu.QA_Test_Original_Report);
+            //Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Correction_Report);
+
+
+            // Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_All);
+            // Navigate.Menu(NavMenu.QARecordControl.Menu.QA_DIRs);
+            // Navigate.Menu(NavMenu.QARecordControl.Menu.General_NCR);
+            // Navigate.Menu(NavMenu.QARecordControl.Menu.General_CDR);
+            // Navigate.Menu(NavMenu.QARecordControl.Menu.Retaining_Wall_BackFill_Quantity_Tracker);
+            // Navigate.Menu(NavMenu.QARecordControl.Menu.Concrete_Paving_Quantity_Tracker);
+            // Navigate.Menu(NavMenu.QARecordControl.Menu.MPL_Tracker);
+            // Navigate.Menu(NavMenu.QARecordControl.Menu.Girder_Tracker);
+
+            // Navigate.Menu(NavMenu.QARecordControl.Menu.Qms_Document); //DONE - Create a method to go to QMS, for ex: GotoQMSDocs()
+
+
+        }
+
+
+        public abstract void NavigateToVerifyQAEngineerMenu();
+        public virtual void _NavigateToVerifyQAEngineerMenu()
+        {
+            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
+            LoginAs(UserType.Bhoomi);
+
+
+        }
+
+
+        public abstract void NavigateToVerifyProjectConfigurationMenu();
+        public virtual void _NavigateToVerifyProjectConfigurationMenu()
         {
             LogInfo($"Project Configuration component test - This test should run");
             LoginAs(UserType.Bhoomi);
@@ -86,12 +165,121 @@ namespace RKCIUIAutomation.Test
             Assert.True(VerifyPageTitle("Locked Records"));
         }
 
-        [Test]
-        [Category(Component.Project_Configuration)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name- for QA Lab Menu only")]
-        public void NavigateToVerifyQALabMenu()
+        /// <summary>
+        /// Common workflow methof for Tenants: GLX, I15South, I15Tech, & SH249
+        /// </summary>
+        public abstract void NavigateToVerifyQALabMenu();
+        public virtual void _NavigateToVerifyQALabMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+
+            NavigateToPage.QALab_Technician_Random();
+            bool techRandomTitleDisplayed = VerifyPageTitle("Technician Random");
+            NavigateToPage.QALab_BreakSheet_Creation();
+            bool breaksheetCreationTitleDisplayed = VerifyPageTitle("Create Break Sheet");
+            NavigateToPage.QALab_BreakSheet_Legacy();
+            bool breaksheetLegacyTitleDisplayed = VerifyPageTitle("Break Sheet Legacy");
+            NavigateToPage.QALab_Equipment_Management();
+            bool equipMgmtTitleDisplayed = VerifyPageTitle("Equipment");
+            NavigateToPage.QALab_BreakSheet_Forecast();
+            bool breaksheetForecastTitleDisplayed = VerifyPageTitle("Break Sheet Forecast");
+            NavigateToPage.QALab_Early_Break_Calendar();
+            bool earlyBreakCalendarDisplayed = VerifySchedulerIsDisplayed();
+
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(techRandomTitleDisplayed);
+                Assert.True(breaksheetCreationTitleDisplayed);
+                Assert.True(breaksheetLegacyTitleDisplayed);
+                Assert.True(equipMgmtTitleDisplayed);
+                Assert.True(breaksheetForecastTitleDisplayed);
+                Assert.True(earlyBreakCalendarDisplayed);
+            });
+        }
+
+
+        public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
+        public static ILinkCoverage SetPageClassBasedOnTenant()
+        {
+            ILinkCoverage instance = new LinkCoverage();
+
+            if (projectName == ProjectName.SGWay)
+            {
+                LogInfo($"###### using LinkCoverage_SGWay instance ###### ");
+                instance = new LinkCoverage_SGWay();
+            }
+            else if (projectName == ProjectName.SH249)
+            {
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverage_SH249();
+            }
+            else if (projectName == ProjectName.Garnet)
+            {
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverage_Garnet();
+            }
+            else if (projectName == ProjectName.GLX)
+            {
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverage_GLX();
+            }
+            else if (projectName == ProjectName.I15South)
+            {
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverage_I15South();
+            }
+            else if (projectName == ProjectName.I15Tech)
+            {
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverage_I15Tech();
+            }
+
+            return instance;
+        }
+    }
+
+
+
+    // Tenant based implementations
+    public class LinkCoverage_Garnet : LinkCoverage
+    {
+        public override void _NavigateToVerifyQALabMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+
+            NavigateToPage.QALab_Technician_Random();
+            bool techRandomTitleDisplayed = VerifyPageTitle("Technician Random");
+            NavigateToPage.QALab_BreakSheet_Creation();
+            bool breaksheetCreationTitleDisplayed = VerifyPageTitle("Create Break Sheet");
+            NavigateToPage.QALab_BreakSheet_Legacy();
+            bool breaksheetLegacyTitleDisplayed = VerifyPageTitle("Break Sheet Legacy");
+            NavigateToPage.QALab_Equipment_Management();
+            bool equipMgmtTitleDisplayed = VerifyPageTitle("Equipment");
+            NavigateToPage.QALab_BreakSheet_Forecast();
+            bool breaksheetForecastTitleDisplayed = VerifyPageTitle("Break Sheet Forecast");
+
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(techRandomTitleDisplayed);
+                Assert.True(breaksheetCreationTitleDisplayed);
+                Assert.True(breaksheetLegacyTitleDisplayed);
+                Assert.True(equipMgmtTitleDisplayed);
+                Assert.True(breaksheetForecastTitleDisplayed);
+            });
+        }
+    }
+
+    public class LinkCoverage_GLX : LinkCoverage
+    {
+    }
+
+    public class LinkCoverage_SH249 : LinkCoverage
+    {
+    }
+
+    public class LinkCoverage_SGWay : LinkCoverage
+    {
+        public override void _NavigateToVerifyQALabMenu()
         {
             LoginAs(UserType.Bhoomi);
 
@@ -121,47 +309,13 @@ namespace RKCIUIAutomation.Test
                 Assert.True(earlyBreakCalendarDisplayed);
             });
         }
+    }
 
-        [Test]
-        [Category(Component.Project_Configuration)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name- for QA Record Control Menu only")]
-        public void NavigateToVerifyQARecordControlMenu()
-        {
-            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
-            LoginAs(UserType.Bhoomi);
-           //Navigate.Menu(Navigate)
-           //Navigate.Menu(.Menu.QA_Test_Original_Report);
-           //Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Correction_Report);
-           
-    
-           // Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_All);
-           // Navigate.Menu(NavMenu.QARecordControl.Menu.QA_DIRs);
-           // Navigate.Menu(NavMenu.QARecordControl.Menu.General_NCR);
-           // Navigate.Menu(NavMenu.QARecordControl.Menu.General_CDR);
-           // Navigate.Menu(NavMenu.QARecordControl.Menu.Retaining_Wall_BackFill_Quantity_Tracker);
-           // Navigate.Menu(NavMenu.QARecordControl.Menu.Concrete_Paving_Quantity_Tracker);
-           // Navigate.Menu(NavMenu.QARecordControl.Menu.MPL_Tracker);
-           // Navigate.Menu(NavMenu.QARecordControl.Menu.Girder_Tracker);
-        
-           // Navigate.Menu(NavMenu.QARecordControl.Menu.Qms_Document); //DONE - Create a method to go to QMS, for ex: GotoQMSDocs()
+    public class LinkCoverage_I15South : LinkCoverage
+    {
+    }
 
-
-        }
-
-        [Test]
-        [Category(Component.Testing_Module)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name- for QA Engineer Menu only")]
-        public void NavigateToVerifyQAEngineerMenu()
-        {
-            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
-            LoginAs(UserType.Bhoomi);
-            
-
-        }
-
+    public class LinkCoverage_I15Tech : LinkCoverage
+    {
     }
 }
