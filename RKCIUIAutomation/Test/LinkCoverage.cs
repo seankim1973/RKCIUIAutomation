@@ -2,60 +2,125 @@
 using static RKCIUIAutomation.Config.ProjectProperties;
 using NUnit.Framework;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
+using RKCIUIAutomation.Base;
 
 namespace RKCIUIAutomation.Test
 {
-    //NUnit Test Case Methods
+    #region NUnit Test Case Methods class
     [TestFixture]
     public class LinkCoverage : LinkCoverage_Impl
     {
         ILinkCoverage Instance => SetClass<ILinkCoverage>();
 
         [Test]
-        [Category(Component.Project_Configuration)]
+        [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name- for Project Configuration Menu only")]
+        [Description("Verify Page Title for OV Menu only")]
+        public override void NavigateToOVMenu() => Instance._NavigateToOVMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public override void NavigateToRMCenterMenu() => Instance._NavigateToRMCenterMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Project Configuration Menu only")]
         public override void NavigateToVerifyProjectConfigurationMenu() => Instance._NavigateToVerifyProjectConfigurationMenu();
 
         [Test]
-        [Category(Component.Testing_Module)]
+        [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name- for QA Engineer Menu only")]
+        [Description("Verify Page Title for QA Engineer Menu only")]
         public override void NavigateToVerifyQAEngineerMenu() => Instance._NavigateToVerifyQAEngineerMenu();
 
         [Test]
-        [Category(Component.Project_Configuration)]
+        [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name- for QA Lab Menu only")]
+        [Description("Verify Page Title for QA Lab Menu only")]
         public override void NavigateToVerifyQALabMenu() => Instance._NavigateToVerifyQALabMenu();
 
         [Test]
-        [Category(Component.Project_Configuration)]
+        [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name- for QA Record Control Menu only")]
+        [Description("Verify Page Title for QA Record Control Menu only")]
         public override void NavigateToVerifyQARecordControlMenu() => Instance._NavigateToVerifyQARecordControlMenu();
     }
+    #endregion <-- end of Test Case Methods class
 
 
-
-    //Workflow interfaces
+    #region Workflow Interface class
     public interface ILinkCoverage
     {
         void _NavigateToVerifyProjectConfigurationMenu();
         void _NavigateToVerifyQALabMenu();
+        void _NavigateToOVMenu();
         void _NavigateToVerifyQARecordControlMenu();
         void _NavigateToVerifyQAEngineerMenu();
+        void _NavigateToRMCenterMenu();
     }
+    #endregion <-- end of Workflow Interface class
 
 
-
-    // Common workflow implementations
+    #region Common Workflow Implementation class
     public abstract class LinkCoverage_Impl : TestBase, ILinkCoverage
     {
+        /// <summary>
+        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
+        /// </summary>
+        public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
+        public static ILinkCoverage SetPageClassBasedOnTenant()
+        {
+            ILinkCoverage instance = new LinkCoverage();
+
+            if (projectName == ProjectName.SGWay)
+            {
+                LogInfo($"###### using LinkCoverage_SGWay instance ###### ");
+                instance = new LinkCoverage_SGWay();
+            }
+            else if (projectName == ProjectName.SH249)
+            {
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverage_SH249();
+            }
+            else if (projectName == ProjectName.Garnet)
+            {
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverage_Garnet();
+            }
+            else if (projectName == ProjectName.GLX)
+            {
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverage_GLX();
+            }
+            else if (projectName == ProjectName.I15South)
+            {
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverage_I15South();
+            }
+            else if (projectName == ProjectName.I15Tech)
+            {
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverage_I15Tech();
+            }
+
+            return instance;
+        }
+
+
+
+        /// <summary>
+        /// TODO - implement common workflow
+        /// </summary>
         public abstract void NavigateToVerifyQARecordControlMenu();
         public virtual void _NavigateToVerifyQARecordControlMenu()
         {
@@ -80,7 +145,9 @@ namespace RKCIUIAutomation.Test
 
         }
 
-
+        /// <summary>
+        /// TODO - implement common workflow
+        /// </summary>
         public abstract void NavigateToVerifyQAEngineerMenu();
         public virtual void _NavigateToVerifyQAEngineerMenu()
         {
@@ -90,7 +157,9 @@ namespace RKCIUIAutomation.Test
 
         }
 
-
+        /// <summary>
+        /// TODO - implement common workflow
+        /// </summary>
         public abstract void NavigateToVerifyProjectConfigurationMenu();
         public virtual void _NavigateToVerifyProjectConfigurationMenu()
         {
@@ -166,7 +235,7 @@ namespace RKCIUIAutomation.Test
         }
 
         /// <summary>
-        /// Common workflow methof for Tenants: GLX, I15South, I15Tech, & SH249
+        /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
         public abstract void NavigateToVerifyQALabMenu();
         public virtual void _NavigateToVerifyQALabMenu()
@@ -197,50 +266,75 @@ namespace RKCIUIAutomation.Test
             });
         }
 
-
-        public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-        public static ILinkCoverage SetPageClassBasedOnTenant()
+        /// <summary>
+        /// Common workflow method for Tenants: GLX, I15South, I15Tech, SGWay, & SH249
+        /// </summary>
+        public abstract void NavigateToRMCenterMenu();
+        public virtual void _NavigateToRMCenterMenu()
         {
-            ILinkCoverage instance = new LinkCoverage();
+            LoginAs(UserType.Bhoomi);
 
-            if (projectName == ProjectName.SGWay)
-            {
-                LogInfo($"###### using LinkCoverage_SGWay instance ###### ");
-                instance = new LinkCoverage_SGWay();
-            }
-            else if (projectName == ProjectName.SH249)
-            {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
-                instance = new LinkCoverage_SH249();
-            }
-            else if (projectName == ProjectName.Garnet)
-            {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
-                instance = new LinkCoverage_Garnet();
-            }
-            else if (projectName == ProjectName.GLX)
-            {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
-                instance = new LinkCoverage_GLX();
-            }
-            else if (projectName == ProjectName.I15South)
-            {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
-                instance = new LinkCoverage_I15South();
-            }
-            else if (projectName == ProjectName.I15Tech)
-            {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
-                instance = new LinkCoverage_I15Tech();
-            }
+            NavigateToPage.RMCenter_Search();
+            bool RMCenter_Search_TitleDisplayed = VerifyPageTitle("RM Center Search");
+            NavigateToPage.RMCenter_Design_Documents();
+            bool RMCenter_Design_Documents_TitleDisplayed = VerifyPageTitle("Design Document");
+            NavigateToPage.RMCenter_Upload_QA_Submittal();
+            bool RMCenter_Upload_QA_Submittal_TitleDisplayed = VerifyPageTitle("Submittal Details");
+            NavigateToPage.RMCenter_Upload_Owner_Submittal();
+            bool RMCenter_Upload_Owner_Submittal_TitleDisplayed = VerifyPageTitle("New Submittal");
+            NavigateToPage.RMCenter_Upload_DEV_Submittal();
+            bool RMCenter_Upload_DEV_Submittal_TitleDisplayed = VerifyPageTitle("Submittal Details");
+            NavigateToPage.RMCenter_DOT_Project_Correspondence_Log();
+            bool RMCenter_DOT_Project_Correspondence_Log_TitleDisplayed = VerifyPageTitle("Transmissions");
+            NavigateToPage.RMCenter_Review_Revise_Submittal();
+            bool RMCenter_Review_Revise_Submittal_TitleDisplayed = VerifyPageTitle("Review / Revise Submittals");
+            NavigateToPage.RMCenter_RFC_Management();
+            bool RMCenter_RFC_Management_TitleDisplayed = VerifyPageTitle("RFC List");
+            NavigateToPage.RMCenter_Project_Correspondence_Log();
+            bool RMCenter_Project_Correspondence_Log_TitleDisplayed = VerifyPageTitle("Transmissions");
 
-            return instance;
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(RMCenter_Search_TitleDisplayed);
+                Assert.True(RMCenter_Design_Documents_TitleDisplayed);
+                Assert.True(RMCenter_Upload_QA_Submittal_TitleDisplayed);
+                Assert.True(RMCenter_Upload_Owner_Submittal_TitleDisplayed);
+                Assert.True(RMCenter_Upload_DEV_Submittal_TitleDisplayed);
+                Assert.True(RMCenter_DOT_Project_Correspondence_Log_TitleDisplayed);
+                Assert.True(RMCenter_Review_Revise_Submittal_TitleDisplayed);
+                Assert.True(RMCenter_RFC_Management_TitleDisplayed);
+                Assert.True(RMCenter_Project_Correspondence_Log_TitleDisplayed);
+            });
         }
+
+        public abstract void NavigateToOVMenu();
+        public virtual void _NavigateToOVMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+
+            NavigateToPage.OV_Create_OV_Test();
+            bool OV_Create_OV_Test_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            NavigateToPage.OV_OV_Test();
+            bool OV_OV_Test_TitleDisplayed = VerifyPageTitle("OV Tests");
+
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(OV_Create_OV_Test_FormIsDisplayed);
+                Assert.True(OV_OV_Test_TitleDisplayed);
+            });
+        }
+
     }
+    #endregion <-- end of common implementation class
 
 
 
-    // Tenant based implementations
+
+    /// <summary>
+    /// Tenant specific implementation of LinkCoverage
+    /// </summary>
+
+    #region Implementation specific to Garnet
     public class LinkCoverage_Garnet : LinkCoverage
     {
         public override void _NavigateToVerifyQALabMenu()
@@ -267,16 +361,26 @@ namespace RKCIUIAutomation.Test
                 Assert.True(breaksheetForecastTitleDisplayed);
             });
         }
-    }
 
+    }
+    #endregion
+
+
+    #region Implementation specific to GLX
     public class LinkCoverage_GLX : LinkCoverage
     {
     }
+    #endregion
 
+
+    #region Implementation specific to SGWay
     public class LinkCoverage_SH249 : LinkCoverage
     {
     }
+    #endregion
 
+
+    #region Implementation specific to SGWay
     public class LinkCoverage_SGWay : LinkCoverage
     {
         public override void _NavigateToVerifyQALabMenu()
@@ -309,13 +413,62 @@ namespace RKCIUIAutomation.Test
                 Assert.True(earlyBreakCalendarDisplayed);
             });
         }
-    }
 
+        public override void _NavigateToRMCenterMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+
+            NavigateToPage.RMCenter_Search();
+            bool RMCenter_Search_TitleDisplayed = VerifyPageTitle("RM Center Search");
+            NavigateToPage.RMCenter_Design_Documents();
+            bool RMCenter_Design_Documents_TitleDisplayed = VerifyPageTitle("Design Document");
+            NavigateToPage.RMCenter_Upload_QA_Submittal();
+            bool RMCenter_Upload_QA_Submittal_TitleDisplayed = VerifyPageTitle("Submittal Details");
+            NavigateToPage.RMCenter_Upload_Owner_Submittal();
+            bool RMCenter_Upload_Owner_Submittal_TitleDisplayed = VerifyPageTitle("New Submittal");
+            NavigateToPage.RMCenter_Upload_DEV_Submittal();
+            bool RMCenter_Upload_DEV_Submittal_TitleDisplayed = VerifyPageTitle("Submittal Details");
+            NavigateToPage.RMCenter_DOT_Project_Correspondence_Log();
+            bool RMCenter_DOT_Project_Correspondence_Log_TitleDisplayed = VerifyPageTitle("Transmissions");
+            NavigateToPage.RMCenter_Review_Revise_Submittal();
+            bool RMCenter_Review_Revise_Submittal_TitleDisplayed = VerifyPageTitle("Review / Revise Submittals");
+            NavigateToPage.RMCenter_RFC_Management();
+            bool RMCenter_RFC_Management_TitleDisplayed = VerifyPageTitle("RFC List");
+            NavigateToPage.RMCenter_Project_Correspondence_Log();
+            bool RMCenter_Project_Correspondence_Log_TitleDisplayed = VerifyPageTitle("Transmissions");
+            NavigateToPage.RMCenter_Comment_Summary();
+            bool RMCenter_Comment_Summary_TitleDisplayed = VerifyPageTitle("Comment Summary Search");
+
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(RMCenter_Search_TitleDisplayed);
+                Assert.True(RMCenter_Design_Documents_TitleDisplayed);
+                Assert.True(RMCenter_Upload_QA_Submittal_TitleDisplayed);
+                Assert.True(RMCenter_Upload_Owner_Submittal_TitleDisplayed);
+                Assert.True(RMCenter_Upload_DEV_Submittal_TitleDisplayed);
+                Assert.True(RMCenter_DOT_Project_Correspondence_Log_TitleDisplayed);
+                Assert.True(RMCenter_Review_Revise_Submittal_TitleDisplayed);
+                Assert.True(RMCenter_RFC_Management_TitleDisplayed);
+                Assert.True(RMCenter_Project_Correspondence_Log_TitleDisplayed);
+                Assert.True(RMCenter_Comment_Summary_TitleDisplayed);
+            });
+        }
+    }
+    #endregion
+
+
+    #region Implementation specific to I15South
     public class LinkCoverage_I15South : LinkCoverage
     {
-    }
 
+    }
+    #endregion
+
+
+    #region Implementation specific to I15Tech
     public class LinkCoverage_I15Tech : LinkCoverage
     {
     }
+
+    #endregion
 }

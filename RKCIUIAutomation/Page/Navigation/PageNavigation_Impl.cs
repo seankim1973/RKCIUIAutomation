@@ -113,6 +113,11 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QALab_Early_Break_Calendar() => Navigate.Menu(NavMenu.QALab.Menu.Early_Break_Calendar);
         #endregion
 
+        #region OV Menu
+        public virtual void OV_Create_OV_Test() => Navigate.Menu(NavMenu.OV.Menu.Create_OV_Test);
+        public virtual void OV_OV_Test() => Navigate.Menu(NavMenu.OV.Menu.OV_Tests);
+        #endregion
+
         #region QA Records Control Menu
         public virtual void QARecordControl_QA_Test_Original_Report() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Original_Report);
         public virtual void QARecordControl_QA_Test_Correction_Report() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Correction_Report);

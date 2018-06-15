@@ -1,5 +1,4 @@
-﻿using RKCIUIAutomation.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using static RKCIUIAutomation.Base.BaseUtils;
 
@@ -36,6 +35,10 @@ namespace RKCIUIAutomation.Config
             public const string User_Mgmt = "User_Mgmt";
             public const string Submittals = "Submittals";
             public const string Guide_Schedule = "Guide_Schedule";
+            public const string Link_Coverage = "Link_Coverage";
+
+            //Secondary Components (not in Jira)
+            public const string OV_Test = "OV_Test";
         }
 
         private static List<string> additionalComponents;
@@ -110,6 +113,7 @@ namespace RKCIUIAutomation.Config
 
         private static readonly List<string> CommonComponents = new List<string>
         {
+            Component.Link_Coverage,
             Component.Breaksheet,
             Component.CDR,
             Component.CVL_List_Item,

@@ -230,7 +230,7 @@ namespace RKCIUIAutomation.Page
         }
 
         private static string PageTitle = string.Empty;
-        private static bool IsElementDisplayed(By elementByLocator)
+        public static bool IsElementDisplayed(By elementByLocator)
         {
             IWebElement element = GetElement(elementByLocator);
             bool isDisplayed = false;
@@ -258,21 +258,21 @@ namespace RKCIUIAutomation.Page
             bool isDisplayed = false;
             By headingElement = null;
 
-            headingElement = By.XPath($"//h2[contains(text(),'{expectedPageTitle}')]");
+            headingElement = By.XPath($"//h3[contains(text(),'{expectedPageTitle}')]");
             isDisplayed = IsElementDisplayed(headingElement);
             if (!isDisplayed)
             {
-                headingElement = By.XPath($"//h3[contains(text(),'{expectedPageTitle}')]");
+                headingElement = By.XPath($"//h2[contains(text(),'{expectedPageTitle}')]");
                 isDisplayed = IsElementDisplayed(headingElement);
                 if (!isDisplayed)
                 {
                     LogError($"Page Title element with h2 or h3 tag containing text '{expectedPageTitle}' was not found.");
 
-                    headingElement = By.XPath("//h2");
+                    headingElement = By.XPath("//h3");
                     isDisplayed = IsElementDisplayed(headingElement);
                     if (!isDisplayed)
                     {
-                        headingElement = By.XPath("//h3");
+                        headingElement = By.XPath("//h2");
                         isDisplayed = IsElementDisplayed(headingElement);
                     }
                 }
@@ -294,7 +294,7 @@ namespace RKCIUIAutomation.Page
             return isMatchingTitle;
         }
 
-        public static bool VerifySchedulerIsDisplayed()
+        public static bool VerifySchedulerIsDisplayed() //TODO - move to Early Break Calendar class when more test cases are created
         {
             IWebElement scheduler = GetElement(By.Id("scheduler"));
             bool isDisplayed = scheduler.Displayed;

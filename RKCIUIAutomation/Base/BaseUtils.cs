@@ -5,6 +5,7 @@ using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -125,4 +126,21 @@ namespace RKCIUIAutomation.Base
             return MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");
         }
     }
+
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public class ComponentsAttribute : CategoryAttribute
+    {
+        private IList<string> components = new List<string>();
+
+        public ComponentsAttribute(string component1, string component2 = "")
+        {
+            components.Add(component1);
+            components.Add(component2);
+            Value = components;
+        }
+        
+        public IList<string> Value { get; set; }
+    }
+
 }
