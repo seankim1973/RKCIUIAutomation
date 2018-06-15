@@ -97,10 +97,12 @@ namespace RKCIUIAutomation.Config
 
         private static readonly List<string> Components_I15Southbound = new List<string>
         {
+            Component.OV_Test
         };
 
         private static readonly List<string> Components_I15TechCorridor = new List<string>
         {
+            Component.OV_Test
         };
 
         private static readonly List<string> Components_SH249Ext = new List<string>
@@ -109,6 +111,7 @@ namespace RKCIUIAutomation.Config
 
         private static readonly List<string> Components_SouthernGateway = new List<string>
         {
+            
         };
 
         private static readonly List<string> CommonComponents = new List<string>

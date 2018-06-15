@@ -83,7 +83,8 @@ namespace RKCIUIAutomation.Base
 
         public static void LogInfo(string details, Exception e)
         {
-            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));           
+            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
+            log.Debug(details);
             if(e != null)
             {
                 ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
@@ -95,7 +96,7 @@ namespace RKCIUIAutomation.Base
             if (assertion)
             {
                 ExtentTestManager.GetTest().Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
-
+                
                 if (details.Contains("<br>"))
                 {
                     string[] result = Regex.Split(details, "<br>&nbsp;&nbsp;");
@@ -126,21 +127,4 @@ namespace RKCIUIAutomation.Base
             return MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");
         }
     }
-
-
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class ComponentsAttribute : CategoryAttribute
-    {
-        private IList<string> components = new List<string>();
-
-        public ComponentsAttribute(string component1, string component2 = "")
-        {
-            components.Add(component1);
-            components.Add(component2);
-            Value = components;
-        }
-        
-        public IList<string> Value { get; set; }
-    }
-
 }
