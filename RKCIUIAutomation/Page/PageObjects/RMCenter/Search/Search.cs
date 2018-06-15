@@ -3,7 +3,7 @@
     /// <summary>
     /// Common pageObjects and workflows are inherited from abstract _Impl class
     /// </summary>
-    public class Search : Search_Impl, ISearch
+    public class Search : Search_Impl//, ISearch
     { }
 
     /// <summary>

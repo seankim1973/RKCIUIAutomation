@@ -262,6 +262,6 @@ __pycache__/
 
 # Extent Report & Error Screenshots
 Report
-Report/Extent.html
+Report/*.html
 Report/errorscreenshots
 Report/errorscreenshots/*.png
