@@ -30,11 +30,11 @@ namespace RKCIUIAutomation.Page
             }
             return $"//div[@id='{ddListID.GetString()}-list']//li[{locatorXpath}]";
         }
-
         private static string SetDDListItemsXpath(Enum ddListID, int itemIndex) => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";
         private static string SetTableTabXpath(Enum tableTab) => $"//ul[@class='k-reset k-tabstrip-items']//span[text()='{tableTab.GetString()}']";
         private static string SetTableNavPageXpath(int pageNumber) => $"//div[@id='TestGrid_New']//div[@data-role='pager']/ul/li/a[text()='{pageNumber.ToString()}']";
         private static string SetTextInputFieldByLocator(Enum inputEnum) => $"//input[@id='{inputEnum.GetString()}']";
+
         public static By GetMainNavMenuByLocator(Enum navEnum) => By.XPath(SetMainNavMenuXpath(navEnum));
         public static By GetNavMenuByLocator(Enum navEnum) => By.XPath(SetNavMenuXpath(navEnum));
         public static By GetInputFieldByLocator(string inputFieldLabel) => By.XPath(SetInputFieldXpath(inputFieldLabel));

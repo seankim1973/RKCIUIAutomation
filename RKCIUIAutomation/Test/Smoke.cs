@@ -162,7 +162,7 @@ namespace RKCIUIAutomation.Test
             NavigateToPage.QALab_Early_Break_Calendar();
         }
 
-        //[Test]
+        [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]

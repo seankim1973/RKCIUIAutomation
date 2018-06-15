@@ -65,6 +65,10 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     mainNavEnum = MainNav.Menu.QA_Lab;
                 }
+                else if (reflectedPageType.Equals(typeof(OV)))
+                {
+                    mainNavEnum = MainNav.Menu.OV;
+                }
                 else if (reflectedPageType.Equals(typeof(QARecordControl)))
                 {
                     mainNavEnum = MainNav.Menu.QA_Record_Control;
@@ -183,6 +187,7 @@ namespace RKCIUIAutomation.Page.Navigation
             {
                 [StringValue("Project")] Project,
                 [StringValue("QA Lab")] QA_Lab,
+                [StringValue("OV")] OV,
                 [StringValue("QA Record Control")] QA_Record_Control,
                 [StringValue("QA Engineer")] QA_Engineer,
                 [StringValue("Reports & Notices")] Reports_Notices,
@@ -314,6 +319,16 @@ namespace RKCIUIAutomation.Page.Navigation
             }
         }
 
+        //OV Menu Navigation Enums
+        public class OV
+        {
+            public enum Menu
+            {
+                [StringValue("Create OV Test")] Create_OV_Test,
+                [StringValue("OV Tests")] OV_Tests
+            }
+        }
+
         //QA Record Control Menu Navigation Enums
         public class QARecordControl
         {
@@ -436,7 +451,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Upload DEV Submittal")] Upload_DEV_Submittal,
                 [StringValue("DOT Project Correspondence Log")] DOT_Project_Correspondence_Log,
                 [StringValue("Review / Revise Submittal")] Review_Revise_Submittal,
-                [StringValue("RFC Management")] RFC_Management,
+                [StringValue("RFC Management ")] RFC_Management,
                 [StringValue("Project Correspondence Log")] Project_Correspondence_Log,
                 [StringValue("Project Transmittal Log")] Project_Transmittal_Log,
                 [StringValue("Comment Summary")] Comment_Summary

@@ -64,6 +64,11 @@ namespace RKCIUIAutomation.Page.Navigation
         void QALab_Early_Break_Calendar();
         #endregion
 
+        #region OV Menu
+        void OV_Create_OV_Test();
+        void OV_OV_Test();
+        #endregion
+
         #region QA Records Control Menu
         void QARecordControl_QA_Test_Original_Report();
         void QARecordControl_QA_Test_Correction_Report();

@@ -316,6 +316,7 @@
     <Compile Include="Page\PageObjects\RMCenter\UploadDEVSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadOwnerSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadQASubmittal.cs" />
+    <Compile Include="Page\PageObjects\LabFieldTests\TestDetails.cs" />
     <Compile Include="Page\TableHelper.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
