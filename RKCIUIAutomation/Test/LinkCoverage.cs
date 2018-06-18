@@ -125,23 +125,56 @@ namespace RKCIUIAutomation.Test
         public abstract void NavigateToVerifyQARecordControlMenu();
         public virtual void _NavigateToVerifyQARecordControlMenu()
         {
-            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
-            //Navigate.Menu(Navigate)
-            //Navigate.Menu(.Menu.QA_Test_Original_Report);
-            //Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Correction_Report);
+            //QA Test-Original Report
+            //QA Test- Correction Report (Not in Garnet, glx, I15SB
+            //QA test- All
+            //QA Test- Retest Report
+            //QA DIRs
+            //General NCR
+            //General CDR
+            //Retaining Wall Backfill Quantity Tracker
+            //Concrete Paving Quantity Tracker
+            //MPL Tracker
+            //Girder Tracker
+            //QMS Document(Not in Garnet, glx, sh249, I15tech, I15SB
+            //Environmental Document (Not in Garnet, glx, sh249,I15tech, I15SB
 
+            NavigateToPage.QARecordControl_QA_Test_Original_Report();
+            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            NavigateToPage.QARecordControl_QA_Test_All();
+            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            NavigateToPage.QARecordControl_QA_Test_Retest_Report();
+            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            NavigateToPage.QARecordControl_QA_DIRs();
+            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            NavigateToPage.QARecordControl_General_NCR();
+            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            NavigateToPage.QARecordControl_General_CDR();
+            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
+            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
+            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            NavigateToPage.QARecordControl_MPL_Tracker();
+            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            NavigateToPage.QARecordControl_Girder_Tracker();
+            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+           
 
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_All);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.QA_DIRs);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.General_NCR);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.General_CDR);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.Retaining_Wall_BackFill_Quantity_Tracker);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.Concrete_Paving_Quantity_Tracker);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.MPL_Tracker);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.Girder_Tracker);
-
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.Qms_Document); //DONE - Create a method to go to QMS, for ex: GotoQMSDocs()
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
+                Assert.True(qa_Test_AllTitleDisplayed);
+                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
+                Assert.True(qa_DIRsTitleDisplayed);
+                Assert.True(general_NCRTitleDisplayed);
+                Assert.True(general_CDRTitleDisplayed);
+                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                Assert.True(mpl_TrackerTitleDisplayed);
+                Assert.True(girder_TrackerTitleDisplayed);
+            });
 
 
         }
@@ -374,9 +407,54 @@ namespace RKCIUIAutomation.Test
     #endregion
 
 
-    #region Implementation specific to SGWay
+    #region Implementation specific to SH249
     public class LinkCoverage_SH249 : LinkCoverage
     {
+        public override void _NavigateToVerifyQARecordControlMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            
+            NavigateToPage.QARecordControl_QA_Test_Original_Report();
+            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            NavigateToPage.QARecordControl_QA_Test_Correction_Report();
+            bool qa_Test_Correction_ReportTitleDisplayed = VerifyPageTitle("Create Correction Test Report");
+            NavigateToPage.QARecordControl_QA_Test_All();
+            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            NavigateToPage.QARecordControl_QA_Test_Retest_Report();
+            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            NavigateToPage.QARecordControl_QA_DIRs();
+            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            NavigateToPage.QARecordControl_General_NCR();
+            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            NavigateToPage.QARecordControl_General_CDR();
+            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
+            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
+            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            NavigateToPage.QARecordControl_MPL_Tracker();
+            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            NavigateToPage.QARecordControl_Girder_Tracker();
+            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+
+
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
+                Assert.True(qa_Test_Correction_ReportTitleDisplayed);
+                Assert.True(qa_Test_AllTitleDisplayed);
+                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
+                Assert.True(qa_DIRsTitleDisplayed);
+                Assert.True(general_NCRTitleDisplayed);
+                Assert.True(general_CDRTitleDisplayed);
+                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                Assert.True(mpl_TrackerTitleDisplayed);
+                Assert.True(girder_TrackerTitleDisplayed);
+            });
+
+
+        }
     }
     #endregion
 
@@ -454,6 +532,60 @@ namespace RKCIUIAutomation.Test
                 Assert.True(RMCenter_Comment_Summary_TitleDisplayed);
             });
         }
+
+        public override void _NavigateToVerifyQARecordControlMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+       
+
+            NavigateToPage.QARecordControl_QA_Test_Original_Report();
+            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            NavigateToPage.QARecordControl_QA_Test_Correction_Report();
+            bool qa_Test_Correction_ReportTitleDisplayed = VerifyPageTitle("Create Correction Test Report");
+            NavigateToPage.QARecordControl_QA_Test_All();
+            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            NavigateToPage.QARecordControl_QA_Test_Retest_Report();
+            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            NavigateToPage.QARecordControl_QA_DIRs();
+            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            NavigateToPage.QARecordControl_General_NCR();
+            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            NavigateToPage.QARecordControl_General_CDR();
+            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
+            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
+            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            NavigateToPage.QARecordControl_MPL_Tracker();
+            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            NavigateToPage.QARecordControl_Girder_Tracker();
+            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+            NavigateToPage.Qms_Document();
+            bool qmsDocumentTitleDisplayed = VerifyPageTitle("QMS Documents");
+            NavigateToPage.QARecordControl_Environmental_Document();
+            bool environmental_DocumentTitleDisplayed = VerifyPageTitle("Environmental Documents");
+
+
+
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
+                Assert.True(qa_Test_Correction_ReportTitleDisplayed);
+                Assert.True(qa_Test_AllTitleDisplayed);
+                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
+                Assert.True(qa_DIRsTitleDisplayed);
+                Assert.True(general_NCRTitleDisplayed);
+                Assert.True(general_CDRTitleDisplayed);
+                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                Assert.True(mpl_TrackerTitleDisplayed);
+                Assert.True(girder_TrackerTitleDisplayed);
+                Assert.True(qmsDocumentTitleDisplayed);
+                Assert.True(environmental_DocumentTitleDisplayed);
+            });
+
+
+        }
     }
     #endregion
 
@@ -469,6 +601,51 @@ namespace RKCIUIAutomation.Test
     #region Implementation specific to I15Tech
     public class LinkCoverage_I15Tech : LinkCoverage
     {
+        public override void _NavigateToVerifyQARecordControlMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+
+            NavigateToPage.QARecordControl_QA_Test_Original_Report();
+            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            NavigateToPage.QARecordControl_QA_Test_Correction_Report();
+            bool qa_Test_Correction_ReportTitleDisplayed = VerifyPageTitle("Create Correction Test Report");
+            NavigateToPage.QARecordControl_QA_Test_All();
+            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            NavigateToPage.QARecordControl_QA_Test_Retest_Report();
+            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            NavigateToPage.QARecordControl_QA_DIRs();
+            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            NavigateToPage.QARecordControl_General_NCR();
+            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            NavigateToPage.QARecordControl_General_CDR();
+            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
+            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
+            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            NavigateToPage.QARecordControl_MPL_Tracker();
+            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            NavigateToPage.QARecordControl_Girder_Tracker();
+            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+
+
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
+                Assert.True(qa_Test_Correction_ReportTitleDisplayed);
+                Assert.True(qa_Test_AllTitleDisplayed);
+                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
+                Assert.True(qa_DIRsTitleDisplayed);
+                Assert.True(general_NCRTitleDisplayed);
+                Assert.True(general_CDRTitleDisplayed);
+                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                Assert.True(mpl_TrackerTitleDisplayed);
+                Assert.True(girder_TrackerTitleDisplayed);
+            });
+
+
+        }
     }
 
     #endregion
