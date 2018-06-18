@@ -95,29 +95,27 @@ namespace RKCIUIAutomation.Test
             }
             else if (projectName == ProjectName.Garnet)
             {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                LogInfo($"###### using LinkCoverage_Garnet instance ###### ");
                 instance = new LinkCoverage_Garnet();
             }
             else if (projectName == ProjectName.GLX)
             {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                LogInfo($"###### using LinkCoverage_GLX instance ###### ");
                 instance = new LinkCoverage_GLX();
             }
             else if (projectName == ProjectName.I15South)
             {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                LogInfo($"###### using LinkCoverage_I15South instance ###### ");
                 instance = new LinkCoverage_I15South();
             }
             else if (projectName == ProjectName.I15Tech)
             {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                LogInfo($"###### using LinkCoverage_I15Tech instance ###### ");
                 instance = new LinkCoverage_I15Tech();
             }
 
             return instance;
         }
-
-
 
         /// <summary>
         /// TODO - implement common workflow

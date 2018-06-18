@@ -7,16 +7,29 @@ namespace RKCIUIAutomation.Test
     [TestFixture]
     public class TenantNavMenu : TestBase
     {
-        //[Test]
+        [Test]
         [Category(Component.Other)]
+        [Property("Component2", Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name")]
+        [Description("Generate Page Navigation Menu Names and URLs")]
         public void GetSiteNavigation()
         {
-            LogInfo($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             TestUtils.LoopThroughNavMenu();
+        }
+
+
+        [Test]
+        [Category(Component.Other)]
+        [Property("Component2", Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Generate Page Title for Navigation Menu Pages")]
+        public void GetPageTitles()
+        {
+            LoginAs(UserType.Bhoomi);
+            TestUtils.GetPageTitleForNavPages();
         }
     }
 }

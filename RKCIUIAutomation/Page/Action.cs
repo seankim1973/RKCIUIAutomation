@@ -293,7 +293,6 @@ namespace RKCIUIAutomation.Page
             }
             return isMatchingTitle;
         }
-
         public static bool VerifySchedulerIsDisplayed() //TODO - move to Early Break Calendar class when more test cases are created
         {
             IWebElement scheduler = GetElement(By.Id("scheduler"));
@@ -302,6 +301,8 @@ namespace RKCIUIAutomation.Page
             LogInfo($"Scheduler is{not} displayed", isDisplayed);
             return isDisplayed;
         }
+
+
 
         private static readonly By Btn_Cancel = By.Id("CancelSubmittal");
         private static readonly By Btn_Save = By.Id("SaveSubmittal");

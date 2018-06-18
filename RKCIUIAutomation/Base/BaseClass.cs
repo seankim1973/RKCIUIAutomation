@@ -82,11 +82,15 @@ namespace RKCIUIAutomation.Base
                     .AssignCategory(testComponent1)
                     .AssignCategory(testSuite);
 
-                var tenantContainsComponent1 = GetComponentsForProject(projectName).Contains(testComponent1);
-                
+                bool tenantContainsComponent1 = false;
+                bool tenantContainsComponent2 = false;
+
+
+                tenantContainsComponent1 = GetComponentsForProject(projectName).Contains(testComponent1);
+
                 if (tenantContainsComponent1)
                 {
-                    var tenantContainsComponent2 = GetComponentsForProject(projectName).Contains(testComponent2);
+                    tenantContainsComponent2 = GetComponentsForProject(projectName).Contains(testComponent2);
 
                     if (tenantContainsComponent2 || tenantContainsComponent2.Equals(null))
                     switch (testPlatform)
