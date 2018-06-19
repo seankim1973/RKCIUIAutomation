@@ -3,6 +3,7 @@ using RKCIUIAutomation.Base;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using static RKCIUIAutomation.Base.BaseUtils;
 using static RKCIUIAutomation.Base.WebDriverFactory;
@@ -11,13 +12,27 @@ namespace RKCIUIAutomation.Test
 {
     public static class TestUtils
     {
-        private static List<string> pageUrlList;
-        private static List<Navigation> ls;
-        public static XmlSerializer xs;
-
+        private static string GetDateString()
+        {
+            string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
+            string month = shortDate[0];
+            if (month.Length < 1)
+            {
+                month = $"0{month}";
+            }
+            return $"{month}{shortDate[1]}{shortDate[2]}";
+        }
+        
+        private static readonly string baseTempFolder = $"{GetCodeBasePath()}\\Temp";
         private static readonly string fileName = BaseClass.projectName.ToString();
-        private static string xmlFilePath = $"c:\\Temp\\{fileName}.xml";
 
+        /// <summary>
+        /// Location to project Temp folder with Tenant name as filename
+        /// -- Specify file type extention (i.e. - .xml)
+        /// </summary>
+        public static readonly string fullTempFileName = $"{baseTempFolder}\\{fileName}({GetDateString()})";
+
+        private static List<string> pageUrlList;
 
         private static string GetInnerText(IWebElement listElement)
         {
@@ -29,37 +44,43 @@ namespace RKCIUIAutomation.Test
             IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
             return $"{anchorElem.GetAttribute("href")}";
         }
-        private static void WriteToFile(string fileName, string text)
+        private static void WriteToFile(string msg, string fileExt = ".txt", bool overwriteExisting = false)
         {
-            string path = $"c:\\Temp\\{fileName}.txt";
-            if (!File.Exists(path))
+            string path = $"{fullTempFileName}{fileExt}";
+            StreamWriter workflow = null;
+
+            if (overwriteExisting.Equals(true))
             {
-                // Create a file to write to.
-                using (StreamWriter sw = File.CreateText(path))
+                if (File.Exists(path))
                 {
-                    sw.WriteLine(text);
+                    File.Delete(path);
                 }
+
+                workflow = File.CreateText(path);
             }
             else
             {
-                using (StreamWriter sw = File.AppendText(path))
+                workflow = File.AppendText(path);
+            }
+
+            using (StreamWriter sw = workflow )
+            {
+                if (msg.Contains("<br>"))
                 {
-                    sw.WriteLine(text);
+                    string[] message = Regex.Split(msg, "<br>&nbsp;&nbsp;");
+                    sw.WriteLine(message[0]);
+                    sw.WriteLine(message[1]);
                 }
+                else
+                    sw.WriteLine(msg);
             }
         }
 
-
         public static void LoopThroughNavMenu()
         {
-            ls = new List<Navigation>();
-            xs = new XmlSerializer(typeof(List<Navigation>));
-            pageUrlList = new List<string>();
-
             string pageUrl = string.Empty;
-
-            FileStream fs = new FileStream(xmlFilePath, FileMode.Create, FileAccess.Write);
-            Navigation linklist = new Navigation();
+            WriteToFile($"{BaseClass.projectName} Navigation Menu", ".txt", true); //create {overwrite existing} txt file
+            WriteToFile(Environment.NewLine);
 
             IList<IWebElement> elements = new List<IWebElement>();
             elements = Driver.FindElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
@@ -68,121 +89,127 @@ namespace RKCIUIAutomation.Test
                 string mainNavMenuText = mainNavElem.FindElement(By.XPath("./a")).Text;
                 string mainNavMsg = $">{mainNavMenuText}";
                 log.Info(mainNavMsg); //i.e. Project
-                WriteToFile(fileName, mainNavMsg); //write to txt file
-                linklist.MainNavMenu = mainNavMenuText; //write to xml file
-                ls.Add(linklist);
+                WriteToFile(mainNavMsg); //create {overwrite existing} txt file
 
                 IList<IWebElement> subMainNavElements = mainNavElem.FindElements(By.XPath("./ul/li"));
                 foreach (IWebElement subMainNavElem in subMainNavElements)
                 {
                     string subMainNavMsg;
-                    linklist = new Navigation();
-
-                    pageUrl = GetElementHref(subMainNavElem);
-                    pageUrlList.Add(pageUrl);
 
                     if (!subMainNavElem.GetAttribute("class").Contains("dropdown-submenu"))
                     {
-                        subMainNavMsg = $"  --{GetInnerText(subMainNavElem)} ({pageUrl})";
-                        log.Info(subMainNavMsg); //i.e. Project>>MyDetails
-                        WriteToFile(fileName, subMainNavMsg); //write to txt file
-                        linklist.SubMainNavMenu = GetInnerText(subMainNavElem); //write to xml file
+                        if (!string.IsNullOrEmpty(GetInnerText(subMainNavElem)))
+                        {
+                            pageUrl = GetElementHref(subMainNavElem);
+                            pageUrlList.Add(pageUrl);
+
+                            subMainNavMsg = $"  --{GetInnerText(subMainNavElem)} ({pageUrl})";
+                            log.Info(subMainNavMsg); //i.e. Project>>MyDetails
+                            WriteToFile(subMainNavMsg); //write to txt file
+                        }
                     }
                     else
                     {
                         subMainNavMsg = $"  > {GetInnerText(subMainNavElem)}";
                         log.Info(subMainNavMsg); //i.e. Project>>Administration 
-                        WriteToFile(fileName, subMainNavMsg); //write to txt file
-                        linklist.SubMainNavMenu = GetInnerText(subMainNavElem); //write to xml file
+                        WriteToFile(subMainNavMsg); //write to txt file
 
                         IList<IWebElement> subMenuElements = subMainNavElem.FindElements(By.XPath("./ul/li"));
                         foreach (IWebElement subMenuElem in subMenuElements)
                         {
                             string subMenuMsg;
-                            linklist = new Navigation();
-
-                            pageUrl = GetElementHref(subMenuElem);
-                            pageUrlList.Add(pageUrl);
 
                             if (!subMenuElem.GetAttribute("class").Contains("dropdown-submenu"))
-                            {                                
+                            {
+                                pageUrl = GetElementHref(subMenuElem);
+                                pageUrlList.Add(pageUrl);
+
                                 subMenuMsg = $"    --{GetInnerText(subMenuElem)} ({pageUrl})";
                                 log.Info(subMenuMsg); //i.e. Project>>Administration>>Project Details
-                                WriteToFile(fileName, subMenuMsg); //write to txt file
-                                linklist.SubMenu = GetInnerText(subMenuElem); //write to xml file
+                                WriteToFile(subMenuMsg); //write to txt file
                             }
                             else
                             {
                                 subMenuMsg = $"    > {GetInnerText(subMenuElem)}";
                                 log.Info(subMenuMsg); //i.e. Project>>Administration>>User Management
-                                WriteToFile(fileName, subMenuMsg); //write to txt file
-                                linklist.SubMenu = GetInnerText(subMenuElem); //write to xml file
+                                WriteToFile(subMenuMsg); //write to txt file
 
                                 IList<IWebElement> subSubMenuElements = subMenuElem.FindElements(By.XPath("./ul/li"));
                                 foreach (IWebElement subSubMenuElem in subSubMenuElements)
                                 {
                                     string subSubMenuMsg;
-                                    linklist = new Navigation();
-
-                                    pageUrl = GetElementHref(subSubMenuElem);
-                                    pageUrlList.Add(pageUrl);
 
                                     if (!subSubMenuElem.GetAttribute("class").Contains("dropdown-submenu"))
                                     {
+                                        pageUrl = GetElementHref(subSubMenuElem);
+                                        pageUrlList.Add(pageUrl);
+
                                         subSubMenuMsg = $"       --{GetInnerText(subSubMenuElem)} ({pageUrl})";
                                         log.Info(subSubMenuMsg); //i.e. Project>>Administration>>System Configuration>>Disciplines
-                                        WriteToFile(fileName, subSubMenuMsg); //write to txt file
-                                        linklist.SubSubMenu = GetInnerText(subSubMenuElem); //write to xml file
+                                        WriteToFile(subSubMenuMsg); //write to txt file
                                     }
                                     else
                                     {
                                         subSubMenuMsg = $"       > {GetInnerText(subSubMenuElem)}";
                                         log.Info(subSubMenuMsg); //i.e. Project>>Administration>>System Configuration>>Equipment
-                                        WriteToFile(fileName, subSubMenuMsg); //write to txt file
-                                        linklist.SubSubMenu = GetInnerText(subSubMenuElem); //write to xml file
+                                        WriteToFile(subSubMenuMsg); //write to txt file
 
                                         IList<IWebElement> subSubMenuItems = subSubMenuElem.FindElements(By.XPath("./ul/li"));
                                         foreach (IWebElement subSubMenuItem in subSubMenuItems)
                                         {
-                                            pageUrl = GetElementHref(subSubMenuElem);
+                                            pageUrl = GetElementHref(subSubMenuItem);
                                             pageUrlList.Add(pageUrl);
 
                                             string subSubMenuItemMsg = $"         --{GetInnerText(subSubMenuItem)} ({pageUrl})";
-                                            linklist = new Navigation();
                                             log.Info(subSubMenuItemMsg); //i.e. Project>>Administration>>System Configuration>>Equipment>>Equipment Makes
-                                            WriteToFile(fileName, subSubMenuItemMsg); //write to txt file
-                                            linklist.SubSubMenuItem = GetInnerText(subSubMenuItem); //write to xml file
-                                            ls.Add(linklist);
+                                            WriteToFile(subSubMenuItemMsg); //write to txt file
                                         }
                                     }
-                                    ls.Add(linklist);
                                 }
                             }
-                            ls.Add(linklist);
                         }
                     }
-                    ls.Add(linklist);
                 }
             }
 
-            xs.Serialize(fs, ls);
-            fs.Close();
+            WriteToFile(Environment.NewLine);
         }
 
-
-        public static void GetPageTitleForNavPages()
+        public static List<string> GetNavMenuUrlList()
         {
+            pageUrlList = new List<string>();
             LoopThroughNavMenu();
-            foreach (string url in pageUrlList)
-            {
-                Driver.Navigate().GoToUrl(url);
-                string pageTitle = Driver.Title;
-                string pageTitleMsg = $"PageTitle: {pageTitle}    ##PageURL: {url}";
-                WriteToFile($"{fileName}_PageTitle", pageTitleMsg);
-                log.Info(pageTitleMsg);
-            }
+            return pageUrlList;
         }
 
+        public static bool VerifyUrlIsLoaded(string pageUrl)
+        {
+            List<string> errorMsgs = new List<string>
+            {
+                "The resource cannot be found."
+            };
+
+            bool isLoaded = false;
+            string pageTitle = string.Empty;
+            try
+            {
+                Driver.Navigate().GoToUrl(pageUrl);
+                pageTitle = Driver.Title;
+
+                if (!errorMsgs.Contains(pageTitle))
+                {
+                    isLoaded = true;
+                }
+            }
+            finally
+            {
+                string pageTitleMsg = $"{pageUrl}<br>&nbsp;&nbsp;PageTitle: {pageTitle}";
+                WriteToFile(pageTitleMsg, "_PageTitle.txt");
+                LogInfo(pageTitleMsg, isLoaded);
+            }
+
+            return isLoaded;
+        }
     }
 
 
@@ -218,7 +245,7 @@ namespace RKCIUIAutomation.Test
             fs.Close();
         }
 
-        string GetFilePath(string fileName) => $"c:\\Temp\\{fileName}.xml";
+        string GetFilePath(string fileName) => $"{TestUtils.fullTempFileName}.xml";
     }
 
     public class Navigation

@@ -331,7 +331,6 @@
     <Compile Include="Test\LinkCoverage.cs" />
     <Compile Include="Test\MSUnitTest.cs" />
     <Compile Include="Test\Smoke.cs" />
-    <Compile Include="Test\TenantNavMenu.cs" />
     <Compile Include="Test\TestBase.cs" />
     <Compile Include="Test\TestUtils.cs" />
     <Compile Include="Test\UnitTest1.cs" />
@@ -340,6 +339,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Report\errorscreenshots\" />
+    <Folder Include="Temp\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

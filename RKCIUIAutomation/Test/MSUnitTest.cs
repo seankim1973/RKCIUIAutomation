@@ -185,7 +185,7 @@ namespace RKCIUIAutomation.Test
 
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void MSUnitTest5()
         {
             //var lockedRecords = Project.Administration.AdminTools.Menu.Locked_Records;
@@ -193,11 +193,12 @@ namespace RKCIUIAutomation.Test
 
             //Assert.IsTrue(reflectedPageType.IsSubclassOf(typeof(Project)));
 
-            string value = "## Actual : 1234 <br>&nbsp;&nbsp;## Expected : 45678";
-            string[] result = Regex.Split(value, " <br>&nbsp;&nbsp;");
-            log.Info(result[0]);
-            log.Info(result[1]);
-
+            //string value = "## Actual : 1234 <br>&nbsp;&nbsp;## Expected : 45678";
+            //string[] result = Regex.Split(value, " <br>&nbsp;&nbsp;");
+            //log.Info(result[0]);
+            //log.Info(result[1]);
+            string[] today = (DateTime.Today.ToShortDateString()).Split('/');
+            Console.WriteLine($"{today[0]}{today[1]}{today[2]}");
         }
 
         #region write XML
@@ -277,32 +278,7 @@ namespace RKCIUIAutomation.Test
         }
         #endregion
 
-        [TestMethod]
-        public void GetPageTitles()
-        {
-            List<string> pageUrls = new List<string>
-            {
-                GetSiteUrl(TestEnv.Stage, ProjectName.Garnet),
-                GetSiteUrl(TestEnv.Stage, ProjectName.GLX),
-                GetSiteUrl(TestEnv.Stage, ProjectName.I15South),
-                GetSiteUrl(TestEnv.Stage, ProjectName.I15Tech),
-                GetSiteUrl(TestEnv.Stage, ProjectName.SGWay),
-                GetSiteUrl(TestEnv.Stage, ProjectName.SH249)
-            };
-
-            foreach (var site in pageUrls)
-            {
-                Driver = new ChromeDriver();
-                Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
-                Driver.Manage().Window.Maximize();
-                Driver.Navigate().GoToUrl(site);
-
-                TestBase.LoginAs(UserType.Bhoomi);
-                TestUtils.GetPageTitleForNavPages();
-            }
-
-            Driver.Quit();
-        }
+        
 
     }
 }

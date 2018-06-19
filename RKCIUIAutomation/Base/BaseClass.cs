@@ -64,62 +64,58 @@ namespace RKCIUIAutomation.Base
         [SetUp]
         public void BeforeTest()
         {
-            TestContext.TestAdapter testInstance = TestContext.CurrentContext.Test;
             try
             {
-                testName = testInstance.Name;
-                testComponent1 = testInstance.Properties.Get("Category").ToString();
-                testComponent2 = testInstance.Properties.Get("Component2").ToString();
-                testDescription = testInstance.Properties.Get("Description").ToString();
-                testPriority = testInstance.Properties.Get("Priority").ToString();
-                testCaseNumber = testInstance.Properties.Get("TC#").ToString();
-                testSuite = GetTestContext(testInstance.FullName)[2];
+                testName = GetTestContextProperty(TestContextProperty.TestName);
+                testComponent1 = GetTestContextProperty(TestContextProperty.TestComponent1);
+                testComponent2 = GetTestContextProperty(TestContextProperty.TestComponent2);
+                testDescription = GetTestContextProperty(TestContextProperty.TestDescription);
+                testPriority = GetTestContextProperty(TestContextProperty.TestPriority);
+                testCaseNumber = GetTestContextProperty(TestContextProperty.TestCaseNumber);
+                testSuite = GetTestContextProperty(TestContextProperty.TestSuite);
 
-                ExtentTestManager.CreateParentTest(testInstance.Name);
+                ExtentTestManager.CreateParentTest(testName);
                 ExtentTestManager
-                    .CreateTest($"<font size=3>TestCase# : {testCaseNumber} - {testName}</font><br><font size=2>{testDescription}</font>")
+                    .CreateTest($"<font size=3>TestCase# : {testCaseNumber}" +
+                    $" - {testName}</font><br><font size=2>{testDescription}</font>")
                     .AssignCategory(testPriority)
                     .AssignCategory(testComponent1)
                     .AssignCategory(testSuite);
 
-                bool tenantContainsComponent1 = false;
-                bool tenantContainsComponent2 = false;
-
-
-                tenantContainsComponent1 = GetComponentsForProject(projectName).Contains(testComponent1);
-
-                if (tenantContainsComponent1)
+                if (GetComponentsForProject(projectName).Contains(testComponent1))
                 {
-                    tenantContainsComponent2 = GetComponentsForProject(projectName).Contains(testComponent2);
-
-                    if (tenantContainsComponent2 || tenantContainsComponent2.Equals(null))
-                    switch (testPlatform)
+                    if (GetComponentsForProject(projectName).Contains(testComponent2) || testComponent2.Contains("Not Defined"))
                     {
-                        case TestPlatform.Local:
-                            Driver = GetLocalWebDriver(browserType);
-                            break;
-                        //TODO - case for appium (mobile) ?
-                        default:
-                            Driver = GetRemoteWebDriver(testPlatform, browserType);
-                            break;
-                    }
-                    siteUrl = GetSiteUrl(testEnv, projectName);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
-                    Driver.Manage().Window.Maximize();
-                    Driver.Navigate().GoToUrl(siteUrl);
+                        switch (testPlatform)
+                        {
+                            case TestPlatform.Local:
+                                Driver = GetLocalWebDriver(browserType);
+                                break;
+                            //TODO - case for appium (mobile) ?
+                            default:
+                                Driver = GetRemoteWebDriver(testPlatform, browserType);
+                                break;
+                        }
+                        siteUrl = GetSiteUrl(testEnv, projectName);
+                        Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
+                        Driver.Manage().Window.Maximize();
+                        Driver.Navigate().GoToUrl(siteUrl);
 
-                    LogTestDetails(projectName, testEnv, siteUrl, browserType, testName, testCaseNumber, testSuite, testDescription, testComponent1, testPriority);
+                        LogTestDetails(projectName, testEnv, siteUrl, browserType, testName, 
+                            testCaseNumber, testSuite, testDescription, testComponent1, testPriority);
+                    }
                 }
                 else
                 {
                     testStatus = TestStatus.Skipped;
-                    string msg = $"TEST SKIPPED : Project ({projectName}) does not have implementation of the component ({testComponent1}).";
+                    string msg = $"TEST SKIPPED : Project ({projectName}) " +
+                        $"does not have implementation of the component ({testComponent1}).";
                     LogSkipped(msg);
                 }
             }
             catch (Exception e)
             {
-                LogInfo("Exception occured during BeforeTest method", e);
+                log.Error("Exception occured during BeforeTest method", e);
             }
         }
 
@@ -199,7 +195,8 @@ namespace RKCIUIAutomation.Base
                 }
                 finally
                 {
-                    ExtentTestManager.GetTest().Log(logstatus, $"Test ended with {logstatus} {stacktrace}").AddScreenCaptureFromPath(screenshotPath);
+                    ExtentTestManager.GetTest().Log(logstatus, 
+                        $"Test ended with {logstatus} {stacktrace}").AddScreenCaptureFromPath(screenshotPath);
                     Driver.Close();
                 }
             }

@@ -265,3 +265,7 @@ Report
 Report/*.html
 Report/errorscreenshots
 Report/errorscreenshots/*.png
+
+# Temp Folder
+Temp
+Temp/*.*
