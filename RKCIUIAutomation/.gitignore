@@ -261,11 +261,8 @@ __pycache__/
 *.pyc
 
 # Extent Report & Error Screenshots
-Report
-Report/*.html
-Report/errorscreenshots
+Report/Extent.html
 Report/errorscreenshots/*.png
 
 # Temp Folder
-Temp
 Temp/*.*
