@@ -4,8 +4,10 @@ using log4net;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
+using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -63,6 +65,13 @@ namespace RKCIUIAutomation.Base
         public static void LogError(string details)
         {
             ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));
+            log.Error(details);
+        }
+
+        public static void LogDebug(string details)
+        {
+            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
+            log.Debug(details);
         }
 
         public static void LogInfo(string details)
@@ -75,6 +84,7 @@ namespace RKCIUIAutomation.Base
                 ExtentTestManager.GetTest().Info(details);
             log.Info(details);    
         }
+
         public static void LogErrorWithScreenshot()
         {
             string screenshotPath = CaptureScreenshot(methodName);
@@ -125,6 +135,66 @@ namespace RKCIUIAutomation.Base
         private static IMarkup CreateReportMarkupCodeBlock(Exception e)
         {
             return MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");
+        }
+
+
+        public static string GetTestContextProperty(TestContextProperty testContextProperty)
+        {            
+            string property = string.Empty;
+            string context = string.Empty;
+
+            TestContext.TestAdapter testInstance = TestContext.CurrentContext.Test;
+
+            switch (testContextProperty)
+            {
+                case TestContextProperty.TestName:
+                    return testInstance.Name;
+                case TestContextProperty.TestSuite:
+                    return (testInstance.FullName).Split('.')[2];
+                case TestContextProperty.TestComponent1:
+                    context = "Category";
+                    break;
+                case TestContextProperty.TestComponent2:
+                    context = "Component2";
+                    break;
+                case TestContextProperty.TestDescription:
+                    context = "Description";
+                    break;
+                case TestContextProperty.TestPriority:
+                    context = "Priority";
+                    break;
+                case TestContextProperty.TestCaseNumber:
+                    context = "TC#";
+                    break;
+            }
+
+            try
+            {
+                property = testInstance.Properties.Get(context).ToString();
+
+                if (property == null || property == string.Empty)
+                {
+                    property = "Not Defined";
+                    LogDebug($"{testContextProperty.ToString()} - Test Context Property is not assigned to Test Case method");
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+
+            return property;
+        }
+
+        public enum TestContextProperty
+        {
+            TestName,
+            TestSuite,
+            TestComponent1,
+            TestComponent2,
+            TestDescription,
+            TestPriority,
+            TestCaseNumber
         }
     }
 }

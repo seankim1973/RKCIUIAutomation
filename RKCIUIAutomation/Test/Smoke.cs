@@ -5,21 +5,38 @@ using RKCIUIAutomation.Page.PageObjects.RMCenter;
 
 using static RKCIUIAutomation.Page.Action;
 using static RKCIUIAutomation.Config.ProjectProperties;
-
+using System.Collections.Generic;
 
 namespace RKCIUIAutomation.Test
 {
     [TestFixture]
     public class Smoke : TestBase
     {
-        //[Test]
-        //[Category("")]
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("Component2", Component.Other)]
         [Property("TC#", "ELVS2345")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify user can login successfully using project - admin account")]
-        public void VerifyUserCanLogin_ProjAdmin()
+        [Description("Verify Site Pages Load Successfully")]
+        public void LinkCoverage_Level1()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
+            List<string> pageUrls = new List<string>();
+            pageUrls = TestUtils.GetNavMenuUrlList();
+
+            List<bool> results = new List<bool>();
+            foreach (var url in pageUrls)
+            {
+                results.Add(TestUtils.VerifyUrlIsLoaded(url));
+            }
+
+            Assert.Multiple(() =>
+            {
+                foreach (var result in results)
+                {
+                    Assert.True(result);
+                }
+            });
         }
 
 

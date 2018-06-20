@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Xml;
+using System.Xml.Serialization;
 using AutoIt;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
@@ -14,10 +16,11 @@ using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Navigation;
+using RKCIUIAutomation.Page.PageObjects;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using static RKCIUIAutomation.Config.ProjectProperties;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
-using static RKCIUIAutomation.Page.PageObjects.RMCenter.SubmittalDetails;
+using static RKCIUIAutomation.Config.ConfigUtil;
 
 namespace RKCIUIAutomation.Test
 {
@@ -127,9 +130,9 @@ namespace RKCIUIAutomation.Test
         {
             List<string> components = GetComponentsForProject(ProjectName.Garnet);
             int componentCount = components.Count;
-           
+
             log.Error($"Component count is {componentCount}");
-            
+
             foreach (var component in components)
             {
                 log.Error(component.ToString());
@@ -156,7 +159,7 @@ namespace RKCIUIAutomation.Test
             Assert.IsTrue(reflectedType.Equals(typeof(Project.Administration.UserManagement)));
             //try
             //{
-                
+
             //    //Assert.IsTrue(reflectedTypeName == typeof(Project).ToString());
             //}
             //catch (Exception e)
@@ -190,12 +193,92 @@ namespace RKCIUIAutomation.Test
 
             //Assert.IsTrue(reflectedPageType.IsSubclassOf(typeof(Project)));
 
-            string value = "## Actual : 1234 <br>&nbsp;&nbsp;## Expected : 45678";
-            string[] result = Regex.Split(value, " <br>&nbsp;&nbsp;");
-            log.Info(result[0]);
-            log.Info(result[1]);
+            //string value = "## Actual : 1234 <br>&nbsp;&nbsp;## Expected : 45678";
+            //string[] result = Regex.Split(value, " <br>&nbsp;&nbsp;");
+            //log.Info(result[0]);
+            //log.Info(result[1]);
+            string[] today = (DateTime.Today.ToShortDateString()).Split('/');
+            Console.WriteLine($"{today[0]}{today[1]}{today[2]}");
+        }
+
+        #region write XML
+
+        [TestMethod]
+        public void MSUnitTest6()
+        {
+            string filename = "c:\\temp\\file.xml";
+
+            XmlSerializer serializer;
+            FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
+            serializer = new XmlSerializer(typeof(List<NavigationMenu>));
+            List<NavigationMenu> navigationMenuList = new List<NavigationMenu>();
+
+            NavigationMenu mainNavNode = new NavigationMenu();
+            mainNavNode.MainNavMenu = "Project";
+            mainNavNode.MainNavMenuItem = "My Details";
+            mainNavNode.SubMenu = "Administrator";
+            mainNavNode.SubMenuItem = "Project Details";
+            mainNavNode.SubX2Menu = "System Configuration";
+            mainNavNode.SubX2MenuItem = "Submittal Action";
+            mainNavNode.SubX3Menu = "Grade Management";
+            mainNavNode.SubX3MenuItem = "Grade Types";
+            navigationMenuList.Add(mainNavNode);
+
+            NavigationMenu menuItemNode = new NavigationMenu();
+            menuItemNode.MainNavMenu = "QA Lab";
+            menuItemNode.MainNavMenuItem = "Breaksheet Creation";
+            navigationMenuList.Add(menuItemNode);
+
+            serializer.Serialize(fs, navigationMenuList);
+            fs.Close();
 
         }
-    }
 
+        public abstract class NavMenuClass
+        {
+            public string MainNavMenu { get; set; }
+            public string MainNavMenuItem { get; set; }
+            public string SubMenuItem { get; set; }
+            public string SubMenu { get; set; }
+            public string SubX2Menu { get; set; }
+            public string SubX2MenuItem { get; set; }
+            public string SubX3Menu { get; set; }
+            public string SubX3MenuItem { get; set; }
+
+            public string Name { get; set; }
+            public string URL { get; set; }
+            public string PageTitle { get; set; }
+        }
+        public class NavigationMenu : NavMenuClass
+        {
+        }
+        public class MainNavMenu : NavigationMenu
+        {
+        }
+
+        public class MenuItem : NavigationMenu
+        {
+        }
+
+        public class SubMenu : NavigationMenu
+        {
+        }
+
+        public class SubMenuItem : NavigationMenu
+        {
+        }
+
+        public class SubSubMenu : NavigationMenu
+        {
+        }
+
+        public class SubSubMenuItem : NavigationMenu
+        {
+            
+        }
+        #endregion
+
+        
+
+    }
 }
