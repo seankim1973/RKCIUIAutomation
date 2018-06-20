@@ -13,20 +13,6 @@ namespace RKCIUIAutomation.Test
     {
         ILinkCoverage Instance => SetClass<ILinkCoverage>();
 
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("Component2",Component.OV_Test)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for OV Menu only")]
-        public override void NavigateToOVMenu() => Instance._NavigateToOVMenu();
-
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for RM Center Menu only")]
-        public override void NavigateToRMCenterMenu() => Instance._NavigateToRMCenterMenu();
 
         [Test]
         [Category(Component.Link_Coverage)]
@@ -34,13 +20,6 @@ namespace RKCIUIAutomation.Test
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for Project Configuration Menu only")]
         public override void NavigateToVerifyProjectConfigurationMenu() => Instance._NavigateToVerifyProjectConfigurationMenu();
-
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for QA Engineer Menu only")]
-        public override void NavigateToVerifyQAEngineerMenu() => Instance._NavigateToVerifyQAEngineerMenu();
 
         [Test]
         [Category(Component.Link_Coverage)]
@@ -55,6 +34,72 @@ namespace RKCIUIAutomation.Test
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for QA Record Control Menu only")]
         public override void NavigateToVerifyQARecordControlMenu() => Instance._NavigateToVerifyQARecordControlMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("Component2", Component.OV_Test)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for OV Menu only")]
+        public override void NavigateToOVMenu() => Instance._NavigateToOVMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for QA Engineer Menu only")]
+        public override void NavigateToVerifyQAEngineerMenu() => Instance._NavigateToVerifyQAEngineerMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Reports & Notices Menu only")]
+        public override void _NavigateToReportsAndNoticesMenu() => Instance._NavigateToReportsAndNoticesMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public override void NavigateToQASearchMenu() => Instance._NavigateToQASearchMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public override void NavigateToQAFieldMenu() => Instance._NavigateToQAFieldMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Control Point Menu only")]
+        public override void NavigateToControlPointMenu() => Instance._NavigateToControlPointMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Control Point Menu only")]
+        public override void NavigateToOwnerMenu() => Instance._NavigateToOwnerMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Control Point Menu only")]
+        public override void NavigateToMaterialMixCodeMenu() => Instance._NavigateToMaterialMixCodeMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public override void NavigateToRMCenterMenu() => Instance._NavigateToRMCenterMenu();
+
+
     }
     #endregion <-- end of Test Case Methods class
 
@@ -67,6 +112,12 @@ namespace RKCIUIAutomation.Test
         void _NavigateToOVMenu();
         void _NavigateToVerifyQARecordControlMenu();
         void _NavigateToVerifyQAEngineerMenu();
+        void _NavigateToReportsAndNoticesMenu();
+        void _NavigateToQASearchMenu();
+        void _NavigateToQAFieldMenu();
+        void _NavigateToControlPointMenu();
+        void _NavigateToOwnerMenu();
+        void _NavigateToMaterialMixCodeMenu();
         void _NavigateToRMCenterMenu();
     }
     #endregion <-- end of Workflow Interface class
@@ -358,6 +409,39 @@ namespace RKCIUIAutomation.Test
             });
         }
 
+        public abstract void NavigateToReportsAndNoticesMenu();
+        public virtual void _NavigateToReportsAndNoticesMenu()
+        {
+        }
+
+        public abstract void NavigateToQASearchMenu();
+        public virtual void _NavigateToQASearchMenu()
+        {
+            
+        }
+
+        public abstract void NavigateToQAFieldMenu();
+        public virtual void _NavigateToQAFieldMenu()
+        {
+        }
+
+        public abstract void NavigateToControlPointMenu();
+        public virtual void _NavigateToControlPointMenu()
+        {
+            
+        }
+
+        public abstract void NavigateToOwnerMenu();
+        public virtual void _NavigateToOwnerMenu()
+        {
+            
+        }
+
+        public abstract void NavigateToMaterialMixCodeMenu();
+        public virtual void _NavigateToMaterialMixCodeMenu()
+        {
+            
+        }
     }
     #endregion <-- end of common implementation class
 
