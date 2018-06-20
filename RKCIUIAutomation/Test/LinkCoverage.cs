@@ -13,20 +13,6 @@ namespace RKCIUIAutomation.Test
     {
         ILinkCoverage Instance => SetClass<ILinkCoverage>();
 
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("Component2",Component.OV_Test)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for OV Menu only")]
-        public override void NavigateToOVMenu() => Instance._NavigateToOVMenu();
-
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for RM Center Menu only")]
-        public override void NavigateToRMCenterMenu() => Instance._NavigateToRMCenterMenu();
 
         [Test]
         [Category(Component.Link_Coverage)]
@@ -34,13 +20,6 @@ namespace RKCIUIAutomation.Test
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for Project Configuration Menu only")]
         public override void NavigateToVerifyProjectConfigurationMenu() => Instance._NavigateToVerifyProjectConfigurationMenu();
-
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for QA Engineer Menu only")]
-        public override void NavigateToVerifyQAEngineerMenu() => Instance._NavigateToVerifyQAEngineerMenu();
 
         [Test]
         [Category(Component.Link_Coverage)]
@@ -55,6 +34,72 @@ namespace RKCIUIAutomation.Test
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for QA Record Control Menu only")]
         public override void NavigateToVerifyQARecordControlMenu() => Instance._NavigateToVerifyQARecordControlMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("Component2", Component.OV_Test)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for OV Menu only")]
+        public override void NavigateToOVMenu() => Instance._NavigateToOVMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for QA Engineer Menu only")]
+        public override void NavigateToVerifyQAEngineerMenu() => Instance._NavigateToVerifyQAEngineerMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Reports & Notices Menu only")]
+        public override void _NavigateToReportsAndNoticesMenu() => Instance._NavigateToReportsAndNoticesMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public override void NavigateToQASearchMenu() => Instance._NavigateToQASearchMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public override void NavigateToQAFieldMenu() => Instance._NavigateToQAFieldMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Control Point Menu only")]
+        public override void NavigateToControlPointMenu() => Instance._NavigateToControlPointMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Control Point Menu only")]
+        public override void NavigateToOwnerMenu() => Instance._NavigateToOwnerMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Control Point Menu only")]
+        public override void NavigateToMaterialMixCodeMenu() => Instance._NavigateToMaterialMixCodeMenu();
+
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public override void NavigateToRMCenterMenu() => Instance._NavigateToRMCenterMenu();
+
+
     }
     #endregion <-- end of Test Case Methods class
 
@@ -67,6 +112,12 @@ namespace RKCIUIAutomation.Test
         void _NavigateToOVMenu();
         void _NavigateToVerifyQARecordControlMenu();
         void _NavigateToVerifyQAEngineerMenu();
+        void _NavigateToReportsAndNoticesMenu();
+        void _NavigateToQASearchMenu();
+        void _NavigateToQAFieldMenu();
+        void _NavigateToControlPointMenu();
+        void _NavigateToOwnerMenu();
+        void _NavigateToMaterialMixCodeMenu();
         void _NavigateToRMCenterMenu();
     }
     #endregion <-- end of Workflow Interface class
@@ -95,27 +146,29 @@ namespace RKCIUIAutomation.Test
             }
             else if (projectName == ProjectName.Garnet)
             {
-                LogInfo($"###### using LinkCoverage_Garnet instance ###### ");
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
                 instance = new LinkCoverage_Garnet();
             }
             else if (projectName == ProjectName.GLX)
             {
-                LogInfo($"###### using LinkCoverage_GLX instance ###### ");
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
                 instance = new LinkCoverage_GLX();
             }
             else if (projectName == ProjectName.I15South)
             {
-                LogInfo($"###### using LinkCoverage_I15South instance ###### ");
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
                 instance = new LinkCoverage_I15South();
             }
             else if (projectName == ProjectName.I15Tech)
             {
-                LogInfo($"###### using LinkCoverage_I15Tech instance ###### ");
+                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
                 instance = new LinkCoverage_I15Tech();
             }
 
             return instance;
         }
+
+
 
         /// <summary>
         /// TODO - implement common workflow
@@ -123,24 +176,56 @@ namespace RKCIUIAutomation.Test
         public abstract void NavigateToVerifyQARecordControlMenu();
         public virtual void _NavigateToVerifyQARecordControlMenu()
         {
-            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
-            //Navigate.Menu(Navigate)
-            //Navigate.Menu(.Menu.QA_Test_Original_Report);
-            //Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Correction_Report);
+            //QA Test-Original Report
+            //QA Test- Correction Report (Not in Garnet, glx, I15SB
+            //QA test- All
+            //QA Test- Retest Report
+            //QA DIRs
+            //General NCR
+            //General CDR
+            //Retaining Wall Backfill Quantity Tracker
+            //Concrete Paving Quantity Tracker
+            //MPL Tracker
+            //Girder Tracker
+            //QMS Document(Not in Garnet, glx, sh249, I15tech, I15SB
+            //Environmental Document (Not in Garnet, glx, sh249,I15tech, I15SB
 
+            NavigateToPage.QARecordControl_QA_Test_Original_Report();
+            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            NavigateToPage.QARecordControl_QA_Test_All();
+            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            NavigateToPage.QARecordControl_QA_Test_Retest_Report();
+            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            NavigateToPage.QARecordControl_QA_DIRs();
+            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            NavigateToPage.QARecordControl_General_NCR();
+            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            NavigateToPage.QARecordControl_General_CDR();
+            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
+            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
+            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            NavigateToPage.QARecordControl_MPL_Tracker();
+            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            NavigateToPage.QARecordControl_Girder_Tracker();
+            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+           
 
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_All);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.QA_DIRs);
-
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.General_NCR);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.General_CDR);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.Retaining_Wall_BackFill_Quantity_Tracker);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.Concrete_Paving_Quantity_Tracker);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.MPL_Tracker);
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.Girder_Tracker);
-
-            // Navigate.Menu(NavMenu.QARecordControl.Menu.Qms_Document); //DONE - Create a method to go to QMS, for ex: GotoQMSDocs()
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
+                Assert.True(qa_Test_AllTitleDisplayed);
+                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
+                Assert.True(qa_DIRsTitleDisplayed);
+                Assert.True(general_NCRTitleDisplayed);
+                Assert.True(general_CDRTitleDisplayed);
+                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                Assert.True(mpl_TrackerTitleDisplayed);
+                Assert.True(girder_TrackerTitleDisplayed);
+            });
 
 
         }
@@ -324,6 +409,39 @@ namespace RKCIUIAutomation.Test
             });
         }
 
+        public abstract void NavigateToReportsAndNoticesMenu();
+        public virtual void _NavigateToReportsAndNoticesMenu()
+        {
+        }
+
+        public abstract void NavigateToQASearchMenu();
+        public virtual void _NavigateToQASearchMenu()
+        {
+            
+        }
+
+        public abstract void NavigateToQAFieldMenu();
+        public virtual void _NavigateToQAFieldMenu()
+        {
+        }
+
+        public abstract void NavigateToControlPointMenu();
+        public virtual void _NavigateToControlPointMenu()
+        {
+            
+        }
+
+        public abstract void NavigateToOwnerMenu();
+        public virtual void _NavigateToOwnerMenu()
+        {
+            
+        }
+
+        public abstract void NavigateToMaterialMixCodeMenu();
+        public virtual void _NavigateToMaterialMixCodeMenu()
+        {
+            
+        }
     }
     #endregion <-- end of common implementation class
 
@@ -373,9 +491,54 @@ namespace RKCIUIAutomation.Test
     #endregion
 
 
-    #region Implementation specific to SGWay
+    #region Implementation specific to SH249
     public class LinkCoverage_SH249 : LinkCoverage
     {
+        public override void _NavigateToVerifyQARecordControlMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            
+            NavigateToPage.QARecordControl_QA_Test_Original_Report();
+            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            NavigateToPage.QARecordControl_QA_Test_Correction_Report();
+            bool qa_Test_Correction_ReportTitleDisplayed = VerifyPageTitle("Create Correction Test Report");
+            NavigateToPage.QARecordControl_QA_Test_All();
+            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            NavigateToPage.QARecordControl_QA_Test_Retest_Report();
+            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            NavigateToPage.QARecordControl_QA_DIRs();
+            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            NavigateToPage.QARecordControl_General_NCR();
+            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            NavigateToPage.QARecordControl_General_CDR();
+            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
+            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
+            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            NavigateToPage.QARecordControl_MPL_Tracker();
+            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            NavigateToPage.QARecordControl_Girder_Tracker();
+            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+
+
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
+                Assert.True(qa_Test_Correction_ReportTitleDisplayed);
+                Assert.True(qa_Test_AllTitleDisplayed);
+                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
+                Assert.True(qa_DIRsTitleDisplayed);
+                Assert.True(general_NCRTitleDisplayed);
+                Assert.True(general_CDRTitleDisplayed);
+                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                Assert.True(mpl_TrackerTitleDisplayed);
+                Assert.True(girder_TrackerTitleDisplayed);
+            });
+
+
+        }
     }
     #endregion
 
@@ -453,6 +616,60 @@ namespace RKCIUIAutomation.Test
                 Assert.True(RMCenter_Comment_Summary_TitleDisplayed);
             });
         }
+
+        public override void _NavigateToVerifyQARecordControlMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+       
+
+            NavigateToPage.QARecordControl_QA_Test_Original_Report();
+            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            NavigateToPage.QARecordControl_QA_Test_Correction_Report();
+            bool qa_Test_Correction_ReportTitleDisplayed = VerifyPageTitle("Create Correction Test Report");
+            NavigateToPage.QARecordControl_QA_Test_All();
+            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            NavigateToPage.QARecordControl_QA_Test_Retest_Report();
+            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            NavigateToPage.QARecordControl_QA_DIRs();
+            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            NavigateToPage.QARecordControl_General_NCR();
+            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            NavigateToPage.QARecordControl_General_CDR();
+            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
+            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
+            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            NavigateToPage.QARecordControl_MPL_Tracker();
+            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            NavigateToPage.QARecordControl_Girder_Tracker();
+            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+            NavigateToPage.Qms_Document();
+            bool qmsDocumentTitleDisplayed = VerifyPageTitle("QMS Documents");
+            NavigateToPage.QARecordControl_Environmental_Document();
+            bool environmental_DocumentTitleDisplayed = VerifyPageTitle("Environmental Documents");
+
+
+
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
+                Assert.True(qa_Test_Correction_ReportTitleDisplayed);
+                Assert.True(qa_Test_AllTitleDisplayed);
+                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
+                Assert.True(qa_DIRsTitleDisplayed);
+                Assert.True(general_NCRTitleDisplayed);
+                Assert.True(general_CDRTitleDisplayed);
+                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                Assert.True(mpl_TrackerTitleDisplayed);
+                Assert.True(girder_TrackerTitleDisplayed);
+                Assert.True(qmsDocumentTitleDisplayed);
+                Assert.True(environmental_DocumentTitleDisplayed);
+            });
+
+
+        }
     }
     #endregion
 
@@ -468,6 +685,51 @@ namespace RKCIUIAutomation.Test
     #region Implementation specific to I15Tech
     public class LinkCoverage_I15Tech : LinkCoverage
     {
+        public override void _NavigateToVerifyQARecordControlMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+
+            NavigateToPage.QARecordControl_QA_Test_Original_Report();
+            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            NavigateToPage.QARecordControl_QA_Test_Correction_Report();
+            bool qa_Test_Correction_ReportTitleDisplayed = VerifyPageTitle("Create Correction Test Report");
+            NavigateToPage.QARecordControl_QA_Test_All();
+            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            NavigateToPage.QARecordControl_QA_Test_Retest_Report();
+            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            NavigateToPage.QARecordControl_QA_DIRs();
+            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            NavigateToPage.QARecordControl_General_NCR();
+            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            NavigateToPage.QARecordControl_General_CDR();
+            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
+            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
+            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            NavigateToPage.QARecordControl_MPL_Tracker();
+            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            NavigateToPage.QARecordControl_Girder_Tracker();
+            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+
+
+            Assert.Multiple(testDelegate: () =>
+            {
+                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
+                Assert.True(qa_Test_Correction_ReportTitleDisplayed);
+                Assert.True(qa_Test_AllTitleDisplayed);
+                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
+                Assert.True(qa_DIRsTitleDisplayed);
+                Assert.True(general_NCRTitleDisplayed);
+                Assert.True(general_CDRTitleDisplayed);
+                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                Assert.True(mpl_TrackerTitleDisplayed);
+                Assert.True(girder_TrackerTitleDisplayed);
+            });
+
+
+        }
     }
 
     #endregion
