@@ -99,7 +99,12 @@ namespace RKCIUIAutomation.Test
         [Description("Verify Page Title for RM Center Menu only")]
         public override void NavigateToRMCenterMenu() => Instance._NavigateToRMCenterMenu();
 
-
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Reports and Notices Menu only")]
+        public override void NavigateToReportsAndNoticesMenu() => Instance._NavigateToReportsAndNoticesMenu();
     }
     #endregion <-- end of Test Case Methods class
 
