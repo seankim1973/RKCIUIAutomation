@@ -4,7 +4,6 @@ using NUnit.Framework;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
 using RKCIUIAutomation.Base;
-//using static RKCIUIAutomation.Test.ILinkCoverage;
 
 namespace RKCIUIAutomation.Test
 {
@@ -16,7 +15,7 @@ namespace RKCIUIAutomation.Test
 
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property("Component2", Component.OV_Test)]
+        [Property("Component2",Component.OV_Test)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for OV Menu only")]
@@ -56,20 +55,6 @@ namespace RKCIUIAutomation.Test
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for QA Record Control Menu only")]
         public override void NavigateToVerifyQARecordControlMenu() => Instance._NavigateToVerifyQARecordControlMenu();
-
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for Reports & Notices Menu only")]
-        public override void NavigateToReportsAndNoticesMenu() => Instance._NavigateToReportsAndNoticesMenu();
-
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for QA Search Menu only")]
-        public override void NavigateToQASearchMenu() => Instance._NavigateToQASearchMenu();
     }
     #endregion <-- end of Test Case Methods class
 
@@ -83,14 +68,10 @@ namespace RKCIUIAutomation.Test
         void _NavigateToVerifyQARecordControlMenu();
         void _NavigateToVerifyQAEngineerMenu();
         void _NavigateToRMCenterMenu();
-        void _NavigateToReportsAndNoticesMenu();
-        void _NavigateToQASearchMenu();
-
-        
     }
     #endregion <-- end of Workflow Interface class
-    
-    
+
+
     #region Common Workflow Implementation class
     public abstract class LinkCoverage_Impl : TestBase, ILinkCoverage
     {
@@ -145,7 +126,19 @@ namespace RKCIUIAutomation.Test
         public virtual void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
-
+            //QA Test-Original Report
+            //QA Test- Correction Report (Not in Garnet, glx, I15SB
+            //QA test- All
+            //QA Test- Retest Report
+            //QA DIRs
+            //General NCR
+            //General CDR
+            //Retaining Wall Backfill Quantity Tracker
+            //Concrete Paving Quantity Tracker
+            //MPL Tracker
+            //Girder Tracker
+            //QMS Document(Not in Garnet, glx, sh249, I15tech, I15SB
+            //Environmental Document (Not in Garnet, glx, sh249,I15tech, I15SB
 
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
             bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
@@ -167,7 +160,7 @@ namespace RKCIUIAutomation.Test
             bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
             NavigateToPage.QARecordControl_Girder_Tracker();
             bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
-
+           
 
             Assert.Multiple(testDelegate: () =>
             {
@@ -194,10 +187,7 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
-            NavigateToPage.QAEngineer_QA_Test_Lab_Supervisor_Review();
-            NavigateToPage.QAEngineer_QA_Test_Field_Supervisor_Review();
-            NavigateToPage.QAEngineer_QA_Test_Authorization();
-            NavigateToPage.QAEngineer_DIR_QA_Review_Approval();
+
 
         }
 
@@ -368,21 +358,6 @@ namespace RKCIUIAutomation.Test
             });
         }
 
-
-        public abstract void NavigateToReportsAndNoticesMenu();
-        public virtual void _NavigateToReportsAndNoticesMenu()
-        {
-            LoginAs(UserType.Bhoomi);
-            NavigateToPage.ReportsNotices_General_NCR();
-            NavigateToPage.ReportsNotices_General_DN();
-
-        }
-
-        public abstract void NavigateToQASearchMenu();
-        public virtual void _NavigateToQASearchMenu()
-        {
-            throw new System.NotImplementedException();
-        }
     }
     #endregion <-- end of common implementation class
 
@@ -438,7 +413,7 @@ namespace RKCIUIAutomation.Test
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
-
+            
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
             bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
@@ -561,7 +536,7 @@ namespace RKCIUIAutomation.Test
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
-
+       
 
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
             bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
@@ -675,4 +650,3 @@ namespace RKCIUIAutomation.Test
 
     #endregion
 }
-
