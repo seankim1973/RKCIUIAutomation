@@ -180,7 +180,7 @@ namespace RKCIUIAutomation.Test
         }
 
         [Test]
-        [Category(Component.Other), Property("Component2", Component.OV_Test)]
+        [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
