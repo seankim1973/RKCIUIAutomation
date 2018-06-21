@@ -23,6 +23,7 @@ namespace RKCIUIAutomation.Test
 
         [Test]
         [Category(Component.Link_Coverage)]
+        [Property("Component2", Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for QA Lab Menu only")]
@@ -55,7 +56,7 @@ namespace RKCIUIAutomation.Test
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for Reports & Notices Menu only")]
-        public override void _NavigateToReportsAndNoticesMenu() => Instance._NavigateToReportsAndNoticesMenu();
+        public override void NavigateToReportsAndNoticesMenu() => Instance._NavigateToReportsAndNoticesMenu();
 
         [Test]
         [Category(Component.Link_Coverage)]
@@ -99,12 +100,7 @@ namespace RKCIUIAutomation.Test
         [Description("Verify Page Title for RM Center Menu only")]
         public override void NavigateToRMCenterMenu() => Instance._NavigateToRMCenterMenu();
 
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for Reports and Notices Menu only")]
-        public override void NavigateToReportsAndNoticesMenu() => Instance._NavigateToReportsAndNoticesMenu();
+
     }
     #endregion <-- end of Test Case Methods class
 
@@ -151,22 +147,22 @@ namespace RKCIUIAutomation.Test
             }
             else if (projectName == ProjectName.Garnet)
             {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                LogInfo($"###### using LinkCoverage_Garnet instance ###### ");
                 instance = new LinkCoverage_Garnet();
             }
             else if (projectName == ProjectName.GLX)
             {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                LogInfo($"###### using LinkCoverage_GLX instance ###### ");
                 instance = new LinkCoverage_GLX();
             }
             else if (projectName == ProjectName.I15South)
             {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                LogInfo($"###### using LinkCoverage_I15South instance ###### ");
                 instance = new LinkCoverage_I15South();
             }
             else if (projectName == ProjectName.I15Tech)
             {
-                LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
+                LogInfo($"###### using LinkCoverage_I15Tech instance ###### ");
                 instance = new LinkCoverage_I15Tech();
             }
 

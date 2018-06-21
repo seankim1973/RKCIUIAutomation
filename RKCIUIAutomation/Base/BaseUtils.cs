@@ -55,11 +55,10 @@ namespace RKCIUIAutomation.Base
 
 
         //ExtentReports Helpers
-        public static void LogSkipped(string msg)
+        public static void LogAssertIgnore(string msg)
         {
-            ExtentTestManager.GetTest().Log(Status.Skip, CreateReportMarkupLabel(msg, ExtentColor.Orange));
-            log.Warn(msg);
-            Assert.Warn(msg);
+            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(msg, ExtentColor.Orange));
+            Assert.Ignore(msg);
         }
 
         public static void LogError(string details)
@@ -138,9 +137,17 @@ namespace RKCIUIAutomation.Base
         }
 
 
-        public static string GetTestContextProperty(TestContextProperty testContextProperty)
-        {            
-            string property = string.Empty;
+        public static string GetTestName() => GetTestContextProperty(TestContextProperty.TestName);
+        public static string GetTestComponent1() => GetTestContextProperty(TestContextProperty.TestComponent1);
+        public static string GetTestComponent2() => GetTestContextProperty(TestContextProperty.TestComponent2);
+        public static string GetTestDescription() => GetTestContextProperty(TestContextProperty.TestDescription);
+        public static string GetTestPriority() => GetTestContextProperty(TestContextProperty.TestPriority);
+        public static string GetTestCaseNumber() => GetTestContextProperty(TestContextProperty.TestCaseNumber);
+        public static string GetTestSuiteName() => GetTestContextProperty(TestContextProperty.TestSuite);
+
+
+        private static string GetTestContextProperty(TestContextProperty testContextProperty)
+        {
             string context = string.Empty;
 
             TestContext.TestAdapter testInstance = TestContext.CurrentContext.Test;
@@ -168,25 +175,23 @@ namespace RKCIUIAutomation.Base
                     break;
             }
 
-            try
-            {
-                property = testInstance.Properties.Get(context).ToString();
+            var prop = testInstance.Properties.Get(context) ?? "Not Defined";
 
-                if (property == null || property == string.Empty)
-                {
-                    property = "Not Defined";
-                    LogDebug($"{testContextProperty.ToString()} - Test Context Property is not assigned to Test Case method");
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-            }
+            //Console.WriteLine($"########### {property.ToString()}");
 
-            return property;
+            //if (prop == null || prop.ToString() == "Not Defined")
+            //{
+            //    LogDebug($" - Test Context Property is not assigned to Test Case method");
+            //}
+            //else
+            //{
+            //    property = prop.ToString();
+            //}
+
+            return prop.ToString();
         }
 
-        public enum TestContextProperty
+        private enum TestContextProperty
         {
             TestName,
             TestSuite,

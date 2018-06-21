@@ -266,7 +266,7 @@ namespace RKCIUIAutomation.Page
                 isDisplayed = IsElementDisplayed(headingElement);
                 if (!isDisplayed)
                 {
-                    LogError($"Page Title element with h2 or h3 tag containing text '{expectedPageTitle}' was not found.");
+                    LogDebug($"Page Title element with h2 or h3 tag containing text '{expectedPageTitle}' was not found.");
 
                     headingElement = By.XPath("//h3");
                     isDisplayed = IsElementDisplayed(headingElement);
@@ -282,17 +282,17 @@ namespace RKCIUIAutomation.Page
             else
                 isMatchingTitle = true;
 
-
             if (isDisplayed)
             {
                 LogInfo($"## Expect Page Title: {expectedPageTitle} <br>&nbsp;&nbsp;## Actual Page Title: {PageTitle}", isMatchingTitle);
             }
             else
             {
-                LogInfo($"Could not find any Page element with h2 or h3 tag", isMatchingTitle);
+                LogDebug($"Could not find any Page element with h2 or h3 tag");
             }
             return isMatchingTitle;
         }
+
         public static bool VerifySchedulerIsDisplayed() //TODO - move to Early Break Calendar class when more test cases are created
         {
             IWebElement scheduler = GetElement(By.Id("scheduler"));
@@ -301,7 +301,6 @@ namespace RKCIUIAutomation.Page
             LogInfo($"Scheduler is{not} displayed", isDisplayed);
             return isDisplayed;
         }
-
 
 
         private static readonly By Btn_Cancel = By.Id("CancelSubmittal");

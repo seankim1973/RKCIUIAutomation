@@ -180,7 +180,7 @@ namespace RKCIUIAutomation.Test
         }
 
         [Test]
-        [Category(Component.Other)]
+        [Category(Component.Other), Property("Component2", Component.OV_Test)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
@@ -293,9 +293,9 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
-            
 
-          
         }
+
+
     }
 }
