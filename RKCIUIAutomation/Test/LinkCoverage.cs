@@ -139,7 +139,7 @@ namespace RKCIUIAutomation.Test
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
         public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-        public static ILinkCoverage SetPageClassBasedOnTenant()
+        private static ILinkCoverage SetPageClassBasedOnTenant()
         {
             ILinkCoverage instance = new LinkCoverage();
 

@@ -102,9 +102,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
 
         public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-        private static object SetPageClassBasedOnTenant()
+        private static ISearch SetPageClassBasedOnTenant()
         {
-            var instance = new Search();
+            ISearch instance = new Search();
 
             if (projectName == ProjectName.SGWay)
             {
