@@ -2,8 +2,7 @@
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects;
-using RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
-using System;
+using RKCIUIAutomation.Page.PageObjects.RMCenter;
 
 namespace RKCIUIAutomation.Test
 {

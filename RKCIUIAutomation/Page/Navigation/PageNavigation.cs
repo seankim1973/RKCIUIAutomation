@@ -300,7 +300,7 @@
 
 
         public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-        private static object SetPageClassBasedOnTenant()
+        private static IPageNavigation SetPageClassBasedOnTenant()
         {
             IPageNavigation instance = new PageNavigation();
 
