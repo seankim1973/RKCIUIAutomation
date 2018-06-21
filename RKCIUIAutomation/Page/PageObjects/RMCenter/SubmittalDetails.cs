@@ -4,7 +4,7 @@ using static RKCIUIAutomation.Base.WebDriverFactory;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
-    public class SubmittalDetails : RMCenter
+    public class SubmittalDetails
     {
         public SubmittalDetails(){ }
         public SubmittalDetails(IWebDriver driver) => Driver = driver;

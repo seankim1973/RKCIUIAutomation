@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
-    public class ReviewReviseSubmittals : RMCenter
+    public class ReviewReviseSubmittals
     {
 
-
-
-
     }
+
 }

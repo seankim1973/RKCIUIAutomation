@@ -85,6 +85,7 @@
         void QAEngineer_QA_Test_Field_Supervisor_Review();
         void QAEngineer_QA_Test_Authorization();
         void QAEngineer_DIR_QA_Review_Approval();
+        void QA_Test_Proctor_Curve_Controller();
 
         // Reports & Notices Menu
         void ReportsNotices_General_NCR();
@@ -100,6 +101,9 @@
         void QASearch_DIR_Checklist_Search();
         void QASearch_Ncr_Log_View();
         void QASearch_QMS_Document_Search();
+        void Environmental_Document_Search();
+        void QAQO_Test_Proctor_Curve_Report();
+        void QAQO_Test_Proctor_Curve_Summary();
 
         // QA Field Menu
         void QAField_QA_Test();
@@ -221,6 +225,7 @@
         public virtual void QAEngineer_QA_Test_Field_Supervisor_Review() => Navigate.Menu(NavMenu.QAEngineer.Menu.QA_Test_Field_Supervisor_Review);
         public virtual void QAEngineer_QA_Test_Authorization() => Navigate.Menu(NavMenu.QAEngineer.Menu.QA_Test_Authorization);
         public virtual void QAEngineer_DIR_QA_Review_Approval() => Navigate.Menu(NavMenu.QAEngineer.Menu.DIR_QA_Review_Approval);
+        public virtual void QA_Test_Proctor_Curve_Controller() => Navigate.Menu(NavMenu.QAEngineer.Menu.QA_Test_Proctor_Curve_Controller);
 
         // QA Field Menu
         public virtual void QAField_Daily_Environmental_Inspection() => Navigate.Menu(NavMenu.QAField.Menu.Daily_Environmental_Inspection);
@@ -244,6 +249,7 @@
         public virtual void OV_OV_Test() => Navigate.Menu(NavMenu.OV.Menu.OV_Tests);
 
         // QA Records Control Menu
+        // use Qms_Document() for QARecordControl_Qms_Document
         public virtual void QARecordControl_QA_Test_Original_Report() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Original_Report);
         public virtual void QARecordControl_QA_Test_Correction_Report() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Correction_Report);
         public virtual void QARecordControl_QA_Test_All() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_All);
@@ -256,8 +262,7 @@
         public virtual void QARecordControl_Girder_Tracker() => Navigate.Menu(NavMenu.QARecordControl.Menu.Girder_Tracker);
         public virtual void QARecordControl_QA_Test_Retest_Report() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Retest_Report);
         public virtual void QARecordControl_Environmental_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.Environmental_Document);
-        //use Qms_Document() for QARecordControl_Qms_Document
-
+              
         // QA Search
         public virtual void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QASearch.Menu.Daily_Inspection_Report);
         public virtual void QASearch_DIR_Checklist_Search() => Navigate.Menu(NavMenu.QASearch.Menu.DIR_Checklist_Search);
@@ -268,7 +273,10 @@
         public virtual void QASearch_QA_Tests() => Navigate.Menu(NavMenu.QASearch.Menu.QA_Tests);
         public virtual void QASearch_QA_Test_Summary_Search() => Navigate.Menu(NavMenu.QASearch.Menu.QA_Test_Summary_Search);
         public virtual void QASearch_QMS_Document_Search() => Navigate.Menu(NavMenu.QASearch.Menu.QMS_Document_Search);
-
+        public virtual void Environmental_Document_Search() => Navigate.Menu(NavMenu.QASearch.Menu.Environmental_Document_Search);
+        public virtual void QAQO_Test_Proctor_Curve_Report() => Navigate.Menu(NavMenu.QASearch.Menu.QAQO_Test_Proctor_Curve_Report);
+        public virtual void QAQO_Test_Proctor_Curve_Summary() => Navigate.Menu(NavMenu.QASearch.Menu.QAQO_Test_Proctor_Curve_Summary);
+        
         // Reports & Notices Menu
         public virtual void ReportsNotices_General_DN() => Navigate.Menu(NavMenu.ReportsNotices.Menu.General_DN);
         public virtual void ReportsNotices_General_NCR() => Navigate.Menu(NavMenu.ReportsNotices.Menu.General_NCR);

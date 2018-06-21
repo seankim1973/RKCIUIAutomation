@@ -358,7 +358,8 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QA Test - Lab Supervisor Review")] QA_Test_Lab_Supervisor_Review,
                 [StringValue("QA Test - Field Supervisor Review")] QA_Test_Field_Supervisor_Review,
                 [StringValue("QA Test - Authorization")] QA_Test_Authorization,
-                [StringValue("DIR QA Review/Approval")] DIR_QA_Review_Approval
+                [StringValue("DIR QA Review/Approval")] DIR_QA_Review_Approval,
+                [StringValue("QA Test - Proctor Curve Controller")] QA_Test_Proctor_Curve_Controller
             }
         }
 
@@ -385,7 +386,10 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("DIR Summary Report")] DIR_Summary_Report,
                 [StringValue("DIR Checklist Search")] DIR_Checklist_Search,
                 [StringValue("Ncr Log View")] Ncr_Log_View,
-                [StringValue("QMS Document Search")] QMS_Document_Search
+                [StringValue("QMS Document Search")] QMS_Document_Search,
+                [StringValue("Environmental Document Search")] Environmental_Document_Search,
+                [StringValue("QA/QO Test - Proctor Curve Report")] QAQO_Test_Proctor_Curve_Report,
+                [StringValue("QA/QO Test - Proctor Curve Summary")] QAQO_Test_Proctor_Curve_Summary
             }
         }
 

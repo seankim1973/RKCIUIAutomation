@@ -302,14 +302,11 @@
     <Compile Include="Page\PageObjects\RFI\List.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DesignDocument.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DOTProjectCorrespondenceLog.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\Search\Search_Impl.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\Search\ISearch.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\RFCManagement.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\RMCenter.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittals.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\Search\Search.cs" />
+    <Compile Include="Page\PageObjects\RMCenter\Search.cs" />
     <Compile Include="Page\PageObjects\RMCenter\SubmittalDetails.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadDEVSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadOwnerSubmittal.cs" />
