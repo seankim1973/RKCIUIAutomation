@@ -100,6 +100,13 @@ namespace RKCIUIAutomation.Test
         [Description("Verify Page Title for RM Center Menu only")]
         public override void NavigateToRMCenterMenu() => Instance._NavigateToRMCenterMenu();
 
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public override void NavigateToRFIMenu() => Instance._NavigateToRFIMenu();
+
 
     }
     #endregion <-- end of Test Case Methods class
@@ -120,6 +127,7 @@ namespace RKCIUIAutomation.Test
         void _NavigateToOwnerMenu();
         void _NavigateToMaterialMixCodeMenu();
         void _NavigateToRMCenterMenu();
+        void _NavigateToRFIMenu();
     }
     #endregion <-- end of Workflow Interface class
 
@@ -239,7 +247,11 @@ namespace RKCIUIAutomation.Test
         {
             LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
-
+            NavigateToPage.QAEngineer_QA_Test_Lab_Supervisor_Review();
+            NavigateToPage.QAEngineer_QA_Test_Field_Supervisor_Review();
+            NavigateToPage.QAEngineer_QA_Test_Authorization();
+            NavigateToPage.QAEngineer_DIR_QA_Review_Approval();
+            //Proctor curve menu item
 
         }
 
@@ -413,35 +425,77 @@ namespace RKCIUIAutomation.Test
         public abstract void NavigateToReportsAndNoticesMenu();
         public virtual void _NavigateToReportsAndNoticesMenu()
         {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QARecordControl_General_NCR();
+            NavigateToPage.QARecordControl_General_CDR();
         }
 
         public abstract void NavigateToQASearchMenu();
         public virtual void _NavigateToQASearchMenu()
         {
-            
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QASearch_QA_Tests();
+            NavigateToPage.QASearch_QA_Test_Summary_Search();
+            NavigateToPage.QASearch_QA_Guide_Schedule_Summary_Report();
+            NavigateToPage.QASearch_Inspection_Deficiency_Log_Report();
+            NavigateToPage.QASearch_Daily_Inspection_Report();
+            NavigateToPage.QASearch_DIR_Summary_Report();
+            NavigateToPage.QASearch_DIR_Checklist_Search();
+            NavigateToPage.QASearch_QMS_Document_Search();
+            //environmental doc search menu
+            //Procutor curve report menu
+            //proctor curve sumary report menu
         }
 
         public abstract void NavigateToQAFieldMenu();
         public virtual void _NavigateToQAFieldMenu()
         {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QAField_QA_Test();
+            NavigateToPage.QAField_QA_DIRs();
+            NavigateToPage.QAField_QA_Technician_Random_Search();
+            NavigateToPage.QAField_Weekly_Environmental_Monitoring();
+            NavigateToPage.QAField_Daily_Environmental_Inspection();
+            NavigateToPage.QAField_Weekly_Environmental_Inspection();
         }
 
         public abstract void NavigateToControlPointMenu();
         public virtual void _NavigateToControlPointMenu()
         {
-            
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Control_Point_Log();
+            NavigateToPage.Control_Point_Scheduler();
         }
 
         public abstract void NavigateToOwnerMenu();
         public virtual void _NavigateToOwnerMenu()
         {
-            
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Owner_DIRs();
+            NavigateToPage.Owner_NCRs();
         }
 
         public abstract void NavigateToMaterialMixCodeMenu();
         public virtual void _NavigateToMaterialMixCodeMenu()
         {
-            
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.MaterialMixCodes_Mix_Design_PCC();
+            NavigateToPage.MaterialMixCodes_Mix_Design_HMA();
+            NavigateToPage.MaterialMixCodes_Sieve_Analyses_JMF();
+            NavigateToPage.MaterialMixCodes_Sieve_Analyses_IOC();
+            NavigateToPage.MaterialMixCodes_Material_Code_Concrete_Aggregate();
+            NavigateToPage.MaterialMixCodes_Material_Code_Base_Aggregate();
+            NavigateToPage.MaterialMixCodes_Material_Code_HMA_Aggregate();
+            NavigateToPage.MaterialMixCodes_Material_Code_Raw_Material();
+        }
+
+        public abstract void NavigateToRFIMenu();
+        public virtual void _NavigateToRFIMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+
+            NavigateToPage.RFI_Create();
+            NavigateToPage.RFI_List();
         }
     }
     #endregion <-- end of common implementation class
