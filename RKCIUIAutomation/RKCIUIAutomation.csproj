@@ -381,7 +381,6 @@
     <Content Include="Report\errorscreenshots\NavigateToRMCenterMenu10.png" />
     <Content Include="Report\errorscreenshots\NavigateToRMCenterMenu8.png" />
     <Content Include="Report\errorscreenshots\_NavigateToVerifyQALabMenu6.png" />
-    <Content Include="Report\Extent.html" />
     <Content Include="Temp\Garnet.txt" />
     <Content Include="Temp\Garnet_PageTitle.txt" />
     <Content Include="Temp\GLX.txt" />
