@@ -30,6 +30,7 @@
         <!-- slideout menu -->
         <ul id='slide-out' class='side-nav fixed hide-on-med-and-down'>
             <li class='waves-effect active'><a href='#!' view='test-view' onclick="configureView(0);chartsView('test');"><i class='material-icons'>dashboard</i></a></li>
+                <li class='waves-effect'><a href='#!' view='category-view' onclick="configureView(1)"><i class='material-icons'>label_outline</i></a></li>
                         <li class='waves-effect'><a href='#!' onclick="configureView(-1);chartsView('dashboard');" view='dashboard-view'><i class='material-icons'>track_changes</i></i></a></li>
         </ul>
 
@@ -43,7 +44,7 @@
         <ul id='nav-mobile' class='right hide-on-med-and-down nav-right'>
 
             <a>
-                <span class='suite-start-time label blue darken-3'>6/21/2018 1:09:35 PM Central Standard Time</span>
+                <span class='suite-start-time label blue darken-3'>6/22/2018 10:21:44 AM Central Standard Time</span>
             </a>
             <a>
                 <span class="label blue darken-3">3.1.0</span>
@@ -78,6 +79,18 @@
             <!-- test toggle -->
 
             <!-- category toggle -->
+                <div class='chip transparent'>
+                    <a class='dropdown-button category-toggle' data-activates='category-toggle' data-constrainwidth='false' data-beloworigin='true' data-hover='true' href='#'>
+                        <i class='material-icons'>local_offer</i> Category
+                    </a>
+                    <ul id='category-toggle' class='dropdown-content'>
+                            <li><a href='#'>Priority1</a></li>
+                            <li><a href='#'>Other</a></li>
+                            <li><a href='#'>Smoke</a></li>
+                        <li class='divider'></li>
+                        <li class='clear'><a href='#!' clear='true'>Clear Filters</a></li>
+                    </ul>
+                </div>
             <!-- category toggle -->
 
             <!-- clear filters -->
@@ -123,10 +136,10 @@
                     <canvas id='parent-analysis' width='100' height='80'></canvas>
                 </div>
                 <div class='block text-small'>
-                    <span><span class='strong'>0</span> test(s) passed</span>
+                    <span><span class='strong'>1</span> test(s) passed</span>
                 </div>
                 <div class='block text-small'>
-                    <span class='strong'>0</span> test(s) failed, <span class='strong'>1</span> others
+                    <span class='strong'>0</span> test(s) failed, <span class='strong'>0</span> others
                 </div>
             </div>
         </div>
@@ -138,10 +151,10 @@
                         <canvas id='child-analysis' width='100' height='80'></canvas>
                     </div>
                     <div class='block text-small'>
-                        <span><span class='strong'>0</span> step(s) passed</span>
+                        <span><span class='strong'>2</span> step(s) passed</span>
                     </div>
                     <div class='block text-small'>
-                        <span class='strong'>0</span> step(s) failed, <span class='strong'>23</span> others
+                        <span class='strong'>0</span> step(s) failed, <span class='strong'>30</span> others
                     </div>
                 </div>
             </div>
@@ -156,26 +169,31 @@
             <ul id='test-collection' class='test-collection'>
 
 
-                    <li class='test displayed active has-leaf skip' status='skip' test-id='1'>
+                    <li class='test displayed active has-leaf pass' status='pass' test-id='1'>
                         <div class='test-heading'>
                             <span class='test-name'>LatestTest</span>
-                            <span class='test-time'>6/21/2018 1:09:35 PM</span>
-                            <span class='test-status right skip'>Skip</span>
+                            <span class='test-time'>6/22/2018 10:21:44 AM</span>
+                            <span class='test-status right pass'>Pass</span>
                         </div>
                         <div class='test-content hide'>
                                 <div class='test-time-info'>
-                                    <span class='label start-time'>6/21/2018 1:09:35 PM</span>
-                                    <span class='label end-time'>6/21/2018 1:09:39 PM</span>
-                                    <span class='label time-taken grey lighten-1 white-text'>00:00:04.2468185</span>
+                                    <span class='label start-time'>6/22/2018 10:21:44 AM</span>
+                                    <span class='label end-time'>6/22/2018 10:22:06 AM</span>
+                                    <span class='label time-taken grey lighten-1 white-text'>00:00:21.2792234</span>
                                 </div>
                                     <ul class='collapsible node-list' data-collapsible='accordion'>
-                                            <li class='node level-1 skip' status='skip' test-id='2'>
+                                            <li class='node level-1 pass' status='pass' test-id='2'>
                                                 <div class='collapsible-header'>
                                                     <div class='node-name'><font size=3>TestCase# : ELVS2222 - LatestTest</font><br><font size=2>Verify Component Name</font></div>
-                                                    <span class='node-time'>6/21/2018 1:09:35 PM</span>
-                                                    <span class='test-status right skip'>Skip</span>
+                                                    <span class='node-time'>6/22/2018 10:21:44 AM</span>
+                                                    <span class='test-status right pass'>Pass</span>
                                                 </div>
                                                 <div class='collapsible-body'>
+                                                        <div class='category-list'>
+                                                                <span class='category label white-text'>Priority1</span>
+                                                                <span class='category label white-text'>Other</span>
+                                                                <span class='category label white-text'>Smoke</span>
+                                                        </div>
                                                     <div class='node-steps'>
                                                         <table class='bordered table-results'>
                                                             <thead>
@@ -186,432 +204,165 @@
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>TEST SKIPPED : Project (SH249) does not have implementation of the component (OV_Test).</span></td>
-                                                                    </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:21:53 AM</td>
                                                                         <td class='step-details'>Other component test - This test should run</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:21:53 AM</td>
                                                                         <td class='step-details'>Using account : QAProjectAdmin@rkci.com</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:21:53 AM</td>
                                                                         <td class='step-details'>...waiting for element By.Name: Email</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Exception occured while waiting for element - By.Name: Email</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:21:53 AM</td>
                                                                         <td class='step-details'>...waiting for element By.Name: Password</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Exception occured while waiting for element - By.Name: Password</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:21:54 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //input[@type='submit']</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //input[@type='submit']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unable to click element - By.XPath: //input[@type='submit']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:21:59 AM</td>
+                                                                        <td class='step-details'>Clicked element - By.XPath: //input[@type='submit']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text blue'>###### using Navigation_SH249 instance ###### </span></td>
+                                                                        <td class='timestamp'>6/22/2018 10:21:59 AM</td>
+                                                                        <td class='step-details'><span class='label white-text blue'>###### using Navigation_Garnet instance ###### </span></td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:21:59 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //li[@class='dropdown']/a[text()='RM Center']</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //li[@class='dropdown']/a[text()='RM Center']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unsuccessful attempt to hover mouse over element By.XPath: //li[@class='dropdown']/a[text()='RM Center']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:21:59 AM</td>
+                                                                        <td class='step-details'>Hover mouse over element - By.XPath: //li[@class='dropdown']/a[text()='RM Center']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:00 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //ul[@class='dropdown-menu']/li/a[text()='Search']</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //ul[@class='dropdown-menu']/li/a[text()='Search']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unable to click element - By.XPath: //ul[@class='dropdown-menu']/li/a[text()='Search']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:35 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:00 AM</td>
+                                                                        <td class='step-details'>Clicked element - By.XPath: //ul[@class='dropdown-menu']/li/a[text()='Search']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:37 PM</td>
-                                                                        <td class='step-details'><span class='label white-text blue'>###### using Search_SH249 instance ###### </span></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:02 AM</td>
+                                                                        <td class='step-details'><span class='label white-text blue'>###### using Search_Garnet instance ###### </span></td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:37 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:02 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //span[@aria-owns='SelectedType_listbox']//span[@class='k-select']/span</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:37 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //span[@aria-owns='SelectedType_listbox']//span[@class='k-select']/span</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:37 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:37 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unable to click element - By.XPath: //span[@aria-owns='SelectedType_listbox']//span[@class='k-select']/span</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:37 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:03 AM</td>
+                                                                        <td class='step-details'>Clicked element - By.XPath: //span[@aria-owns='SelectedType_listbox']//span[@class='k-select']/span</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
                                                                         <td class='step-details'>Expanded DDList - DocumentType</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //div[@id='SelectedType-list']//li[1]</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //div[@id='SelectedType-list']//li[1]</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unable to click element - By.XPath: //div[@id='SelectedType-list']//li[1]</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
+                                                                        <td class='step-details'>Clicked element - By.XPath: //div[@id='SelectedType-list']//li[1]</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //input[@id='Number']</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //input[@id='Number']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unable to enter text in field - By.XPath: //input[@id='Number']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
+                                                                        <td class='step-details'>Entered 'Common Test Number' in field - By.XPath: //input[@id='Number']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //input[@id='TransmittalNumber']</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //input[@id='TransmittalNumber']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unable to enter text in field - By.XPath: //input[@id='TransmittalNumber']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
+                                                                        <td class='step-details'>Entered 'Common Test Transmittal Number' in field - By.XPath: //input[@id='TransmittalNumber']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //input[@id='Title']</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //input[@id='Title']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unable to enter text in field - By.XPath: //input[@id='Title']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
+                                                                        <td class='step-details'>Entered 'Common Test Title' in field - By.XPath: //input[@id='Title']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //input[@id='From']</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //input[@id='From']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unable to enter text in field - By.XPath: //input[@id='From']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
+                                                                        <td class='step-details'>Entered 'From Common Test' in field - By.XPath: //input[@id='From']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //input[@id='OwnerNumber']</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //input[@id='OwnerNumber']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unable to enter text in field - By.XPath: //input[@id='OwnerNumber']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
+                                                                        <td class='step-details'>Entered 'Common Test MSL Number' in field - By.XPath: //input[@id='OwnerNumber']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //input[@id='Attention']</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //input[@id='Attention']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>Unable to enter text in field - By.XPath: //input[@id='Attention']</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Object reference not set to an instance of an object.</span></td>
+                                                                    <tr class='log' status='info'>
+                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
+                                                                        <td class='step-details'>Entered 'Attention Common Test' in field - By.XPath: //input[@id='Attention']</td>
                                                                     </tr>
                                                                     <tr class='log' status='info'>
                                                                         <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:05 AM</td>
                                                                         <td class='step-details'>...waiting for element By.XPath: //h3[contains(text(),'RM Center Search')]</td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //h3[contains(text(),'RM Center Search')]</span></td>
+                                                                    <tr class='log' status='pass'>
+                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:06 AM</td>
+                                                                        <td class='step-details'><span class='label white-text green'>## Expect Page Title: RM Center Search <br>&nbsp;&nbsp;## Actual Page Title: RM Center Search</span></td>
                                                                     </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //h2[contains(text(),'RM Center Search')]</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //h2[contains(text(),'RM Center Search')]</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Page Title element with h2 or h3 tag containing text 'RM Center Search' was not found.</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //h3</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //h3</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='info'>
-                                                                        <td class='status info' title='info' alt='info'><i class='material-icons'>info_outline</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'>...waiting for element By.XPath: //h2</td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text orange'>WaitForElement timeout occured for element - By.XPath: //h2</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>input cannot be null
-Parameter name: input</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='debug'>
-                                                                        <td class='status debug' title='debug' alt='debug'><i class='material-icons'>low_priority</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'><span class='label white-text grey'>Could not find any Page element with h2 or h3 tag</span></td>
-                                                                    </tr>
-                                                                    <tr class='log' status='skip'>
-                                                                        <td class='status skip' title='skip' alt='skip'><i class='material-icons'>redo</i></td>
-                                                                        <td class='timestamp'>6/21/2018 1:09:39 PM</td>
-                                                                        <td class='step-details'>Test Skipped</td>
+                                                                    <tr class='log' status='pass'>
+                                                                        <td class='status pass' title='pass' alt='pass'><i class='material-icons'>check_circle</i></td>
+                                                                        <td class='timestamp'>6/22/2018 10:22:06 AM</td>
+                                                                        <td class='step-details'>Test Passed</td>
                                                                     </tr>
                                                             </tbody>
                                                         </table>
@@ -647,7 +398,132 @@ Parameter name: input</span></td>
 
 </div>
 <!-- test view -->
-            <!-- category view -->
+            <div id='category-view' class='view hide'>
+        <section id='controls'>
+            <div class='controls grey lighten-4'>
+                <!-- search -->
+                <div class='chip transparent' alt='Search Tests' title='Search Tests'>
+                    <a href="#" class='search-div'>
+                        <i class='material-icons'>search</i> Search
+                    </a>
+
+                    <div class='input-field left hide'>
+                        <input id='search-tests' type='text' class='validate browser-default' placeholder='Search Tests...'>
+                    </div>
+
+                </div>
+                <!-- search -->
+            </div>
+        </section>
+
+        <div class='subview-left left'>
+
+            <div class='view-summary'>
+                <h5>Categories</h5>
+                <ul id='category-collection' class='category-collection'>
+
+                        <li class='category displayed active'>
+                            <div class='category-heading'>
+                                <span class='category-name'>Priority1</span>
+                                <span class='category-status right'>
+ <span class='label pass'>1</span>                                                                                                         </span>
+                            </div>
+                            <div class='category-content hide'>
+                                <div class='category-status-counts'>
+ <span class='label green accent-4 white-text'>Passed: 1</span>                                                                                                         </div>
+
+                                <div class='category-tests'>
+                                    <table class='bordered table-results'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>TestName</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                    <td>6/22/2018 10:21:44 AM</td>
+                                                    <td class='linked' test-id='2'>LatestTest.<font size=3>TestCase# : ELVS2222 - LatestTest</font><br><font size=2>Verify Component Name</font></td>
+                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                        <li class='category displayed active'>
+                            <div class='category-heading'>
+                                <span class='category-name'>Other</span>
+                                <span class='category-status right'>
+ <span class='label pass'>1</span>                                                                                                         </span>
+                            </div>
+                            <div class='category-content hide'>
+                                <div class='category-status-counts'>
+ <span class='label green accent-4 white-text'>Passed: 1</span>                                                                                                         </div>
+
+                                <div class='category-tests'>
+                                    <table class='bordered table-results'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>TestName</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                    <td>6/22/2018 10:21:44 AM</td>
+                                                    <td class='linked' test-id='2'>LatestTest.<font size=3>TestCase# : ELVS2222 - LatestTest</font><br><font size=2>Verify Component Name</font></td>
+                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+                        <li class='category displayed active'>
+                            <div class='category-heading'>
+                                <span class='category-name'>Smoke</span>
+                                <span class='category-status right'>
+ <span class='label pass'>1</span>                                                                                                         </span>
+                            </div>
+                            <div class='category-content hide'>
+                                <div class='category-status-counts'>
+ <span class='label green accent-4 white-text'>Passed: 1</span>                                                                                                         </div>
+
+                                <div class='category-tests'>
+                                    <table class='bordered table-results'>
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>TestName</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                    <td>6/22/2018 10:21:44 AM</td>
+                                                    <td class='linked' test-id='2'>LatestTest.<font size=3>TestCase# : ELVS2222 - LatestTest</font><br><font size=2>Verify Component Name</font></td>
+                                                    <td><span class='test-status pass'>Pass</span></td>
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </li>
+
+                </ul>
+            </div>
+        </div>
+
+        <div class='subview-right left'>
+            <div class='view-summary'>
+                <h5 class='category-name'></h5>
+            </div>
+        </div>
+    </div>
+<!-- category view -->
             
 
 
@@ -701,25 +577,25 @@ Parameter name: input</span></td>
             </div>
             <div class='col s2'>
                 <div class='card-panel r'>
- <span>Steps</span>                     <div class='panel-lead'>23</div>
+ <span>Steps</span>                     <div class='panel-lead'>32</div>
                 </div>
             </div>
             <div class='col s2'>
                 <div class='card-panel r'>
                     Start
-                    <div class='panel-lead'>6/21/2018 1:09:35 PM</div>
+                    <div class='panel-lead'>6/22/2018 10:21:44 AM</div>
                 </div>
             </div>
             <div class='col s2'>
                 <div class='card-panel r'>
                     End
-                    <div class='panel-lead'>6/21/2018 1:09:41 PM</div>
+                    <div class='panel-lead'>6/22/2018 10:22:08 AM</div>
                 </div>
             </div>
             <div class='col s2'>
                 <div class='card-panel r'>
                     Time Taken
-                    <div class='panel-lead'>00:00:06.8422566</div>
+                    <div class='panel-lead'>00:00:24.0528230</div>
                 </div>
             </div>
 
@@ -734,7 +610,7 @@ Parameter name: input</span></td>
                             </tr>
                                 <tr>
                                     <td>Project</td>
-                                    <td>SH249</td>
+                                    <td>Garnet</td>
                                 </tr>
                                 <tr>
                                     <td>Test Environment</td>
@@ -748,6 +624,42 @@ Parameter name: input</span></td>
                     </div>
                 </div>
 
+                <div class='col s6'>
+                    <div class='card-panel'>
+                        <span class='right label cyan white-text'>Categories</span><p>&nbsp;</p>
+
+                        <table>
+                            <tr>
+                                <th>Name</th>
+                                <th>Passed</th>
+                                <th>Failed</th>
+                                <th>Others</th>
+								<th>Passed %</th>
+                            </tr>
+                                <tr>
+                                    <td>Priority1</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>0</td>
+									<td>100%</td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>0</td>
+									<td>100%</td>
+                                </tr>
+                                <tr>
+                                    <td>Smoke</td>
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>0</td>
+									<td>100%</td>
+                                </tr>
+                        </table>
+                    </div>
+                </div>
         </div>
     </div>
 </div>
@@ -762,20 +674,20 @@ Parameter name: input</span></td>
 
 		<script>
 			var statusGroup = {
-			    passParent: 0,
+			    passParent: 1,
 			    failParent: 0,
 			    fatalParent: 0,
 			    errorParent: 0,
 			    warningParent: 0,
-			    skipParent: 1,
+			    skipParent: 0,
 				
-			    passChild: 0,
+			    passChild: 2,
 			    failChild: 0,
 			    fatalChild: 0,
 			    errorChild: 0,
 			    warningChild: 0,
-			    skipChild: 1,
-			    infoChild: 22,
+			    skipChild: 0,
+			    infoChild: 30,
 				
 			    passGrandChild: 0,
 			    failGrandChild: 0,
