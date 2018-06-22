@@ -323,6 +323,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Report\errorscreenshots\dummy.cs" />
+    <Compile Include="Temp\dummy.cs" />
     <Compile Include="Test\LinkCoverage.cs" />
     <Compile Include="Test\MSUnitTest.cs" />
     <Compile Include="Test\Smoke.cs" />
@@ -332,10 +334,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\JiraUtil.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Report\errorscreenshots\" />
-    <Folder Include="Temp\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="app.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

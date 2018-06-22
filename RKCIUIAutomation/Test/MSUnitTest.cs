@@ -185,7 +185,7 @@ namespace RKCIUIAutomation.Test
 
         }
 
-        [TestMethod]
+        //[TestMethod]
         public void MSUnitTest5()
         {
             //var lockedRecords = Project.Administration.AdminTools.Menu.Locked_Records;
@@ -203,7 +203,7 @@ namespace RKCIUIAutomation.Test
 
         #region write XML
 
-        [TestMethod]
+        //[TestMethod]
         public void MSUnitTest6()
         {
             string filename = "c:\\temp\\file.xml";
