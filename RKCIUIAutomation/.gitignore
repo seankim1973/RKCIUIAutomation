@@ -266,3 +266,6 @@ __pycache__/
 
 # Temp Folder
 **/Temp/*.txt
+
+# JUnit Test Results
+junit-results.xml
