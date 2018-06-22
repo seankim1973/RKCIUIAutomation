@@ -332,10 +332,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\JiraUtil.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Report\errorscreenshots\" />
-    <Folder Include="Temp\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="app.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -370,6 +367,33 @@
     <Content Include="Lib\AutoItX3_x64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Report\errorscreenshots\2.png" />
+    <Content Include="Report\errorscreenshots\45.png" />
+    <Content Include="Report\errorscreenshots\8.png" />
+    <Content Include="Report\errorscreenshots\GetPageTitles43.png" />
+    <Content Include="Report\errorscreenshots\LinkCoverage_Level10.png" />
+    <Content Include="Report\errorscreenshots\LinkCoverage_Level114.png" />
+    <Content Include="Report\errorscreenshots\LinkCoverage_Level121.png" />
+    <Content Include="Report\errorscreenshots\LinkCoverage_Level127.png" />
+    <Content Include="Report\errorscreenshots\LinkCoverage_Level135.png" />
+    <Content Include="Report\errorscreenshots\LinkCoverage_Level15.png" />
+    <Content Include="Report\errorscreenshots\LinkCoverage_Level16.png" />
+    <Content Include="Report\errorscreenshots\NavigateToRMCenterMenu10.png" />
+    <Content Include="Report\errorscreenshots\NavigateToRMCenterMenu8.png" />
+    <Content Include="Report\errorscreenshots\_NavigateToVerifyQALabMenu6.png" />
+    <Content Include="Report\Extent.html" />
+    <Content Include="Temp\Garnet.txt" />
+    <Content Include="Temp\Garnet_PageTitle.txt" />
+    <Content Include="Temp\GLX.txt" />
+    <Content Include="Temp\GLX_PageTitle.txt" />
+    <Content Include="Temp\I15South.txt" />
+    <Content Include="Temp\I15South_PageTitle.txt" />
+    <Content Include="Temp\I15Tech%286192018%29.txt" />
+    <Content Include="Temp\I15Tech%286192018%29_PageTitle.txt" />
+    <Content Include="Temp\I15Tech6192018.txt" />
+    <Content Include="Temp\I15Tech6192018_PageTitle.txt" />
+    <Content Include="Temp\SH249.txt" />
+    <Content Include="Temp\SH249_PageTitle.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
