@@ -181,7 +181,7 @@ namespace RKCIUIAutomation.Test
         }
 
         [Test]
-        [Category(Component.Other), Property("Component2",Component.OV_Test)]
+        [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
@@ -192,6 +192,20 @@ namespace RKCIUIAutomation.Test
             NavigateToPage.RMCenter_Search();
             RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
             Assert.True(VerifyPageTitle("RM Center Search"));
+        }
+
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Failing Test")]
+        public void FailingTest()
+        {
+            LogInfo($"Other component test - This test should run");
+            LoginAs(UserType.ProjAdmin);
+            NavigateToPage.RMCenter_Search();
+            RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
+            Assert.True(false);
         }
 
         [Test]
