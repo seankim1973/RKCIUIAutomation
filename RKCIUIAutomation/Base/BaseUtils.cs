@@ -49,7 +49,9 @@ namespace RKCIUIAutomation.Base
         {
             string uniqueFileName = $"{fileName}{DateTime.Now.Second}.png";
             var screenshot = Driver.TakeScreenshot();
-            screenshot.SaveAsFile($"{extentReportPath}\\errorscreenshots\\{uniqueFileName}", ScreenshotImageFormat.Png);
+            string screenshotFolderPath = $"{extentReportPath}\\errorscreenshots\\";
+            Directory.CreateDirectory(screenshotFolderPath);
+            screenshot.SaveAsFile($"{screenshotFolderPath}{uniqueFileName}", ScreenshotImageFormat.Png);
             return $"{screenshotReferencePath}{uniqueFileName}";
         }
 

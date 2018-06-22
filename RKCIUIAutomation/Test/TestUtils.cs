@@ -46,6 +46,7 @@ namespace RKCIUIAutomation.Test
         }
         private static void WriteToFile(string msg, string fileExt = ".txt", bool overwriteExisting = false)
         {
+            Directory.CreateDirectory(baseTempFolder);
             string path = $"{fullTempFileName}{fileExt}";
             StreamWriter workflow = null;
 

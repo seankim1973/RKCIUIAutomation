@@ -265,4 +265,4 @@ __pycache__/
 **/Report/errorscreenshots/*.png
 
 # Temp Folder
-**/Temp/*.*
+**/Temp/*.txt

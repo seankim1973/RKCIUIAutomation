@@ -14,7 +14,8 @@ namespace RKCIUIAutomation.Base
         public static ExtentReports Instance { get { return _lazy.Value; } }
 
         static ExtentManager()
-        {            
+        {
+            Directory.CreateDirectory(extentReportPath);
             ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(reportFilePath);
             htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
             Instance.AttachReporter(htmlReporter);

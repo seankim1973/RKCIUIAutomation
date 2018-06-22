@@ -21,6 +21,7 @@ namespace RKCIUIAutomation.Test
         public void LinkCoverage_Level1()
         {
             LoginAs(UserType.Bhoomi);
+
             List<string> pageUrls = new List<string>();
             pageUrls = TestUtils.GetNavMenuUrlList();
 
