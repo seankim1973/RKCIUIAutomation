@@ -4,6 +4,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 
 using static RKCIUIAutomation.Page.Action;
+using static RKCIUIAutomation.Test.TestUtils;
 using static RKCIUIAutomation.Config.ProjectProperties;
 using System.Collections.Generic;
 
@@ -88,15 +89,13 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.ProjAdmin);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             ClickSave();
-            Assert.Multiple(testDelegate: () =>
-               {
-                   Assert.True(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_Name));
-                   Assert.True(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_SubmittalTitle));
-                   
-                   /**uncomment Assert statement below to fail test*/
-                   //Assert.True(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_DDListAction));  
-               });
+            AddAssertionToList(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_Name));
+            AddAssertionToList(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_SubmittalTitle));
 
+            /**uncomment Assert statement below to fail test*/
+            //AddAssertionToList(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_DDListAction));
+
+            AssertAll();
             Thread.Sleep(5000);
         }
 

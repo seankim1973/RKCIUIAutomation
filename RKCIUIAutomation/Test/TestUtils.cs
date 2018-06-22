@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using NUnit.Framework;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Base;
 using System;
 using System.Collections.Generic;
@@ -211,6 +212,23 @@ namespace RKCIUIAutomation.Test
 
             return isLoaded;
         }
+
+
+        private static List<bool> assertionList;
+        public static void AddAssertionToList(bool assertion)
+        {
+            assertionList = new List<bool>();
+            assertionList.Add(assertion);
+        }
+        public static void AssertAll()
+        {
+            Assert.Multiple(testDelegate: () =>
+            {
+                foreach(bool assertion in assertionList)
+                Assert.True(assertion);
+            });
+        }
+
     }
 
 
