@@ -8,6 +8,7 @@ using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -147,7 +148,6 @@ namespace RKCIUIAutomation.Base
         public static string GetTestCaseNumber() => GetTestContextProperty(TestContextProperty.TestCaseNumber);
         public static string GetTestSuiteName() => GetTestContextProperty(TestContextProperty.TestSuite);
 
-
         private static string GetTestContextProperty(TestContextProperty testContextProperty)
         {
             string context = string.Empty;
@@ -192,7 +192,6 @@ namespace RKCIUIAutomation.Base
 
             return prop.ToString();
         }
-
         private enum TestContextProperty
         {
             TestName,
@@ -202,6 +201,18 @@ namespace RKCIUIAutomation.Base
             TestDescription,
             TestPriority,
             TestCaseNumber
+        }
+
+        public static void RunExternalExecutible(string executible, string cmdLineArgument)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo(executible)
+            {
+                Arguments = cmdLineArgument,
+                UseShellExecute = false,
+                CreateNoWindow = false
+            };
+
+            Process.Start(startInfo);
         }
     }
 }

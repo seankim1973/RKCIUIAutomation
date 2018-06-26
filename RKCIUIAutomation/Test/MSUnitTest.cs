@@ -185,7 +185,7 @@ namespace RKCIUIAutomation.Test
 
         }
 
-        //[TestMethod]
+        [TestMethod]
         public void MSUnitTest5()
         {
             //var lockedRecords = Project.Administration.AdminTools.Menu.Locked_Records;
@@ -197,8 +197,14 @@ namespace RKCIUIAutomation.Test
             //string[] result = Regex.Split(value, " <br>&nbsp;&nbsp;");
             //log.Info(result[0]);
             //log.Info(result[1]);
-            string[] today = (DateTime.Today.ToShortDateString()).Split('/');
-            Console.WriteLine($"{today[0]}{today[1]}{today[2]}");
+
+            //string exe = "nunit3-console";
+            //string arg = $"-p:Platform=Local -p:TestEnv=Stage -p:ProjectName=GLX --test=RKCIUIAutomation.Test.Smoke.LatestTest " +
+            //    $"C:\\Users\\schong\\source\\repos\\RKCIUIAutomation\\RKCIUIAutomation\\bin\\Debug\\RKCIUIAutomation.dll";
+
+            //RunExternalExecutible(exe, arg);
+            Console.WriteLine(ZaleniumService.IsRunning());
+            //Assert.IsTrue();
         }
 
         #region write XML

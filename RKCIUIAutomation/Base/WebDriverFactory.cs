@@ -14,38 +14,44 @@ namespace RKCIUIAutomation.Base
     {
         public static IWebDriver Driver { get; set; }
 
-        protected IWebDriver GetRemoteWebDriver(TestPlatform platform, BrowserType browser)
+        protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser)
         {
-            DesiredCapabilities caps = DetermineCapabilities(platform, browser);
-            return Driver = new RemoteWebDriver(new Uri("http://localhost:4444/wd/hub"), caps);
-        }
+            if (Driver == null)
+            {
+                if (platform == TestPlatform.Local)
+                {
+                    switch (browser)
+                    {
+                        case BrowserType.Chrome:
+                            Driver = new ChromeDriver();
+                            break;
+                        case BrowserType.Firefox:
+                            Driver = new FirefoxDriver();
+                            break;
+                        case BrowserType.Edge:
+                            Driver = new EdgeDriver();
+                            break;
+                        case BrowserType.Safari:
+                            Driver = new SafariDriver();
+                            break;
+                        default:
+                            LogDebug("Unrecognized Browser Type... using ChromeDriver");
+                            Driver = new ChromeDriver();
+                            break;
+                    }
+                }
+                else
+                {
+                    DesiredCapabilities caps = DetermineCapabilities(platform, browser);
+                    Driver = new RemoteWebDriver(new Uri("http://10.1.1.207:4444/wd/hub"), caps);
+                }
 
-        protected IWebDriver GetLocalWebDriver(BrowserType browser)
-        {
-            if (browser == BrowserType.Chrome)
-            {
-                Driver = new ChromeDriver();
-            }
-            else if (browser == BrowserType.Edge)
-            {
-                Driver = new EdgeDriver();
-            }
-            else if (browser == BrowserType.Firefox)
-            {
-                Driver = new FirefoxDriver();
-            }
-            else if (browser == BrowserType.Safari)
-            {
-                Driver = new SafariDriver();
+                return Driver;
             }
             else
-            {
-                log.Debug("Local browser type is not implemented.");
-            }
-
-            return Driver;
+                return Driver;
         }
-
+        
         private DesiredCapabilities caps = null;
 
         private DesiredCapabilities DetermineCapabilities(TestPlatform platform, BrowserType browser)
@@ -59,57 +65,52 @@ namespace RKCIUIAutomation.Base
 
         private DesiredCapabilities DeterminePlatformType(TestPlatform platform)
         {
-            if (platform == TestPlatform.Windows)
+            switch (platform)
             {
-                caps.SetCapability(CapabilityType.Platform, "Windows");
+                case TestPlatform.Linux:
+                    caps.SetCapability(CapabilityType.Platform, "Linux");
+                    break;
+                case TestPlatform.Windows:
+                    caps.SetCapability(CapabilityType.Platform, "Windows");
+                    break;
+                case TestPlatform.Mac:
+                    caps.SetCapability(CapabilityType.Platform, "Mac");
+                    break;
+                case TestPlatform.Android:
+                    caps.SetCapability(CapabilityType.Platform, "Android");
+                    break;
+                case TestPlatform.IOS:
+                    caps.SetCapability(CapabilityType.Platform, "Mac");
+                    break;
+                default:
+                    LogDebug("Unrecognized Platform... using Linux");
+                    caps.SetCapability(CapabilityType.Platform, "Linux");
+                    break;
             }
-            else if (platform == TestPlatform.Mac)
-            {
-                caps.SetCapability(CapabilityType.Platform, "Mac");
-            }
-            else if (platform == TestPlatform.Android)
-            {
-                caps.SetCapability(CapabilityType.Platform, "Android");
-            }
-            else if (platform == TestPlatform.IOS)
-            {
-                caps.SetCapability(CapabilityType.Platform, "Mac");
-            }
-            else if (platform == TestPlatform.Linux)
-            {
-                caps.SetCapability(CapabilityType.Platform, "Linux");
-            }
-            else
-            {
-                log.Debug("Test Platform is not implemented.");
-            }
-
             return caps;
         }
 
         private DesiredCapabilities DetermineBrowserType(BrowserType browser)
         {
-            if (browser == BrowserType.Chrome)
+            switch (browser)
             {
-                caps.SetCapability(CapabilityType.BrowserName, "chrome");
+                case BrowserType.Chrome:
+                    caps.SetCapability(CapabilityType.BrowserName, "chrome");
+                    break;
+                case BrowserType.Firefox:
+                    caps.SetCapability(CapabilityType.BrowserName, "firefox");
+                    break;
+                case BrowserType.Edge:
+                    caps.SetCapability(CapabilityType.BrowserName, "edge");
+                    break;
+                case BrowserType.Safari:
+                    caps.SetCapability(CapabilityType.BrowserName, "safari");
+                    break;
+                default:
+                    LogDebug("Unrecognized browser capabilities... using Chrome");
+                    caps.SetCapability(CapabilityType.BrowserName, "chrome");
+                    break;
             }
-            else if (browser == BrowserType.Edge)
-            {
-                caps.SetCapability(CapabilityType.BrowserName, "edge");
-            }
-            else if (browser == BrowserType.Firefox)
-            {
-                caps.SetCapability(CapabilityType.BrowserName, "firefox");
-            }
-            else if (browser == BrowserType.Safari)
-            {
-                caps.SetCapability(CapabilityType.BrowserName, "safari");
-            }
-            else
-            {
-                log.Debug("Browser type is not implemented.");
-            }
-
             return caps;
         }
     }

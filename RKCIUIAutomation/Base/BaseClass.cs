@@ -32,7 +32,7 @@ namespace RKCIUIAutomation.Base
             var _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Linux}");
             var _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Chrome}");
             var _testEnv = TestContext.Parameters.Get("TestEnv", $"{TestEnv.Test}");
-            var _projectName = TestContext.Parameters.Get("Project");
+            var _projectName = TestContext.Parameters.Get("Project", $"{ProjectName.Garnet}");
 
             testPlatform = (TestPlatform)Enum.Parse(typeof(TestPlatform), _testPlatform);
             browserType = (BrowserType)Enum.Parse(typeof(BrowserType), _browserType);
@@ -69,6 +69,9 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
+            Driver = GetWebDriver(testPlatform, browserType);
+            siteUrl = GetSiteUrl(testEnv, projectName);
+
             try
             {
                 ExtentTestManager.CreateParentTest(testName);
@@ -79,19 +82,7 @@ namespace RKCIUIAutomation.Base
                 if (GetComponentsForProject(projectName).Contains(testComponent1))
                 {
                     if (GetComponentsForProject(projectName).Contains(testComponent2) || testComponent2 == "Not Defined")
-                    {
-                        switch (testPlatform)
-                        {
-                            case TestPlatform.Local:
-                                Driver = GetLocalWebDriver(browserType);
-                                break;
-                            //TODO - case for appium (mobile) ?
-                            default:
-                                Driver = GetRemoteWebDriver(testPlatform, browserType);
-                                break;
-                        }
-
-                        siteUrl = GetSiteUrl(testEnv, projectName);
+                    {                        
                         Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
                         Driver.Manage().Window.Maximize();
                         Driver.Navigate().GoToUrl(siteUrl);

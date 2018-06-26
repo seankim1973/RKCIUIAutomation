@@ -204,6 +204,7 @@
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.4.0\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.6\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
@@ -227,7 +228,9 @@
     <Compile Include="Base\BaseUtils.cs" />
     <Compile Include="Base\ExtentManager.cs" />
     <Compile Include="Base\ExtentTestManager.cs" />
+    <Compile Include="Base\RestUtils.cs" />
     <Compile Include="Base\WebDriverFactory.cs" />
+    <Compile Include="Base\ZaleniumService.cs" />
     <Compile Include="Config\ConfigUtils.cs" />
     <Compile Include="Config\ProjectProperties.cs" />
     <Compile Include="Config\Properties.cs" />
