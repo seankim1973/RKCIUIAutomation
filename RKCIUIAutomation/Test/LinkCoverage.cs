@@ -3,6 +3,7 @@ using static RKCIUIAutomation.Config.ProjectProperties;
 using NUnit.Framework;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
+using static RKCIUIAutomation.Test.TestUtils;
 using RKCIUIAutomation.Base;
 
 namespace RKCIUIAutomation.Test
@@ -182,60 +183,133 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
+        public abstract void NavigateToVerifyProjectConfigurationMenu();
+        public virtual void _NavigateToVerifyProjectConfigurationMenu()
+        {
+            LogInfo($"Project Configuration component test - This test should run");
+            LoginAs(UserType.Bhoomi);
+
+
+            NavigateToPage.My_Details();
+            AddAssertionToList(VerifyPageTitle("Account Details"));
+            //Qms Document - based on Tenant
+            NavigateToPage.Qms_Document();
+            AddAssertionToList(VerifyPageTitle("QMS Documents"));
+
+            //Project>Administration
+            NavigateToPage.Admin_Project_Details();
+            AddAssertionToList(VerifyPageTitle("Project"));
+            NavigateToPage.Admin_Companies();
+            AddAssertionToList(VerifyPageTitle("Companies"));
+            NavigateToPage.Admin_Contracts();
+            AddAssertionToList(VerifyPageTitle("Contracts"));
+            NavigateToPage.Admin_Menu_Editor();
+            AddAssertionToList(VerifyPageTitle("Menu Editor"));
+            NavigateToPage.Admin_Suport();
+            AddAssertionToList(VerifyPageTitle("Cache Management"));
+
+
+            //Project>Administration>User Management
+            NavigateToPage.UserMgmt_Roles();
+            AddAssertionToList(VerifyPageTitle("Roles"));
+            NavigateToPage.UserMgmt_Users();
+            AddAssertionToList(VerifyPageTitle("Users"));
+            NavigateToPage.UserMgmt_Access_Rights();
+            AddAssertionToList(VerifyPageTitle("Access Rights"));
+
+            //Project>Administration>System Configuration
+            NavigateToPage.SysConfig_Disciplines();
+            AddAssertionToList(VerifyPageTitle("Disciplines"));
+            NavigateToPage.SysConfig_Submittal_Actions();
+            AddAssertionToList(VerifyPageTitle("SubmittalActions"));
+            NavigateToPage.SysConfig_Submittal_Requirements();
+            AddAssertionToList(VerifyPageTitle("Submittal Requirments"));
+            NavigateToPage.SysConfig_Submittal_Types();
+            AddAssertionToList(VerifyPageTitle("SubmittalTypes"));
+            NavigateToPage.SysConfig_CVL_Lists();
+            AddAssertionToList(VerifyPageTitle("CVL List"));
+            NavigateToPage.SysConfig_CVL_List_Items();
+            AddAssertionToList(VerifyPageTitle("CVL List Items"));
+            NavigateToPage.SysConfig_Notifications();
+            AddAssertionToList(VerifyPageTitle("Notifications"));
+            NavigateToPage.SysConfig_Sieves();
+            AddAssertionToList(VerifyPageTitle("Sieves"));
+            NavigateToPage.SysConfig_Gradations();
+            AddAssertionToList(VerifyPageTitle("Gradations"));
+
+            //Project>Administration>System Configuration>Equipment
+            NavigateToPage.SysConfig_Equipment_Makes();
+            AddAssertionToList(VerifyPageTitle("Makes"));
+            NavigateToPage.SysConfig_Equipment_Models();
+            AddAssertionToList(VerifyPageTitle("EquipmentModels"));
+            NavigateToPage.SysConfig_Equipment_Types();
+            AddAssertionToList(VerifyPageTitle("Equipment Types"));
+
+            //Project>Administration>System Configuration>Grade Management
+            NavigateToPage.SysConfig_Grade_Types();
+            AddAssertionToList(VerifyPageTitle("Grade Type"));
+            NavigateToPage.SysConfig_Grades();
+            AddAssertionToList(VerifyPageTitle("Grades"));
+
+
+            //Project>Administration>Admin Tools
+            NavigateToPage.AdminTools_Locked_Records();
+            AddAssertionToList(VerifyPageTitle("Locked Records"));
+            AssertAll();
+        }
+
+        /// <summary>
+        /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
+        /// </summary>
+        public abstract void NavigateToVerifyQALabMenu();
+        public virtual void _NavigateToVerifyQALabMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+
+            NavigateToPage.QALab_Technician_Random();
+            AddAssertionToList(VerifyPageTitle("Technician Random"));
+            NavigateToPage.QALab_BreakSheet_Creation();
+            AddAssertionToList(VerifyPageTitle("Create Break Sheet"));
+            NavigateToPage.QALab_BreakSheet_Legacy();
+            AddAssertionToList(VerifyPageTitle("Break Sheet Legacy"));
+            NavigateToPage.QALab_Equipment_Management();
+            AddAssertionToList(VerifyPageTitle("Equipment"));
+            NavigateToPage.QALab_BreakSheet_Forecast();
+            AddAssertionToList(VerifyPageTitle("Break Sheet Forecast"));
+            NavigateToPage.QALab_Early_Break_Calendar();
+            AddAssertionToList(VerifySchedulerIsDisplayed());
+
+            AssertAll();
+        }
+
+        /// <summary>
+        /// Common workflow method for Tenants:
+        /// </summary>
         public abstract void NavigateToVerifyQARecordControlMenu();
         public virtual void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
-            //QA Test-Original Report
-            //QA Test- Correction Report (Not in Garnet, glx, I15SB
-            //QA test- All
-            //QA Test- Retest Report
-            //QA DIRs
-            //General NCR
-            //General CDR
-            //Retaining Wall Backfill Quantity Tracker
-            //Concrete Paving Quantity Tracker
-            //MPL Tracker
-            //Girder Tracker
-            //QMS Document(Not in Garnet, glx, sh249, I15tech, I15SB
-            //Environmental Document (Not in Garnet, glx, sh249,I15tech, I15SB
-
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_All();
-            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            AddAssertionToList(VerifyPageTitle("Lab Tests"));
             NavigateToPage.QARecordControl_QA_Test_Retest_Report();
-            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            AddAssertionToList(VerifyPageTitle("Create Retest Report"));
             NavigateToPage.QARecordControl_QA_DIRs();
-            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports"));
             NavigateToPage.QARecordControl_General_NCR();
-            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
             NavigateToPage.QARecordControl_General_CDR();
-            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
-            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
-            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
             NavigateToPage.QARecordControl_MPL_Tracker();
-            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            AddAssertionToList(VerifyPageTitle("MPL Tracker"));
             NavigateToPage.QARecordControl_Girder_Tracker();
-            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
-           
-
-            Assert.Multiple(testDelegate: () =>
-            {
-                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
-                Assert.True(qa_Test_AllTitleDisplayed);
-                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
-                Assert.True(qa_DIRsTitleDisplayed);
-                Assert.True(general_NCRTitleDisplayed);
-                Assert.True(general_CDRTitleDisplayed);
-                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
-                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
-                Assert.True(mpl_TrackerTitleDisplayed);
-                Assert.True(girder_TrackerTitleDisplayed);
-            });
-
+            AddAssertionToList(VerifyPageTitle("Girder Tracker"));
+            AssertAll();
 
         }
 
@@ -248,120 +322,173 @@ namespace RKCIUIAutomation.Test
             LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QAEngineer_QA_Test_Lab_Supervisor_Review();
-            NavigateToPage.QAEngineer_QA_Test_Field_Supervisor_Review();
+            AddAssertionToList(VerifyPageTitle("Lab Supervisor Review"));
+            NavigateToPage.QAEngineer_QA_Test_Field_Supervisor_Review(); //not in 249
+            AddAssertionToList(VerifyPageTitle(""));
             NavigateToPage.QAEngineer_QA_Test_Authorization();
+            AddAssertionToList(VerifyPageTitle("Authorizations"));
             NavigateToPage.QAEngineer_DIR_QA_Review_Approval();
-            //Proctor curve menu item
-
+            AddAssertionToList(VerifyPageTitle("IQF Engineer > List of Daily Inspection Reports"));
+            NavigateToPage.QA_Test_Proctor_Curve_Controller();
+            AddAssertionToList(VerifyPageTitle("Proctor Curve Information"));
+            AssertAll();
         }
 
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
-        public abstract void NavigateToVerifyProjectConfigurationMenu();
-        public virtual void _NavigateToVerifyProjectConfigurationMenu()
+        public abstract void NavigateToReportsAndNoticesMenu();
+        public virtual void _NavigateToReportsAndNoticesMenu()
         {
-            LogInfo($"Project Configuration component test - This test should run");
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QARecordControl_General_NCR();
+            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            NavigateToPage.QARecordControl_General_CDR();
+            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
+            AssertAll();
+        }
+
+
+
+        /// <summary>
+        /// Common workflow method for Tenants:I15South, I15Tech, & SH249
+        /// </summary>
+
+        public abstract void NavigateToOVMenu();
+        public virtual void _NavigateToOVMenu()
+        {
             LoginAs(UserType.Bhoomi);
 
+            NavigateToPage.OV_Create_OV_Test();
+            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            NavigateToPage.OV_OV_Test();
+            AddAssertionToList(VerifyPageTitle("OV Tests"));
 
-            NavigateToPage.My_Details();
-            Assert.True(VerifyPageTitle("Account Details"));
-            //Qms Document - based on Tenant
-            NavigateToPage.Qms_Document();
-            Assert.True(VerifyPageTitle("QMS Documents"));
-
-            //Project>Administration
-            NavigateToPage.Admin_Project_Details();
-            Assert.True(VerifyPageTitle("Project"));
-            NavigateToPage.Admin_Companies();
-            Assert.True(VerifyPageTitle("Companies"));
-            NavigateToPage.Admin_Contracts();
-            Assert.True(VerifyPageTitle("Contracts"));
-            NavigateToPage.Admin_Menu_Editor();
-            Assert.True(VerifyPageTitle("Menu Editor"));
-            NavigateToPage.Admin_Suport();
-            Assert.True(VerifyPageTitle("Cache Management"));
+            AssertAll();
+        }
 
 
-            //Project>Administration>User Management
-            NavigateToPage.UserMgmt_Roles();
-            Assert.True(VerifyPageTitle("Roles"));
-            NavigateToPage.UserMgmt_Users();
-            Assert.True(VerifyPageTitle("Users"));
-            NavigateToPage.UserMgmt_Access_Rights();
-            Assert.True(VerifyPageTitle("Access Rights"));
-
-            //Project>Administration>System Configuration
-            NavigateToPage.SysConfig_Disciplines();
-            Assert.True(VerifyPageTitle("Disciplines"));
-            NavigateToPage.SysConfig_Submittal_Actions();
-            Assert.True(VerifyPageTitle("SubmittalActions"));
-            NavigateToPage.SysConfig_Submittal_Requirements();
-            Assert.True(VerifyPageTitle("Submittal Requirments"));
-            NavigateToPage.SysConfig_Submittal_Types();
-            Assert.True(VerifyPageTitle("SubmittalTypes"));
-            NavigateToPage.SysConfig_CVL_Lists();
-            Assert.True(VerifyPageTitle("CVL List"));
-            NavigateToPage.SysConfig_CVL_List_Items();
-            Assert.True(VerifyPageTitle("CVL List Items"));
-            NavigateToPage.SysConfig_Notifications();
-            Assert.True(VerifyPageTitle("Notifications"));
-            NavigateToPage.SysConfig_Sieves();
-            Assert.True(VerifyPageTitle("Sieves"));
-            NavigateToPage.SysConfig_Gradations();
-            Assert.True(VerifyPageTitle("Gradations"));
-
-            //Project>Administration>System Configuration>Equipment
-            NavigateToPage.SysConfig_Equipment_Makes();
-            Assert.True(VerifyPageTitle("Makes"));
-            NavigateToPage.SysConfig_Equipment_Models();
-            Assert.True(VerifyPageTitle("EquipmentModels"));
-            NavigateToPage.SysConfig_Equipment_Types();
-            Assert.True(VerifyPageTitle("Equipment Types"));
-
-            //Project>Administration>System Configuration>Grade Management
-            NavigateToPage.SysConfig_Grade_Types();
-            Assert.True(VerifyPageTitle("Grade Type"));
-            NavigateToPage.SysConfig_Grades();
-            Assert.True(VerifyPageTitle("Grades"));
-
-
-            //Project>Administration>Admin Tools
-            NavigateToPage.AdminTools_Locked_Records();
-            Assert.True(VerifyPageTitle("Locked Records"));
+        /// <summary>
+        /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
+        /// </summary>
+        public abstract void NavigateToQASearchMenu();
+        public virtual void _NavigateToQASearchMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QASearch_QA_Tests();
+            AddAssertionToList(VerifyPageTitle("Test Search"));
+            NavigateToPage.QASearch_QA_Test_Summary_Search();
+            AddAssertionToList(VerifyPageTitle("Test Summary Report Search"));
+            NavigateToPage.QASearch_QA_Guide_Schedule_Summary_Report();
+            AddAssertionToList(VerifyPageTitle("Guide Schedule of Sampling and Testing"));
+            NavigateToPage.QASearch_Inspection_Deficiency_Log_Report();
+            AddAssertionToList(VerifyPageTitle("Inspection Deficiency Log Search"));
+            NavigateToPage.QASearch_Daily_Inspection_Report();
+            AddAssertionToList(VerifyPageTitle("Daily Inspection Report Search"));
+            NavigateToPage.QASearch_DIR_Summary_Report();
+            AddAssertionToList(VerifyPageTitle("DIR Summary Report Search"));
+            NavigateToPage.QASearch_DIR_Checklist_Search();
+            AddAssertionToList(VerifyPageTitle("DIR Checklist Search"));
+            NavigateToPage.QASearch_QMS_Document_Search();
+            AddAssertionToList(VerifyPageTitle("QMS Documents Search"));
+            NavigateToPage.Environmental_Document_Search();//not in 249
+            AddAssertionToList(VerifyPageTitle(""));
+            NavigateToPage.QAQO_Test_Proctor_Curve_Report();
+            AddAssertionToList(VerifyPageTitle("ProctorCurveSummary"));
+            NavigateToPage.QAQO_Test_Proctor_Curve_Summary();
+            AddAssertionToList(VerifyPageTitle("ProctorCurveReport"));
+            AssertAll();
         }
 
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public abstract void NavigateToVerifyQALabMenu();
-        public virtual void _NavigateToVerifyQALabMenu()
+        public abstract void NavigateToQAFieldMenu();
+        public virtual void _NavigateToQAFieldMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QAField_QA_Test();
+            AddAssertionToList(VerifyPageTitle("Field Tests"));
+            NavigateToPage.QAField_QA_DIRs();
+            AddAssertionToList(VerifyPageTitle("IQF Field > List of Daily Inspection Reports"));
+           // NavigateToPage.QAField_QA_Technician_Random_Search();//page not implemented
+           // AddAssertionToList(VerifyPageTitle("");
+            NavigateToPage.QAField_Weekly_Environmental_Monitoring();
+            AddAssertionToList(VerifyPageTitle("Week Environmental Monitoring Reports"));
+            NavigateToPage.QAField_Daily_Environmental_Inspection();
+            AddAssertionToList(VerifyPageTitle("List of Daily Environmental Inspection Reports"));
+            NavigateToPage.QAField_Weekly_Environmental_Inspection();
+            AddAssertionToList(VerifyPageTitle("List of Weekly Environmental Inspection Reportse"));
+            AssertAll();
+        }
+
+        /// <summary>
+        /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
+        /// </summary>
+        public abstract void NavigateToControlPointMenu();
+        public virtual void _NavigateToControlPointMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Control_Point_Log();
+            AddAssertionToList(VerifyPageTitle("Control Point List"));
+            NavigateToPage.Control_Point_Scheduler();
+            AddAssertionToList(VerifyPageTitle("Control Point Log Search"));
+            AssertAll();
+        }
+
+        /// <summary>
+        /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
+        /// </summary>
+        public abstract void NavigateToOwnerMenu();
+        public virtual void _NavigateToOwnerMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Owner_DIRs();
+            AddAssertionToList(VerifyPageTitle("DOT > List of Daily Inspection Reports"));
+            NavigateToPage.Owner_NCRs();
+            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            AssertAll();
+        }
+
+        /// <summary>
+        /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
+        /// </summary>
+        public abstract void NavigateToMaterialMixCodeMenu();
+        public virtual void _NavigateToMaterialMixCodeMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.MaterialMixCodes_Mix_Design_PCC();
+            AddAssertionToList(VerifyPageTitle("Pcc Mix Design"));
+            NavigateToPage.MaterialMixCodes_Mix_Design_HMA();
+            AddAssertionToList(VerifyPageTitle("Hma Mix Design"));
+            NavigateToPage.MaterialMixCodes_Sieve_Analyses_JMF();
+            AddAssertionToList(VerifyPageTitle("Sieve Analysis JMF"));
+            NavigateToPage.MaterialMixCodes_Sieve_Analyses_IOC();
+            AddAssertionToList(VerifyPageTitle("Sieve Analysis IOC"));
+            NavigateToPage.MaterialMixCodes_Material_Code_Concrete_Aggregate();
+            AddAssertionToList(VerifyPageTitle("Aggregate A"));
+            NavigateToPage.MaterialMixCodes_Material_Code_Base_Aggregate();
+            AddAssertionToList(VerifyPageTitle("Aggregate E"));
+            NavigateToPage.MaterialMixCodes_Material_Code_HMA_Aggregate();
+            AddAssertionToList(VerifyPageTitle("Aggregate F"));
+            NavigateToPage.MaterialMixCodes_Material_Code_Raw_Material();
+            AddAssertionToList(VerifyPageTitle("Raw Materials"));
+            AssertAll();
+        }
+
+        /// <summary>
+        /// Common workflow method for Tenants: GLX
+        /// </summary>
+        public abstract void NavigateToRFIMenu();
+        public virtual void _NavigateToRFIMenu()
         {
             LoginAs(UserType.Bhoomi);
 
-            NavigateToPage.QALab_Technician_Random();
-            bool techRandomTitleDisplayed = VerifyPageTitle("Technician Random");
-            NavigateToPage.QALab_BreakSheet_Creation();
-            bool breaksheetCreationTitleDisplayed = VerifyPageTitle("Create Break Sheet");
-            NavigateToPage.QALab_BreakSheet_Legacy();
-            bool breaksheetLegacyTitleDisplayed = VerifyPageTitle("Break Sheet Legacy");
-            NavigateToPage.QALab_Equipment_Management();
-            bool equipMgmtTitleDisplayed = VerifyPageTitle("Equipment");
-            NavigateToPage.QALab_BreakSheet_Forecast();
-            bool breaksheetForecastTitleDisplayed = VerifyPageTitle("Break Sheet Forecast");
-            NavigateToPage.QALab_Early_Break_Calendar();
-            bool earlyBreakCalendarDisplayed = VerifySchedulerIsDisplayed();
-
-            Assert.Multiple(testDelegate: () =>
-            {
-                Assert.True(techRandomTitleDisplayed);
-                Assert.True(breaksheetCreationTitleDisplayed);
-                Assert.True(breaksheetLegacyTitleDisplayed);
-                Assert.True(equipMgmtTitleDisplayed);
-                Assert.True(breaksheetForecastTitleDisplayed);
-                Assert.True(earlyBreakCalendarDisplayed);
-            });
+            NavigateToPage.RFI_Create();
+            AddAssertionToList(VerifyPageTitle("Request For Information"));
+            NavigateToPage.RFI_List();
+            AddAssertionToList(VerifyPageTitle(""));//dont see title
+            AssertAll();
         }
 
         /// <summary>
@@ -373,129 +500,25 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.RMCenter_Search();
-            bool RMCenter_Search_TitleDisplayed = VerifyPageTitle("RM Center Search");
+            AddAssertionToList(VerifyPageTitle("RM Center Search"));
             NavigateToPage.RMCenter_Design_Documents();
-            bool RMCenter_Design_Documents_TitleDisplayed = VerifyPageTitle("Design Document");
+            AddAssertionToList(VerifyPageTitle("Design Document"));
             NavigateToPage.RMCenter_Upload_QA_Submittal();
-            bool RMCenter_Upload_QA_Submittal_TitleDisplayed = VerifyPageTitle("Submittal Details");
+            AddAssertionToList(VerifyPageTitle("Submittal Details"));
             NavigateToPage.RMCenter_Upload_Owner_Submittal();
-            bool RMCenter_Upload_Owner_Submittal_TitleDisplayed = VerifyPageTitle("New Submittal");
+            AddAssertionToList(VerifyPageTitle("New Submittal"));
             NavigateToPage.RMCenter_Upload_DEV_Submittal();
-            bool RMCenter_Upload_DEV_Submittal_TitleDisplayed = VerifyPageTitle("Submittal Details");
+            AddAssertionToList(VerifyPageTitle("Submittal Details"));
             NavigateToPage.RMCenter_DOT_Project_Correspondence_Log();
-            bool RMCenter_DOT_Project_Correspondence_Log_TitleDisplayed = VerifyPageTitle("Transmissions");
+            AddAssertionToList(VerifyPageTitle("Transmissions"));
             NavigateToPage.RMCenter_Review_Revise_Submittal();
-            bool RMCenter_Review_Revise_Submittal_TitleDisplayed = VerifyPageTitle("Review / Revise Submittals");
+            AddAssertionToList(VerifyPageTitle("Review / Revise Submittals"));
             NavigateToPage.RMCenter_RFC_Management();
-            bool RMCenter_RFC_Management_TitleDisplayed = VerifyPageTitle("RFC List");
+            AddAssertionToList(VerifyPageTitle("RFC List"));
             NavigateToPage.RMCenter_Project_Correspondence_Log();
-            bool RMCenter_Project_Correspondence_Log_TitleDisplayed = VerifyPageTitle("Transmissions");
+            AddAssertionToList(VerifyPageTitle("Transmissions"));
 
-            Assert.Multiple(testDelegate: () =>
-            {
-                Assert.True(RMCenter_Search_TitleDisplayed);
-                Assert.True(RMCenter_Design_Documents_TitleDisplayed);
-                Assert.True(RMCenter_Upload_QA_Submittal_TitleDisplayed);
-                Assert.True(RMCenter_Upload_Owner_Submittal_TitleDisplayed);
-                Assert.True(RMCenter_Upload_DEV_Submittal_TitleDisplayed);
-                Assert.True(RMCenter_DOT_Project_Correspondence_Log_TitleDisplayed);
-                Assert.True(RMCenter_Review_Revise_Submittal_TitleDisplayed);
-                Assert.True(RMCenter_RFC_Management_TitleDisplayed);
-                Assert.True(RMCenter_Project_Correspondence_Log_TitleDisplayed);
-            });
-        }
-
-        public abstract void NavigateToOVMenu();
-        public virtual void _NavigateToOVMenu()
-        {
-            LoginAs(UserType.Bhoomi);
-
-            NavigateToPage.OV_Create_OV_Test();
-            bool OV_Create_OV_Test_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
-            NavigateToPage.OV_OV_Test();
-            bool OV_OV_Test_TitleDisplayed = VerifyPageTitle("OV Tests");
-
-            Assert.Multiple(testDelegate: () =>
-            {
-                Assert.True(OV_Create_OV_Test_FormIsDisplayed);
-                Assert.True(OV_OV_Test_TitleDisplayed);
-            });
-        }
-
-        public abstract void NavigateToReportsAndNoticesMenu();
-        public virtual void _NavigateToReportsAndNoticesMenu()
-        {
-            LoginAs(UserType.Bhoomi);
-            NavigateToPage.QARecordControl_General_NCR();
-            NavigateToPage.QARecordControl_General_CDR();
-        }
-
-        public abstract void NavigateToQASearchMenu();
-        public virtual void _NavigateToQASearchMenu()
-        {
-            LoginAs(UserType.Bhoomi);
-            NavigateToPage.QASearch_QA_Tests();
-            NavigateToPage.QASearch_QA_Test_Summary_Search();
-            NavigateToPage.QASearch_QA_Guide_Schedule_Summary_Report();
-            NavigateToPage.QASearch_Inspection_Deficiency_Log_Report();
-            NavigateToPage.QASearch_Daily_Inspection_Report();
-            NavigateToPage.QASearch_DIR_Summary_Report();
-            NavigateToPage.QASearch_DIR_Checklist_Search();
-            NavigateToPage.QASearch_QMS_Document_Search();
-            //environmental doc search menu
-            //Procutor curve report menu
-            //proctor curve sumary report menu
-        }
-
-        public abstract void NavigateToQAFieldMenu();
-        public virtual void _NavigateToQAFieldMenu()
-        {
-            LoginAs(UserType.Bhoomi);
-            NavigateToPage.QAField_QA_Test();
-            NavigateToPage.QAField_QA_DIRs();
-            NavigateToPage.QAField_QA_Technician_Random_Search();
-            NavigateToPage.QAField_Weekly_Environmental_Monitoring();
-            NavigateToPage.QAField_Daily_Environmental_Inspection();
-            NavigateToPage.QAField_Weekly_Environmental_Inspection();
-        }
-
-        public abstract void NavigateToControlPointMenu();
-        public virtual void _NavigateToControlPointMenu()
-        {
-            LoginAs(UserType.Bhoomi);
-            NavigateToPage.Control_Point_Log();
-            NavigateToPage.Control_Point_Scheduler();
-        }
-
-        public abstract void NavigateToOwnerMenu();
-        public virtual void _NavigateToOwnerMenu()
-        {
-            LoginAs(UserType.Bhoomi);
-            NavigateToPage.Owner_DIRs();
-            NavigateToPage.Owner_NCRs();
-        }
-
-        public abstract void NavigateToMaterialMixCodeMenu();
-        public virtual void _NavigateToMaterialMixCodeMenu()
-        {
-            LoginAs(UserType.Bhoomi);
-            NavigateToPage.MaterialMixCodes_Mix_Design_PCC();
-            NavigateToPage.MaterialMixCodes_Mix_Design_HMA();
-            NavigateToPage.MaterialMixCodes_Sieve_Analyses_JMF();
-            NavigateToPage.MaterialMixCodes_Sieve_Analyses_IOC();
-            NavigateToPage.MaterialMixCodes_Material_Code_Concrete_Aggregate();
-            NavigateToPage.MaterialMixCodes_Material_Code_Base_Aggregate();
-            NavigateToPage.MaterialMixCodes_Material_Code_HMA_Aggregate();
-            NavigateToPage.MaterialMixCodes_Material_Code_Raw_Material();
-        }
-
-        public abstract void NavigateToRFIMenu();
-        public virtual void _NavigateToRFIMenu()
-        {
-            LoginAs(UserType.Bhoomi);
-
-            NavigateToPage.RFI_Create();
-            NavigateToPage.RFI_List();
+            AssertAll();
         }
     }
     #endregion <-- end of common implementation class
@@ -527,11 +550,11 @@ namespace RKCIUIAutomation.Test
 
             Assert.Multiple(testDelegate: () =>
             {
-                Assert.True(techRandomTitleDisplayed);
-                Assert.True(breaksheetCreationTitleDisplayed);
-                Assert.True(breaksheetLegacyTitleDisplayed);
-                Assert.True(equipMgmtTitleDisplayed);
-                Assert.True(breaksheetForecastTitleDisplayed);
+                AddAssertionToList(techRandomTitleDisplayed);
+                AddAssertionToList(breaksheetCreationTitleDisplayed);
+                AddAssertionToList(breaksheetLegacyTitleDisplayed);
+                AddAssertionToList(equipMgmtTitleDisplayed);
+                AddAssertionToList(breaksheetForecastTitleDisplayed);
             });
         }
 
@@ -579,17 +602,17 @@ namespace RKCIUIAutomation.Test
 
             Assert.Multiple(testDelegate: () =>
             {
-                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
-                Assert.True(qa_Test_Correction_ReportTitleDisplayed);
-                Assert.True(qa_Test_AllTitleDisplayed);
-                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
-                Assert.True(qa_DIRsTitleDisplayed);
-                Assert.True(general_NCRTitleDisplayed);
-                Assert.True(general_CDRTitleDisplayed);
-                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
-                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
-                Assert.True(mpl_TrackerTitleDisplayed);
-                Assert.True(girder_TrackerTitleDisplayed);
+                AddAssertionToList(qa_Test_Original_Report_FormIsDisplayed);
+                AddAssertionToList(qa_Test_Correction_ReportTitleDisplayed);
+                AddAssertionToList(qa_Test_AllTitleDisplayed);
+                AddAssertionToList(qa_Test_Retest_ReportTitleDisplayed);
+                AddAssertionToList(qa_DIRsTitleDisplayed);
+                AddAssertionToList(general_NCRTitleDisplayed);
+                AddAssertionToList(general_CDRTitleDisplayed);
+                AddAssertionToList(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                AddAssertionToList(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                AddAssertionToList(mpl_TrackerTitleDisplayed);
+                AddAssertionToList(girder_TrackerTitleDisplayed);
             });
 
 
@@ -622,13 +645,13 @@ namespace RKCIUIAutomation.Test
 
             Assert.Multiple(testDelegate: () =>
             {
-                Assert.True(techRandomTitleDisplayed);
-                Assert.True(breaksheetCreationTitleDisplayed);
-                Assert.True(breaksheetLegacyTitleDisplayed);
-                Assert.True(equipMgmtTitleDisplayed);
-                Assert.True(breaksheetForecastTitleDisplayed);
-                Assert.True(cylinderPickupListTitleDisplayed);
-                Assert.True(earlyBreakCalendarDisplayed);
+                AddAssertionToList(techRandomTitleDisplayed);
+                AddAssertionToList(breaksheetCreationTitleDisplayed);
+                AddAssertionToList(breaksheetLegacyTitleDisplayed);
+                AddAssertionToList(equipMgmtTitleDisplayed);
+                AddAssertionToList(breaksheetForecastTitleDisplayed);
+                AddAssertionToList(cylinderPickupListTitleDisplayed);
+                AddAssertionToList(earlyBreakCalendarDisplayed);
             });
         }
 
@@ -659,16 +682,16 @@ namespace RKCIUIAutomation.Test
 
             Assert.Multiple(testDelegate: () =>
             {
-                Assert.True(RMCenter_Search_TitleDisplayed);
-                Assert.True(RMCenter_Design_Documents_TitleDisplayed);
-                Assert.True(RMCenter_Upload_QA_Submittal_TitleDisplayed);
-                Assert.True(RMCenter_Upload_Owner_Submittal_TitleDisplayed);
-                Assert.True(RMCenter_Upload_DEV_Submittal_TitleDisplayed);
-                Assert.True(RMCenter_DOT_Project_Correspondence_Log_TitleDisplayed);
-                Assert.True(RMCenter_Review_Revise_Submittal_TitleDisplayed);
-                Assert.True(RMCenter_RFC_Management_TitleDisplayed);
-                Assert.True(RMCenter_Project_Correspondence_Log_TitleDisplayed);
-                Assert.True(RMCenter_Comment_Summary_TitleDisplayed);
+                AddAssertionToList(RMCenter_Search_TitleDisplayed);
+                AddAssertionToList(RMCenter_Design_Documents_TitleDisplayed);
+                AddAssertionToList(RMCenter_Upload_QA_Submittal_TitleDisplayed);
+                AddAssertionToList(RMCenter_Upload_Owner_Submittal_TitleDisplayed);
+                AddAssertionToList(RMCenter_Upload_DEV_Submittal_TitleDisplayed);
+                AddAssertionToList(RMCenter_DOT_Project_Correspondence_Log_TitleDisplayed);
+                AddAssertionToList(RMCenter_Review_Revise_Submittal_TitleDisplayed);
+                AddAssertionToList(RMCenter_RFC_Management_TitleDisplayed);
+                AddAssertionToList(RMCenter_Project_Correspondence_Log_TitleDisplayed);
+                AddAssertionToList(RMCenter_Comment_Summary_TitleDisplayed);
             });
         }
 
@@ -708,19 +731,19 @@ namespace RKCIUIAutomation.Test
 
             Assert.Multiple(testDelegate: () =>
             {
-                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
-                Assert.True(qa_Test_Correction_ReportTitleDisplayed);
-                Assert.True(qa_Test_AllTitleDisplayed);
-                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
-                Assert.True(qa_DIRsTitleDisplayed);
-                Assert.True(general_NCRTitleDisplayed);
-                Assert.True(general_CDRTitleDisplayed);
-                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
-                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
-                Assert.True(mpl_TrackerTitleDisplayed);
-                Assert.True(girder_TrackerTitleDisplayed);
-                Assert.True(qmsDocumentTitleDisplayed);
-                Assert.True(environmental_DocumentTitleDisplayed);
+                AddAssertionToList(qa_Test_Original_Report_FormIsDisplayed);
+                AddAssertionToList(qa_Test_Correction_ReportTitleDisplayed);
+                AddAssertionToList(qa_Test_AllTitleDisplayed);
+                AddAssertionToList(qa_Test_Retest_ReportTitleDisplayed);
+                AddAssertionToList(qa_DIRsTitleDisplayed);
+                AddAssertionToList(general_NCRTitleDisplayed);
+                AddAssertionToList(general_CDRTitleDisplayed);
+                AddAssertionToList(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                AddAssertionToList(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                AddAssertionToList(mpl_TrackerTitleDisplayed);
+                AddAssertionToList(girder_TrackerTitleDisplayed);
+                AddAssertionToList(qmsDocumentTitleDisplayed);
+                AddAssertionToList(environmental_DocumentTitleDisplayed);
             });
 
 
@@ -770,17 +793,17 @@ namespace RKCIUIAutomation.Test
 
             Assert.Multiple(testDelegate: () =>
             {
-                Assert.True(qa_Test_Original_Report_FormIsDisplayed);
-                Assert.True(qa_Test_Correction_ReportTitleDisplayed);
-                Assert.True(qa_Test_AllTitleDisplayed);
-                Assert.True(qa_Test_Retest_ReportTitleDisplayed);
-                Assert.True(qa_DIRsTitleDisplayed);
-                Assert.True(general_NCRTitleDisplayed);
-                Assert.True(general_CDRTitleDisplayed);
-                Assert.True(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
-                Assert.True(concrete_Paving_Quantity_TrackerTitleDisplayed);
-                Assert.True(mpl_TrackerTitleDisplayed);
-                Assert.True(girder_TrackerTitleDisplayed);
+                AddAssertionToList(qa_Test_Original_Report_FormIsDisplayed);
+                AddAssertionToList(qa_Test_Correction_ReportTitleDisplayed);
+                AddAssertionToList(qa_Test_AllTitleDisplayed);
+                AddAssertionToList(qa_Test_Retest_ReportTitleDisplayed);
+                AddAssertionToList(qa_DIRsTitleDisplayed);
+                AddAssertionToList(general_NCRTitleDisplayed);
+                AddAssertionToList(general_CDRTitleDisplayed);
+                AddAssertionToList(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
+                AddAssertionToList(concrete_Paving_Quantity_TrackerTitleDisplayed);
+                AddAssertionToList(mpl_TrackerTitleDisplayed);
+                AddAssertionToList(girder_TrackerTitleDisplayed);
             });
 
 
