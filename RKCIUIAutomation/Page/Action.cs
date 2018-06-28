@@ -301,11 +301,13 @@ namespace RKCIUIAutomation.Page
         private readonly By Btn_Cancel = By.Id("CancelSubmittal");
         private readonly By Btn_Save = By.Id("SaveSubmittal");
         private readonly By Btn_SubmitForward = By.Id("SaveForwardSubmittal");
+        private static readonly By Btn_Create = By.Id("btnCreate");
 
         public void ClickCancel() => ClickElement(Btn_Cancel);
         public void ClickSave() => ClickElement(Btn_Save);
         public void ClickSubmitForward() => ClickElement(Btn_SubmitForward);
-
+        public void ClickCreate() => ClickElement(Btn_Create);
+        public void ClickNew() => ClickElement(PageHelper.GetButtonByLocator("New"));
 
     }
 }

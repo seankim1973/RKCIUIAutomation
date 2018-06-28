@@ -35,6 +35,7 @@ namespace RKCIUIAutomation.Page
         private string SetTableTabXpath(Enum tableTab) => $"//ul[@class='k-reset k-tabstrip-items']//span[text()='{tableTab.GetString()}']";
         private string SetTableNavPageXpath(int pageNumber) => $"//div[@id='TestGrid_New']//div[@data-role='pager']/ul/li/a[text()='{pageNumber.ToString()}']";
         private string SetTextInputFieldByLocator(Enum inputEnum) => $"//input[@id='{inputEnum.GetString()}']";
+        private string SetButtonXpath(string buttonName) => $"//a[text()='{buttonName}']";
 
         public By GetMainNavMenuByLocator(Enum navEnum) => By.XPath(SetMainNavMenuXpath(navEnum));
         public By GetNavMenuByLocator(Enum navEnum) => By.XPath(SetNavMenuXpath(navEnum));
@@ -45,8 +46,9 @@ namespace RKCIUIAutomation.Page
         public By GetTableNavByLocator(int pageNumber) => By.XPath(SetTableNavPageXpath(pageNumber));
         public By GetTableTabByLocator(Enum tableTab) => By.XPath(SetTableTabXpath(tableTab));
         public By GetTextInputFieldByLocator(Enum inputEnum) => By.XPath(SetTextInputFieldByLocator(inputEnum));
+        public By GetButtonByLocator(string buttonName) => By.XPath(SetButtonXpath(buttonName));
 
-        
+
     }
 
     public static class EnumHelper

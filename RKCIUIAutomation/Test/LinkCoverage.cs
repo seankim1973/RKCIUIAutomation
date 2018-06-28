@@ -184,6 +184,8 @@ namespace RKCIUIAutomation.Test
             AddAssertionToList(VerifyPageTitle("Break Sheet Legacy"));
             NavigateToPage.QALab_Equipment_Management();
             AddAssertionToList(VerifyPageTitle("Equipment"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QALab_BreakSheet_Forecast();
             AddAssertionToList(VerifyPageTitle("Break Sheet Forecast"));
             NavigateToPage.QALab_Early_Break_Calendar();
@@ -206,18 +208,32 @@ namespace RKCIUIAutomation.Test
             AddAssertionToList(VerifyPageTitle("Create Retest Report"));
             NavigateToPage.QARecordControl_QA_DIRs();
             AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QARecordControl_General_NCR();
             AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QARecordControl_General_CDR();
             AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
             AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
             AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QARecordControl_MPL_Tracker();
             AddAssertionToList(VerifyPageTitle("MPL Tracker"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QARecordControl_Girder_Tracker();
             AddAssertionToList(VerifyPageTitle("Girder Tracker"));
+            ClickCreate();
+            ClickCancel();
             AssertAll();
 
         }
@@ -250,8 +266,12 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_General_NCR(); //TODO: Is this correct?
             AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QARecordControl_General_CDR(); //TODO: Is this correct?
             AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
+            ClickCreate();
+            ClickCancel();
             AssertAll();
         }
 
@@ -313,16 +333,26 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QAField_QA_Test();
             AddAssertionToList(VerifyPageTitle("Field Tests"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QAField_QA_DIRs();
             AddAssertionToList(VerifyPageTitle("IQF Field > List of Daily Inspection Reports"));
-           // NavigateToPage.QAField_QA_Technician_Random_Search();//page not implemented
-           // AddAssertionToList(VerifyPageTitle("");
+            ClickCreate();
+            ClickCancel();
+            // NavigateToPage.QAField_QA_Technician_Random_Search();//page not implemented
+            // AddAssertionToList(VerifyPageTitle("");
             NavigateToPage.QAField_Weekly_Environmental_Monitoring();
             AddAssertionToList(VerifyPageTitle("Week Environmental Monitoring Reports"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QAField_Daily_Environmental_Inspection();
             AddAssertionToList(VerifyPageTitle("List of Daily Environmental Inspection Reports"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.QAField_Weekly_Environmental_Inspection();
             AddAssertionToList(VerifyPageTitle("List of Weekly Environmental Inspection Reportse"));
+            ClickCreate();
+            ClickCancel();
             AssertAll();
         }
 
@@ -334,6 +364,8 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Control_Point_Log();
             AddAssertionToList(VerifyPageTitle("Control Point List"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.Control_Point_Scheduler();
             AddAssertionToList(VerifyPageTitle("Control Point Log Search"));
             AssertAll();
@@ -347,8 +379,12 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Owner_DIRs();
             AddAssertionToList(VerifyPageTitle("DOT > List of Daily Inspection Reports"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.Owner_NCRs();
             AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            ClickCreate();
+            ClickCancel();
             AssertAll();
         }
 
@@ -360,20 +396,36 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.Bhoomi);
             NavigateToPage.MaterialMixCodes_Mix_Design_PCC();
             AddAssertionToList(VerifyPageTitle("Pcc Mix Design"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Mix_Design_HMA();
             AddAssertionToList(VerifyPageTitle("Hma Mix Design"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Sieve_Analyses_JMF();
             AddAssertionToList(VerifyPageTitle("Sieve Analysis JMF"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Sieve_Analyses_IOC();
             AddAssertionToList(VerifyPageTitle("Sieve Analysis IOC"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_Concrete_Aggregate();
             AddAssertionToList(VerifyPageTitle("Aggregate A"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_Base_Aggregate();
             AddAssertionToList(VerifyPageTitle("Aggregate E"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_HMA_Aggregate();
             AddAssertionToList(VerifyPageTitle("Aggregate F"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_Raw_Material();
             AddAssertionToList(VerifyPageTitle("Raw Materials"));
+            ClickCreate();
+            ClickCancel();
             AssertAll();
         }
 
@@ -386,6 +438,8 @@ namespace RKCIUIAutomation.Test
 
             NavigateToPage.RFI_Create();
             AddAssertionToList(VerifyPageTitle("Request For Information"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.RFI_List();
             //TODO: verify if test should fail if no title is seen on the page
             AddAssertionToList(VerifyPageTitle(""));//dont see title
@@ -403,6 +457,8 @@ namespace RKCIUIAutomation.Test
             AddAssertionToList(VerifyPageTitle("RM Center Search"));
             NavigateToPage.RMCenter_Design_Documents();
             AddAssertionToList(VerifyPageTitle("Design Document"));
+            ClickCreate();
+            ClickCancel();
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             AddAssertionToList(VerifyPageTitle("Submittal Details"));
             NavigateToPage.RMCenter_Upload_Owner_Submittal();
