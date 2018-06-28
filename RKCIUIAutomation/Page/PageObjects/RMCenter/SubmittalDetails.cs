@@ -1,13 +1,9 @@
 ﻿using OpenQA.Selenium;
 
-using static RKCIUIAutomation.Base.WebDriverFactory;
-
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
-    public class SubmittalDetails
+    public class SubmittalDetails : PageBase
     {
-        private IWebDriver driver;
-        public SubmittalDetails(){ }
         public SubmittalDetails(IWebDriver driver) => this.driver = driver;
 
         public enum DDListID

@@ -18,7 +18,6 @@ namespace RKCIUIAutomation.Test
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property("Component2", Component.Other)]
         [Property("TC#", "ELVS2345")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Site Pages Load Successfully")]

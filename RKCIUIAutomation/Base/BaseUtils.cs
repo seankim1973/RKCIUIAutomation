@@ -4,6 +4,7 @@ using log4net;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
+using RKCIUIAutomation.Config;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -11,7 +12,7 @@ using System.Text.RegularExpressions;
 
 namespace RKCIUIAutomation.Base
 {
-    public class BaseUtils : WebDriverFactory
+    public class BaseUtils : BaseHooks
     {
         internal static readonly ILog log = LogManager.GetLogger("");
   

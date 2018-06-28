@@ -16,9 +16,9 @@ namespace RKCIUIAutomation.Page
             try
             {
                 LogInfo($"...waiting for element {elementByLocator}");
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5))
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2))
                 {
-                    PollingInterval = TimeSpan.FromMilliseconds(500)
+                    PollingInterval = TimeSpan.FromMilliseconds(250)
                 };
                 wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));

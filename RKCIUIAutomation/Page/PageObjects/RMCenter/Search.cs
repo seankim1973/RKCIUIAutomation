@@ -11,7 +11,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// <summary>
         /// Common pageObjects and workflows are inherited from abstract _Impl class
         /// </summary>
-        public Search(IWebDriver driver) : base(driver) => this.driver = driver;
+        public Search(){}
+        public Search(IWebDriver driver) => this.driver = driver;
     }
     #endregion end of Search Generic class
 
@@ -42,8 +43,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Search Common Implementation class
     public abstract class Search_Impl : PageBase, ISearch
     {
-        protected Search_Impl(IWebDriver driver) => this.driver = driver;
-
         internal enum SearchCriteria
         {
             [StringValue("SelectedType")] DocumentType,
@@ -105,8 +104,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
 
 
-        public  T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-        private ISearch SetPageClassBasedOnTenant()
+        public  T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
+        private ISearch SetPageClassBasedOnTenant(IWebDriver driver)
         {
             ISearch instance = new Search(driver);
 

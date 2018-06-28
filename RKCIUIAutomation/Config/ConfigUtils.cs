@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using OpenQA.Selenium;
+using RKCIUIAutomation.Base;
 using System;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -8,19 +10,12 @@ using static RKCIUIAutomation.Base.BaseUtils;
 namespace RKCIUIAutomation.Config
 {
     #pragma warning disable IDE0044 // Add readonly modifier
-    public class ConfigUtil
+    public class ConfigUtils : WebDriverFactory
     {
-        public static ConfigUtil configUtil = new ConfigUtil();
-        
-        private string _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Local}");
-        private string _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Chrome}");
-        private string _testEnv = TestContext.Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-        private string _tenantName = TestContext.Parameters.Get("Project", $"{TenantName.SGWay}");
-
-        public TestPlatform GetTestPlatform() => (TestPlatform)Enum.Parse(typeof(TestPlatform), _testPlatform);
-        public BrowserType GetBrowserType() => (BrowserType)Enum.Parse(typeof(BrowserType), _browserType);
-        public TestEnv GetTestEnv() => (TestEnv)Enum.Parse(typeof(TestEnv), _testEnv);
-        public TenantName GetTenantName() => (TenantName)Enum.Parse(typeof(TenantName), _tenantName);
+        public TestPlatform GetTestPlatform(string nunitArg) => (TestPlatform)Enum.Parse(typeof(TestPlatform), nunitArg);
+        public BrowserType GetBrowserType(string nunitArg) => (BrowserType)Enum.Parse(typeof(BrowserType), nunitArg);
+        public TestEnv GetTestEnv(string nunitArg) => (TestEnv)Enum.Parse(typeof(TestEnv), nunitArg);
+        public TenantName GetTenantName(string nunitArg) => (TenantName)Enum.Parse(typeof(TenantName), nunitArg);
 
         public string GetSiteUrl(TestEnv testEnv, TenantName project)
         {

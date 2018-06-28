@@ -14,7 +14,6 @@ namespace RKCIUIAutomation.Base
     {
         protected IWebDriver driver;
         private IWebDriver Driver;
-        ConfigUtil configUtil = new ConfigUtil();
         
         protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser)
         {

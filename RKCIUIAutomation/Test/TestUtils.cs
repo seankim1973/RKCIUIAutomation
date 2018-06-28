@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-using static RKCIUIAutomation.Config.ConfigUtil;
+using static RKCIUIAutomation.Config.ConfigUtils;
 
 
 namespace RKCIUIAutomation.Test
@@ -23,7 +23,7 @@ namespace RKCIUIAutomation.Test
         public TestUtils()
         {
             baseTempFolder = $"{GetCodeBasePath()}\\Temp";
-            fileName = configUtil.GetTenantName().ToString();
+            fileName = tenantName.ToString();
             dateString = GetDateString();
         }
 
@@ -260,12 +260,14 @@ namespace RKCIUIAutomation.Test
             xs = new XmlSerializer(typeof(List<Navigation>));
 
             FileStream fs = new FileStream(GetFilePath(fileName), FileMode.Create, FileAccess.Write);
-            Navigation linklist = new Navigation();
-            linklist.MainNavMenu = "";
-            linklist.SubMainNavMenu = "";
-            linklist.SubMenu = "";
-            linklist.SubSubMenu = "";
-            linklist.SubSubMenuItem = "";
+            Navigation linklist = new Navigation
+            {
+                MainNavMenu = "",
+                SubMainNavMenu = "",
+                SubMenu = "",
+                SubSubMenu = "",
+                SubSubMenuItem = ""
+            };
             ls.Add(linklist);
 
             xs.Serialize(fs, ls);

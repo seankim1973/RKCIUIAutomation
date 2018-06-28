@@ -1,12 +1,12 @@
-﻿using System;
+﻿using RKCIUIAutomation.Base;
+using System;
 using System.Collections.Generic;
-using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Config
 {
     public static class ProjectProperties
     {
-        public class Component
+        public static class Component
         {
             public const string Breaksheet = "Breaksheet";
             public const string CDR = "CDR";
@@ -41,28 +41,24 @@ namespace RKCIUIAutomation.Config
             public const string OV_Test = "OV_Test";
         }
 
-        private static List<string> additionalComponents;
-
         public static List<string> GetComponentsForProject(TenantName projectName)
         {
             List<string> components = new List<string>();
             try
             {
-                DefineAdditionalComponents(projectName);
                 components = CommonComponents;
-                components.AddRange(additionalComponents);
+                components.AddRange(DefineAdditionalComponents(projectName));
             }
             catch (Exception e)
             {
-                LogInfo("Exception occured during GetComponentsForProject method", e);
+                BaseUtils.LogInfo("Exception occured during GetComponentsForProject method", e);
             }
 
             return components;
         }
-
         private static List<string> DefineAdditionalComponents(TenantName projectName)
         {
-            additionalComponents = new List<string>();
+            List<string> additionalComponents = new List<string>();
             switch (projectName)
             {
                 case TenantName.Garnet:
@@ -89,10 +85,12 @@ namespace RKCIUIAutomation.Config
 
         private static readonly List<string> Components_Garnet = new List<string>
         {
+            Component.RFI
         };
 
         private static readonly List<string> Components_GreenLineExt = new List<string>
         {
+            Component.RFI
         };
 
         private static readonly List<string> Components_I15Southbound = new List<string>

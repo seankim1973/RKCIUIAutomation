@@ -7,150 +7,20 @@ using RKCIUIAutomation.Base;
 
 namespace RKCIUIAutomation.Test
 {
-    #region NUnit Test Case Methods class
-    [TestFixture]
-    public class Test_ProjectConfigurationMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for Project Configuration Menu only")]
-        public void NavigateToVerifyProjectConfigurationMenu() => LinkCoverage._NavigateToVerifyProjectConfigurationMenu();
-    }
-
-    public class Test_QALabMenu : TestBase
-    {        
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("Component2", Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for QA Lab Menu only")]
-        public void NavigateToVerifyQALabMenu() => LinkCoverage._NavigateToVerifyQALabMenu();
-    }
-
-    public class Test_QARecordControlMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for QA Record Control Menu only")]
-        public void NavigateToVerifyQARecordControlMenu() => LinkCoverage._NavigateToVerifyQARecordControlMenu();
-    }
-
-    public class Test_OVMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("Component2", Component.OV_Test)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for OV Menu only")]
-        public void NavigateToOVMenu() => LinkCoverage._NavigateToOVMenu();
-    }
-
-    public class Test_QAEngineerMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for QA Engineer Menu only")]
-        public void NavigateToVerifyQAEngineerMenu() => LinkCoverage._NavigateToVerifyQAEngineerMenu();
-    }
-
-    public class Test_ReportsAndNoticesMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for Reports & Notices Menu only")]
-        public void NavigateToReportsAndNoticesMenu() => LinkCoverage._NavigateToReportsAndNoticesMenu();
-    }
-
-    public class Test_QASearchMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for RM Center Menu only")]
-        public void NavigateToQASearchMenu() => LinkCoverage._NavigateToQASearchMenu();
-    }
-
-    public class Test_QAFieldMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for RM Center Menu only")]
-        public void NavigateToQAFieldMenu() => LinkCoverage._NavigateToQAFieldMenu();
-    }
-
-    public class Test_ControlPointMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for Control Point Menu only")]
-        public void NavigateToControlPointMenu() => LinkCoverage._NavigateToControlPointMenu();
-    }
-
-    public class Test_OwnerMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for Control Point Menu only")]
-        public void NavigateToOwnerMenu() => LinkCoverage._NavigateToOwnerMenu();
-    }
-
-    public class Test_MaterialMixCodeMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for Control Point Menu only")]
-        public void NavigateToMaterialMixCodeMenu() => LinkCoverage._NavigateToMaterialMixCodeMenu();
-    }
-
-    public class Test_RMCenterMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for RM Center Menu only")]
-        public void NavigateToRMCenterMenu() => LinkCoverage._NavigateToRMCenterMenu();
-    }
-
-    public class Test_RFIMenu : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for RM Center Menu only")]
-        public void NavigateToRFIMenu() => LinkCoverage._NavigateToRFIMenu();
-    }
-    #endregion <-- end of Test Case Methods class
-
 
     #region LinkCoverage Generic class
     public class LinkCoverage : LinkCoverage_Impl
     {
+        public LinkCoverage(){}
         public LinkCoverage(IWebDriver driver) => this.driver = driver;
 
         /// <summary>
         /// Common pageObjects and workflows are inherited from abstract _Impl class
         /// </summary>
+
+
+
+
     }
     #endregion <-- end of LinkCoverage Generic class
 
@@ -181,8 +51,8 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
-        public T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-        private ILinkCoverage SetPageClassBasedOnTenant()
+        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
+        private ILinkCoverage SetPageClassBasedOnTenant(IWebDriver driver)
         {
             ILinkCoverage instance = new LinkCoverage(driver);
 
@@ -378,9 +248,9 @@ namespace RKCIUIAutomation.Test
         public virtual void _NavigateToReportsAndNoticesMenu()
         {
             LoginAs(UserType.Bhoomi);
-            NavigateToPage.QARecordControl_General_NCR();
+            NavigateToPage.QARecordControl_General_NCR(); //TODO: Is this correct?
             AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
-            NavigateToPage.QARecordControl_General_CDR();
+            NavigateToPage.QARecordControl_General_CDR(); //TODO: Is this correct?
             AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
             AssertAll();
         }

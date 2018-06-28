@@ -225,6 +225,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\BaseClass.cs" />
+    <Compile Include="Base\BaseHooks.cs" />
     <Compile Include="Base\BaseUtils.cs" />
     <Compile Include="Base\ExtentManager.cs" />
     <Compile Include="Base\ExtentTestManager.cs" />
@@ -326,6 +327,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Test\LinkCoverage.cs" />
+    <Compile Include="Test\LinkCoverageTest.cs" />
     <Compile Include="Test\MSUnitTest.cs" />
     <Compile Include="Test\ParallelTests.cs" />
     <Compile Include="Test\Smoke.cs" />

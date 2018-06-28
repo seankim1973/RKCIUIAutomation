@@ -6,7 +6,8 @@ namespace RKCIUIAutomation.Page.Navigation
     #region PageNavigation Generic class
     public class PageNavigation : PageNavigation_Impl
     {
-        public PageNavigation(IWebDriver driver) : base(driver) => this.driver = driver;
+        public PageNavigation() { }      
+        public PageNavigation(IWebDriver driver) => this.driver = driver;
 
         /// <summary>
         /// Common pageObjects and workflows are inherited from abstract _Impl class
@@ -160,7 +161,6 @@ namespace RKCIUIAutomation.Page.Navigation
     #region PageNavigation Common Implementation class
     public abstract class PageNavigation_Impl : PageBase, IPageNavigation
     {
-        public PageNavigation_Impl(IWebDriver driver) => this.driver = driver;
         internal NavMenu Navigate => new NavMenu(driver);
 
         // QMS_Document / QMS_Document_Search
@@ -306,8 +306,8 @@ namespace RKCIUIAutomation.Page.Navigation
         public void RFI_Create() => Navigate.Menu(NavMenu.RFI.Menu.Create);
 
 
-        public T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-        private IPageNavigation SetPageClassBasedOnTenant()
+        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
+        private IPageNavigation SetPageClassBasedOnTenant(IWebDriver driver)
         {
             IPageNavigation instance = new PageNavigation(driver);
 

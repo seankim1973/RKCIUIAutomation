@@ -20,7 +20,7 @@ using RKCIUIAutomation.Page.PageObjects;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using static RKCIUIAutomation.Config.ProjectProperties;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
-using static RKCIUIAutomation.Config.ConfigUtil;
+using static RKCIUIAutomation.Config.ConfigUtils;
 
 
 namespace RKCIUIAutomation.Test

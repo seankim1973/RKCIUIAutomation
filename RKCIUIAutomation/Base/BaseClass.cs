@@ -1,12 +1,10 @@
-﻿using AventStack.ExtentReports;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
 using System.Text.RegularExpressions;
-using static RKCIUIAutomation.Config.ConfigUtil;
 using static RKCIUIAutomation.Config.ProjectProperties;
 
 
@@ -15,29 +13,30 @@ namespace RKCIUIAutomation.Base
     [TestFixture]
     public class BaseClass : BaseUtils
     {
-        public TestPlatform testPlatform;
-        public BrowserType browserType;
-        public TestEnv testEnv;
-        public TenantName tenantName;
+        public static TestPlatform testPlatform;
+        public static BrowserType browserType;
+        public static TestEnv testEnv;
+        public static TenantName tenantName;
 
         private string siteUrl;       
         private TestStatus testStatus;
         private ResultState testResult;
         private Cookie cookie = null;
 
+
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            //TestExecutionContext testExecutionContext = new TestExecutionContext();
-            //TestContext testContext = new TestContext(testExecutionContext);
+            string _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Local}");
+            string _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Chrome}");
+            string _testEnv = TestContext.Parameters.Get("TestEnv", $"{TestEnv.Stage}");
+            string _tenantName = TestContext.Parameters.Get("Project", $"{TenantName.GLX}");
 
-            //var testName = testContext.Test.Name;
-
-            testPlatform = configUtil.GetTestPlatform();
-            browserType = configUtil.GetBrowserType();
-            testEnv = configUtil.GetTestEnv();
-            tenantName = configUtil.GetTenantName();
-
+            testPlatform = Configs.GetTestPlatform(_testPlatform);
+            browserType = Configs.GetBrowserType(_browserType);
+            testEnv = Configs.GetTestEnv(_testEnv);
+            tenantName = Configs.GetTenantName(_tenantName);
+            
             DetermineFilePath(testPlatform.ToString());
         }
 
@@ -64,7 +63,7 @@ namespace RKCIUIAutomation.Base
             string testDescription = GetTestDescription();
 
             driver = GetWebDriver(testPlatform, browserType);
-            siteUrl = configUtil.GetSiteUrl(testEnv, tenantName);
+            siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
 
             try
             {
