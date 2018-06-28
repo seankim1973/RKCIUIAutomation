@@ -12,7 +12,7 @@ namespace RKCIUIAutomation
 {
     //[TestFixture]
     [Category("TestFixture Category")]
-    public class UnitTest1 : BaseClass
+    public class UnitTest1 : TestBase
     {
         //[Test]
         [Category("Test Category")]

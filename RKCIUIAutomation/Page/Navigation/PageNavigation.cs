@@ -1,11 +1,17 @@
-﻿namespace RKCIUIAutomation.Page.Navigation
+﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Config;
+
+namespace RKCIUIAutomation.Page.Navigation
 {
     #region PageNavigation Generic class
     public class PageNavigation : PageNavigation_Impl
     {
+        public PageNavigation(IWebDriver driver) : base(driver) => this.driver = driver;
+
         /// <summary>
         /// Common pageObjects and workflows are inherited from abstract _Impl class
         /// </summary>
+
     }
     #endregion end of PageNavigation Generic class
 
@@ -154,7 +160,8 @@
     #region PageNavigation Common Implementation class
     public abstract class PageNavigation_Impl : PageBase, IPageNavigation
     {
-        internal NavMenu Navigate = new NavMenu(Driver);
+        public PageNavigation_Impl(IWebDriver driver) => this.driver = driver;
+        internal NavMenu Navigate => new NavMenu(driver);
 
         // QMS_Document / QMS_Document_Search
         /// <summary> 
@@ -299,40 +306,40 @@
         public void RFI_Create() => Navigate.Menu(NavMenu.RFI.Menu.Create);
 
 
-        public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-        private static IPageNavigation SetPageClassBasedOnTenant()
+        public T SetClass<T>() => (T)SetPageClassBasedOnTenant();
+        private IPageNavigation SetPageClassBasedOnTenant()
         {
-            IPageNavigation instance = new PageNavigation();
+            IPageNavigation instance = new PageNavigation(driver);
 
-            if (projectName == Config.ProjectName.SGWay)
+            if (tenantName == TenantName.SGWay)
             {
                 LogInfo($"###### using Navigation_SGWay instance ###### ");
-                instance = new PageNavigation_SGWay();
+                instance = new PageNavigation_SGWay(driver);
             }
-            else if (projectName == Config.ProjectName.SH249)
+            else if (tenantName == TenantName.SH249)
             {
                 LogInfo($"###### using Navigation_SH249 instance ###### ");
-                instance = new PageNavigation_SH249();
+                instance = new PageNavigation_SH249(driver);
             }
-            else if (projectName == Config.ProjectName.Garnet)
+            else if (tenantName == TenantName.Garnet)
             {
                 LogInfo($"###### using Navigation_Garnet instance ###### ");
-                instance = new PageNavigation_Garnet();
+                instance = new PageNavigation_Garnet(driver);
             }
-            else if (projectName == Config.ProjectName.GLX)
+            else if (tenantName == TenantName.GLX)
             {
                 LogInfo($"###### using Navigation_GLX instance ###### ");
-                instance = new PageNavigation_GLX();
+                instance = new PageNavigation_GLX(driver);
             }
-            else if (projectName == Config.ProjectName.I15South)
+            else if (tenantName == TenantName.I15South)
             {
                 LogInfo($"###### using Navigation_I15South instance ###### ");
-                instance = new PageNavigation_I15South();
+                instance = new PageNavigation_I15South(driver);
             }
-            else if (projectName == Config.ProjectName.I15Tech)
+            else if (tenantName == TenantName.I15Tech)
             {
                 LogInfo($"###### using Navigation_I15Tech instance ###### ");
-                instance = new PageNavigation_I15Tech();
+                instance = new PageNavigation_I15Tech(driver);
             }
 
             return instance;
@@ -351,6 +358,10 @@
     #region Implementation specific to SGWay
     public class PageNavigation_SGWay : PageNavigation
     {
+        public PageNavigation_SGWay(IWebDriver driver) : base(driver)
+        {
+        }
+
         public override void Qms_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.Qms_Document);
     }
     #endregion
@@ -359,6 +370,10 @@
     #region Implementation specific to SH249
     public class PageNavigation_SH249 : PageNavigation
     {
+        public PageNavigation_SH249(IWebDriver driver) : base(driver)
+        {
+        }
+
         public override void Qms_Document() => Navigate.Menu(NavMenu.Project.Menu.QMS_Documents);
     }
     #endregion
@@ -367,6 +382,9 @@
     #region Implementation specific to Garnet
     public class PageNavigation_Garnet : PageNavigation
     {
+        public PageNavigation_Garnet(IWebDriver driver) : base(driver)
+        {
+        }
     }
     #endregion
 
@@ -374,6 +392,9 @@
     #region Implementation specific to GLX
     public class PageNavigation_GLX : PageNavigation
     {
+        public PageNavigation_GLX(IWebDriver driver) : base(driver)
+        {
+        }
     }
     #endregion
 
@@ -381,6 +402,9 @@
     #region Implementation specific to I15South
     public class PageNavigation_I15South : PageNavigation
     {
+        public PageNavigation_I15South(IWebDriver driver) : base(driver)
+        {
+        }
     }
     #endregion
 
@@ -388,6 +412,9 @@
     #region Implementation specific to I15Tech
     public class PageNavigation_I15Tech : PageNavigation
     {
+        public PageNavigation_I15Tech(IWebDriver driver) : base(driver)
+        {
+        }
     }
     #endregion
 

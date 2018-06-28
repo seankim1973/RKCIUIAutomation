@@ -1,116 +1,158 @@
-﻿using static RKCIUIAutomation.Page.Action;
-using static RKCIUIAutomation.Config.ProjectProperties;
+﻿using static RKCIUIAutomation.Config.ProjectProperties;
 using NUnit.Framework;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
-using static RKCIUIAutomation.Test.TestUtils;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Base;
 
 namespace RKCIUIAutomation.Test
 {
     #region NUnit Test Case Methods class
     [TestFixture]
-    public class LinkCoverage : LinkCoverage_Impl
+    public class Test_ProjectConfigurationMenu : TestBase
     {
-        ILinkCoverage Instance => SetClass<ILinkCoverage>();
-
-
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for Project Configuration Menu only")]
-        public override void NavigateToVerifyProjectConfigurationMenu() => Instance._NavigateToVerifyProjectConfigurationMenu();
+        public void NavigateToVerifyProjectConfigurationMenu() => LinkCoverage._NavigateToVerifyProjectConfigurationMenu();
+    }
 
+    public class Test_QALabMenu : TestBase
+    {        
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("Component2", Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for QA Lab Menu only")]
-        public override void NavigateToVerifyQALabMenu() => Instance._NavigateToVerifyQALabMenu();
+        public void NavigateToVerifyQALabMenu() => LinkCoverage._NavigateToVerifyQALabMenu();
+    }
 
+    public class Test_QARecordControlMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for QA Record Control Menu only")]
-        public override void NavigateToVerifyQARecordControlMenu() => Instance._NavigateToVerifyQARecordControlMenu();
+        public void NavigateToVerifyQARecordControlMenu() => LinkCoverage._NavigateToVerifyQARecordControlMenu();
+    }
 
+    public class Test_OVMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("Component2", Component.OV_Test)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for OV Menu only")]
-        public override void NavigateToOVMenu() => Instance._NavigateToOVMenu();
+        public void NavigateToOVMenu() => LinkCoverage._NavigateToOVMenu();
+    }
 
+    public class Test_QAEngineerMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for QA Engineer Menu only")]
-        public override void NavigateToVerifyQAEngineerMenu() => Instance._NavigateToVerifyQAEngineerMenu();
+        public void NavigateToVerifyQAEngineerMenu() => LinkCoverage._NavigateToVerifyQAEngineerMenu();
+    }
 
+    public class Test_ReportsAndNoticesMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for Reports & Notices Menu only")]
-        public override void NavigateToReportsAndNoticesMenu() => Instance._NavigateToReportsAndNoticesMenu();
+        public void NavigateToReportsAndNoticesMenu() => LinkCoverage._NavigateToReportsAndNoticesMenu();
+    }
 
+    public class Test_QASearchMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for RM Center Menu only")]
-        public override void NavigateToQASearchMenu() => Instance._NavigateToQASearchMenu();
+        public void NavigateToQASearchMenu() => LinkCoverage._NavigateToQASearchMenu();
+    }
 
+    public class Test_QAFieldMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for RM Center Menu only")]
-        public override void NavigateToQAFieldMenu() => Instance._NavigateToQAFieldMenu();
+        public void NavigateToQAFieldMenu() => LinkCoverage._NavigateToQAFieldMenu();
+    }
 
+    public class Test_ControlPointMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for Control Point Menu only")]
-        public override void NavigateToControlPointMenu() => Instance._NavigateToControlPointMenu();
+        public void NavigateToControlPointMenu() => LinkCoverage._NavigateToControlPointMenu();
+    }
 
+    public class Test_OwnerMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for Control Point Menu only")]
-        public override void NavigateToOwnerMenu() => Instance._NavigateToOwnerMenu();
+        public void NavigateToOwnerMenu() => LinkCoverage._NavigateToOwnerMenu();
+    }
 
+    public class Test_MaterialMixCodeMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for Control Point Menu only")]
-        public override void NavigateToMaterialMixCodeMenu() => Instance._NavigateToMaterialMixCodeMenu();
+        public void NavigateToMaterialMixCodeMenu() => LinkCoverage._NavigateToMaterialMixCodeMenu();
+    }
 
+    public class Test_RMCenterMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for RM Center Menu only")]
-        public override void NavigateToRMCenterMenu() => Instance._NavigateToRMCenterMenu();
+        public void NavigateToRMCenterMenu() => LinkCoverage._NavigateToRMCenterMenu();
+    }
 
+    public class Test_RFIMenu : TestBase
+    {
         [Test]
         [Category(Component.Link_Coverage)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Page Title for RM Center Menu only")]
-        public override void NavigateToRFIMenu() => Instance._NavigateToRFIMenu();
-
-
+        public void NavigateToRFIMenu() => LinkCoverage._NavigateToRFIMenu();
     }
     #endregion <-- end of Test Case Methods class
+
+
+    #region LinkCoverage Generic class
+    public class LinkCoverage : LinkCoverage_Impl
+    {
+        public LinkCoverage(IWebDriver driver) => this.driver = driver;
+
+        /// <summary>
+        /// Common pageObjects and workflows are inherited from abstract _Impl class
+        /// </summary>
+    }
+    #endregion <-- end of LinkCoverage Generic class
 
 
     #region Workflow Interface class
@@ -139,40 +181,40 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
-        public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-        private static ILinkCoverage SetPageClassBasedOnTenant()
+        public T SetClass<T>() => (T)SetPageClassBasedOnTenant();
+        private ILinkCoverage SetPageClassBasedOnTenant()
         {
-            ILinkCoverage instance = new LinkCoverage();
+            ILinkCoverage instance = new LinkCoverage(driver);
 
-            if (projectName == ProjectName.SGWay)
+            if (tenantName == TenantName.SGWay)
             {
                 LogInfo($"###### using LinkCoverage_SGWay instance ###### ");
-                instance = new LinkCoverage_SGWay();
+                instance = new LinkCoverage_SGWay(driver);
             }
-            else if (projectName == ProjectName.SH249)
+            else if (tenantName == TenantName.SH249)
             {
                 LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
-                instance = new LinkCoverage_SH249();
+                instance = new LinkCoverage_SH249(driver);
             }
-            else if (projectName == ProjectName.Garnet)
+            else if (tenantName == TenantName.Garnet)
             {
                 LogInfo($"###### using LinkCoverage_Garnet instance ###### ");
-                instance = new LinkCoverage_Garnet();
+                instance = new LinkCoverage_Garnet(driver);
             }
-            else if (projectName == ProjectName.GLX)
+            else if (tenantName == TenantName.GLX)
             {
                 LogInfo($"###### using LinkCoverage_GLX instance ###### ");
-                instance = new LinkCoverage_GLX();
+                instance = new LinkCoverage_GLX(driver);
             }
-            else if (projectName == ProjectName.I15South)
+            else if (tenantName == TenantName.I15South)
             {
                 LogInfo($"###### using LinkCoverage_I15South instance ###### ");
-                instance = new LinkCoverage_I15South();
+                instance = new LinkCoverage_I15South(driver);
             }
-            else if (projectName == ProjectName.I15Tech)
+            else if (tenantName == TenantName.I15Tech)
             {
                 LogInfo($"###### using LinkCoverage_I15Tech instance ###### ");
-                instance = new LinkCoverage_I15Tech();
+                instance = new LinkCoverage_I15Tech(driver);
             }
 
             return instance;
@@ -183,7 +225,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
-        public abstract void NavigateToVerifyProjectConfigurationMenu();
         public virtual void _NavigateToVerifyProjectConfigurationMenu()
         {
             LogInfo($"Project Configuration component test - This test should run");
@@ -261,7 +302,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public abstract void NavigateToVerifyQALabMenu();
         public virtual void _NavigateToVerifyQALabMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -285,7 +325,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Common workflow method for Tenants:
         /// </summary>
-        public abstract void NavigateToVerifyQARecordControlMenu();
         public virtual void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -316,7 +355,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
-        public abstract void NavigateToVerifyQAEngineerMenu();
         public virtual void _NavigateToVerifyQAEngineerMenu()
         {
             LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
@@ -337,7 +375,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
-        public abstract void NavigateToReportsAndNoticesMenu();
         public virtual void _NavigateToReportsAndNoticesMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -354,7 +391,6 @@ namespace RKCIUIAutomation.Test
         /// Common workflow method for Tenants:I15South, I15Tech, & SH249
         /// </summary>
 
-        public abstract void NavigateToOVMenu();
         public virtual void _NavigateToOVMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -371,7 +407,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public abstract void NavigateToQASearchMenu();
         public virtual void _NavigateToQASearchMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -403,7 +438,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public abstract void NavigateToQAFieldMenu();
         public virtual void _NavigateToQAFieldMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -425,7 +459,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public abstract void NavigateToControlPointMenu();
         public virtual void _NavigateToControlPointMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -439,7 +472,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public abstract void NavigateToOwnerMenu();
         public virtual void _NavigateToOwnerMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -453,7 +485,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public abstract void NavigateToMaterialMixCodeMenu();
         public virtual void _NavigateToMaterialMixCodeMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -479,7 +510,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Common workflow method for Tenants: GLX
         /// </summary>
-        public abstract void NavigateToRFIMenu();
         public virtual void _NavigateToRFIMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -487,6 +517,7 @@ namespace RKCIUIAutomation.Test
             NavigateToPage.RFI_Create();
             AddAssertionToList(VerifyPageTitle("Request For Information"));
             NavigateToPage.RFI_List();
+            //TODO: verify if test should fail if no title is seen on the page
             AddAssertionToList(VerifyPageTitle(""));//dont see title
             AssertAll();
         }
@@ -494,7 +525,6 @@ namespace RKCIUIAutomation.Test
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, SGWay, & SH249
         /// </summary>
-        public abstract void NavigateToRMCenterMenu();
         public virtual void _NavigateToRMCenterMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -533,6 +563,8 @@ namespace RKCIUIAutomation.Test
     #region Implementation specific to Garnet
     public class LinkCoverage_Garnet : LinkCoverage
     {
+        public LinkCoverage_Garnet(IWebDriver driver) : base(driver) { }
+
         public override void _NavigateToVerifyQALabMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -565,6 +597,7 @@ namespace RKCIUIAutomation.Test
     #region Implementation specific to GLX
     public class LinkCoverage_GLX : LinkCoverage
     {
+        public LinkCoverage_GLX(IWebDriver driver) : base(driver) { }
     }
     #endregion
 
@@ -572,6 +605,8 @@ namespace RKCIUIAutomation.Test
     #region Implementation specific to SH249
     public class LinkCoverage_SH249 : LinkCoverage
     {
+        public LinkCoverage_SH249(IWebDriver driver) : base(driver) { }
+
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -624,6 +659,8 @@ namespace RKCIUIAutomation.Test
     #region Implementation specific to SGWay
     public class LinkCoverage_SGWay : LinkCoverage
     {
+        public LinkCoverage_SGWay(IWebDriver driver) : base(driver) { }
+
         public override void _NavigateToVerifyQALabMenu()
         {
             LoginAs(UserType.Bhoomi);
@@ -755,7 +792,7 @@ namespace RKCIUIAutomation.Test
     #region Implementation specific to I15South
     public class LinkCoverage_I15South : LinkCoverage
     {
-
+        public LinkCoverage_I15South(IWebDriver driver) : base(driver) { }
     }
     #endregion
 
@@ -763,6 +800,8 @@ namespace RKCIUIAutomation.Test
     #region Implementation specific to I15Tech
     public class LinkCoverage_I15Tech : LinkCoverage
     {
+        public LinkCoverage_I15Tech(IWebDriver driver) : base(driver) { }
+
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);

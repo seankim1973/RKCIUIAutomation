@@ -4,10 +4,7 @@ using log4net;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
-using RKCIUIAutomation.Page;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -16,12 +13,12 @@ namespace RKCIUIAutomation.Base
 {
     public class BaseUtils : WebDriverFactory
     {
+        internal static readonly ILog log = LogManager.GetLogger("");
+  
         public static string extentReportPath = $"{GetCodeBasePath()}\\Report";
         public static string screenshotReferencePath = null;
-        internal static readonly string methodName = TestContext.CurrentContext.Test.MethodName;
-        internal static readonly ILog log = LogManager.GetLogger("");
-
-        public void DetermineFilePath(string _testPlatform)
+        
+        public static void DetermineFilePath(string _testPlatform)
         {
             if (_testPlatform.Equals("Local"))
             {
@@ -46,36 +43,37 @@ namespace RKCIUIAutomation.Base
             return baseDir;
         }
 
-        public static string CaptureScreenshot(string fileName)
+        public static string CaptureScreenshot(IWebDriver driver, string fileName)
         {
             string uniqueFileName = $"{fileName}{DateTime.Now.Second}.png";
-            var screenshot = Driver.TakeScreenshot();
+            var screenshot = driver.TakeScreenshot();
             string screenshotFolderPath = $"{extentReportPath}\\errorscreenshots\\";
             Directory.CreateDirectory(screenshotFolderPath);
             screenshot.SaveAsFile($"{screenshotFolderPath}{uniqueFileName}", ScreenshotImageFormat.Png);
             return $"{screenshotReferencePath}{uniqueFileName}";
         }
 
-
-        //ExtentReports Helpers
+        //ExtentReports Loggers
         public static void LogAssertIgnore(string msg)
         {
             ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(msg, ExtentColor.Orange));
             Assert.Ignore(msg);
         }
-
         public static void LogError(string details)
         {
             ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));
             log.Error(details);
         }
-
         public static void LogDebug(string details)
         {
             ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
             log.Debug(details);
         }
-
+        public void LogErrorWithScreenshot()
+        {
+            string screenshotPath = CaptureScreenshot(driver, GetTestName());
+            ExtentTestManager.GetTest().Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
+        }
         public static void LogInfo(string details)
         {
             if (details.Contains("#####"))
@@ -86,13 +84,6 @@ namespace RKCIUIAutomation.Base
                 ExtentTestManager.GetTest().Info(details);
             log.Info(details);    
         }
-
-        public static void LogErrorWithScreenshot()
-        {
-            string screenshotPath = CaptureScreenshot(methodName);
-            ExtentTestManager.GetTest().Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
-        }
-
         public static void LogInfo(string details, Exception e)
         {
             ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
@@ -103,7 +94,7 @@ namespace RKCIUIAutomation.Base
                 log.Debug(e.Message);
             }
         }
-        public static void LogInfo(string details, bool assertion, Exception e = null)
+        public void LogInfo(string details, bool assertion, Exception e = null)
         {
             if (assertion)
             {

@@ -9,8 +9,7 @@ namespace RKCIUIAutomation.Page.Navigation
 {
     public class NavMenu : PageBase
     {
-        public NavMenu() { }
-        public NavMenu(IWebDriver driver) => Driver = driver;
+        public NavMenu(IWebDriver driver) => this.driver = driver;
 
         public void Menu<T>(T navEnum)
         {
@@ -137,34 +136,34 @@ namespace RKCIUIAutomation.Page.Navigation
 
                 if (adminEnum != null)
                 {
-                    builder = new Actions(Driver);
-                    element = Driver.FindElement(GetNavMenuByLocator(adminEnum));
+                    builder = new Actions(driver);
+                    element = driver.FindElement(GetNavMenuByLocator(adminEnum));
                     builder.MoveToElement(element).Perform();
 
                     if (userMgmtEnum != null)
                     {
-                        element = Driver.FindElement(GetNavMenuByLocator(userMgmtEnum));
+                        element = driver.FindElement(GetNavMenuByLocator(userMgmtEnum));
                         builder.MoveToElement(element).Perform();
                     }
                     else if (sysConfigEnum != null)
                     {
-                        element = Driver.FindElement(GetNavMenuByLocator(sysConfigEnum));
+                        element = driver.FindElement(GetNavMenuByLocator(sysConfigEnum));
                         builder.MoveToElement(element).Perform();
 
                         if (sysConfigEquipEnum != null)
                         {
-                            element = Driver.FindElement(GetNavMenuByLocator(sysConfigEquipEnum));
+                            element = driver.FindElement(GetNavMenuByLocator(sysConfigEquipEnum));
                             builder.MoveToElement(element).Perform();
                         }
                         else if (sysConfigGradeMgmtEnum != null)
                         {
-                            element = Driver.FindElement(GetNavMenuByLocator(sysConfigGradeMgmtEnum));
+                            element = driver.FindElement(GetNavMenuByLocator(sysConfigGradeMgmtEnum));
                             builder.MoveToElement(element).Perform();
                         }
                     }
                     else if (adminToolsEnum != null)
                     {
-                        element = Driver.FindElement(GetNavMenuByLocator(adminToolsEnum));
+                        element = driver.FindElement(GetNavMenuByLocator(adminToolsEnum));
                         builder.MoveToElement(element).Perform();
                     }
                 }

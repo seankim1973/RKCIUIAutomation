@@ -1,4 +1,5 @@
-﻿using RKCIUIAutomation.Config;
+﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Config;
 using static RKCIUIAutomation.Page.Action;
 using static RKCIUIAutomation.Page.PageHelper;
 
@@ -10,6 +11,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// <summary>
         /// Common pageObjects and workflows are inherited from abstract _Impl class
         /// </summary>
+        public Search(IWebDriver driver) : base(driver) => this.driver = driver;
     }
     #endregion end of Search Generic class
 
@@ -40,6 +42,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Search Common Implementation class
     public abstract class Search_Impl : PageBase, ISearch
     {
+        protected Search_Impl(IWebDriver driver) => this.driver = driver;
+
         internal enum SearchCriteria
         {
             [StringValue("SelectedType")] DocumentType,
@@ -101,40 +105,40 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
 
 
-        public static T SetClass<T>() => (T)SetPageClassBasedOnTenant();
-        private static ISearch SetPageClassBasedOnTenant()
+        public  T SetClass<T>() => (T)SetPageClassBasedOnTenant();
+        private ISearch SetPageClassBasedOnTenant()
         {
-            ISearch instance = new Search();
+            ISearch instance = new Search(driver);
 
-            if (projectName == ProjectName.SGWay)
+            if (tenantName == TenantName.SGWay)
             {
                 LogInfo($"###### using Search_SGWay instance ###### ");
-                instance = new Search_SGWay();
+                instance = new Search_SGWay(driver);
             }
-            else if (projectName == ProjectName.SH249)
+            else if (tenantName == TenantName.SH249)
             {
                 LogInfo($"###### using Search_SH249 instance ###### ");
-                instance = new Search_SH249();
+                instance = new Search_SH249(driver);
             }
-            else if (projectName == ProjectName.Garnet)
+            else if (tenantName == TenantName.Garnet)
             {
                 LogInfo($"###### using Search_Garnet instance ###### ");
-                instance = new Search_Garnet();
+                instance = new Search_Garnet(driver);
             }
-            else if (projectName == ProjectName.GLX)
+            else if (tenantName == TenantName.GLX)
             {
                 LogInfo($"###### using Search_GLX instance ###### ");
-                instance = new Search_GLX();
+                instance = new Search_GLX(driver);
             }
-            else if (projectName == ProjectName.I15South)
+            else if (tenantName == TenantName.I15South)
             {
                 LogInfo($"###### using Search_I15South instance ###### ");
-                instance = new Search_I15South();
+                instance = new Search_I15South(driver);
             }
-            else if (projectName == ProjectName.I15Tech)
+            else if (tenantName == TenantName.I15Tech)
             {
                 LogInfo($"###### using Search_I15Tech instance ###### ");
-                instance = new Search_I15Tech();
+                instance = new Search_I15Tech(driver);
             }
             return instance;
         }
@@ -151,6 +155,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Implementation specific to SGWay
     public class Search_SGWay : Search
     {
+        public Search_SGWay(IWebDriver driver) : base(driver)
+        {
+        }
     }
     #endregion
 
@@ -158,6 +165,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Implementation specific to SH249
     public class Search_SH249 : Search
     {
+        public Search_SH249(IWebDriver driver) : base(driver)
+        {
+        }
     }
     #endregion
 
@@ -165,6 +175,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Implementation specific to Garnet
     public class Search_Garnet : Search
     {
+        public Search_Garnet(IWebDriver driver) : base(driver)
+        {
+        }
     }
     #endregion
 
@@ -172,6 +185,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Implementation specific to GLX
     public class Search_GLX : Search
     {
+        public Search_GLX(IWebDriver driver) : base(driver)
+        {
+        }
+
         public override void PopulateAllSearchCriteriaFields()
         {
             SelectDDL_DocumentType(1);
@@ -193,6 +210,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Implementation specific to I15South
     public class Search_I15South : Search
     {
+        public Search_I15South(IWebDriver driver) : base(driver)
+        {
+        }
     }
     #endregion
 
@@ -200,6 +220,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Implementation specific to I15Tech
     public class Search_I15Tech : Search
     {
+        public Search_I15Tech(IWebDriver driver) : base(driver)
+        {
+        }
+
         public override void PopulateAllSearchCriteriaFields()
         {
             SelectDDL_DocumentType(1);

@@ -1,19 +1,33 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Base;
+using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-using static RKCIUIAutomation.Base.BaseUtils;
-using static RKCIUIAutomation.Base.WebDriverFactory;
+using static RKCIUIAutomation.Config.ConfigUtil;
+
 
 namespace RKCIUIAutomation.Test
 {
-    public static class TestUtils
+    public class TestUtils : PageBase
     {
-        private static string GetDateString()
+        private static string baseTempFolder;
+        private static string fileName;
+        private static string dateString;
+
+        public TestUtils()
+        {
+            baseTempFolder = $"{GetCodeBasePath()}\\Temp";
+            fileName = configUtil.GetTenantName().ToString();
+            dateString = GetDateString();
+        }
+
+        private string GetDateString()
         {
             string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
             string month = shortDate[0];
@@ -24,14 +38,11 @@ namespace RKCIUIAutomation.Test
             return $"{month}{shortDate[1]}{shortDate[2]}";
         }
         
-        private static readonly string baseTempFolder = $"{GetCodeBasePath()}\\Temp";
-        private static readonly string fileName = BaseClass.projectName.ToString();
-
         /// <summary>
         /// Location to project Temp folder with Tenant name as filename
         /// -- Specify file type extention (i.e. - .xml)
         /// </summary>
-        public static readonly string fullTempFileName = $"{baseTempFolder}\\{fileName}({GetDateString()})";
+        public static string fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
 
         private static List<string> pageUrlList;
 
@@ -78,14 +89,14 @@ namespace RKCIUIAutomation.Test
             }
         }
 
-        public static void LoopThroughNavMenu()
+        public void LoopThroughNavMenu()
         {
             string pageUrl = string.Empty;
-            WriteToFile($"{BaseClass.projectName} Navigation Menu", ".txt", true); //create {overwrite existing} txt file
+            WriteToFile($"{tenantName} Navigation Menu", ".txt", true); //create {overwrite existing} txt file
             WriteToFile(Environment.NewLine);
 
             IList<IWebElement> elements = new List<IWebElement>();
-            elements = Driver.FindElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
+            elements = driver.FindElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
             foreach (IWebElement mainNavElem in elements)
             {
                 string mainNavMenuText = mainNavElem.FindElement(By.XPath("./a")).Text;
@@ -177,14 +188,14 @@ namespace RKCIUIAutomation.Test
             WriteToFile(Environment.NewLine);
         }
 
-        public static List<string> GetNavMenuUrlList()
+        public List<string> GetNavMenuUrlList()
         {
             pageUrlList = new List<string>();
             LoopThroughNavMenu();
             return pageUrlList;
         }
 
-        public static bool VerifyUrlIsLoaded(string pageUrl)
+        public bool VerifyUrlIsLoaded(string pageUrl)
         {
             List<string> errorMsgs = new List<string>
             {
@@ -195,8 +206,8 @@ namespace RKCIUIAutomation.Test
             string pageTitle = string.Empty;
             try
             {
-                Driver.Navigate().GoToUrl(pageUrl);
-                pageTitle = Driver.Title;
+                driver.Navigate().GoToUrl(pageUrl);
+                pageTitle = driver.Title;
 
                 if (!errorMsgs.Contains(pageTitle))
                 {
@@ -214,13 +225,17 @@ namespace RKCIUIAutomation.Test
         }
 
 
-        private static List<bool> assertionList;
-        public static void AddAssertionToList(bool assertion)
+        private List<bool> assertionList;
+        public void AddAssertionToList(bool assertion)
         {
-            assertionList = new List<bool>();
-            assertionList.Add(assertion);
+            if (assertionList?.Any() != true)
+            {
+                assertionList = new List<bool>();
+            }
+            else
+                assertionList.Add(assertion);
         }
-        public static void AssertAll()
+        public void AssertAll()
         {
             Assert.Multiple(testDelegate: () =>
             {
@@ -233,7 +248,7 @@ namespace RKCIUIAutomation.Test
 
 
 
-    public class XMLUtil
+    public class XMLUtil : TestUtils
     {
         public XmlSerializer xs;
         List<Navigation> ls;
@@ -264,7 +279,7 @@ namespace RKCIUIAutomation.Test
             fs.Close();
         }
 
-        string GetFilePath(string fileName) => $"{TestUtils.fullTempFileName}.xml";
+        string GetFilePath(string fileName) => $"{fullTempFileName}.xml";
     }
 
     public class Navigation

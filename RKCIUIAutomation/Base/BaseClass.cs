@@ -15,30 +15,29 @@ namespace RKCIUIAutomation.Base
     [TestFixture]
     public class BaseClass : BaseUtils
     {
-        public static TestPlatform testPlatform;
-        public static BrowserType browserType;
-        public static TestEnv testEnv;
-        public static ProjectName projectName;
+        public TestPlatform testPlatform;
+        public BrowserType browserType;
+        public TestEnv testEnv;
+        public TenantName tenantName;
 
-        private static string tenantName;
         private string siteUrl;       
         private TestStatus testStatus;
         private ResultState testResult;
         private Cookie cookie = null;
-        
+
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            var _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Linux}");
-            var _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            var _testEnv = TestContext.Parameters.Get("TestEnv", $"{TestEnv.Test}");
-            var _projectName = TestContext.Parameters.Get("Project", $"{ProjectName.Garnet}");
+            //TestExecutionContext testExecutionContext = new TestExecutionContext();
+            //TestContext testContext = new TestContext(testExecutionContext);
 
-            testPlatform = (TestPlatform)Enum.Parse(typeof(TestPlatform), _testPlatform);
-            browserType = (BrowserType)Enum.Parse(typeof(BrowserType), _browserType);
-            testEnv = (TestEnv)Enum.Parse(typeof(TestEnv), _testEnv);
-            projectName = (ProjectName)Enum.Parse(typeof(ProjectName), _projectName);
-            tenantName = projectName.ToString();
+            //var testName = testContext.Test.Name;
+
+            testPlatform = configUtil.GetTestPlatform();
+            browserType = configUtil.GetBrowserType();
+            testEnv = configUtil.GetTestEnv();
+            tenantName = configUtil.GetTenantName();
+
             DetermineFilePath(testPlatform.ToString());
         }
 
@@ -47,15 +46,10 @@ namespace RKCIUIAutomation.Base
         {
             log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
 
-            ExtentManager.Instance.AddSystemInfo("Project", tenantName);
-            ExtentManager.Instance.AddSystemInfo("Test Environment", testEnv.ToString());
+            ExtentManager.Instance.AddSystemInfo("Tenant", tenantName.ToString());
+            ExtentManager.Instance.AddSystemInfo("Environment", testEnv.ToString());
             ExtentManager.Instance.AddSystemInfo("Browser", browserType.ToString());
             ExtentManager.Instance.Flush();
-
-            if (Driver != null)
-            {
-                Driver.Quit();
-            }
         }
 
         [SetUp]
@@ -69,8 +63,8 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
-            Driver = GetWebDriver(testPlatform, browserType);
-            siteUrl = GetSiteUrl(testEnv, projectName);
+            driver = GetWebDriver(testPlatform, browserType);
+            siteUrl = configUtil.GetSiteUrl(testEnv, tenantName);
 
             try
             {
@@ -79,13 +73,13 @@ namespace RKCIUIAutomation.Base
                     .CreateTest($"<font size=3>TestCase# : {testCaseNumber}" +
                     $" - {testName}</font><br><font size=2>{testDescription}</font>");
 
-                if (GetComponentsForProject(projectName).Contains(testComponent1))
+                if (GetComponentsForProject(tenantName).Contains(testComponent1))
                 {
-                    if (GetComponentsForProject(projectName).Contains(testComponent2) || testComponent2 == "Not Defined")
-                    {                        
-                        Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
-                        Driver.Manage().Window.Maximize();
-                        Driver.Navigate().GoToUrl(siteUrl);
+                    if (GetComponentsForProject(tenantName).Contains(testComponent2) || testComponent2 == "Not Defined")
+                    {
+                        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
+                        driver.Manage().Window.Maximize();
+                        driver.Navigate().GoToUrl(siteUrl);
 
                         string component2 = string.Empty;
 
@@ -94,7 +88,7 @@ namespace RKCIUIAutomation.Base
                             component2 = $"{testComponent2}";
                         }
 
-                        LogTestDetails(projectName, testEnv, siteUrl, browserType, testName,
+                        LogTestDetails(tenantName, testEnv, siteUrl, browserType, testName,
                             testCaseNumber, testSuite, testDescription, testPriority, testComponent1, component2);
 
                         ExtentTestManager.GetTest()
@@ -117,12 +111,12 @@ namespace RKCIUIAutomation.Base
         private void SkipTest(string testComponent)
         {
             testStatus = TestStatus.Skipped;
-            string msg = $"TEST SKIPPED : Project ({projectName}) " +
+            string msg = $"TEST SKIPPED : Project ({tenantName}) " +
                 $"does not have implementation of the component ({testComponent}).";
             LogAssertIgnore(msg);
         }
 
-        private void LogTestDetails(ProjectName projectName, TestEnv testEnv, string siteUrl, BrowserType browserType,
+        private void LogTestDetails(TenantName projectName, TestEnv testEnv, string siteUrl, BrowserType browserType,
             string tcName, string tcNumber, string suite, string tcDesc, string priority, string component1, string component2)
         {
             var comp2 = (string.IsNullOrEmpty(component2) || component2 == "Not Defined") ? string.Empty : $", {component2}";        
@@ -163,7 +157,7 @@ namespace RKCIUIAutomation.Base
                     stacktrace = string.IsNullOrEmpty(TestContext.CurrentContext.Result.StackTrace)
                         ? "" : string.Format("<pre>{0}</pre>", TestContext.CurrentContext.Result.StackTrace);
 
-                    screenshotPath = CaptureScreenshot(TestContext.CurrentContext.Test.Name);
+                    screenshotPath = CaptureScreenshot(driver, GetTestName());
                     cookie = new Cookie("zaleniumTestPassed", "false");
                     ExtentTestManager.GetTest().Fail($"Test Failed:<br> {stacktrace}")
                         .AddScreenCaptureFromPath(screenshotPath);
@@ -189,12 +183,13 @@ namespace RKCIUIAutomation.Base
 
             if (cookie != null)
             {
-                Driver.Manage().Cookies.AddCookie(cookie);
+                driver.Manage().Cookies.AddCookie(cookie);
             }
 
-            if (Driver != null)
+            if (driver != null)
             {
-                Driver.Close();
+                driver.Close();
+                driver = null;
             }
         }
     }

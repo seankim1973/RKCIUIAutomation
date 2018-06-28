@@ -22,13 +22,14 @@ using static RKCIUIAutomation.Config.ProjectProperties;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
 using static RKCIUIAutomation.Config.ConfigUtil;
 
+
 namespace RKCIUIAutomation.Test
 {
     /// <summary>
     /// Summary description for JUnitTest
     /// </summary>
     [TestClass]
-    public class MSUnitTest : BaseClass
+    public class MSUnitTest : TestBase
     {
         public MSUnitTest()
         {
@@ -128,7 +129,7 @@ namespace RKCIUIAutomation.Test
         //[TestMethod]
         public void MSUnitTest2()
         {
-            List<string> components = GetComponentsForProject(ProjectName.Garnet);
+            List<string> components = GetComponentsForProject(TenantName.Garnet);
             int componentCount = components.Count;
 
             log.Error($"Component count is {componentCount}");
@@ -206,6 +207,8 @@ namespace RKCIUIAutomation.Test
             Console.WriteLine(ZaleniumService.IsRunning());
             //Assert.IsTrue();
         }
+
+
 
         #region write XML
 

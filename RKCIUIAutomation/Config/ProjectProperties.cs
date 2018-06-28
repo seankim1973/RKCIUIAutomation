@@ -43,7 +43,7 @@ namespace RKCIUIAutomation.Config
 
         private static List<string> additionalComponents;
 
-        public static List<string> GetComponentsForProject(ProjectName projectName)
+        public static List<string> GetComponentsForProject(TenantName projectName)
         {
             List<string> components = new List<string>();
             try
@@ -60,27 +60,27 @@ namespace RKCIUIAutomation.Config
             return components;
         }
 
-        private static List<string> DefineAdditionalComponents(ProjectName projectName)
+        private static List<string> DefineAdditionalComponents(TenantName projectName)
         {
             additionalComponents = new List<string>();
             switch (projectName)
             {
-                case ProjectName.Garnet:
+                case TenantName.Garnet:
                     additionalComponents = Components_Garnet;
                     break;
-                case ProjectName.GLX:
+                case TenantName.GLX:
                     additionalComponents = Components_GreenLineExt;
                     break;
-                case ProjectName.I15South:
+                case TenantName.I15South:
                     additionalComponents = Components_I15Southbound;
                     break;
-                case ProjectName.I15Tech:
+                case TenantName.I15Tech:
                     additionalComponents = Components_I15TechCorridor;
                     break;
-                case ProjectName.SH249:
+                case TenantName.SH249:
                     additionalComponents = Components_SH249Ext;
                     break;
-                case ProjectName.SGWay:
+                case TenantName.SGWay:
                     additionalComponents = Components_SouthernGateway;
                     break;
             }

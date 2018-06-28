@@ -8,14 +8,13 @@ using static RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Page.PageObjects.LabFieldTests
 {
-    public class TestDetails
+    public class TestDetails : PageBase
     {
-        public static readonly By TestDetailsFormByLocator = By.Id("StartDiv");
+        public TestDetails(IWebDriver driver) => this.driver = driver;
 
-        public static bool VerifyTestDetailsFormIsDisplayed()
-        {
-            return IsElementDisplayed(TestDetailsFormByLocator);
-        }
-        
+        public readonly By TestDetailsFormByLocator = By.Id("StartDiv");
+
+        public bool VerifyTestDetailsFormIsDisplayed() => IsElementDisplayed(TestDetailsFormByLocator);
+
     }
 }

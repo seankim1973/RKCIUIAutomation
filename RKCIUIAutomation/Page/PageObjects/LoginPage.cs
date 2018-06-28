@@ -10,16 +10,18 @@ using static RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Page.PageObjects
 {
-    public static class LoginPage
+    public class LoginPage : PageBase
     {
-        private static readonly By field_Email = By.Name("Email");
-        private static readonly By field_Password = By.Name("Password");
-        private static readonly By chkbx_RememberMe = By.Name("RememberMe");
-        private static readonly By btn_Login = By.XPath("//input[@type='submit']");
+        public LoginPage(IWebDriver driver) => this.driver = driver;
 
-        public static void LoginUser(UserType userType)
+        private By field_Email = By.Name("Email");
+        private By field_Password = By.Name("Password");
+        private By chkbx_RememberMe = By.Name("RememberMe");
+        private By btn_Login = By.XPath("//input[@type='submit']");
+
+        public void LoginUser(UserType userType)
         {
-            string[] userAcct = GetUser(userType);
+            string[] userAcct = configUtil.GetUser(userType);
             IList<By> loginFields = new List<By>
             {
                 field_Email,
@@ -43,7 +45,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                 try
                 {
                     LogInfo($"...waiting for element {field}");
-                    WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20))
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20))
                     {
                         PollingInterval = TimeSpan.FromMilliseconds(500)
                     };
@@ -61,7 +63,7 @@ namespace RKCIUIAutomation.Page.PageObjects
             ClickElement(btn_Login);
         }
 
-        public static void ToggleRememberMeChkbox()
+        public void ToggleRememberMeChkbox()
         {
             ClickElement(chkbx_RememberMe);
         }
