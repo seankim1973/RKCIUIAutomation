@@ -19,12 +19,13 @@ namespace RKCIUIAutomation.Base
         public static string extentReportPath = $"{GetCodeBasePath()}\\Report";
         public static string screenshotReferencePath = null;
         
-        public static void DetermineFilePath(string _testPlatform)
+        public static void DetermineFilePath()
         {
-            if (_testPlatform.Equals("Local"))
+            if (BaseClass.testPlatform.ToString() == "Local")
             {
                 screenshotReferencePath = "errorscreenshots/";
-            } else
+            }
+            else
             {
                 //extentReportPath = "C:\\inetpub\\wwwroot\\extentreport";
                 screenshotReferencePath = "errorscreenshots\\";

@@ -438,8 +438,6 @@ namespace RKCIUIAutomation.Test
 
             NavigateToPage.RFI_Create();
             AddAssertionToList(VerifyPageTitle("Request For Information"));
-            ClickCreate();
-            ClickCancel();
             NavigateToPage.RFI_List();
             //TODO: verify if test should fail if no title is seen on the page
             AddAssertionToList(VerifyPageTitle(""));//dont see title

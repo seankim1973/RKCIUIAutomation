@@ -19,6 +19,7 @@ namespace RKCIUIAutomation.Test
         private static string baseTempFolder;
         private static string fileName;
         private static string dateString;
+        public static string fullTempFileName;
 
         public TestUtils()
         {
@@ -37,12 +38,7 @@ namespace RKCIUIAutomation.Test
             }
             return $"{month}{shortDate[1]}{shortDate[2]}";
         }
-        
-        /// <summary>
-        /// Location to project Temp folder with Tenant name as filename
-        /// -- Specify file type extention (i.e. - .xml)
-        /// </summary>
-        public static string fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
+       
 
         private static List<string> pageUrlList;
 
@@ -56,8 +52,15 @@ namespace RKCIUIAutomation.Test
             IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
             return $"{anchorElem.GetAttribute("href")}";
         }
+
+        /// <summary>
+        /// Location to project Temp folder with Tenant name as filename
+        /// -- Specify file type extention (i.e. - .xml)
+        /// </summary>
         private static void WriteToFile(string msg, string fileExt = ".txt", bool overwriteExisting = false)
         {
+            fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
+
             Directory.CreateDirectory(baseTempFolder);
             string path = $"{fullTempFileName}{fileExt}";
             StreamWriter workflow = null;

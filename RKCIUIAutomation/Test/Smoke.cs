@@ -1,20 +1,15 @@
 ﻿using NUnit.Framework;
 using System.Threading;
-using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.PageObjects.RMCenter;
-
-using static RKCIUIAutomation.Page.Action;
-using static RKCIUIAutomation.Test.TestUtils;
-using static RKCIUIAutomation.Config.ProjectProperties;
 using System.Collections.Generic;
 using NUnit.Framework.Internal;
-using System;
-using RKCIUIAutomation.Page.PageObjects;
+using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page.PageObjects.RMCenter;
+using static RKCIUIAutomation.Config.ProjectProperties;
 
 namespace RKCIUIAutomation.Test
 {
     [TestFixture]
-    public class Smoke : TestBase
+    public class Verify_LinkCoverage_Level1 : TestBase
     {
         [Test]
         [Category(Component.Link_Coverage)]
@@ -42,10 +37,13 @@ namespace RKCIUIAutomation.Test
                 }
             });
         }
+    }
 
-
-        //[Test]
-        //[Category("")]
+    [TestFixture]
+    public class Test_UserCanLogin_ProjUser : TestBase
+    {
+        [Test]
+        [Category("")]
         [Property("TC#", "ELVS1234")]
         [Property("Priority", "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
@@ -53,13 +51,17 @@ namespace RKCIUIAutomation.Test
         {
             LoginAs(UserType.ProjAdmin);
         }
+    }
 
-        //[Test]
+    [TestFixture]
+    public class Test_Generic : TestBase
+    {
+        [Test]
         [Category(Component.Submittals)]
         [Property("TC#", "ELVS3456")]
         [Property("Priority", "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
-        public void GenericTest()
+        public void Generic()
         {
             LoginAs(UserType.ProjAdmin);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
@@ -80,7 +82,11 @@ namespace RKCIUIAutomation.Test
 
             Thread.Sleep(5000);
         }
+    }
 
+    [TestFixture]
+    public class Test_RequiredFieldErrorsClickingSaveWithoutNameAndTitle : TestBase
+    {
         [Test]
         [Category(Component.Submittals)]
         [Property("TC#", "ELVS8988")]
@@ -100,9 +106,13 @@ namespace RKCIUIAutomation.Test
             AssertAll();
             Thread.Sleep(5000);
         }
+    }
 
-        //[Test]
-        //[Category("")]
+    [TestFixture]
+    public class Test_RequiredFieldErrorsClickingSaveWithNameAndTitle : TestBase
+    {
+        [Test]
+        [Category("")]
         [Property("TC#", "ELVS1111")]
         [Property("Priority", "Priority 1")]
         [Description("Verify proper required fields show error when clicking Save button with Submittal Name and Title")]
@@ -118,8 +128,12 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
+    }
 
-        //[Test]
+    [TestFixture]
+    public class Test_SuccessMsgClickingSaveWithNameTitleAndActionDDL : TestBase
+    {
+        [Test]
         [Category(Component.Submittals)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -136,8 +150,12 @@ namespace RKCIUIAutomation.Test
 
             Thread.Sleep(5000);
         }
+    }
 
-        //[Test]
+    [TestFixture]
+    public class Test_ComponentTestIsSkipped : TestBase
+    {
+        [Test]
         [Category(Component.Control_Point)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -149,7 +167,11 @@ namespace RKCIUIAutomation.Test
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             Thread.Sleep(5000);
         }
+    }
 
+    [TestFixture]
+    public class Test_ComponentTestRuns : TestBase
+    {
         [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
@@ -166,13 +188,17 @@ namespace RKCIUIAutomation.Test
             NavigateToPage.SysConfig_Gradations();
             Assert.True(VerifyPageTitle("Gradations"));
         }
+    }
 
+    [TestFixture]
+    public class Test_NewGWQALabMenu : TestBase
+    {
         [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
-        public void TestNewGWQALabMenu()
+        public void NewGWQALabMenu()
         {
             LogInfo($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
@@ -181,144 +207,23 @@ namespace RKCIUIAutomation.Test
             NavigateToPage.QALab_Early_Break_Calendar();
         }
 
-        [TestFixture]
-        public class LatestTestClass : TestBase
-        {
-            [Test]
-            [Category(Component.Other)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Component Name")]
-            public void LatestTest()
-            {
-                LogInfo($"Other component test - This test should run");
-                LoginAs(UserType.ProjAdmin);
-                NavigateToPage.RMCenter_Search();
-                RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-                Assert.True(VerifyPageTitle("RM Center Search"));
-            }
-        }
+    }
 
-        [TestFixture]
-        public class FailingTestClass : TestBase
-        {
-            [Test]
-            [Category(Component.Other)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Failing Test")]
-            public void FailingTest()
-            {
-                LogInfo($"Other component test - This test should run");
-                LoginAs(UserType.ProjAdmin);
-                NavigateToPage.RMCenter_Search();
-                RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-                Assert.True(false);
-                Thread.Sleep(15000);
-            }
-        }
-
+    [TestFixture]
+    public class Test_DynamicNavigation : TestBase
+    {
         [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
-        public void TestDynamicNavigation()
+        public void DynamicNavigation()
         {
             LogInfo($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Qms_Document();           
             Assert.True(VerifyPageTitle("QMS Documents"));
         }
-
-        //[Test]
-        [Category(Component.Project_Configuration)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name- for Project Configuration Menu only")]
-        public void NavigateToVerifyProjectConfigurationMenu()
-        {
-            LogInfo($"Other component test - This test should run");
-            LoginAs(UserType.Bhoomi);
-            
-
-            NavigateToPage.My_Details();
-            Assert.True(VerifyPageTitle("Account Details"));
-            //Qms Document - based on Tenant
-            NavigateToPage.Qms_Document();
-            Assert.True(VerifyPageTitle("QMS Documents"));
-
-            //Project>Administration
-            NavigateToPage.Admin_Project_Details();
-            Assert.True(VerifyPageTitle("Project"));
-            NavigateToPage.Admin_Companies();
-            Assert.True(VerifyPageTitle("Companies"));
-            NavigateToPage.Admin_Contracts();
-            Assert.True(VerifyPageTitle("Contracts"));
-            NavigateToPage.Admin_Menu_Editor();
-            Assert.True(VerifyPageTitle("Menu Editor"));
-            NavigateToPage.Admin_Suport();
-            Assert.True(VerifyPageTitle("Cache Management"));
-           
-
-            //Project>Administration>User Management
-            NavigateToPage.UserMgmt_Roles();
-            Assert.True(VerifyPageTitle("Roles"));
-            NavigateToPage.UserMgmt_Users();
-            Assert.True(VerifyPageTitle("Users"));
-            NavigateToPage.UserMgmt_Access_Rights();
-            Assert.True(VerifyPageTitle("Access Rights"));
-
-            //Project>Administration>System Configuration
-            NavigateToPage.SysConfig_Disciplines();
-            Assert.True(VerifyPageTitle("Disciplines"));
-            NavigateToPage.SysConfig_Submittal_Actions();
-            Assert.True(VerifyPageTitle("SubmittalActions"));
-            NavigateToPage.SysConfig_Submittal_Requirements();
-            Assert.True(VerifyPageTitle("Submittal Requirments"));
-            NavigateToPage.SysConfig_Submittal_Types();
-            Assert.True(VerifyPageTitle("SubmittalTypes"));
-            NavigateToPage.SysConfig_CVL_Lists();
-            Assert.True(VerifyPageTitle("CVL List"));
-            NavigateToPage.SysConfig_CVL_List_Items();
-            Assert.True(VerifyPageTitle("CVL List Items"));
-            NavigateToPage.SysConfig_Notifications();
-            Assert.True(VerifyPageTitle("Notifications"));
-            NavigateToPage.SysConfig_Sieves();
-            Assert.True(VerifyPageTitle("Sieves"));
-            NavigateToPage.SysConfig_Gradations();
-            Assert.True(VerifyPageTitle("Gradations"));
-
-            //Project>Administration>System Configuration>Equipment
-            NavigateToPage.SysConfig_Equipment_Makes();
-            Assert.True(VerifyPageTitle("Makes"));
-            NavigateToPage.SysConfig_Equipment_Models();
-            Assert.True(VerifyPageTitle("EquipmentModels"));
-            NavigateToPage.SysConfig_Equipment_Types();
-            Assert.True(VerifyPageTitle("Equipment Types"));
-
-            //Project>Administration>System Configuration>Grade Management
-            NavigateToPage.SysConfig_Grade_Types();
-            Assert.True(VerifyPageTitle("Grade Type"));
-            NavigateToPage.SysConfig_Grades();
-            Assert.True(VerifyPageTitle("Grades"));
-
-
-            //Project>Administration>Admin Tools
-            NavigateToPage.AdminTools_Locked_Records();
-            Assert.True(VerifyPageTitle("Locked Records"));
-        }
-  
-        //[Test]
-        [Category(Component.Project_Configuration)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name- for QA Record Control Menu only")]
-        public void NavigateToVerifyQARecordControlMenu()
-        {
-            LogInfo($"Other component test - This test should run");
-            LoginAs(UserType.Bhoomi);
-
-        }
     }
+
 }

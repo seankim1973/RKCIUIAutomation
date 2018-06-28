@@ -18,6 +18,11 @@ namespace RKCIUIAutomation.Base
         public static TestEnv testEnv;
         public static TenantName tenantName;
 
+        private static string _testPlatform;
+        private static string _browserType;
+        private static string _testEnv;
+        private static string _tenantName;
+
         private string siteUrl;       
         private TestStatus testStatus;
         private ResultState testResult;
@@ -27,17 +32,17 @@ namespace RKCIUIAutomation.Base
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            string _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Local}");
-            string _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            string _testEnv = TestContext.Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = TestContext.Parameters.Get("Tenant", $"{TenantName.GLX}");
+            _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Local}");
+            _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Chrome}");
+            _testEnv = TestContext.Parameters.Get("TestEnv", $"{TestEnv.Stage}");
+            _tenantName = TestContext.Parameters.Get("Tenant", $"{TenantName.GLX}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);
             browserType = Configs.GetBrowserType(_browserType);
             testEnv = Configs.GetTestEnv(_testEnv);
             tenantName = Configs.GetTenantName(_tenantName);
             
-            DetermineFilePath(testPlatform.ToString());
+            DetermineFilePath();
         }
 
         [OneTimeTearDown]
