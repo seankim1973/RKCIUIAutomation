@@ -307,7 +307,7 @@ namespace RKCIUIAutomation.Page
         public void ClickSave() => ClickElement(Btn_Save);
         public void ClickSubmitForward() => ClickElement(Btn_SubmitForward);
         public void ClickCreate() => ClickElement(Btn_Create);
-        public void ClickNew() => ClickElement(PageHelper.GetButtonByLocator("New"));
+        public void ClickNew() => ClickElement(GetButtonByLocator("New"));
 
     }
 }
