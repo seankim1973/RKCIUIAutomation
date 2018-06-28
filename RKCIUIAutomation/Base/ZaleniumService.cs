@@ -4,11 +4,12 @@ using System.Web.Script.Serialization;
 
 using static RKCIUIAutomation.Base.RestUtils;
 using static RKCIUIAutomation.Base.BaseUtils;
+using RKCIUIAutomation.Test;
 
 namespace RKCIUIAutomation.Base
 {
 #pragma warning disable IDE1006 // Naming Styles
-    public static class ZaleniumService
+    public class ZaleniumService : TestBase
     {
         public static void Start()
         {

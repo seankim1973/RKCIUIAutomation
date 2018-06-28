@@ -1,19 +1,20 @@
 ﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Base;
 using System;
 using System.Reflection;
 
 namespace RKCIUIAutomation.Page
 {
-    public static class PageHelper
+    public class PageHelper : BaseClass
     {
-        public static Enum ConvertToEnumType<T>(T navEnum) => (Enum)Convert.ChangeType(navEnum, typeof(Enum));
+        public Enum ConvertToEnumType<T>(T navEnum) => (Enum)Convert.ChangeType(navEnum, typeof(Enum));
 
-        private static string SetDDListFieldXpath(Enum ddListID) => $"//span[@aria-owns='{ddListID.GetString()}_listbox']";
-        private static string SetDDListFieldExpandArrowXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']/span";
-        private static string SetMainNavMenuXpath(Enum navEnum) => $"//li[@class='dropdown']/a[text()='{navEnum.GetString()}']";
-        private static string SetNavMenuXpath(Enum navEnum) => $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
-        private static string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
-        private static string SetDDListItemsXpath<T>(Enum ddListID, T itemIndexOrName)
+        private string SetDDListFieldXpath(Enum ddListID) => $"//span[@aria-owns='{ddListID.GetString()}_listbox']";
+        private string SetDDListFieldExpandArrowXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']/span";
+        private string SetMainNavMenuXpath(Enum navEnum) => $"//li[@class='dropdown']/a[text()='{navEnum.GetString()}']";
+        private string SetNavMenuXpath(Enum navEnum) => $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
+        private string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
+        private string SetDDListItemsXpath<T>(Enum ddListID, T itemIndexOrName)
         {
             Type itemType = itemIndexOrName.GetType();
 
@@ -30,21 +31,28 @@ namespace RKCIUIAutomation.Page
             }
             return $"//div[@id='{ddListID.GetString()}-list']//li[{locatorXpath}]";
         }
-        private static string SetDDListItemsXpath(Enum ddListID, int itemIndex) => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";
-        private static string SetTableTabXpath(Enum tableTab) => $"//ul[@class='k-reset k-tabstrip-items']//span[text()='{tableTab.GetString()}']";
-        private static string SetTableNavPageXpath(int pageNumber) => $"//div[@id='TestGrid_New']//div[@data-role='pager']/ul/li/a[text()='{pageNumber.ToString()}']";
-        private static string SetTextInputFieldByLocator(Enum inputEnum) => $"//input[@id='{inputEnum.GetString()}']";
+        private string SetDDListItemsXpath(Enum ddListID, int itemIndex) => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";
+        private string SetTableTabXpath(Enum tableTab) => $"//ul[@class='k-reset k-tabstrip-items']//span[text()='{tableTab.GetString()}']";
+        private string SetTableNavPageXpath(int pageNumber) => $"//div[@id='TestGrid_New']//div[@data-role='pager']/ul/li/a[text()='{pageNumber.ToString()}']";
+        private string SetTextInputFieldByLocator(Enum inputEnum) => $"//input[@id='{inputEnum.GetString()}']";
+        private string SetButtonXpath(string buttonName) => $"//a[text()='{buttonName}']";
 
-        public static By GetMainNavMenuByLocator(Enum navEnum) => By.XPath(SetMainNavMenuXpath(navEnum));
-        public static By GetNavMenuByLocator(Enum navEnum) => By.XPath(SetNavMenuXpath(navEnum));
-        public static By GetInputFieldByLocator(string inputFieldLabel) => By.XPath(SetInputFieldXpath(inputFieldLabel));
-        public static By GetDDListByLocator(Enum ddListID) => By.XPath(SetDDListFieldXpath(ddListID));
-        public static By GetExpandDDListButtonByLocator(Enum ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
-        public static By GetDDListItemsByLocator<T>(Enum ddListID, T itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
-        public static By GetTableNavByLocator(int pageNumber) => By.XPath(SetTableNavPageXpath(pageNumber));
-        public static By GetTableTabByLocator(Enum tableTab) => By.XPath(SetTableTabXpath(tableTab));
-        public static By GetTextInputFieldByLocator(Enum inputEnum) => By.XPath(SetTextInputFieldByLocator(inputEnum));
+        public By GetMainNavMenuByLocator(Enum navEnum) => By.XPath(SetMainNavMenuXpath(navEnum));
+        public By GetNavMenuByLocator(Enum navEnum) => By.XPath(SetNavMenuXpath(navEnum));
+        public By GetInputFieldByLocator(string inputFieldLabel) => By.XPath(SetInputFieldXpath(inputFieldLabel));
+        public By GetDDListByLocator(Enum ddListID) => By.XPath(SetDDListFieldXpath(ddListID));
+        public By GetExpandDDListButtonByLocator(Enum ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
+        public By GetDDListItemsByLocator<T>(Enum ddListID, T itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
+        public By GetTableNavByLocator(int pageNumber) => By.XPath(SetTableNavPageXpath(pageNumber));
+        public By GetTableTabByLocator(Enum tableTab) => By.XPath(SetTableTabXpath(tableTab));
+        public By GetTextInputFieldByLocator(Enum inputEnum) => By.XPath(SetTextInputFieldByLocator(inputEnum));
+        public By GetButtonByLocator(string buttonName) => By.XPath(SetButtonXpath(buttonName));
 
+
+    }
+
+    public static class EnumHelper
+    {
         public static string GetString(this Enum value)
         {
             string output = null;

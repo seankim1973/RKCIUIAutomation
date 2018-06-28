@@ -4,9 +4,7 @@ namespace RKCIUIAutomation.Page.PageObjects.Project
 {
     public class QmsDocuments : PageBase
     {
-        public QmsDocuments(){}
-        public QmsDocuments(IWebDriver driver) => Driver = driver;
-
+        public QmsDocuments(IWebDriver driver) => this.driver = driver;
 
     }
 }

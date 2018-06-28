@@ -7,24 +7,18 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-using static RKCIUIAutomation.Base.WebDriverFactory;
-using static RKCIUIAutomation.Base.BaseClass;
-using static RKCIUIAutomation.Base.BaseUtils;
-using NUnit.Framework;
-using RKCIUIAutomation.Base;
-
 namespace RKCIUIAutomation.Page
 {
-    public static class Action
+    public class Action : PageHelper
     {
-        private static bool WaitForElement(By elementByLocator)
+        private bool WaitForElement(By elementByLocator)
         {
             try
             {
                 LogInfo($"...waiting for element {elementByLocator}");
-                WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(5))
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2))
                 {
-                    PollingInterval = TimeSpan.FromMilliseconds(500)
+                    PollingInterval = TimeSpan.FromMilliseconds(250)
                 };
                 wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
@@ -40,14 +34,14 @@ namespace RKCIUIAutomation.Page
             return false;
         }
 
-        private static IWebElement GetElement(By elementByLocator)
+        private IWebElement GetElement(By elementByLocator)
         {
             IWebElement elem = null;
             if (WaitForElement(elementByLocator))
             {
                 try
                 {
-                    elem = Driver.FindElement(elementByLocator);
+                    elem = driver.FindElement(elementByLocator);
                     return elem;
                 }
                 catch (Exception e)
@@ -58,7 +52,7 @@ namespace RKCIUIAutomation.Page
             return elem;
         }
 
-        private static IList<IWebElement> GetElements(By elementByLocator)
+        private IList<IWebElement> GetElements(By elementByLocator)
         {
             IList<IWebElement> elements = null;
             if (WaitForElement(elementByLocator))
@@ -66,7 +60,7 @@ namespace RKCIUIAutomation.Page
                 try
                 {
                     elements = new List<IWebElement>();
-                    elements = Driver.FindElements(elementByLocator);
+                    elements = driver.FindElements(elementByLocator);
                 }
                 catch (Exception e)
                 {
@@ -76,7 +70,7 @@ namespace RKCIUIAutomation.Page
             return elements;
         }
 
-        public static void ClickElement(By elementByLocator)
+        public void ClickElement(By elementByLocator)
         {
             try
             {
@@ -89,13 +83,13 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public static void HoverAndClick(By elemByToHover, By elemByToClick)
+        public void HoverAndClick(By elemByToHover, By elemByToClick)
         {
             Hover(elemByToHover);
             ClickElement(elemByToClick);
         }
 
-        public static void Hover(By elementByLocator)
+        public void Hover(By elementByLocator)
         {
             IWebElement element = GetElement(elementByLocator);
             try
@@ -104,7 +98,7 @@ namespace RKCIUIAutomation.Page
                     "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
                     "arguments[0].dispatchEvent(evObj);";
 
-                IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
                 executor.ExecuteScript(javaScript, element);
                 LogInfo($"Hover mouse over element - {elementByLocator}");
                 Thread.Sleep(1000);
@@ -115,7 +109,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public static void EnterText(By elementByLocator, string text)
+        public void EnterText(By elementByLocator, string text)
         {
             try
             {
@@ -128,7 +122,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public static string GetText(By elementByLocator)
+        public string GetText(By elementByLocator)
         {
             string text = String.Empty;
             try
@@ -144,10 +138,11 @@ namespace RKCIUIAutomation.Page
             return text;
         }
 
-        public static string GetTextFromDDL(Enum ddListID) => $"{GetText(PageHelper.GetDDListByLocator(ddListID))}//span[@class='k-input']";
-        public static void ExpandDDL(Enum ddListID)
+
+        public string GetTextFromDDL(Enum ddListID) => $"{GetText(new PageHelper().GetDDListByLocator(ddListID))}//span[@class='k-input']";
+        public void ExpandDDL(Enum ddListID)
         {
-            By locator = PageHelper.GetExpandDDListButtonByLocator(ddListID);
+            By locator = new PageHelper().GetExpandDDListButtonByLocator(ddListID);
             try
             {
                 ClickElement(locator);
@@ -160,13 +155,13 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public static void ExpandAndSelectFromDDList<T>(Enum ddListID, T itemIndexOrName)
+        public void ExpandAndSelectFromDDList<T>(Enum ddListID, T itemIndexOrName)
         {
             ExpandDDL(ddListID);
-            ClickElement(PageHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName));
+            ClickElement(new PageHelper().GetDDListItemsByLocator(ddListID, itemIndexOrName));
         }
 
-        private static void UploadUsingAutoItX(string filePath)
+        private void UploadUsingAutoItX(string filePath)
         {
             AutoItX.WinWaitActive("Open");
             LogInfo("...Waiting for File Open Dialog Window");
@@ -176,7 +171,7 @@ namespace RKCIUIAutomation.Page
             LogInfo("Clicked Open button on the File Open Dialog Window");
         }
 
-        public static void UploadFile(string fileName)
+        public void UploadFile(string fileName)
         {
             string filePath = null;
             if (testPlatform == TestPlatform.Local)
@@ -189,13 +184,13 @@ namespace RKCIUIAutomation.Page
             {
                 filePath = GetUploadFilePath(fileName, true); //TODO - check if path format needs to change in docker environment
                 LogInfo("Uploading files in remote environment");
-                IAllowsFileDetection allowsFileDetection = Driver as IAllowsFileDetection;
+                IAllowsFileDetection allowsFileDetection = driver as IAllowsFileDetection;
                 allowsFileDetection.FileDetector = new LocalFileDetector();
                 UploadUsingAutoItX(filePath);
             }
         }
 
-        public static string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
+        public string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
         {
             string uploadPath = string.Empty;
             if (isRemoteUpload == false)
@@ -210,7 +205,7 @@ namespace RKCIUIAutomation.Page
             return uploadPath;
         }
 
-        public static bool VerifyFieldErrorIsDisplayed(By elementByLocator )
+        public bool VerifyFieldErrorIsDisplayed(By elementByLocator )
         {
             IWebElement elem = GetElement(elementByLocator);
             bool elementDisplayed = elem.Displayed;
@@ -219,7 +214,7 @@ namespace RKCIUIAutomation.Page
             return elementDisplayed;
         }
 
-        public static bool VerifySuccessMessageIsDisplayed()
+        public bool VerifySuccessMessageIsDisplayed()
         {
             By elementByLocator = By.XPath("//div[contains(@class,'bootstrap-growl')]");
             IWebElement msg = GetElement(elementByLocator);
@@ -229,8 +224,8 @@ namespace RKCIUIAutomation.Page
             return elementDisplayed;
         }
 
-        private static string PageTitle = string.Empty;
-        public static bool IsElementDisplayed(By elementByLocator)
+        private string PageTitle = string.Empty;
+        public bool IsElementDisplayed(By elementByLocator)
         {
             IWebElement element = GetElement(elementByLocator);
             bool isDisplayed = false;
@@ -252,7 +247,7 @@ namespace RKCIUIAutomation.Page
             return isDisplayed;
         }
 
-        public static bool VerifyPageTitle(string expectedPageTitle)
+        public bool VerifyPageTitle(string expectedPageTitle)
         {
             bool isMatchingTitle = false;
             bool isDisplayed = false;
@@ -293,7 +288,7 @@ namespace RKCIUIAutomation.Page
             return isMatchingTitle;
         }
 
-        public static bool VerifySchedulerIsDisplayed() //TODO - move to Early Break Calendar class when more test cases are created
+        public bool VerifySchedulerIsDisplayed() //TODO - move to Early Break Calendar class when more test cases are created
         {
             IWebElement scheduler = GetElement(By.Id("scheduler"));
             bool isDisplayed = scheduler.Displayed;
@@ -303,14 +298,16 @@ namespace RKCIUIAutomation.Page
         }
 
 
-        private static readonly By Btn_Cancel = By.Id("CancelSubmittal");
-        private static readonly By Btn_Save = By.Id("SaveSubmittal");
-        private static readonly By Btn_SubmitForward = By.Id("SaveForwardSubmittal");
+        private readonly By Btn_Cancel = By.Id("CancelSubmittal");
+        private readonly By Btn_Save = By.Id("SaveSubmittal");
+        private readonly By Btn_SubmitForward = By.Id("SaveForwardSubmittal");
+        private static readonly By Btn_Create = By.Id("btnCreate");
 
-        public static void ClickCancel() => ClickElement(Btn_Cancel);
-        public static void ClickSave() => ClickElement(Btn_Save);
-        public static void ClickSubmitForward() => ClickElement(Btn_SubmitForward);
-
+        public void ClickCancel() => ClickElement(Btn_Cancel);
+        public void ClickSave() => ClickElement(Btn_Save);
+        public void ClickSubmitForward() => ClickElement(Btn_SubmitForward);
+        public void ClickCreate() => ClickElement(Btn_Create);
+        public void ClickNew() => ClickElement(PageHelper.GetButtonByLocator("New"));
 
     }
 }

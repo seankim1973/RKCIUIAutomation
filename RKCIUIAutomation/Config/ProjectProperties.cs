@@ -1,12 +1,12 @@
-﻿using System;
+﻿using RKCIUIAutomation.Base;
+using System;
 using System.Collections.Generic;
-using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Config
 {
     public static class ProjectProperties
     {
-        public class Component
+        public static class Component
         {
             public const string Breaksheet = "Breaksheet";
             public const string CDR = "CDR";
@@ -41,46 +41,42 @@ namespace RKCIUIAutomation.Config
             public const string OV_Test = "OV_Test";
         }
 
-        private static List<string> additionalComponents;
-
-        public static List<string> GetComponentsForProject(ProjectName projectName)
+        public static List<string> GetComponentsForProject(TenantName projectName)
         {
             List<string> components = new List<string>();
             try
             {
-                DefineAdditionalComponents(projectName);
                 components = CommonComponents;
-                components.AddRange(additionalComponents);
+                components.AddRange(DefineAdditionalComponents(projectName));
             }
             catch (Exception e)
             {
-                LogInfo("Exception occured during GetComponentsForProject method", e);
+                BaseUtils.LogInfo("Exception occured during GetComponentsForProject method", e);
             }
 
             return components;
         }
-
-        private static List<string> DefineAdditionalComponents(ProjectName projectName)
+        private static List<string> DefineAdditionalComponents(TenantName projectName)
         {
-            additionalComponents = new List<string>();
+            List<string> additionalComponents = new List<string>();
             switch (projectName)
             {
-                case ProjectName.Garnet:
+                case TenantName.Garnet:
                     additionalComponents = Components_Garnet;
                     break;
-                case ProjectName.GLX:
+                case TenantName.GLX:
                     additionalComponents = Components_GreenLineExt;
                     break;
-                case ProjectName.I15South:
+                case TenantName.I15South:
                     additionalComponents = Components_I15Southbound;
                     break;
-                case ProjectName.I15Tech:
+                case TenantName.I15Tech:
                     additionalComponents = Components_I15TechCorridor;
                     break;
-                case ProjectName.SH249:
+                case TenantName.SH249:
                     additionalComponents = Components_SH249Ext;
                     break;
-                case ProjectName.SGWay:
+                case TenantName.SGWay:
                     additionalComponents = Components_SouthernGateway;
                     break;
             }
@@ -89,10 +85,12 @@ namespace RKCIUIAutomation.Config
 
         private static readonly List<string> Components_Garnet = new List<string>
         {
+            Component.RFI
         };
 
         private static readonly List<string> Components_GreenLineExt = new List<string>
         {
+            Component.RFI
         };
 
         private static readonly List<string> Components_I15Southbound = new List<string>

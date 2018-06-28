@@ -8,7 +8,7 @@
         Prod
     }
 
-    public enum ProjectName
+    public enum TenantName
     {
         Garnet,
         GLX,

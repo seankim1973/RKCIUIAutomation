@@ -225,6 +225,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\BaseClass.cs" />
+    <Compile Include="Base\BaseHooks.cs" />
     <Compile Include="Base\BaseUtils.cs" />
     <Compile Include="Base\ExtentManager.cs" />
     <Compile Include="Base\ExtentTestManager.cs" />
@@ -259,7 +260,6 @@
     <Compile Include="Page\PageObjects\Project\Administration\UserManagement\Users.cs" />
     <Compile Include="Page\PageObjects\ControlPoint\ControlPointLog.cs" />
     <Compile Include="Page\PageObjects\ControlPoint\ControlPointScheduler.cs" />
-    <Compile Include="Page\PageObjects\LandingPage.cs" />
     <Compile Include="Page\PageBase.cs" />
     <Compile Include="Page\PageObjects\LoginPage.cs" />
     <Compile Include="Page\PageHelper.cs" />
@@ -327,7 +327,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Test\LinkCoverage.cs" />
+    <Compile Include="Test\LinkCoverageTest.cs" />
     <Compile Include="Test\MSUnitTest.cs" />
+    <Compile Include="Test\ParallelTests.cs" />
     <Compile Include="Test\Smoke.cs" />
     <Compile Include="Test\TestBase.cs" />
     <Compile Include="Test\TestUtils.cs" />

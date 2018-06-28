@@ -1,5 +1,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
+using log4net.Config;
+using NUnit.Framework;
 
 [assembly: AssemblyTitle("RKCIUIAutomation")]
 [assembly: AssemblyDescription("")]
@@ -9,6 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: Parallelizable(ParallelScope.All)]
 
 [assembly: ComVisible(false)]
 
@@ -17,4 +20,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]
+[assembly: XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]

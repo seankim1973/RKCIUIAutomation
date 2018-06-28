@@ -7,6 +7,9 @@ using static RKCIUIAutomation.Page.Action;
 using static RKCIUIAutomation.Test.TestUtils;
 using static RKCIUIAutomation.Config.ProjectProperties;
 using System.Collections.Generic;
+using NUnit.Framework.Internal;
+using System;
+using RKCIUIAutomation.Page.PageObjects;
 
 namespace RKCIUIAutomation.Test
 {
@@ -15,7 +18,6 @@ namespace RKCIUIAutomation.Test
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property("Component2", Component.Other)]
         [Property("TC#", "ELVS2345")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Site Pages Load Successfully")]
@@ -24,12 +26,12 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.Bhoomi);
 
             List<string> pageUrls = new List<string>();
-            pageUrls = TestUtils.GetNavMenuUrlList();
+            pageUrls = GetNavMenuUrlList();
 
             List<bool> results = new List<bool>();
             foreach (var url in pageUrls)
             {
-                results.Add(TestUtils.VerifyUrlIsLoaded(url));
+                results.Add(VerifyUrlIsLoaded(url));
             }
 
             Assert.Multiple(() =>
@@ -62,7 +64,7 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.ProjAdmin);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             EnterText(SubmittalDetails.Input_Name, "Test Name");
-            EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");            
+            EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Action, 1);
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Segment_Area, 1);
             //ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Location, 1);
@@ -148,7 +150,7 @@ namespace RKCIUIAutomation.Test
             Thread.Sleep(5000);
         }
 
-        //[Test]
+        [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -165,7 +167,7 @@ namespace RKCIUIAutomation.Test
             Assert.True(VerifyPageTitle("Gradations"));
         }
 
-        //[Test]
+        [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
@@ -179,32 +181,41 @@ namespace RKCIUIAutomation.Test
             NavigateToPage.QALab_Early_Break_Calendar();
         }
 
-        [Test]
-        [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name")]
-        public void LatestTest()
+        [TestFixture]
+        public class LatestTestClass : TestBase
         {
-            LogInfo($"Other component test - This test should run");
-            LoginAs(UserType.ProjAdmin);
-            NavigateToPage.RMCenter_Search();
-            RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-            Assert.True(VerifyPageTitle("RM Center Search"));
+            [Test]
+            [Category(Component.Other)]
+            [Property("TC#", "ELVS2222")]
+            [Property("Priority", "Priority 1")]
+            [Description("Verify Component Name")]
+            public void LatestTest()
+            {
+                LogInfo($"Other component test - This test should run");
+                LoginAs(UserType.ProjAdmin);
+                NavigateToPage.RMCenter_Search();
+                RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
+                Assert.True(VerifyPageTitle("RM Center Search"));
+            }
         }
 
-        [Test]
-        [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Failing Test")]
-        public void FailingTest()
+        [TestFixture]
+        public class FailingTestClass : TestBase
         {
-            LogInfo($"Other component test - This test should run");
-            LoginAs(UserType.ProjAdmin);
-            NavigateToPage.RMCenter_Search();
-            RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-            Assert.True(false);
+            [Test]
+            [Category(Component.Other)]
+            [Property("TC#", "ELVS2222")]
+            [Property("Priority", "Priority 1")]
+            [Description("Failing Test")]
+            public void FailingTest()
+            {
+                LogInfo($"Other component test - This test should run");
+                LoginAs(UserType.ProjAdmin);
+                NavigateToPage.RMCenter_Search();
+                RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
+                Assert.True(false);
+                Thread.Sleep(15000);
+            }
         }
 
         [Test]
@@ -309,7 +320,5 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.Bhoomi);
 
         }
-
-
     }
 }
