@@ -27,7 +27,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                //extentReportPath = "C:\\inetpub\\wwwroot\\extentreport";
+                extentReportPath = "C:\\inetpub\\wwwroot\\extentreport";
                 screenshotReferencePath = "errorscreenshots\\";
             }
         }

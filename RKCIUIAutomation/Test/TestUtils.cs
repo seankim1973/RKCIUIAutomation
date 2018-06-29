@@ -100,85 +100,88 @@ namespace RKCIUIAutomation.Test
 
             IList<IWebElement> elements = new List<IWebElement>();
             elements = driver.FindElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
-            foreach (IWebElement mainNavElem in elements)
+            if (elements?.Any() != true)
             {
-                string mainNavMenuText = mainNavElem.FindElement(By.XPath("./a")).Text;
-                string mainNavMsg = $">{mainNavMenuText}";
-                log.Info(mainNavMsg); //i.e. Project
-                WriteToFile(mainNavMsg); //create {overwrite existing} txt file
-
-                IList<IWebElement> subMainNavElements = mainNavElem.FindElements(By.XPath("./ul/li"));
-                foreach (IWebElement subMainNavElem in subMainNavElements)
+                foreach (IWebElement mainNavElem in elements)
                 {
-                    string subMainNavMsg;
+                    string mainNavMenuText = mainNavElem.FindElement(By.XPath("./a")).Text;
+                    string mainNavMsg = $">{mainNavMenuText}";
+                    log.Info(mainNavMsg); //i.e. Project
+                    WriteToFile(mainNavMsg); //create {overwrite existing} txt file
 
-                    if (!subMainNavElem.GetAttribute("class").Contains("dropdown-submenu"))
+                    IList<IWebElement> subMainNavElements = mainNavElem.FindElements(By.XPath("./ul/li"));
+                    foreach (IWebElement subMainNavElem in subMainNavElements)
                     {
-                        if (!string.IsNullOrEmpty(GetInnerText(subMainNavElem)))
+                        string subMainNavMsg;
+
+                        if (!subMainNavElem.GetAttribute("class").Contains("dropdown-submenu"))
                         {
-                            pageUrl = GetElementHref(subMainNavElem);
-                            pageUrlList.Add(pageUrl);
-
-                            subMainNavMsg = $"  --{GetInnerText(subMainNavElem)} ({pageUrl})";
-                            log.Info(subMainNavMsg); //i.e. Project>>MyDetails
-                            WriteToFile(subMainNavMsg); //write to txt file
-                        }
-                    }
-                    else
-                    {
-                        subMainNavMsg = $"  > {GetInnerText(subMainNavElem)}";
-                        log.Info(subMainNavMsg); //i.e. Project>>Administration 
-                        WriteToFile(subMainNavMsg); //write to txt file
-
-                        IList<IWebElement> subMenuElements = subMainNavElem.FindElements(By.XPath("./ul/li"));
-                        foreach (IWebElement subMenuElem in subMenuElements)
-                        {
-                            string subMenuMsg;
-
-                            if (!subMenuElem.GetAttribute("class").Contains("dropdown-submenu"))
+                            if (!string.IsNullOrEmpty(GetInnerText(subMainNavElem)))
                             {
-                                pageUrl = GetElementHref(subMenuElem);
+                                pageUrl = GetElementHref(subMainNavElem);
                                 pageUrlList.Add(pageUrl);
 
-                                subMenuMsg = $"    --{GetInnerText(subMenuElem)} ({pageUrl})";
-                                log.Info(subMenuMsg); //i.e. Project>>Administration>>Project Details
-                                WriteToFile(subMenuMsg); //write to txt file
+                                subMainNavMsg = $"  --{GetInnerText(subMainNavElem)} ({pageUrl})";
+                                log.Info(subMainNavMsg); //i.e. Project>>MyDetails
+                                WriteToFile(subMainNavMsg); //write to txt file
                             }
-                            else
+                        }
+                        else
+                        {
+                            subMainNavMsg = $"  > {GetInnerText(subMainNavElem)}";
+                            log.Info(subMainNavMsg); //i.e. Project>>Administration 
+                            WriteToFile(subMainNavMsg); //write to txt file
+
+                            IList<IWebElement> subMenuElements = subMainNavElem.FindElements(By.XPath("./ul/li"));
+                            foreach (IWebElement subMenuElem in subMenuElements)
                             {
-                                subMenuMsg = $"    > {GetInnerText(subMenuElem)}";
-                                log.Info(subMenuMsg); //i.e. Project>>Administration>>User Management
-                                WriteToFile(subMenuMsg); //write to txt file
+                                string subMenuMsg;
 
-                                IList<IWebElement> subSubMenuElements = subMenuElem.FindElements(By.XPath("./ul/li"));
-                                foreach (IWebElement subSubMenuElem in subSubMenuElements)
+                                if (!subMenuElem.GetAttribute("class").Contains("dropdown-submenu"))
                                 {
-                                    string subSubMenuMsg;
+                                    pageUrl = GetElementHref(subMenuElem);
+                                    pageUrlList.Add(pageUrl);
 
-                                    if (!subSubMenuElem.GetAttribute("class").Contains("dropdown-submenu"))
+                                    subMenuMsg = $"    --{GetInnerText(subMenuElem)} ({pageUrl})";
+                                    log.Info(subMenuMsg); //i.e. Project>>Administration>>Project Details
+                                    WriteToFile(subMenuMsg); //write to txt file
+                                }
+                                else
+                                {
+                                    subMenuMsg = $"    > {GetInnerText(subMenuElem)}";
+                                    log.Info(subMenuMsg); //i.e. Project>>Administration>>User Management
+                                    WriteToFile(subMenuMsg); //write to txt file
+
+                                    IList<IWebElement> subSubMenuElements = subMenuElem.FindElements(By.XPath("./ul/li"));
+                                    foreach (IWebElement subSubMenuElem in subSubMenuElements)
                                     {
-                                        pageUrl = GetElementHref(subSubMenuElem);
-                                        pageUrlList.Add(pageUrl);
+                                        string subSubMenuMsg;
 
-                                        subSubMenuMsg = $"       --{GetInnerText(subSubMenuElem)} ({pageUrl})";
-                                        log.Info(subSubMenuMsg); //i.e. Project>>Administration>>System Configuration>>Disciplines
-                                        WriteToFile(subSubMenuMsg); //write to txt file
-                                    }
-                                    else
-                                    {
-                                        subSubMenuMsg = $"       > {GetInnerText(subSubMenuElem)}";
-                                        log.Info(subSubMenuMsg); //i.e. Project>>Administration>>System Configuration>>Equipment
-                                        WriteToFile(subSubMenuMsg); //write to txt file
-
-                                        IList<IWebElement> subSubMenuItems = subSubMenuElem.FindElements(By.XPath("./ul/li"));
-                                        foreach (IWebElement subSubMenuItem in subSubMenuItems)
+                                        if (!subSubMenuElem.GetAttribute("class").Contains("dropdown-submenu"))
                                         {
-                                            pageUrl = GetElementHref(subSubMenuItem);
+                                            pageUrl = GetElementHref(subSubMenuElem);
                                             pageUrlList.Add(pageUrl);
 
-                                            string subSubMenuItemMsg = $"         --{GetInnerText(subSubMenuItem)} ({pageUrl})";
-                                            log.Info(subSubMenuItemMsg); //i.e. Project>>Administration>>System Configuration>>Equipment>>Equipment Makes
-                                            WriteToFile(subSubMenuItemMsg); //write to txt file
+                                            subSubMenuMsg = $"       --{GetInnerText(subSubMenuElem)} ({pageUrl})";
+                                            log.Info(subSubMenuMsg); //i.e. Project>>Administration>>System Configuration>>Disciplines
+                                            WriteToFile(subSubMenuMsg); //write to txt file
+                                        }
+                                        else
+                                        {
+                                            subSubMenuMsg = $"       > {GetInnerText(subSubMenuElem)}";
+                                            log.Info(subSubMenuMsg); //i.e. Project>>Administration>>System Configuration>>Equipment
+                                            WriteToFile(subSubMenuMsg); //write to txt file
+
+                                            IList<IWebElement> subSubMenuItems = subSubMenuElem.FindElements(By.XPath("./ul/li"));
+                                            foreach (IWebElement subSubMenuItem in subSubMenuItems)
+                                            {
+                                                pageUrl = GetElementHref(subSubMenuItem);
+                                                pageUrlList.Add(pageUrl);
+
+                                                string subSubMenuItemMsg = $"         --{GetInnerText(subSubMenuItem)} ({pageUrl})";
+                                                log.Info(subSubMenuItemMsg); //i.e. Project>>Administration>>System Configuration>>Equipment>>Equipment Makes
+                                                WriteToFile(subSubMenuItemMsg); //write to txt file
+                                            }
                                         }
                                     }
                                 }
@@ -187,7 +190,10 @@ namespace RKCIUIAutomation.Test
                     }
                 }
             }
-
+            else
+            {
+                LogInfo("Unable to retrieve navigation menu URLs", false);
+            }
             WriteToFile(Environment.NewLine);
         }
 
@@ -202,7 +208,8 @@ namespace RKCIUIAutomation.Test
         {
             List<string> errorMsgs = new List<string>
             {
-                "The resource cannot be found."
+                "The resource cannot be found.",
+                "The model backing the 'ElvisContext' context has changed since the database was created."
             };
 
             bool isLoaded = false;

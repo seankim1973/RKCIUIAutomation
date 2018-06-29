@@ -26,7 +26,7 @@ namespace RKCIUIAutomation.Page.PageObjects
 
             foreach (By field in loginFields)
             {
-                string credential = String.Empty;
+                string credential = string.Empty;
                 int userAcctIndex = 1;
                 IWebElement webElem = null;
 
@@ -41,7 +41,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                 try
                 {
                     LogInfo($"...waiting for element {field}");
-                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(20))
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5))
                     {
                         PollingInterval = TimeSpan.FromMilliseconds(500)
                     };
@@ -52,7 +52,8 @@ namespace RKCIUIAutomation.Page.PageObjects
                 }
                 catch (Exception e)
                 {
-                    LogInfo($"Exception occured while waiting for element - {field}", e);
+                    LogInfo($"Exception occured while waiting for element - {field}", false, e);
+                    throw;
                 }
             }
             
