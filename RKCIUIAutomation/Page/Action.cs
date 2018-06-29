@@ -350,13 +350,15 @@ namespace RKCIUIAutomation.Page
                         if (stackTraceTag?.Displayed == true)
                         {
                             Assert.True(false);
+                            LogError(">>> Page did not load properly, when navigating to the previous page <<<");
                         }
                     }
+                    else
+                        Assert.True(false);
                 }   
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                LogError("Error occured in VerifyPageIsLoaded method", true, e);
                 throw;
             }
         }

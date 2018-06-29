@@ -132,7 +132,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
             try
             {
-                VerifyPageIsLoaded();
+                VerifyPageIsLoaded(false);
                 Hover(GetMainNavMenuByLocator(mainNavEnum));
 
                 if (adminEnum != null)
