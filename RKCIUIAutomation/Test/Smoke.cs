@@ -43,13 +43,19 @@ namespace RKCIUIAutomation.Test
     public class Test_UserCanLogin_ProjUser : TestBase
     {
         [Test]
-        [Category("")]
+        [Category(Component.Submittals)]
         [Property("TC#", "ELVS1234")]
         [Property("Priority", "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
         public void VerifyUserCanLogin_ProjUser()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.RMCenter_Upload_Owner_Submittal();
+            AddAssertionToList(VerifyPageTitle("New Submittal"));
+            ClickCancel();
+            NavigateToPage.RMCenter_Upload_DEV_Submittal();
+            AddAssertionToList(VerifyPageTitle("Submittal Details"));
+            AssertAll();
         }
     }
 

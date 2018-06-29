@@ -5,10 +5,13 @@ using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Test;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 
 namespace RKCIUIAutomation.Base
 {
@@ -16,10 +19,33 @@ namespace RKCIUIAutomation.Base
     {
         internal static readonly ILog log = LogManager.GetLogger("");
   
-        public static string extentReportPath = $"{GetCodeBasePath()}\\Report";
-        public static string screenshotReferencePath = null;
-        
-        public static void DetermineFilePath()
+        public static string extentReportPath = string.Empty;
+        public static string screenshotReferencePath = string.Empty;
+        public static string fullTempFileName = string.Empty;
+        private static string baseTempFolder = string.Empty;
+        private static string fileName = string.Empty;
+        private static string dateString = string.Empty;
+
+        public BaseUtils()
+        {
+            extentReportPath = $"{GetCodeBasePath()}\\Report";
+            baseTempFolder = $"{GetCodeBasePath()}\\Temp";
+            fileName = BaseClass.tenantName.ToString();
+            dateString = GetDateString();
+        }
+
+        private string GetDateString()
+        {
+            string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
+            string month = shortDate[0];
+            if (month.Length < 1)
+            {
+                month = $"0{month}";
+            }
+            return $"{month}{shortDate[1]}{shortDate[2]}";
+        }
+
+        public static void DetermineReportFilePath()
         {
             if (BaseClass.testPlatform.ToString() == "Local")
             {
@@ -30,12 +56,6 @@ namespace RKCIUIAutomation.Base
                 extentReportPath = "C:\\inetpub\\wwwroot\\extentreport";
                 screenshotReferencePath = "errorscreenshots\\";
             }
-        }
-
-        public string[] GetTestContext(string fullTestName)
-        {
-            string[] testNameArray = fullTestName.Split('.');
-            return testNameArray;
         }
 
         public static string GetCodeBasePath()
@@ -59,12 +79,23 @@ namespace RKCIUIAutomation.Base
         public static void LogAssertIgnore(string msg)
         {
             ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(msg, ExtentColor.Orange));
+            log.Debug(msg);
             Assert.Ignore(msg);
         }
-        public static void LogError(string details)
+        public void LogError(string details, bool takeScreenshot = true, Exception e = null)
         {
             ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));
             log.Error(details);
+
+            if (takeScreenshot)
+            {
+                LogErrorWithScreenshot();          
+            }
+            
+            if (e != null)
+            {
+                log.Fatal(e.Message);
+            }
         }
         public static void LogDebug(string details)
         {
@@ -115,6 +146,7 @@ namespace RKCIUIAutomation.Base
             {
                 ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
                 LogErrorWithScreenshot();
+                log.Fatal(details);
 
                 if (e != null)
                 {
@@ -122,7 +154,6 @@ namespace RKCIUIAutomation.Base
                 }
             }
         }
-
         private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
         {
             return MarkupHelper.CreateLabel(details, extentColor);
@@ -133,6 +164,7 @@ namespace RKCIUIAutomation.Base
         }
 
 
+        //Helper methods to gather Test Context Details
         public static string GetTestName() => GetTestContextProperty(TestContextProperty.TestName);
         public static string GetTestComponent1() => GetTestContextProperty(TestContextProperty.TestComponent1);
         public static string GetTestComponent2() => GetTestContextProperty(TestContextProperty.TestComponent2);
@@ -196,6 +228,8 @@ namespace RKCIUIAutomation.Base
             TestCaseNumber
         }
 
+
+        //Helper methods for working with files
         public static void RunExternalExecutible(string executible, string cmdLineArgument)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo(executible)
@@ -207,5 +241,92 @@ namespace RKCIUIAutomation.Base
 
             Process.Start(startInfo);
         }
+
+        /// <summary>
+        /// Location to project Temp folder with Tenant name as filename
+        /// -- Specify file type extention (i.e. - .xml)
+        /// </summary>
+        public static void WriteToFile(string msg, string fileExt = ".txt", bool overwriteExisting = false)
+        {
+            fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
+
+            Directory.CreateDirectory(baseTempFolder);
+            string path = $"{fullTempFileName}{fileExt}";
+            StreamWriter workflow = null;
+
+            if (overwriteExisting.Equals(true))
+            {
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+
+                workflow = File.CreateText(path);
+            }
+            else
+            {
+                workflow = File.AppendText(path);
+            }
+
+            using (StreamWriter sw = workflow)
+            {
+                if (msg.Contains("<br>"))
+                {
+                    string[] message = Regex.Split(msg, "<br>&nbsp;&nbsp;");
+                    sw.WriteLine(message[0]);
+                    sw.WriteLine(message[1]);
+                }
+                else
+                    sw.WriteLine(msg);
+            }
+        }
+
+
+        //TODO: Fix util to generate xml file for menu nav
+        public class XMLUtil
+        {
+            public XmlSerializer xs;
+            List<Navigation> ls;
+
+            public void WriteXmlFile(string fileName)
+            {
+
+                ls = new List<Navigation>();
+                xs = new XmlSerializer(typeof(List<Navigation>));
+
+                FileStream fs = new FileStream(GetFilePath(fileName), FileMode.Create, FileAccess.Write);
+                Navigation linklist = new Navigation
+                {
+                    MainNavMenu = "",
+                    SubMainNavMenu = "",
+                    SubMenu = "",
+                    SubSubMenu = "",
+                    SubSubMenuItem = ""
+                };
+                ls.Add(linklist);
+
+                xs.Serialize(fs, ls);
+                fs.Close();
+            }
+
+            public void ReadXmlFile(string fileName)
+            {
+                FileStream fs = new FileStream(GetFilePath(fileName), FileMode.Open, FileAccess.Read);
+                ls = (List<Navigation>)xs.Deserialize(fs);
+                fs.Close();
+            }
+
+            string GetFilePath(string fileName) => $"{fullTempFileName}.xml";
+        }
+        public class Navigation
+        {
+            public string MainNavMenu { get; set; }
+            public string SubMainNavMenu { get; set; }
+            public string SubMenu { get; set; }
+            public string SubSubMenu { get; set; }
+            public string SubSubMenuItem { get; set; }
+
+        }
+
     }
 }

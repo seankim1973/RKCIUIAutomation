@@ -1,4 +1,5 @@
 ﻿using AutoIt;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
@@ -16,7 +17,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 LogInfo($"...waiting for element {elementByLocator}");
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2))
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(1))
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(250)
                 };
@@ -295,6 +296,69 @@ namespace RKCIUIAutomation.Page
             string not = isDisplayed == false ? " not" : "";
             LogInfo($"Scheduler is{not} displayed", isDisplayed);
             return isDisplayed;
+        }
+
+        private readonly By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
+        private readonly By h1HeaderTagByLocator = By.TagName("h1");
+
+        public bool VerifyUrlIsLoaded(string pageUrl)
+        {
+            bool isLoaded = false;
+            string pageTitle = string.Empty;
+            IWebElement stackTraceTag = null;
+            try
+            {
+                driver.Navigate().GoToUrl(pageUrl);
+                pageTitle = driver.Title;
+
+                stackTraceTag = GetElement(stackTraceTagByLocator);
+                if (stackTraceTag?.Displayed == true)
+                {
+                    LogError(">>> Page Did Not Load Successfully <<<");
+                }
+                else
+                    LogInfo(">>> Page Loaded Successfully <<<");
+            }
+            finally
+            {
+                string pageTitleMsg = $"{pageUrl}<br>&nbsp;&nbsp;PageHeader: {pageTitle}";
+                WriteToFile(pageTitleMsg, "_PageTitle.txt");
+                LogInfo(pageTitleMsg, isLoaded);
+            }
+            return isLoaded;
+        }
+
+        public void VerifyPageIsLoaded(bool continueTestIfPageNotLoaded = true)
+        {
+            IWebElement stackTraceTag = null;
+            try
+            {
+                stackTraceTag = GetElement(stackTraceTagByLocator);
+                if (stackTraceTag?.Displayed != true)
+                {
+                    LogInfo(">>> Page Loaded Successfully <<<");
+                }
+                else
+                {
+                    LogError(">>> Page did not load properly <<<");
+
+                    if (continueTestIfPageNotLoaded == true)
+                    {
+                        driver.Navigate().Back();
+                        LogDebug(">>> Navigating back to previous page to continue test <<<");
+                        stackTraceTag = GetElement(stackTraceTagByLocator);
+                        if (stackTraceTag?.Displayed == true)
+                        {
+                            Assert.True(false);
+                        }
+                    }
+                }   
+            }
+            catch (Exception e)
+            {
+                LogError("Error occured in VerifyPageIsLoaded method", true, e);
+                throw;
+            }
         }
 
 

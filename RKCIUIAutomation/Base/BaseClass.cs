@@ -42,7 +42,7 @@ namespace RKCIUIAutomation.Base
             testEnv = Configs.GetTestEnv(_testEnv);
             tenantName = Configs.GetTenantName(_tenantName);
             
-            DetermineFilePath();
+            DetermineReportFilePath();
         }
 
         [OneTimeTearDown]

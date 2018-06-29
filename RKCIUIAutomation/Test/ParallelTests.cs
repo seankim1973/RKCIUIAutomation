@@ -79,7 +79,6 @@ namespace RKCIUIAutomation.Test
         [Description("Verify Component Name")]
         public void LatestTest()
         {
-            LogInfo($"Other component test - This test should run");
             LoginAs(UserType.ProjAdmin);
             NavigateToPage.RMCenter_Search();
             RMCenter_SearchPage.PopulateAllSearchCriteriaFields();

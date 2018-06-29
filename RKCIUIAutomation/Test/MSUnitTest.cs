@@ -1,26 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Web;
-using System.Xml;
 using System.Xml.Serialization;
-using AutoIt;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page;
-using RKCIUIAutomation.Page.Navigation;
-using RKCIUIAutomation.Page.PageObjects;
-using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using static RKCIUIAutomation.Config.ProjectProperties;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
-using static RKCIUIAutomation.Config.ConfigUtils;
 
 
 namespace RKCIUIAutomation.Test
@@ -186,8 +172,9 @@ namespace RKCIUIAutomation.Test
 
         }
 
+
         [TestMethod]
-        public void MSUnitTest5()
+        public void UnitTest5()
         {
             //var lockedRecords = Project.Administration.AdminTools.Menu.Locked_Records;
             //var reflectedPageType = lockedRecords.GetType().ReflectedType;
@@ -204,10 +191,10 @@ namespace RKCIUIAutomation.Test
             //    $"C:\\Users\\schong\\source\\repos\\RKCIUIAutomation\\RKCIUIAutomation\\bin\\Debug\\RKCIUIAutomation.dll";
 
             //RunExternalExecutible(exe, arg);
-            Console.WriteLine(ZaleniumService.IsRunning());
+            ZaleniumService zalenium = new ZaleniumService();
+            Console.WriteLine(zalenium.ZaleniumIsRunning());
             //Assert.IsTrue();
         }
-
 
 
         #region write XML
@@ -222,15 +209,17 @@ namespace RKCIUIAutomation.Test
             serializer = new XmlSerializer(typeof(List<NavigationMenu>));
             List<NavigationMenu> navigationMenuList = new List<NavigationMenu>();
 
-            NavigationMenu mainNavNode = new NavigationMenu();
-            mainNavNode.MainNavMenu = "Project";
-            mainNavNode.MainNavMenuItem = "My Details";
-            mainNavNode.SubMenu = "Administrator";
-            mainNavNode.SubMenuItem = "Project Details";
-            mainNavNode.SubX2Menu = "System Configuration";
-            mainNavNode.SubX2MenuItem = "Submittal Action";
-            mainNavNode.SubX3Menu = "Grade Management";
-            mainNavNode.SubX3MenuItem = "Grade Types";
+            NavigationMenu mainNavNode = new NavigationMenu
+            {
+                MainNavMenu = "Project",
+                MainNavMenuItem = "My Details",
+                SubMenu = "Administrator",
+                SubMenuItem = "Project Details",
+                SubX2Menu = "System Configuration",
+                SubX2MenuItem = "Submittal Action",
+                SubX3Menu = "Grade Management",
+                SubX3MenuItem = "Grade Types"
+            };
             navigationMenuList.Add(mainNavNode);
 
             NavigationMenu menuItemNode = new NavigationMenu();

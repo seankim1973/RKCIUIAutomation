@@ -1,22 +1,25 @@
 ﻿using System;
 using RestSharp;
-using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Base
 {
-    public static class RestUtils
+    public class RestUtils
     {        
-        public static string GetJsonResponse(string baseUrl, string endpoint)
+        public string GetJsonResponse(string baseUrl, string endpoint)
         {
+            BaseUtils baseUtils = new BaseUtils();
+
             RestClient client = new RestClient();
             RestRequest request = new RestRequest();
+            IRestResponse response = new RestResponse();
             string json = string.Empty;
 
             try
             {
                 client.BaseUrl = new Uri(baseUrl);
                 request.Resource = endpoint;
-                IRestResponse response = client.Execute(request);
+                response = client.Execute(request);
+
                 if (response != null)
                 {
                     json = response.Content;
@@ -24,7 +27,7 @@ namespace RKCIUIAutomation.Base
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                baseUtils.LogError(e.Message);
             }
 
             return json;

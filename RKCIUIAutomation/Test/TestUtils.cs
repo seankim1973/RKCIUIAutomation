@@ -16,30 +16,6 @@ namespace RKCIUIAutomation.Test
 {
     public class TestUtils : PageBase
     {
-        private static string baseTempFolder;
-        private static string fileName;
-        private static string dateString;
-        public static string fullTempFileName;
-
-        public TestUtils()
-        {
-            baseTempFolder = $"{GetCodeBasePath()}\\Temp";
-            fileName = tenantName.ToString();
-            dateString = GetDateString();
-        }
-
-        private string GetDateString()
-        {
-            string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
-            string month = shortDate[0];
-            if (month.Length < 1)
-            {
-                month = $"0{month}";
-            }
-            return $"{month}{shortDate[1]}{shortDate[2]}";
-        }
-       
-
         private static List<string> pageUrlList;
 
         private static string GetInnerText(IWebElement listElement)
@@ -51,45 +27,6 @@ namespace RKCIUIAutomation.Test
         {
             IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
             return $"{anchorElem.GetAttribute("href")}";
-        }
-
-        /// <summary>
-        /// Location to project Temp folder with Tenant name as filename
-        /// -- Specify file type extention (i.e. - .xml)
-        /// </summary>
-        private static void WriteToFile(string msg, string fileExt = ".txt", bool overwriteExisting = false)
-        {
-            fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
-
-            Directory.CreateDirectory(baseTempFolder);
-            string path = $"{fullTempFileName}{fileExt}";
-            StreamWriter workflow = null;
-
-            if (overwriteExisting.Equals(true))
-            {
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-
-                workflow = File.CreateText(path);
-            }
-            else
-            {
-                workflow = File.AppendText(path);
-            }
-
-            using (StreamWriter sw = workflow )
-            {
-                if (msg.Contains("<br>"))
-                {
-                    string[] message = Regex.Split(msg, "<br>&nbsp;&nbsp;");
-                    sw.WriteLine(message[0]);
-                    sw.WriteLine(message[1]);
-                }
-                else
-                    sw.WriteLine(msg);
-            }
         }
 
         public void LoopThroughNavMenu()
@@ -204,37 +141,6 @@ namespace RKCIUIAutomation.Test
             return pageUrlList;
         }
 
-        public bool VerifyUrlIsLoaded(string pageUrl)
-        {
-            List<string> errorMsgs = new List<string>
-            {
-                "The resource cannot be found.",
-                "The model backing the 'ElvisContext' context has changed since the database was created."
-            };
-
-            bool isLoaded = false;
-            string pageTitle = string.Empty;
-            try
-            {
-                driver.Navigate().GoToUrl(pageUrl);
-                pageTitle = driver.Title;
-
-                if (!errorMsgs.Contains(pageTitle))
-                {
-                    isLoaded = true;
-                }
-            }
-            finally
-            {
-                string pageTitleMsg = $"{pageUrl}<br>&nbsp;&nbsp;PageTitle: {pageTitle}";
-                WriteToFile(pageTitleMsg, "_PageTitle.txt");
-                LogInfo(pageTitleMsg, isLoaded);
-            }
-
-            return isLoaded;
-        }
-
-
         private List<bool> assertionList;
         public void AddAssertionToList(bool assertion)
         {
@@ -254,55 +160,5 @@ namespace RKCIUIAutomation.Test
             });
         }
 
-    }
-
-
-
-    public class XMLUtil : TestUtils
-    {
-        public XmlSerializer xs;
-        List<Navigation> ls;
-
-        public void WriteXmlFile(string fileName)
-        {
-
-            ls = new List<Navigation>();
-            xs = new XmlSerializer(typeof(List<Navigation>));
-
-            FileStream fs = new FileStream(GetFilePath(fileName), FileMode.Create, FileAccess.Write);
-            Navigation linklist = new Navigation
-            {
-                MainNavMenu = "",
-                SubMainNavMenu = "",
-                SubMenu = "",
-                SubSubMenu = "",
-                SubSubMenuItem = ""
-            };
-            ls.Add(linklist);
-
-            xs.Serialize(fs, ls);
-            fs.Close();
-        }
-
-        public void ReadXmlFile(string fileName)
-        {
-            FileStream fs = new FileStream(GetFilePath(fileName), FileMode.Open, FileAccess.Read);
-            ls = (List<Navigation>)xs.Deserialize(fs);
-            fs.Close();
-        }
-
-        string GetFilePath(string fileName) => $"{fullTempFileName}.xml";
-    }
-
-    public class Navigation
-    {
-        public string MainNavMenu { get; set; }
-        public string SubMainNavMenu { get; set; }
-        public string SubMenu { get; set; }
-        public string SubSubMenu { get; set; }      
-        public string SubSubMenuItem { get; set; }
-
-    }
-
-    
+    }    
 }

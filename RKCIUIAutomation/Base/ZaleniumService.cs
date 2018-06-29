@@ -2,16 +2,14 @@
 using System.Threading;
 using System.Web.Script.Serialization;
 
-using static RKCIUIAutomation.Base.RestUtils;
-using static RKCIUIAutomation.Base.BaseUtils;
-using RKCIUIAutomation.Test;
-
 namespace RKCIUIAutomation.Base
 {
 #pragma warning disable IDE1006 // Naming Styles
-    public class ZaleniumService : TestBase
+    public class ZaleniumService
     {
-        public static void Start()
+        BaseUtils baseUtils = new BaseUtils();
+
+        public void Start()
         {
             string cmdLineArgument = $"run --rm -ti --name zalenium -p 4444:4444 -p 5555:5555 " +
                 $"-v /var/run/docker.sock:/var/run/docker.sock " +
@@ -20,34 +18,35 @@ namespace RKCIUIAutomation.Base
             Service(cmdLineArgument);
         }
 
-        public static void Stop()
+        public void Stop()
         {
             string cmdLineArgument = "stop zalenium";
             Service(cmdLineArgument);
-        }     
+        }
 
-        private static void Service(string cmdLineArgument)
-        {
-            if (!IsRunning())
+        
+        private void Service(string cmdLineArgument)
+        {            
+            if (!ZaleniumIsRunning())
             {
                 try
                 {
-                    RunExternalExecutible("docker", cmdLineArgument);
+                    BaseUtils.RunExternalExecutible("docker", cmdLineArgument);
 
-                    while (!IsRunning())
+                    while (!ZaleniumIsRunning())
                     {
                         Thread.Sleep(5000);
                     }
                 }
                 catch (Exception e)
                 {
-                    LogError(e.Message);
+                    baseUtils.LogError(e.Message);
                     throw;
                 }
             }
         }
 
-        public static bool IsRunning()
+        public bool ZaleniumIsRunning()
         {
             string zaleniumBaseUrl = "http://10.1.1.207:4444";
             string zaleniumStatus = "wd/hub/status";
@@ -56,14 +55,15 @@ namespace RKCIUIAutomation.Base
             string json = string.Empty;
             try
             {
-                json = GetJsonResponse(zaleniumBaseUrl, zaleniumStatus);
+                RestUtils Rest = new RestUtils();
+                json = Rest.GetJsonResponse(zaleniumBaseUrl, zaleniumStatus);
                 JavaScriptSerializer js = new JavaScriptSerializer();
                 Value value = js.Deserialize<RootObject>(json).value;
                 isRunning = value.ready;
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                baseUtils.LogError(e.Message);
             }
 
             return isRunning;
