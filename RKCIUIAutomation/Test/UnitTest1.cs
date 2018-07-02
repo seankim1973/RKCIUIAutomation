@@ -1,12 +1,8 @@
 ﻿using NUnit.Framework;
-using OpenQA.Selenium;
-using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading;
+using static RKCIUIAutomation.Config.ProjectProperties;
 
 namespace RKCIUIAutomation
 {
@@ -40,5 +36,22 @@ namespace RKCIUIAutomation
         //public void testmethod4()
         //{
         //}
-    }    
+    }
+
+    [TestFixture]
+    public class BaseTest : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void DynamicNavigation()
+        {
+            LogInfo($"Other component test - This test should run");
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Qms_Document();
+            Assert.True(VerifyPageTitle("QMS Documents"));
+        }
+    }
 }

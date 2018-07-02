@@ -1,0 +1,114 @@
+﻿pipeline {
+    agent any
+	parameters {
+		choice(name: 'testEnv',
+			choices: 'Test\nStage\Prod',
+			description: 'Select the environment to execute the tests')
+		booleanParam(name: 'Garnet',
+			defaultValue: 'true',
+			description: 'Tenant: Garnet Interchange')
+		booleanParam(name: 'GLX',
+			defaultValue: 'true',
+			description: 'Tenant: Green Line Extension')
+		booleanParam(name: 'SH249',
+			defaultValue: 'true',
+			description: 'Tenant: SH249 Extension')
+		booleanParam(name: 'SGWay',
+			defaultValue: 'true',
+			description: 'Tenant: Southern Gateway')
+		booleanParam(name: 'I15Tech',
+			defaultValue: 'true',
+			description: 'Tenant: I-15 Technology Corridor')
+		booleanParam(name: 'I15South',
+			defaultValue: 'true',
+			description: 'Tenant: I-15 Southbound')
+
+	}
+    stages {
+		stage ('UI Automation Code Checkout'){
+			steps{
+			    git branch: 'master', changelog: false, credentialsId: 'b00799bb-87f3-42f6-8c9a-c7c6680de30c', poll: false, url: 'https://github.com/seankim1973/RKCIUIAutomation.git'
+			    bat 'nuget.exe restore RKCIUIAutomation.sln'
+			    bat 'MSBuild RKCIUIAutomation.sln /p:Configuration=Debug /p:Platform=\"Any CPU\" /p:ProductVersion=1.0.0.${env.BUILD_NUMBER}'
+			}
+		}
+        stage('Run Tests on ${params.testEnv} Environment') {
+            parallel {
+                stage('Garnet on ${params.testEnv}') {
+                    when {
+						${params.Garnet}
+					}
+					steps {
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=${params.testEnv} -p:Tenant=Garnet -p:Platform=Linux --test=RKCIUIAutomation.BaseTest/*Test.Verify_LinkCoverage_Level1*/ "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_Garnet.xml'
+						sleep 1
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_Garnet.xml -out=junit-result_Garnet.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					sleep 1	
+                    }
+                }
+                stage('GLX on ${params.testEnv}') {
+					when {
+						${params.GLX}
+					}
+					steps {
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=${params.testEnv} -p:Tenant=GLX -p:Platform=Linux --test=RKCIUIAutomation.BaseTest/*Test.Verify_LinkCoverage_Level1*/ "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_GLX.xml'
+						sleep 1
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_GLX.xml -out=junit-result_GLX.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					sleep 1	
+					}
+                }
+				stage('GLX on ${params.testEnv}') {
+					when {
+						${params.SH249}
+					}
+					steps {
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=${params.testEnv} -p:Tenant=SH249 -p:Platform=Linux --test=RKCIUIAutomation.BaseTest/*Test.Verify_LinkCoverage_Level1*/ "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_SH249.xml'
+						sleep 1
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_SH249.xml -out=junit-result_SH249.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					sleep 1	
+					}
+                }
+				stage('GLX on ${params.testEnv}') {
+					when {
+						${params.SGWay}
+					}
+					steps {
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=${params.testEnv} -p:Tenant=SGWay -p:Platform=Linux --test=RKCIUIAutomation.BaseTest/*Test.Verify_LinkCoverage_Level1*/ "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_SGWay.xml'
+						sleep 1
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_SGWay.xml -out=junit-result_SGWay.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					sleep 1	
+					}
+                }
+				stage('GLX on ${params.testEnv}') {
+					when {
+						${params.I15Tech}
+					}
+					steps {
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=${params.testEnv} -p:Tenant=I15Tech -p:Platform=Linux --test=RKCIUIAutomation.BaseTest/*Test.Verify_LinkCoverage_Level1*/ "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_I15Tech.xml'
+						sleep 1
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_I15Tech.xml -out=junit-result_I15Tech.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					sleep 1	
+					}
+                }
+				stage('GLX on ${params.testEnv}') {
+					when {
+						${params.I15South}
+					}
+					steps {
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=${params.testEnv} -p:Tenant=I15South -p:Platform=Linux --test=RKCIUIAutomation.BaseTest/*Test.Verify_LinkCoverage_Level1*/ "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_I15South.xml'
+						sleep 1
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_I15South.xml -out=junit-result_I15South.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					sleep 1	
+					}
+                }
+            }
+            post {
+    			always {
+    				junit '**/junit-result_*.xml'
+    				sleep 1
+					echo "Generate JUnit HTML report as TestResult.html"
+    				emailext body: '${FILE,path="TestResult.html"}', subject: '$DEFAULT_SUBJECT', to: 'schongkim@rkci.com/*, chris.evans@rkci.com, jscott@rkci.com, bpurohit@rkci.com*/'
+				}
+			}
+		}
+    }
+}

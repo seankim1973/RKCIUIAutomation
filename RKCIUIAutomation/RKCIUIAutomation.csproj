@@ -363,6 +363,7 @@
     <Content Include="extent-config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Jenkinsfile" />
     <Content Include="Lib\AutoItX3.Assembly.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
