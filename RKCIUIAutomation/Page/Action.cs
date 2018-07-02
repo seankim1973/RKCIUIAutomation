@@ -348,7 +348,7 @@ namespace RKCIUIAutomation.Page
                 {
                     IWebElement stackTraceTag = null;
                     stackTraceTag = GetElement(stackTraceTagByLocator);
-                    if (stackTraceTag?.Displayed != true)
+                    if (stackTraceTag?.Displayed == true)
                     {
                         LogError(">>> Page did not load properly <<<");
 
