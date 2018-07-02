@@ -335,11 +335,13 @@ namespace RKCIUIAutomation.Page
 
         public void VerifyPageIsLoaded(bool checkingLoginPage = false, bool continueTestIfPageNotLoaded = true)
         {
-            string pageTitle = driver.Title;
+            string pageTitle = null;
             string expectedPageTitle = checkingLoginPage == false ? "ELVIS PMC" : "Log in";
 
             try
             {
+                pageTitle = driver.Title;
+
                 if (pageTitle.Contains(expectedPageTitle))
                 {
                     LogInfo(">>> Page Loaded Successfully <<<");
@@ -356,11 +358,19 @@ namespace RKCIUIAutomation.Page
                         {
                             driver.Navigate().Back();
                             LogDebug(">>> Navigating back to previous page to continue test <<<");
-                            stackTraceTag = GetElement(stackTraceTagByLocator);
-                            if (stackTraceTag?.Displayed == true)
+                            pageTitle = driver.Title;
+                            if (pageTitle.Contains("ELVIS PMC"))
                             {
-                                Assert.True(false);
-                                LogError(">>> Page did not load properly, when navigating to the previous page <<<");
+                                LogDebug(">>> Navigated to previous page successfully <<<");
+                            }
+                            else
+                            {
+                                stackTraceTag = GetElement(stackTraceTagByLocator);
+                                if (stackTraceTag?.Displayed == true)
+                                {
+                                    Assert.True(false);
+                                    LogError(">>> Page did not load properly, when navigating to the previous page <<<");
+                                }
                             }
                         }
                         else
