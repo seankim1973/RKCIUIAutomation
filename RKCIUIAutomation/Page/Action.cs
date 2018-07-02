@@ -379,11 +379,46 @@ namespace RKCIUIAutomation.Page
         private readonly By Btn_SubmitForward = By.Id("SaveForwardSubmittal");
         private static readonly By Btn_Create = By.Id("btnCreate");
 
-        public void ClickCancel() => ClickElement(Btn_Cancel);
-        public void ClickSave() => ClickElement(Btn_Save);
-        public void ClickSubmitForward() => ClickElement(Btn_SubmitForward);
-        public void ClickCreate() => ClickElement(Btn_Create);
-        public void ClickNew() => ClickElement(GetButtonByLocator("New"));
+        public void ClickCancel()
+        {
+            VerifyPageIsLoaded();
+            ClickElement(Btn_Cancel);
+        }
+        public void ClickSave()
+        {
+            VerifyPageIsLoaded();
+            ClickElement(Btn_Save);
+        }
+        public void ClickSubmitForward()
+        {
+            VerifyPageIsLoaded();
+            ClickElement(Btn_SubmitForward);
+        }
+        public void ClickCreate()
+        {
+            VerifyPageIsLoaded();
+            ClickElement(Btn_Create);
+        }
+        public void ClickNew()
+        {
+            VerifyPageIsLoaded();
+            ClickElement(GetButtonByLocator("New"));
+        }
+        public void ClickNew_InputBtn()
+        {
+            VerifyPageIsLoaded();
+            ClickElement(GetInputFieldByLocator("Create New"));
+        }
+        public void ClickCancel_ATag()
+        {
+            VerifyPageIsLoaded();
+            ClickElement(GetButtonByLocator("Cancel"));
+        }
+        public void ClickCancel_InputBtn()
+        {
+            VerifyPageIsLoaded();
+            ClickElement(GetInputFieldByLocator("Cancel"));
+        }
 
     }
 }
