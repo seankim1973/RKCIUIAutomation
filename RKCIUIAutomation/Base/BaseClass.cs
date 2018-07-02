@@ -35,7 +35,7 @@ namespace RKCIUIAutomation.Base
         {
             _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Local}");
             _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            _testEnv = TestContext.Parameters.Get("TestEnv", $"{TestEnv.Test}");
+            _testEnv = TestContext.Parameters.Get("TestEnv", $"{TestEnv.Stage}");
             _tenantName = TestContext.Parameters.Get("Tenant", $"{TenantName.GLX}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);

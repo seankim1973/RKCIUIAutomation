@@ -13,8 +13,8 @@ namespace RKCIUIAutomation.Base
         {
             string cmdLineArgument = $"run --rm -ti --name zalenium -p 4444:4444 -p 5555:5555 " +
                 $"-v /var/run/docker.sock:/var/run/docker.sock " +
-                $"-v C:\\inetpub\\wwwroot\\dashboard:/home/seluser/videos dosel/zalenium " +
-                $"--desiredContainers=6 start";
+                $"-v C:\\inetpub\\wwwroot\\dashboard:/home/seluser/videos dosel/zalenium start" +
+                $"--desiredContainers=6";
             Service(cmdLineArgument);
         }
 
