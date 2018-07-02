@@ -12,11 +12,12 @@ namespace RKCIUIAutomation.Base
 {
     public class WebDriverFactory
     {
-        protected IWebDriver driver;
+        protected IWebDriver driver { get; set; }
         private IWebDriver Driver;
         
         protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser)
         {
+            Driver = driver;
             if (Driver == null)
             {
                 if (platform == TestPlatform.Local)
@@ -53,14 +54,19 @@ namespace RKCIUIAutomation.Base
                 return Driver;
         }
         
-        private DesiredCapabilities caps = null;
+        private DesiredCapabilities caps { get; set; }
         private DesiredCapabilities DetermineCapabilities(TestPlatform platform, BrowserType browser)
         {
-            caps = new DesiredCapabilities();
-            DeterminePlatformType(platform);
-            DetermineBrowserType(browser);
-            caps.SetCapability("tz", "America/Chicago");
-            return caps;
+            if (caps == null)
+            {
+                caps = new DesiredCapabilities();
+                DeterminePlatformType(platform);
+                DetermineBrowserType(browser);
+                caps.SetCapability("tz", "America/Chicago");
+                return caps;
+            }
+            else
+                return caps;
         }
         private DesiredCapabilities DeterminePlatformType(TestPlatform platform)
         {
