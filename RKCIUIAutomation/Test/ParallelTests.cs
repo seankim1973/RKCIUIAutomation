@@ -11,6 +11,7 @@ using static RKCIUIAutomation.Config.ProjectProperties;
 namespace RKCIUIAutomation.Test
 {
     [TestFixture]
+    [Parallelizable]
     public class TestDynamicNavigationClass : TestBase
     {
         [Test]
@@ -29,6 +30,7 @@ namespace RKCIUIAutomation.Test
     }
 
     [TestFixture]
+    [Parallelizable]
     public class VerifyComponentTestRunsClass : TestBase
     {
         [Test]
@@ -51,6 +53,7 @@ namespace RKCIUIAutomation.Test
     }
 
     [TestFixture]
+    [Parallelizable]
     public class TestNewGWQALabMenuClass : TestBase
     {
         [Test]
@@ -70,6 +73,7 @@ namespace RKCIUIAutomation.Test
     }
 
     [TestFixture]
+    [Parallelizable]
     public class LatestTestClass : TestBase
     {
         [Test]
@@ -87,6 +91,7 @@ namespace RKCIUIAutomation.Test
     }
 
     [TestFixture]
+    [Parallelizable]
     public class FailingTestClass : TestBase
     {
         [Test]

@@ -17,7 +17,7 @@ namespace RKCIUIAutomation.Page.PageObjects
 
         public void LoginUser(UserType userType)
         {
-            VerifyPageIsLoaded(false);
+            VerifyPageIsLoaded(true, false);
 
             string[] userAcct = Configs.GetUser(userType);
             IList<By> loginFields = new List<By>

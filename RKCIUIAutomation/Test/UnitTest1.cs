@@ -6,12 +6,16 @@ using static RKCIUIAutomation.Config.ProjectProperties;
 
 namespace RKCIUIAutomation
 {
-    //[TestFixture]
+    [TestFixture]
+    [Parallelizable]
     [Category("TestFixture Category")]
     public class UnitTest1 : TestBase
     {
-        //[Test]
-        [Category("Test Category")]
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Test Method 1")]
         public void TestMethod1()
         {
             //driver.Navigate().GoToUrl("http://www.google.com");
@@ -19,26 +23,10 @@ namespace RKCIUIAutomation
             Assert.True(true);
         }
 
-
-
-        //[Test(Description = "test description - inline")]
-        public void Testmethod2()
-        {
-
-        }
-
-        //[Test, Description("test description - comma seperated")]
-        //public void testmethod3()
-        //{
-        //}
-
-        //[Testcase(Testname = "test0004")]
-        //public void testmethod4()
-        //{
-        //}
     }
 
     [TestFixture]
+    [Parallelizable]
     public class BaseTest : TestBase
     {
         [Test]

@@ -11,6 +11,7 @@ using static RKCIUIAutomation.Config.ProjectProperties;
 namespace RKCIUIAutomation.Base
 {
     [TestFixture]
+    [Parallelizable]
     public class BaseClass : BaseUtils
     {
         public static TestPlatform testPlatform;
@@ -192,7 +193,8 @@ namespace RKCIUIAutomation.Base
 
             if (driver != null)
             {
-                driver.Close();
+                driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+                driver?.Close();
                 driver = null;
             }
         }

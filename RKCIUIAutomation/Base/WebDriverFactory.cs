@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using NUnit.Framework;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
@@ -10,6 +11,8 @@ using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Base
 {
+    [SetUpFixture]
+    [Parallelizable]
     public class WebDriverFactory
     {
         protected IWebDriver driver { get; set; }

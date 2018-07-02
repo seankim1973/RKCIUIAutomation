@@ -299,25 +299,30 @@ namespace RKCIUIAutomation.Page
         }
 
         private readonly By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
-        private readonly By h1HeaderTagByLocator = By.TagName("h1");
 
         public bool VerifyUrlIsLoaded(string pageUrl)
         {
             bool isLoaded = false;
             string pageTitle = string.Empty;
-            IWebElement stackTraceTag = null;
+            
             try
             {
                 driver.Navigate().GoToUrl(pageUrl);
                 pageTitle = driver.Title;
 
-                stackTraceTag = GetElement(stackTraceTagByLocator);
-                if (stackTraceTag?.Displayed == true)
+                if (pageTitle.Contains("ELVIS PMC"))
                 {
-                    LogError(">>> Page Did Not Load Successfully <<<");
+                    LogInfo(">>> Page Loaded Successfully <<<");
+                    isLoaded = true;
                 }
                 else
-                    LogInfo(">>> Page Loaded Successfully <<<");
+                {
+                    IWebElement stackTraceTag = GetElement(stackTraceTagByLocator);
+                    if(stackTraceTag?.Displayed == true)
+                    {
+                        LogError(">>> Page Did Not Load Successfully <<<");
+                    }
+                }                    
             }
             finally
             {
@@ -328,41 +333,46 @@ namespace RKCIUIAutomation.Page
             return isLoaded;
         }
 
-        public void VerifyPageIsLoaded(bool continueTestIfPageNotLoaded = true)
+        public void VerifyPageIsLoaded(bool checkingLoginPage = false, bool continueTestIfPageNotLoaded = true)
         {
-            IWebElement stackTraceTag = null;
+            string pageTitle = driver.Title;
+            string expectedPageTitle = checkingLoginPage == false ? "ELVIS PMC" : "Log in";
+
             try
             {
-                stackTraceTag = GetElement(stackTraceTagByLocator);
-                if (stackTraceTag?.Displayed != true)
+                if (pageTitle.Contains(expectedPageTitle))
                 {
                     LogInfo(">>> Page Loaded Successfully <<<");
                 }
                 else
                 {
-                    LogError(">>> Page did not load properly <<<");
-
-                    if (continueTestIfPageNotLoaded == true)
+                    IWebElement stackTraceTag = null;
+                    stackTraceTag = GetElement(stackTraceTagByLocator);
+                    if (stackTraceTag?.Displayed != true)
                     {
-                        driver.Navigate().Back();
-                        LogDebug(">>> Navigating back to previous page to continue test <<<");
-                        stackTraceTag = GetElement(stackTraceTagByLocator);
-                        if (stackTraceTag?.Displayed == true)
+                        LogError(">>> Page did not load properly <<<");
+
+                        if (continueTestIfPageNotLoaded == true)
                         {
-                            Assert.True(false);
-                            LogError(">>> Page did not load properly, when navigating to the previous page <<<");
+                            driver.Navigate().Back();
+                            LogDebug(">>> Navigating back to previous page to continue test <<<");
+                            stackTraceTag = GetElement(stackTraceTagByLocator);
+                            if (stackTraceTag?.Displayed == true)
+                            {
+                                Assert.True(false);
+                                LogError(">>> Page did not load properly, when navigating to the previous page <<<");
+                            }
                         }
+                        else
+                            Assert.True(false);
                     }
-                    else
-                        Assert.True(false);
-                }   
+                }
             }
             catch (Exception)
             {
                 throw;
             }
         }
-
 
         private readonly By Btn_Cancel = By.Id("CancelSubmittal");
         private readonly By Btn_Save = By.Id("SaveSubmittal");
