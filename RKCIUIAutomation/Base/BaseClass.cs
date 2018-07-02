@@ -5,6 +5,7 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static RKCIUIAutomation.Config.ProjectProperties;
 
 
@@ -44,11 +45,42 @@ namespace RKCIUIAutomation.Base
             tenantName = Configs.GetTenantName(_tenantName);
             
             DetermineReportFilePath();
+
+            if (testPlatform != TestPlatform.Local)
+            {
+                try
+                {
+                    ZaleniumService.Start();
+                    do
+                    {
+                        Thread.Sleep(3000);
+                    }
+                    while (!ZaleniumService.ZaleniumIsRunning());
+                    
+                    LogInfo("Started ");
+                }
+                catch (Exception e)
+                {
+                    LogError(e.Message, false);
+                } 
+            } 
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
+            if (testPlatform != TestPlatform.Local)
+            {
+                try
+                {
+                    ZaleniumService.Stop();
+                }
+                catch (Exception e)
+                {
+                    LogError(e.Message, false);
+                }
+            }
+
             log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
 
             ExtentManager.Instance.AddSystemInfo("Tenant", tenantName.ToString());
