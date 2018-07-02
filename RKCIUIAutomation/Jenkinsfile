@@ -1,67 +1,89 @@
-﻿pipeline {
-    agent any
+﻿#!/usr/bin/env groovy
+pipeline {
+    agent {
+        label 'MasterAgent'
+    }
     stages {
 		stage ('UI Automation Code Checkout'){
 			steps{
 			    git branch: 'master', changelog: false, credentialsId: 'b00799bb-87f3-42f6-8c9a-c7c6680de30c', poll: false, url: 'https://github.com/seankim1973/RKCIUIAutomation.git'
 			    bat 'nuget.exe restore RKCIUIAutomation.sln'
-			    bat 'MSBuild RKCIUIAutomation.sln /p:Configuration=Debug /p:Platform=\"Any CPU\" /p:ProductVersion=1.0.0.${env.BUILD_NUMBER}'
+			    bat 'MSBuild RKCIUIAutomation.sln /p:OutputPath="C:\\Program Files (x86)\\Jenkins\\workspace\\TestPipeline\\RKCIUIAutomation\\bin\\Debug" /p:Configuration=Debug /p:Platform=\"Any CPU\" /p:ProductVersion=1.0.0.${env.BUILD_NUMBER}'
 			}
 		}
         stage("Run Tests on Test Environment") {
             parallel {
                 stage("Garnet on Test") {
+                    agent {
+                        label 'MasterAgent'
+                    }
 					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Test -p:Tenant=Garnet -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_Garnet.xml'
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=Garnet -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_Garnet.xml'
 						sleep 1
-    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_Garnet.xml -out=junit-result_Garnet.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" ../TestPipeline/TestResult_Garnet.xml -out=../TestPipeline/junit-result_Garnet.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
     					sleep 1	
                     }
                 }
                 stage("GLX on Test") {
-					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Test -p:Tenant=GLX -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_GLX.xml'
+                    agent {
+                        label 'MasterAgent'
+                    }
+                    steps {
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=GLX -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_GLX.xml'
 						sleep 1
-    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_GLX.xml -out=junit-result_GLX.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" ../TestPipeline/TestResult_GLX.xml -out=../TestPipeline/junit-result_GLX.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
     					sleep 1	
 					}
                 }
 				stage("SH249 on Test") {
+                    agent {
+                        label 'MasterAgent'
+                    }
 					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Test -p:Tenant=SH249 -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_SH249.xml'
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=SH249 -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_SH249.xml'
 						sleep 1
-    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_SH249.xml -out=junit-result_SH249.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" ../TestPipeline/TestResult_SH249.xml -out=../TestPipeline/junit-result_SH249.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
     					sleep 1	
 					}
                 }
 				stage("SGWay on Test") {
+                    agent {
+                        label 'MasterAgent'
+                    }
 					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Test -p:Tenant=SGWay -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_SGWay.xml'
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=SGWay -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_SGWay.xml'
 						sleep 1
-    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_SGWay.xml -out=junit-result_SGWay.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" ../TestPipeline/TestResult_SGWay.xml -out=../TestPipeline/junit-result_SGWay.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
     					sleep 1	
 					}
                 }
 				stage("I15Tech on Test") {
+                    agent {
+                        label 'MasterAgent'
+                    }
 					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Test -p:Tenant=I15Tech -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_I15Tech.xml'
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=I15Tech -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_I15Tech.xml'
 						sleep 1
-    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_I15Tech.xml -out=junit-result_I15Tech.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" ../TestPipeline/TestResult_I15Tech.xml -out=../TestPipeline/junit-result_I15Tech.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
     					sleep 1	
 					}
                 }
 				stage("I15South on Test") {
+                    agent {
+                        label 'MasterAgent'
+                    }
 					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Test -p:Tenant=I15South -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=TestResult_I15South.xml'
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=I15South -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_I15South.xml'
 						sleep 1
-    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" TestResult_I15South.xml -out=junit-result_I15South.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
+    					bat '"C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit-summary.exe" ../TestPipeline/TestResult_I15South.xml -out=../TestPipeline/junit-result_I15South.xml -xsl="C:\\Program Files (x86)\\BuildTool\\nunit-summary\\nunit3-junit.xslt"'
     					sleep 1	
 					}
                 }
             }
             post {
     			always {
-    				junit '**/junit-result_*.xml'
+    			    nunit testResultsPattern: 'TestResult_*.xml'
+    			    junit 'junit-result_*.xml'
     				sleep 1
 					echo "Generate JUnit HTML report as TestResult.html"
     				emailext body: '${FILE,path="TestResult.html"}', subject: '$DEFAULT_SUBJECT', to: 'schongkim@rkci.com'
