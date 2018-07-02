@@ -50,14 +50,17 @@ namespace RKCIUIAutomation.Base
             {
                 try
                 {
-                    ZaleniumService.Start();
+                    if (!ZaleniumService.ZaleniumIsRunning())
+                    {
+                        ZaleniumService.Start();
+                    }
                     do
                     {
                         Thread.Sleep(3000);
                     }
                     while (!ZaleniumService.ZaleniumIsRunning());
                     
-                    LogInfo("Started ");
+                    LogInfo("Started Zalenium Service");
                 }
                 catch (Exception e)
                 {
