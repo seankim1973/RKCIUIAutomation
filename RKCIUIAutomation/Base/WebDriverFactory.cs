@@ -65,9 +65,9 @@ namespace RKCIUIAutomation.Base
                 caps = new DesiredCapabilities();
                 DeterminePlatformType(platform);
                 DetermineBrowserType(browser);
-                caps.SetCapability("tz", "America/Chicago");
-                caps.SetCapability("name", testName);
-                caps.SetCapability("screenResolution", "1280x720");
+                caps.SetCapability("zal:tz", "America/Chicago");
+                caps.SetCapability("zal:name", testName);
+                caps.SetCapability("zal:screenResolution", "1440x810");
                 return caps;
             }
             else
