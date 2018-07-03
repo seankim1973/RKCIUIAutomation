@@ -56,6 +56,11 @@ namespace RKCIUIAutomation.Base
             ExtentManager.Instance.AddSystemInfo("Environment", testEnv.ToString());
             ExtentManager.Instance.AddSystemInfo("Browser", browserType.ToString());
             ExtentManager.Instance.Flush();
+
+            if (driver != null)
+            {
+                driver.Quit();
+            }
         }
 
         [SetUp]
@@ -180,7 +185,6 @@ namespace RKCIUIAutomation.Base
             }
 
             driver.Close();
-            driver = null;
         }
     }
 }

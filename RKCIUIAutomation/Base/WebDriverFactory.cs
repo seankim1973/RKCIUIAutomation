@@ -21,37 +21,30 @@ namespace RKCIUIAutomation.Base
         protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testName)
         {
             Driver = driver;
-            if (Driver == null)
+            if (driver == null)
             {
                 if (platform == TestPlatform.Local)
                 {
                     switch (browser)
                     {
                         case BrowserType.Chrome:
-                            Driver = new ChromeDriver();
-                            break;
+                            return Driver = new ChromeDriver();
                         case BrowserType.Firefox:
-                            Driver = new FirefoxDriver();
-                            break;
+                            return Driver = new FirefoxDriver();
                         case BrowserType.Edge:
-                            Driver = new EdgeDriver();
-                            break;
+                            return Driver = new EdgeDriver();
                         case BrowserType.Safari:
-                            Driver = new SafariDriver();
-                            break;
+                            return Driver = new SafariDriver();
                         default:
                             LogDebug("Unrecognized Browser Type... using ChromeDriver");
-                            Driver = new ChromeDriver();
-                            break;
+                            return Driver = new ChromeDriver();
                     }
                 }
                 else
                 {
                     DesiredCapabilities caps = DetermineCapabilities(platform, browser, testName);
-                    Driver = new RemoteWebDriver(new Uri("http://10.1.1.207:4444/wd/hub"), caps);
+                    return Driver = new RemoteWebDriver(new Uri("http://10.1.1.207:4444/wd/hub"), caps);
                 }
-
-                return Driver;
             }
             else
                 return Driver;
