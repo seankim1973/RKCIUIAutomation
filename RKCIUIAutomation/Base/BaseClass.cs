@@ -69,7 +69,7 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
-            driver = GetWebDriver(testPlatform, browserType);
+            driver = GetWebDriver(testPlatform, browserType, testName);
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
 
             try
@@ -150,7 +150,7 @@ namespace RKCIUIAutomation.Base
         [TearDown]
         public void AfterTest()
         {
-            driver?.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+            driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
 
             ResultAdapter result = CurrentContext.Result;
             testStatus = result.Outcome.Status;
@@ -179,7 +179,7 @@ namespace RKCIUIAutomation.Base
                     break;
             }
 
-            driver?.Close();
+            driver.Close();
             driver = null;
         }
     }

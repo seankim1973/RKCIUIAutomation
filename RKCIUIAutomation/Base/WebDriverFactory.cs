@@ -18,7 +18,7 @@ namespace RKCIUIAutomation.Base
         protected IWebDriver driver { get; set; }
         private IWebDriver Driver;
         
-        protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser)
+        protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testName)
         {
             Driver = driver;
             if (Driver == null)
@@ -47,7 +47,7 @@ namespace RKCIUIAutomation.Base
                 }
                 else
                 {
-                    DesiredCapabilities caps = DetermineCapabilities(platform, browser);
+                    DesiredCapabilities caps = DetermineCapabilities(platform, browser, testName);
                     Driver = new RemoteWebDriver(new Uri("http://10.1.1.207:4444/wd/hub"), caps);
                 }
 
@@ -58,7 +58,7 @@ namespace RKCIUIAutomation.Base
         }
         
         private DesiredCapabilities caps { get; set; }
-        private DesiredCapabilities DetermineCapabilities(TestPlatform platform, BrowserType browser)
+        private DesiredCapabilities DetermineCapabilities(TestPlatform platform, BrowserType browser, string testName)
         {
             if (caps == null)
             {
@@ -66,6 +66,8 @@ namespace RKCIUIAutomation.Base
                 DeterminePlatformType(platform);
                 DetermineBrowserType(browser);
                 caps.SetCapability("tz", "America/Chicago");
+                caps.SetCapability("name", testName);
+                caps.SetCapability("screenResolution", "1280x720");
                 return caps;
             }
             else
