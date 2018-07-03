@@ -45,45 +45,11 @@ namespace RKCIUIAutomation.Base
             tenantName = Configs.GetTenantName(_tenantName);
             
             DetermineReportFilePath();
-
-            if (testPlatform != TestPlatform.Local)
-            {
-                try
-                {
-                    if (!ZaleniumService.ZaleniumIsRunning())
-                    {
-                        ZaleniumService.Start();
-                    }
-                    do
-                    {
-                        Thread.Sleep(3000);
-                    }
-                    while (!ZaleniumService.ZaleniumIsRunning());
-                    
-                    LogInfo("Started Zalenium Service");
-                }
-                catch (Exception e)
-                {
-                    LogError(e.Message, false);
-                } 
-            } 
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            if (testPlatform != TestPlatform.Local)
-            {
-                try
-                {
-                    ZaleniumService.Stop();
-                }
-                catch (Exception e)
-                {
-                    LogError(e.Message, false);
-                }
-            }
-
             log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
 
             ExtentManager.Instance.AddSystemInfo("Tenant", tenantName.ToString());
