@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Tools;
 using static RKCIUIAutomation.Config.ProjectProperties;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
 
@@ -191,9 +192,12 @@ namespace RKCIUIAutomation.Test
             //    $"C:\\Users\\schong\\source\\repos\\RKCIUIAutomation\\RKCIUIAutomation\\bin\\Debug\\RKCIUIAutomation.dll";
 
             //RunExternalExecutible(exe, arg);
-            ZaleniumService zalenium = new ZaleniumService();
-            Console.WriteLine(zalenium.ZaleniumIsRunning());
+            //ZaleniumService zalenium = new ZaleniumService();
+            //Console.WriteLine(zalenium.ZaleniumIsRunning());
             //Assert.IsTrue();
+
+            TestResultUtil testResult = new TestResultUtil();
+            testResult.GetValue();
         }
 
 

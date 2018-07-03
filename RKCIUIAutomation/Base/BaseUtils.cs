@@ -20,15 +20,14 @@ namespace RKCIUIAutomation.Base
         internal static readonly ILog log = LogManager.GetLogger("");
   
         public static string extentReportPath = string.Empty;
-        public static string screenshotReferencePath = string.Empty;
+        public static string screenshotReferencePath = "errorscreenshots/";
         public static string fullTempFileName = string.Empty;
         private static string baseTempFolder = string.Empty;
         private static string fileName = string.Empty;
         private static string dateString = string.Empty;
 
         public BaseUtils()
-        {
-            extentReportPath = $"{GetCodeBasePath()}\\Report";
+        {           
             baseTempFolder = $"{GetCodeBasePath()}\\Temp";
             fileName = BaseClass.tenantName.ToString();
             dateString = GetDateString();
@@ -49,12 +48,13 @@ namespace RKCIUIAutomation.Base
         {
             if (BaseClass.testPlatform.ToString() == "Local")
             {
-                screenshotReferencePath = "errorscreenshots/";
+                extentReportPath = $"{GetCodeBasePath()}\\Report";
+                //screenshotReferencePath = "errorscreenshots/";
             }
             else
             {
                 extentReportPath = "C:\\inetpub\\wwwroot\\extentreport";
-                screenshotReferencePath = "errorscreenshots\\";
+                //screenshotReferencePath = "errorscreenshots/";
             }
         }
 

@@ -41,6 +41,13 @@
         ProjAdmin,
         SysAdmin,
         ProjUser,
-        Bhoomi
+        Bhoomi,
+        IQFRecordsManager,
+        IQFUse,
+        IQFAdmin,
+        DotUser,
+        DotAdmin,
+        DevUser,
+        DevAdmin
     }
 }
