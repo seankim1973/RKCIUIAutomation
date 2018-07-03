@@ -150,6 +150,8 @@ namespace RKCIUIAutomation.Base
         [TearDown]
         public void AfterTest()
         {
+            driver?.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+
             ResultAdapter result = CurrentContext.Result;
             testStatus = result.Outcome.Status;
 
@@ -160,12 +162,14 @@ namespace RKCIUIAutomation.Base
                         ? "" : string.Format("<pre>{0}</pre>", result.StackTrace);
                     string screenshotPath = CaptureScreenshot(driver, GetTestName());
                     cookie = new Cookie("zaleniumTestPassed", "false");
+                    driver.Manage().Cookies.AddCookie(cookie);
                     ExtentTestManager.GetTest().Fail($"Test Failed:<br> {stacktrace}")
                         .AddScreenCaptureFromPath(screenshotPath);
                     break;
                 case TestStatus.Passed:
                     ExtentTestManager.GetTest().Pass("Test Passed");
                     cookie = new Cookie("zaleniumTestPassed", "true");
+                    driver.Manage().Cookies.AddCookie(cookie);
                     break;
                 case TestStatus.Skipped:
                     ExtentTestManager.GetTest().Skip("Test Skipped");
@@ -175,8 +179,6 @@ namespace RKCIUIAutomation.Base
                     break;
             }
 
-            driver?.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
-            driver?.Manage().Cookies.AddCookie(cookie);
             driver?.Close();
             driver = null;
         }
