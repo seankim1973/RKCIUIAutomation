@@ -334,6 +334,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Page\PageObjects\RMCenter\DesignDocumentCommentReview.cs" />
+    <Compile Include="Test\DesignDocumentCommentReviewTest.cs" />
     <Compile Include="Test\LinkCoverage.cs" />
     <Compile Include="Test\LinkCoverageTest.cs" />
     <Compile Include="Test\MSUnitTest.cs" />
