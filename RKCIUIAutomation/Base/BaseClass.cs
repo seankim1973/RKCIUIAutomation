@@ -6,6 +6,7 @@ using RKCIUIAutomation.Config;
 using System;
 using System.Text.RegularExpressions;
 using System.Threading;
+using static NUnit.Framework.TestContext;
 using static RKCIUIAutomation.Config.ProjectProperties;
 
 
@@ -27,17 +28,16 @@ namespace RKCIUIAutomation.Base
 
         private string siteUrl;       
         private TestStatus testStatus;
-        private ResultState testResult;
         private Cookie cookie = null;
 
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _testPlatform = TestContext.Parameters.Get("Platform", $"{TestPlatform.Local}");
-            _browserType = TestContext.Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            _testEnv = TestContext.Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            _tenantName = TestContext.Parameters.Get("Tenant", $"{TenantName.GLX}");
+            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
+            _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
+            _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
+            _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);
             browserType = Configs.GetBrowserType(_browserType);
@@ -150,54 +150,35 @@ namespace RKCIUIAutomation.Base
         [TearDown]
         public void AfterTest()
         {
-            string screenshotPath = null;
-            var stacktrace = string.Empty;
+            ResultAdapter result = CurrentContext.Result;
+            testStatus = result.Outcome.Status;
 
-            if (testStatus != TestStatus.Skipped)
+            switch (testStatus)
             {
-                testResult = TestContext.CurrentContext.Result.Outcome;
-                testStatus = TestContext.CurrentContext.Result.Outcome.Status;
-
-                if (testStatus == TestStatus.Failed)
-                {
-                    stacktrace = string.IsNullOrEmpty(TestContext.CurrentContext.Result.StackTrace)
-                        ? "" : string.Format("<pre>{0}</pre>", TestContext.CurrentContext.Result.StackTrace);
-
-                    screenshotPath = CaptureScreenshot(driver, GetTestName());
+                case TestStatus.Failed:
+                    string stacktrace = string.IsNullOrEmpty(result.StackTrace)
+                        ? "" : string.Format("<pre>{0}</pre>", result.StackTrace);
+                    string screenshotPath = CaptureScreenshot(driver, GetTestName());
                     cookie = new Cookie("zaleniumTestPassed", "false");
                     ExtentTestManager.GetTest().Fail($"Test Failed:<br> {stacktrace}")
                         .AddScreenCaptureFromPath(screenshotPath);
-                }
-                else
-                {
-                    switch (testStatus)
-                    {
-                        case TestStatus.Passed:
-                            ExtentTestManager.GetTest().Pass("Test Passed");
-                            cookie = new Cookie("zaleniumTestPassed", "true");
-                            break;
-                        default:
-                            ExtentTestManager.GetTest().Debug("Inconclusive Test Result");
-                            break;
-                    }
-                }
-            }
-            else
-            {
-                ExtentTestManager.GetTest().Skip("Test Skipped");
+                    break;
+                case TestStatus.Passed:
+                    ExtentTestManager.GetTest().Pass("Test Passed");
+                    cookie = new Cookie("zaleniumTestPassed", "true");
+                    break;
+                case TestStatus.Skipped:
+                    ExtentTestManager.GetTest().Skip("Test Skipped");
+                    break;
+                default:
+                    ExtentTestManager.GetTest().Debug("Inconclusive Test Result");
+                    break;
             }
 
-            if (cookie != null)
-            {
-                driver.Manage().Cookies.AddCookie(cookie);
-            }
-
-            if (driver != null)
-            {
-                driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
-                driver?.Close();
-                driver = null;
-            }
+            driver?.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+            driver?.Manage().Cookies.AddCookie(cookie);
+            driver?.Close();
+            driver = null;
         }
     }
 }
