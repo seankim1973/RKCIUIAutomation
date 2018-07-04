@@ -37,7 +37,7 @@ namespace RKCIUIAutomation.Test
 
             IList<IWebElement> elements = new List<IWebElement>();
             elements = driver.FindElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
-            if (elements?.Any() != true)
+            if (elements?.Any() == true)
             {
                 foreach (IWebElement mainNavElem in elements)
                 {
@@ -129,7 +129,7 @@ namespace RKCIUIAutomation.Test
             }
             else
             {
-                LogInfo("Unable to retrieve navigation menu URLs", false);
+                LogError("Unable to retrieve navigation menu URLs", false);
             }
             WriteToFile(Environment.NewLine);
         }

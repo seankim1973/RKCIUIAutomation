@@ -20,28 +20,40 @@ namespace RKCIUIAutomation.Base
         internal static readonly ILog log = LogManager.GetLogger("");
   
         public static string extentReportPath = string.Empty;
-        public static string screenshotReferencePath = "errorscreenshots/";
+        //public static string screenshotReferencePath = "errorscreenshots/";
         public static string fullTempFileName = string.Empty;
         private static string baseTempFolder = string.Empty;
         private static string fileName = string.Empty;
         private static string dateString = string.Empty;
 
         public BaseUtils()
-        {           
+        {
             baseTempFolder = $"{GetCodeBasePath()}\\Temp";
             fileName = BaseClass.tenantName.ToString();
             dateString = GetDateString();
+        }
+
+        private string SetWinTempFolder()
+        {
+            string cTemp = "C:\\Temp";
+            if (!File.Exists(cTemp))
+            {
+                Directory.CreateDirectory(cTemp);
+            }
+
+            return cTemp;
         }
 
         private string GetDateString()
         {
             string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
             string month = shortDate[0];
-            if (month.Length < 1)
-            {
-                month = $"0{month}";
-            }
-            return $"{month}{shortDate[1]}{shortDate[2]}";
+            string date = shortDate[1];
+
+            month = (month.Length > 1)?month : $"0{month}";
+            date = (date.Length > 1)?date : $"0{date}";
+
+            return $"{month}{date}{shortDate[2]}";
         }
 
         public static void DetermineReportFilePath()
@@ -72,7 +84,7 @@ namespace RKCIUIAutomation.Base
             string screenshotFolderPath = $"{extentReportPath}\\errorscreenshots\\";
             Directory.CreateDirectory(screenshotFolderPath);
             screenshot.SaveAsFile($"{screenshotFolderPath}{uniqueFileName}", ScreenshotImageFormat.Png);
-            return $"{screenshotReferencePath}{uniqueFileName}";
+            return $"{"errorscreenshots/"}{uniqueFileName}";
         }
 
         //ExtentReports Loggers
@@ -203,18 +215,6 @@ namespace RKCIUIAutomation.Base
             }
 
             var prop = testInstance.Properties.Get(context) ?? "Not Defined";
-
-            //Console.WriteLine($"########### {property.ToString()}");
-
-            //if (prop == null || prop.ToString() == "Not Defined")
-            //{
-            //    LogDebug($" - Test Context Property is not assigned to Test Case method");
-            //}
-            //else
-            //{
-            //    property = prop.ToString();
-            //}
-
             return prop.ToString();
         }
         private enum TestContextProperty
@@ -248,36 +248,40 @@ namespace RKCIUIAutomation.Base
         /// </summary>
         public static void WriteToFile(string msg, string fileExt = ".txt", bool overwriteExisting = false)
         {
-            fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
-
-            Directory.CreateDirectory(baseTempFolder);
-            string path = $"{fullTempFileName}{fileExt}";
-            StreamWriter workflow = null;
-
-            if (overwriteExisting.Equals(true))
+            try
             {
-                if (File.Exists(path))
+                fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
+
+                Directory.CreateDirectory(baseTempFolder);
+                string path = $"{fullTempFileName}{fileExt}";
+
+                if (overwriteExisting == true)
                 {
-                    File.Delete(path);
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
                 }
 
-                workflow = File.CreateText(path);
-            }
-            else
-            {
-                workflow = File.AppendText(path);
-            }
-
-            using (StreamWriter sw = workflow)
-            {
-                if (msg.Contains("<br>"))
+                StreamWriter streamWriter = File.Exists(path) ? File.AppendText(path) : File.CreateText(path);
+                using (StreamWriter sw = streamWriter)
                 {
-                    string[] message = Regex.Split(msg, "<br>&nbsp;&nbsp;");
-                    sw.WriteLine(message[0]);
-                    sw.WriteLine(message[1]);
+                    if (msg.Contains("<br>"))
+                    {
+                        string[] message = Regex.Split(msg, "<br>&nbsp;&nbsp;");
+                        sw.WriteLine(message[0]);
+                        sw.WriteLine(message[1]);
+                    }
+                    else
+                    {
+                        sw.WriteLine(msg);
+                    }
                 }
-                else
-                    sw.WriteLine(msg);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
             }
         }
 
