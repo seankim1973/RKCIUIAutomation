@@ -372,6 +372,7 @@
     <Content Include="extent-config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Tools\TestResult.xml" />
     <None Include="Jenkinsfile">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

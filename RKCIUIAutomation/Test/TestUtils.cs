@@ -1,15 +1,9 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
-using RKCIUIAutomation.Base;
-using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Xml.Serialization;
-using static RKCIUIAutomation.Config.ConfigUtils;
 
 
 namespace RKCIUIAutomation.Test

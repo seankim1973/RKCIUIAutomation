@@ -5,17 +5,14 @@ using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Test;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Xml.Serialization;
 
 namespace RKCIUIAutomation.Base
 {
-    public class BaseUtils : BaseHooks
+    public class BaseUtils : ConfigUtils
     {
         internal static readonly ILog log = LogManager.GetLogger("");
   
@@ -88,11 +85,10 @@ namespace RKCIUIAutomation.Base
         }
 
         //ExtentReports Loggers
-        public static void LogAssertIgnore(string msg)
+        public static void LogIgnore(string msg)
         {
-            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(msg, ExtentColor.Orange));
+            ExtentTestManager.GetTest().Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
             log.Debug(msg);
-            Assert.Ignore(msg);
         }
         public void LogError(string details, bool takeScreenshot = true, Exception e = null)
         {
@@ -285,52 +281,14 @@ namespace RKCIUIAutomation.Base
             }
         }
 
+    }
 
-        //TODO: Fix util to generate xml file for menu nav
-        public class XMLUtil
+    public static class BaseHelper
+    {
+        public static string SplitCamelCase(this string str, bool removeUnderscore = true)
         {
-            public XmlSerializer xs;
-            List<Navigation> ls;
-
-            public void WriteXmlFile(string fileName)
-            {
-
-                ls = new List<Navigation>();
-                xs = new XmlSerializer(typeof(List<Navigation>));
-
-                FileStream fs = new FileStream(GetFilePath(fileName), FileMode.Create, FileAccess.Write);
-                Navigation linklist = new Navigation
-                {
-                    MainNavMenu = "",
-                    SubMainNavMenu = "",
-                    SubMenu = "",
-                    SubSubMenu = "",
-                    SubSubMenuItem = ""
-                };
-                ls.Add(linklist);
-
-                xs.Serialize(fs, ls);
-                fs.Close();
-            }
-
-            public void ReadXmlFile(string fileName)
-            {
-                FileStream fs = new FileStream(GetFilePath(fileName), FileMode.Open, FileAccess.Read);
-                ls = (List<Navigation>)xs.Deserialize(fs);
-                fs.Close();
-            }
-
-            string GetFilePath(string fileName) => $"{fullTempFileName}.xml";
+            string value = (removeUnderscore == true) ? Regex.Replace(str, @"_", "") : str;
+            return Regex.Replace(Regex.Replace(value, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
         }
-        public class Navigation
-        {
-            public string MainNavMenu { get; set; }
-            public string SubMainNavMenu { get; set; }
-            public string SubMenu { get; set; }
-            public string SubSubMenu { get; set; }
-            public string SubSubMenuItem { get; set; }
-
-        }
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AventStack.ExtentReports;
+using RKCIUIAutomation.Config;
 using System;
 using System.Runtime.CompilerServices;
 using static RKCIUIAutomation.Base.BaseUtils;
@@ -14,11 +15,15 @@ namespace RKCIUIAutomation.Base
         private static ExtentTest _childTest;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public static ExtentTest CreateParentTest(string testName, string description = null)
+        public static ExtentTest CreateParentTest(string testName, TenantName tenantName, TestEnv testEnv, BrowserType browserType, string description = null)
         {
             try
             {
-                _parentTest = ExtentManager.Instance.CreateTest(testName, description);
+                _parentTest = ExtentManager.Instance
+                    .CreateTest(testName.SplitCamelCase(), description);
+                ExtentManager.Instance.AddSystemInfo("Tenant", tenantName.ToString());
+                ExtentManager.Instance.AddSystemInfo("Environment", testEnv.ToString());
+                ExtentManager.Instance.AddSystemInfo("Browser", browserType.ToString());
             }
             catch (Exception e)
             {
