@@ -39,6 +39,7 @@ namespace RKCIUIAutomation.Config
 
             //Secondary Components (not in Jira)
             public const string OV_Test = "OV_Test";
+            public const string QAField = "QAField";
         }
 
         public List<string> GetComponentsForProject(TenantName tenantName)
@@ -85,7 +86,8 @@ namespace RKCIUIAutomation.Config
 
         private readonly List<string> Components_Garnet = new List<string>
         {
-            Component.RFI
+            Component.RFI,
+            Component.QAField
         };
 
         private readonly List<string> Components_GreenLineExt = new List<string>
@@ -95,21 +97,25 @@ namespace RKCIUIAutomation.Config
 
         private readonly List<string> Components_I15Southbound = new List<string>
         {
-            Component.OV_Test
+            Component.OV_Test,
+            Component.QAField
         };
 
         private readonly List<string> Components_I15TechCorridor = new List<string>
         {
-            Component.OV_Test
+            Component.OV_Test,
+            Component.QAField
         };
 
         private readonly List<string> Components_SH249Ext = new List<string>
         {
+            Component.QAField
         };
 
         private readonly List<string> Components_SouthernGateway = new List<string>
         {
-            
+            Component.QAField
+
         };
 
         private readonly List<string> CommonComponents = new List<string>

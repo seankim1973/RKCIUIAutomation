@@ -1,6 +1,7 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.MarkupUtils;
 using log4net;
+using log4net.Core;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
@@ -147,15 +148,22 @@ namespace RKCIUIAutomation.Base
         }
         public void LogInfo(string details, bool assertion, Exception e = null)
         {
+            bool hasPgBreak = false;
+            string[] detailsBr = null;
+
+            if (details.Contains("<br>"))
+            {
+                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                hasPgBreak = true;
+            }
+
             if (assertion)
             {
                 ExtentTestManager.GetTest().Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
-                
-                if (details.Contains("<br>"))
+                if (hasPgBreak)
                 {
-                    string[] result = Regex.Split(details, "<br>&nbsp;&nbsp;");
-                    log.Info(result[0]);
-                    log.Info(result[1]);
+                    log.Info(detailsBr[0]);
+                    log.Info(detailsBr[1]);
                 }
                 else
                     log.Info(details);
@@ -164,7 +172,13 @@ namespace RKCIUIAutomation.Base
             {
                 ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
                 LogErrorWithScreenshot();
-                log.Fatal(details);
+                if (hasPgBreak)
+                {
+                    log.Fatal(detailsBr[0]);
+                    log.Fatal(detailsBr[1]);
+                }
+                else
+                    log.Fatal(details);
 
                 if (e != null)
                 {
@@ -172,6 +186,8 @@ namespace RKCIUIAutomation.Base
                 }
             }
         }
+
+
         private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
         {
             return MarkupHelper.CreateLabel(details, extentColor);

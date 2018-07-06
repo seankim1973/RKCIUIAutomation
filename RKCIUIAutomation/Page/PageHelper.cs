@@ -12,7 +12,17 @@ namespace RKCIUIAutomation.Page
         private string SetDDListFieldXpath(Enum ddListID) => $"//span[@aria-owns='{ddListID.GetString()}_listbox']";
         private string SetDDListFieldExpandArrowXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']/span";
         private string SetMainNavMenuXpath(Enum navEnum) => $"//li[@class='dropdown']/a[text()='{navEnum.GetString()}']";
-        private string SetNavMenuXpath(Enum navEnum) => $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
+        private string SetNavMenuXpath(Enum navEnum, Enum parentNavEnum = null)
+        {
+            if (parentNavEnum == null)
+            {
+                return $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
+            }
+            else
+            {
+                return $"//a[text()='{parentNavEnum.GetString()}']/following-sibling::ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
+            }          
+        }
         private string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
         private string SetDDListItemsXpath<T>(Enum ddListID, T itemIndexOrName)
         {
@@ -39,7 +49,7 @@ namespace RKCIUIAutomation.Page
         private string SetInputButtonXpath(string buttonName) => $"//input[@value='{buttonName}']";
 
         public By GetMainNavMenuByLocator(Enum navEnum) => By.XPath(SetMainNavMenuXpath(navEnum));
-        public By GetNavMenuByLocator(Enum navEnum) => By.XPath(SetNavMenuXpath(navEnum));
+        public By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null) => By.XPath(SetNavMenuXpath(navEnum, parentNavEnum));
         public By GetInputFieldByLocator(string inputFieldLabel) => By.XPath(SetInputFieldXpath(inputFieldLabel));
         public By GetDDListByLocator(Enum ddListID) => By.XPath(SetDDListFieldXpath(ddListID));
         public By GetExpandDDListButtonByLocator(Enum ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));

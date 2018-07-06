@@ -288,6 +288,12 @@
     <Compile Include="Page\PageObjects\QAEngineer\QATest_Authorization.cs" />
     <Compile Include="Page\PageObjects\QAEngineer\QATest_FieldSuervisorReview.cs" />
     <Compile Include="Page\PageObjects\QAEngineer\QATest_LabSupervisorReview.cs" />
+    <Compile Include="Page\PageObjects\QAField\DailyEnvInspection.cs" />
+    <Compile Include="Page\PageObjects\QAField\QADIRs.cs" />
+    <Compile Include="Page\PageObjects\QAField\QATechRandomSearch.cs" />
+    <Compile Include="Page\PageObjects\QAField\QATest.cs" />
+    <Compile Include="Page\PageObjects\QAField\WeeklyEnvInspection.cs" />
+    <Compile Include="Page\PageObjects\QAField\WeeklyEnvMonitoring.cs" />
     <Compile Include="Page\PageObjects\QALab\BreakSheetCreation.cs" />
     <Compile Include="Page\PageObjects\QALab\BreakSheetForecast.cs" />
     <Compile Include="Page\PageObjects\QALab\BreakSheetLegacy.cs" />

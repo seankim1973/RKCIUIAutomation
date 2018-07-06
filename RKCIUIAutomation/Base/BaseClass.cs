@@ -6,9 +6,7 @@ using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading;
 using static NUnit.Framework.TestContext;
-using static RKCIUIAutomation.Config.ProjectProperties;
 
 
 namespace RKCIUIAutomation.Base
@@ -39,7 +37,7 @@ namespace RKCIUIAutomation.Base
             _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
             _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            _tenantName = Parameters.Get("Tenant", $"{TenantName.I15South}");
+            _tenantName = Parameters.Get("Tenant", $"{TenantName.Garnet}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);
             browserType = Configs.GetBrowserType(_browserType);

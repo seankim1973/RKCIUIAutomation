@@ -94,10 +94,10 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     public class VerifyQAFieldMenu : LinkCoverageWF
     {
         [Test]
-        [Category(Component.Link_Coverage)]
+        [Category(Component.Link_Coverage), Property("Component2",Component.QAField)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify Page Title for RM Center Menu only")]
+        [Description("Verify QA Field Menu only")]
         public void NavigateToQAFieldMenu() => LinkCoverageWF._NavigateToQAFieldMenu();
     }
 

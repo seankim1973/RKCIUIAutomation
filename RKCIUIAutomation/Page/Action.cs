@@ -12,6 +12,30 @@ namespace RKCIUIAutomation.Page
 {
     public class Action : PageHelper
     {
+        private enum JSAction
+        {
+            [StringValue("arguments[0].click();")]Click,
+            [StringValue("var evObj = document.createEvent('MouseEvents');" +
+                    "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
+                    "arguments[0].dispatchEvent(evObj);")]Hover
+        }
+        private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
+        {
+            try
+            {
+                string javaScript = jsAction.GetString();
+                IWebElement element = GetElement(elementByLocator);
+                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
+                executor.ExecuteScript(javaScript, element);
+                LogInfo($"{jsAction.ToString()}ed on javascript element - {elementByLocator}");
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to perform {jsAction.ToString()} action on javascript element - {elementByLocator}", true, e);
+                throw;
+            }
+        }
+
         private bool WaitForElement(By elementByLocator)
         {
             try
@@ -83,31 +107,30 @@ namespace RKCIUIAutomation.Page
                 LogError($"Unable to click element - {elementByLocator}", true, e);
             }
         }
-
-        public void HoverAndClick(By elemByToHover, By elemByToClick)
+        public void ClickElement(IWebElement webElement)
         {
-            Hover(elemByToHover);
-            ClickElement(elemByToClick);
-        }
-
-        public void Hover(By elementByLocator)
-        {
-            IWebElement element = GetElement(elementByLocator);
             try
             {
-                string javaScript = "var evObj = document.createEvent('MouseEvents');" +
-                    "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
-                    "arguments[0].dispatchEvent(evObj);";
-
-                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
-                executor.ExecuteScript(javaScript, element);
-                LogInfo($"Hover mouse over element - {elementByLocator}");
-                Thread.Sleep(1000);
+                string buttonTxt = string.Empty;
+                if (webElement != null)
+                {
+                    buttonTxt = webElement.GetAttribute("value");
+                    webElement.Click();
+                }               
+                LogInfo($"Clicked {buttonTxt}");
             }
             catch (Exception e)
             {
-                LogInfo($"Unsuccessful attempt to hover mouse over element {elementByLocator}", e);
+                LogError($"Unable to click element", true, e);
             }
+        }
+
+        public void ClickJsElement(By elementByLocator) => ExecuteJsAction(JSAction.Click, elementByLocator);
+
+        public void Hover(By elementByLocator)
+        {
+            ExecuteJsAction(JSAction.Hover, elementByLocator);
+            Thread.Sleep(1000);
         }
 
         public void EnterText(By elementByLocator, string text)
@@ -129,7 +152,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 text = GetElement(elementByLocator).Text;
-                LogInfo($"Retrieved text '{text}' from element - {elementByLocator}");
+                LogInfo($"Retrieved text, '{text}', from element - {elementByLocator}");
             }
             catch (Exception e)
             {
@@ -219,6 +242,28 @@ namespace RKCIUIAutomation.Page
             return uploadPath;
         }
 
+        public void AcceptAlertMessage()
+        {
+            try
+            {
+                driver.SwitchTo().Alert().Accept();
+                LogInfo("Accepted browser alert message");
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to accept browser alert message", true, e);
+                throw;
+            }          
+        }
+
+        public bool VerifyAlertMessage(string expectedMessage)
+        {            
+            string actualAlertMsg = driver.SwitchTo().Alert().Text;
+            bool msgMatch = (actualAlertMsg).Contains(expectedMessage) ? true : false;
+            LogInfo($"## Expected Alert Message: {expectedMessage} <br>&nbsp;&nbsp;## Actual Alert Message: {actualAlertMsg}", msgMatch);
+            return msgMatch;
+        }
+
         public bool VerifyFieldErrorIsDisplayed(By elementByLocator )
         {
             IWebElement elem = GetElement(elementByLocator);
@@ -241,19 +286,16 @@ namespace RKCIUIAutomation.Page
         private string PageTitle = string.Empty;
         public bool IsElementDisplayed(By elementByLocator)
         {
-            IWebElement element = null;
+            IWebElement element = GetElement(elementByLocator);
+            bool isDisplayed = false;
 
-            try
+            if (element != null)
             {
-                element = GetElement(elementByLocator);
-                PageTitle = element?.Text;
+                PageTitle = element.Text;
+                isDisplayed = true;
             }
-            catch (Exception e)
-            {
-                LogDebug(e.Message);
-            }
-
-            return element.Displayed;
+  
+            return isDisplayed;
         }
 
         public bool VerifyPageTitle(string expectedPageTitle)
@@ -277,7 +319,11 @@ namespace RKCIUIAutomation.Page
                     if (!isDisplayed)
                     {
                         headingElement = By.XPath("//h2");
-                        isDisplayed = IsElementDisplayed(headingElement);
+                        isMatchingTitle = IsElementDisplayed(headingElement) ? (GetElement(headingElement).Text).Contains(expectedPageTitle) : false;
+                    }
+                    else
+                    {
+                        isMatchingTitle = (GetElement(headingElement).Text).Contains(expectedPageTitle);
                     }
                 }
                 else
@@ -307,7 +353,6 @@ namespace RKCIUIAutomation.Page
         }
 
         private readonly By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
-
         public bool VerifyUrlIsLoaded(string pageUrl)
         {
             bool isLoaded = false;
@@ -340,7 +385,6 @@ namespace RKCIUIAutomation.Page
             }
             return isLoaded;
         }
-
         public void VerifyPageIsLoaded(bool checkingLoginPage = false, bool continueTestIfPageNotLoaded = true)
         {
             string pageTitle = null;
@@ -392,18 +436,39 @@ namespace RKCIUIAutomation.Page
             }
         }
 
+
+
+        private static string activeModalXpath = "//div[contains(@style,'opacity: 1')]";
+        private static string modalTitle = $"{activeModalXpath}//div[contains(@class,'k-header')]";
+        private static string modalCloseBtn = $"{activeModalXpath}//a[@aria-label='Close']";
+        public void CloseActiveModalWindow()
+        {
+            ClickJsElement(By.XPath(modalCloseBtn));
+            Thread.Sleep(500);
+        }
+        public bool VerifyActiveModalTitle(string expectedModalTitle)
+        {
+            string actualTitle = GetText(By.XPath(modalTitle));
+            bool titlesMatch = actualTitle.Contains(expectedModalTitle) ? true : false;
+            LogInfo($"## Expected Modal Title: {expectedModalTitle} <br>&nbsp;&nbsp;## Actual Modal Title: {actualTitle}", titlesMatch);
+            return titlesMatch;
+        }
+
+
+
         private readonly By Btn_Cancel = By.Id("CancelSubmittal");
         private readonly By Btn_Save = By.Id("SaveSubmittal");
         private readonly By Btn_SubmitForward = By.Id("SaveForwardSubmittal");
-        private static readonly By Btn_Create = By.Id("btnCreate");
+        private readonly By Btn_Create = By.Id("btnCreate");
 
         public void ClickCancel()
         {
             VerifyPageIsLoaded();
             //ClickElement(Btn_Cancel);
 
-            IWebElement cancelBtn = GetElement(GetButtonByLocator("Cancel")) ?? GetElement(GetInputButtonByLocator("Cancel")) ?? GetElement(Btn_Cancel);
-            cancelBtn.Click();
+
+            IWebElement cancelBtn = GetElement(Btn_Cancel) ?? GetElement(GetButtonByLocator("Cancel")) ?? GetElement(GetInputButtonByLocator("Cancel"));
+            ClickElement(cancelBtn);
         }
         public void ClickSave()
         {

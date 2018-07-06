@@ -3,6 +3,7 @@ using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Test;
 using System;
+using RKCIUIAutomation.Page.PageObjects.QAField;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -325,32 +326,41 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void _NavigateToQAFieldMenu()
         {
             LoginAs(UserType.Bhoomi);
+
             NavigateToPage.QAField_QA_Test();
             AddAssertionToList(VerifyPageTitle("Field Tests"));
-            //ClickCreate(); TODO - Verify Create button is not present in page
+            //ClickCreate(); TODO - Create button is not present in page
             //ClickCancel();
+
             NavigateToPage.QAField_QA_DIRs();
             AddAssertionToList(VerifyPageTitle("IQF Field > List of Daily Inspection Reports"));
-            //ClickCreate(); //TODO - Verify Error Msg - "Invalid Technician ID for DIR No."
+            //ClickCreate(); //TODO - Error Msg - "Invalid Technician ID for DIR No."
             //ClickCancel();
+
             // NavigateToPage.QAField_QA_Technician_Random_Search();//page not implemented
             // AddAssertionToList(VerifyPageTitle("");
+
             NavigateToPage.QAField_Weekly_Environmental_Monitoring();
             AddAssertionToList(VerifyPageTitle("Week Environmental Monitoring Reports"));
             ClickNew();
-            AddAssertionToList(driver.SwitchTo().Alert().Text == "Week Ending Date is required!");
-            driver.SwitchTo().Alert().Accept();
-            EnterText(By.Id("endDate"),DateTime.Now.ToShortDateString()); //TODO - Create method
+            AddAssertionToList(VerifyAlertMessage("Week Ending Date is required!"));
+            AcceptAlertMessage();
+            EnterText(WeeklyEnvMonitoring.WeekEndingDateField,DateTime.Now.ToShortDateString()); //TODO - Create method
             ClickNew();
             ClickCancel();
+
             NavigateToPage.QAField_Daily_Environmental_Inspection();
             AddAssertionToList(VerifyPageTitle("List of Daily Environmental Inspection Reports"));
             ClickNew();
-            ClickCancel(); //TODO - NOT CORRECT
+            AddAssertionToList(VerifyActiveModalTitle("DEI Creation"));
+            CloseActiveModalWindow();
+
             NavigateToPage.QAField_Weekly_Environmental_Inspection();
             AddAssertionToList(VerifyPageTitle("List of Weekly Environmental Inspection Reportse"));
-            ClickCreate();
-            ClickCancel();
+            ClickNew();
+            AddAssertionToList(VerifyActiveModalTitle("Weekly Environmental Inspection Creation"));
+            CloseActiveModalWindow();
+
             AssertAll();
         }
 
