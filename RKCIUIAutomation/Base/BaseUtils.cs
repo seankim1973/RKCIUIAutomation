@@ -107,7 +107,13 @@ namespace RKCIUIAutomation.Base
         }
         public static void LogDebug(string details)
         {
-            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
+            if (details.Contains(">>>"))
+            {
+                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
+            }
+            else
+                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
+
             log.Debug(details);
         }
         public void LogErrorWithScreenshot()
@@ -120,6 +126,10 @@ namespace RKCIUIAutomation.Base
             if (details.Contains("#####"))
             {
                 ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details));
+            }
+            else if (details.Contains(">>>"))
+            {
+                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
             }
             else
                 ExtentTestManager.GetTest().Info(details);

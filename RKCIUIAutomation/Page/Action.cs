@@ -80,7 +80,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogInfo($"Unable to click element - {elementByLocator}", e);
+                LogError($"Unable to click element - {elementByLocator}", true, e);
             }
         }
 
@@ -119,13 +119,13 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogInfo($"Unable to enter text in field - {elementByLocator}", e);
+                LogError($"Unable to enter text in field - {elementByLocator}", true, e);
             }
         }
 
         public string GetText(By elementByLocator)
         {
-            string text = String.Empty;
+            string text = string.Empty;
             try
             {
                 text = GetElement(elementByLocator).Text;
@@ -133,14 +133,27 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogInfo($"Unable to retrieve text from element - {elementByLocator}", e);
+                LogError($"Unable to retrieve text from element - {elementByLocator}", true, e);
             }
             
             return text;
         }
 
+        public string GetTextFromDDL(Enum ddListID)
+        {
+            string text = string.Empty;
+            try
+            {
+                text = $"{GetText(new PageHelper().GetDDListByLocator(ddListID))}//span[@class='k-input']";
+                LogInfo($"Retrieved text '{text}' from element - {ddListID?.GetString()}");
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to retrieve text from drop-down element - {ddListID?.GetString()}", true, e);
+            }
+            return text;
+        }
 
-        public string GetTextFromDDL(Enum ddListID) => $"{GetText(new PageHelper().GetDDListByLocator(ddListID))}//span[@class='k-input']";
         public void ExpandDDL(Enum ddListID)
         {
             By locator = new PageHelper().GetExpandDDListButtonByLocator(ddListID);
@@ -148,11 +161,11 @@ namespace RKCIUIAutomation.Page
             {
                 ClickElement(locator);
                 Thread.Sleep(2000);
-                LogInfo($"Expanded DDList - {ddListID}");
+                LogInfo($"Expanded DDList - {ddListID?.GetString()}");
             }
             catch (Exception e)
             {
-                LogInfo($"Unable to expand drop down list - {locator}", e);
+                LogError($"Unable to expand drop down list - {locator}", true, e);
             }
         }
 
@@ -228,24 +241,19 @@ namespace RKCIUIAutomation.Page
         private string PageTitle = string.Empty;
         public bool IsElementDisplayed(By elementByLocator)
         {
-            IWebElement element = GetElement(elementByLocator);
-            bool isDisplayed = false;
+            IWebElement element = null;
 
-            if (element != null)
+            try
             {
-                try
-                {
-                    isDisplayed = element.Displayed;
-                    if (isDisplayed)
-                        PageTitle = element.Text;
-                }
-                catch (Exception e)
-                {
-                    log.Debug(e.Message);
-                }
+                element = GetElement(elementByLocator);
+                PageTitle = element?.Text;
+            }
+            catch (Exception e)
+            {
+                LogDebug(e.Message);
             }
 
-            return isDisplayed;
+            return element.Displayed;
         }
 
         public bool VerifyPageTitle(string expectedPageTitle)
@@ -344,7 +352,7 @@ namespace RKCIUIAutomation.Page
 
                 if (pageTitle.Contains(expectedPageTitle))
                 {
-                    LogInfo(">>> Page Loaded Successfully <<<");
+                    LogInfo(">>> Page loaded ...No error seen on page <<<");
                 }
                 else
                 {
@@ -352,7 +360,7 @@ namespace RKCIUIAutomation.Page
                     stackTraceTag = GetElement(stackTraceTagByLocator);
                     if (stackTraceTag?.Displayed == true)
                     {
-                        LogError(">>> Page did not load properly <<<");
+                        LogError("!!! Page did not load properly !!!");
 
                         if (continueTestIfPageNotLoaded == true)
                         {
@@ -369,7 +377,7 @@ namespace RKCIUIAutomation.Page
                                 if (stackTraceTag?.Displayed == true)
                                 {
                                     Assert.True(false);
-                                    LogError(">>> Page did not load properly, when navigating to the previous page <<<");
+                                    LogError("!!! Page did not load properly, when navigating to the previous page !!!");
                                 }
                             }
                         }
@@ -392,7 +400,10 @@ namespace RKCIUIAutomation.Page
         public void ClickCancel()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_Cancel);
+            //ClickElement(Btn_Cancel);
+
+            IWebElement cancelBtn = GetElement(GetButtonByLocator("Cancel")) ?? GetElement(GetInputButtonByLocator("Cancel")) ?? GetElement(Btn_Cancel);
+            cancelBtn.Click();
         }
         public void ClickSave()
         {
@@ -417,7 +428,7 @@ namespace RKCIUIAutomation.Page
         public void ClickNew_InputBtn()
         {
             VerifyPageIsLoaded();
-            ClickElement(GetInputFieldByLocator("Create New"));
+            ClickElement(GetInputButtonByLocator("Create New"));
         }
         public void ClickCancel_ATag()
         {
@@ -427,7 +438,7 @@ namespace RKCIUIAutomation.Page
         public void ClickCancel_InputBtn()
         {
             VerifyPageIsLoaded();
-            ClickElement(GetInputFieldByLocator("Cancel"));
+            ClickElement(GetInputButtonByLocator("Cancel"));
         }
 
     }

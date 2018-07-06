@@ -1,154 +1,165 @@
 ﻿using NUnit.Framework;
-using OpenQA.Selenium;
-using RKCIUIAutomation.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static RKCIUIAutomation.Config.ProjectProperties;
+using RKCIUIAutomation.Page.Workflows;
 
-namespace RKCIUIAutomation.Test
+namespace RKCIUIAutomation.Test.LinkCoverage
 {
     [TestFixture]
-    public class LinkCoverageTest : TestBase
+    [Parallelizable]
+    public class VerifyProjectConfigurationMenu : LinkCoverageWF
     {
-
-        #region NUnit Test Case Methods class
-
-        public class VerifyProjectConfigurationMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for Project Configuration Menu only")]
-            public void NavigateToVerifyProjectConfigurationMenu() => LinkCoverage._NavigateToVerifyProjectConfigurationMenu();
-        }
-
-        public class VerifyQALabMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("Component2", Component.Other)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for QA Lab Menu only")]
-            public void NavigateToVerifyQALabMenu() => LinkCoverage._NavigateToVerifyQALabMenu();
-        }
-
-        public class VerifyQARecordControlMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for QA Record Control Menu only")]
-            public void NavigateToVerifyQARecordControlMenu() => LinkCoverage._NavigateToVerifyQARecordControlMenu();
-        }
-
-        public class VerifyOVMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("Component2", Component.OV_Test)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for OV Menu only")]
-            public void NavigateToOVMenu() => LinkCoverage._NavigateToOVMenu();
-        }
-
-        public class VerifyQAEngineerMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for QA Engineer Menu only")]
-            public void NavigateToVerifyQAEngineerMenu() => LinkCoverage._NavigateToVerifyQAEngineerMenu();
-        }
-
-        public class VerifyReportsAndNoticesMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for Reports & Notices Menu only")]
-            public void NavigateToReportsAndNoticesMenu() => LinkCoverage._NavigateToReportsAndNoticesMenu();
-        }
-
-        public class VerifyQASearchMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for RM Center Menu only")]
-            public void NavigateToQASearchMenu() => LinkCoverage._NavigateToQASearchMenu();
-        }
-
-        public class VerifyQAFieldMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for RM Center Menu only")]
-            public void NavigateToQAFieldMenu() => LinkCoverage._NavigateToQAFieldMenu();
-        }
-
-        public class VerifyControlPointMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for Control Point Menu only")]
-            public void NavigateToControlPointMenu() => LinkCoverage._NavigateToControlPointMenu();
-        }
-
-        public class VerifyOwnerMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for Control Point Menu only")]
-            public void NavigateToOwnerMenu() => LinkCoverage._NavigateToOwnerMenu();
-        }
-
-        public class VerifyMaterialMixCodeMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for Control Point Menu only")]
-            public void NavigateToMaterialMixCodeMenu() => LinkCoverage._NavigateToMaterialMixCodeMenu();
-        }
-
-        public class VerifyRMCenterMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for RM Center Menu only")]
-            public void NavigateToRMCenterMenu() => LinkCoverage._NavigateToRMCenterMenu();
-        }
-
-        [TestFixture]
-        public class VerifyRFIMenu : TestBase
-        {
-            [Test]
-            [Category(Component.Link_Coverage)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Page Title for RM Center Menu only")]
-            public void NavigateToRFIMenu() => LinkCoverage._NavigateToRFIMenu();
-        }
-        #endregion <-- end of Test Case Methods class
-
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Project Configuration Menu only")]
+        public void NavigateToVerifyProjectConfigurationMenu() => LinkCoverageWF._NavigateToVerifyProjectConfigurationMenu();
     }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyQALabMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("Component2", Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for QA Lab Menu only")]
+        public void NavigateToVerifyQALabMenu() => LinkCoverageWF._NavigateToVerifyQALabMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyQARecordControlMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for QA Record Control Menu only")]
+        public void NavigateToVerifyQARecordControlMenu() => LinkCoverageWF._NavigateToVerifyQARecordControlMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyOVMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("Component2", Component.OV_Test)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for OV Menu only")]
+        public void NavigateToOVMenu() => LinkCoverageWF._NavigateToOVMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyQAEngineerMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for QA Engineer Menu only")]
+        public void NavigateToVerifyQAEngineerMenu() => LinkCoverageWF._NavigateToVerifyQAEngineerMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyReportsAndNoticesMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Reports & Notices Menu only")]
+        public void NavigateToReportsAndNoticesMenu() => LinkCoverageWF._NavigateToReportsAndNoticesMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyQASearchMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public void NavigateToQASearchMenu() => LinkCoverageWF._NavigateToQASearchMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyQAFieldMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public void NavigateToQAFieldMenu() => LinkCoverageWF._NavigateToQAFieldMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyControlPointMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Control Point Menu only")]
+        public void NavigateToControlPointMenu() => LinkCoverageWF._NavigateToControlPointMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyOwnerMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Control Point Menu only")]
+        public void NavigateToOwnerMenu() => LinkCoverageWF._NavigateToOwnerMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyMaterialMixCodeMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for Control Point Menu only")]
+        public void NavigateToMaterialMixCodeMenu() => LinkCoverageWF._NavigateToMaterialMixCodeMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyRMCenterMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public void NavigateToRMCenterMenu() => LinkCoverageWF._NavigateToRMCenterMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    [TestFixture]
+    public class VerifyRFIMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for RM Center Menu only")]
+        public void NavigateToRFIMenu() => LinkCoverageWF._NavigateToRFIMenu();
+    }
+
 }
