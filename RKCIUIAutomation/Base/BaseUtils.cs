@@ -187,7 +187,6 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-
         private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
         {
             return MarkupHelper.CreateLabel(details, extentColor);

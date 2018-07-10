@@ -11,6 +11,10 @@ namespace RKCIUIAutomation.Test
 {
     public class TestBase : TestUtils
     {
+        public void ClickLoginLink() => ClickElement(By.XPath("//a[text()=' Login']"));
+        public void ClickLogoutLink() => ClickElement(By.XPath("//a[text()=' Log out']"));
+
+
         public TestDetails TestDetails => new TestDetails(driver);
         public void LoginAs(UserType user) => new LoginPage(driver).LoginUser(user);      
 

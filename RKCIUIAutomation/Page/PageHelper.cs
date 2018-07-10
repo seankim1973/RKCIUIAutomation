@@ -42,11 +42,12 @@ namespace RKCIUIAutomation.Page
             return $"//div[@id='{ddListID.GetString()}-list']//li[{locatorXpath}]";
         }
         private string SetDDListItemsXpath(Enum ddListID, int itemIndex) => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";
-        private string SetTableTabXpath(Enum tableTab) => $"//ul[@class='k-reset k-tabstrip-items']//span[text()='{tableTab.GetString()}']";
+        private string SetTableTabXpath(Enum tableTab) => $"//span[contains(text(),'{tableTab.GetString()}')]";
         private string SetTableNavPageXpath(int pageNumber) => $"//div[@id='TestGrid_New']//div[@data-role='pager']/ul/li/a[text()='{pageNumber.ToString()}']";
         private string SetTextInputFieldByLocator(Enum inputEnum) => $"//input[@id='{inputEnum.GetString()}']";
         private string SetButtonXpath(string buttonName) => $"//a[text()='{buttonName}']";
         private string SetInputButtonXpath(string buttonName) => $"//input[@value='{buttonName}']";
+
 
         public By GetMainNavMenuByLocator(Enum navEnum) => By.XPath(SetMainNavMenuXpath(navEnum));
         public By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null) => By.XPath(SetNavMenuXpath(navEnum, parentNavEnum));
@@ -60,7 +61,8 @@ namespace RKCIUIAutomation.Page
         public By GetButtonByLocator(string buttonName) => By.XPath(SetButtonXpath(buttonName));
         public By GetInputButtonByLocator(string buttonName) => By.XPath(SetInputButtonXpath(buttonName));
 
-        
+
+
     }
 
     public static class EnumHelper

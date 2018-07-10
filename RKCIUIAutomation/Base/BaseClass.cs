@@ -20,12 +20,14 @@ namespace RKCIUIAutomation.Base
         public static TestEnv testEnv;
         public static TenantName tenantName;
 
+        public static string userName = string.Empty;
         private static string _testPlatform;
         private static string _browserType;
         private static string _testEnv;
         private static string _tenantName;
 
-        private string siteUrl;       
+        private string siteUrl;
+        private string displayUrl;
         private TestStatus testStatus;
         private Cookie cookie = null;
 
@@ -51,6 +53,8 @@ namespace RKCIUIAutomation.Base
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
+            log.Info(userName);
+            log.Info(displayUrl);
             log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
             ExtentManager.Instance.Flush();
 
@@ -120,8 +124,7 @@ namespace RKCIUIAutomation.Base
         private void SkipTest(string testComponent)
         {
             testStatus = TestStatus.Skipped;
-            string msg = $"TEST SKIPPED : Project ({tenantName}) " +
-                $"does not have implementation of the component ({testComponent}).";
+            string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
             LogIgnore(msg);
             Assert.Ignore(msg);
         }
@@ -131,14 +134,14 @@ namespace RKCIUIAutomation.Base
         {
             var comp2 = (string.IsNullOrEmpty(component2) || component2 == "Not Defined") ? string.Empty : $", {component2}";        
             string[] url = Regex.Split(siteUrl, "/Account");
+            displayUrl = url[0];
 
-            Console.WriteLine("");
             log.Info($"########################################################################");
             log.Info($"#                   RKCI ELVIS UI Test Automation");
             log.Info($"########################################################################");
             log.Info($"#  -->> Test Configuration <<--");
             log.Info($"#  Tenant: {projectName}  TestEnv: {testEnv}");
-            log.Info($"#  Site URL: {url[0]}");
+            log.Info($"#  Site URL: {displayUrl}");
             log.Info($"#  Browser: {browserType}");
             log.Info($"#");
             log.Info($"#  -->> Test Case Details <<--");

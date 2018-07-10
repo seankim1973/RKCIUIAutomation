@@ -230,7 +230,7 @@ namespace RKCIUIAutomation.Page
         public string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
         {
             string uploadPath = string.Empty;
-            if (isRemoteUpload == false)
+            if (!isRemoteUpload)
             {
                 uploadPath = $"{GetCodeBasePath()}\\UploadFiles\\{fileName}";
             }
@@ -436,11 +436,10 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-
-
-        private static string activeModalXpath = "//div[contains(@style,'opacity: 1')]";
-        private static string modalTitle = $"{activeModalXpath}//div[contains(@class,'k-header')]";
-        private static string modalCloseBtn = $"{activeModalXpath}//a[@aria-label='Close']";
+        
+        private static string activeModalXpath => "//div[contains(@style,'opacity: 1')]";
+        private static string modalTitle => $"{activeModalXpath}//div[contains(@class,'k-header')]";
+        private static string modalCloseBtn => $"{activeModalXpath}//a[@aria-label='Close']";
         public void CloseActiveModalWindow()
         {
             ClickJsElement(By.XPath(modalCloseBtn));
@@ -455,63 +454,33 @@ namespace RKCIUIAutomation.Page
         }
 
 
-
-        private readonly By Btn_Cancel = By.Id("CancelSubmittal");
-        private readonly By Btn_Save = By.Id("SaveSubmittal");
-        private readonly By Btn_SubmitForward = By.Id("SaveForwardSubmittal");
-        private readonly By Btn_Create = By.Id("btnCreate");
-
         public void ClickCancel()
         {
             VerifyPageIsLoaded();
-            //ClickElement(Btn_Cancel);
-
-
-            IWebElement cancelBtn = GetElement(Btn_Cancel) ?? GetElement(GetButtonByLocator("Cancel")) ?? GetElement(GetInputButtonByLocator("Cancel"));
+            IWebElement cancelBtn = GetElement(GetButtonByLocator("Cancel")) ??  GetElement(GetInputButtonByLocator("Cancel")) ?? GetElement(By.Id("CancelSubmittal"));
             ClickElement(cancelBtn);
         }
         public void ClickSave()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_Save);
+            ClickElement(By.Id("SaveSubmittal"));
         }
         public void ClickSubmitForward()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_SubmitForward);
+            ClickElement(By.Id("SaveForwardSubmittal"));
         }
         public void ClickCreate()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_Create);
+            ClickElement(By.Id("btnCreate"));
         }
         public void ClickNew()
         {
             VerifyPageIsLoaded();
-            ClickElement(GetButtonByLocator("New"));
-        }
-        public void ClickNew_InputBtn()
-        {
-            VerifyPageIsLoaded();
-            ClickElement(GetInputButtonByLocator("Create New"));
-        }
-        public void ClickCancel_ATag()
-        {
-            VerifyPageIsLoaded();
-            ClickElement(GetButtonByLocator("Cancel"));
-        }
-        public void ClickCancel_InputBtn()
-        {
-            VerifyPageIsLoaded();
-            ClickElement(GetInputButtonByLocator("Cancel"));
+            IWebElement newBtn = GetElement(GetButtonByLocator("New")) ?? GetElement(GetInputButtonByLocator("Create New"));
+            ClickElement(newBtn);
         }
 
     }
 }
-
-
-//AutoItX.Run("notepad.exe", "C:\\Windows");
-//AutoItX.WinWaitActive("Untitled");
-//AutoItX.Send("Testing 1 2 3 4 5");
-//IntPtr winHandle = AutoItX.WinGetHandle("Untitled");
-//AutoItX.WinKill(winHandle);
