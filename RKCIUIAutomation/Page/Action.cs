@@ -1,9 +1,12 @@
 ﻿using AutoIt;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
+using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -114,7 +117,7 @@ namespace RKCIUIAutomation.Page
                 string buttonTxt = string.Empty;
                 if (webElement != null)
                 {
-                    buttonTxt = webElement.GetAttribute("value");
+                    buttonTxt = webElement.Text;
                     webElement.Click();
                 }               
                 LogInfo($"Clicked {buttonTxt}");
@@ -230,7 +233,7 @@ namespace RKCIUIAutomation.Page
         public string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
         {
             string uploadPath = string.Empty;
-            if (isRemoteUpload == false)
+            if (!isRemoteUpload)
             {
                 uploadPath = $"{GetCodeBasePath()}\\UploadFiles\\{fileName}";
             }
@@ -352,7 +355,20 @@ namespace RKCIUIAutomation.Page
             return isDisplayed;
         }
 
-        private readonly By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
+        private string pageErrLogMsg = string.Empty;
+        private bool FoundKnownPageErrors()
+        {            
+            By serverErrorH1Tag = By.XPath("//h1[contains(text(),'Server Error')]");
+            By resourceNotFoundH2Tag = By.XPath("//h2/i[text()='The resource cannot be found.']");
+            By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
+
+            IWebElement pageErrElement = driver.FindElement(serverErrorH1Tag) ?? driver.FindElement(stackTraceTagByLocator) ?? driver.FindElement(resourceNotFoundH2Tag);
+            bool foundKnownError = pageErrElement.Displayed ? true : false;
+            string pageUrl = $"<br>&nbsp;&nbsp;@URL: {driver.Url}";
+            pageErrLogMsg = foundKnownError ? $"!!! Page Error - {pageErrElement.Text}{pageUrl}" : $"!!! Page did not load as expected.{pageUrl}";
+            return false;
+        }
+
         public bool VerifyUrlIsLoaded(string pageUrl)
         {
             bool isLoaded = false;
@@ -363,71 +379,60 @@ namespace RKCIUIAutomation.Page
                 driver.Navigate().GoToUrl(pageUrl);
                 pageTitle = driver.Title;
 
-                if (pageTitle.Contains("ELVIS PMC"))
-                {
-                    LogInfo(">>> Page Loaded Successfully <<<");
-                    isLoaded = true;
-                }
-                else
-                {
-                    IWebElement stackTraceTag = GetElement(stackTraceTagByLocator);
-                    if(stackTraceTag?.Displayed == true)
-                    {
-                        LogError(">>> Page Did Not Load Successfully <<<");
-                    }
-                }                    
+                isLoaded = (pageTitle.Contains("ELVIS PMC")) ? true : FoundKnownPageErrors();                 
             }
             finally
             {
-                string pageTitleMsg = $"{pageUrl}<br>&nbsp;&nbsp;PageHeader: {pageTitle}";
+                string pageTitleMsg = $"{pageUrl} - Page Title: {pageTitle}<br>&nbsp;&nbsp;";
+                string logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : pageErrLogMsg;            
+                
+                LogInfo($"{logMsg}<br>&nbsp;&nbsp;{pageTitleMsg}", isLoaded);
+                if (!isLoaded)
+                {
+                    LogDebug($"Page Error seen at URL: {driver.Url}");
+                }
                 WriteToFile(pageTitleMsg, "_PageTitle.txt");
-                LogInfo(pageTitleMsg, isLoaded);
             }
             return isLoaded;
         }
         public void VerifyPageIsLoaded(bool checkingLoginPage = false, bool continueTestIfPageNotLoaded = true)
         {
             string pageTitle = null;
-            string expectedPageTitle = checkingLoginPage == false ? "ELVIS PMC" : "Log in";
+            string expectedPageTitle = (checkingLoginPage == false) ? "ELVIS PMC" : "Log in";
+            string logMsg = string.Empty;
+            bool isLoaded = false;
 
             try
             {
                 pageTitle = driver.Title;
+                isLoaded = (pageTitle.Contains(expectedPageTitle)) ? true : FoundKnownPageErrors();
+                logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : pageErrLogMsg;
+                LogInfo(logMsg, isLoaded);
 
-                if (pageTitle.Contains(expectedPageTitle))
+                if (!isLoaded)
                 {
-                    LogInfo(">>> Page loaded ...No error seen on page <<<");
-                }
-                else
-                {
-                    IWebElement stackTraceTag = null;
-                    stackTraceTag = GetElement(stackTraceTagByLocator);
-                    if (stackTraceTag?.Displayed == true)
+                    if (continueTestIfPageNotLoaded == true)
                     {
-                        LogError("!!! Page did not load properly !!!");
-
-                        if (continueTestIfPageNotLoaded == true)
+                        LogInfo(">>> Attempting to navigate back to previous page to continue testing <<<");
+                        driver.Navigate().Back();
+                        pageTitle = driver.Title;
+                        isLoaded = pageTitle.Contains("ELVIS PMC") ? true : FoundKnownPageErrors();
+                        if (isLoaded)
                         {
-                            driver.Navigate().Back();
-                            LogDebug(">>> Navigating back to previous page to continue test <<<");
-                            pageTitle = driver.Title;
-                            if (pageTitle.Contains("ELVIS PMC"))
-                            {
-                                LogDebug(">>> Navigated to previous page successfully <<<");
-                            }
-                            else
-                            {
-                                stackTraceTag = GetElement(stackTraceTagByLocator);
-                                if (stackTraceTag?.Displayed == true)
-                                {
-                                    Assert.True(false);
-                                    LogError("!!! Page did not load properly, when navigating to the previous page !!!");
-                                }
-                            }
+                            LogInfo(">>> Navigated to previous page successfully <<<");
                         }
                         else
-                            Assert.True(false);
+                        {
+                            LogInfo($"!!! Page did not load properly, when navigating to the previous page !!!<br>&nbsp;&nbsp;{pageErrLogMsg}");
+                            Assert.Fail();
+                        }
                     }
+                    else
+                    {
+                        Assert.Fail();
+                    }
+
+                    InjectTestStatus(GetTestName(), TestStatus.Failed, pageErrLogMsg);
                 }
             }
             catch (Exception)
@@ -436,82 +441,60 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-
-
-        private static string activeModalXpath = "//div[contains(@style,'opacity: 1')]";
-        private static string modalTitle = $"{activeModalXpath}//div[contains(@class,'k-header')]";
-        private static string modalCloseBtn = $"{activeModalXpath}//a[@aria-label='Close']";
+        
+        private static string ActiveModalXpath => "//div[contains(@style,'opacity: 1')]";
+        private static string ModalTitle => $"{ActiveModalXpath}//div[contains(@class,'k-header')]";
+        private static string ModalCloseBtn => $"{ActiveModalXpath}//a[@aria-label='Close']";
         public void CloseActiveModalWindow()
         {
-            ClickJsElement(By.XPath(modalCloseBtn));
+            ClickJsElement(By.XPath(ModalCloseBtn));
             Thread.Sleep(500);
         }
         public bool VerifyActiveModalTitle(string expectedModalTitle)
         {
-            string actualTitle = GetText(By.XPath(modalTitle));
+            string actualTitle = GetText(By.XPath(ModalTitle));
             bool titlesMatch = actualTitle.Contains(expectedModalTitle) ? true : false;
             LogInfo($"## Expected Modal Title: {expectedModalTitle} <br>&nbsp;&nbsp;## Actual Modal Title: {actualTitle}", titlesMatch);
             return titlesMatch;
         }
 
 
-
-        private readonly By Btn_Cancel = By.Id("CancelSubmittal");
-        private readonly By Btn_Save = By.Id("SaveSubmittal");
-        private readonly By Btn_SubmitForward = By.Id("SaveForwardSubmittal");
-        private readonly By Btn_Create = By.Id("btnCreate");
-
         public void ClickCancel()
         {
             VerifyPageIsLoaded();
-            //ClickElement(Btn_Cancel);
+            IWebElement cancelBtn = GetElement(GetButtonByLocator("Cancel")) ?? GetElement(GetInputButtonByLocator("Cancel")) ?? GetElement(By.Id("CancelSubmittal"));
 
-
-            IWebElement cancelBtn = GetElement(Btn_Cancel) ?? GetElement(GetButtonByLocator("Cancel")) ?? GetElement(GetInputButtonByLocator("Cancel"));
-            ClickElement(cancelBtn);
+            if (cancelBtn.Displayed)
+            {
+                cancelBtn.Click();
+                LogInfo("Clicked Cancel");
+            }
+            else
+            {
+                LogError("Unable to click Cancel");
+            }
         }
         public void ClickSave()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_Save);
+            ClickElement(By.Id("SaveSubmittal"));
         }
         public void ClickSubmitForward()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_SubmitForward);
+            ClickElement(By.Id("SaveForwardSubmittal"));
         }
         public void ClickCreate()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_Create);
+            ClickElement(By.Id("btnCreate"));
         }
         public void ClickNew()
         {
             VerifyPageIsLoaded();
-            ClickElement(GetButtonByLocator("New"));
-        }
-        public void ClickNew_InputBtn()
-        {
-            VerifyPageIsLoaded();
-            ClickElement(GetInputButtonByLocator("Create New"));
-        }
-        public void ClickCancel_ATag()
-        {
-            VerifyPageIsLoaded();
-            ClickElement(GetButtonByLocator("Cancel"));
-        }
-        public void ClickCancel_InputBtn()
-        {
-            VerifyPageIsLoaded();
-            ClickElement(GetInputButtonByLocator("Cancel"));
+            IWebElement newBtn = GetElement(GetButtonByLocator("New")) ?? GetElement(GetInputButtonByLocator("Create New"));
+            ClickElement(newBtn);
         }
 
     }
 }
-
-
-//AutoItX.Run("notepad.exe", "C:\\Windows");
-//AutoItX.WinWaitActive("Untitled");
-//AutoItX.Send("Testing 1 2 3 4 5");
-//IntPtr winHandle = AutoItX.WinGetHandle("Untitled");
-//AutoItX.WinKill(winHandle);

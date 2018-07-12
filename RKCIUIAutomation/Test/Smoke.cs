@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using NUnit.Framework.Internal;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
-using static RKCIUIAutomation.Config.ProjectProperties;
 
-namespace RKCIUIAutomation.Test
+namespace RKCIUIAutomation.Test.Smoke
 {
     [TestFixture]
     public class Verify_LinkCoverage_Level1 : TestBase
@@ -40,14 +39,14 @@ namespace RKCIUIAutomation.Test
     }
 
     [TestFixture]
-    public class Test_UserCanLogin_ProjUser : TestBase
+    public class Verify_CancelOutOfOwnerSubmittalPage : TestBase
     {
         [Test]
         [Category(Component.Submittals)]
         [Property("TC#", "ELVS1234")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify user can login successfully using project - user account")]
-        public void VerifyUserCanLogin_ProjUser()
+        [Description("Verify user can cancel out of Owner Submittal Page Successfully")]
+        public void VerifyCancelOutOfOwnerSubmittalPage()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_Owner_Submittal();

@@ -11,42 +11,93 @@ pipeline {
 			    sleep 2
 			    bat 'nuget.exe restore RKCIUIAutomation.sln'
 			    sleep 2
-			    bat 'MSBuild RKCIUIAutomation.sln /p:OutputPath="C:\\Program Files (x86)\\Jenkins\\workspace\\TestPipeline\\RKCIUIAutomation\\bin\\Debug" /p:Configuration=Debug /p:Platform=\"Any CPU\" /p:ProductVersion=1.0.0.${env.BUILD_NUMBER}'
+			    bat 'MSBuild RKCIUIAutomation.sln /p:OutputPath="C:\\Program Files (x86)\\Jenkins\\workspace\\TestPipeline\\RKCIUIAutomation\\bin\\Debug" /p:Configuration=Debug /p:Platform=\"Any CPU\" /p:ProductVersion=1.0.0.{env.BUILD_NUMBER}'
 			    sleep 2
 			}
 		}
         stage('Run Tests for Garnet, GLX, & SH249') {
+            failFast false
             parallel {
-                stage("Garnet on Test") {
-            		agent {
+                stage("Garnet") {
+                    when {
+                        expression { params.Garnet == true }
+                    }
+                    agent {
                         label 'GarnetAgent'
                     }
                     steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=Garnet -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_Garnet.xml'
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=Garnet -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_Garnet.xml'
 						sleep 1
                     }
                 }
-                stage("GLX on Test") {
+                stage("GLX") {
+                    when {
+                        expression { params.GLX == true }
+                    }
             		agent {
                         label 'GLXAgent'
                     }
                     steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=GLX -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_GLX.xml'
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=GLX -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_GLX.xml'
 						sleep 1
 					}
                 }
-				stage("SH249 on Test") {
+				stage("SH249") {
+				    when {
+				        expression { params.SH249 == true }
+		            }
 				    agent {
                         label 'SH249Agent'
                     }
 					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=SH249 -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_SH249.xml'
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=SH249 -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_SH249.xml'
 						sleep 1
 					}
                 }
 			}
 		}
-		stage('Publish NUnit Report for Garnet, GLX, & SH249') {
+		stage('Run Tests for SGWay, I15Tech, I15South') {
+            failFast false
+            parallel {
+				stage("SGWay") {
+				    when {
+                        expression { params.SGWay == true }
+                    }
+				    agent {
+                        label 'SGWayAgent'
+                    }
+                    steps {
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=SGWay -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_SGWay.xml'
+						sleep 1
+					}
+                }
+				stage("I15Tech") {
+				    when {
+                        expression { params.I15Tech == true }
+                    }
+            		agent {
+                        label 'I15TechAgent'
+                    }
+					steps {
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=I15Tech -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_I15Tech.xml'
+						sleep 1
+					}
+                }
+				stage("I15South") {
+				    when {
+                        expression { params.I15South == true }
+                    }
+            		agent {
+                        label 'I15SouthAgent'
+                    }
+					steps {
+						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=I15South -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_I15South.xml'
+						sleep 1
+					}
+                }
+            }
+		}
+		stage('Publish NUnit Test Reports') {
 		    agent {
                 label 'MasterAgent'
             }
@@ -57,44 +108,6 @@ pipeline {
 			    sleep 1
 				nunit testResultsPattern: 'TestResult_SH249.xml'
 			    sleep 1
-			}
-		}
-		stage('Run Tests for SGWay, I15Tech, I15South') {
-            parallel {
-				stage("SGWay on Test") {
-				    agent {
-                        label 'SGWayAgent'
-                    }
-                    steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=SGWay -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_SGWay.xml'
-						sleep 1
-					}
-                }
-				stage("I15Tech on Test") {
-            		agent {
-                        label 'I15TechAgent'
-                    }
-					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=I15Tech -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_I15Tech.xml'
-						sleep 1
-					}
-                }
-				stage("I15South on Test") {
-            		agent {
-                        label 'I15SouthAgent'
-                    }
-					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=Stage -p:Tenant=I15South -p:Platform=Linux --test=RKCIUIAutomation.BaseTest "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_I15South.xml'
-						sleep 1
-					}
-                }
-            }
-		}
-		stage('Publish NUnit Report for SGWay, I15Tech, I15South') {
-		    agent {
-                label 'MasterAgent'
-            }
-			steps {
 			    nunit testResultsPattern: 'TestResult_SGWay.xml'
 			    sleep 1
 			    nunit testResultsPattern: 'TestResult_I15Tech.xml'

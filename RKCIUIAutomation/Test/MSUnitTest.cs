@@ -9,7 +9,9 @@ using RKCIUIAutomation.Tools;
 using static RKCIUIAutomation.Config.ProjectProperties;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
 using static RKCIUIAutomation.Base.BaseUtils;
-
+using RKCIUIAutomation.Page;
+using MiniGuids;
+using System.Text.RegularExpressions;
 
 namespace RKCIUIAutomation.Test
 {
@@ -17,7 +19,7 @@ namespace RKCIUIAutomation.Test
     /// Summary description for JUnitTest
     /// </summary>
     [TestClass]
-    public class MSUnitTest : BaseUtils
+    public class MSUnitTest : TestBase
     {
         public MSUnitTest()
         {
@@ -197,93 +199,66 @@ namespace RKCIUIAutomation.Test
             //Console.WriteLine(zalenium.ZaleniumIsRunning());
             //Assert.IsTrue();
 
-            //TestResultUtil testResult = new TestResultUtil();
-            //testResult.GetValue();
-            Console.WriteLine($"#  Date: {DateTime.Now.ToShortDateString()}  Time: {DateTime.Now.ToShortTimeString()}");
-            Console.WriteLine($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");
+            //HashMap.CreateVar("Int", 1200);
+            //HashMap.CreateVar("String", "TestName1234");
+
+            //Console.WriteLine(HashMap.GetVar("Int"));
+            //Console.WriteLine(HashMap.GetVar("String"));
+            //Console.WriteLine(HashMap.GetVar("NotThere"));
+
+            string details = "Test<br>&nbsp;&nbsp;Page Title:BlahBlash<br>&nbsp;&nbsp;More Details Here";
+
+            bool hasPgBreak = false;
+            string[] detailsBr = null;
+
+            if (details.Contains("<br>"))
+            {
+                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                hasPgBreak = true;
+            }
+
+            if (hasPgBreak)
+            {
+                for (int i = 0; i < detailsBr.Length; i++)
+                {
+                    log.Info(detailsBr[i]);
+                }
+            }
+
         }
-
-
-        #region write XML
 
         //[TestMethod]
-        public void MSUnitTest6()
+        public void TestMiniGuid()
         {
-            string filename = "c:\\temp\\file.xml";
+            MiniGuid guid;
+            guid = MiniGuid.NewGuid();
 
-            XmlSerializer serializer;
-            FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
-            serializer = new XmlSerializer(typeof(List<NavigationMenu>));
-            List<NavigationMenu> navigationMenuList = new List<NavigationMenu>();
+            string key = "GUID";
+            CreateVar(key, guid);
 
-            NavigationMenu mainNavNode = new NavigationMenu
-            {
-                MainNavMenu = "Project",
-                MainNavMenuItem = "My Details",
-                SubMenu = "Administrator",
-                SubMenuItem = "Project Details",
-                SubX2Menu = "System Configuration",
-                SubX2MenuItem = "Submittal Action",
-                SubX3Menu = "Grade Management",
-                SubX3MenuItem = "Grade Types"
-            };
-            navigationMenuList.Add(mainNavNode);
-
-            NavigationMenu menuItemNode = new NavigationMenu();
-            menuItemNode.MainNavMenu = "QA Lab";
-            menuItemNode.MainNavMenuItem = "Breaksheet Creation";
-            navigationMenuList.Add(menuItemNode);
-
-            serializer.Serialize(fs, navigationMenuList);
-            fs.Close();
-
+            var value = GetVar(key);
+            Console.WriteLine(value);
         }
 
-        public abstract class NavMenuClass
-        {
-            public string MainNavMenu { get; set; }
-            public string MainNavMenuItem { get; set; }
-            public string SubMenuItem { get; set; }
-            public string SubMenu { get; set; }
-            public string SubX2Menu { get; set; }
-            public string SubX2MenuItem { get; set; }
-            public string SubX3Menu { get; set; }
-            public string SubX3MenuItem { get; set; }
 
-            public string Name { get; set; }
-            public string URL { get; set; }
-            public string PageTitle { get; set; }
-        }
-        public class NavigationMenu : NavMenuClass
+        //[TestMethod]
+        public void TestCreateGetVar()
         {
-        }
-        public class MainNavMenu : NavigationMenu
-        {
+            CreateVar("Int", 1500000);
+            CreateVar("String", "BlahBlahTestName1234654789654321");
+
+            Console.WriteLine(GetVar("Int"));
+            Console.WriteLine(GetVar("String"));
+            Console.WriteLine(GetVar("NotThere"));
+
+            //
         }
 
-        public class MenuItem : NavigationMenu
+        //[TestMethod]
+        public void TestXMLUtil()
         {
+            XMLUtil xmlUtil = new XMLUtil();
+            xmlUtil.XMLDocumentTool();
         }
-
-        public class SubMenu : NavigationMenu
-        {
-        }
-
-        public class SubMenuItem : NavigationMenu
-        {
-        }
-
-        public class SubSubMenu : NavigationMenu
-        {
-        }
-
-        public class SubSubMenuItem : NavigationMenu
-        {
-            
-        }
-        #endregion
-
-        
-
     }
 }
