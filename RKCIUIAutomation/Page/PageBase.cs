@@ -23,10 +23,10 @@ namespace RKCIUIAutomation.Page
             Hashtable.Add(key, value);
         }
 
-        public object GetVar(string key)
+        public string GetVar(string key)
         {
             Hashtable = GetHashTable();
-            return (Hashtable.ContainsKey(key)) ?  Hashtable[key] : $"Key ({key}) does not exist";
+            return (Hashtable.ContainsKey(key)) ?  Hashtable[key].ToString() : $"Key ({key}) does not exist";
         }
     }
 }

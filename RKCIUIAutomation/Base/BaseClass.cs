@@ -3,6 +3,8 @@ using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page;
+using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -19,18 +21,16 @@ namespace RKCIUIAutomation.Base
         public static BrowserType browserType;
         public static TestEnv testEnv;
         public static TenantName tenantName;
-
         public static string userName = string.Empty;
         private static string _testPlatform;
         private static string _browserType;
         private static string _testEnv;
         private static string _tenantName;
-
         private string siteUrl;
         private string displayUrl;
         private TestStatus testStatus;
         private Cookie cookie = null;
-
+                
         ConfigUtils Configs = new ConfigUtils();
 
         [OneTimeSetUp]
@@ -66,7 +66,7 @@ namespace RKCIUIAutomation.Base
 
         [SetUp]
         public void BeforeTest()
-        {            
+        {
             string testName = GetTestName();
             string testSuite = GetTestSuiteName();            
             string testPriority = GetTestPriority();
@@ -123,7 +123,6 @@ namespace RKCIUIAutomation.Base
 
         private void SkipTest(string testComponent)
         {
-            testStatus = TestStatus.Skipped;
             string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
             LogIgnore(msg);
             Assert.Ignore(msg);
@@ -136,9 +135,9 @@ namespace RKCIUIAutomation.Base
             string[] url = Regex.Split(siteUrl, "/Account");
             displayUrl = url[0];
 
-            log.Info($"########################################################################");
+            log.Info($"#################################################");
             log.Info($"#                   RKCI ELVIS UI Test Automation");
-            log.Info($"########################################################################");
+            log.Info($"#################################################");
             log.Info($"#  -->> Test Configuration <<--");
             log.Info($"#  Tenant: {projectName}  TestEnv: {testEnv}");
             log.Info($"#  Site URL: {displayUrl}");
@@ -150,15 +149,16 @@ namespace RKCIUIAutomation.Base
             log.Info($"#  TC#: {tcNumber}, {priority}");
             log.Info($"#  Suite: {suite}, Component(s): {component1}{comp2}");
             log.Info($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");
-            log.Info($"########################################################################\n");
+            log.Info($"#################################################\n");
         }
 
 
         [TearDown]
         public void AfterTest()
-        {
+        {         
             ResultAdapter result = CurrentContext.Result;
             testStatus = result.Outcome.Status;
+            CheckForTestStatusInjection();
 
             switch (testStatus)
             {

@@ -11,6 +11,7 @@ using static RKCIUIAutomation.Page.Navigation.NavMenu;
 using static RKCIUIAutomation.Base.BaseUtils;
 using RKCIUIAutomation.Page;
 using MiniGuids;
+using System.Text.RegularExpressions;
 
 namespace RKCIUIAutomation.Test
 {
@@ -205,7 +206,30 @@ namespace RKCIUIAutomation.Test
             //Console.WriteLine(HashMap.GetVar("String"));
             //Console.WriteLine(HashMap.GetVar("NotThere"));
 
+            string details = "Test<br>&nbsp;&nbsp;Page Title:BlahBlash<br>&nbsp;&nbsp;More Details Here";
 
+            bool hasPgBreak = false;
+            string[] detailsBr = null;
+
+            if (details.Contains("<br>"))
+            {
+                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                hasPgBreak = true;
+            }
+
+            if (hasPgBreak)
+            {
+                for (int i = 0; i < detailsBr.Length; i++)
+                {
+                    log.Info(detailsBr[i]);
+                }
+            }
+
+        }
+
+        //[TestMethod]
+        public void TestMiniGuid()
+        {
             MiniGuid guid;
             guid = MiniGuid.NewGuid();
 
@@ -214,12 +238,11 @@ namespace RKCIUIAutomation.Test
 
             var value = GetVar(key);
             Console.WriteLine(value);
-
         }
 
 
-        [TestMethod]
-        public void MSUnitTest6()
+        //[TestMethod]
+        public void TestCreateGetVar()
         {
             CreateVar("Int", 1500000);
             CreateVar("String", "BlahBlahTestName1234654789654321");
@@ -228,8 +251,14 @@ namespace RKCIUIAutomation.Test
             Console.WriteLine(GetVar("String"));
             Console.WriteLine(GetVar("NotThere"));
 
-            //XMLUtil xmlUtil = new XMLUtil();
-            //xmlUtil.XMLDocumentTool();
+            //
+        }
+
+        //[TestMethod]
+        public void TestXMLUtil()
+        {
+            XMLUtil xmlUtil = new XMLUtil();
+            xmlUtil.XMLDocumentTool();
         }
     }
 }
