@@ -18,54 +18,49 @@ namespace RKCIUIAutomation.Base
         protected IWebDriver driver { get; set; }
         private IWebDriver Driver;
         
-        protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser)
+        protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testName)
         {
             Driver = driver;
-            if (Driver == null)
+            if (driver == null)
             {
                 if (platform == TestPlatform.Local)
                 {
                     switch (browser)
                     {
                         case BrowserType.Chrome:
-                            Driver = new ChromeDriver();
-                            break;
+                            return Driver = new ChromeDriver();
                         case BrowserType.Firefox:
-                            Driver = new FirefoxDriver();
-                            break;
+                            return Driver = new FirefoxDriver();
                         case BrowserType.Edge:
-                            Driver = new EdgeDriver();
-                            break;
+                            return Driver = new EdgeDriver();
                         case BrowserType.Safari:
-                            Driver = new SafariDriver();
-                            break;
+                            return Driver = new SafariDriver();
                         default:
                             LogDebug("Unrecognized Browser Type... using ChromeDriver");
-                            Driver = new ChromeDriver();
-                            break;
+                            return Driver = new ChromeDriver();
                     }
                 }
                 else
                 {
-                    DesiredCapabilities caps = DetermineCapabilities(platform, browser);
-                    Driver = new RemoteWebDriver(new Uri("http://10.1.1.207:4444/wd/hub"), caps);
+                    DesiredCapabilities caps = DetermineCapabilities(platform, browser, testName);
+                    return Driver = new RemoteWebDriver(new Uri("http://10.1.1.207:4444/wd/hub"), caps);
                 }
-
-                return Driver;
             }
             else
                 return Driver;
         }
         
         private DesiredCapabilities caps { get; set; }
-        private DesiredCapabilities DetermineCapabilities(TestPlatform platform, BrowserType browser)
+        private DesiredCapabilities DetermineCapabilities(TestPlatform platform, BrowserType browser, string testName)
         {
             if (caps == null)
             {
                 caps = new DesiredCapabilities();
                 DeterminePlatformType(platform);
                 DetermineBrowserType(browser);
-                caps.SetCapability("tz", "America/Chicago");
+                caps.SetCapability("zal:tz", "America/Chicago");
+                caps.SetCapability("zal:name", testName);
+                caps.SetCapability("zal:screenResolution", "1440x810");
                 return caps;
             }
             else

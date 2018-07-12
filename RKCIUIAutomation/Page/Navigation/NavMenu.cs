@@ -25,7 +25,7 @@ namespace RKCIUIAutomation.Page.Navigation
             IWebElement element;
 
             var reflectedPageType = navEnum.GetType().ReflectedType;
-            By clickLocator = GetNavMenuByLocator(ConvertToEnumType(navEnum));
+            By clickLocator = null;
 
             if (reflectedPageType.Equals(typeof(Project)) || reflectedPageType.IsSubclassOf(typeof(Project)))
             {
@@ -140,6 +140,7 @@ namespace RKCIUIAutomation.Page.Navigation
                     builder = new Actions(driver);
                     element = driver.FindElement(GetNavMenuByLocator(adminEnum));
                     builder.MoveToElement(element).Perform();
+                    clickLocator = GetNavMenuByLocator(ConvertToEnumType(navEnum));
 
                     if (userMgmtEnum != null)
                     {
@@ -167,6 +168,10 @@ namespace RKCIUIAutomation.Page.Navigation
                         element = driver.FindElement(GetNavMenuByLocator(adminToolsEnum));
                         builder.MoveToElement(element).Perform();
                     }
+                }
+                else
+                {
+                    clickLocator = GetNavMenuByLocator(ConvertToEnumType(navEnum), ConvertToEnumType(mainNavEnum));
                 }
             }
             catch (Exception e)

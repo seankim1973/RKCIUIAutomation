@@ -8,6 +8,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using static RKCIUIAutomation.Config.ProjectProperties;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
+using static RKCIUIAutomation.Base.BaseUtils;
 
 
 namespace RKCIUIAutomation.Test
@@ -16,7 +17,7 @@ namespace RKCIUIAutomation.Test
     /// Summary description for JUnitTest
     /// </summary>
     [TestClass]
-    public class MSUnitTest : TestBase
+    public class MSUnitTest : BaseUtils
     {
         public MSUnitTest()
         {
@@ -175,7 +176,7 @@ namespace RKCIUIAutomation.Test
 
 
         [TestMethod]
-        public void UnitTest5()
+        public void VerifyMSUnitTest5()
         {
             //var lockedRecords = Project.Administration.AdminTools.Menu.Locked_Records;
             //var reflectedPageType = lockedRecords.GetType().ReflectedType;
@@ -196,8 +197,10 @@ namespace RKCIUIAutomation.Test
             //Console.WriteLine(zalenium.ZaleniumIsRunning());
             //Assert.IsTrue();
 
-            TestResultUtil testResult = new TestResultUtil();
-            testResult.GetValue();
+            //TestResultUtil testResult = new TestResultUtil();
+            //testResult.GetValue();
+            Console.WriteLine($"#  Date: {DateTime.Now.ToShortDateString()}  Time: {DateTime.Now.ToShortTimeString()}");
+            Console.WriteLine($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");
         }
 
 

@@ -1,32 +1,28 @@
-﻿using static RKCIUIAutomation.Config.ProjectProperties;
-using NUnit.Framework;
-using RKCIUIAutomation.Config;
+﻿using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
 using OpenQA.Selenium;
-using RKCIUIAutomation.Base;
+using RKCIUIAutomation.Test;
+using System;
+using RKCIUIAutomation.Page.PageObjects.QAField;
 
-namespace RKCIUIAutomation.Test
+namespace RKCIUIAutomation.Page.Workflows
 {
-
     #region LinkCoverage Generic class
-    public class LinkCoverage : LinkCoverage_Impl
+    public class LinkCoverageWF : LinkCoverageWF_Impl
     {
-        public LinkCoverage(){}
-        public LinkCoverage(IWebDriver driver) => this.driver = driver;
+        public LinkCoverageWF(){}
+        public LinkCoverageWF(IWebDriver driver) => this.driver = driver;
 
         /// <summary>
         /// Common pageObjects and workflows are inherited from abstract _Impl class
         /// </summary>
-
-
-
 
     }
     #endregion <-- end of LinkCoverage Generic class
 
 
     #region Workflow Interface class
-    public interface ILinkCoverage
+    public interface ILinkCoverageWF
     {
         void _NavigateToVerifyProjectConfigurationMenu();
         void _NavigateToVerifyQALabMenu();
@@ -46,45 +42,45 @@ namespace RKCIUIAutomation.Test
 
 
     #region Common Workflow Implementation class
-    public abstract class LinkCoverage_Impl : TestBase, ILinkCoverage
+    public abstract class LinkCoverageWF_Impl : TestBase, ILinkCoverageWF
     {
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-        private ILinkCoverage SetPageClassBasedOnTenant(IWebDriver driver)
+        private ILinkCoverageWF SetPageClassBasedOnTenant(IWebDriver driver)
         {
-            ILinkCoverage instance = new LinkCoverage(driver);
+            ILinkCoverageWF instance = new LinkCoverageWF(driver);
 
             if (tenantName == TenantName.SGWay)
             {
                 LogInfo($"###### using LinkCoverage_SGWay instance ###### ");
-                instance = new LinkCoverage_SGWay(driver);
+                instance = new LinkCoverageWF_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
                 LogInfo($"###### using LinkCoverage_SH249 instance ###### ");
-                instance = new LinkCoverage_SH249(driver);
+                instance = new LinkCoverageWF_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
                 LogInfo($"###### using LinkCoverage_Garnet instance ###### ");
-                instance = new LinkCoverage_Garnet(driver);
+                instance = new LinkCoverageWF_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
                 LogInfo($"###### using LinkCoverage_GLX instance ###### ");
-                instance = new LinkCoverage_GLX(driver);
+                instance = new LinkCoverageWF_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
                 LogInfo($"###### using LinkCoverage_I15South instance ###### ");
-                instance = new LinkCoverage_I15South(driver);
+                instance = new LinkCoverageWF_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
                 LogInfo($"###### using LinkCoverage_I15Tech instance ###### ");
-                instance = new LinkCoverage_I15Tech(driver);
+                instance = new LinkCoverageWF_I15Tech(driver);
             }
 
             return instance;
@@ -276,7 +272,6 @@ namespace RKCIUIAutomation.Test
         }
 
 
-
         /// <summary>
         /// Common workflow method for Tenants:I15South, I15Tech, & SH249
         /// </summary>
@@ -331,28 +326,41 @@ namespace RKCIUIAutomation.Test
         public virtual void _NavigateToQAFieldMenu()
         {
             LoginAs(UserType.Bhoomi);
+
             NavigateToPage.QAField_QA_Test();
             AddAssertionToList(VerifyPageTitle("Field Tests"));
-            ClickCreate();
-            ClickCancel();
+            //ClickCreate(); TODO - Create button is not present in page
+            //ClickCancel();
+
             NavigateToPage.QAField_QA_DIRs();
             AddAssertionToList(VerifyPageTitle("IQF Field > List of Daily Inspection Reports"));
-            ClickCreate();
-            ClickCancel();
+            //ClickCreate(); //TODO - Error Msg - "Invalid Technician ID for DIR No."
+            //ClickCancel();
+
             // NavigateToPage.QAField_QA_Technician_Random_Search();//page not implemented
             // AddAssertionToList(VerifyPageTitle("");
+
             NavigateToPage.QAField_Weekly_Environmental_Monitoring();
             AddAssertionToList(VerifyPageTitle("Week Environmental Monitoring Reports"));
-            ClickCreate();
+            ClickNew();
+            AddAssertionToList(VerifyAlertMessage("Week Ending Date is required!"));
+            AcceptAlertMessage();
+            EnterText(WeeklyEnvMonitoring.WeekEndingDateField,DateTime.Now.ToShortDateString()); //TODO - Create method
+            ClickNew();
             ClickCancel();
+
             NavigateToPage.QAField_Daily_Environmental_Inspection();
             AddAssertionToList(VerifyPageTitle("List of Daily Environmental Inspection Reports"));
-            ClickCreate();
-            ClickCancel();
+            ClickNew();
+            AddAssertionToList(VerifyActiveModalTitle("DEI Creation"));
+            CloseActiveModalWindow();
+
             NavigateToPage.QAField_Weekly_Environmental_Inspection();
             AddAssertionToList(VerifyPageTitle("List of Weekly Environmental Inspection Reportse"));
-            ClickCreate();
-            ClickCancel();
+            ClickNew();
+            AddAssertionToList(VerifyActiveModalTitle("Weekly Environmental Inspection Creation"));
+            CloseActiveModalWindow();
+
             AssertAll();
         }
 
@@ -362,11 +370,11 @@ namespace RKCIUIAutomation.Test
         public virtual void _NavigateToControlPointMenu()
         {
             LoginAs(UserType.Bhoomi);
-            NavigateToPage.Control_Point_Log();
+            NavigateToPage.Control_Point_Scheduler();
             AddAssertionToList(VerifyPageTitle("Control Point List"));
             ClickNew();
             ClickCancel_InputBtn();
-            NavigateToPage.Control_Point_Scheduler();
+            NavigateToPage.Control_Point_Log();
             AddAssertionToList(VerifyPageTitle("Control Point Log Search"));
             AssertAll();
         }
@@ -492,135 +500,102 @@ namespace RKCIUIAutomation.Test
     /// </summary>
 
     #region Implementation specific to Garnet
-    public class LinkCoverage_Garnet : LinkCoverage
+    public class LinkCoverageWF_Garnet : LinkCoverageWF
     {
-        public LinkCoverage_Garnet(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_Garnet(IWebDriver driver) : base(driver) { }
 
         public override void _NavigateToVerifyQALabMenu()
         {
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QALab_Technician_Random();
-            bool techRandomTitleDisplayed = VerifyPageTitle("Technician Random");
+            AddAssertionToList(VerifyPageTitle("Technician Random"));
             NavigateToPage.QALab_BreakSheet_Creation();
-            bool breaksheetCreationTitleDisplayed = VerifyPageTitle("Create Break Sheet");
+            AddAssertionToList(VerifyPageTitle("Create Break Sheet"));
             NavigateToPage.QALab_BreakSheet_Legacy();
-            bool breaksheetLegacyTitleDisplayed = VerifyPageTitle("Break Sheet Legacy");
+            AddAssertionToList(VerifyPageTitle("Break Sheet Legacy"));
             NavigateToPage.QALab_Equipment_Management();
-            bool equipMgmtTitleDisplayed = VerifyPageTitle("Equipment");
+            AddAssertionToList(VerifyPageTitle("Equipment"));
             NavigateToPage.QALab_BreakSheet_Forecast();
-            bool breaksheetForecastTitleDisplayed = VerifyPageTitle("Break Sheet Forecast");
+            AddAssertionToList(VerifyPageTitle("Break Sheet Forecast"));
 
-            Assert.Multiple(testDelegate: () =>
-            {
-                AddAssertionToList(techRandomTitleDisplayed);
-                AddAssertionToList(breaksheetCreationTitleDisplayed);
-                AddAssertionToList(breaksheetLegacyTitleDisplayed);
-                AddAssertionToList(equipMgmtTitleDisplayed);
-                AddAssertionToList(breaksheetForecastTitleDisplayed);
-            });
+            AssertAll();
         }
-
     }
     #endregion
 
 
     #region Implementation specific to GLX
-    public class LinkCoverage_GLX : LinkCoverage
+    public class LinkCoverageWF_GLX : LinkCoverageWF
     {
-        public LinkCoverage_GLX(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_GLX(IWebDriver driver) : base(driver) { }
     }
     #endregion
 
 
     #region Implementation specific to SH249
-    public class LinkCoverage_SH249 : LinkCoverage
+    public class LinkCoverageWF_SH249 : LinkCoverageWF
     {
-        public LinkCoverage_SH249(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_SH249(IWebDriver driver) : base(driver) { }
 
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
             
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
-            bool qa_Test_Correction_ReportTitleDisplayed = VerifyPageTitle("Create Correction Test Report");
+            AddAssertionToList(VerifyPageTitle("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();
-            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            AddAssertionToList(VerifyPageTitle("Lab Tests"));
             NavigateToPage.QARecordControl_QA_Test_Retest_Report();
-            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            AddAssertionToList(VerifyPageTitle("Create Retest Report"));
             NavigateToPage.QARecordControl_QA_DIRs();
-            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports"));
             NavigateToPage.QARecordControl_General_NCR();
-            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
             NavigateToPage.QARecordControl_General_CDR();
-            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
-            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
-            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
             NavigateToPage.QARecordControl_MPL_Tracker();
-            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            AddAssertionToList(VerifyPageTitle("MPL Tracker"));
             NavigateToPage.QARecordControl_Girder_Tracker();
-            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+            AddAssertionToList(VerifyPageTitle("Girder Tracker"));
 
-
-            Assert.Multiple(testDelegate: () =>
-            {
-                AddAssertionToList(qa_Test_Original_Report_FormIsDisplayed);
-                AddAssertionToList(qa_Test_Correction_ReportTitleDisplayed);
-                AddAssertionToList(qa_Test_AllTitleDisplayed);
-                AddAssertionToList(qa_Test_Retest_ReportTitleDisplayed);
-                AddAssertionToList(qa_DIRsTitleDisplayed);
-                AddAssertionToList(general_NCRTitleDisplayed);
-                AddAssertionToList(general_CDRTitleDisplayed);
-                AddAssertionToList(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
-                AddAssertionToList(concrete_Paving_Quantity_TrackerTitleDisplayed);
-                AddAssertionToList(mpl_TrackerTitleDisplayed);
-                AddAssertionToList(girder_TrackerTitleDisplayed);
-            });
-
-
+            AssertAll();
         }
     }
     #endregion
 
 
     #region Implementation specific to SGWay
-    public class LinkCoverage_SGWay : LinkCoverage
+    public class LinkCoverageWF_SGWay : LinkCoverageWF
     {
-        public LinkCoverage_SGWay(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_SGWay(IWebDriver driver) : base(driver) { }
 
         public override void _NavigateToVerifyQALabMenu()
         {
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QALab_Technician_Random();
-            bool techRandomTitleDisplayed = VerifyPageTitle("Technician Random");
+            AddAssertionToList(VerifyPageTitle("Technician Random"));
             NavigateToPage.QALab_BreakSheet_Creation();
-            bool breaksheetCreationTitleDisplayed = VerifyPageTitle("Create Break Sheet");
+            AddAssertionToList(VerifyPageTitle("Create Break Sheet"));
             NavigateToPage.QALab_BreakSheet_Legacy();
-            bool breaksheetLegacyTitleDisplayed = VerifyPageTitle("Break Sheet Legacy");
+            AddAssertionToList(VerifyPageTitle("Break Sheet Legacy"));
             NavigateToPage.QALab_Equipment_Management();
-            bool equipMgmtTitleDisplayed = VerifyPageTitle("Equipment");
+            AddAssertionToList(VerifyPageTitle("Equipment"));
             NavigateToPage.QALab_BreakSheet_Forecast();
-            bool breaksheetForecastTitleDisplayed = VerifyPageTitle("Break Sheet Forecast");
+            AddAssertionToList(VerifyPageTitle("Break Sheet Forecast"));
             NavigateToPage.QALab_Cylinder_PickUp_List();
-            bool cylinderPickupListTitleDisplayed = VerifyPageTitle("Cylinder Pick-Up Status:");
+            AddAssertionToList(VerifyPageTitle("Cylinder Pick-Up Status:"));
             NavigateToPage.QALab_Early_Break_Calendar();
-            bool earlyBreakCalendarDisplayed = VerifySchedulerIsDisplayed();
+            AddAssertionToList(VerifySchedulerIsDisplayed());
 
-            Assert.Multiple(testDelegate: () =>
-            {
-                AddAssertionToList(techRandomTitleDisplayed);
-                AddAssertionToList(breaksheetCreationTitleDisplayed);
-                AddAssertionToList(breaksheetLegacyTitleDisplayed);
-                AddAssertionToList(equipMgmtTitleDisplayed);
-                AddAssertionToList(breaksheetForecastTitleDisplayed);
-                AddAssertionToList(cylinderPickupListTitleDisplayed);
-                AddAssertionToList(earlyBreakCalendarDisplayed);
-            });
+            AssertAll();
         }
 
         public override void _NavigateToRMCenterMenu()
@@ -628,157 +603,109 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.RMCenter_Search();
-            bool RMCenter_Search_TitleDisplayed = VerifyPageTitle("RM Center Search");
+            AddAssertionToList(VerifyPageTitle("RM Center Search"));
             NavigateToPage.RMCenter_Design_Documents();
-            bool RMCenter_Design_Documents_TitleDisplayed = VerifyPageTitle("Design Document");
+            AddAssertionToList(VerifyPageTitle("Design Document"));
             NavigateToPage.RMCenter_Upload_QA_Submittal();
-            bool RMCenter_Upload_QA_Submittal_TitleDisplayed = VerifyPageTitle("Submittal Details");
+            AddAssertionToList(VerifyPageTitle("Submittal Details"));
             NavigateToPage.RMCenter_Upload_Owner_Submittal();
-            bool RMCenter_Upload_Owner_Submittal_TitleDisplayed = VerifyPageTitle("New Submittal");
+            AddAssertionToList(VerifyPageTitle("New Submittal"));
             NavigateToPage.RMCenter_Upload_DEV_Submittal();
-            bool RMCenter_Upload_DEV_Submittal_TitleDisplayed = VerifyPageTitle("Submittal Details");
+            AddAssertionToList(VerifyPageTitle("Submittal Details"));
             NavigateToPage.RMCenter_DOT_Project_Correspondence_Log();
-            bool RMCenter_DOT_Project_Correspondence_Log_TitleDisplayed = VerifyPageTitle("Transmissions");
+            AddAssertionToList(VerifyPageTitle("Transmissions"));
             NavigateToPage.RMCenter_Review_Revise_Submittal();
-            bool RMCenter_Review_Revise_Submittal_TitleDisplayed = VerifyPageTitle("Review / Revise Submittals");
+            AddAssertionToList(VerifyPageTitle("Review / Revise Submittals"));
             NavigateToPage.RMCenter_RFC_Management();
-            bool RMCenter_RFC_Management_TitleDisplayed = VerifyPageTitle("RFC List");
+            AddAssertionToList(VerifyPageTitle("RFC List"));
             NavigateToPage.RMCenter_Project_Correspondence_Log();
-            bool RMCenter_Project_Correspondence_Log_TitleDisplayed = VerifyPageTitle("Transmissions");
+            AddAssertionToList(VerifyPageTitle("Transmissions"));
             NavigateToPage.RMCenter_Comment_Summary();
-            bool RMCenter_Comment_Summary_TitleDisplayed = VerifyPageTitle("Comment Summary Search");
+            AddAssertionToList(VerifyPageTitle("Comment Summary Search"));
 
-            Assert.Multiple(testDelegate: () =>
-            {
-                AddAssertionToList(RMCenter_Search_TitleDisplayed);
-                AddAssertionToList(RMCenter_Design_Documents_TitleDisplayed);
-                AddAssertionToList(RMCenter_Upload_QA_Submittal_TitleDisplayed);
-                AddAssertionToList(RMCenter_Upload_Owner_Submittal_TitleDisplayed);
-                AddAssertionToList(RMCenter_Upload_DEV_Submittal_TitleDisplayed);
-                AddAssertionToList(RMCenter_DOT_Project_Correspondence_Log_TitleDisplayed);
-                AddAssertionToList(RMCenter_Review_Revise_Submittal_TitleDisplayed);
-                AddAssertionToList(RMCenter_RFC_Management_TitleDisplayed);
-                AddAssertionToList(RMCenter_Project_Correspondence_Log_TitleDisplayed);
-                AddAssertionToList(RMCenter_Comment_Summary_TitleDisplayed);
-            });
+            AssertAll();
         }
 
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
        
-
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
-            bool qa_Test_Correction_ReportTitleDisplayed = VerifyPageTitle("Create Correction Test Report");
+            AddAssertionToList(VerifyPageTitle("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();
-            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            AddAssertionToList(VerifyPageTitle("Lab Tests"));
             NavigateToPage.QARecordControl_QA_Test_Retest_Report();
-            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            AddAssertionToList(VerifyPageTitle("Create Retest Report"));
             NavigateToPage.QARecordControl_QA_DIRs();
-            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports"));
             NavigateToPage.QARecordControl_General_NCR();
-            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
             NavigateToPage.QARecordControl_General_CDR();
-            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
-            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
-            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
             NavigateToPage.QARecordControl_MPL_Tracker();
-            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            AddAssertionToList(VerifyPageTitle("MPL Tracker"));
             NavigateToPage.QARecordControl_Girder_Tracker();
-            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+            AddAssertionToList(VerifyPageTitle("Girder Tracker"));
             NavigateToPage.Qms_Document();
-            bool qmsDocumentTitleDisplayed = VerifyPageTitle("QMS Documents");
+            AddAssertionToList(VerifyPageTitle("QMS Documents"));
             NavigateToPage.QARecordControl_Environmental_Document();
-            bool environmental_DocumentTitleDisplayed = VerifyPageTitle("Environmental Documents");
+            AddAssertionToList(VerifyPageTitle("Environmental Documents"));
 
-
-
-            Assert.Multiple(testDelegate: () =>
-            {
-                AddAssertionToList(qa_Test_Original_Report_FormIsDisplayed);
-                AddAssertionToList(qa_Test_Correction_ReportTitleDisplayed);
-                AddAssertionToList(qa_Test_AllTitleDisplayed);
-                AddAssertionToList(qa_Test_Retest_ReportTitleDisplayed);
-                AddAssertionToList(qa_DIRsTitleDisplayed);
-                AddAssertionToList(general_NCRTitleDisplayed);
-                AddAssertionToList(general_CDRTitleDisplayed);
-                AddAssertionToList(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
-                AddAssertionToList(concrete_Paving_Quantity_TrackerTitleDisplayed);
-                AddAssertionToList(mpl_TrackerTitleDisplayed);
-                AddAssertionToList(girder_TrackerTitleDisplayed);
-                AddAssertionToList(qmsDocumentTitleDisplayed);
-                AddAssertionToList(environmental_DocumentTitleDisplayed);
-            });
-
-
+            AssertAll();
         }
     }
     #endregion
 
 
     #region Implementation specific to I15South
-    public class LinkCoverage_I15South : LinkCoverage
+    public class LinkCoverageWF_I15South : LinkCoverageWF
     {
-        public LinkCoverage_I15South(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_I15South(IWebDriver driver) : base(driver) { }
     }
     #endregion
 
 
     #region Implementation specific to I15Tech
-    public class LinkCoverage_I15Tech : LinkCoverage
+    public class LinkCoverageWF_I15Tech : LinkCoverageWF
     {
-        public LinkCoverage_I15Tech(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_I15Tech(IWebDriver driver) : base(driver) { }
 
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            bool qa_Test_Original_Report_FormIsDisplayed = TestDetails.VerifyTestDetailsFormIsDisplayed();
+            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
-            bool qa_Test_Correction_ReportTitleDisplayed = VerifyPageTitle("Create Correction Test Report");
+            AddAssertionToList(VerifyPageTitle("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();
-            bool qa_Test_AllTitleDisplayed = VerifyPageTitle("Lab Tests");
+            AddAssertionToList(VerifyPageTitle("Lab Tests"));
             NavigateToPage.QARecordControl_QA_Test_Retest_Report();
-            bool qa_Test_Retest_ReportTitleDisplayed = VerifyPageTitle("Create Retest Report");
+            AddAssertionToList(VerifyPageTitle("Create Retest Report"));
             NavigateToPage.QARecordControl_QA_DIRs();
-            bool qa_DIRsTitleDisplayed = VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports");
+            AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports"));
             NavigateToPage.QARecordControl_General_NCR();
-            bool general_NCRTitleDisplayed = VerifyPageTitle("List of NCR Reports");
+            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
             NavigateToPage.QARecordControl_General_CDR();
-            bool general_CDRTitleDisplayed = VerifyPageTitle("List of CDR Reports");
+            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
-            bool retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Retaining Wall Backfill Quantity Tracker");
+            AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
-            bool concrete_Paving_Quantity_TrackerTitleDisplayed = VerifyPageTitle("Concrete Paving Quantity Tracker");
+            AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
             NavigateToPage.QARecordControl_MPL_Tracker();
-            bool mpl_TrackerTitleDisplayed = VerifyPageTitle("MPL Tracker");
+            AddAssertionToList(VerifyPageTitle("MPL Tracker"));
             NavigateToPage.QARecordControl_Girder_Tracker();
-            bool girder_TrackerTitleDisplayed = VerifyPageTitle("Girder Tracker");
+            AddAssertionToList(VerifyPageTitle("Girder Tracker"));
 
-
-            Assert.Multiple(testDelegate: () =>
-            {
-                AddAssertionToList(qa_Test_Original_Report_FormIsDisplayed);
-                AddAssertionToList(qa_Test_Correction_ReportTitleDisplayed);
-                AddAssertionToList(qa_Test_AllTitleDisplayed);
-                AddAssertionToList(qa_Test_Retest_ReportTitleDisplayed);
-                AddAssertionToList(qa_DIRsTitleDisplayed);
-                AddAssertionToList(general_NCRTitleDisplayed);
-                AddAssertionToList(general_CDRTitleDisplayed);
-                AddAssertionToList(retaining_Wall_BackFill_Quantity_TrackerTitleDisplayed);
-                AddAssertionToList(concrete_Paving_Quantity_TrackerTitleDisplayed);
-                AddAssertionToList(mpl_TrackerTitleDisplayed);
-                AddAssertionToList(girder_TrackerTitleDisplayed);
-            });
-
-
+            AssertAll();
         }
     }
-
     #endregion
+
 }
