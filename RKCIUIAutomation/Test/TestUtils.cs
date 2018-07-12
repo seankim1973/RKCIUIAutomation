@@ -1,21 +1,18 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
-using RKCIUIAutomation.Base;
-using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Xml.Serialization;
-using static RKCIUIAutomation.Config.ConfigUtils;
 
 
 namespace RKCIUIAutomation.Test
 {
     public class TestUtils : PageBase
     {
+        public TestUtils(){}
+        public TestUtils(IWebDriver driver) => this.driver = driver;
+
         private static List<string> pageUrlList;
 
         private static string GetInnerText(IWebElement listElement)
@@ -37,7 +34,7 @@ namespace RKCIUIAutomation.Test
 
             IList<IWebElement> elements = new List<IWebElement>();
             elements = driver.FindElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
-            if (elements?.Any() != true)
+            if (elements?.Any() == true)
             {
                 foreach (IWebElement mainNavElem in elements)
                 {
@@ -129,7 +126,7 @@ namespace RKCIUIAutomation.Test
             }
             else
             {
-                LogInfo("Unable to retrieve navigation menu URLs", false);
+                LogError("Unable to retrieve navigation menu URLs", false);
             }
             WriteToFile(Environment.NewLine);
         }
@@ -155,8 +152,8 @@ namespace RKCIUIAutomation.Test
         {
             Assert.Multiple(testDelegate: () =>
             {
-                foreach(bool assertion in assertionList)
-                Assert.True(assertion);
+                foreach (bool assertion in assertionList)
+                    Assert.True(assertion);
             });
         }
 

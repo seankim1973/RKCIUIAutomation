@@ -5,11 +5,16 @@ using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects;
 using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
+using RKCIUIAutomation.Page.Workflows;
 
 namespace RKCIUIAutomation.Test
 {
     public class TestBase : TestUtils
     {
+        public void ClickLoginLink() => ClickElement(By.XPath("//a[text()=' Login']"));
+        public void ClickLogoutLink() => ClickElement(By.XPath("//a[text()=' Log out']"));
+
+
         public TestDetails TestDetails => new TestDetails(driver);
         public void LoginAs(UserType user) => new LoginPage(driver).LoginUser(user);      
 
@@ -17,7 +22,7 @@ namespace RKCIUIAutomation.Test
 
         public ISearch RMCenter_SearchPage => new Search().SetClass<ISearch>(driver);
 
-        public ILinkCoverage LinkCoverage => new LinkCoverage().SetClass<ILinkCoverage>(driver);
+        public ILinkCoverageWF LinkCoverageWF => new LinkCoverageWF().SetClass<ILinkCoverageWF>(driver);
 
     }
 }

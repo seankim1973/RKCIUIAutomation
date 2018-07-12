@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace RKCIUIAutomation.Config
 {
-    public static class ProjectProperties
+    public class ProjectProperties : WebDriverFactory
     {
-        public static class Component
+        public class Component
         {
             public const string Breaksheet = "Breaksheet";
             public const string CDR = "CDR";
@@ -39,15 +39,16 @@ namespace RKCIUIAutomation.Config
 
             //Secondary Components (not in Jira)
             public const string OV_Test = "OV_Test";
+            public const string QAField = "QAField";
         }
 
-        public static List<string> GetComponentsForProject(TenantName projectName)
+        public List<string> GetComponentsForProject(TenantName tenantName)
         {
             List<string> components = new List<string>();
             try
             {
                 components = CommonComponents;
-                components.AddRange(DefineAdditionalComponents(projectName));
+                components.AddRange(DefineAdditionalComponents(tenantName));
             }
             catch (Exception e)
             {
@@ -56,10 +57,10 @@ namespace RKCIUIAutomation.Config
 
             return components;
         }
-        private static List<string> DefineAdditionalComponents(TenantName projectName)
+        private List<string> DefineAdditionalComponents(TenantName tenantName)
         {
             List<string> additionalComponents = new List<string>();
-            switch (projectName)
+            switch (tenantName)
             {
                 case TenantName.Garnet:
                     additionalComponents = Components_Garnet;
@@ -83,36 +84,41 @@ namespace RKCIUIAutomation.Config
             return additionalComponents;
         }
 
-        private static readonly List<string> Components_Garnet = new List<string>
+        private readonly List<string> Components_Garnet = new List<string>
+        {
+            Component.RFI,
+            Component.QAField
+        };
+
+        private readonly List<string> Components_GreenLineExt = new List<string>
         {
             Component.RFI
         };
 
-        private static readonly List<string> Components_GreenLineExt = new List<string>
+        private readonly List<string> Components_I15Southbound = new List<string>
         {
-            Component.RFI
+            Component.OV_Test,
+            Component.QAField
         };
 
-        private static readonly List<string> Components_I15Southbound = new List<string>
+        private readonly List<string> Components_I15TechCorridor = new List<string>
         {
-            Component.OV_Test
+            Component.OV_Test,
+            Component.QAField
         };
 
-        private static readonly List<string> Components_I15TechCorridor = new List<string>
+        private readonly List<string> Components_SH249Ext = new List<string>
         {
-            Component.OV_Test
+            Component.QAField
         };
 
-        private static readonly List<string> Components_SH249Ext = new List<string>
+        private readonly List<string> Components_SouthernGateway = new List<string>
         {
+            Component.QAField
+
         };
 
-        private static readonly List<string> Components_SouthernGateway = new List<string>
-        {
-            
-        };
-
-        private static readonly List<string> CommonComponents = new List<string>
+        private readonly List<string> CommonComponents = new List<string>
         {
             Component.Link_Coverage,
             Component.Breaksheet,

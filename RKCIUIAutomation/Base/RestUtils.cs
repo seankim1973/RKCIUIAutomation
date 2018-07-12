@@ -3,12 +3,10 @@ using RestSharp;
 
 namespace RKCIUIAutomation.Base
 {
-    public class RestUtils
+    public class RestUtils : BaseUtils
     {        
         public string GetJsonResponse(string baseUrl, string endpoint)
         {
-            BaseUtils baseUtils = new BaseUtils();
-
             RestClient client = new RestClient();
             RestRequest request = new RestRequest();
             IRestResponse response = new RestResponse();
@@ -27,7 +25,7 @@ namespace RKCIUIAutomation.Base
             }
             catch (Exception e)
             {
-                baseUtils.LogError(e.Message);
+                LogError(e.Message);
             }
 
             return json;

@@ -2,10 +2,7 @@
 
 namespace RKCIUIAutomation.Base
 {
-    public class BaseHooks : ConfigUtils
+    public class BaseHooks
     {
-        public ConfigUtils Configs = new ConfigUtils();
-
-
     }
 }

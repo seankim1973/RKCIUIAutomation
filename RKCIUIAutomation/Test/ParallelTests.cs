@@ -1,14 +1,8 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using static RKCIUIAutomation.Config.ProjectProperties;
 
-namespace RKCIUIAutomation.Test
+namespace RKCIUIAutomation.Test.ParallelTests
 {
     [TestFixture]
     [Parallelizable]
@@ -18,15 +12,13 @@ namespace RKCIUIAutomation.Test
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name")]
+        [Description("Verify Page Title for QMS Documents page")]
         public void TestDynamicNavigation()
         {
-            LogInfo($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Qms_Document();
             Assert.True(VerifyPageTitle("QMS Documents"));
         }
-
     }
 
     [TestFixture]
@@ -37,39 +29,38 @@ namespace RKCIUIAutomation.Test
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name")]
+        [Description("Verify Navigation for sub menu items under Project")]
         public void VerifyComponentTestRuns()
         {
             LogInfo($"Other component test - This test should run");
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.My_Details();
-            Assert.True(VerifyPageTitle("Account Details"));
+            AddAssertionToList(VerifyPageTitle("Account Details"));
             NavigateToPage.UserMgmt_Roles();
-            Assert.True(VerifyPageTitle("Roles"));
+            AddAssertionToList(VerifyPageTitle("Roles"));
             NavigateToPage.SysConfig_Gradations();
-            Assert.True(VerifyPageTitle("Gradations"));
+            AddAssertionToList(VerifyPageTitle("Gradations"));
+            AssertAll();
         }
-
     }
 
     [TestFixture]
     [Parallelizable]
-    public class TestNewGWQALabMenuClass : TestBase
+    public class VerifySkipTestBasedOnComponent : TestBase
     {
         [Test]
         [Category(Component.Other), Property("Component2",Component.OV_Test)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name")]
-        public void TestNewGWQALabMenu()
+        [Description("Verify Test is Skipped for non-I15 Tenants")]
+        public void SkipTestBasedOnComponent()
         {
-            LogInfo($"Other component test - This test should run");
+            LogInfo($"Test skip test - This test should run only for I15 Tenants");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QALab_BreakSheet_Forecast();
             NavigateToPage.QALab_Cylinder_PickUp_List();
             NavigateToPage.QALab_Early_Break_Calendar();
         }
-
     }
 
     [TestFixture]
@@ -80,10 +71,10 @@ namespace RKCIUIAutomation.Test
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name")]
+        [Description("Verify Test Runs without specifying Component2 annotation")]
         public void LatestTest()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Search();
             RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
             Assert.True(VerifyPageTitle("RM Center Search"));
@@ -98,11 +89,10 @@ namespace RKCIUIAutomation.Test
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
-        [Description("Failing Test")]
+        [Description("Verify Test Fails as expected")]
         public void FailingTest()
         {
-            LogInfo($"Other component test - This test should run");
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Search();
             RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
             Assert.True(false);

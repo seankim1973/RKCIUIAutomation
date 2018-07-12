@@ -93,6 +93,9 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MiniGuid, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MiniGuid.1.1.2\lib\netstandard1.0\MiniGuid.dll</HintPath>
+    </Reference>
     <Reference Include="MongoDB.Bson, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.7.0\lib\net45\MongoDB.Bson.dll</HintPath>
     </Reference>
@@ -121,6 +124,16 @@
       <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.Primitives, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Primitives.4.3.0\lib\net45\System.ComponentModel.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.TypeConverter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.TypeConverter.4.3.0\lib\net45\System.ComponentModel.TypeConverter.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Console, Version=4.0.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Console.4.3.1\lib\net46\System.Console.dll</HintPath>
@@ -206,6 +219,11 @@
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -288,6 +306,12 @@
     <Compile Include="Page\PageObjects\QAEngineer\QATest_Authorization.cs" />
     <Compile Include="Page\PageObjects\QAEngineer\QATest_FieldSuervisorReview.cs" />
     <Compile Include="Page\PageObjects\QAEngineer\QATest_LabSupervisorReview.cs" />
+    <Compile Include="Page\PageObjects\QAField\DailyEnvInspection.cs" />
+    <Compile Include="Page\PageObjects\QAField\QADIRs.cs" />
+    <Compile Include="Page\PageObjects\QAField\QATechRandomSearch.cs" />
+    <Compile Include="Page\PageObjects\QAField\QATest.cs" />
+    <Compile Include="Page\PageObjects\QAField\WeeklyEnvInspection.cs" />
+    <Compile Include="Page\PageObjects\QAField\WeeklyEnvMonitoring.cs" />
     <Compile Include="Page\PageObjects\QALab\BreakSheetCreation.cs" />
     <Compile Include="Page\PageObjects\QALab\BreakSheetForecast.cs" />
     <Compile Include="Page\PageObjects\QALab\BreakSheetLegacy.cs" />
@@ -311,6 +335,7 @@
     <Compile Include="Page\PageObjects\ReportsNotices\GeneralNCR.cs" />
     <Compile Include="Page\PageObjects\RFI\Create.cs" />
     <Compile Include="Page\PageObjects\RFI\List.cs" />
+    <Compile Include="Page\PageObjects\RMCenter\DesignDocument_Template.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DesignDocument.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DOTProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ProjectCorrespondenceLog.cs" />
@@ -334,9 +359,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Page\PageObjects\RMCenter\DesignDocumentCommentReview.cs" />
-    <Compile Include="Test\DesignDocumentCommentReviewTest.cs" />
-    <Compile Include="Test\LinkCoverage.cs" />
+    <Compile Include="Page\Workflows\LinkCoverageWF.cs" />
     <Compile Include="Test\LinkCoverageTest.cs" />
     <Compile Include="Test\MSUnitTest.cs" />
     <Compile Include="Test\ParallelTests.cs" />
@@ -346,7 +369,9 @@
     <Compile Include="Test\UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\JiraUtil.cs" />
+    <Compile Include="Tools\NUnitClass.cs" />
     <Compile Include="Tools\TestResultUtil.cs" />
+    <Compile Include="Tools\XMLUtil.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -374,6 +399,7 @@
     <Content Include="extent-config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Tools\TestResult.xml" />
     <None Include="Jenkinsfile">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

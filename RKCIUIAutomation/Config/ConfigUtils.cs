@@ -1,7 +1,4 @@
-﻿using NUnit.Framework;
-using OpenQA.Selenium;
-using RKCIUIAutomation.Base;
-using System;
+﻿using System;
 using System.Collections.Specialized;
 using System.Configuration;
 
@@ -9,8 +6,8 @@ using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Config
 {
-    #pragma warning disable IDE0044 // Add readonly modifier
-    public class ConfigUtils : WebDriverFactory
+#pragma warning disable IDE0044 // Add readonly modifier
+    public class ConfigUtils : ProjectProperties
     {
         public TestPlatform GetTestPlatform(string nunitArg) => (TestPlatform)Enum.Parse(typeof(TestPlatform), nunitArg);
         public BrowserType GetBrowserType(string nunitArg) => (BrowserType)Enum.Parse(typeof(BrowserType), nunitArg);
@@ -58,8 +55,5 @@ namespace RKCIUIAutomation.Config
             }
             return collection[$"{key}"];
         }
-
-
-
     }
 }

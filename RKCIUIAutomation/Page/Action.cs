@@ -1,9 +1,12 @@
 ﻿using AutoIt;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
+using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,6 +15,30 @@ namespace RKCIUIAutomation.Page
 {
     public class Action : PageHelper
     {
+        private enum JSAction
+        {
+            [StringValue("arguments[0].click();")]Click,
+            [StringValue("var evObj = document.createEvent('MouseEvents');" +
+                    "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
+                    "arguments[0].dispatchEvent(evObj);")]Hover
+        }
+        private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
+        {
+            try
+            {
+                string javaScript = jsAction.GetString();
+                IWebElement element = GetElement(elementByLocator);
+                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
+                executor.ExecuteScript(javaScript, element);
+                LogInfo($"{jsAction.ToString()}ed on javascript element - {elementByLocator}");
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to perform {jsAction.ToString()} action on javascript element - {elementByLocator}", true, e);
+                throw;
+            }
+        }
+
         private bool WaitForElement(By elementByLocator)
         {
             try
@@ -80,34 +107,33 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogInfo($"Unable to click element - {elementByLocator}", e);
+                LogError($"Unable to click element - {elementByLocator}", true, e);
             }
         }
-
-        public void HoverAndClick(By elemByToHover, By elemByToClick)
+        public void ClickElement(IWebElement webElement)
         {
-            Hover(elemByToHover);
-            ClickElement(elemByToClick);
-        }
-
-        public void Hover(By elementByLocator)
-        {
-            IWebElement element = GetElement(elementByLocator);
             try
             {
-                string javaScript = "var evObj = document.createEvent('MouseEvents');" +
-                    "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
-                    "arguments[0].dispatchEvent(evObj);";
-
-                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
-                executor.ExecuteScript(javaScript, element);
-                LogInfo($"Hover mouse over element - {elementByLocator}");
-                Thread.Sleep(1000);
+                string buttonTxt = string.Empty;
+                if (webElement != null)
+                {
+                    buttonTxt = webElement.Text;
+                    webElement.Click();
+                }               
+                LogInfo($"Clicked {buttonTxt}");
             }
             catch (Exception e)
             {
-                LogInfo($"Unsuccessful attempt to hover mouse over element {elementByLocator}", e);
+                LogError($"Unable to click element", true, e);
             }
+        }
+
+        public void ClickJsElement(By elementByLocator) => ExecuteJsAction(JSAction.Click, elementByLocator);
+
+        public void Hover(By elementByLocator)
+        {
+            ExecuteJsAction(JSAction.Hover, elementByLocator);
+            Thread.Sleep(1000);
         }
 
         public void EnterText(By elementByLocator, string text)
@@ -119,28 +145,41 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogInfo($"Unable to enter text in field - {elementByLocator}", e);
+                LogError($"Unable to enter text in field - {elementByLocator}", true, e);
             }
         }
 
         public string GetText(By elementByLocator)
         {
-            string text = String.Empty;
+            string text = string.Empty;
             try
             {
                 text = GetElement(elementByLocator).Text;
-                LogInfo($"Retrieved text '{text}' from element - {elementByLocator}");
+                LogInfo($"Retrieved text, '{text}', from element - {elementByLocator}");
             }
             catch (Exception e)
             {
-                LogInfo($"Unable to retrieve text from element - {elementByLocator}", e);
+                LogError($"Unable to retrieve text from element - {elementByLocator}", true, e);
             }
             
             return text;
         }
 
+        public string GetTextFromDDL(Enum ddListID)
+        {
+            string text = string.Empty;
+            try
+            {
+                text = $"{GetText(new PageHelper().GetDDListByLocator(ddListID))}//span[@class='k-input']";
+                LogInfo($"Retrieved text '{text}' from element - {ddListID?.GetString()}");
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to retrieve text from drop-down element - {ddListID?.GetString()}", true, e);
+            }
+            return text;
+        }
 
-        public string GetTextFromDDL(Enum ddListID) => $"{GetText(new PageHelper().GetDDListByLocator(ddListID))}//span[@class='k-input']";
         public void ExpandDDL(Enum ddListID)
         {
             By locator = new PageHelper().GetExpandDDListButtonByLocator(ddListID);
@@ -148,11 +187,11 @@ namespace RKCIUIAutomation.Page
             {
                 ClickElement(locator);
                 Thread.Sleep(2000);
-                LogInfo($"Expanded DDList - {ddListID}");
+                LogInfo($"Expanded DDList - {ddListID?.GetString()}");
             }
             catch (Exception e)
             {
-                LogInfo($"Unable to expand drop down list - {locator}", e);
+                LogError($"Unable to expand drop down list - {locator}", true, e);
             }
         }
 
@@ -194,7 +233,7 @@ namespace RKCIUIAutomation.Page
         public string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
         {
             string uploadPath = string.Empty;
-            if (isRemoteUpload == false)
+            if (!isRemoteUpload)
             {
                 uploadPath = $"{GetCodeBasePath()}\\UploadFiles\\{fileName}";
             }
@@ -204,6 +243,28 @@ namespace RKCIUIAutomation.Page
             }
 
             return uploadPath;
+        }
+
+        public void AcceptAlertMessage()
+        {
+            try
+            {
+                driver.SwitchTo().Alert().Accept();
+                LogInfo("Accepted browser alert message");
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to accept browser alert message", true, e);
+                throw;
+            }          
+        }
+
+        public bool VerifyAlertMessage(string expectedMessage)
+        {            
+            string actualAlertMsg = driver.SwitchTo().Alert().Text;
+            bool msgMatch = (actualAlertMsg).Contains(expectedMessage) ? true : false;
+            LogInfo($"## Expected Alert Message: {expectedMessage} <br>&nbsp;&nbsp;## Actual Alert Message: {actualAlertMsg}", msgMatch);
+            return msgMatch;
         }
 
         public bool VerifyFieldErrorIsDisplayed(By elementByLocator )
@@ -233,18 +294,10 @@ namespace RKCIUIAutomation.Page
 
             if (element != null)
             {
-                try
-                {
-                    isDisplayed = element.Displayed;
-                    if (isDisplayed)
-                        PageTitle = element.Text;
-                }
-                catch (Exception e)
-                {
-                    log.Debug(e.Message);
-                }
+                PageTitle = element.Text;
+                isDisplayed = true;
             }
-
+  
             return isDisplayed;
         }
 
@@ -269,7 +322,11 @@ namespace RKCIUIAutomation.Page
                     if (!isDisplayed)
                     {
                         headingElement = By.XPath("//h2");
-                        isDisplayed = IsElementDisplayed(headingElement);
+                        isMatchingTitle = IsElementDisplayed(headingElement) ? (GetElement(headingElement).Text).Contains(expectedPageTitle) : false;
+                    }
+                    else
+                    {
+                        isMatchingTitle = (GetElement(headingElement).Text).Contains(expectedPageTitle);
                     }
                 }
                 else
@@ -298,7 +355,19 @@ namespace RKCIUIAutomation.Page
             return isDisplayed;
         }
 
-        private readonly By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
+        private string pageErrLogMsg = string.Empty;
+        private bool FoundKnownPageErrors()
+        {            
+            By serverErrorH1Tag = By.XPath("//h1[contains(text(),'Server Error')]");
+            By resourceNotFoundH2Tag = By.XPath("//h2/i[text()='The resource cannot be found.']");
+            By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
+
+            IWebElement pageErrElement = driver.FindElement(serverErrorH1Tag) ?? driver.FindElement(stackTraceTagByLocator) ?? driver.FindElement(resourceNotFoundH2Tag);
+            bool foundKnownError = pageErrElement.Displayed ? true : false;
+            string pageUrl = $"<br>&nbsp;&nbsp;@URL: {driver.Url}";
+            pageErrLogMsg = foundKnownError ? $"!!! Page Error - {pageErrElement.Text}{pageUrl}" : $"!!! Page did not load as expected.{pageUrl}";
+            return false;
+        }
 
         public bool VerifyUrlIsLoaded(string pageUrl)
         {
@@ -310,72 +379,60 @@ namespace RKCIUIAutomation.Page
                 driver.Navigate().GoToUrl(pageUrl);
                 pageTitle = driver.Title;
 
-                if (pageTitle.Contains("ELVIS PMC"))
-                {
-                    LogInfo(">>> Page Loaded Successfully <<<");
-                    isLoaded = true;
-                }
-                else
-                {
-                    IWebElement stackTraceTag = GetElement(stackTraceTagByLocator);
-                    if(stackTraceTag?.Displayed == true)
-                    {
-                        LogError(">>> Page Did Not Load Successfully <<<");
-                    }
-                }                    
+                isLoaded = (pageTitle.Contains("ELVIS PMC")) ? true : FoundKnownPageErrors();                 
             }
             finally
             {
-                string pageTitleMsg = $"{pageUrl}<br>&nbsp;&nbsp;PageHeader: {pageTitle}";
+                string pageTitleMsg = $"{pageUrl} - Page Title: {pageTitle}<br>&nbsp;&nbsp;";
+                string logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : pageErrLogMsg;            
+                
+                LogInfo($"{logMsg}<br>&nbsp;&nbsp;{pageTitleMsg}", isLoaded);
+                if (!isLoaded)
+                {
+                    LogDebug($"Page Error seen at URL: {driver.Url}");
+                }
                 WriteToFile(pageTitleMsg, "_PageTitle.txt");
-                LogInfo(pageTitleMsg, isLoaded);
             }
             return isLoaded;
         }
-
         public void VerifyPageIsLoaded(bool checkingLoginPage = false, bool continueTestIfPageNotLoaded = true)
         {
             string pageTitle = null;
-            string expectedPageTitle = checkingLoginPage == false ? "ELVIS PMC" : "Log in";
+            string expectedPageTitle = (checkingLoginPage == false) ? "ELVIS PMC" : "Log in";
+            string logMsg = string.Empty;
+            bool isLoaded = false;
 
             try
             {
                 pageTitle = driver.Title;
+                isLoaded = (pageTitle.Contains(expectedPageTitle)) ? true : FoundKnownPageErrors();
+                logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : pageErrLogMsg;
+                LogInfo(logMsg, isLoaded);
 
-                if (pageTitle.Contains(expectedPageTitle))
+                if (!isLoaded)
                 {
-                    LogInfo(">>> Page Loaded Successfully <<<");
-                }
-                else
-                {
-                    IWebElement stackTraceTag = null;
-                    stackTraceTag = GetElement(stackTraceTagByLocator);
-                    if (stackTraceTag?.Displayed == true)
+                    if (continueTestIfPageNotLoaded == true)
                     {
-                        LogError(">>> Page did not load properly <<<");
-
-                        if (continueTestIfPageNotLoaded == true)
+                        LogInfo(">>> Attempting to navigate back to previous page to continue testing <<<");
+                        driver.Navigate().Back();
+                        pageTitle = driver.Title;
+                        isLoaded = pageTitle.Contains("ELVIS PMC") ? true : FoundKnownPageErrors();
+                        if (isLoaded)
                         {
-                            driver.Navigate().Back();
-                            LogDebug(">>> Navigating back to previous page to continue test <<<");
-                            pageTitle = driver.Title;
-                            if (pageTitle.Contains("ELVIS PMC"))
-                            {
-                                LogDebug(">>> Navigated to previous page successfully <<<");
-                            }
-                            else
-                            {
-                                stackTraceTag = GetElement(stackTraceTagByLocator);
-                                if (stackTraceTag?.Displayed == true)
-                                {
-                                    Assert.True(false);
-                                    LogError(">>> Page did not load properly, when navigating to the previous page <<<");
-                                }
-                            }
+                            LogInfo(">>> Navigated to previous page successfully <<<");
                         }
                         else
-                            Assert.True(false);
+                        {
+                            LogInfo($"!!! Page did not load properly, when navigating to the previous page !!!<br>&nbsp;&nbsp;{pageErrLogMsg}");
+                            Assert.Fail();
+                        }
                     }
+                    else
+                    {
+                        Assert.Fail();
+                    }
+
+                    InjectTestStatus(GetTestName(), TestStatus.Failed, pageErrLogMsg);
                 }
             }
             catch (Exception)
@@ -384,58 +441,60 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        private readonly By Btn_Cancel = By.Id("CancelSubmittal");
-        private readonly By Btn_Save = By.Id("SaveSubmittal");
-        private readonly By Btn_SubmitForward = By.Id("SaveForwardSubmittal");
-        private static readonly By Btn_Create = By.Id("btnCreate");
+        
+        private static string ActiveModalXpath => "//div[contains(@style,'opacity: 1')]";
+        private static string ModalTitle => $"{ActiveModalXpath}//div[contains(@class,'k-header')]";
+        private static string ModalCloseBtn => $"{ActiveModalXpath}//a[@aria-label='Close']";
+        public void CloseActiveModalWindow()
+        {
+            ClickJsElement(By.XPath(ModalCloseBtn));
+            Thread.Sleep(500);
+        }
+        public bool VerifyActiveModalTitle(string expectedModalTitle)
+        {
+            string actualTitle = GetText(By.XPath(ModalTitle));
+            bool titlesMatch = actualTitle.Contains(expectedModalTitle) ? true : false;
+            LogInfo($"## Expected Modal Title: {expectedModalTitle} <br>&nbsp;&nbsp;## Actual Modal Title: {actualTitle}", titlesMatch);
+            return titlesMatch;
+        }
+
 
         public void ClickCancel()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_Cancel);
+            IWebElement cancelBtn = GetElement(GetButtonByLocator("Cancel")) ?? GetElement(GetInputButtonByLocator("Cancel")) ?? GetElement(By.Id("CancelSubmittal"));
+
+            if (cancelBtn.Displayed)
+            {
+                cancelBtn.Click();
+                LogInfo("Clicked Cancel");
+            }
+            else
+            {
+                LogError("Unable to click Cancel");
+            }
         }
         public void ClickSave()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_Save);
+            ClickElement(By.Id("SaveSubmittal"));
         }
         public void ClickSubmitForward()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_SubmitForward);
+            ClickElement(By.Id("SaveForwardSubmittal"));
         }
         public void ClickCreate()
         {
             VerifyPageIsLoaded();
-            ClickElement(Btn_Create);
+            ClickElement(By.Id("btnCreate"));
         }
         public void ClickNew()
         {
             VerifyPageIsLoaded();
-            ClickElement(GetButtonByLocator("New"));
-        }
-        public void ClickNew_InputBtn()
-        {
-            VerifyPageIsLoaded();
-            ClickElement(GetInputFieldByLocator("Create New"));
-        }
-        public void ClickCancel_ATag()
-        {
-            VerifyPageIsLoaded();
-            ClickElement(GetButtonByLocator("Cancel"));
-        }
-        public void ClickCancel_InputBtn()
-        {
-            VerifyPageIsLoaded();
-            ClickElement(GetInputFieldByLocator("Cancel"));
+            IWebElement newBtn = GetElement(GetButtonByLocator("New")) ?? GetElement(GetInputButtonByLocator("Create New"));
+            ClickElement(newBtn);
         }
 
     }
 }
-
-
-//AutoItX.Run("notepad.exe", "C:\\Windows");
-//AutoItX.WinWaitActive("Untitled");
-//AutoItX.Send("Testing 1 2 3 4 5");
-//IntPtr winHandle = AutoItX.WinGetHandle("Untitled");
-//AutoItX.WinKill(winHandle);

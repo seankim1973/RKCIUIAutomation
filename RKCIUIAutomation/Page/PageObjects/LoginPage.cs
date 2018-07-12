@@ -14,11 +14,14 @@ namespace RKCIUIAutomation.Page.PageObjects
         private readonly By field_Password = By.Name("Password");
         private readonly By chkbx_RememberMe = By.Name("RememberMe");
         private readonly By btn_Login = By.XPath("//input[@type='submit']");
+        private int userAcctIndex = 0;
+        private string credential = string.Empty;
 
         public void LoginUser(UserType userType)
         {
             VerifyPageIsLoaded(true, false);
 
+            ConfigUtils Configs = new ConfigUtils();
             string[] userAcct = Configs.GetUser(userType);
             IList<By> loginFields = new List<By>
             {
@@ -27,25 +30,18 @@ namespace RKCIUIAutomation.Page.PageObjects
             };
 
             foreach (By field in loginFields)
-            {
-                string credential = string.Empty;
-                int userAcctIndex = 1;
+            {              
+                userAcctIndex = (field == field_Email) ? 0 : 1;
                 IWebElement webElem = null;
-
-                if (field == field_Email)
-                {
-                    userAcctIndex = 0;
-                    LogInfo($"Using account : {userAcct[0]}");
-                }
 
                 credential = userAcct[userAcctIndex];
 
                 try
                 {
                     LogInfo($"...waiting for element {field}");
-                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5))
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2))
                     {
-                        PollingInterval = TimeSpan.FromMilliseconds(500)
+                        PollingInterval = TimeSpan.FromMilliseconds(250)
                     };
                     wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
                     wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
@@ -54,11 +50,12 @@ namespace RKCIUIAutomation.Page.PageObjects
                 }
                 catch (Exception e)
                 {
-                    LogInfo($"Exception occured while waiting for element - {field}", false, e);
+                    LogError($"Exception occured while waiting for element - {field}", true, e);
                     throw;
                 }
             }
-            
+
+            LogInfo($"Using account : {userAcct[0]}");
             ClickElement(btn_Login);
         }
 

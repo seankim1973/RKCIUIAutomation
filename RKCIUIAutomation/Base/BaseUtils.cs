@@ -1,47 +1,59 @@
-﻿using AventStack.ExtentReports;
-using AventStack.ExtentReports.MarkupUtils;
-using log4net;
-using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.Extensions;
-using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Test;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Xml.Serialization;
+using AventStack.ExtentReports;
+using AventStack.ExtentReports.MarkupUtils;
+using log4net;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.Extensions;
+using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page;
+using static RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Base
 {
-    public class BaseUtils : BaseHooks
+    public class BaseUtils : ConfigUtils
     {
         internal static readonly ILog log = LogManager.GetLogger("");
   
         public static string extentReportPath = string.Empty;
-        public static string screenshotReferencePath = "errorscreenshots/";
+        //public static string screenshotReferencePath = "errorscreenshots/";
         public static string fullTempFileName = string.Empty;
         private static string baseTempFolder = string.Empty;
         private static string fileName = string.Empty;
         private static string dateString = string.Empty;
 
         public BaseUtils()
-        {           
+        {
             baseTempFolder = $"{GetCodeBasePath()}\\Temp";
             fileName = BaseClass.tenantName.ToString();
             dateString = GetDateString();
+        }
+
+        private string SetWinTempFolder()
+        {
+            string cTemp = "C:\\Temp";
+            if (!File.Exists(cTemp))
+            {
+                Directory.CreateDirectory(cTemp);
+            }
+
+            return cTemp;
         }
 
         private string GetDateString()
         {
             string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
             string month = shortDate[0];
-            if (month.Length < 1)
-            {
-                month = $"0{month}";
-            }
-            return $"{month}{shortDate[1]}{shortDate[2]}";
+            string date = shortDate[1];
+
+            month = (month.Length > 1)?month : $"0{month}";
+            date = (date.Length > 1)?date : $"0{date}";
+
+            return $"{month}{date}{shortDate[2]}";
         }
 
         public static void DetermineReportFilePath()
@@ -72,34 +84,53 @@ namespace RKCIUIAutomation.Base
             string screenshotFolderPath = $"{extentReportPath}\\errorscreenshots\\";
             Directory.CreateDirectory(screenshotFolderPath);
             screenshot.SaveAsFile($"{screenshotFolderPath}{uniqueFileName}", ScreenshotImageFormat.Png);
-            return $"{screenshotReferencePath}{uniqueFileName}";
+            return $"{"errorscreenshots/"}{uniqueFileName}";
         }
 
         //ExtentReports Loggers
-        public static void LogAssertIgnore(string msg)
+        public static void LogIgnore(string msg)
         {
-            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(msg, ExtentColor.Orange));
+            ExtentTestManager.GetTest().Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
             log.Debug(msg);
-            Assert.Ignore(msg);
+        }
+        public static void LogFail(string details, Exception e = null)
+        {
+            ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
+            log.Error(details);
+
+            if (e != null)
+            {
+                ExtentTestManager.GetTest().Error(CreateReportMarkupCodeBlock(e));
+                log.Error(e.Message);
+            }
         }
         public void LogError(string details, bool takeScreenshot = true, Exception e = null)
         {
-            ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));
-            log.Error(details);
-
             if (takeScreenshot)
             {
-                LogErrorWithScreenshot();          
+                LogErrorWithScreenshot();
             }
-            
+            else
+            {
+                ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));               
+            }
+            log.Error(details);
+
             if (e != null)
             {
-                log.Fatal(e.Message);
+                ExtentTestManager.GetTest().Error(CreateReportMarkupCodeBlock(e));
+                log.Error(e.Message);
             }
         }
         public static void LogDebug(string details)
         {
-            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
+            if (details.Contains(">>>"))
+            {
+                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
+            }
+            else
+                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
+
             log.Debug(details);
         }
         public void LogErrorWithScreenshot()
@@ -112,6 +143,10 @@ namespace RKCIUIAutomation.Base
             if (details.Contains("#####"))
             {
                 ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details));
+            }
+            else if (details.Contains(">>>"))
+            {
+                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
             }
             else
                 ExtentTestManager.GetTest().Info(details);
@@ -129,15 +164,24 @@ namespace RKCIUIAutomation.Base
         }
         public void LogInfo(string details, bool assertion, Exception e = null)
         {
+            bool hasPgBreak = false;
+            string[] detailsBr = null;
+
+            if (details.Contains("<br>"))
+            {
+                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                hasPgBreak = true;
+            }
+
             if (assertion)
             {
                 ExtentTestManager.GetTest().Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
-                
-                if (details.Contains("<br>"))
+                if (hasPgBreak)
                 {
-                    string[] result = Regex.Split(details, "<br>&nbsp;&nbsp;");
-                    log.Info(result[0]);
-                    log.Info(result[1]);
+                    for (int i = 0; i < detailsBr.Length; i++)
+                    {
+                        log.Info(detailsBr[i]);
+                    }
                 }
                 else
                     log.Info(details);
@@ -146,7 +190,15 @@ namespace RKCIUIAutomation.Base
             {
                 ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
                 LogErrorWithScreenshot();
-                log.Fatal(details);
+                if (hasPgBreak)
+                {
+                    for (int i = 0; i < detailsBr.Length; i++)
+                    {
+                        log.Fatal(detailsBr[i]);
+                    }
+                }
+                else
+                    log.Fatal(details);
 
                 if (e != null)
                 {
@@ -154,6 +206,7 @@ namespace RKCIUIAutomation.Base
                 }
             }
         }
+
         private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
         {
             return MarkupHelper.CreateLabel(details, extentColor);
@@ -203,18 +256,6 @@ namespace RKCIUIAutomation.Base
             }
 
             var prop = testInstance.Properties.Get(context) ?? "Not Defined";
-
-            //Console.WriteLine($"########### {property.ToString()}");
-
-            //if (prop == null || prop.ToString() == "Not Defined")
-            //{
-            //    LogDebug($" - Test Context Property is not assigned to Test Case method");
-            //}
-            //else
-            //{
-            //    property = prop.ToString();
-            //}
-
             return prop.ToString();
         }
         private enum TestContextProperty
@@ -248,85 +289,70 @@ namespace RKCIUIAutomation.Base
         /// </summary>
         public static void WriteToFile(string msg, string fileExt = ".txt", bool overwriteExisting = false)
         {
-            fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
-
-            Directory.CreateDirectory(baseTempFolder);
-            string path = $"{fullTempFileName}{fileExt}";
-            StreamWriter workflow = null;
-
-            if (overwriteExisting.Equals(true))
+            try
             {
-                if (File.Exists(path))
+                fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
+
+                Directory.CreateDirectory(baseTempFolder);
+                string path = $"{fullTempFileName}{fileExt}";
+
+                if (overwriteExisting == true)
                 {
-                    File.Delete(path);
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
                 }
 
-                workflow = File.CreateText(path);
-            }
-            else
-            {
-                workflow = File.AppendText(path);
-            }
-
-            using (StreamWriter sw = workflow)
-            {
-                if (msg.Contains("<br>"))
+                StreamWriter streamWriter = File.Exists(path) ? File.AppendText(path) : File.CreateText(path);
+                using (StreamWriter sw = streamWriter)
                 {
-                    string[] message = Regex.Split(msg, "<br>&nbsp;&nbsp;");
-                    sw.WriteLine(message[0]);
-                    sw.WriteLine(message[1]);
+                    if (msg.Contains("<br>"))
+                    {
+                        string[] message = Regex.Split(msg, "<br>&nbsp;&nbsp;");
+                        sw.WriteLine(message[0]);
+                        sw.WriteLine(message[1]);
+                    }
+                    else
+                    {
+                        sw.WriteLine(msg);
+                    }
                 }
-                else
-                    sw.WriteLine(msg);
             }
-        }
-
-
-        //TODO: Fix util to generate xml file for menu nav
-        public class XMLUtil
-        {
-            public XmlSerializer xs;
-            List<Navigation> ls;
-
-            public void WriteXmlFile(string fileName)
+            catch (Exception e)
             {
-
-                ls = new List<Navigation>();
-                xs = new XmlSerializer(typeof(List<Navigation>));
-
-                FileStream fs = new FileStream(GetFilePath(fileName), FileMode.Create, FileAccess.Write);
-                Navigation linklist = new Navigation
-                {
-                    MainNavMenu = "",
-                    SubMainNavMenu = "",
-                    SubMenu = "",
-                    SubSubMenu = "",
-                    SubSubMenuItem = ""
-                };
-                ls.Add(linklist);
-
-                xs.Serialize(fs, ls);
-                fs.Close();
+                Console.WriteLine(e.Message);
+                throw;
             }
-
-            public void ReadXmlFile(string fileName)
-            {
-                FileStream fs = new FileStream(GetFilePath(fileName), FileMode.Open, FileAccess.Read);
-                ls = (List<Navigation>)xs.Deserialize(fs);
-                fs.Close();
-            }
-
-            string GetFilePath(string fileName) => $"{fullTempFileName}.xml";
         }
-        public class Navigation
+
+        private static PageBaseHelper pgbHelper = new PageBaseHelper();
+        public static void InjectTestStatus(string testName, TestStatus status, string logMsg)
         {
-            public string MainNavMenu { get; set; }
-            public string SubMainNavMenu { get; set; }
-            public string SubMenu { get; set; }
-            public string SubSubMenu { get; set; }
-            public string SubSubMenuItem { get; set; }
-
+            pgbHelper.CreateVar($"{testName}_msgKey", logMsg);
+            pgbHelper.CreateVar($"{testName}_statusKey", status.ToString());
         }
 
+        public static void CheckForTestStatusInjection()
+        {
+            string logMessage = pgbHelper.GetVar($"{GetTestName()}_msgKey");
+            string injStatus = pgbHelper.GetVar($"{GetTestName()}_statusKey");
+
+            switch (injStatus)
+            {
+                case "Failed":
+                    Assert.Fail(logMessage);
+                    break;
+            }
+        }
+    }
+
+    public static class BaseHelper
+    {
+        public static string SplitCamelCase(this string str, bool removeUnderscore = true)
+        {
+            string value = (removeUnderscore == true) ? Regex.Replace(str, @"_", "") : str;
+            return Regex.Replace(Regex.Replace(value, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
+        }
     }
 }
