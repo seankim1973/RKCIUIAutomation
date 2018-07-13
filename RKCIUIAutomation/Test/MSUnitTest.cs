@@ -260,5 +260,34 @@ namespace RKCIUIAutomation.Test
             XMLUtil xmlUtil = new XMLUtil();
             xmlUtil.XMLDocumentTool();
         }
+
+        private class BtnCategory
+        {
+            internal const string Cat1 = "Cat1";
+        }
+        enum TableButton
+        {
+            [StringValue("", BtnCategory.Cat1)] QMS_Attachments_View,
+            [StringValue("-1")] Report_View,
+            [StringValue("-2")] WebForm_View,
+            [StringValue("-3")] Attachments_View,
+            [StringValue("")] Action_Edit,
+            [StringValue("first")] First,
+            [StringValue("previous")] Previous,
+            [StringValue("next")] Next,
+            [StringValue("last")] Last
+        }
+
+        [TestMethod]
+        public void XPathStringTest()
+        {
+            string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
+            string xpath(string textInRowForAnyColumn, TableButton tblRowBtn) => $"{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}[last(){tblRowBtn.GetString()}]/a";
+            string xpath2(string textInRowForAnyColumn, TableButton tblRowBtn) => $"{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}[last(){tblRowBtn.GetString(true)}]/a";
+
+            Console.WriteLine($"XPATH: {xpath("Ron Seal", TableButton.QMS_Attachments_View)}");
+            Console.WriteLine($"XPATH2: {xpath2("Ron Seal", TableButton.QMS_Attachments_View)}");
+            Console.WriteLine($"PREVIOUS: {xpath("Ron Seal", TableButton.Previous)}");
+        }
     }
 }

@@ -1,14 +1,5 @@
 ﻿using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static RKCIUIAutomation.Config.ProjectProperties;
-using NUnit.Framework;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
-using RKCIUIAutomation.Base;
 using MiniGuids;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
@@ -24,15 +15,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Workflow Interface class
     public interface IDesignDocumentCommentReview
     {
-        void _LoggedInUserUploadsDesignDocument();
-        void _LoggedInUserCommentsAndSave();
-        void _LoggedInUserForwardsComment();
-        void _LoggedInUserResponseCommentAndSave();
-        void _LoggedInUserForwardsResponseComment();
-        void _LoggedInUserResolutionCommentAndSave();
-        void _LoggedInUserForwardsResolutionComment();
-        void _LoggedInUserCloseCommentAndSave();
-        void _LoggedInUserForwardsCloseComment();
+        void LoggedInUserUploadsDesignDocument();
+        void LoggedInUserCommentsAndSave();
+        void LoggedInUserForwardsComment();
+        void LoggedInUserResponseCommentAndSave();
+        void LoggedInUserForwardsResponseComment();
+        void LoggedInUserResolutionCommentAndSave();
+        void LoggedInUserForwardsResolutionComment();
+        void LoggedInUserCloseCommentAndSave();
+        void LoggedInUserForwardsCloseComment();
 
     }
     #endregion <-- end of Workflow Interface class
@@ -160,19 +151,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
-        public virtual void _LoggedInUserUploadsDesignDocument()
+        public virtual void LoggedInUserUploadsDesignDocument()
         {
            
         }
 
-        public virtual void _LoggedInUserCommentsAndSave() { }
-        public virtual void _LoggedInUserForwardsComment() { }
-        public virtual void _LoggedInUserResponseCommentAndSave() { }
-        public virtual void _LoggedInUserForwardsResponseComment() { }
-        public virtual void _LoggedInUserResolutionCommentAndSave() { }
-        public virtual void _LoggedInUserForwardsResolutionComment() { }
-        public virtual void _LoggedInUserCloseCommentAndSave() { }
-        public virtual void _LoggedInUserForwardsCloseComment() { }
+        public virtual void LoggedInUserCommentsAndSave() { }
+        public virtual void LoggedInUserForwardsComment() { }
+        public virtual void LoggedInUserResponseCommentAndSave() { }
+        public virtual void LoggedInUserForwardsResponseComment() { }
+        public virtual void LoggedInUserResolutionCommentAndSave() { }
+        public virtual void LoggedInUserForwardsResolutionComment() { }
+        public virtual void LoggedInUserCloseCommentAndSave() { }
+        public virtual void LoggedInUserForwardsCloseComment() { }
 
     }
     #endregion <--end of common implementation class

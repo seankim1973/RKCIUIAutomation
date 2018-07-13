@@ -42,8 +42,6 @@ namespace RKCIUIAutomation.Page
             return $"//div[@id='{ddListID.GetString()}-list']//li[{locatorXpath}]";
         }
         private string SetDDListItemsXpath(Enum ddListID, int itemIndex) => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";
-        private string SetTableTabXpath(Enum tableTab) => $"//span[contains(text(),'{tableTab.GetString()}')]";
-        private string SetTableNavPageXpath(int pageNumber) => $"//div[@id='TestGrid_New']//div[@data-role='pager']/ul/li/a[text()='{pageNumber.ToString()}']";
         private string SetTextInputFieldByLocator(Enum inputEnum) => $"//input[@id='{inputEnum.GetString()}']";
         private string SetButtonXpath(string buttonName) => $"//a[text()='{buttonName}']";
         private string SetInputButtonXpath(string buttonName) => $"//input[@value='{buttonName}']";
@@ -55,8 +53,6 @@ namespace RKCIUIAutomation.Page
         public By GetDDListByLocator(Enum ddListID) => By.XPath(SetDDListFieldXpath(ddListID));
         public By GetExpandDDListButtonByLocator(Enum ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
         public By GetDDListItemsByLocator<T>(Enum ddListID, T itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
-        public By GetTableNavByLocator(int pageNumber) => By.XPath(SetTableNavPageXpath(pageNumber));
-        public By GetTableTabByLocator(Enum tableTab) => By.XPath(SetTableTabXpath(tableTab));
         public By GetTextInputFieldByLocator(Enum inputEnum) => By.XPath(SetTextInputFieldByLocator(inputEnum));
         public By GetButtonByLocator(string buttonName) => By.XPath(SetButtonXpath(buttonName));
         public By GetInputButtonByLocator(string buttonName) => By.XPath(SetInputButtonXpath(buttonName));
@@ -67,7 +63,7 @@ namespace RKCIUIAutomation.Page
 
     public static class EnumHelper
     {
-        public static string GetString(this Enum value)
+        public static string GetString(this Enum value, bool getValue2 = false)
         {
             string output = null;
 
@@ -76,7 +72,7 @@ namespace RKCIUIAutomation.Page
                 Type type = value.GetType();
                 FieldInfo fi = type.GetField(value.ToString());
                 StringValueAttribute[] attrs = fi.GetCustomAttributes(typeof(StringValueAttribute), false) as StringValueAttribute[];
-                output = attrs[0].Value;
+                output = (getValue2) ? attrs[0].Value2 : attrs[0].Value;
             }
             catch (Exception)
             {
@@ -88,8 +84,13 @@ namespace RKCIUIAutomation.Page
 
     public class StringValueAttribute : Attribute
     {
-        public StringValueAttribute(string value) => Value = value;
+        public StringValueAttribute(string value, string value2 = "")
+        {
+            Value = value;
+            Value2 = value2;
+        }
         public string Value { get; }
+        public string Value2 { get; }
     }
 
 }

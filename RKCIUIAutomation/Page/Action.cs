@@ -39,14 +39,14 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        private bool WaitForElement(By elementByLocator)
+        private bool WaitForElement(By elementByLocator, int timeOutInSeconds = 1, int pollingInterval = 250)
         {
             try
             {
                 LogInfo($"...waiting for element {elementByLocator}");
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(1))
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                 {
-                    PollingInterval = TimeSpan.FromMilliseconds(250)
+                    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
                 };
                 wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
@@ -96,6 +96,28 @@ namespace RKCIUIAutomation.Page
                 }
             }
             return elements;
+        }
+        public int GetElementsCount(By elementByLocator)
+        {
+            IList<IWebElement> elements = GetElements(elementByLocator);
+            return elements.Count;
+        }
+        public void WaitForTableToLoad(int timeOutInSeconds = 5, int pollingInterval = 500)
+        {
+            By activeTblBodyLocator = By.XPath("//div[contains(@style,'opacity: 1;')]//tbody");
+
+            try
+            {
+                IWebElement spinner = driver.FindElement(By.XPath("//div[@class='k-loading-image']"));
+                while (spinner.Displayed)
+                {
+                    Thread.Sleep(500);
+                }
+            }
+            finally
+            {
+                WaitForElement(activeTblBodyLocator, timeOutInSeconds, pollingInterval);
+            }
         }
 
         public void ClickElement(By elementByLocator)
@@ -148,6 +170,8 @@ namespace RKCIUIAutomation.Page
                 LogError($"Unable to enter text in field - {elementByLocator}", true, e);
             }
         }
+
+        public string GetElementAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetAttribute(attributeName);
 
         public string GetText(By elementByLocator)
         {
@@ -286,8 +310,15 @@ namespace RKCIUIAutomation.Page
             return elementDisplayed;
         }
 
+        public bool ElementIsDisplayed(By elementByLocator)
+        {
+            IWebElement element = GetElement(elementByLocator);
+            bool isDisplayed = (element != null) ? true : false;
+            return isDisplayed;
+        }
+
         private string PageTitle = string.Empty;
-        public bool IsElementDisplayed(By elementByLocator)
+        private bool IsHeadingDisplayed(By elementByLocator)
         {
             IWebElement element = GetElement(elementByLocator);
             bool isDisplayed = false;
@@ -300,7 +331,6 @@ namespace RKCIUIAutomation.Page
   
             return isDisplayed;
         }
-
         public bool VerifyPageTitle(string expectedPageTitle)
         {
             bool isMatchingTitle = false;
@@ -308,21 +338,21 @@ namespace RKCIUIAutomation.Page
             By headingElement = null;
 
             headingElement = By.XPath($"//h3[contains(text(),'{expectedPageTitle}')]");
-            isDisplayed = IsElementDisplayed(headingElement);
+            isDisplayed = IsHeadingDisplayed(headingElement);
             if (!isDisplayed)
             {
                 headingElement = By.XPath($"//h2[contains(text(),'{expectedPageTitle}')]");
-                isDisplayed = IsElementDisplayed(headingElement);
+                isDisplayed = IsHeadingDisplayed(headingElement);
                 if (!isDisplayed)
                 {
                     LogDebug($"Page Title element with h2 or h3 tag containing text '{expectedPageTitle}' was not found.");
 
                     headingElement = By.XPath("//h3");
-                    isDisplayed = IsElementDisplayed(headingElement);
+                    isDisplayed = IsHeadingDisplayed(headingElement);
                     if (!isDisplayed)
                     {
                         headingElement = By.XPath("//h2");
-                        isMatchingTitle = IsElementDisplayed(headingElement) ? (GetElement(headingElement).Text).Contains(expectedPageTitle) : false;
+                        isMatchingTitle = IsHeadingDisplayed(headingElement) ? (GetElement(headingElement).Text).Contains(expectedPageTitle) : false;
                     }
                     else
                     {
