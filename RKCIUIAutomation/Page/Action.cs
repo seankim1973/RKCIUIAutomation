@@ -149,6 +149,20 @@ namespace RKCIUIAutomation.Page
             }
         }
 
+        public void EnterComment(By elementByLocator)
+        {
+            try
+            {
+                string text = "Comment 123";
+                GetElement(elementByLocator).SendKeys(text);
+                LogInfo($"Entered '{text}' in field - {elementByLocator}");
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to enter text in field - {elementByLocator}", true, e);
+            }
+        }
+
         public string GetText(By elementByLocator)
         {
             string text = string.Empty;

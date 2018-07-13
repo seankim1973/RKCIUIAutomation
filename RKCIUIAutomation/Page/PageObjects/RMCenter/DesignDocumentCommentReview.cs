@@ -24,15 +24,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Workflow Interface class
     public interface IDesignDocumentCommentReview
     {
-        void _LoggedInUserUploadsDesignDocument();
-        void _LoggedInUserCommentsAndSave();
-        void _LoggedInUserForwardsComment();
-        void _LoggedInUserResponseCommentAndSave();
-        void _LoggedInUserForwardsResponseComment();
-        void _LoggedInUserResolutionCommentAndSave();
-        void _LoggedInUserForwardsResolutionComment();
-        void _LoggedInUserCloseCommentAndSave();
-        void _LoggedInUserForwardsCloseComment();
+        void EnterDesignDocTitleAndNumber();
+        void EnterRegularCommentAndDrawingPageNo();
+       // void LoggedInUserForwardsComment();
+        //void LoggedInUserResponseCommentAndSave();
+       // void LoggedInUserForwardsResponseComment();
+       // void LoggedInUserResolutionCommentAndSave();
+       // void LoggedInUserForwardsResolutionComment();
+       // void LoggedInUserCloseCommentAndSave();
+       // void LoggedInUserForwardsCloseComment();
 
     }
     #endregion <-- end of Workflow Interface class
@@ -114,7 +114,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public void ClickTab_Response() => ClickTableTab(TableTab.Response);
         public void ClickTab_Closing() => ClickTableTab(TableTab.Closing);
         public void ClickTab_Closed() => ClickTableTab(TableTab.Closed);
-
+       
 
         public void CreateDocument()
         {
@@ -130,8 +130,28 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Submittal_Document_Number")] DocumentNumber,
             [StringValue("Submittal_Document_DocumentDate")] DocumentDate,
             [StringValue("Submittal_TransmittalDate")] TransmittalDate,
-            [StringValue("Submittal_TransmittalNumber")] TransmittalNumber
+            [StringValue("Submittal_TransmittalNumber")] TransmittalNumber,
+            [StringValue("Comment_ReviewTypeId_0_")] ReviewType,
+            //[StringValue("Comment_Text_0_")] RegularComment,
+            //[StringValue("Comment_DrawingPageNumber")] DrawingPageNumber,
+           // [StringValue("Response_Comment")] ResponseComment,
+            [StringValue("SelectedResponseCode")] ResponseCode,
+           // [StringValue("Resolution_Comment")] ResolutionComment,
+            [StringValue("SelectedResolutionStamp")] ResolutionStamp,
+           // [StringValue("Closing_Comment")] ClosingComment,
+            [StringValue("SelectedClosingStamp")] ClosingStamp
         }
+
+        public  void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 3);
+        public  void SelectNoCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 1);
+      //  public  void EnterText_RegularComment(string text) => EnterText(GetTextInputFieldByLocator(DesignDocDetails_InputFields.RegularComment), text);
+      //  public  void EnterText_DrawingPageNumber(string text) => EnterText(GetTextInputFieldByLocator(DesignDocDetails_InputFields.DrawingPageNumber), text);
+      //  public  void EnterText_ResponseComment(string text) => EnterText(GetTextInputFieldByLocator(DesignDocDetails_InputFields.ResponseComment), text);
+        public  void SelectDDL_ResponseCode<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, itemIndexOrName);
+      //  public  void EnterText_ResolutionComment(string text) => EnterText(GetTextInputFieldByLocator(DesignDocDetails_InputFields.ResolutionComment), text);
+        public  void SelectDDL_ResolutionStamp<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResolutionStamp, itemIndexOrName);
+       // public  void EnterText_ClosingComment(string text) => EnterText(GetTextInputFieldByLocator(DesignDocDetails_InputFields.ClosingComment), text);
+        public  void SelectDDL_ClosingStamp<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ClosingStamp, itemIndexOrName);
 
         private void SetDesignDocTitleAndNumber()
         {
@@ -144,7 +164,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             CreateVar(docNumberKey, guid);
         }
 
-        public void EnterDesignDocTitleAndNumber()
+        public virtual void EnterDesignDocTitleAndNumber()
         {
             SetDesignDocTitleAndNumber();
             designDocTitle = GetVar(docTitleKey).ToString();
@@ -152,27 +172,35 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             designDocNumber = GetVar(docNumberKey).ToString();
             EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.DocumentNumber), designDocNumber);
         }
-
-
+        
+        By commentInput = By.Id("Comment_Text_0_");
+        //By commentResponseInput = By.Id("Comment_Text_0_");
+       // By commentResolutionInput = By.Id("Comment_Text_0_");
+        //By commentClosingInput = By.Id("Comment_Text_0_");
+        public virtual void EnterRegularCommentAndDrawingPageNo()
+        {
+            SelectRegularCommentReviewType();
+            EnterComment(commentInput);
+        }
 
 
 
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
-        public virtual void _LoggedInUserUploadsDesignDocument()
+        public virtual void LoggedInUserUploadsDesignDocument()
         {
            
         }
 
-        public virtual void _LoggedInUserCommentsAndSave() { }
-        public virtual void _LoggedInUserForwardsComment() { }
-        public virtual void _LoggedInUserResponseCommentAndSave() { }
-        public virtual void _LoggedInUserForwardsResponseComment() { }
-        public virtual void _LoggedInUserResolutionCommentAndSave() { }
-        public virtual void _LoggedInUserForwardsResolutionComment() { }
-        public virtual void _LoggedInUserCloseCommentAndSave() { }
-        public virtual void _LoggedInUserForwardsCloseComment() { }
+        public virtual void LoggedInUserCommentsAndSave() { }
+        public virtual void LoggedInUserForwardsComment() { }
+        public virtual void LoggedInUserResponseCommentAndSave() { }
+        public virtual void LoggedInUserForwardsResponseComment() { }
+        public virtual void LoggedInUserResolutionCommentAndSave() { }
+        public virtual void LoggedInUserForwardsResolutionComment() { }
+        public virtual void LoggedInUserCloseCommentAndSave() { }
+        public virtual void LoggedInUserForwardsCloseComment() { }
 
     }
     #endregion <--end of common implementation class
