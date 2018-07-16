@@ -7,7 +7,7 @@ namespace RKCIUIAutomation.Page
 {
     public class PageHelper : BaseClass
     {
-        public Enum ConvertToEnumType<T>(T navEnum) => (Enum)Convert.ChangeType(navEnum, typeof(Enum));
+        public Enum ConvertToEnumType<T>(T enumObject) => (Enum)Convert.ChangeType(enumObject, typeof(Enum));
 
         private string SetDDListFieldXpath(Enum ddListID) => $"//span[@aria-owns='{ddListID.GetString()}_listbox']";
         private string SetDDListFieldExpandArrowXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']/span";

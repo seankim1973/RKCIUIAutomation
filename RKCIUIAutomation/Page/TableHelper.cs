@@ -118,8 +118,192 @@ namespace RKCIUIAutomation.Page
         #endregion <-- end of Table Page Navigation Methods
 
 
+        #region Table Column Filter Methods
+        //<<-- Table Column Filter Helpers -->>
+        private class AttribType
+        {
+            internal const string Button = "Button";
+            internal const string Input = "Input";
+            internal const string DDList = "DDList";
+        }
+        private enum FilterForm
+        {
+            [StringValue("Operator", AttribType.DDList)] Operator,
+            [StringValue("Value", AttribType.Input)] OperatorValue,
+            [StringValue("Filters logic", AttribType.DDList)] FilterLogic,
+            [StringValue("Additional operator", AttribType.DDList)] AddnlOperator,
+            [StringValue("Additional value", AttribType.Input)] AddnlOperatorValue,
+            [StringValue("submit", AttribType.Button)] Filter,
+            [StringValue("reset", AttribType.Button)] Clear,
+        }
+
+        public enum Operator
+        {
+            [StringValue("Is equal to")] Is_equal_to,
+            [StringValue("Is not equal to")] Is_not_equal_to,
+            [StringValue("Starts with")] Starts_with,
+            [StringValue("Contains")] Contains,
+            [StringValue("Does not contain")] Does_not_contain,
+            [StringValue("Ends with")] Ends_with,
+            [StringValue("Is null")] Is_null,
+            [StringValue("Is not null")] Is_not_null,
+            [StringValue("Is empty")] Is_empty,
+            [StringValue("Is not empty")] Is_not_empty,
+        }
+
+        public enum Logic
+        {
+            [StringValue("And")] And,
+            [StringValue("Or")] Or
+        }
+
+        private string SetXPath_ColumnHeaderByName(Enum tblColumnName) => $"//div[contains(@style,'opacity: 1;')]//tr/th[@data-title='{tblColumnName.GetString()}']";
+        private string SetXPath_ColumnHeaderFilterBtn(Enum tblColumnName) => $"{SetXPath_ColumnHeaderByName(tblColumnName)}/a[1]";
+        private string GetXPath_ActiveFilterForm() => $"//form[@aria-hidden='false']";
+        private string SetXPath_ActiveFilterFormElement(FilterForm formElement) => $"{GetXPath_ActiveFilterForm()}/{formElement.GetString()}";
+        
+        /// <summary>
+        /// Table Colum Filter Form xPath string generator is based on the active Filter Form and requires a prior click of the column filter button.
+        /// Only FilterForm enum value is required to generate xpath for input fields and buttons(including buttons to expand a DDList) elements.
+        /// Both FilterForm and OperatorOrLogic enum values are required to generate xpath for filter Operator, Logic, or Additional Operator drop-down list item elements.
+        /// </summary>
+        /// <param name="filterForm"></param>
+        /// <param name="OperatorOrLogic"></param>
+        /// <returns></returns>
+        private string DetermineFilterFormElemXPath(FilterForm filterForm, Enum OperatorOrLogic = null)
+        {
+            string attrbType = filterForm.GetString(true);
+
+            int divIndex = 0;
+            string xPathExt = string.Empty;
+            bool isDDListItem = (attrbType == AttribType.DDList) ? true : false;
+
+            if (OperatorOrLogic == null)
+            {
+                divIndex = 1;
+                    
+                switch (attrbType)
+                {
+                    case AttribType.Button:
+                        xPathExt = $"//button[@type='{filterForm.GetString()}']";
+                        break;
+                    case AttribType.Input:
+                        xPathExt = $"/input[@title='{filterForm.GetString()}']";
+                        break;
+                    case AttribType.DDList:
+                        xPathExt = $"//span[@title='{filterForm.GetString()}']//span[@class='k-select']";
+                        break;
+                }
+            }
+            else if (OperatorOrLogic != null)
+            {
+                try
+                {
+                    switch (filterForm)
+                    {
+                        case FilterForm.Operator:
+                            divIndex = 2;
+                            break;
+                        case FilterForm.FilterLogic:
+                            divIndex = 3;
+                            break;
+                        case FilterForm.AddnlOperator:
+                            divIndex = 4;
+                            break;
+                    }
+
+                    xPathExt = $"//ul/li[text()='{OperatorOrLogic.GetString()}']";
+                }
+                catch (Exception)
+                {
+                    LogError("When OperatorOrLogic value is specified, FilterForm value must be Operator, FilterLogic, or AddnlOperator");
+                    throw;
+                }
+            }
+
+            return $"//form[@aria-hidden='false']/div[{divIndex.ToString()}]{xPathExt}";
+        }
+        private By GetFilterForm_ByLocator(FilterForm filterForm, Enum OperatorOrLogic = null) => By.XPath(DetermineFilterFormElemXPath(filterForm, OperatorOrLogic));
+        private void ExpandFilterDDL(FilterForm filterForm)
+        {
+            By locator = GetFilterForm_ByLocator(filterForm);
+            try
+            {
+                ClickElement(locator);
+                Thread.Sleep(1000);
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to expand filter drop down list - {locator}", true, e);
+            }
+        }
+        private void ExpandandAndSelectFilterDDL(FilterForm filterForm, Enum operatorLogic)
+        {
+            ExpandFilterDDL(filterForm);
+            By ddListItemLocator = GetFilterForm_ByLocator(filterForm, operatorLogic);
+            ClickElement(ddListItemLocator);
+        }
+
+        //<<-- Table Column Filter Public Methods -->>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="tblColumnName"></param>
+        /// <param name="operatorFilterValue"></param>
+        /// <param name="additionalOperatorFilterValue"></param>
+        /// <param name="Operator"></param>
+        /// <param name="Logic"></param>
+        /// <param name="AddnlOperator"></param>
+        public void FilterTableColumn<T>(T tblColumnName, string operatorFilterValue, string additionalOperatorFilterValue = null, Operator Operator = Operator.Is_equal_to, Logic Logic = Logic.And, Operator AddnlOperator = Operator.Is_equal_to)
+        {
+            Enum columnName = ConvertToEnumType(tblColumnName);
+            By filterColumnBtnLocator = By.XPath(SetXPath_ColumnHeaderFilterBtn(columnName));
+            ClickElement(filterColumnBtnLocator);
+
+            try
+            {
+                if (Operator != Operator.Is_equal_to)
+                {
+                    ExpandandAndSelectFilterDDL(FilterForm.Operator, Operator);
+                }
+
+                By operatorInputLocator = GetFilterForm_ByLocator(FilterForm.OperatorValue);
+                EnterText(operatorInputLocator, operatorFilterValue);
+
+                if (Logic != Logic.And)
+                {
+                    ExpandandAndSelectFilterDDL(FilterForm.FilterLogic, Logic);
+                }
+
+                if (additionalOperatorFilterValue != null)
+                {
+                    By addnlOperatorInputLocator = GetFilterForm_ByLocator(FilterForm.AddnlOperatorValue);
+
+                    if (AddnlOperator != Operator.Is_equal_to)
+                    {
+                        ExpandandAndSelectFilterDDL(FilterForm.AddnlOperator, AddnlOperator);
+                    }
+
+                    EnterText(addnlOperatorInputLocator, additionalOperatorFilterValue);
+                }
+
+                By filterBtnLocator = GetFilterForm_ByLocator(FilterForm.Filter);
+                ClickElement(filterBtnLocator);
+            }
+            catch (Exception e)
+            {
+                LogError(e.Message);
+                throw;
+            }
+        }
+
+        #endregion <-- end of Table Column Filter & Sort Order Methods
+
+
         #region Table Column Sort Order Methods
         //<<-- Table Column Sort Order Helpers -->>
+        private string SetXPath_ColumnHeaderNameSortBtn(Enum tblColumnName) => $"{SetXPath_ColumnHeaderByName(tblColumnName)}/a[2]";
         private enum SortOrder
         {
             [StringValue("default")] Default,
@@ -134,7 +318,7 @@ namespace RKCIUIAutomation.Page
 
             if (ElementIsDisplayed(sortIndicator))
             {
-                string currentOrder = GetElementAttribute(By.XPath($"{SetXPath_GetColumnHeaderByName(columnName)}"), "aria-sort");
+                string currentOrder = GetElementAttribute(By.XPath($"{SetXPath_ColumnHeaderByName(columnName)}"), "aria-sort");
                 if (currentOrder == SortOrder.Ascending.GetString())
                 {
                     sortOrder = SortOrder.Ascending;
@@ -213,126 +397,6 @@ namespace RKCIUIAutomation.Page
         }
 
         #endregion <-- end of Column Sort Order Methods
-
-
-        #region Table Column Filter Methods
-        //<<-- Table Column Filter Helpers -->>
-        private class AttribType
-        {
-            internal const string Button = "//button[@type=";
-            internal const string Input = "/input[@title=";
-            internal const string DDLBtn = "//span[@class='k-select']";
-            internal const string DDList = "DDList";
-        }
-        public enum FilterForm
-        {
-            [StringValue("Operator", AttribType.DDLBtn)] Operator,
-            [StringValue("Value", AttribType.Input)] OperatorValue,
-            [StringValue("Filters logic", AttribType.DDLBtn)] FilterLogic,
-            [StringValue("Additional operator", AttribType.DDLBtn)] AddnlOperator,
-            [StringValue("Additional value", AttribType.Input)] AddnlOperatorValue,
-            [StringValue("submit", AttribType.Button)] Filter,
-            [StringValue("reset", AttribType.Button)] Clear,
-        }
-        public enum OperatorOrLogic
-        {
-            [StringValue("Is equal to")] Is_equal_to,
-            [StringValue("Is not equal to")] Is_not_equal_to,
-            [StringValue("Starts with")] Starts_with,
-            [StringValue("Contains")] Contains,
-            [StringValue("Does not contain")] Does_not_contain,
-            [StringValue("Ends with")] Ends_with,
-            [StringValue("Is null")] Is_null,
-            [StringValue("Is not null")] Is_not_null,
-            [StringValue("Is empty")] Is_empty,
-            [StringValue("Is not empty")] Is_not_empty,
-            [StringValue("And")] And,
-            [StringValue("Or")] Or
-        }
-
-        /// <summary>
-        /// Table Colum Filter Form xPath string generator.
-        /// Only FilterForm enum value is required to generate xpath for button or input elements.
-        /// Both FilterForm and OperatorOrLogic enum values are required to generate xpath for filter Operator, Logic, or Additional Operator drop-down list elements.
-        /// </summary>
-        /// <param name="filterForm"></param>
-        /// <param name="OperatorOrLogic"></param>
-        /// <returns></returns>
-        private string GenerateFilterFormElemXPath(FilterForm filterForm, Enum OperatorOrLogic = null)
-        {
-            string attrbType = filterForm.GetString(true);
-
-            int divIndex = 0;
-            string xPathExt = string.Empty;
-            bool isDDListItem = (attrbType == AttribType.DDList) ? true : false;
-
-            if (!isDDListItem)
-            {
-                divIndex = 1;
-                    
-                switch (attrbType)
-                {
-                    case AttribType.Button:
-                        xPathExt = $"//button[@type='{filterForm.GetString()}']";
-                        break;
-                    case AttribType.Input:
-                        xPathExt = $"/input[@title='{filterForm.GetString()}']";
-                        break;
-                    case AttribType.DDLBtn:
-                        xPathExt = $"//span[@title='{filterForm.GetString()}']//span[@class='k-select']";
-                        break;
-                }
-            }
-            else
-            {
-                switch (filterForm)
-                {
-                    case FilterForm.Operator:
-                        divIndex = 2;
-                        break;
-                    case FilterForm.FilterLogic:
-                        divIndex = 3;
-                        break;
-                    case FilterForm.AddnlOperator:
-                        divIndex = 4;
-                        break;
-                }
-
-                xPathExt = $"//ul/li[text()='{OperatorOrLogic.GetString()}']";
-            }
-
-            return $"//form[@aria-hidden='false']/div[{divIndex.ToString()}]{xPathExt}";
-        }
-        private string SetXPath_GetColumnHeaderByName(Enum tblColumnName) => $"//div[contains(@style,'opacity: 1;')]//tr/th[@data-title='{tblColumnName.GetString()}']";
-        private string SetXPath_ColumnHeaderFilterBtn(Enum tblColumnName) => $"{SetXPath_GetColumnHeaderByName(tblColumnName)}/a[1]";
-        private string SetXPath_ColumnHeaderNameSortBtn(Enum tblColumnName) => $"{SetXPath_GetColumnHeaderByName(tblColumnName)}/a[2]";
-        private string GetXPath_ActiveFilterForm() => $"//form[@aria-hidden='false']";
-        private string SetXPath_ActiveFilterFormElement(FilterForm formElement) => $"{GetXPath_ActiveFilterForm()}/{formElement.GetString()}";
-
-
-        //<<-- Table Column Filter Public Methods -->>
-        public void FilterTableColumn<T>(T tblColumnName, string filterValue)
-        {
-            Enum columnName = ConvertToEnumType(tblColumnName);
-            By columnHeaderFilterBtnLocator = By.XPath(SetXPath_ColumnHeaderFilterBtn(columnName));
-
-            try
-            {
-                IWebElement activeFilterForm = driver.FindElement(By.XPath("//form[@aria-hidden='false']"));
-                IWebElement filterBtn = activeFilterForm.FindElement(By.XPath(".//button[@type='submit']"));
-                IWebElement clearBtn = activeFilterForm.FindElement(By.XPath(".//button[@type='reset']"));
-
-                //TODO: create logic for table column filter methods using GenerateFilterFormElemXPath() method.
-            }
-            catch (Exception)
-            {
-                //TODO: Log for table column filter method
-                throw;
-            }
-        }
-
-        #endregion <-- end of Table Column Filter & Sort Order Methods
-
 
 
         //TODO: Horizontal scroll in table (i.e. QA Search>ProctorCurveSummary)

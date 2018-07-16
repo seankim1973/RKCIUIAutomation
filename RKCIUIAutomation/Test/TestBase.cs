@@ -16,7 +16,10 @@ namespace RKCIUIAutomation.Test
 
 
         public TestDetails TestDetails => new TestDetails(driver);
-        public void LoginAs(UserType user) => new LoginPage(driver).LoginUser(user);      
+
+        public ILoginPage LoginPage => new LoginPage().SetClass<ILoginPage>(driver);
+        public void LoginAs(UserType user) => LoginPage.LoginUser(user);
+                
 
         public IPageNavigation NavigateToPage => new PageNavigation().SetClass<IPageNavigation>(driver);
 

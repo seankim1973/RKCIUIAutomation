@@ -231,4 +231,20 @@ namespace RKCIUIAutomation.Test.Smoke
         }
     }
 
+    [TestFixture]
+    public class Test_TableSorting : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void DynamicNavigation()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Qms_Document();
+            Assert.True(VerifyPageTitle("QMS Documents"));
+        }
+    }
+
 }

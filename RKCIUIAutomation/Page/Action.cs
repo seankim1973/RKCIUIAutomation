@@ -65,7 +65,7 @@ namespace RKCIUIAutomation.Page
             }
             return false;
         }
-        public void WaitForTableToLoad(int timeOutInSeconds = 5, int pollingInterval = 500)
+        internal void WaitForTableToLoad(int timeOutInSeconds = 5, int pollingInterval = 500)
         {
             By activeTblBodyLocator = By.XPath("//div[contains(@style,'opacity: 1;')]//tbody");
 
@@ -83,7 +83,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        private IWebElement GetElement(By elementByLocator)
+        internal IWebElement GetElement(By elementByLocator)
         {
             IWebElement elem = null;
             if (WaitForElement(elementByLocator))
