@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework.Internal;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
+using RKCIUIAutomation.Page;
 
 namespace RKCIUIAutomation.Test.Smoke
 {
@@ -232,18 +233,26 @@ namespace RKCIUIAutomation.Test.Smoke
     }
 
     [TestFixture]
-    public class Test_TableSorting : TestBase
+    public class Test_TableHelper : TestBase
     {
         [Test]
         [Category(Component.Other)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
-        public void DynamicNavigation()
+        public void TableHelper()
         {
-            LoginAs(UserType.Bhoomi);
-            NavigateToPage.Qms_Document();
-            Assert.True(VerifyPageTitle("QMS Documents"));
+            LoginAs(UserType.IqfAdmin);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper tblHelper = new TableHelper();
+            tblHelper.SortColumnAscending(DesignDocumentCommentReview.ColumnName.Number);
+            tblHelper.SortColumnDecending(DesignDocumentCommentReview.ColumnName.Title);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Response);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Resolution);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Closing);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Comment);
+            tblHelper.FilterTableColumn(DesignDocumentCommentReview.ColumnName.Title, "Test0323Bhoomi");
+            tblHelper.ClearTableColumnFilter(DesignDocumentCommentReview.ColumnName.Title);
         }
     }
 

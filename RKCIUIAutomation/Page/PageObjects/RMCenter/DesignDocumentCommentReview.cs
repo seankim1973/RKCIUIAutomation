@@ -92,6 +92,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Closed")] Closed
         }
 
+        public enum ColumnName
+        {
+            [StringValue("Number")] Number,
+            [StringValue("Title")] Title,
+            [StringValue("Deadline")] Deadline
+        }
+
         private By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
         private By CancelBtn_ByLocator => By.Id("btnCancel");
         private By SaveOnlyBtn_ByLocator => By.Id("btnSave");

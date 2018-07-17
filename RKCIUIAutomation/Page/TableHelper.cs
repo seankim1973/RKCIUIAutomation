@@ -7,7 +7,10 @@ using System.Threading;
 namespace RKCIUIAutomation.Page
 {
     public class TableHelper : Action
-    {        
+    {
+        public TableHelper(){}
+        public TableHelper(IWebDriver driver) => this.driver = driver;
+
         #region Table Row Button Methods       
         //<<-- Table Row Button Helpers -->>
         private class BtnCategory
@@ -297,7 +300,23 @@ namespace RKCIUIAutomation.Page
                 throw;
             }
         }
+        public void ClearTableColumnFilter<T>(T tblColumnName)
+        {
+            try
+            {
+                Enum columnName = ConvertToEnumType(tblColumnName);
+                By filterColumnBtnLocator = By.XPath(SetXPath_ColumnHeaderFilterBtn(columnName));
+                ClickElement(filterColumnBtnLocator);
 
+                By clearFilterBtnLocator = GetFilterForm_ByLocator(FilterForm.Clear);
+                ClickElement(clearFilterBtnLocator);
+            }
+            catch (Exception e)
+            {
+                LogError(e.Message);
+                throw;
+            }
+        }
         #endregion <-- end of Table Column Filter & Sort Order Methods
 
 
@@ -315,8 +334,8 @@ namespace RKCIUIAutomation.Page
             SortOrder sortOrder = SortOrder.Default;
             Enum columnName = ConvertToEnumType(tblColumnName);
             By sortIndicator = By.XPath($"{SetXPath_ColumnHeaderNameSortBtn(columnName)}/span");
-
-            if (ElementIsDisplayed(sortIndicator))
+            IWebElement sortElem = GetElement(sortIndicator);
+            if (sortElem?.Displayed == true) //TODO: need to check for default sort order first
             {
                 string currentOrder = GetElementAttribute(By.XPath($"{SetXPath_ColumnHeaderByName(columnName)}"), "aria-sort");
                 if (currentOrder == SortOrder.Ascending.GetString())
@@ -327,8 +346,10 @@ namespace RKCIUIAutomation.Page
                 {
                     sortOrder = SortOrder.Decending;
                 }
+                return sortOrder;
             }
-            return sortOrder;
+            else
+                return sortOrder;
         }
         private void ToggleColumnSortOrder(Enum tblColumnName, SortOrder desiredOrder)
         {

@@ -38,12 +38,12 @@ namespace RKCIUIAutomation.Page.PageObjects
     #region LoginPage Common Implementation class
     public abstract class LoginPage_Impl : PageBase, ILoginPage
     {
-        private readonly By field_Email = By.Name("Email");
-        private readonly By field_Password = By.Name("Password");
-        private readonly By chkbx_RememberMe = By.Name("RememberMe");
-        private readonly By btn_Login = By.XPath("//input[@type='submit']");
-        private int userAcctIndex = 0;
-        private string credential = string.Empty;
+        internal readonly By field_Email = By.Name("Email");
+        internal readonly By field_Password = By.Name("Password");
+        internal readonly By chkbx_RememberMe = By.Name("RememberMe");
+        internal readonly By btn_Login = By.XPath("//input[@type='submit']");
+        internal int userAcctIndex = 0;
+        internal string credential = string.Empty;
 
         public virtual void LoginUser(UserType userType)
         {
@@ -97,13 +97,13 @@ namespace RKCIUIAutomation.Page.PageObjects
         public virtual void LoginAsProjAdmin() => LoginUser(UserType.ProjAdmin);
         public virtual void LoginAsProjUser() => LoginUser(UserType.ProjUser);
 
-        public virtual void LoginAsIQFRecordsMgr() => LoginUser(UserType.IQFRecordsMgr);
-        public virtual void LoginAsIQFAdmin() => LoginUser(UserType.IQFAdmin);
-        public virtual void LoginAsIQFUser() => LoginUser(UserType.IQFUser);
-        public virtual void LoginAsIQFDOTAdmin() => LoginUser(UserType.DotAdmin);
-        public virtual void LoginAsIQFDOTUser() => LoginUser(UserType.DotUser);
-        public virtual void LoginAsIQFDevAdmin() => LoginUser(UserType.DevAdmin);
-        public virtual void LoginAsIQFDevUser() => LoginUser(UserType.DevUser);
+        public virtual void LoginAsIQFRecordsMgr() => LoginUser(UserType.IqfRecordsMgr);
+        public virtual void LoginAsIQFAdmin() => LoginUser(UserType.IqfAdmin);
+        public virtual void LoginAsIQFUser() => LoginUser(UserType.IqfUser);
+        public virtual void LoginAsIQFDOTAdmin() => LoginUser(UserType.IqfDOTAdmin);
+        public virtual void LoginAsIQFDOTUser() => LoginUser(UserType.IqfDOTUser);
+        public virtual void LoginAsIQFDevAdmin() => LoginUser(UserType.IqfDevAdmin);
+        public virtual void LoginAsIQFDevUser() => LoginUser(UserType.IqfDevUser);
 
 
         //Only SH249 and SG use IQF Records Mgr accts

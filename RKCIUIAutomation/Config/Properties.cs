@@ -42,12 +42,12 @@
         SysAdmin,
         ProjUser,
         Bhoomi,
-        IQFRecordsMgr,
-        IQFUser,
-        IQFAdmin,
-        DotUser,
-        DotAdmin,
-        DevUser,
-        DevAdmin
+        IqfRecordsMgr,
+        IqfUser,
+        IqfAdmin,
+        IqfDOTUser,
+        IqfDOTAdmin,
+        IqfDevUser,
+        IqfDevAdmin
     }
 }
