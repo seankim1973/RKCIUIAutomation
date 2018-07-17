@@ -240,19 +240,18 @@ namespace RKCIUIAutomation.Test.Smoke
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
-        public void TableHelper()
+        public void VerifyTableHelper()
         {
-            LoginAs(UserType.IqfAdmin);
+            LoginAs(UserType.IQFAdmin);
             NavigateToPage.RMCenter_Design_Documents();
-            TableHelper tblHelper = new TableHelper();
-            tblHelper.SortColumnAscending(DesignDocumentCommentReview.ColumnName.Number);
-            tblHelper.SortColumnDecending(DesignDocumentCommentReview.ColumnName.Title);
-            tblHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Response);
-            tblHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Resolution);
-            tblHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Closing);
-            tblHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Comment);
-            tblHelper.FilterTableColumn(DesignDocumentCommentReview.ColumnName.Title, "Test0323Bhoomi");
-            tblHelper.ClearTableColumnFilter(DesignDocumentCommentReview.ColumnName.Title);
+            TableHelper.SortColumnAscending(DesignDocumentCommentReview.ColumnName.Number);
+            TableHelper.SortColumnDecending(DesignDocumentCommentReview.ColumnName.Title);
+            TableHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Response);
+            TableHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Resolution);
+            TableHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Closing);
+            TableHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Comment);
+            TableHelper.FilterTableColumn(DesignDocumentCommentReview.ColumnName.Title, "Test0323Bhoomi");
+            TableHelper.ClearTableColumnFilter(DesignDocumentCommentReview.ColumnName.Title);
         }
     }
 

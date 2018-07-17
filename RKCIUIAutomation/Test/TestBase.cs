@@ -19,7 +19,8 @@ namespace RKCIUIAutomation.Test
 
         private ILoginPage LoginPage => new LoginPage().SetClass<ILoginPage>(driver);
         public void LoginAs(UserType user) => LoginPage.LoginUser(user);
-                
+
+        public TableHelper TableHelper => new TableHelper();
 
         public IPageNavigation NavigateToPage => new PageNavigation().SetClass<IPageNavigation>(driver);
 

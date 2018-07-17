@@ -53,8 +53,8 @@ namespace RKCIUIAutomation.Base
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            log.Info(userName);
-            log.Info(displayUrl);
+            //log.Info(userName);
+            //log.Info(displayUrl);
             log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
             ExtentManager.Instance.Flush();
 

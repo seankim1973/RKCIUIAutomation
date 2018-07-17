@@ -8,9 +8,6 @@ namespace RKCIUIAutomation.Page
 {
     public class TableHelper : Action
     {
-        public TableHelper(){}
-        public TableHelper(IWebDriver driver) => this.driver = driver;
-
         #region Table Row Button Methods       
         //<<-- Table Row Button Helpers -->>
         private class BtnCategory
@@ -98,7 +95,7 @@ namespace RKCIUIAutomation.Page
                 LogDebug($"Did not click table tab, it is currently active");
             }
 
-            WaitForTableToLoad();
+            WaitForTableToLoad(driver);
         }
 
         #endregion <-- end of Table Tab Methods
@@ -329,27 +326,35 @@ namespace RKCIUIAutomation.Page
             [StringValue("ascending")] Ascending,
             [StringValue("decending")] Decending
         }
+
         private SortOrder GetCurrentColumnSortOrder(Enum tblColumnName)
         {
+            WaitForTableToLoad(driver);
+
             SortOrder sortOrder = SortOrder.Default;
             Enum columnName = ConvertToEnumType(tblColumnName);
-            By sortIndicator = By.XPath($"{SetXPath_ColumnHeaderNameSortBtn(columnName)}/span");
-            IWebElement sortElem = GetElement(sortIndicator);
-            if (sortElem?.Displayed == true) //TODO: need to check for default sort order first
+            By columnHeaderLocator = By.XPath(SetXPath_ColumnHeaderByName(columnName));
+            string attribute = "aria-sort";
+            bool isSorted = JsHasAttribute(driver, columnHeaderLocator, attribute);
+
+            if (!isSorted)
             {
-                string currentOrder = GetElementAttribute(By.XPath($"{SetXPath_ColumnHeaderByName(columnName)}"), "aria-sort");
-                if (currentOrder == SortOrder.Ascending.GetString())
+                sortOrder = SortOrder.Default;
+            }
+            else
+            {
+                string sortedAttrib = JsGetAttribute(driver, columnHeaderLocator, attribute);
+                if (sortedAttrib == SortOrder.Ascending.GetString())
                 {
                     sortOrder = SortOrder.Ascending;
                 }
-                else if (currentOrder == SortOrder.Decending.GetString())
+                else if (sortedAttrib == SortOrder.Decending.GetString())
                 {
                     sortOrder = SortOrder.Decending;
                 }
-                return sortOrder;
             }
-            else
-                return sortOrder;
+
+            return sortOrder;
         }
         private void ToggleColumnSortOrder(Enum tblColumnName, SortOrder desiredOrder)
         {
@@ -421,5 +426,11 @@ namespace RKCIUIAutomation.Page
 
 
         //TODO: Horizontal scroll in table (i.e. QA Search>ProctorCurveSummary)
+
+
+        //TODO: KendoUI jsScripts - 
+        static string tabIndex = "1";
+        string jsTabStrip = string.Format("var tabStrip = $('#DesignDocumentList').data('kendoTabStrip');");
+        string jsClickTab = string.Format("tabStrip.element['0'].childNodes['0'].childNodes['{0}'].firstChild.click();", tabIndex);
     }
 }

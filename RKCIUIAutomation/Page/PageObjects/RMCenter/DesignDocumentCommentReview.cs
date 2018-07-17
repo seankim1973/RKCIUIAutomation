@@ -9,6 +9,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public DesignDocumentCommentReview(){}
         public DesignDocumentCommentReview(IWebDriver driver) => this.driver = driver;
+        
     }
     #endregion  <-- end of DesignDocumentCommentReview Generic Class
 
@@ -73,15 +74,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return instance;
         }
 
-
-
-
-        private string designDocTitle;
-        private string designDocNumber;
-        private string docTitleKey;
-        private string docNumberKey;
-        private MiniGuid guid;
-
         public enum TableTab
         {
             [StringValue("Creating")] Creating,
@@ -98,7 +90,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Title")] Title,
             [StringValue("Deadline")] Deadline
         }
-
+        
+        private string designDocTitle;
+        private string designDocNumber;
+        private string docTitleKey;
+        private string docNumberKey;
+        private MiniGuid guid;
+                
         private By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
         private By CancelBtn_ByLocator => By.Id("btnCancel");
         private By SaveOnlyBtn_ByLocator => By.Id("btnSave");
@@ -186,12 +184,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
     #endregion <--specific to Garnet
 
+
     #region Implementation specific to GLX
     public class DesignDocumentCommentReview_GLX : DesignDocumentCommentReview
     {
         public DesignDocumentCommentReview_GLX(IWebDriver driver) : base(driver) { }
     }
     #endregion specific to GLX
+
 
     #region Implementation specific to SH249
     public class DesignDocumentCommentReview_SH249 : DesignDocumentCommentReview
@@ -201,6 +201,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
     #endregion <--specific toSGway
 
+
     #region Implementation specific to SGWay
     public class DesignDocumentCommentReview_SGWay : DesignDocumentCommentReview
     {
@@ -209,12 +210,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
     #endregion <--specific toSGway
 
+
     #region Implementation specific to I15South
     public class DesignDocumentCommentReview_I15South : DesignDocumentCommentReview
     {
         public DesignDocumentCommentReview_I15South(IWebDriver driver) : base(driver) { }
     }
     #endregion <--specific to I15south
+
 
     #region Implementation specific to I15Tech
     public class DesignDocumentCommentReview_I15Tech : DesignDocumentCommentReview

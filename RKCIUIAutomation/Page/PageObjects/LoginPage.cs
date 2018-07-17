@@ -27,10 +27,10 @@ namespace RKCIUIAutomation.Page.PageObjects
         void LoginAsIQFRecordsMgr();
         void LoginAsIQFAdmin();
         void LoginAsIQFUser();
-        void LoginAsIQFDOTAdmin();
-        void LoginAsIQFDOTUser();
-        void LoginAsIQFDevAdmin();
-        void LoginAsIQFDevUser();
+        void LoginAsDOTAdmin();
+        void LoginAsDOTUser();
+        void LoginAsDEVAdmin();
+        void LoginAsDEVUser();
     }
     #endregion end of LoginPage Interface class
 
@@ -97,13 +97,13 @@ namespace RKCIUIAutomation.Page.PageObjects
         public virtual void LoginAsProjAdmin() => LoginUser(UserType.ProjAdmin);
         public virtual void LoginAsProjUser() => LoginUser(UserType.ProjUser);
 
-        public virtual void LoginAsIQFRecordsMgr() => LoginUser(UserType.IqfRecordsMgr);
-        public virtual void LoginAsIQFAdmin() => LoginUser(UserType.IqfAdmin);
-        public virtual void LoginAsIQFUser() => LoginUser(UserType.IqfUser);
-        public virtual void LoginAsIQFDOTAdmin() => LoginUser(UserType.IqfDOTAdmin);
-        public virtual void LoginAsIQFDOTUser() => LoginUser(UserType.IqfDOTUser);
-        public virtual void LoginAsIQFDevAdmin() => LoginUser(UserType.IqfDevAdmin);
-        public virtual void LoginAsIQFDevUser() => LoginUser(UserType.IqfDevUser);
+        public virtual void LoginAsIQFRecordsMgr() => LoginUser(UserType.IQFRecordsMgr);
+        public virtual void LoginAsIQFAdmin() => LoginUser(UserType.IQFAdmin);
+        public virtual void LoginAsIQFUser() => LoginUser(UserType.IQFUser);
+        public virtual void LoginAsDOTAdmin() => LoginUser(UserType.DOTAdmin);
+        public virtual void LoginAsDOTUser() => LoginUser(UserType.DOTUser);
+        public virtual void LoginAsDEVAdmin() => LoginUser(UserType.DEVAdmin);
+        public virtual void LoginAsDEVUser() => LoginUser(UserType.DEVUser);
 
 
         //Only SH249 and SG use IQF Records Mgr accts

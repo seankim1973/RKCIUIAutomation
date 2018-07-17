@@ -15,10 +15,13 @@ namespace RKCIUIAutomation.Page
     {
         private enum JSAction
         {
-            [StringValue("arguments[0].click();")]Click,
+            [StringValue("arguments[0].isDisplayed();")] IsDisplayed,
+            [StringValue("arguments[0].getAttribute")] GetAttribute,
+            [StringValue("arguments[0].hasAttribute")] HasAttribute,
+            [StringValue("arguments[0].click();")] Click,
             [StringValue("var evObj = document.createEvent('MouseEvents');" +
                     "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
-                    "arguments[0].dispatchEvent(evObj);")]Hover
+                    "arguments[0].dispatchEvent(evObj);")] Hover
         }
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
         {
@@ -36,6 +39,69 @@ namespace RKCIUIAutomation.Page
                 throw;
             }
         }
+        private object ExecuteJsAsync(IWebDriver driver, JSAction jsAction, By elementByLocator, string attribute = null)
+        {
+            object result = null;
+            string javaScript = (jsAction == JSAction.HasAttribute || jsAction == JSAction.GetAttribute) ? $"{jsAction.GetString()}(\"{attribute}\");" : jsAction.GetString();
+                        
+            IWebElement element = GetElement(elementByLocator);
+            if (element != null)
+            {
+                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
+                driver.Manage().Timeouts().AsynchronousJavaScript = TimeSpan.FromSeconds(10);
+                result = executor.ExecuteAsyncScript(javaScript, element);
+                LogInfo($"{jsAction.ToString()}ed on javascript element - {elementByLocator}");
+            }
+            else
+            {
+                LogDebug("Error during ExecuteJsAsync method");
+            }
+            return result;
+        }
+        public string JsGetAttribute(IWebDriver driver, By elementByLocator, string attribute)
+        {
+            var result = ExecuteJsAsync(driver, JSAction.GetAttribute, elementByLocator, attribute);
+            if (result != null)
+            {
+                return (string)result;
+
+            }
+            else
+            {
+                LogDebug("Attribute returned null value");
+                return string.Empty;
+            }
+                
+        }
+        public bool JsIsDisplayed(IWebDriver driver, By elementByLocator)
+        {
+            var result = ExecuteJsAsync(driver, JSAction.IsDisplayed, elementByLocator);
+            if (result != null)
+            {
+                return (bool)result;
+
+            }
+            else
+            {
+                LogDebug("Element not found");
+                return false;
+            }
+                
+        }
+        public bool JsHasAttribute(IWebDriver driver, By elementByLocator, string attribute)
+        {
+            var result = ExecuteJsAsync(driver, JSAction.HasAttribute, elementByLocator, attribute);
+            if (result != null)
+            {
+                return (bool)result;
+            }
+            else
+            {
+                LogDebug("Element not found");
+                return false;
+            }
+                
+        }
         public void JsClickElement(By elementByLocator) => ExecuteJsAction(JSAction.Click, elementByLocator);
         public void JsHover(By elementByLocator)
         {
@@ -43,7 +109,7 @@ namespace RKCIUIAutomation.Page
             Thread.Sleep(1000);
         }
 
-        private bool WaitForElement(By elementByLocator, int timeOutInSeconds = 1, int pollingInterval = 250)
+        private bool WaitForElement(By elementByLocator, int timeOutInSeconds = 2, int pollingInterval = 250)
         {
             try
             {
@@ -65,22 +131,26 @@ namespace RKCIUIAutomation.Page
             }
             return false;
         }
-        internal void WaitForTableToLoad(int timeOutInSeconds = 5, int pollingInterval = 500)
+        internal void WaitForTableToLoad(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500)
         {
             By activeTblBodyLocator = By.XPath("//div[contains(@style,'opacity: 1;')]//tbody");
+            bool spinnerIsDisplayed = true;
+            do
+            {
+                Thread.Sleep(500);
+                spinnerIsDisplayed = JsIsDisplayed(driver, By.XPath("//div[@class='k-loading-image']"));
+                log.Info("...waiting for loading spinner to clear");
+            }
+            while (spinnerIsDisplayed);
 
-            try
+            bool tableBodyIsDisplayed = false;
+            do
             {
-                IWebElement spinner = driver.FindElement(By.XPath("//div[@class='k-loading-image']"));
-                while (spinner.Displayed)
-                {
-                    Thread.Sleep(250);
-                }
+                Thread.Sleep(500);
+                tableBodyIsDisplayed = JsIsDisplayed(driver, activeTblBodyLocator);
+                log.Info("...waiting for table body to become visible");
             }
-            finally
-            {
-                WaitForElement(activeTblBodyLocator, timeOutInSeconds, pollingInterval);
-            }
+            while (!tableBodyIsDisplayed);
         }
 
         internal IWebElement GetElement(By elementByLocator)
@@ -153,7 +223,8 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public string GetElementAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetAttribute(attributeName);
+        public string GetAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetProperty(attributeName);
+
         public void EnterText(By elementByLocator, string text)
         {
             try
