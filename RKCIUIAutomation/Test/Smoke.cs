@@ -244,14 +244,13 @@ namespace RKCIUIAutomation.Test.Smoke
         {
             LoginAs(UserType.IQFAdmin);
             NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.SortColumnAscending(DesignDocumentCommentReview.ColumnName.Number);
-            TableHelper.SortColumnDecending(DesignDocumentCommentReview.ColumnName.Title);
-            TableHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Response);
-            TableHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Resolution);
-            TableHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Closing);
-            TableHelper.ClickTableTab(DesignDocumentCommentReview.TableTab.Comment);
-            TableHelper.FilterTableColumn(DesignDocumentCommentReview.ColumnName.Title, "Test0323Bhoomi");
-            TableHelper.ClearTableColumnFilter(DesignDocumentCommentReview.ColumnName.Title);
+            //Thread.Sleep(5000);
+            TableHelper tblHelper = new TableHelper(driver);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Resolution);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Closing);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Comment);
+
+            Thread.Sleep(10000);
         }
     }
 

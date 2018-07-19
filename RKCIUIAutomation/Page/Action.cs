@@ -58,7 +58,7 @@ namespace RKCIUIAutomation.Page
             }
             return result;
         }
-        public string JsGetAttribute(IWebDriver driver, By elementByLocator, string attribute)
+        public string JsGetAttribute(By elementByLocator, string attribute)
         {
             var result = ExecuteJsAsync(driver, JSAction.GetAttribute, elementByLocator, attribute);
             if (result != null)
@@ -88,7 +88,7 @@ namespace RKCIUIAutomation.Page
             }
                 
         }
-        public bool JsHasAttribute(IWebDriver driver, By elementByLocator, string attribute)
+        public bool JsHasAttribute(By elementByLocator, string attribute)
         {
             var result = ExecuteJsAsync(driver, JSAction.HasAttribute, elementByLocator, attribute);
             if (result != null)
@@ -131,7 +131,7 @@ namespace RKCIUIAutomation.Page
             }
             return false;
         }
-        internal void WaitForTableToLoad(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500)
+        internal void WaitForTableToLoad(int timeOutInSeconds = 10, int pollingInterval = 500)
         {
             By activeTblBodyLocator = By.XPath("//div[contains(@style,'opacity: 1;')]//tbody");
             bool spinnerIsDisplayed = true;

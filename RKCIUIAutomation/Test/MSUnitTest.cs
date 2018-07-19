@@ -275,7 +275,8 @@ namespace RKCIUIAutomation.Test
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
-            [StringValue("last")] Last
+            [StringValue("last")] Last,
+            [StringValue("KENDOUItabStripID")] KendoTabStripId
         }
 
         [TestMethod]
@@ -288,6 +289,17 @@ namespace RKCIUIAutomation.Test
             Console.WriteLine($"XPATH: {xpath("Ron Seal", TableButton.QMS_Attachments_View)}");
             Console.WriteLine($"XPATH2: {xpath2("Ron Seal", TableButton.QMS_Attachments_View)}");
             Console.WriteLine($"PREVIOUS: {xpath("Ron Seal", TableButton.Previous)}");
+        }
+
+        [TestMethod]
+        public void EnumParseTest()
+        {
+            Enum tblTabEnum = TableButton.Report_View;
+
+            Type enumType = tblTabEnum.GetType();
+            object kendoTabStripEnum = Enum.Parse(enumType, "KendoTabStripId");
+            Enum tabStripEnum = ConvertToEnumType(kendoTabStripEnum);
+            Console.WriteLine($"#### {tabStripEnum.GetString()}");
         }
     }
 }
