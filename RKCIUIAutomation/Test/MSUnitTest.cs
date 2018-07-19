@@ -301,5 +301,12 @@ namespace RKCIUIAutomation.Test
             Enum tabStripEnum = ConvertToEnumType(kendoTabStripEnum);
             Console.WriteLine($"#### {tabStripEnum.GetString()}");
         }
+
+        [TestMethod]
+        public void KendoGridClassTest()
+        {
+            KendoGrid kendo = new KendoGrid("DesignDocumentListGrid_0");
+            kendo.Filter("SubmittalNumber", FilterOperator.EqualTo, "Oncor - Wedgemere Drive");
+        }
     }
 }

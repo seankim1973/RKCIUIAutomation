@@ -77,12 +77,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public enum TableTab
         {
-            [StringValue("DesignDocumentListGrid_0")] Creating,
-            [StringValue("DesignDocumentListGrid_1")] Requires_Comment,
-            [StringValue("DesignDocumentListGrid_2")] Pending_Resolution,
-            [StringValue("DesignDocumentListGrid_3")] Pending_Closing,
-            [StringValue("DesignDocumentListGrid_4")] Closed,
-            [StringValue("DesignDocumentList")] KendoTabStripId
+            [StringValue("Creating")] Creating,
+            [StringValue("Requires Comment")] Requires_Comment,
+            [StringValue("Pending Response")] Pending_Response,
+            [StringValue("Requires Resolution")] Requires_Resolution,
+            [StringValue("Pending Resolution")] Pending_Resolution,
+            [StringValue("Pending Closing")] Pending_Closing,
+            [StringValue("Closed")] Closed,
         }
 
         public enum ColumnName
@@ -105,11 +106,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
 
         public void ClickBtn_UploadNewDesignDoc() => ClickElement(UploadNewDesignDoc_ByLocator);
-        public void ClickTab_Creating() => ClickTableTab(TableTab.Creating);
-        public void ClickTab_Comment() => ClickTableTab(TableTab.Requires_Comment);
-        public void ClickTab_Resolution() => ClickTableTab(TableTab.Pending_Resolution);
-        public void ClickTab_Closing() => ClickTableTab(TableTab.Pending_Closing);
-        public void ClickTab_Closed() => ClickTableTab(TableTab.Closed);
 
 
         public void CreateDocument()

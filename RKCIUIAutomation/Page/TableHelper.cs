@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace RKCIUIAutomation.Page
@@ -18,28 +19,28 @@ namespace RKCIUIAutomation.Page
 
         public void ClickTableTab(Enum tblTabEnum)
         {
-            Type tabType = tblTabEnum.GetType();
-            object kendoTabStripEnum = Enum.Parse(tabType, "KendoTabStripId");
-            Enum tabStripEnum = ConvertToEnumType(kendoTabStripEnum);
+            string jsToBeExecuted = GetTabStripReference();
 
-            string jsToBeExecuted = GetTabStripReference(tabStripEnum);
-            int tabIndex = Array.IndexOf(Enum.GetValues(tabType), tblTabEnum);
-            string tabSelect = string.Format("tab.select('{0}');", tabIndex.ToString());
+            By locator = By.XPath("//ul[@class='k-reset k-tabstrip-items']/li");
+            var tabIndex = GetElementIndex(locator, tblTabEnum.GetString());
+            string tabSelect = $"tab.select('{tabIndex.ToString()}');";
             jsToBeExecuted = string.Concat(jsToBeExecuted, tabSelect);
             ExecuteJsScript(jsToBeExecuted);
         }
+
 
         private void ExecuteJsScript(string jsToBeExecuted)
         {
             Console.WriteLine($"#####CLICK TAB JS#####{jsToBeExecuted}");
             IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
             executor.ExecuteScript(jsToBeExecuted);
+            //TODO: Wait for table to load logic
             Thread.Sleep(1000);
         }
 
-        private string GetTabStripReference(Enum tblTabEnum)
+        private string GetTabStripReference(Enum tblTabEnum = null)
         {
-            string tabStripId = tblTabEnum.GetString();
+            string tabStripId = GetElement(By.XPath("//div[contains(@class,'k-tabstrip-top')]")).GetAttribute("id");
             string initializeKendoTabStrip = string.Format("var tab = $('#{0}').data('kendoTabStrip');", tabStripId);
             return initializeKendoTabStrip;
         }
@@ -49,6 +50,32 @@ namespace RKCIUIAutomation.Page
             string initializeKendoGrid = string.Format("var grid = $('#{0}').data('kendoGrid');", gridId);
             return initializeKendoGrid;
         }
+        
+               
+
+        protected int GetElementIndex(By findElementsLocator, string matchValue)
+        {
+            IList<IWebElement> elements = new List<IWebElement>();
+            elements = driver.FindElements(findElementsLocator);
+
+            int index = 0;
+            for(int i = 0; i < elements.Count; i++)
+            {
+                string queueValue = elements[i].GetAttribute("queue");
+                bool match = (queueValue == matchValue) ? true : false;
+                
+                if (match == true)
+                {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        }
+
+
+
+
 
 
         #region Table Row Button Methods       
@@ -474,7 +501,7 @@ namespace RKCIUIAutomation.Page
         //TODO: KendoUI jsScripts - 
         static string tabIndex = "1";
         string jsTabStrip = string.Format("var tabStrip = $('#DesignDocumentList').data('kendoTabStrip');");
-        string jsClickTab = string.Format("tabStrip.element['0'].childNodes['0'].childNodes['{0}'].firstChild.click();", tabIndex);
+        string jsClickTab = string.Format("tabStrip.select('{0}')", tabIndex);
         string jsFilterColumn = "grid.dataSource.filter({logic: 'and', filters: [{field: 'SubmittalNumber', operator: 'eq', value: 'Bhoomi416'}]});";
     }
 }
