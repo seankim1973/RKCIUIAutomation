@@ -231,4 +231,23 @@ namespace RKCIUIAutomation.Test.Smoke
         }
     }
 
+    [TestFixture]
+    public class Test_CommentReviewPartialFunctions : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void DynamicNavigation()
+        {
+            LogInfo($"Other component test - This test should run");
+            LoginAs(UserType.IQFUse);//testing glx comment review
+            NavigateToPage.RMCenter_Design_Documents();
+            Assert.True(VerifyPageTitle("Design Documents"));
+            RMCenter_DesignDocumentCommentReview.CreateDocument();
+            Thread.Sleep(5000);
+        }
+    }
+
 }

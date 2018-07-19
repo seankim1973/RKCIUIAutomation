@@ -24,10 +24,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Workflow Interface class
     public interface IDesignDocumentCommentReview
     {
+        void CreateDocument();
         void EnterDesignDocTitleAndNumber();
         void EnterRegularCommentAndDrawingPageNo();
+        void ForwardComment();
+        void EnterResponseCommentAndAgreeResponseCode();
+        void EnterResponseCommentAndDisagreeResponseCode();
+        void ForwardResponseComment();
+        void EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
+        void VerifyifClosed();
        // void LoggedInUserForwardsComment();
-        //void LoggedInUserResponseCommentAndSave();
+       //void LoggedInUserResponseCommentAndSave();
        // void LoggedInUserForwardsResponseComment();
        // void LoggedInUserResolutionCommentAndSave();
        // void LoggedInUserForwardsResolutionComment();
@@ -101,6 +108,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Closed")] Closed
         }
 
+        /// <summary>
+        /// TODO- implement common workflow
+        /// </summary>
         private By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
         private By CancelBtn_ByLocator => By.Id("btnCancel");
         private By SaveOnlyBtn_ByLocator => By.Id("btnSave");
@@ -116,7 +126,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public void ClickTab_Closed() => ClickTableTab(TableTab.Closed);
        
 
-        public void CreateDocument()
+        public virtual void CreateDocument()
         {
             ClickElement(UploadNewDesignDoc_ByLocator);
             EnterDesignDocTitleAndNumber();
@@ -132,25 +142,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Submittal_TransmittalDate")] TransmittalDate,
             [StringValue("Submittal_TransmittalNumber")] TransmittalNumber,
             [StringValue("Comment_ReviewTypeId_0_")] ReviewType,
-            //[StringValue("Comment_Text_0_")] RegularComment,
-            //[StringValue("Comment_DrawingPageNumber")] DrawingPageNumber,
-           // [StringValue("Response_Comment")] ResponseComment,
             [StringValue("SelectedResponseCode")] ResponseCode,
-           // [StringValue("Resolution_Comment")] ResolutionComment,
             [StringValue("SelectedResolutionStamp")] ResolutionStamp,
-           // [StringValue("Closing_Comment")] ClosingComment,
             [StringValue("SelectedClosingStamp")] ClosingStamp
         }
 
         public  void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 3);
         public  void SelectNoCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 1);
-      //  public  void EnterText_RegularComment(string text) => EnterText(GetTextInputFieldByLocator(DesignDocDetails_InputFields.RegularComment), text);
-      //  public  void EnterText_DrawingPageNumber(string text) => EnterText(GetTextInputFieldByLocator(DesignDocDetails_InputFields.DrawingPageNumber), text);
-      //  public  void EnterText_ResponseComment(string text) => EnterText(GetTextInputFieldByLocator(DesignDocDetails_InputFields.ResponseComment), text);
-        public  void SelectDDL_ResponseCode<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, itemIndexOrName);
-      //  public  void EnterText_ResolutionComment(string text) => EnterText(GetTextInputFieldByLocator(DesignDocDetails_InputFields.ResolutionComment), text);
-        public  void SelectDDL_ResolutionStamp<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResolutionStamp, itemIndexOrName);
-       // public  void EnterText_ClosingComment(string text) => EnterText(GetTextInputFieldByLocator(DesignDocDetails_InputFields.ClosingComment), text);
+        public void SelectAgreeResponseCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, 1); //check the index, UI not working so need to confirm later
+        public void SelectDisagreeResponseCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, 3);//check the index, UI not working so need to confirm later
+        public void SelectAgreeResolutionCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResolutionStamp, 1); //check the index, UI not working so need to confirm later
+        public void SelectDisagreeResolutionCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResolutionStamp, 2);//check the index, UI not working so need to confirm later
         public  void SelectDDL_ClosingStamp<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ClosingStamp, itemIndexOrName);
 
         private void SetDesignDocTitleAndNumber()
@@ -166,41 +168,87 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void EnterDesignDocTitleAndNumber()
         {
+            //login as uploading user IQFRecordsmgr (for SG and SH249) and IQFuser(GLX and Garnet)
             SetDesignDocTitleAndNumber();
             designDocTitle = GetVar(docTitleKey).ToString();
             EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.Title), designDocTitle);
             designDocNumber = GetVar(docNumberKey).ToString();
             EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.DocumentNumber), designDocNumber);
+            ClickSubmitForward();
         }
         
         By commentInput = By.Id("Comment_Text_0_");
-        //By commentResponseInput = By.Id("Comment_Text_0_");
-       // By commentResolutionInput = By.Id("Comment_Text_0_");
-        //By commentClosingInput = By.Id("Comment_Text_0_");
+        By commentResponseInput = By.Id("Comment_Response_0_");
+        By commentResolutionInput = By.Id("Comment_ResolutionMeetingDecision_0_");
+        By commentClosingInput = By.Id("Comment_ClosingComment_0_");
+
         public virtual void EnterRegularCommentAndDrawingPageNo()
         {
+            //login as commenting user (SG- IQFuser, DoTuser | SH249-- IQFUser | Garenet and GLX-- DOTUser)
+            SelectRegularCommentReviewType();
             SelectRegularCommentReviewType();
             EnterComment(commentInput);
+            EnterText(By.Id("Comment_DrawingPageNumber_0_"), "Draw123");
+            ClickSave();
+
         }
 
-
-
-        /// <summary>
-        /// TODO - implement common workflow
-        /// </summary>
-        public virtual void LoggedInUserUploadsDesignDocument()
+        public virtual void ForwardComment()
         {
-           
+            //login as user to forward the comment ( SG-- IQFadmin and DOTAdmin both | SH249 -- IQFAdmin/IQFRecordsMgr | Garnet and GLX-- DOTadmin)
+            //find the record you want to edit 
+            //wait for loading the comments and make any changes if required
+            ClickSubmitForward();
+
         }
 
-        public virtual void LoggedInUserCommentsAndSave() { }
-        public virtual void LoggedInUserForwardsComment() { }
-        public virtual void LoggedInUserResponseCommentAndSave() { }
-        public virtual void LoggedInUserForwardsResponseComment() { }
-        public virtual void LoggedInUserResolutionCommentAndSave() { }
-        public virtual void LoggedInUserForwardsResolutionComment() { }
-        public virtual void LoggedInUserCloseCommentAndSave() { }
-        public virtual void LoggedInUserForwardsCloseComment() { }
+        public virtual void EnterResponseCommentAndAgreeResponseCode()
+        {
+
+            // Login as user to make response comment (All tenants - DevUser)
+            EnterComment(commentResponseInput);
+            SelectAgreeResponseCode(); //Disagree then different workflow
+            ClickSave();
+        }
+
+        public virtual void EnterResponseCommentAndDisagreeResponseCode()
+        {
+
+            // Login as user to make response comment (All tenants - DevUser)
+            EnterComment(commentResponseInput);
+            SelectDisagreeResponseCode(); //agree then different workflow
+            ClickSave();
+        }
+
+        public virtual void ForwardResponseComment()
+        {
+            //login as user to forward the comment ( All tenants - DevAdmin)
+            //find the record you want to edit 
+            //wait for loading the comments and make any changes if required
+            ClickSubmitForward();
+
+        }
+
+        public virtual void EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
+        {
+
+            // Login as user to make resolution comment (All tenants - DevAdmin)
+            EnterComment(commentResolutionInput);
+            SelectAgreeResolutionCode(); //
+            ClickSave();
+            //wait for saveforward to load
+            ClickSubmitForward();
+        }
+
+        public virtual void VerifyifClosed()
+        {
+            //verify if records made it to Dev Closed tab.
+        }
+
+
+     
+       
+
 
     }
     #endregion <--end of common implementation class
