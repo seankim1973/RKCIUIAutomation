@@ -83,7 +83,6 @@ namespace RKCIUIAutomation.Test.Smoke
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Specification, 1);
             EnterText(SubmittalDetails.Input_Quantity, "50");
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.QuantityUnit, 1);
-            ClickElement(SubmittalDetails.Btn_SelectFiles);
             UploadFile("test.xlsx");
             ClickSubmitForward();
 
@@ -246,12 +245,16 @@ namespace RKCIUIAutomation.Test.Smoke
             LoginAs(UserType.IQFAdmin);
             NavigateToPage.RMCenter_Design_Documents();
             //Thread.Sleep(5000);
+            //TableHelper tblHelper = new TableHelper(driver);
             TableHelper tblHelper = new TableHelper(driver);
-            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Response);
-            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Resolution);
-            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Closing);
-            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Closed);
-            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Comment);
+            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Response);
+            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Resolution);
+            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Closing);
+            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Closed);
+            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Comment);
+            NavigateToPage.RMCenter_Search();
+            tblHelper.GoToPageNumber(5);
+            tblHelper.GoToLastPage();
 
             //By locator = By.XPath("//div[@id='DesignDocumentListGrid_0']//td[contains(text(),'Oncor')]//following-sibling::td/a[text()='Revise']");
             //ClickElement(locator);

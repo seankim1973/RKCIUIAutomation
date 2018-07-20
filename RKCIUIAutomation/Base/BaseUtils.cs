@@ -140,7 +140,18 @@ namespace RKCIUIAutomation.Base
         }
         public static void LogInfo(string details)
         {
-            if (details.Contains("#####"))
+            string[] detailsBr = null;
+
+            if (details.Contains("<br>"))
+            {
+                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                for (int i = 0; i < detailsBr.Length; i++)
+                {
+                    log.Info(detailsBr[i]);
+                }
+            }
+            else if (details.Contains("#####"))
             {
                 ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details));
             }
@@ -149,19 +160,36 @@ namespace RKCIUIAutomation.Base
                 ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
             }
             else
+            {
                 ExtentTestManager.GetTest().Info(details);
-            log.Info(details);    
+                log.Info(details);
+            }
         }
         public static void LogInfo(string details, Exception e)
         {
+            string[] detailsBr = null;
+
             ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
-            log.Debug(details);
+            if (details.Contains("<br>"))
+            {
+                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                for (int i = 0; i < detailsBr.Length; i++)
+                {
+                    log.Info(detailsBr[i]);
+                }
+            }
+            else
+            {
+                log.Debug(details);
+            }
+                       
             if(e != null)
             {
                 ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
                 log.Debug(e.Message);
             }
         }
+
         public void LogInfo(string details, bool assertion, Exception e = null)
         {
             bool hasPgBreak = false;
