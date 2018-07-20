@@ -239,7 +239,7 @@ namespace RKCIUIAutomation.Test.Smoke
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Component Name")]
-        public void DynamicNavigation()
+        public void CommentReviewPartialFunctions()
         {
             LogInfo($"Other component test - This test should run");
             LoginAs(UserType.IQFUse);//testing glx comment review
