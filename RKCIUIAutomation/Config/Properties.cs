@@ -4,7 +4,6 @@
     {
         Test,
         Stage,
-        PreProd,
         Prod
     }
 
@@ -20,6 +19,7 @@
 
     public enum TestPlatform
     {
+        Grid,
         Windows,
         Mac,
         Android,
@@ -42,12 +42,12 @@
         SysAdmin,
         ProjUser,
         Bhoomi,
-        IQFRecordsManager,
-        IQFUse,
+        IQFRecordsMgr,
+        IQFUser,
         IQFAdmin,
-        DotUser,
-        DotAdmin,
-        DevUser,
-        DevAdmin
+        DOTUser,
+        DOTAdmin,
+        DEVUser,
+        DEVAdmin
     }
 }

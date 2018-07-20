@@ -1,14 +1,5 @@
 ﻿using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static RKCIUIAutomation.Config.ProjectProperties;
-using NUnit.Framework;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
-using RKCIUIAutomation.Base;
 using MiniGuids;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
@@ -18,6 +9,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public DesignDocumentCommentReview(){}
         public DesignDocumentCommentReview(IWebDriver driver) => this.driver = driver;
+        
     }
     #endregion  <-- end of DesignDocumentCommentReview Generic Class
 
@@ -90,8 +82,24 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
+        public enum TableTab
+        {
+            [StringValue("Creating")] Creating,
+            [StringValue("Requires Comment")] Requires_Comment,
+            [StringValue("Pending Response")] Pending_Response,
+            [StringValue("Requires Resolution")] Requires_Resolution,
+            [StringValue("Pending Resolution")] Pending_Resolution,
+            [StringValue("Pending Closing")] Pending_Closing,
+            [StringValue("Closed")] Closed,
+        }
 
-
+        public enum ColumnName
+        {
+            [StringValue("SubmittalNumber")] Number,
+            [StringValue("SubmittalTitle")] Title,
+            [StringValue("IqfDeadlineDate")] Deadline
+        }
+        
         private string designDocTitle;
         private string designDocNumber;
         private string docTitleKey;
@@ -108,9 +116,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Closed")] Closed
         }
 
-        /// <summary>
-        /// TODO- implement common workflow
-        /// </summary>
         private By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
         private By CancelBtn_ByLocator => By.Id("btnCancel");
         private By SaveOnlyBtn_ByLocator => By.Id("btnSave");
@@ -124,7 +129,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public void ClickTab_Response() => ClickTableTab(TableTab.Response);
         public void ClickTab_Closing() => ClickTableTab(TableTab.Closing);
         public void ClickTab_Closed() => ClickTableTab(TableTab.Closed);
-       
+
 
         public virtual void CreateDocument()
         {
@@ -229,7 +234,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         }
 
-        public virtual void EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
+        /// <summary>
+        /// TODO - implement common workflow
+        /// </summary>
+        public virtual void _LoggedInUserUploadsDesignDocument()
         {
 
             // Login as user to make resolution comment (All tenants - DevAdmin)
@@ -264,12 +272,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
     #endregion <--specific to Garnet
 
+
     #region Implementation specific to GLX
     public class DesignDocumentCommentReview_GLX : DesignDocumentCommentReview
     {
         public DesignDocumentCommentReview_GLX(IWebDriver driver) : base(driver) { }
     }
     #endregion specific to GLX
+
 
     #region Implementation specific to SH249
     public class DesignDocumentCommentReview_SH249 : DesignDocumentCommentReview
@@ -279,6 +289,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
     #endregion <--specific toSGway
 
+
     #region Implementation specific to SGWay
     public class DesignDocumentCommentReview_SGWay : DesignDocumentCommentReview
     {
@@ -287,12 +298,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
     #endregion <--specific toSGway
 
+
     #region Implementation specific to I15South
     public class DesignDocumentCommentReview_I15South : DesignDocumentCommentReview
     {
         public DesignDocumentCommentReview_I15South(IWebDriver driver) : base(driver) { }
     }
     #endregion <--specific to I15south
+
 
     #region Implementation specific to I15Tech
     public class DesignDocumentCommentReview_I15Tech : DesignDocumentCommentReview

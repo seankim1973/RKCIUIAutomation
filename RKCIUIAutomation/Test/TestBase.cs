@@ -16,7 +16,11 @@ namespace RKCIUIAutomation.Test
 
 
         public TestDetails TestDetails => new TestDetails(driver);
-        public void LoginAs(UserType user) => new LoginPage(driver).LoginUser(user);      
+
+        private ILoginPage LoginPage => new LoginPage().SetClass<ILoginPage>(driver);
+        public void LoginAs(UserType user) => LoginPage.LoginUser(user);
+
+        public TableHelper TableHelper => new TableHelper();
 
         public IPageNavigation NavigateToPage => new PageNavigation().SetClass<IPageNavigation>(driver);
 
@@ -24,7 +28,7 @@ namespace RKCIUIAutomation.Test
 
         public ILinkCoverageWF LinkCoverageWF => new LinkCoverageWF().SetClass<ILinkCoverageWF>(driver);
 
-        public IDesignDocumentCommentReview RMCenter_DesignDocumentCommentReview => new DesignDocumentCommentReview().SetClass<IDesignDocumentCommentReview>(driver);
+        public IDesignDocumentCommentReview DesignDocCommentReview => new DesignDocumentCommentReview().SetClass<IDesignDocumentCommentReview>(driver);
 
     }
 }

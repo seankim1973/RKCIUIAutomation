@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using NUnit.Framework.Internal;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
+using RKCIUIAutomation.Page;
+using OpenQA.Selenium;
 
 namespace RKCIUIAutomation.Test.Smoke
 {
@@ -228,6 +230,33 @@ namespace RKCIUIAutomation.Test.Smoke
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Qms_Document();           
             Assert.True(VerifyPageTitle("QMS Documents"));
+        }
+    }
+
+    [TestFixture]
+    public class Test_TableHelper : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void VerifyTableHelper()
+        {
+            LoginAs(UserType.IQFAdmin);
+            NavigateToPage.RMCenter_Design_Documents();
+            //Thread.Sleep(5000);
+            TableHelper tblHelper = new TableHelper(driver);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Response);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Resolution);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Closing);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Closed);
+            tblHelper.ClickTableTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Comment);
+
+            //By locator = By.XPath("//div[@id='DesignDocumentListGrid_0']//td[contains(text(),'Oncor')]//following-sibling::td/a[text()='Revise']");
+            //ClickElement(locator);
+
+            Thread.Sleep(10000);
         }
     }
 

@@ -1,7 +1,5 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
-using static RKCIUIAutomation.Page.Action;
-using static RKCIUIAutomation.Page.PageHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {

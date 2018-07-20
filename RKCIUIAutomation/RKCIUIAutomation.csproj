@@ -105,6 +105,9 @@
     <Reference Include="MongoDB.Driver.Core, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Driver.Core.2.7.0\lib\net45\MongoDB.Driver.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
@@ -262,9 +265,9 @@
     <Compile Include="Config\ProjectProperties.cs" />
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\Action.cs" />
+    <Compile Include="Page\KendoGrid.cs" />
     <Compile Include="Page\Navigation\PageNavigation.cs" />
     <Compile Include="Page\Navigation\NavMenu.cs" />
-    <Compile Include="Page\PageObjects\IPageBase.cs" />
     <Compile Include="Page\PageObjects\Project\Administration\AdminTools\LockedRecords.cs" />
     <Compile Include="Page\PageObjects\Project\Administration\Companies.cs" />
     <Compile Include="Page\PageObjects\Project\Administration\Contracts.cs" />
@@ -337,7 +340,6 @@
     <Compile Include="Page\PageObjects\RFI\List.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DesignDocumentCommentReview.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DesignDocument_Template.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\DesignDocument.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DOTProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittal.cs" />

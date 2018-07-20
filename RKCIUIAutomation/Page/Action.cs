@@ -4,9 +4,7 @@ using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
-using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -17,10 +15,13 @@ namespace RKCIUIAutomation.Page
     {
         private enum JSAction
         {
-            [StringValue("arguments[0].click();")]Click,
+            [StringValue("arguments[0].isDisplayed();")] IsDisplayed,
+            [StringValue("arguments[0].getAttribute")] GetAttribute,
+            [StringValue("arguments[0].hasAttribute")] HasAttribute,
+            [StringValue("arguments[0].click();")] Click,
             [StringValue("var evObj = document.createEvent('MouseEvents');" +
                     "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
-                    "arguments[0].dispatchEvent(evObj);")]Hover
+                    "arguments[0].dispatchEvent(evObj);")] Hover
         }
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
         {
@@ -38,15 +39,84 @@ namespace RKCIUIAutomation.Page
                 throw;
             }
         }
+        private object ExecuteJsAsync(IWebDriver driver, JSAction jsAction, By elementByLocator, string attribute = null)
+        {
+            object result = null;
+            string javaScript = (jsAction == JSAction.HasAttribute || jsAction == JSAction.GetAttribute) ? $"{jsAction.GetString()}(\"{attribute}\");" : jsAction.GetString();
+                        
+            IWebElement element = GetElement(elementByLocator);
+            if (element != null)
+            {
+                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
+                driver.Manage().Timeouts().AsynchronousJavaScript = TimeSpan.FromSeconds(10);
+                result = executor.ExecuteAsyncScript(javaScript, element);
+                LogInfo($"{jsAction.ToString()}ed on javascript element - {elementByLocator}");
+            }
+            else
+            {
+                LogDebug("Error during ExecuteJsAsync method");
+            }
+            return result;
+        }
+        public string JsGetAttribute(By elementByLocator, string attribute)
+        {
+            var result = ExecuteJsAsync(driver, JSAction.GetAttribute, elementByLocator, attribute);
+            if (result != null)
+            {
+                return (string)result;
 
-        private bool WaitForElement(By elementByLocator)
+            }
+            else
+            {
+                LogDebug("Attribute returned null value");
+                return string.Empty;
+            }
+                
+        }
+        public bool JsIsDisplayed(IWebDriver driver, By elementByLocator)
+        {
+            var result = ExecuteJsAsync(driver, JSAction.IsDisplayed, elementByLocator);
+            if (result != null)
+            {
+                return (bool)result;
+
+            }
+            else
+            {
+                LogDebug("Element not found");
+                return false;
+            }
+                
+        }
+        public bool JsHasAttribute(By elementByLocator, string attribute)
+        {
+            var result = ExecuteJsAsync(driver, JSAction.HasAttribute, elementByLocator, attribute);
+            if (result != null)
+            {
+                return (bool)result;
+            }
+            else
+            {
+                LogDebug("Element not found");
+                return false;
+            }
+                
+        }
+        public void JsClickElement(By elementByLocator) => ExecuteJsAction(JSAction.Click, elementByLocator);
+        public void JsHover(By elementByLocator)
+        {
+            ExecuteJsAction(JSAction.Hover, elementByLocator);
+            Thread.Sleep(1000);
+        }
+
+        private bool WaitForElement(By elementByLocator, int timeOutInSeconds = 2, int pollingInterval = 250)
         {
             try
             {
                 LogInfo($"...waiting for element {elementByLocator}");
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(1))
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                 {
-                    PollingInterval = TimeSpan.FromMilliseconds(250)
+                    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
                 };
                 wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
@@ -61,8 +131,29 @@ namespace RKCIUIAutomation.Page
             }
             return false;
         }
+        internal void WaitForTableToLoad(int timeOutInSeconds = 10, int pollingInterval = 500)
+        {
+            By activeTblBodyLocator = By.XPath("//div[contains(@style,'opacity: 1;')]//tbody");
+            bool spinnerIsDisplayed = true;
+            do
+            {
+                Thread.Sleep(500);
+                spinnerIsDisplayed = JsIsDisplayed(driver, By.XPath("//div[@class='k-loading-image']"));
+                log.Info("...waiting for loading spinner to clear");
+            }
+            while (spinnerIsDisplayed);
 
-        private IWebElement GetElement(By elementByLocator)
+            bool tableBodyIsDisplayed = false;
+            do
+            {
+                Thread.Sleep(500);
+                tableBodyIsDisplayed = JsIsDisplayed(driver, activeTblBodyLocator);
+                log.Info("...waiting for table body to become visible");
+            }
+            while (!tableBodyIsDisplayed);
+        }
+
+        internal IWebElement GetElement(By elementByLocator)
         {
             IWebElement elem = null;
             if (WaitForElement(elementByLocator))
@@ -79,7 +170,6 @@ namespace RKCIUIAutomation.Page
             }
             return elem;
         }
-
         private IList<IWebElement> GetElements(By elementByLocator)
         {
             IList<IWebElement> elements = null;
@@ -97,7 +187,12 @@ namespace RKCIUIAutomation.Page
             }
             return elements;
         }
-
+        public int GetElementsCount(By elementByLocator)
+        {
+            IList<IWebElement> elements = GetElements(elementByLocator);
+            return elements.Count;
+        }
+                
         public void ClickElement(By elementByLocator)
         {
             try
@@ -128,13 +223,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void ClickJsElement(By elementByLocator) => ExecuteJsAction(JSAction.Click, elementByLocator);
-
-        public void Hover(By elementByLocator)
-        {
-            ExecuteJsAction(JSAction.Hover, elementByLocator);
-            Thread.Sleep(1000);
-        }
+        public string GetAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetProperty(attributeName);
 
         public void EnterText(By elementByLocator, string text)
         {
@@ -148,21 +237,6 @@ namespace RKCIUIAutomation.Page
                 LogError($"Unable to enter text in field - {elementByLocator}", true, e);
             }
         }
-
-        public void EnterComment(By elementByLocator)
-        {
-            try
-            {
-                string text = "Comment 123";
-                GetElement(elementByLocator).SendKeys(text);
-                LogInfo($"Entered '{text}' in field - {elementByLocator}");
-            }
-            catch (Exception e)
-            {
-                LogError($"Unable to enter text in field - {elementByLocator}", true, e);
-            }
-        }
-
         public string GetText(By elementByLocator)
         {
             string text = string.Empty;
@@ -193,7 +267,6 @@ namespace RKCIUIAutomation.Page
             }
             return text;
         }
-
         public void ExpandDDL(Enum ddListID)
         {
             By locator = new PageHelper().GetExpandDDListButtonByLocator(ddListID);
@@ -208,7 +281,6 @@ namespace RKCIUIAutomation.Page
                 LogError($"Unable to expand drop down list - {locator}", true, e);
             }
         }
-
         public void ExpandAndSelectFromDDList<T>(Enum ddListID, T itemIndexOrName)
         {
             ExpandDDL(ddListID);
@@ -224,7 +296,6 @@ namespace RKCIUIAutomation.Page
             AutoItX.ControlClick("Open", "&Open", "Button1");
             LogInfo("Clicked Open button on the File Open Dialog Window");
         }
-
         public void UploadFile(string fileName)
         {
             string filePath = null;
@@ -243,7 +314,6 @@ namespace RKCIUIAutomation.Page
                 UploadUsingAutoItX(filePath);
             }
         }
-
         public string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
         {
             string uploadPath = string.Empty;
@@ -272,7 +342,6 @@ namespace RKCIUIAutomation.Page
                 throw;
             }          
         }
-
         public bool VerifyAlertMessage(string expectedMessage)
         {            
             string actualAlertMsg = driver.SwitchTo().Alert().Text;
@@ -280,7 +349,6 @@ namespace RKCIUIAutomation.Page
             LogInfo($"## Expected Alert Message: {expectedMessage} <br>&nbsp;&nbsp;## Actual Alert Message: {actualAlertMsg}", msgMatch);
             return msgMatch;
         }
-
         public bool VerifyFieldErrorIsDisplayed(By elementByLocator )
         {
             IWebElement elem = GetElement(elementByLocator);
@@ -289,7 +357,6 @@ namespace RKCIUIAutomation.Page
             LogInfo($"Field error is{not} displayed for - {elementByLocator}", elementDisplayed);
             return elementDisplayed;
         }
-
         public bool VerifySuccessMessageIsDisplayed()
         {
             By elementByLocator = By.XPath("//div[contains(@class,'bootstrap-growl')]");
@@ -299,9 +366,23 @@ namespace RKCIUIAutomation.Page
             LogInfo($"Success Message is{not} displayed", elementDisplayed);
             return elementDisplayed;
         }
+        public bool VerifySchedulerIsDisplayed() //TODO - move to Early Break Calendar class when more test cases are created
+        {
+            IWebElement scheduler = GetElement(By.Id("scheduler"));
+            bool isDisplayed = scheduler.Displayed;
+            string not = isDisplayed == false ? " not" : "";
+            LogInfo($"Scheduler is{not} displayed", isDisplayed);
+            return isDisplayed;
+        }
+        public bool ElementIsDisplayed(By elementByLocator)
+        {
+            IWebElement element = GetElement(elementByLocator);
+            bool isDisplayed = (element != null) ? true : false;
+            return isDisplayed;
+        }
 
         private string PageTitle = string.Empty;
-        public bool IsElementDisplayed(By elementByLocator)
+        private bool IsHeadingDisplayed(By elementByLocator)
         {
             IWebElement element = GetElement(elementByLocator);
             bool isDisplayed = false;
@@ -314,7 +395,6 @@ namespace RKCIUIAutomation.Page
   
             return isDisplayed;
         }
-
         public bool VerifyPageTitle(string expectedPageTitle)
         {
             bool isMatchingTitle = false;
@@ -322,21 +402,21 @@ namespace RKCIUIAutomation.Page
             By headingElement = null;
 
             headingElement = By.XPath($"//h3[contains(text(),'{expectedPageTitle}')]");
-            isDisplayed = IsElementDisplayed(headingElement);
+            isDisplayed = IsHeadingDisplayed(headingElement);
             if (!isDisplayed)
             {
                 headingElement = By.XPath($"//h2[contains(text(),'{expectedPageTitle}')]");
-                isDisplayed = IsElementDisplayed(headingElement);
+                isDisplayed = IsHeadingDisplayed(headingElement);
                 if (!isDisplayed)
                 {
                     LogDebug($"Page Title element with h2 or h3 tag containing text '{expectedPageTitle}' was not found.");
 
                     headingElement = By.XPath("//h3");
-                    isDisplayed = IsElementDisplayed(headingElement);
+                    isDisplayed = IsHeadingDisplayed(headingElement);
                     if (!isDisplayed)
                     {
                         headingElement = By.XPath("//h2");
-                        isMatchingTitle = IsElementDisplayed(headingElement) ? (GetElement(headingElement).Text).Contains(expectedPageTitle) : false;
+                        isMatchingTitle = IsHeadingDisplayed(headingElement) ? (GetElement(headingElement).Text).Contains(expectedPageTitle) : false;
                     }
                     else
                     {
@@ -358,15 +438,6 @@ namespace RKCIUIAutomation.Page
                 LogDebug($"Could not find any Page element with h2 or h3 tag");
             }
             return isMatchingTitle;
-        }
-
-        public bool VerifySchedulerIsDisplayed() //TODO - move to Early Break Calendar class when more test cases are created
-        {
-            IWebElement scheduler = GetElement(By.Id("scheduler"));
-            bool isDisplayed = scheduler.Displayed;
-            string not = isDisplayed == false ? " not" : "";
-            LogInfo($"Scheduler is{not} displayed", isDisplayed);
-            return isDisplayed;
         }
 
         private string pageErrLogMsg = string.Empty;
@@ -454,14 +525,13 @@ namespace RKCIUIAutomation.Page
                 throw;
             }
         }
-
         
         private static string ActiveModalXpath => "//div[contains(@style,'opacity: 1')]";
         private static string ModalTitle => $"{ActiveModalXpath}//div[contains(@class,'k-header')]";
         private static string ModalCloseBtn => $"{ActiveModalXpath}//a[@aria-label='Close']";
         public void CloseActiveModalWindow()
         {
-            ClickJsElement(By.XPath(ModalCloseBtn));
+            JsClickElement(By.XPath(ModalCloseBtn));
             Thread.Sleep(500);
         }
         public bool VerifyActiveModalTitle(string expectedModalTitle)
@@ -471,7 +541,6 @@ namespace RKCIUIAutomation.Page
             LogInfo($"## Expected Modal Title: {expectedModalTitle} <br>&nbsp;&nbsp;## Actual Modal Title: {actualTitle}", titlesMatch);
             return titlesMatch;
         }
-
 
         public void ClickCancel()
         {
@@ -508,6 +577,12 @@ namespace RKCIUIAutomation.Page
             VerifyPageIsLoaded();
             IWebElement newBtn = GetElement(GetButtonByLocator("New")) ?? GetElement(GetInputButtonByLocator("Create New"));
             ClickElement(newBtn);
+        }
+        public void ClickTwice(By elementByLocator)
+        {
+            ClickElement(elementByLocator);
+            Thread.Sleep(250);
+            ClickElement(elementByLocator);
         }
 
     }
