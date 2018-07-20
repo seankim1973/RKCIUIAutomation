@@ -93,6 +93,9 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MiniGuid, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MiniGuid.1.1.2\lib\netstandard1.0\MiniGuid.dll</HintPath>
+    </Reference>
     <Reference Include="MongoDB.Bson, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.7.0\lib\net45\MongoDB.Bson.dll</HintPath>
     </Reference>
@@ -101,6 +104,9 @@
     </Reference>
     <Reference Include="MongoDB.Driver.Core, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Driver.Core.2.7.0\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
@@ -121,6 +127,16 @@
       <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.Primitives, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Primitives.4.3.0\lib\net45\System.ComponentModel.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.TypeConverter, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.TypeConverter.4.3.0\lib\net45\System.ComponentModel.TypeConverter.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Console, Version=4.0.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Console.4.3.1\lib\net46\System.Console.dll</HintPath>
@@ -206,6 +222,11 @@
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -244,9 +265,9 @@
     <Compile Include="Config\ProjectProperties.cs" />
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\Action.cs" />
+    <Compile Include="Page\KendoGrid.cs" />
     <Compile Include="Page\Navigation\PageNavigation.cs" />
     <Compile Include="Page\Navigation\NavMenu.cs" />
-    <Compile Include="Page\PageObjects\IPageBase.cs" />
     <Compile Include="Page\PageObjects\Project\Administration\AdminTools\LockedRecords.cs" />
     <Compile Include="Page\PageObjects\Project\Administration\Companies.cs" />
     <Compile Include="Page\PageObjects\Project\Administration\Contracts.cs" />
@@ -317,7 +338,8 @@
     <Compile Include="Page\PageObjects\ReportsNotices\GeneralNCR.cs" />
     <Compile Include="Page\PageObjects\RFI\Create.cs" />
     <Compile Include="Page\PageObjects\RFI\List.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\DesignDocument.cs" />
+    <Compile Include="Page\PageObjects\RMCenter\DesignDocumentCommentReview.cs" />
+    <Compile Include="Page\PageObjects\RMCenter\DesignDocument_Template.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DOTProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittal.cs" />
@@ -350,7 +372,9 @@
     <Compile Include="Test\UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\JiraUtil.cs" />
+    <Compile Include="Tools\NUnitClass.cs" />
     <Compile Include="Tools\TestResultUtil.cs" />
+    <Compile Include="Tools\XMLUtil.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -1,15 +1,17 @@
-﻿using AventStack.ExtentReports;
-using AventStack.ExtentReports.MarkupUtils;
-using log4net;
-using log4net.Core;
-using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.Extensions;
-using RKCIUIAutomation.Config;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using AventStack.ExtentReports;
+using AventStack.ExtentReports.MarkupUtils;
+using log4net;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.Extensions;
+using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page;
+using static RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Base
 {
@@ -78,9 +80,9 @@ namespace RKCIUIAutomation.Base
         public static string CaptureScreenshot(IWebDriver driver, string fileName)
         {
             string uniqueFileName = $"{fileName}{DateTime.Now.Second}.png";
-            var screenshot = driver.TakeScreenshot();
             string screenshotFolderPath = $"{extentReportPath}\\errorscreenshots\\";
             Directory.CreateDirectory(screenshotFolderPath);
+            var screenshot = driver.TakeScreenshot();
             screenshot.SaveAsFile($"{screenshotFolderPath}{uniqueFileName}", ScreenshotImageFormat.Png);
             return $"{"errorscreenshots/"}{uniqueFileName}";
         }
@@ -91,19 +93,33 @@ namespace RKCIUIAutomation.Base
             ExtentTestManager.GetTest().Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
             log.Debug(msg);
         }
-        public void LogError(string details, bool takeScreenshot = true, Exception e = null)
+        public static void LogFail(string details, Exception e = null)
         {
-            ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));
+            ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
             log.Error(details);
 
-            if (takeScreenshot)
-            {
-                LogErrorWithScreenshot();          
-            }
-            
             if (e != null)
             {
-                log.Fatal(e.Message);
+                ExtentTestManager.GetTest().Error(CreateReportMarkupCodeBlock(e));
+                log.Error(e.Message);
+            }
+        }
+        public void LogError(string details, bool takeScreenshot = true, Exception e = null)
+        {
+            if (takeScreenshot)
+            {
+                LogErrorWithScreenshot();
+            }
+            else
+            {
+                ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));               
+            }
+            log.Error(details);
+
+            if (e != null)
+            {
+                ExtentTestManager.GetTest().Error(CreateReportMarkupCodeBlock(e));
+                log.Error(e.Message);
             }
         }
         public static void LogDebug(string details)
@@ -124,7 +140,18 @@ namespace RKCIUIAutomation.Base
         }
         public static void LogInfo(string details)
         {
-            if (details.Contains("#####"))
+            string[] detailsBr = null;
+
+            if (details.Contains("<br>"))
+            {
+                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                for (int i = 0; i < detailsBr.Length; i++)
+                {
+                    log.Info(detailsBr[i]);
+                }
+            }
+            else if (details.Contains("#####"))
             {
                 ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details));
             }
@@ -133,19 +160,36 @@ namespace RKCIUIAutomation.Base
                 ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
             }
             else
+            {
                 ExtentTestManager.GetTest().Info(details);
-            log.Info(details);    
+                log.Info(details);
+            }
         }
         public static void LogInfo(string details, Exception e)
         {
+            string[] detailsBr = null;
+
             ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
-            log.Debug(details);
+            if (details.Contains("<br>"))
+            {
+                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                for (int i = 0; i < detailsBr.Length; i++)
+                {
+                    log.Info(detailsBr[i]);
+                }
+            }
+            else
+            {
+                log.Debug(details);
+            }
+                       
             if(e != null)
             {
                 ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
                 log.Debug(e.Message);
             }
         }
+
         public void LogInfo(string details, bool assertion, Exception e = null)
         {
             bool hasPgBreak = false;
@@ -162,8 +206,10 @@ namespace RKCIUIAutomation.Base
                 ExtentTestManager.GetTest().Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
                 if (hasPgBreak)
                 {
-                    log.Info(detailsBr[0]);
-                    log.Info(detailsBr[1]);
+                    for (int i = 0; i < detailsBr.Length; i++)
+                    {
+                        log.Info(detailsBr[i]);
+                    }
                 }
                 else
                     log.Info(details);
@@ -174,8 +220,10 @@ namespace RKCIUIAutomation.Base
                 LogErrorWithScreenshot();
                 if (hasPgBreak)
                 {
-                    log.Fatal(detailsBr[0]);
-                    log.Fatal(detailsBr[1]);
+                    for (int i = 0; i < detailsBr.Length; i++)
+                    {
+                        log.Fatal(detailsBr[i]);
+                    }
                 }
                 else
                     log.Fatal(details);
@@ -186,7 +234,6 @@ namespace RKCIUIAutomation.Base
                 }
             }
         }
-
 
         private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
         {
@@ -307,6 +354,25 @@ namespace RKCIUIAutomation.Base
             }
         }
 
+        private static PageBaseHelper pgbHelper = new PageBaseHelper();
+        public static void InjectTestStatus(string testName, TestStatus status, string logMsg)
+        {
+            pgbHelper.CreateVar($"{testName}_msgKey", logMsg);
+            pgbHelper.CreateVar($"{testName}_statusKey", status.ToString());
+        }
+
+        public static void CheckForTestStatusInjection()
+        {
+            string logMessage = pgbHelper.GetVar($"{GetTestName()}_msgKey");
+            string injStatus = pgbHelper.GetVar($"{GetTestName()}_statusKey");
+
+            switch (injStatus)
+            {
+                case "Failed":
+                    Assert.Fail(logMessage);
+                    break;
+            }
+        }
     }
 
     public static class BaseHelper

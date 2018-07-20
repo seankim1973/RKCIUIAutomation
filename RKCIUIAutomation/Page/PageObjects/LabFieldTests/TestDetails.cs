@@ -14,7 +14,7 @@ namespace RKCIUIAutomation.Page.PageObjects.LabFieldTests
 
         public readonly By TestDetailsFormByLocator = By.Id("StartDiv");
 
-        public bool VerifyTestDetailsFormIsDisplayed() => IsElementDisplayed(TestDetailsFormByLocator);
+        public bool VerifyTestDetailsFormIsDisplayed() => ElementIsDisplayed(TestDetailsFormByLocator);
 
     }
 }

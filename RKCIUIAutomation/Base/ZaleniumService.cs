@@ -5,9 +5,9 @@ using System.Web.Script.Serialization;
 namespace RKCIUIAutomation.Base
 {
 #pragma warning disable IDE1006 // Naming Styles
-    public class ZaleniumService
+    public class ZaleniumService : BaseUtils
     {
-        public static void Start()
+        public void Start()
         {
             string cmdLineArgument = $"run --rm -ti --name zalenium -p 4444:4444 -p 5555:5555 " +
                 $"-v /var/run/docker.sock:/var/run/docker.sock " +
@@ -16,22 +16,20 @@ namespace RKCIUIAutomation.Base
             Service(cmdLineArgument);
         }
 
-        public static void Stop()
+        public void Stop()
         {
             string cmdLineArgument = "stop zalenium";
             Service(cmdLineArgument);
         }
 
         
-        private static void Service(string cmdLineArgument)
+        private void Service(string cmdLineArgument)
         {
-            BaseUtils baseUtils = new BaseUtils();
-
             if (!ZaleniumIsRunning())
             {
                 try
                 {
-                    BaseUtils.RunExternalExecutible("docker", cmdLineArgument);
+                    RunExternalExecutible("docker", cmdLineArgument);
 
                     while (!ZaleniumIsRunning())
                     {
@@ -40,13 +38,13 @@ namespace RKCIUIAutomation.Base
                 }
                 catch (Exception e)
                 {
-                    baseUtils.LogError(e.Message);
+                    LogError(e.Message);
                     throw;
                 }
             }
         }
 
-        public static bool ZaleniumIsRunning()
+        public bool ZaleniumIsRunning()
         {
             BaseUtils baseUtils = new BaseUtils();
             string zaleniumBaseUrl = "http://10.1.1.207:4444";
@@ -64,7 +62,7 @@ namespace RKCIUIAutomation.Base
             }
             catch (Exception e)
             {
-                baseUtils.LogError(e.Message);
+                LogError(e.Message);
             }
 
             return isRunning;

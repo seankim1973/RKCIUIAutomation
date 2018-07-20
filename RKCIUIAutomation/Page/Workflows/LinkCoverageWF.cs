@@ -181,7 +181,7 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.QALab_Equipment_Management();
             AddAssertionToList(VerifyPageTitle("Equipment"));
             ClickCreate();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.QALab_BreakSheet_Forecast();
             AddAssertionToList(VerifyPageTitle("Break Sheet Forecast"));
             NavigateToPage.QALab_Early_Break_Calendar();
@@ -204,32 +204,32 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(VerifyPageTitle("Create Retest Report"));
             NavigateToPage.QARecordControl_QA_DIRs();
             AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports"));
-            ClickNew_InputBtn();
-            ClickCancel_InputBtn();
+            ClickNew();
+            ClickCancel();
             NavigateToPage.QARecordControl_General_NCR();
             AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
             ClickNew();
-            ClickCancel_InputBtn();
+            ClickCancel();
             NavigateToPage.QARecordControl_General_CDR();
             AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
             ClickNew();
-            ClickCancel_InputBtn();
+            ClickCancel();
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
             AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
             AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.QARecordControl_MPL_Tracker();
             AddAssertionToList(VerifyPageTitle("MPL Tracker"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.QARecordControl_Girder_Tracker();
             AddAssertionToList(VerifyPageTitle("Girder Tracker"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             AssertAll();
 
         }
@@ -263,11 +263,11 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.QARecordControl_General_NCR(); //TODO: Is this correct?
             AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
             ClickNew();
-            ClickCancel_InputBtn();
+            ClickCancel();
             NavigateToPage.QARecordControl_General_CDR(); //TODO: Is this correct?
             AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
             ClickNew();
-            ClickCancel_InputBtn();
+            ClickCancel();
             AssertAll();
         }
 
@@ -373,7 +373,7 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.Control_Point_Scheduler();
             AddAssertionToList(VerifyPageTitle("Control Point List"));
             ClickNew();
-            ClickCancel_InputBtn();
+            ClickCancel();
             NavigateToPage.Control_Point_Log();
             AddAssertionToList(VerifyPageTitle("Control Point Log Search"));
             AssertAll();
@@ -405,36 +405,36 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.MaterialMixCodes_Mix_Design_PCC();
             AddAssertionToList(VerifyPageTitle("Pcc Mix Design"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Mix_Design_HMA();
             AddAssertionToList(VerifyPageTitle("Hma Mix Design"));
             VerifyPageIsLoaded();
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Sieve_Analyses_JMF();
             AddAssertionToList(VerifyPageTitle("Sieve Analysis JMF"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Sieve_Analyses_IOC();
             AddAssertionToList(VerifyPageTitle("Sieve Analysis IOC"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_Concrete_Aggregate();
             AddAssertionToList(VerifyPageTitle("Aggregate A"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_Base_Aggregate();
             AddAssertionToList(VerifyPageTitle("Aggregate E"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_HMA_Aggregate();
             AddAssertionToList(VerifyPageTitle("Aggregate F"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_Raw_Material();
             AddAssertionToList(VerifyPageTitle("Raw Materials"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             AssertAll();
         }
 
@@ -478,7 +478,7 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.RMCenter_DOT_Project_Correspondence_Log();
             AddAssertionToList(VerifyPageTitle("Transmissions"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             NavigateToPage.RMCenter_Review_Revise_Submittal();
             AddAssertionToList(VerifyPageTitle("Review / Revise Submittals"));
             NavigateToPage.RMCenter_RFC_Management();
@@ -486,7 +486,7 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.RMCenter_Project_Correspondence_Log();
             AddAssertionToList(VerifyPageTitle("Transmissions"));
             ClickNew();
-            ClickCancel_ATag();
+            ClickCancel();
             AssertAll();
         }
     }

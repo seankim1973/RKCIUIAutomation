@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using NUnit.Framework.Internal;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
-using static RKCIUIAutomation.Config.ProjectProperties;
+using RKCIUIAutomation.Page;
+using OpenQA.Selenium;
 
-namespace RKCIUIAutomation.Test
+namespace RKCIUIAutomation.Test.Smoke
 {
     [TestFixture]
     public class Verify_LinkCoverage_Level1 : TestBase
@@ -40,14 +41,14 @@ namespace RKCIUIAutomation.Test
     }
 
     [TestFixture]
-    public class Test_UserCanLogin_ProjUser : TestBase
+    public class Verify_CancelOutOfOwnerSubmittalPage : TestBase
     {
         [Test]
         [Category(Component.Submittals)]
         [Property("TC#", "ELVS1234")]
         [Property("Priority", "Priority 1")]
-        [Description("Verify user can login successfully using project - user account")]
-        public void VerifyUserCanLogin_ProjUser()
+        [Description("Verify user can cancel out of Owner Submittal Page Successfully")]
+        public void VerifyCancelOutOfOwnerSubmittalPage()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_Owner_Submittal();
@@ -82,7 +83,6 @@ namespace RKCIUIAutomation.Test
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Specification, 1);
             EnterText(SubmittalDetails.Input_Quantity, "50");
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.QuantityUnit, 1);
-            ClickElement(SubmittalDetails.Btn_SelectFiles);
             UploadFile("test.xlsx");
             ClickSubmitForward();
 
@@ -229,6 +229,37 @@ namespace RKCIUIAutomation.Test
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Qms_Document();           
             Assert.True(VerifyPageTitle("QMS Documents"));
+        }
+    }
+
+    [TestFixture]
+    public class Test_TableHelper : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void VerifyTableHelper()
+        {
+            LoginAs(UserType.IQFAdmin);
+            NavigateToPage.RMCenter_Design_Documents();
+            //Thread.Sleep(5000);
+            //TableHelper tblHelper = new TableHelper(driver);
+            TableHelper tblHelper = new TableHelper(driver);
+            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Response);
+            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Resolution);
+            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Closing);
+            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Closed);
+            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Comment);
+            NavigateToPage.RMCenter_Search();
+            tblHelper.GoToPageNumber(5);
+            tblHelper.GoToLastPage();
+
+            //By locator = By.XPath("//div[@id='DesignDocumentListGrid_0']//td[contains(text(),'Oncor')]//following-sibling::td/a[text()='Revise']");
+            //ClickElement(locator);
+
+            Thread.Sleep(10000);
         }
     }
 

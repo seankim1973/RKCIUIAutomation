@@ -10,6 +10,9 @@ namespace RKCIUIAutomation.Test
 {
     public class TestUtils : PageBase
     {
+        public TestUtils(){}
+        public TestUtils(IWebDriver driver) => this.driver = driver;
+
         private static List<string> pageUrlList;
 
         private static string GetInnerText(IWebElement listElement)
@@ -149,8 +152,8 @@ namespace RKCIUIAutomation.Test
         {
             Assert.Multiple(testDelegate: () =>
             {
-                foreach(bool assertion in assertionList)
-                Assert.True(assertion);
+                foreach (bool assertion in assertionList)
+                    Assert.True(assertion);
             });
         }
 
