@@ -39,7 +39,7 @@ namespace RKCIUIAutomation.Base
             _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
             _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            _tenantName = Parameters.Get("Tenant", $"{TenantName.Garnet}");
+            _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);
             browserType = Configs.GetBrowserType(_browserType);
@@ -53,8 +53,8 @@ namespace RKCIUIAutomation.Base
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            log.Info(userName);
-            log.Info(displayUrl);
+            //log.Info(userName);
+            //log.Info(displayUrl);
             log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
             ExtentManager.Instance.Flush();
 

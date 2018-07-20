@@ -60,7 +60,7 @@ namespace RKCIUIAutomation.Base
                 DetermineBrowserType(browser);
                 caps.SetCapability("zal:tz", "America/Chicago");
                 caps.SetCapability("zal:name", testName);
-                caps.SetCapability("zal:screenResolution", "1440x810");
+                caps.SetCapability("zal:screenResolution", "1600x900");
                 return caps;
             }
             else
@@ -70,6 +70,9 @@ namespace RKCIUIAutomation.Base
         {
             switch (platform)
             {
+                case TestPlatform.Grid:
+                    caps.SetCapability(CapabilityType.Platform, "Linux");
+                    break;
                 case TestPlatform.Linux:
                     caps.SetCapability(CapabilityType.Platform, "Linux");
                     break;
