@@ -70,7 +70,7 @@ namespace RKCIUIAutomation.Test.Smoke
         [Description("Verify user can login successfully using project - user account")]
         public void Generic()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
@@ -83,7 +83,6 @@ namespace RKCIUIAutomation.Test.Smoke
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.Specification, 1);
             EnterText(SubmittalDetails.Input_Quantity, "50");
             ExpandAndSelectFromDDList(SubmittalDetails.DDListID.QuantityUnit, 1);
-            ClickElement(SubmittalDetails.Btn_SelectFiles);
             UploadFile("test.xlsx");
             ClickSubmitForward();
 
@@ -271,10 +270,10 @@ namespace RKCIUIAutomation.Test.Smoke
         public void CommentReviewPartialFunctions()
         {
             LogInfo($"Other component test - This test should run");
-            LoginAs(UserType.IQFUse);//testing glx comment review
+            LoginAs(UserType.IQFUser);//testing glx comment review
             NavigateToPage.RMCenter_Design_Documents();
-            Assert.True(VerifyPageTitle("Design Documents"));
-            RMCenter_DesignDocumentCommentReview.CreateDocument();
+            Assert.True(VerifyPageTitle("Design Document"));
+            DesignDocCommentReview.CreateDocument();
             Thread.Sleep(5000);
         }
     }

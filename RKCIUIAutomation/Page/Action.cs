@@ -225,6 +225,20 @@ namespace RKCIUIAutomation.Page
 
         public string GetAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetProperty(attributeName);
 
+        public void EnterComment(By elementByLocator)
+        {
+            try
+            {
+                string text = "Comment 123";
+                GetElement(elementByLocator).SendKeys(text);
+                LogInfo($"Entered '{text}' in field - {elementByLocator}");
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to enter text in field - {elementByLocator}", true, e);
+            }
+        }
+
         public void EnterText(By elementByLocator, string text)
         {
             try
@@ -298,6 +312,8 @@ namespace RKCIUIAutomation.Page
         }
         public void UploadFile(string fileName)
         {
+            ClickElement(By.XPath("//div[@aria-label='Select files...']"));
+            Thread.Sleep(1000);
             string filePath = null;
             if (testPlatform == TestPlatform.Local)
             {
@@ -566,6 +582,11 @@ namespace RKCIUIAutomation.Page
         {
             VerifyPageIsLoaded();
             ClickElement(By.Id("SaveForwardSubmittal"));
+        }
+        public void ClickSaveForward()
+        {
+            VerifyPageIsLoaded();
+            ClickElement(By.Id("btnSaveForward"));
         }
         public void ClickCreate()
         {

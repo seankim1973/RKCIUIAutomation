@@ -106,16 +106,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         private string docNumberKey;
         private MiniGuid guid;
 
-        public enum TableTab
-        {
-            [StringValue("Creating")] Creating,
-            [StringValue("Comment")] Comment,
-            [StringValue("Resolution")] Resolution,
-            [StringValue("Response")] Response,
-            [StringValue("Closing")] Closing,
-            [StringValue("Closed")] Closed
-        }
-
+       
         private By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
         private By CancelBtn_ByLocator => By.Id("btnCancel");
         private By SaveOnlyBtn_ByLocator => By.Id("btnSave");
@@ -123,14 +114,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
 
         public void ClickBtn_UploadNewDesignDoc() => ClickElement(UploadNewDesignDoc_ByLocator);
-        public void ClickTab_Creating() => ClickTableTab(TableTab.Creating);
-        public void ClickTab_Comment() => ClickTableTab(TableTab.Comment);
-        public void ClickTab_Resolution() => ClickTableTab(TableTab.Resolution);
-        public void ClickTab_Response() => ClickTableTab(TableTab.Response);
-        public void ClickTab_Closing() => ClickTableTab(TableTab.Closing);
-        public void ClickTab_Closed() => ClickTableTab(TableTab.Closed);
 
-
+        /// <summary>
+        /// TODO - implement common workflow
+        /// </summary>
         public virtual void CreateDocument()
         {
             ClickElement(UploadNewDesignDoc_ByLocator);
@@ -179,7 +166,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.Title), designDocTitle);
             designDocNumber = GetVar(docNumberKey).ToString();
             EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.DocumentNumber), designDocNumber);
-            ClickSubmitForward();
+            
         }
         
         By commentInput = By.Id("Comment_Text_0_");
@@ -234,9 +221,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         }
 
-        /// <summary>
-        /// TODO - implement common workflow
-        /// </summary>
+        public virtual void EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
+        {
+
+            // Login as user to make resolution comment (All tenants - DevAdmin)
+            EnterComment(commentResolutionInput);
+            SelectAgreeResolutionCode(); //
+            ClickSave();
+            //wait for saveforward to load
+            ClickSubmitForward();
+        }
+        
         public virtual void _LoggedInUserUploadsDesignDocument()
         {
 
