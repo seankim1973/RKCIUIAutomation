@@ -13,6 +13,17 @@ namespace RKCIUIAutomation.Page
         public KendoGrid(IWebDriver driver) => this.driver = driver;
 
 
+        public void ClickCommentTab(int commentNumber)
+        {
+            string jsToBeExecuted = GetTabStripReference();
+            int commentTabIndex = commentNumber - 1;
+            string tabSelect = $"tab.select('{commentTabIndex.ToString()}');";
+            jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
+            ExecuteJsScript(jsToBeExecuted);
+            LogInfo($"Clicked Comment {commentTabIndex} tab");
+            WaitForPageReady();
+        }
+
         public void ClickTableTab(string tblTabName)
         {
             string jsToBeExecuted = GetTabStripReference();
@@ -22,12 +33,12 @@ namespace RKCIUIAutomation.Page
             string tabSelect = $"tab.select('{tabIndex.ToString()}');";
             jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
             ExecuteJsScript(jsToBeExecuted);
-            Thread.Sleep(1000);
+            LogInfo($"Clicked Table Tab - {tblTabName}");
+            WaitForPageReady();
         }
 
         private void ExecuteJsScript(string jsToBeExecuted)
         {
-            Console.WriteLine($"#####CLICK TAB JS#####{jsToBeExecuted}");
             IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
             executor.ExecuteScript(jsToBeExecuted);
         }
@@ -64,6 +75,7 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference();
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.filter([]);";
             ExecuteJsScript(jsToBeExecuted);
+            WaitForPageReady();
         }
 
         public int TotalNumberRows()
@@ -79,6 +91,7 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference();
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.read();";
             ExecuteJsScript(jsToBeExecuted);
+            WaitForPageReady();
         }
 
         public int GetPageSize()
@@ -95,13 +108,17 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference();
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.pageSize({newSize});";
             ExecuteJsScript(jsToBeExecuted);
+            WaitForPageReady();
         }
 
-        public void NavigateToTablePage(int pageNumber)
+        public void GoToTablePage(int pageNumber)
         {
+            ScrollToElement(By.XPath("//div[@data-role='pager']"));
             string jsToBeExecuted = this.GetGridReference();
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.page({pageNumber});";
             ExecuteJsScript(jsToBeExecuted);
+            LogInfo($"Navigated to table page {pageNumber}");
+            WaitForPageReady();
         }
 
         public void Sort(string columnName, SortType sortType)
@@ -109,6 +126,8 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference();
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.sort({{field: '{columnName}', dir: '{sortType.GetString()}'}});";
             ExecuteJsScript(jsToBeExecuted);
+            LogInfo($"Sorted {columnName} column to {sortType.ToString()} order");
+            WaitForPageReady();
         }
 
         public List<T> GetItems<T>() where T : class
@@ -120,36 +139,50 @@ namespace RKCIUIAutomation.Page
             return items;
         }
 
-        public void Filter(string columnName, FilterOperator filterOperator, string filterValue, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
+        public void Filter(string columnName, string filterValue, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
         {
             this.Filter(new GridFilter(columnName, filterOperator, filterValue, filterLogic, additionalFilterValue, additionalFilterOperator));
         }
 
         private void Filter(params GridFilter[] gridFilters)
         {
-            string filterScript = string.Empty;
+            string columnName = null;
+            string filterValue = null;
+            string filterOperator = null;
+            string filterLogic = null;
+            string addnlFilterOperator = null;
+            string addnlFilterValue = null;
+
+            string filterScript = null;
 
             foreach (var currentFilter in gridFilters)
             {
-                string jsFilterBase = $"grid.dataSource.filter({{ logic: '{currentFilter.FilterLogic.GetString()}', filters: [";
+                filterLogic = currentFilter.FilterLogic.GetString();
+                string jsFilterBase = $"grid.dataSource.filter({{ logic: '{filterLogic}', filters: [";
 
                 DateTime filterDateTime;
-                bool isFilterDateTime = DateTime.TryParse(currentFilter.FilterValue, out filterDateTime);
+                filterValue = currentFilter.FilterValue;
+                bool isFilterDateTime = DateTime.TryParse(filterValue, out filterDateTime);
                 string filterValueToBeApplied =
-                    isFilterDateTime ? $"new Date({filterDateTime.Year}, {filterDateTime.Month - 1}, {filterDateTime.Day})" : $"{currentFilter.FilterValue}";
+                    isFilterDateTime ? $"new Date({filterDateTime.Year}, {filterDateTime.Month - 1}, {filterDateTime.Day})" : $"{filterValue}";
 
-                string columnName = currentFilter.ColumnName;
+                columnName = currentFilter.ColumnName;
+                filterOperator = currentFilter.FilterOperator.GetString();
+                filterScript = $"{jsFilterBase}{{ field: '{columnName}', operator: '{filterOperator}', value: '{filterValueToBeApplied}' }}";
 
-                filterScript = $"{jsFilterBase}{{ field: '{columnName}', operator: '{currentFilter.FilterOperator.GetString()}', value: '{filterValueToBeApplied}' }}";
-
-                filterScript = (currentFilter.AdditionalFilterValue == null) ? filterScript :
-                    $"{filterScript},{{ field: '{columnName}', operator: '{currentFilter.AdditionalFilterOperator.GetString()}', value: '{currentFilter.AdditionalFilterValue}' }}";
+                addnlFilterValue = currentFilter.AdditionalFilterValue;
+                addnlFilterOperator = currentFilter.AdditionalFilterOperator.GetString();
+                filterScript = (addnlFilterValue == null) ? filterScript :
+                    $"{filterScript},{{ field: '{columnName}', operator: '{addnlFilterOperator}', value: '{addnlFilterValue}' }}";
             }
 
             StringBuilder sb = new StringBuilder();
             sb.Append($"{GetGridReference()}{filterScript}] }});");
-            Console.WriteLine(sb.ToString());
             ExecuteJsScript(sb.ToString());
+
+            string addnlFilter = (addnlFilterValue != null) ? $"{filterLogic} {addnlFilterOperator} {addnlFilterValue}" : string.Empty;
+            LogInfo($"Filtered {columnName} : {filterOperator} {filterValue} {addnlFilter}");
+            WaitForPageReady();
         }
 
         public int GetCurrentPageNumber()
@@ -165,9 +198,9 @@ namespace RKCIUIAutomation.Page
 
         private string GetTabStripReference()
         {
-            string tabStripId = string.Empty;
             WaitForPageReady();
 
+            string tabStripId = string.Empty;
             try
             {
                 By tabStripLocator = By.XPath("//div[contains(@class,'k-tabstrip-top')]");
@@ -188,33 +221,29 @@ namespace RKCIUIAutomation.Page
         }
         private string GetGridReference()
         {
-            string gridId = string.Empty;
             WaitForPageReady();
 
+            By singleGridDivLocator = By.XPath("//div[@data-role='grid']");
+            By multiActiveGridDivLocator = By.XPath("//div[@class='k-content k-state-active']/div");
+            IWebElement gridElem = null;
+            string gridId = string.Empty;
             try
             {
-                By tabStripLocator = By.XPath("//div[@data-role='tabstrip']");
-                By singleGridDivLocator = By.XPath("//div[@data-role='grid']");
-                By multiActiveGridDivLocator = By.XPath("//div[@class='k-content k-state-active']/div");
-
-                IWebElement tabStripElem = GetElement(tabStripLocator);
-                By gridLocator = (tabStripElem?.Displayed == true) ? multiActiveGridDivLocator : singleGridDivLocator;
-                gridId = GetElement(gridLocator).GetAttribute("id");
+                gridElem = GetElement(multiActiveGridDivLocator) ?? GetElement(singleGridDivLocator);
+                gridId = gridElem.GetAttribute("id");
 
                 if (!string.IsNullOrEmpty(gridId))
                 {
-                    string gridType = (gridLocator == singleGridDivLocator) ? "Single" : "Multi";
-                    LogInfo($"Found Kendo {gridType}-Table type Grid ID: {gridId}");
+                    LogInfo($"Found Kendo Grid ID: {gridId}");
                 }
             }
             catch (Exception e)
             {
-                LogDebug(e.Message);
+                log.Debug(e.Message);
             }
 
             return $"var grid = $('#{gridId}').data('kendoGrid');";
         }
-
     }
 
     public enum SortType

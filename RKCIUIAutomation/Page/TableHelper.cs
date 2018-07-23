@@ -18,6 +18,7 @@ namespace RKCIUIAutomation.Page
 
         #region Kendo Grid Public Methods
 
+        public void ClickCommentTabNumber(int commentNumber) => Kendo.ClickCommentTab(commentNumber);
         public void ClickTab(Enum tblTabEnum) => Kendo.ClickTableTab(tblTabEnum.GetString());
         public void RefreshTable() => Kendo.Reload();
         public int GetTableRowCount() => Kendo.TotalNumberRows();
@@ -29,20 +30,30 @@ namespace RKCIUIAutomation.Page
         public void GoToNextPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Next));
         public void GoToLastPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Last));
         public int GetCurrentPageNumber() => Kendo.GetCurrentPageNumber();
-        public void GoToPageNumber(int pageNumber) => Kendo.NavigateToTablePage(pageNumber);
+        public void GoToPageNumber(int pageNumber) => Kendo.GoToTablePage(pageNumber);
         public int GetCurrentViewItemsPerPageSize() => Kendo.GetPageSize();
         public void SetViewItemsPerPageSize(int newSize) => Kendo.ChangePageSize(newSize);
-
-        public void ClearFilters() => Kendo.RemoveFilters();
+                
+        /// <summary>
+        /// ColumnName enumerator and FilterValue is required. FilterOperator has a default value of 'Equal To'.
+        /// The default value for FilerLogic is 'AND' and Additional FilterOperator 'Equal To'.
+        /// When filtering the column using an additional filter value, the FilterLogic must be specified ('AND' or 'OR'), but the Additional FilterOperator is optional.
+        /// </summary>
+        /// <param name="columnName"></param>
+        /// <param name="filterValue"></param>
+        /// <param name="filterOperator"></param>
+        /// <param name="filterLogic"></param>
+        /// <param name="additionalFilterValue"></param>
+        /// <param name="additionalFilterOperator"></param>
         public void FilterColumn(
             Enum columnName,
-            FilterOperator filterOperator,
             string filterValue,
+            FilterOperator filterOperator = FilterOperator.EqualTo,
             FilterLogic filterLogic = FilterLogic.And,
             string additionalFilterValue = null,
             FilterOperator additionalFilterOperator = FilterOperator.EqualTo
-            ) => Kendo.Filter(columnName.GetString(), filterOperator, filterValue, filterLogic, additionalFilterValue, additionalFilterOperator);
-
+            ) => Kendo.Filter(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator);
+        public void ClearFilters() => Kendo.RemoveFilters();
         public void SortColumnAscending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Ascending);
         public void SortColumnDescending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Descending);
         public void SortColumnToDefault(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Default);
@@ -100,19 +111,58 @@ namespace RKCIUIAutomation.Page
             }
             return xPathExt;
         }
-        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
-        private string SetXPath_TableRowBtnByTextInRow(string textInRowForAnyColumn, TableButton tblRowBtn) => $"{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}";
-        private By GetTblRowBtn_ByLocator(string textInRowForAnyColumn, TableButton tblRowBtn) => By.XPath(SetXPath_TableRowBtnByTextInRow(textInRowForAnyColumn, tblRowBtn));
+        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn = null) => (string.IsNullOrEmpty(textInRowForAnyColumn)) ? $"//tr[1]/td" : $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
+        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn = null) => By.XPath($"{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
+
 
         //<<-- Table Row Button Public Methods -->>
-        public void ToggleCheckBoxForRow(string textInRowForAnyColumn) => JsClickElement(GetTblRowBtn_ByLocator(textInRowForAnyColumn, TableButton.CheckBox));
-        public void ClickEditBtnForRow(string textInRowForAnyColumn) => JsClickElement(GetTblRowBtn_ByLocator(textInRowForAnyColumn, TableButton.Action_Edit));
-        public void ClickReviseBtnForRow(string textInRowForAnyColumn) => JsClickElement(GetTblRowBtn_ByLocator(textInRowForAnyColumn, TableButton.Action_Revise));
-        public void ClickEnterBtnForRow(string textInRowForAnyColumn) => JsClickElement(GetTblRowBtn_ByLocator(textInRowForAnyColumn, TableButton.Action_Enter));
-        public void ClickQMSViewAttachmentsForRow(string textInRowForAnyColumn) => JsClickElement(GetTblRowBtn_ByLocator(textInRowForAnyColumn, TableButton.QMS_Attachments_View));
-        public void ClickViewAttachmentsForRow(string textInRowForAnyColumn) => JsClickElement(GetTblRowBtn_ByLocator(textInRowForAnyColumn, TableButton.Attachments_View));
-        public void ClickViewWebFormForRow(string textInRowForAnyColumn) => JsClickElement(GetTblRowBtn_ByLocator(textInRowForAnyColumn, TableButton.WebForm_View));
-        public void ClickViewReportForRow(string textInRowForAnyColumn) => JsClickElement(GetTblRowBtn_ByLocator(textInRowForAnyColumn, TableButton.Report_View));
+        /// <summary>
+        /// If no argument is provided, the button on the first row will be clicked.
+        /// </summary>
+        /// <param name="textInRowForAnyColumn"></param>
+        public void ToggleCheckBoxForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.CheckBox, textInRowForAnyColumn));
+        
+        /// <summary>
+        /// If no argument is provided, the button on the first row will be clicked.
+        /// </summary>
+        /// <param name="textInRowForAnyColumn"></param>
+        public void ClickEditBtnForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.Action_Edit, textInRowForAnyColumn));
+
+        /// <summary>
+        /// If no argument is provided, the button on the first row will be clicked.
+        /// </summary>
+        /// <param name="textInRowForAnyColumn"></param>
+        public void ClickReviseBtnForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.Action_Revise, textInRowForAnyColumn));
+
+        /// <summary>
+        /// If no argument is provided, the button on the first row will be clicked.
+        /// </summary>
+        /// <param name="textInRowForAnyColumn"></param>
+        public void ClickEnterBtnForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.Action_Enter, textInRowForAnyColumn));
+
+        /// <summary>
+        /// If no argument is provided, the button on the first row will be clicked.
+        /// </summary>
+        /// <param name="textInRowForAnyColumn"></param>
+        public void ClickQMSViewAttachmentsForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.QMS_Attachments_View, textInRowForAnyColumn));
+
+        /// <summary>
+        /// If no argument is provided, the button on the first row will be clicked.
+        /// </summary>
+        /// <param name="textInRowForAnyColumn"></param>
+        public void ClickViewAttachmentsForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.Attachments_View, textInRowForAnyColumn));
+
+        /// <summary>
+        /// If no argument is provided, the button on the first row will be clicked.
+        /// </summary>
+        /// <param name="textInRowForAnyColumn"></param>
+        public void ClickViewWebFormForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.WebForm_View, textInRowForAnyColumn));
+
+        /// <summary>
+        /// If no argument is provided, the button on the first row will be clicked.
+        /// </summary>
+        /// <param name="textInRowForAnyColumn"></param>
+        public void ClickViewReportForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.Report_View, textInRowForAnyColumn));
 
         #endregion <-- end of Table Row Button Methods
 

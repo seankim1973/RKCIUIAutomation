@@ -338,7 +338,7 @@
     <Compile Include="Page\PageObjects\ReportsNotices\GeneralNCR.cs" />
     <Compile Include="Page\PageObjects\RFI\Create.cs" />
     <Compile Include="Page\PageObjects\RFI\List.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\DesignDocumentCommentReview.cs" />
+    <Compile Include="Page\PageObjects\RMCenter\DesignDocument.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DesignDocument_Template.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DOTProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ProjectCorrespondenceLog.cs" />

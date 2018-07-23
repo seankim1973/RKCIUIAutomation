@@ -3,9 +3,9 @@ using System.Threading;
 using System.Collections.Generic;
 using NUnit.Framework.Internal;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using RKCIUIAutomation.Page;
 using OpenQA.Selenium;
+using RKCIUIAutomation.Page.PageObjects.RMCenter;
 
 namespace RKCIUIAutomation.Test.Smoke
 {
@@ -244,20 +244,25 @@ namespace RKCIUIAutomation.Test.Smoke
         {
             LoginAs(UserType.IQFAdmin);
             NavigateToPage.RMCenter_Design_Documents();
-            //Thread.Sleep(5000);
-            //TableHelper tblHelper = new TableHelper(driver);
-            TableHelper tblHelper = new TableHelper(driver);
-            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Response);
-            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Resolution);
-            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Pending_Closing);
-            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Closed);
-            tblHelper.ClickTab(DesignDocumentCommentReview_Impl.TableTab.Requires_Comment);
-            NavigateToPage.RMCenter_Search();
-            tblHelper.GoToPageNumber(5);
-            tblHelper.GoToLastPage();
+            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Response);
+            TableHelper.SortColumnAscending(DesignDocument.ColumnName.Action);
+            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            TableHelper.SortColumnToDefault(DesignDocument.ColumnName.Action);
+            TableHelper.FilterColumn(DesignDocument.ColumnName.Number, "ATM-PLC-T-00011_UTL-ATM_HDPE-RPLMNT");
+            TableHelper.ClearFilters();
+            TableHelper.FilterColumn(DesignDocument.ColumnName.Number, "NDC-DQP-3.08_00018", FilterOperator.EqualTo, FilterLogic.Or, "ATM-PLC-T-00011_UTL-ATM_HDPE-RPLMNT");
+            TableHelper.ClickEnterBtnForRow();
+            TableHelper.ClickCommentTabNumber(2);
+            DesignDocCommentReview.ClickBtn_BackToList();
 
-            //By locator = By.XPath("//div[@id='DesignDocumentListGrid_0']//td[contains(text(),'Oncor')]//following-sibling::td/a[text()='Revise']");
-            //ClickElement(locator);
+            TableHelper.ClickTab(DesignDocument.TableTab.Requires_Resolution);
+            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Closing);
+            TableHelper.ClickTab(DesignDocument.TableTab.Closed);
+            TableHelper.ClickTab(DesignDocument.TableTab.Requires_Comment);
+            NavigateToPage.RMCenter_Search();
+            TableHelper.GoToPageNumber(5);
+            TableHelper.GoToLastPage();
+
 
             Thread.Sleep(10000);
         }

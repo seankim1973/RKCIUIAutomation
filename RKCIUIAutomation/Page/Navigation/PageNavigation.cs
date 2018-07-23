@@ -395,6 +395,8 @@ namespace RKCIUIAutomation.Page.Navigation
         public PageNavigation_GLX(IWebDriver driver) : base(driver)
         {
         }
+
+
     }
     #endregion
 

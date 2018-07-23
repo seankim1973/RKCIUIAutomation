@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
 using RKCIUIAutomation.Config;
@@ -22,7 +23,6 @@ namespace RKCIUIAutomation.Page
         }
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
         {
-            WaitForPageReady();
             try
             {
                 string javaScript = jsAction.GetString();
@@ -30,6 +30,7 @@ namespace RKCIUIAutomation.Page
                 IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
                 executor.ExecuteScript(javaScript, element);
                 LogInfo($"{jsAction.ToString()}ed on javascript element: - {elementByLocator}");
+                WaitForPageReady();
             }
             catch (Exception e)
             {
@@ -65,7 +66,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForPageReady(int timeOutInSeconds = 10, int pollingInterval = 250)
+        internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 500)
         {
             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
             {
@@ -74,12 +75,14 @@ namespace RKCIUIAutomation.Page
 
             wait.Until(driver =>
             {
-                bool isAjaxFinished = (bool)((IJavaScriptExecutor)driver).
-                    ExecuteScript("return jQuery.active == 0");
                 bool isLoaderHidden = (bool)((IJavaScriptExecutor)driver).
                     ExecuteScript("return $('.k-loading-image').is(':visible') == false");
+                bool isAjaxFinished = (bool)((IJavaScriptExecutor)driver).
+                    ExecuteScript("return jQuery.active == 0");
                 return isAjaxFinished & isLoaderHidden;
             });
+
+            Thread.Sleep(1000);
         }
 
         internal IWebElement GetElement(By elementByLocator)
@@ -94,7 +97,8 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogInfo($"Unable to locate element: - {elementByLocator}", e);
+                LogDebug($"Unable to locate element: - {elementByLocator}");
+                log.Debug(e.Message);
             }
             
             return elem;
@@ -246,7 +250,7 @@ namespace RKCIUIAutomation.Page
                 UploadUsingAutoItX(filePath);
             }
         }
-        public string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
+        private string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
         {
             string uploadPath = string.Empty;
             if (!isRemoteUpload)
@@ -510,11 +514,14 @@ namespace RKCIUIAutomation.Page
             IWebElement newBtn = GetElement(GetButtonByLocator("New")) ?? GetElement(GetInputButtonByLocator("Create New"));
             ClickElement(newBtn);
         }
-        public void ClickTwice(By elementByLocator)
+
+
+        public void ScrollToElement(By elementByLocator)
         {
-            ClickElement(elementByLocator);
-            Thread.Sleep(250);
-            ClickElement(elementByLocator);
+            IWebElement elem = driver.FindElement(elementByLocator);
+            Actions actions = new Actions(driver);
+            actions.MoveToElement(elem);
+            actions.Perform();
         }
 
     }
