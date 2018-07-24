@@ -23,23 +23,23 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         //@@Nav to RMCenter DesignDocument
         //@@under DOT Pending Comment tab, find record and click Enter button
         //wait for comment section to load
-        //select Review type = Regular Comment (alt: No Comment - record shows in DEV Closed tab)
-        //enter comment
-        //enter drawing/page number
-        //click SaveOnly button
-        //logout
+        //@@select Review type = Regular Comment (alt: No Comment - record shows in DEV Closed tab)
+        //@@enter comment
+        //@@enter drawing/page number
+        //@@click SaveOnly button
+        //@@logout
 
         ////Forward comment as DOTAdmin
         //login as TestDOTAdmin
-        //Nav to RMCenter DesignDocument
+        //@@Nav to RMCenter DesignDocument
         //under DOT Pending Comment tab, find record and click Enter button
         //wait for comment section to load
-        //click SaveForward button
-        //logout
+        //@@click SaveForward button
+        //@@logout
 
         ////Make Response comment as Dev User
         //login as TestDevUser
-        //Nav to RMCenter DesignDocument
+        //@@Nav to RMCenter DesignDocument
         //under DEV Requires Response tab(switch to tab), find record and click Enter button
         //wait for comment section to load
         //enter Response comment

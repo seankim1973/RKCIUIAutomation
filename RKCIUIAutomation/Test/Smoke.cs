@@ -70,7 +70,7 @@ namespace RKCIUIAutomation.Test.Smoke
         [Description("Verify user can login successfully using project - user account")]
         public void Generic()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
@@ -267,6 +267,25 @@ namespace RKCIUIAutomation.Test.Smoke
             TableHelper.GoToNextPage();
 
             Thread.Sleep(10000);
+        }
+    }
+
+    [TestFixture]
+    public class Test_CommentReviewPartialFunctions : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void CommentReviewPartialFunctions()
+        {
+            LogInfo($"Other component test - This test should run");
+            LoginAs(UserType.IQFUser);//testing glx comment review
+            NavigateToPage.RMCenter_Design_Documents();
+            Assert.True(VerifyPageTitle("Design Document"));
+            DesignDocCommentReview.CreateDocument();
+            Thread.Sleep(5000);
         }
     }
 
