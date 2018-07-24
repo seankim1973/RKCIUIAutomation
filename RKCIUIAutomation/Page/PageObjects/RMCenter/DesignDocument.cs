@@ -58,14 +58,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void ForwardResponseComment();
         void EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
         void VerifyifClosed();
-       // void LoggedInUserForwardsComment();
-       //void LoggedInUserResponseCommentAndSave();
-       // void LoggedInUserForwardsResponseComment();
-       // void LoggedInUserResolutionCommentAndSave();
-       // void LoggedInUserForwardsResolutionComment();
-       // void LoggedInUserCloseCommentAndSave();
-       // void LoggedInUserForwardsCloseComment();
-
         void ClickBtn_BackToList();
         void ClickBtn_UploadNewDesignDoc();
 
