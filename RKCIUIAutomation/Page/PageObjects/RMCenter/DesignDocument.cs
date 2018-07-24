@@ -11,14 +11,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public DesignDocument(){}
         public DesignDocument(IWebDriver driver) => this.driver = driver;
 
-
         public enum DesignDocDetails_InputFields
         {
             [StringValue("Submittal_Title")] Title,
             [StringValue("Submittal_Document_Number")] DocumentNumber,
             [StringValue("Submittal_Document_DocumentDate")] DocumentDate,
             [StringValue("Submittal_TransmittalDate")] TransmittalDate,
-            [StringValue("Submittal_TransmittalNumber")] TransmittalNumber
+            [StringValue("Submittal_TransmittalNumber")] TransmittalNumber,
+            [StringValue("Comment_ReviewTypeId_0_")] ReviewType,
+            [StringValue("SelectedResponseCode")] ResponseCode,
+            [StringValue("SelectedResolutionStamp")] ResolutionStamp,
+            [StringValue("SelectedClosingStamp")] ClosingStamp
         }
 
         public enum TableTab
@@ -139,19 +142,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickElement(SaveForwardBtn_ByLocator);
         }
 
-        enum DesignDocDetails_InputFields
-        {
-            [StringValue("Submittal_Title")] Title,
-            [StringValue("Submittal_Document_Number")] DocumentNumber,
-            [StringValue("Submittal_Document_DocumentDate")] DocumentDate,
-            [StringValue("Submittal_TransmittalDate")] TransmittalDate,
-            [StringValue("Submittal_TransmittalNumber")] TransmittalNumber,
-            [StringValue("Comment_ReviewTypeId_0_")] ReviewType,
-            [StringValue("SelectedResponseCode")] ResponseCode,
-            [StringValue("SelectedResolutionStamp")] ResolutionStamp,
-            [StringValue("SelectedClosingStamp")] ClosingStamp
-        }
-
         public  void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 3);
         public  void SelectNoCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 1);
         public void SelectAgreeResponseCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, 1); //check the index, UI not working so need to confirm later
@@ -182,8 +172,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             //login as uploading user IQFRecordsmgr (for SG and SH249) and IQFuser(GLX and Garnet)
             SetDesignDocTitleAndNumber();
             EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.Title), designDocTitle);
-            EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.DocumentNumber), designDocNumber);
-            
+            EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.DocumentNumber), designDocNumber);            
         }
         
         By commentInput = By.Id("Comment_Text_0_");

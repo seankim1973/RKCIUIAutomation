@@ -158,6 +158,20 @@ namespace RKCIUIAutomation.Page
 
         public string GetAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetProperty(attributeName);
 
+        public void EnterComment(By elementByLocator)
+        {
+            try
+            {
+                string text = "Comment 123";
+                GetElement(elementByLocator).SendKeys(text);
+                LogInfo($"Entered '{text}' in field - {elementByLocator}");
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to enter text in field - {elementByLocator}", true, e);
+            }
+        }
+
         public void EnterText(By elementByLocator, string text)
         {
             try
