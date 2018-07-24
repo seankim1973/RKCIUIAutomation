@@ -20,7 +20,6 @@ namespace RKCIUIAutomation.Base
         internal static readonly ILog log = LogManager.GetLogger("");
   
         public static string extentReportPath = string.Empty;
-        //public static string screenshotReferencePath = "errorscreenshots/";
         public static string fullTempFileName = string.Empty;
         private static string baseTempFolder = string.Empty;
         private static string fileName = string.Empty;
@@ -58,16 +57,10 @@ namespace RKCIUIAutomation.Base
 
         public static void DetermineReportFilePath()
         {
-            if (BaseClass.testPlatform.ToString() == "Local")
-            {
-                extentReportPath = $"{GetCodeBasePath()}\\Report";
-                //screenshotReferencePath = "errorscreenshots/";
-            }
-            else
-            {
-                extentReportPath = "C:\\inetpub\\wwwroot\\extentreport";
-                //screenshotReferencePath = "errorscreenshots/";
-            }
+            string localPath = $"{GetCodeBasePath()}\\Report";
+            string klovPath = "C:\\Automation\\klov-0.1.1\\upload\\reports";
+
+            extentReportPath = (BaseClass.testPlatform == TestPlatform.Local) ? localPath : klovPath;
         }
 
         public static string GetCodeBasePath()
@@ -80,11 +73,14 @@ namespace RKCIUIAutomation.Base
         public static string CaptureScreenshot(IWebDriver driver, string fileName)
         {
             string uniqueFileName = $"{fileName}{DateTime.Now.Second}.png";
-            string screenshotFolderPath = $"{extentReportPath}\\errorscreenshots\\";
+            string saveRef = (BaseClass.testPlatform == TestPlatform.Local) ? "\\errorscreenshots\\" : "\\";
+            string screenshotFolderPath = $"{extentReportPath}{saveRef}";
             Directory.CreateDirectory(screenshotFolderPath);
             var screenshot = driver.TakeScreenshot();
             screenshot.SaveAsFile($"{screenshotFolderPath}{uniqueFileName}", ScreenshotImageFormat.Png);
-            return $"{"errorscreenshots/"}{uniqueFileName}";
+
+            string fileRef = (BaseClass.testPlatform == TestPlatform.Local) ? "errorscreenshots/" : "";
+            return $"{fileRef}{uniqueFileName}";
         }
 
         //ExtentReports Loggers

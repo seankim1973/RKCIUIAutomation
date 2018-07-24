@@ -36,7 +36,7 @@ namespace RKCIUIAutomation.Base
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
+            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
             _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
             _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
@@ -55,7 +55,7 @@ namespace RKCIUIAutomation.Base
         {
             //log.Info(userName);
             //log.Info(displayUrl);
-            log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
+            //log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
             ExtentManager.Instance.Flush();
 
             if (driver != null)
@@ -76,8 +76,7 @@ namespace RKCIUIAutomation.Base
             string testDescription = GetTestDescription();
             
             ExtentTestManager
-                .CreateTest($"<font size=3>TestCase# : {testCaseNumber}" +
-                $" - {testName}</font><br><font size=2>{testDescription}</font>");
+                .CreateTest($"TestCase# : {testCaseNumber} {testName} - {testDescription}");
 
             ProjectProperties props = new ProjectProperties();
             List<string> tenantComponents = new List<string>();
@@ -188,7 +187,7 @@ namespace RKCIUIAutomation.Base
             {
                 driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
                 driver.Close();
-            }           
+            }
         }
     }
 }

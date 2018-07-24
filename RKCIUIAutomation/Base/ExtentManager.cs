@@ -18,9 +18,6 @@ namespace RKCIUIAutomation.Base
         static ExtentManager()
         {
             Directory.CreateDirectory(extentReportPath);
-
-            //ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(reportFilePath);
-            //htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
             var reporter = (testPlatform == Config.TestPlatform.Local) ? UseHtmlReporter() : UseKlovReporter();
             Instance.AttachReporter(reporter);
         }
