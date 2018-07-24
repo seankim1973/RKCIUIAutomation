@@ -262,7 +262,9 @@ namespace RKCIUIAutomation.Test.Smoke
             NavigateToPage.RMCenter_Search();
             TableHelper.GoToPageNumber(5);
             TableHelper.GoToLastPage();
-
+            TableHelper.GoToPreviousPage();
+            TableHelper.GoToFirstPage();
+            TableHelper.GoToNextPage();
 
             Thread.Sleep(10000);
         }
