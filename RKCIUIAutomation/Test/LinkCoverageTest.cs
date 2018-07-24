@@ -162,4 +162,53 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         public void NavigateToRFIMenu() => LinkCoverageWF._NavigateToRFIMenu();
     }
 
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyQCLabMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("Component2", Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for QC Lab Menu only")]
+        public void NavigateToVerifyQCLabMenu() => LinkCoverageWF._NavigateToVerifyQCLabMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyQCRecordControlMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for QC Record Control Menu only")]
+        public void NavigateToVerifyQCRecordControlMenu() => LinkCoverageWF._NavigateToVerifyQCRecordControlMenu();
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyQCEngineerMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title for QC Engineer Menu only")]
+        public void NavigateToVerifyQCEngineerMenu() => LinkCoverageWF._NavigateToVerifyQCEngineerMenu();
+    }
+
+    
+    [TestFixture]
+    [Parallelizable]
+    public class VerifyQCSearchMenu : LinkCoverageWF
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Page Title forQC Search Menu only")]
+        public void NavigateToQCSearchMenu() => LinkCoverageWF._NavigateToQCSearchMenu();
+    }
 }

@@ -37,6 +37,10 @@ namespace RKCIUIAutomation.Page.Workflows
         void _NavigateToMaterialMixCodeMenu();
         void _NavigateToRMCenterMenu();
         void _NavigateToRFIMenu();
+        void _NavigateToVerifyQCLabMenu();
+        void _NavigateToVerifyQCRecordControlMenu();
+        void _NavigateToVerifyQCEngineerMenu();
+        void _NavigateToQCSearchMenu();
     }
     #endregion <-- end of Workflow Interface class
 
@@ -454,6 +458,78 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         /// <summary>
+        /// Common workflow method for Tenants: GLX only
+        /// </summary>
+        public virtual void _NavigateToVerifyQCLabMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+
+            NavigateToPage.QCLab_BreakSheet_Creation();
+            AddAssertionToList(VerifyPageTitle("Create Break Sheet"));
+            NavigateToPage.QCLab_BreakSheet_Legacy();
+            AddAssertionToList(VerifyPageTitle("Break Sheet Legacy"));
+            NavigateToPage.QCLab_Equipment_Management();
+            AddAssertionToList(VerifyPageTitle("Equipment"));
+            ClickCreate();
+            ClickCancel();
+            AssertAll();
+        }
+
+        /// <summary>
+        /// Common workflow method for Tenants: GLX only
+        /// </summary>
+        public virtual void _NavigateToVerifyQCRecordControlMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QCRecordControl_QC_Test_Original_Report();
+            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            NavigateToPage.QCRecordControl_QC_Test_All();
+            AddAssertionToList(VerifyPageTitle("Lab Tests"));
+            NavigateToPage.QCRecordControl_QC_Test_Correction_Report();
+            AddAssertionToList(VerifyPageTitle("Create Correction Test Report"));
+            NavigateToPage.QCRecordControl_QC_DIRs();
+            AddAssertionToList(VerifyPageTitle("List of Inspector's Daily Report"));
+            ClickNew();
+            ClickCancel();
+            AssertAll();
+
+        }
+
+        /// <summary>
+        /// TODO - implement common workflow: GLX only
+        /// </summary>
+        public virtual void _NavigateToVerifyQCEngineerMenu()
+        {
+            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QCEngineer_QC_Test_Lab_Supervisor_Review();
+            AddAssertionToList(VerifyPageTitle("Lab Supervisor Review"));
+            NavigateToPage.QCEngineer_QC_Test_Authorization();
+            AddAssertionToList(VerifyPageTitle("Authorizations"));
+          
+            AssertAll();
+        }
+
+        /// <summary>
+        /// Common workflow method for Tenants: GLX only
+        /// </summary>
+        public virtual void _NavigateToQCSearchMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QCSearch_QC_Tests_Search();
+            AddAssertionToList(VerifyPageTitle("Test Search"));
+            NavigateToPage.QASearch_QA_Test_Summary_Search();
+            AddAssertionToList(VerifyPageTitle("Test Summary Report Search"));
+            NavigateToPage.QCSearch_Daily_Inspection_Report();
+            AddAssertionToList(VerifyPageTitle("Daily Inspection Report Search"));
+            NavigateToPage.QCSearch_DIR_Summary_Report();
+            AddAssertionToList(VerifyPageTitle("DIR Summary Report Search"));
+           
+            AssertAll();
+        }
+
+
+        /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, SGWay, & SH249
         /// </summary>
         public virtual void _NavigateToRMCenterMenu()
@@ -529,6 +605,7 @@ namespace RKCIUIAutomation.Page.Workflows
     public class LinkCoverageWF_GLX : LinkCoverageWF
     {
         public LinkCoverageWF_GLX(IWebDriver driver) : base(driver) { }
+
     }
     #endregion
 

@@ -154,6 +154,29 @@ namespace RKCIUIAutomation.Page.Navigation
         // RFI Menu
         void RFI_List();
         void RFI_Create();
+
+        //QC Lab Menu
+        void QCLab_BreakSheet_Creation();
+        void QCLab_BreakSheet_Legacy();
+        void QCLab_Equipment_Management();
+
+        //QC Record Control Menu
+        void QCRecordControl_QC_Test_Original_Report();
+        void QCRecordControl_QC_Test_Correction_Report();
+        void QCRecordControl_QC_Test_All();
+        void QCRecordControl_QC_DIRs();
+
+        //QC Engineer Menu
+        void QCEngineer_QC_Test_Lab_Supervisor_Review();
+        void QCEngineer_QC_Test_Authorization();
+
+        // QC Search
+        void QCSearch_QC_Tests_Search();
+        void QCSearch_QC_Test_Summary_Search();
+        void QCSearch_Daily_Inspection_Report();
+        void QCSearch_DIR_Summary_Report();
+
+
     }
     #endregion end of PageNavigation Interface class
 
@@ -302,8 +325,29 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void RMCenter_Upload_QA_Submittal() => Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
 
         // RFI
-        public void RFI_List() => Navigate.Menu(NavMenu.RFI.Menu.List);
-        public void RFI_Create() => Navigate.Menu(NavMenu.RFI.Menu.Create);
+        public virtual void RFI_List() => Navigate.Menu(NavMenu.RFI.Menu.List);
+        public virtual void RFI_Create() => Navigate.Menu(NavMenu.RFI.Menu.Create);
+
+        //QC Lab Menu
+        public virtual void QCLab_BreakSheet_Creation() => Navigate.Menu(NavMenu.QCLab.Menu.BreakSheet_Creation);
+        public virtual void QCLab_BreakSheet_Legacy() => Navigate.Menu(NavMenu.QCLab.Menu.BreakSheet_Legacy);
+        public virtual void QCLab_Equipment_Management() => Navigate.Menu(NavMenu.QCLab.Menu.Equipment_Management);
+
+        //QC Record Control Menu
+        public virtual void QCRecordControl_QC_Test_Original_Report() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_Test_Original_Report);
+        public virtual void QCRecordControl_QC_Test_Correction_Report() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_Test_Correction_Report);
+        public virtual void QCRecordControl_QC_Test_All() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_Test_All);
+        public virtual void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_DIRs);
+
+        //QC Engineer Menu
+        public virtual void QCEngineer_QC_Test_Lab_Supervisor_Review() => Navigate.Menu(NavMenu.QCEngineer.Menu.QC_Test_Lab_Supervisor_Review);
+        public virtual void QCEngineer_QC_Test_Authorization() => Navigate.Menu(NavMenu.QCEngineer.Menu.QC_Test_Authorization);
+
+        //QC Search Menu
+        public virtual void QCSearch_QC_Tests_Search() => Navigate.Menu(NavMenu.QCSearch.Menu.QC_Tests_Search);
+        public virtual void QCSearch_QC_Test_Summary_Search() => Navigate.Menu(NavMenu.QCSearch.Menu.QC_Test_Summary_Search);
+        public virtual void QCSearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QCSearch.Menu.Daily_Inspection_Report);
+        public virtual void QCSearch_DIR_Summary_Report() => Navigate.Menu(NavMenu.QCSearch.Menu.DIR_Summary_Report);
 
 
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
@@ -344,6 +388,8 @@ namespace RKCIUIAutomation.Page.Navigation
 
             return instance;
         }
+
+       
     }
     #endregion end of PageNavigation Common Implementation class
 

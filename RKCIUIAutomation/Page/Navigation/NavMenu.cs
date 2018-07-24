@@ -124,6 +124,22 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     mainNavEnum = MainNav.Menu.RFI;
                 }
+                else if (reflectedPageType.Equals(typeof(QCLab)))
+                {
+                    mainNavEnum = MainNav.Menu.QC_Lab;
+                }
+                else if (reflectedPageType.Equals(typeof(QCRecordControl)))
+                {
+                    mainNavEnum = MainNav.Menu.QC_Record_Control;
+                }
+                else if (reflectedPageType.Equals(typeof(QCEngineer)))
+                {
+                    mainNavEnum = MainNav.Menu.QC_Engineer;
+                }
+                else if (reflectedPageType.Equals(typeof(QCSearch)))
+                {
+                    mainNavEnum = MainNav.Menu.QC_Search;
+                }
                 else if (reflectedPageType.Equals(typeof(ELVIS)))
                 {
                     mainNavEnum = MainNav.Menu.ELVIS;
@@ -207,6 +223,10 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Owner Inbox")] Owner_Inbox,
                 [StringValue("Dev Inbox")] Dev_Inbox,
                 [StringValue("RFI")] RFI,
+                [StringValue("QC Lab")] QC_Lab,
+                [StringValue("QC Record Control")] QC_Record_Control,
+                [StringValue("QC Engineer")] QC_Engineer,
+                [StringValue("QC Search")] QC_Search,
                 [StringValue("ELVIS")] ELVIS
             }
         }
@@ -513,6 +533,56 @@ namespace RKCIUIAutomation.Page.Navigation
             {
                 [StringValue("List")] List,
                 [StringValue("Create")] Create
+            }
+        }
+
+        //QC Lab Menu Navigation Enums
+        public class QCLab
+        {
+            public enum Menu
+            {
+           
+                [StringValue("BreakSheet Creation")] BreakSheet_Creation,
+                [StringValue("BreakSheet Legacy")] BreakSheet_Legacy,
+                [StringValue("Equipment Management")] Equipment_Management
+            }
+        }
+
+
+        //QC Record Control Menu Navigation Enums
+        public class QCRecordControl
+        {
+            public enum Menu
+            {
+                [StringValue("QC Test - Original Report")] QC_Test_Original_Report,
+                [StringValue("QC Test - All")] QC_Test_All,
+                [StringValue("QC Test Correction Report")] QC_Test_Correction_Report,
+                [StringValue("QC DIRs")] QC_DIRs
+               
+            }
+        }
+
+        //QC Engineer Menu Navigation Enums
+        public class QCEngineer
+        {
+            public enum Menu
+            {
+                [StringValue("QC Test - Lab Supervisor Review")] QC_Test_Lab_Supervisor_Review,
+                [StringValue("QC Test - Authorization")] QC_Test_Authorization
+            }
+        }
+
+
+        //QC Search Menu Navigation Enums
+        public class QCSearch
+        {
+            public enum Menu
+            {
+                [StringValue("QC Tests Search")] QC_Tests_Search,
+                [StringValue("QC Test Summary Search")] QC_Test_Summary_Search,
+                [StringValue("Daily Inspection Report")] Daily_Inspection_Report,
+                [StringValue("DIR Summary Report")] DIR_Summary_Report
+
             }
         }
 
