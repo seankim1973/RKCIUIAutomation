@@ -38,7 +38,7 @@ namespace RKCIUIAutomation.Base
             klov.InitMongoDbConnection("localhost", 27017);
             klov.ProjectName = "RKCIUIAutomation";
             klov.ReportName = $"{testEnv} {tenantName} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
-            klov.KlovUrl = "http://localhost";
+            klov.KlovUrl = "http://localhost:8888";
             return klov;
         }
     }
