@@ -366,27 +366,31 @@ namespace RKCIUIAutomation.Page
                     if (!isDisplayed)
                     {
                         headingElement = By.XPath("//h2");
-                        isMatchingTitle = IsHeadingDisplayed(headingElement) ? (GetElement(headingElement).Text).Contains(expectedPageTitle) : false;
-                    }
-                    else
-                    {
-                        isMatchingTitle = (GetElement(headingElement).Text).Contains(expectedPageTitle);
+                        isDisplayed = IsHeadingDisplayed(headingElement);
+                        if (!isDisplayed)
+                        {                            
+                            string logMsg = $"Could not find any Page element with h2 or h3 tag";
+                            InjectTestStatus(TestStatus.Failed, logMsg);
+                        }
                     }
                 }
-                else
-                    isMatchingTitle = true;
             }
-            else
-                isMatchingTitle = true;
+
+            isMatchingTitle = PageTitle.Equals(expectedPageTitle);
+               
 
             if (isDisplayed)
             {
+                
                 LogInfo($"## Expect Page Title: {expectedPageTitle} <br>&nbsp;&nbsp;## Actual Page Title: {PageTitle}", isMatchingTitle);
+
+                if (!isMatchingTitle)
+                {
+                    string logMsg = $"Page titles did not match: Expected: {expectedPageTitle}, Actual: {PageTitle}";
+                    InjectTestStatus(TestStatus.Failed, logMsg);
+                }
             }
-            else
-            {
-                LogDebug($"Could not find any Page element with h2 or h3 tag");
-            }
+
             return isMatchingTitle;
         }
 
@@ -467,7 +471,7 @@ namespace RKCIUIAutomation.Page
                         Assert.Fail();
                     }
 
-                    InjectTestStatus(GetTestName(), TestStatus.Failed, pageErrLogMsg);
+                    InjectTestStatus(TestStatus.Failed, pageErrLogMsg);
                 }
             }
             catch (Exception)

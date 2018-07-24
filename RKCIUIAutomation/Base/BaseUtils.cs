@@ -355,16 +355,18 @@ namespace RKCIUIAutomation.Base
         }
 
         private static PageBaseHelper pgbHelper = new PageBaseHelper();
-        public static void InjectTestStatus(string testName, TestStatus status, string logMsg)
+        public static void InjectTestStatus(TestStatus status, string logMsg)
         {
+            string testName = GetTestName();
             pgbHelper.CreateVar($"{testName}_msgKey", logMsg);
             pgbHelper.CreateVar($"{testName}_statusKey", status.ToString());
         }
 
         public static void CheckForTestStatusInjection()
         {
-            string logMessage = pgbHelper.GetVar($"{GetTestName()}_msgKey");
-            string injStatus = pgbHelper.GetVar($"{GetTestName()}_statusKey");
+            string testName = GetTestName();
+            string logMessage = pgbHelper.GetVar($"{testName}_msgKey");
+            string injStatus = pgbHelper.GetVar($"{testName}_statusKey");
 
             switch (injStatus)
             {

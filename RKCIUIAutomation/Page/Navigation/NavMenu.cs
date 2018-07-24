@@ -566,7 +566,7 @@ namespace RKCIUIAutomation.Page.Navigation
             public enum Menu
             {
                 [StringValue("QC Test - Lab Supervisor Review")] QC_Test_Lab_Supervisor_Review,
-                [StringValue("QC Test - Authorization")] QC_Test_Authorization
+                [StringValue("QC Test  - Authorization")] QC_Test_Authorization
             }
         }
 
