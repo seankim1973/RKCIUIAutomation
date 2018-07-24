@@ -39,7 +39,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public static By Input_SubmittalDate { get; } = By.Id("SubmittalDate");
         public static By Chkbx_IsMaterialCertified { get; } = By.Id("IsMaterialCert");
         public static By Input_Quantity { get; } = By.XPath("//input[@id='Quantity']/preceding-sibling::input");
-        public static By Btn_SelectFiles { get; } = By.XPath("//div[@aria-label='Select files...']");
         public static By Input_ActivityLogNotes { get; } = By.Id("SubmittalNote");
         public static By Btn_ActionBy_Filter { get; } = By.XPath("//th[@data-title='Action By']/a[1]");
         public static By Btn_ActionBy_Column { get; } = By.XPath("//th[@data-title='Action By']/a[2]");

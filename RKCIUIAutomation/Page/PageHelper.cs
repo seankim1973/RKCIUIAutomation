@@ -11,16 +11,16 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListFieldXpath(Enum ddListID) => $"//span[@aria-owns='{ddListID.GetString()}_listbox']";
         private string SetDDListFieldExpandArrowXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']/span";
-        private string SetMainNavMenuXpath(Enum navEnum) => $"//li[@class='dropdown']/a[text()='{navEnum.GetString()}']";
+        private string SetMainNavMenuXpath(Enum navEnum) => $"//li[@class='dropdown']/a[contains(text(),'{navEnum.GetString()}')]";
         private string SetNavMenuXpath(Enum navEnum, Enum parentNavEnum = null)
         {
             if (parentNavEnum == null)
             {
-                return $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
+                return $"//ul[@class='dropdown-menu']/li/a[contains(text(),'{navEnum.GetString()}')]";
             }
             else
             {
-                return $"//a[text()='{parentNavEnum.GetString()}']/following-sibling::ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
+                return $"//a[contains(text(),'{parentNavEnum.GetString()}')]/following-sibling::ul[@class='dropdown-menu']/li/a[contains(text(),'{navEnum.GetString()}')]";
             }          
         }
         private string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
