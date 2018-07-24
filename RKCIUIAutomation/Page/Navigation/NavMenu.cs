@@ -541,7 +541,6 @@ namespace RKCIUIAutomation.Page.Navigation
         {
             public enum Menu
             {
-           
                 [StringValue("BreakSheet Creation")] BreakSheet_Creation,
                 [StringValue("BreakSheet Legacy")] BreakSheet_Legacy,
                 [StringValue("Equipment Management")] Equipment_Management
@@ -557,8 +556,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QC Test - Original Report")] QC_Test_Original_Report,
                 [StringValue("QC Test - All")] QC_Test_All,
                 [StringValue("QC Test Correction Report")] QC_Test_Correction_Report,
-                [StringValue("QC DIRs")] QC_DIRs
-               
+                [StringValue("QC DIRs")] QC_DIRs               
             }
         }
 
@@ -582,7 +580,6 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QC Test Summary Search")] QC_Test_Summary_Search,
                 [StringValue("Daily Inspection Report")] Daily_Inspection_Report,
                 [StringValue("DIR Summary Report")] DIR_Summary_Report
-
             }
         }
 
