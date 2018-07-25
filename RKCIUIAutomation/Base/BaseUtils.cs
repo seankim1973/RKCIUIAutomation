@@ -11,19 +11,20 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
-using static RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Base
 {
     public class BaseUtils : ConfigUtils
-    {
+    {        
         internal static readonly ILog log = LogManager.GetLogger("");
-  
+
         public static string extentReportPath = string.Empty;
         public static string fullTempFileName = string.Empty;
         private static string baseTempFolder = string.Empty;
         private static string fileName = string.Empty;
         private static string dateString = string.Empty;
+        private static string screenshotSavePath = string.Empty;
+
 
         public BaseUtils()
         {
@@ -57,10 +58,10 @@ namespace RKCIUIAutomation.Base
 
         public static void DetermineReportFilePath()
         {
-            string localPath = $"{GetCodeBasePath()}\\Report";
-            string klovPath = "C:\\Automation\\klov-0.1.1\\upload\\reports";
-
-            extentReportPath = (BaseClass.testPlatform == TestPlatform.Local) ? localPath : klovPath;
+            extentReportPath = $"{GetCodeBasePath()}\\Report";
+            screenshotSavePath = (BaseClass.testPlatform == TestPlatform.Local) ? 
+                $"{extentReportPath}\\errorscreenshots\\" :
+                "C:\\Automation\\klov-0.1.1\\upload\\reports\\";
         }
 
         public static string GetCodeBasePath()
@@ -73,30 +74,28 @@ namespace RKCIUIAutomation.Base
         public static string CaptureScreenshot(IWebDriver driver, string fileName)
         {
             string uniqueFileName = $"{fileName}{DateTime.Now.Second}.png";
-            string saveRef = (BaseClass.testPlatform == TestPlatform.Local) ? "\\errorscreenshots\\" : "\\";
-            string screenshotFolderPath = $"{extentReportPath}{saveRef}";
-            Directory.CreateDirectory(screenshotFolderPath);
+            Directory.CreateDirectory(screenshotSavePath);
             var screenshot = driver.TakeScreenshot();
-            screenshot.SaveAsFile($"{screenshotFolderPath}{uniqueFileName}", ScreenshotImageFormat.Png);
+            screenshot.SaveAsFile($"{screenshotSavePath}{uniqueFileName}", ScreenshotImageFormat.Png);
 
-            string fileRef = (BaseClass.testPlatform == TestPlatform.Local) ? "errorscreenshots/" : "";
+            string fileRef = (BaseClass.testPlatform == TestPlatform.Local) ? "errorscreenshots/" : "upload/reports/";
             return $"{fileRef}{uniqueFileName}";
         }
 
         //ExtentReports Loggers
         public static void LogIgnore(string msg)
         {
-            ExtentTestManager.GetTest().Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
+            ExtentTestManager.GetTestNode().Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
             log.Debug(msg);
         }
         public static void LogFail(string details, Exception e = null)
         {
-            ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
+            ExtentTestManager.GetTestNode().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
             log.Error(details);
 
             if (e != null)
             {
-                ExtentTestManager.GetTest().Error(CreateReportMarkupCodeBlock(e));
+                ExtentTestManager.GetTestNode().Error(CreateReportMarkupCodeBlock(e));
                 log.Error(e.Message);
             }
         }
@@ -108,13 +107,13 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));               
+                ExtentTestManager.GetTestNode().Error(CreateReportMarkupLabel(details, ExtentColor.Red));               
             }
             log.Error(details);
 
             if (e != null)
             {
-                ExtentTestManager.GetTest().Error(CreateReportMarkupCodeBlock(e));
+                ExtentTestManager.GetTestNode().Error(CreateReportMarkupCodeBlock(e));
                 log.Error(e.Message);
             }
         }
@@ -122,17 +121,17 @@ namespace RKCIUIAutomation.Base
         {
             if (details.Contains(">>>"))
             {
-                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                ExtentTestManager.GetTestNode().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
             }
             else
-                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
+                ExtentTestManager.GetTestNode().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
 
             log.Debug(details);
         }
         public void LogErrorWithScreenshot()
         {
             string screenshotPath = CaptureScreenshot(driver, GetTestName());
-            ExtentTestManager.GetTest().Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
+            ExtentTestManager.GetTestNode().Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
         }
         public static void LogInfo(string details)
         {
@@ -140,7 +139,7 @@ namespace RKCIUIAutomation.Base
 
             if (details.Contains("<br>"))
             {
-                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                ExtentTestManager.GetTestNode().Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
                 detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
                 for (int i = 0; i < detailsBr.Length; i++)
                 {
@@ -149,15 +148,15 @@ namespace RKCIUIAutomation.Base
             }
             else if (details.Contains("#####"))
             {
-                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details));
+                ExtentTestManager.GetTestNode().Info(CreateReportMarkupLabel(details));
             }
             else if (details.Contains(">>>"))
             {
-                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
+                ExtentTestManager.GetTestNode().Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
             }
             else
             {
-                ExtentTestManager.GetTest().Info(details);
+                ExtentTestManager.GetTestNode().Info(details);
                 log.Info(details);
             }
         }
@@ -165,7 +164,7 @@ namespace RKCIUIAutomation.Base
         {
             string[] detailsBr = null;
 
-            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
+            ExtentTestManager.GetTestNode().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
             if (details.Contains("<br>"))
             {
                 detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
@@ -181,7 +180,7 @@ namespace RKCIUIAutomation.Base
                        
             if(e != null)
             {
-                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
+                ExtentTestManager.GetTestNode().Debug(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
                 log.Debug(e.Message);
             }
         }
@@ -199,7 +198,7 @@ namespace RKCIUIAutomation.Base
 
             if (assertion)
             {
-                ExtentTestManager.GetTest().Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
+                ExtentTestManager.GetTestNode().Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
                 if (hasPgBreak)
                 {
                     for (int i = 0; i < detailsBr.Length; i++)
@@ -212,7 +211,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
+                ExtentTestManager.GetTestNode().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
                 LogErrorWithScreenshot();
                 if (hasPgBreak)
                 {

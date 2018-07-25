@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using static NUnit.Framework.TestContext;
 
-
 namespace RKCIUIAutomation.Base
 {
     [TestFixture]
@@ -45,9 +44,10 @@ namespace RKCIUIAutomation.Base
             browserType = Configs.GetBrowserType(_browserType);
             testEnv = Configs.GetTestEnv(_testEnv);
             tenantName = Configs.GetTenantName(_tenantName);
-            
+            siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
+
             DetermineReportFilePath();
-            ExtentTestManager.CreateParentTest(GetType().Name, tenantName, testEnv, browserType);
+            ExtentTestManager.CreateTest(GetType().Name, tenantName, testEnv, siteUrl);
         }
 
         [OneTimeTearDown]
@@ -73,9 +73,8 @@ namespace RKCIUIAutomation.Base
             string testComponent1 = GetTestComponent1();
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
-            
-            ExtentTestManager
-                .CreateTest($"TestCase# : {testCaseNumber} {testName} - {testDescription}");
+
+            ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
 
             ProjectProperties props = new ProjectProperties();
             List<string> tenantComponents = new List<string>();
@@ -87,7 +86,6 @@ namespace RKCIUIAutomation.Base
                 if (tenantComponents.Contains(testComponent2) || testComponent2 == "Not Defined")
                 {
                     driver = GetWebDriver(testPlatform, browserType, testName);
-                    siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
 
                     driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
                     driver.Manage().Window.Maximize();
@@ -103,7 +101,8 @@ namespace RKCIUIAutomation.Base
                     LogTestDetails(tenantName, testEnv, siteUrl, browserType, testName,
                         testCaseNumber, testSuite, testDescription, testPriority, testComponent1, component2);
 
-                    ExtentTestManager.GetTest()
+                    ExtentTestManager.GetTestNode()
+                        .AssignCategory(tenantName.ToString())
                         .AssignCategory(testPriority)
                         .AssignCategory(testComponent1, component2)
                         .AssignCategory(testSuite);
@@ -166,19 +165,19 @@ namespace RKCIUIAutomation.Base
                     string screenshotPath = CaptureScreenshot(driver, GetTestName());
                     cookie = new Cookie("zaleniumTestPassed", "false");
                     driver.Manage().Cookies.AddCookie(cookie);
-                    ExtentTestManager.GetTest().Fail($"Test Failed:<br> {stacktrace}")
+                    ExtentTestManager.GetTestNode().Fail($"Test Failed:<br> {stacktrace}")
                         .AddScreenCaptureFromPath(screenshotPath);
                     break;
                 case TestStatus.Passed:
-                    ExtentTestManager.GetTest().Pass("Test Passed");
+                    ExtentTestManager.GetTestNode().Pass("Test Passed");
                     cookie = new Cookie("zaleniumTestPassed", "true");
                     driver.Manage().Cookies.AddCookie(cookie);
                     break;
                 case TestStatus.Skipped:
-                    ExtentTestManager.GetTest().Skip("Test Skipped");
+                    ExtentTestManager.GetTestNode().Skip("Test Skipped");
                     break;
                 default:
-                    ExtentTestManager.GetTest().Debug("Inconclusive Test Result");
+                    ExtentTestManager.GetTestNode().Debug("Inconclusive Test Result");
                     break;
             }
 

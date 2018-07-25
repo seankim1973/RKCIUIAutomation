@@ -24,8 +24,8 @@ namespace RKCIUIAutomation.Base
             Directory.CreateDirectory(extentReportPath);
             htmlReporter = new ExtentHtmlReporter(reportFilePath);
             htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
-                      
-            if (BaseClass.testPlatform == TestPlatform.Local)
+            
+            if (testPlatform == TestPlatform.Local)
             {
                 Instance.AttachReporter(htmlReporter);
             }
