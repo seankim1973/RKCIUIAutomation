@@ -4,43 +4,40 @@ using AventStack.ExtentReports.Reporter.Configuration;
 using OpenQA.Selenium;
 using System;
 using System.IO;
+using RKCIUIAutomation.Config;
 using static RKCIUIAutomation.Base.BaseClass;
+
 
 namespace RKCIUIAutomation.Base
 {
     public class ExtentManager : BaseUtils
     {
-        public static readonly string reportFilePath = $"{extentReportPath}\\extent.html";
+        private static ExtentHtmlReporter htmlReporter;
+        private static KlovReporter klov;
         private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
 
         public static ExtentReports Instance { get { return _lazy.Value; } }
-
+        public static readonly string reportFilePath = $"{extentReportPath}\\extent.html";
+        
         static ExtentManager()
         {
             Directory.CreateDirectory(extentReportPath);
-            var reporter = (testPlatform == Config.TestPlatform.Local) ? UseHtmlReporter() : UseKlovReporter();
-            Instance.AttachReporter(reporter);
-        }
-
-        private static IExtentReporter UseHtmlReporter()
-        {
-            ExtentHtmlReporter htmlReporter = new ExtentHtmlReporter(reportFilePath);
+            htmlReporter = new ExtentHtmlReporter(reportFilePath);
             htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
-            return htmlReporter;
-        }
-
-        private static IExtentReporter UseKlovReporter()
-        {
-            var klov = new KlovReporter();
-            klov.InitMongoDbConnection("localhost", 27017);
-            klov.ProjectName = "RKCIUIAutomation";
-            klov.ReportName = $"{testEnv} {tenantName} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
-            klov.KlovUrl = "http://localhost:8888";
-            return klov;
-        }
-
-        private ExtentManager()
-        {
+                      
+            if (BaseClass.testPlatform == TestPlatform.Local)
+            {
+                Instance.AttachReporter(htmlReporter);
+            }
+            else
+            {
+                klov = new KlovReporter();
+                klov.InitMongoDbConnection("localhost", 27017);
+                klov.ProjectName = "RKCIUIAutomation";
+                klov.ReportName = $"{testEnv} {tenantName} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+                klov.KlovUrl = "http://localhost:8888";
+                Instance.AttachReporter(htmlReporter, klov);
+            }
         }
     }
 }

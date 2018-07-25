@@ -56,8 +56,7 @@ namespace RKCIUIAutomation.Base
             //log.Info(userName);
             //log.Info(displayUrl);
             //log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
-            ExtentManager.Instance.Flush();
-
+            
             if (driver != null)
             {
                 driver.Quit();
@@ -182,6 +181,8 @@ namespace RKCIUIAutomation.Base
                     ExtentTestManager.GetTest().Debug("Inconclusive Test Result");
                     break;
             }
+
+            ExtentManager.Instance.Flush();
 
             if (driver != null)
             {
