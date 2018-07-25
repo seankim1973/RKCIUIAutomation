@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using AventStack.ExtentReports;
+using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using OpenQA.Selenium;
@@ -16,6 +17,12 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class BaseClass : BaseUtils
     {
+        [ThreadStatic]
+        public static ExtentTest ParentTest;
+
+        [ThreadStatic]
+        public static ExtentTest TestNode;
+
         public static TestPlatform testPlatform;
         public static BrowserType browserType;
         public static TestEnv testEnv;
@@ -29,7 +36,7 @@ namespace RKCIUIAutomation.Base
         private string displayUrl;
         private TestStatus testStatus;
         private Cookie cookie = null;
-                
+
         ConfigUtils Configs = new ConfigUtils();
 
         [OneTimeSetUp]
@@ -73,8 +80,8 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
-            ExtentTestManager.CreateTest(GetType().Name, tenantName, testEnv, siteUrl);
-            ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
+            ParentTest = ExtentTestManager.CreateTest(GetType().Name, tenantName, testEnv, siteUrl);
+            TestNode = ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
 
             ProjectProperties props = new ProjectProperties();
             List<string> tenantComponents = new List<string>();
