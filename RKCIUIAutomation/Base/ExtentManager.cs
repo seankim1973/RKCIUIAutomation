@@ -11,7 +11,7 @@ namespace RKCIUIAutomation.Base
     public class ExtentManager : BaseUtils
     {
         public static readonly string reportFilePath = $"{extentReportPath}\\extent.html";
-        private static readonly Lazy<ExtentReports> _lazy = null;
+        private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
 
         public static ExtentReports Instance { get { return _lazy.Value; } }
 
@@ -19,12 +19,7 @@ namespace RKCIUIAutomation.Base
         {
             Directory.CreateDirectory(extentReportPath);
             var reporter = (testPlatform == Config.TestPlatform.Local) ? UseHtmlReporter() : UseKlovReporter();
-
-            if (Instance == null)
-            {
-                _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
-                Instance.AttachReporter(reporter);
-            }           
+            Instance.AttachReporter(reporter);
         }
 
         private static IExtentReporter UseHtmlReporter()
