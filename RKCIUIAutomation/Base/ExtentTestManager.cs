@@ -8,8 +8,8 @@ namespace RKCIUIAutomation.Base
 {
     public class ExtentTestManager
     {
-        private static ExtentTest _parentTest;
-        private static ExtentTest _childTest;
+        private static ExtentTest _parentTest = BaseClass.Test;
+        private static ExtentTest _childTest = BaseClass.TestNode;
 
         public static ExtentTest CreateTest(string testName, TenantName tenantName, TestEnv testEnv, string url)
         {

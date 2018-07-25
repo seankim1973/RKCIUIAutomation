@@ -33,6 +33,9 @@ namespace RKCIUIAutomation.Base
 
         ConfigUtils Configs = new ConfigUtils();
 
+        public static ExtentTest Test;
+        public static ExtentTest TestNode;
+
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
@@ -74,8 +77,8 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
-            ExtentTestManager.CreateTest(GetType().Name, tenantName, testEnv, siteUrl);
-            ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
+            Test = ExtentTestManager.CreateTest(GetType().Name, tenantName, testEnv, siteUrl);
+            TestNode = ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
 
             ProjectProperties props = new ProjectProperties();
             List<string> tenantComponents = new List<string>();
