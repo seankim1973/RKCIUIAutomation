@@ -17,12 +17,6 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class BaseClass : BaseUtils
     {
-        [ThreadStatic]
-        public static ExtentTest ParentTest;
-
-        [ThreadStatic]
-        public static ExtentTest TestNode;
-
         public static TestPlatform testPlatform;
         public static BrowserType browserType;
         public static TestEnv testEnv;
@@ -80,8 +74,8 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
-            ParentTest = ExtentTestManager.CreateTest(GetType().Name, tenantName, testEnv, siteUrl);
-            TestNode = ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
+            ExtentTestManager.CreateTest(GetType().Name, tenantName, testEnv, siteUrl);
+            ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
 
             ProjectProperties props = new ProjectProperties();
             List<string> tenantComponents = new List<string>();
