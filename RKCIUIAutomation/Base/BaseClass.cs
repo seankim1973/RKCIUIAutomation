@@ -50,6 +50,7 @@ namespace RKCIUIAutomation.Base
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
 
             DetermineReportFilePath();
+            ExtentTestManager.CreateTestParent(GetType().Name, tenantName, testEnv, siteUrl);
         }
 
         [OneTimeTearDown]
@@ -76,7 +77,6 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
-            ExtentTestManager.CreateTestParent(GetType().Name, tenantName, testEnv, siteUrl);
             ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
 
             ProjectProperties props = new ProjectProperties();
