@@ -24,13 +24,13 @@ namespace RKCIUIAutomation.Base
 
                 _parentTest = ExtentManager.Instance
                     .CreateTest(testName.SplitCamelCase(), tenantEnv);
-                ExtentManager.Instance.AddSystemInfo("Tenant", _tenantName);
-                ExtentManager.Instance.AddSystemInfo("Environment", _testEnv);
-                ExtentManager.Instance.AddSystemInfo("Url", url);
+                //ExtentManager.Instance.AddSystemInfo("Tenant", _tenantName);
+                //ExtentManager.Instance.AddSystemInfo("Environment", _testEnv);
+                //ExtentManager.Instance.AddSystemInfo("Url", url);
             }
             catch (Exception e)
             {
-                log.Debug($"##### Exception occured in CreateParentTest method : \n{e.Message}");
+                log.Debug($"##### Exception occured in CreateTest method : \n{e.Message}");
             }
             return _parentTest;
         }
@@ -43,7 +43,7 @@ namespace RKCIUIAutomation.Base
             }
             catch (Exception e)
             {
-                log.Debug($"##### Exception occured in CreateTest method : \n{e.Message}");
+                log.Debug($"##### Exception occured in CreateTestNode method : \n{e.Message}");
             }
             return _childTest;
         }
