@@ -15,8 +15,8 @@ namespace RKCIUIAutomation.Base
 
         public static ExtentReports Instance { get { return _lazy.Value; } }
 
-        private static KlovReporter klov;
-        private static ExtentHtmlReporter htmlReporter;
+        private static KlovReporter klov = null;
+        private static ExtentHtmlReporter htmlReporter = null;
 
         static ExtentManager()
         {
@@ -25,8 +25,7 @@ namespace RKCIUIAutomation.Base
                 Directory.CreateDirectory(extentReportPath);
                 htmlReporter = new ExtentHtmlReporter(reportFilePath);
                 htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
-                Instance.AttachReporter(htmlReporter);
-
+                
                 if (testPlatform != TestPlatform.Local)
                 {
                     klov = new KlovReporter();                  
@@ -34,9 +33,10 @@ namespace RKCIUIAutomation.Base
                     klov.ProjectName = "RKCIUIAutomation";
                     klov.ReportName = $"{testEnv} {tenantName} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
                     klov.KlovUrl = $"http://{GridVmIP}:8888";
-                    Instance.AttachReporter(klov);
                     klov.Start();
                 }
+
+                Instance.AttachReporter(htmlReporter, klov);
             }
             catch (Exception e)
             {
