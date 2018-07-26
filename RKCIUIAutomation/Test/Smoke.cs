@@ -6,6 +6,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
+using RKCIUIAutomation.Base;
 
 namespace RKCIUIAutomation.Test.Smoke
 {

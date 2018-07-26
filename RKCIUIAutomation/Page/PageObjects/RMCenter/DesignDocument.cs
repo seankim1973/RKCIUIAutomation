@@ -132,6 +132,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterDesignDocTitleAndNumber();
             UploadFile("test.xlsx");
             ClickElement(SaveForwardBtn_ByLocator);
+            WaitForPageReady();
         }
 
         public  void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 3);
