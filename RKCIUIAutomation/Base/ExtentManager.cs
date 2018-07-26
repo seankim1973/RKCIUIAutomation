@@ -25,19 +25,16 @@ namespace RKCIUIAutomation.Base
                 Directory.CreateDirectory(extentReportPath);
                 htmlReporter = new ExtentHtmlReporter(reportFilePath);
                 htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
+                Instance.AttachReporter(htmlReporter);
 
-                if (testPlatform == TestPlatform.Local)
-                {
-                    Instance.AttachReporter(htmlReporter);
-                }
-                else
+                if (testPlatform != TestPlatform.Local)
                 {
                     klov = new KlovReporter();                  
                     klov.InitMongoDbConnection(GridVmIP, 27017);
                     klov.ProjectName = "RKCIUIAutomation";
                     klov.ReportName = $"{testEnv} {tenantName} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
                     klov.KlovUrl = $"http://{GridVmIP}:8888";
-                    Instance.AttachReporter(htmlReporter, klov);
+                    Instance.AttachReporter(klov);
                     klov.Start();
                 }
             }
