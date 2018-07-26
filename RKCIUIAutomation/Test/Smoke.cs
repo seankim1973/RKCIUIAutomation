@@ -288,14 +288,12 @@ namespace RKCIUIAutomation.Test.Smoke
             NavigateToPage.RMCenter_Design_Documents();
             Assert.True(VerifyPageTitle("Design Document"));
             DesignDocCommentReview.CreateDocument();
-            driver.Navigate().GoToUrl("http://stage.glx.elvispmc.com/Account/LogOut");
-            driver.Navigate().GoToUrl("http://stage.glx.elvispmc.com/Account/LogIn");
-            //ClickLogoutLink();
-            //ClickLoginLink();
+            ClickLogoutLink();
+            ClickLoginLink();
             LoginAs(UserType.DOTUser);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickReviseBtnForRow(); //workaround for single Enter btn seen as DOT User acct
+            TableHelper.ClickEnterBtnForRow();
             Thread.Sleep(5000);
         }
     }
