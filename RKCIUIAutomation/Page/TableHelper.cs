@@ -78,8 +78,8 @@ namespace RKCIUIAutomation.Page
             [StringValue("-1", BtnCategory.MultiDupsInRow)]Report_View,
             [StringValue("-2", BtnCategory.MultiDupsInRow)] WebForm_View,
             [StringValue("-3", BtnCategory.MultiDupsInRow)] Attachments_View,
-            [StringValue("1", BtnCategory.DblInCell)] Action_Revise,
-            [StringValue("2", BtnCategory.DblInCell)] Action_Enter,
+            [StringValue("Revise", BtnCategory.DblInCell)] Action_Revise,
+            [StringValue("Enter", BtnCategory.DblInCell)] Action_Enter,
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
@@ -103,7 +103,7 @@ namespace RKCIUIAutomation.Page
                     xPathExt = $"{xPathLast(xPathExtValue)}/a";
                     break;
                 case BtnCategory.DblInCell:
-                    xPathExt = $"{xPathLast()}/a[{xPathExtValue}]";
+                    xPathExt = $"{xPathLast()}/a[text()='{xPathExtValue}']";
                     break;
                 default:
                     xPathExt = xPathExtValue;

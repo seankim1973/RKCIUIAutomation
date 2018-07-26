@@ -17,7 +17,10 @@ namespace RKCIUIAutomation.Base
     {
         protected IWebDriver driver { get; set; }
         private IWebDriver Driver;
-        
+                
+        public static string GridVmIP => gridVmIP;
+        private const string gridVmIP = "10.1.1.207";
+
         protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testName)
         {
             Driver = driver;
@@ -43,7 +46,7 @@ namespace RKCIUIAutomation.Base
                 else
                 {
                     DesiredCapabilities caps = DetermineCapabilities(platform, browser, testName);
-                    return Driver = new RemoteWebDriver(new Uri("http://10.1.1.207:4444/wd/hub"), caps);
+                    return Driver = new RemoteWebDriver(new Uri($"http://{GridVmIP}:4444/wd/hub"), caps);
                 }
             }
             else

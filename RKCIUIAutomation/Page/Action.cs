@@ -542,5 +542,9 @@ namespace RKCIUIAutomation.Page
             actions.Perform();
         }
 
+
+        public void ClickLoginLink() => driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+        public void ClickLogoutLink() => driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
+
     }
 }

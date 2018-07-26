@@ -12,31 +12,36 @@ namespace RKCIUIAutomation.Base
 {
     public class ExtentManager : BaseUtils
     {
-        private static ExtentHtmlReporter htmlReporter;
-        private static KlovReporter klov;
-        private static Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
-        public static ExtentReports Instance { get { return _lazy.Value; } set { } }
-
         public static readonly string reportFilePath = $"{extentReportPath}\\extent.html";
+        private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
+
+        public static ExtentReports Instance { get { return _lazy.Value; } }
         
         static ExtentManager()
         {
-            Directory.CreateDirectory(extentReportPath);
-            htmlReporter = new ExtentHtmlReporter(reportFilePath);
-            htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
-            
-            if (testPlatform == TestPlatform.Local)
+            try
             {
-                Instance.AttachReporter(htmlReporter);
+                Directory.CreateDirectory(extentReportPath);
+                var htmlReporter = new ExtentHtmlReporter(reportFilePath);
+                htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
+
+                if (testPlatform == TestPlatform.Local)
+                {
+                    Instance.AttachReporter(htmlReporter);
+                }
+                else
+                {
+                    var klov = new KlovReporter();
+                    klov.InitMongoDbConnection(GridVmIP, 27017);
+                    klov.ProjectName = "RKCIUIAutomation";
+                    klov.ReportName = $"{testEnv} {tenantName} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+                    klov.KlovUrl = $"http://{GridVmIP}:8888";
+                    Instance.AttachReporter(htmlReporter, klov);
+                }
             }
-            else
+            catch (Exception e)
             {
-                klov = new KlovReporter();
-                klov.InitMongoDbConnection("localhost", 27017);
-                klov.ProjectName = "RKCIUIAutomation";
-                klov.ReportName = $"{testEnv} {tenantName} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
-                klov.KlovUrl = "http://10.1.1.207:8888";
-                Instance.AttachReporter(htmlReporter, klov);
+                log.Error($"Error in ExtentManager constructor:\n{e.Message}");
             }
         }
     }

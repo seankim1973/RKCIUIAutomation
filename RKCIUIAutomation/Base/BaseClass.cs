@@ -17,6 +17,9 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class BaseClass : BaseUtils
     {
+        public static ExtentTest ParentTest;
+        public static ExtentTest TestNode;
+
         public static TestPlatform testPlatform;
         public static BrowserType browserType;
         public static TestEnv testEnv;
@@ -26,8 +29,7 @@ namespace RKCIUIAutomation.Base
         private static string _browserType;
         private static string _testEnv;
         private static string _tenantName;
-        private string siteUrl;
-        private string displayUrl;
+        public string siteUrl;
         private TestStatus testStatus;
         private Cookie cookie = null;
 
@@ -74,7 +76,7 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
-            ExtentTestManager.CreateTest(GetType().Name, tenantName, testEnv, siteUrl);
+            ExtentTestManager.CreateTestParent(GetType().Name, tenantName, testEnv, siteUrl);
             ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
 
             ProjectProperties props = new ProjectProperties();
@@ -90,7 +92,7 @@ namespace RKCIUIAutomation.Base
 
                     driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
                     driver.Manage().Window.Maximize();
-                    driver.Navigate().GoToUrl(siteUrl);
+                    driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 
                     string component2 = string.Empty;
 
@@ -130,15 +132,13 @@ namespace RKCIUIAutomation.Base
             string tcName, string tcNumber, string suite, string tcDesc, string priority, string component1, string component2)
         {
             var comp2 = (string.IsNullOrEmpty(component2) || component2 == "Not Defined") ? string.Empty : $", {component2}";        
-            string[] url = Regex.Split(siteUrl, "/Account");
-            displayUrl = url[0];
 
             log.Info($"#################################################");
             log.Info($"#                   RKCI ELVIS UI Test Automation");
             log.Info($"#################################################");
             log.Info($"#  -->> Test Configuration <<--");
             log.Info($"#  Tenant: {projectName}  TestEnv: {testEnv}");
-            log.Info($"#  Site URL: {displayUrl}");
+            log.Info($"#  Site URL: {siteUrl}");
             log.Info($"#  Browser: {browserType}");
             log.Info($"#");
             log.Info($"#  -->> Test Case Details <<--");
