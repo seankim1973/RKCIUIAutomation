@@ -32,13 +32,13 @@ namespace RKCIUIAutomation.Base
                 }
                 else
                 {
-                    klov = new KlovReporter();
+                    klov = new KlovReporter();                  
                     klov.InitMongoDbConnection(GridVmIP, 27017);
                     klov.ProjectName = "RKCIUIAutomation";
                     klov.ReportName = $"{testEnv} {tenantName} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
                     klov.KlovUrl = $"http://{GridVmIP}:8888";
-                    klov.Start();
                     Instance.AttachReporter(htmlReporter, klov);
+                    klov.Start();
                 }
             }
             catch (Exception e)
