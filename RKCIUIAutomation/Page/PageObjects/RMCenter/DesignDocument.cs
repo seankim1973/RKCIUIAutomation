@@ -126,12 +126,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(UploadNewDesignDoc_ByLocator);
         public virtual void ClickBtn_BackToList() => ClickElement(BackToListBtn_ByLocator);
 
-        public void CreateDocument()
+        public virtual void CreateDocument()
         {
             ClickElement(UploadNewDesignDoc_ByLocator);
             EnterDesignDocTitleAndNumber();
             UploadFile("test.xlsx");
             ClickElement(SaveForwardBtn_ByLocator);
+            WaitForPageReady();
         }
 
         public  void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 3);

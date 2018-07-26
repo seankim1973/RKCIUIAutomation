@@ -542,5 +542,9 @@ namespace RKCIUIAutomation.Page
             actions.Perform();
         }
 
+
+        public void ClickLoginLink() => JsClickElement(By.XPath("//a[text()=' Login']"));
+        public void ClickLogoutLink() => JsClickElement(By.XPath("//a[text()=' Log out']"));
+
     }
 }

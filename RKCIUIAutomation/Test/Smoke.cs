@@ -6,6 +6,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
+using RKCIUIAutomation.Base;
 
 namespace RKCIUIAutomation.Test.Smoke
 {
@@ -283,11 +284,18 @@ namespace RKCIUIAutomation.Test.Smoke
         [Description("Verify Component Name")]
         public void CommentReviewPartialFunctions()
         {
-            LogInfo($"Other component test - This test should run");
             LoginAs(UserType.IQFUser);//testing glx comment review
             NavigateToPage.RMCenter_Design_Documents();
             Assert.True(VerifyPageTitle("Design Document"));
             DesignDocCommentReview.CreateDocument();
+            driver.Navigate().GoToUrl("http://stage.glx.elvispmc.com/Account/LogOut");
+            driver.Navigate().GoToUrl("http://stage.glx.elvispmc.com/Account/LogIn");
+            //ClickLogoutLink();
+            //ClickLoginLink();
+            LoginAs(UserType.DOTUser);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            TableHelper.ClickReviseBtnForRow(); //workaround for single Enter btn seen as DOT User acct
             Thread.Sleep(5000);
         }
     }
