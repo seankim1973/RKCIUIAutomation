@@ -16,13 +16,16 @@ namespace RKCIUIAutomation.Base
 
         public static ExtentTest CreateTest(string testName, TenantName tenantName, TestEnv testEnv, string url)
         {
-            string tenantEnv = $"{tenantName.ToString()}({testEnv.ToString()})";
             try
             {
+                string _tenantName = tenantName.ToString();
+                string _testEnv = testEnv.ToString();
+                string tenantEnv = $"{_tenantName}({_testEnv})";
+
                 _parentTest = ExtentManager.Instance
                     .CreateTest(testName.SplitCamelCase(), tenantEnv);
-                ExtentManager.Instance.AddSystemInfo("Tenant", tenantName.ToString());
-                ExtentManager.Instance.AddSystemInfo("Environment", testEnv.ToString());
+                ExtentManager.Instance.AddSystemInfo("Tenant", _tenantName);
+                ExtentManager.Instance.AddSystemInfo("Environment", _testEnv);
                 ExtentManager.Instance.AddSystemInfo("Url", url);
             }
             catch (Exception e)

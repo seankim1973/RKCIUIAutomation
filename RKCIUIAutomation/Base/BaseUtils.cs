@@ -58,8 +58,8 @@ namespace RKCIUIAutomation.Base
 
         public static void DetermineReportFilePath()
         {
-            string klovPath = $"{extentReportPath}\\errorscreenshots\\"; //TODO: <<--Temp until bug fix by ExtentReports.  >>-Use when bug fixed ->> "C:\\Automation\\klov-0.1.1\\upload\\reports\\";
             extentReportPath = $"{GetCodeBasePath()}\\Report";
+            string klovPath = $"{extentReportPath}\\errorscreenshots\\"; //TODO: <<--Temp until bug fix by ExtentReports.  >>-Use when bug fixed ->> "C:\\Automation\\klov-0.1.1\\upload\\reports\\";
             screenshotSavePath = (BaseClass.testPlatform == TestPlatform.Local) ?
                 $"{extentReportPath}\\errorscreenshots\\" : klovPath; 
         }

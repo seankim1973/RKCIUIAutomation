@@ -14,9 +14,9 @@ namespace RKCIUIAutomation.Base
     {
         private static ExtentHtmlReporter htmlReporter;
         private static KlovReporter klov;
-        private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
+        private static Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
+        public static ExtentReports Instance { get { return _lazy.Value; } set { } }
 
-        public static ExtentReports Instance { get { return _lazy.Value; } }
         public static readonly string reportFilePath = $"{extentReportPath}\\extent.html";
         
         static ExtentManager()
