@@ -15,33 +15,40 @@ namespace RKCIUIAutomation.Base
 
         public static ExtentReports Instance { get { return _lazy.Value; } }
 
-        private static KlovReporter klov = null;
-        private static ExtentHtmlReporter htmlReporter = null;
-
         static ExtentManager()
+        {
+            Directory.CreateDirectory(extentReportPath);
+            SetInstance();
+        }
+
+        private static void SetInstance()
         {
             try
             {
-                Directory.CreateDirectory(extentReportPath);
-                htmlReporter = new ExtentHtmlReporter(reportFilePath);
-                htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
-                
-                if (testPlatform != TestPlatform.Local)
+                if (testPlatform == TestPlatform.Local)
                 {
-                    klov = new KlovReporter();                  
+                    var htmlReporter = new ExtentHtmlReporter(reportFilePath);
+                    htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
+                    Instance.AttachReporter(htmlReporter);
+                }
+                else
+                {
+                    string reportName = $"{testEnv.ToString()}{tenantName.ToString()} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+
+                    var klov = new KlovReporter();
                     klov.InitMongoDbConnection(GridVmIP, 27017);
                     klov.ProjectName = "RKCIUIAutomation";
-                    klov.ReportName = $"{testEnv} {tenantName} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+                    klov.ReportName = reportName;
                     klov.KlovUrl = $"http://{GridVmIP}:8888";
-                    klov.Start();
+                    Instance.AttachReporter(klov);
                 }
-
-                Instance.AttachReporter(htmlReporter, klov);
             }
             catch (Exception e)
             {
                 log.Error($"Error in ExtentManager constructor:\n{e.Message}");
             }
         }
+
+        private ExtentManager() { }
     }
 }
