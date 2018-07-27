@@ -21,7 +21,7 @@ namespace RKCIUIAutomation.Base
         {
             htmlReporter = GetHtmlReporter();
 
-            if (testPlatform == TestPlatform.Local)
+            if (testPlatform == TestPlatform.Local || testPlatform == TestPlatform.Linux)
             {
                 Instance.AttachReporter(htmlReporter);
                 Instance.AddSystemInfo("Tenant", tenantName.ToString());
