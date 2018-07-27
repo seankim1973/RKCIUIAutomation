@@ -24,6 +24,9 @@ namespace RKCIUIAutomation.Base
             if (testPlatform == TestPlatform.Local)
             {
                 Instance.AttachReporter(htmlReporter);
+                Instance.AddSystemInfo("Tenant", tenantName.ToString());
+                Instance.AddSystemInfo("Environment", testEnv.ToString());
+                Instance.AddSystemInfo("URL", siteUrl);
             }
             else
             {
