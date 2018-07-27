@@ -29,12 +29,12 @@ namespace RKCIUIAutomation.Base
         private static string _browserType;
         private static string _testEnv;
         private static string _tenantName;
-        public string siteUrl;
+        public static string siteUrl;
         private TestStatus testStatus;
         private Cookie cookie = null;
 
         ConfigUtils Configs = new ConfigUtils();
-
+        
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
@@ -50,7 +50,7 @@ namespace RKCIUIAutomation.Base
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
 
             DetermineReportFilePath();
-            ExtentTestManager.CreateTestParent(GetType().Name, tenantName, testEnv, siteUrl);
+            
         }
 
         [OneTimeTearDown]
@@ -59,7 +59,7 @@ namespace RKCIUIAutomation.Base
             //log.Info(userName);
             //log.Info(displayUrl);
             //log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
-            
+
             if (driver != null)
             {
                 driver.Quit();
@@ -77,7 +77,8 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
-            ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
+            ExtentTestManager.CreateTest(testCaseNumber, testName, testDescription, tenantName, testEnv);
+            //ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
 
             ProjectProperties props = new ProjectProperties();
             List<string> tenantComponents = new List<string>();
@@ -104,7 +105,7 @@ namespace RKCIUIAutomation.Base
                     LogTestDetails(tenantName, testEnv, siteUrl, browserType, testName,
                         testCaseNumber, testSuite, testDescription, testPriority, testComponent1, component2);
 
-                    ExtentTestManager.GetTestNode()
+                    ExtentTestManager.GetTest()
                         .AssignCategory(tenantName.ToString())
                         .AssignCategory(testPriority)
                         .AssignCategory(testComponent1, component2)
@@ -157,36 +158,36 @@ namespace RKCIUIAutomation.Base
             ResultAdapter result = CurrentContext.Result;
             testStatus = result.Outcome.Status;
             CheckForTestStatusInjection();
-
+                        
             switch (testStatus)
             {
                 case TestStatus.Failed:
-                    string stacktrace = string.IsNullOrEmpty(result.StackTrace)
-                        ? "" : string.Format("<pre>{0}</pre>", result.StackTrace);
+                    string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? "" : $"<pre>{result.StackTrace}</pre>";
                     string screenshotPath = CaptureScreenshot(driver, GetTestName());
+                    ExtentTestManager.GetTest().Fail($"Test Failed:<br> {stacktrace}")
+                        .AddScreenCaptureFromPath(screenshotPath);
                     cookie = new Cookie("zaleniumTestPassed", "false");
                     driver.Manage().Cookies.AddCookie(cookie);
-                    ExtentTestManager.GetTestNode().Fail($"Test Failed:<br> {stacktrace}")
-                        .AddScreenCaptureFromPath(screenshotPath);
                     break;
                 case TestStatus.Passed:
-                    ExtentTestManager.GetTestNode().Pass("Test Passed");
+                    ExtentTestManager.GetTest().Pass("Test Passed");
                     cookie = new Cookie("zaleniumTestPassed", "true");
                     driver.Manage().Cookies.AddCookie(cookie);
                     break;
                 case TestStatus.Skipped:
-                    ExtentTestManager.GetTestNode().Skip("Test Skipped");
+                    ExtentTestManager.GetTest().Skip("Test Skipped");
                     break;
                 default:
-                    ExtentTestManager.GetTestNode().Debug("Inconclusive Test Result");
+                    ExtentTestManager.GetTest().Debug("Inconclusive Test Result");
                     break;
             }
-
+                        
             ExtentManager.Instance.Flush();
 
             if (driver != null)
             {
-                driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+                //Page.Action action = new Page.Action();
+                //action.ClickLogoutLink();
                 driver.Close();
             }
         }

@@ -85,17 +85,17 @@ namespace RKCIUIAutomation.Base
         //ExtentReports Loggers
         public static void LogIgnore(string msg)
         {
-            ExtentTestManager.GetTestNode().Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
+            ExtentTestManager.GetTest().Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
             log.Debug(msg);
         }
         public static void LogFail(string details, Exception e = null)
         {
-            ExtentTestManager.GetTestNode().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
+            ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
             log.Error(details);
 
             if (e != null)
             {
-                ExtentTestManager.GetTestNode().Error(CreateReportMarkupCodeBlock(e));
+                ExtentTestManager.GetTest().Error(CreateReportMarkupCodeBlock(e));
                 log.Error(e.Message);
             }
         }
@@ -107,13 +107,13 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                ExtentTestManager.GetTestNode().Error(CreateReportMarkupLabel(details, ExtentColor.Red));               
+                ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));               
             }
             log.Error(details);
 
             if (e != null)
             {
-                ExtentTestManager.GetTestNode().Error(CreateReportMarkupCodeBlock(e));
+                ExtentTestManager.GetTest().Error(CreateReportMarkupCodeBlock(e));
                 log.Error(e.Message);
             }
         }
@@ -121,17 +121,17 @@ namespace RKCIUIAutomation.Base
         {
             if (details.Contains(">>>"))
             {
-                ExtentTestManager.GetTestNode().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
             }
             else
-                ExtentTestManager.GetTestNode().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
+                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
 
             log.Debug(details);
         }
         public void LogErrorWithScreenshot()
         {
             string screenshotPath = CaptureScreenshot(driver, GetTestName());
-            ExtentTestManager.GetTestNode().Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
+            ExtentTestManager.GetTest().Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
         }
         public static void LogInfo(string details)
         {
@@ -139,7 +139,7 @@ namespace RKCIUIAutomation.Base
 
             if (details.Contains("<br>"))
             {
-                ExtentTestManager.GetTestNode().Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
                 detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
                 for (int i = 0; i < detailsBr.Length; i++)
                 {
@@ -148,15 +148,15 @@ namespace RKCIUIAutomation.Base
             }
             else if (details.Contains("#####"))
             {
-                ExtentTestManager.GetTestNode().Info(CreateReportMarkupLabel(details));
+                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details));
             }
             else if (details.Contains(">>>"))
             {
-                ExtentTestManager.GetTestNode().Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
+                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
             }
             else
             {
-                ExtentTestManager.GetTestNode().Info(details);
+                ExtentTestManager.GetTest().Info(details);
                 log.Info(details);
             }
         }
@@ -164,7 +164,7 @@ namespace RKCIUIAutomation.Base
         {
             string[] detailsBr = null;
 
-            ExtentTestManager.GetTestNode().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
+            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
             if (details.Contains("<br>"))
             {
                 detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
@@ -180,7 +180,7 @@ namespace RKCIUIAutomation.Base
                        
             if(e != null)
             {
-                ExtentTestManager.GetTestNode().Debug(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
+                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
                 log.Debug(e.Message);
             }
         }
@@ -198,7 +198,7 @@ namespace RKCIUIAutomation.Base
 
             if (assertion)
             {
-                ExtentTestManager.GetTestNode().Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
+                ExtentTestManager.GetTest().Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
                 if (hasPgBreak)
                 {
                     for (int i = 0; i < detailsBr.Length; i++)
@@ -211,7 +211,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                ExtentTestManager.GetTestNode().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
+                ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
                 LogErrorWithScreenshot();
                 if (hasPgBreak)
                 {
