@@ -10,7 +10,7 @@ namespace RKCIUIAutomation.Base
 {
     public class ExtentManager : BaseUtils
     {
-        public static readonly string reportFilePath = $"{extentReportPath}\\extent.html";
+        public static readonly string reportFilePath = $"{extentReportPath}\\extent_{tenantName.ToString()}.html";
         private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
 
         public static ExtentReports Instance { get { return _lazy.Value; } }
