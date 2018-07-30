@@ -60,6 +60,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void VerifyifClosed();
         void ClickBtn_BackToList();
         void ClickBtn_UploadNewDesignDoc();
+        void SelectRegularCommentReviewType();
 
     }
     #endregion <-- end of Workflow Interface class
@@ -119,9 +120,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
        
         private By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
         private By CancelBtn_ByLocator => By.Id("btnCancel");
-        private By SaveOnlyBtn_ByLocator => By.Id("btnSave");
-        private By SaveForwardBtn_ByLocator => By.Id("btnSaveForward");
+        private By SaveOnlyBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(text(),'Save Only')]");
+        private By SaveForwardBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(text(),'Save & Forward')]");
         private By BackToListBtn_ByLocator => By.XPath("//button[text()='Back To List']");
+        //private By SaveOnlyBtnComment1_ByLocator => By.Id("btnSave_0_");
+        //private By SaveForwardBtnComment1_ByLocator => By.Id("btnSaveForward_0_");
 
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(UploadNewDesignDoc_ByLocator);
         public virtual void ClickBtn_BackToList() => ClickElement(BackToListBtn_ByLocator);
@@ -135,7 +138,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForPageReady();
         }
 
-        public  void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 3);
+        public virtual void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 3);
         public  void SelectNoCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 1);
         public void SelectAgreeResponseCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, 1); //check the index, UI not working so need to confirm later
         public void SelectDisagreeResponseCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, 3);//check the index, UI not working so need to confirm later
@@ -180,7 +183,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             SelectRegularCommentReviewType();
             EnterComment(commentInput);
             EnterText(By.Id("Comment_DrawingPageNumber_0_"), "Draw123");
-            ClickSave();
+            ClickElement(SaveOnlyBtn_ByLocator);
 
         }
 
@@ -189,7 +192,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             //login as user to forward the comment ( SG-- IQFadmin and DOTAdmin both | SH249 -- IQFAdmin/IQFRecordsMgr | Garnet and GLX-- DOTadmin)
             //find the record you want to edit 
             //wait for loading the comments and make any changes if required
-            ClickSubmitForward();
+            ClickElement(SaveForwardBtn_ByLocator);
 
         }
 
@@ -263,6 +266,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class DesignDocument_Garnet : DesignDocument
     {
         public DesignDocument_Garnet(IWebDriver driver) : base(driver) { }
+        public override void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 2);
     }
     #endregion <--specific to Garnet
 

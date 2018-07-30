@@ -294,6 +294,21 @@ namespace RKCIUIAutomation.Test.Smoke
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
             TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
+            ClickLogoutLink();
+            ClickLoginLink();
+            LoginAs(UserType.DOTAdmin);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.ForwardComment();
+            ClickLogoutLink();
+            ClickLoginLink();
+            LoginAs(UserType.DEVUser);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Response);
+            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            TableHelper.ClickEnterBtnForRow();
             Thread.Sleep(5000);
         }
     }
