@@ -73,7 +73,7 @@ namespace RKCIUIAutomation.Base
 
         public static string CaptureScreenshot(IWebDriver driver, string fileName)
         {
-            string uniqueFileName = $"{fileName}{DateTime.Now.Second}.png";
+            string uniqueFileName = $"{fileName}{DateTime.Now.Second}_{BaseClass.tenantName.ToString()}.png";
             Directory.CreateDirectory(screenshotSavePath);
             var screenshot = driver.TakeScreenshot();
             screenshot.SaveAsFile($"{screenshotSavePath}{uniqueFileName}", ScreenshotImageFormat.Png);
