@@ -111,8 +111,9 @@ namespace RKCIUIAutomation.Page
             }
             return xPathExt;
         }
+        private string ActiveTableDiv = "//div[@class='k-content k-state-active']";
         private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn = null) => (string.IsNullOrEmpty(textInRowForAnyColumn)) ? $"//tr[1]/td" : $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
-        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn = null) => By.XPath($"{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
+        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn = null) => By.XPath($"{ActiveTableDiv}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
 
 
         //<<-- Table Row Button Public Methods -->>
