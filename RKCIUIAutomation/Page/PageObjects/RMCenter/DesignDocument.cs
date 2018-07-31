@@ -29,8 +29,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Creating")] Creating,
             [StringValue("Requires Comment")] Requires_Comment,
             [StringValue("Pending Response")] Pending_Response,
+            [StringValue("DEV Requires Response")] DEV_Requires_Response, //Garnet
             [StringValue("Requires Resolution")] Requires_Resolution,
-            [StringValue("Pending Resolution")] Pending_Resolution,
+            [StringValue("DEV Requires Response")] Dev_Requires_Resolution, //Garnet
+           [StringValue("Pending Resolution")] Pending_Resolution,
             [StringValue("Pending Closing")] Pending_Closing,
             [StringValue("Closed")] Closed,
         }
@@ -119,7 +121,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
        
         private By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
-        private By CancelBtn_ByLocator => By.Id("btnCancel");
+        private By CancelBtnUploadPage_ByLocator => By.Id("btnCancel");
+        private By SaveOnlyBtnUploadPage_ByLocator => By.Id("btnSave");
+        private By SaveForwardBtnUploadPage_ByLocator => By.Id("btnSaveForward");
         private By SaveOnlyBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(text(),'Save Only')]");
         private By SaveForwardBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(text(),'Save & Forward')]");
         private By BackToListBtn_ByLocator => By.XPath("//button[text()='Back To List']");
@@ -134,13 +138,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickElement(UploadNewDesignDoc_ByLocator);
             EnterDesignDocTitleAndNumber();
             UploadFile("test.xlsx");
-            ClickElement(SaveForwardBtn_ByLocator);
+            ClickElement(SaveForwardBtnUploadPage_ByLocator);
             WaitForPageReady();
         }
 
         public virtual void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 3);
         public  void SelectNoCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 1);
-        public void SelectAgreeResponseCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, 1); //check the index, UI not working so need to confirm later
+        public void SelectAgreeResponseCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, 2); //check the index, UI not working so need to confirm later
         public void SelectDisagreeResponseCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, 3);//check the index, UI not working so need to confirm later
         public void SelectAgreeResolutionCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResolutionStamp, 1); //check the index, UI not working so need to confirm later
         public void SelectDisagreeResolutionCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResolutionStamp, 2);//check the index, UI not working so need to confirm later
@@ -202,7 +206,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             // Login as user to make response comment (All tenants - DevUser)
             EnterComment(commentResponseInput);
             SelectAgreeResponseCode(); //Disagree then different workflow
-            ClickSave();
+            ClickElement(SaveOnlyBtn_ByLocator);
         }
 
         public virtual void EnterResponseCommentAndDisagreeResponseCode()
@@ -211,7 +215,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             // Login as user to make response comment (All tenants - DevUser)
             EnterComment(commentResponseInput);
             SelectDisagreeResponseCode(); //agree then different workflow
-            ClickSave();
+            ClickElement(SaveOnlyBtn_ByLocator);
         }
 
         public virtual void ForwardResponseComment()
@@ -219,7 +223,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             //login as user to forward the comment ( All tenants - DevAdmin)
             //find the record you want to edit 
             //wait for loading the comments and make any changes if required
-            ClickSubmitForward();
+            ClickElement(SaveForwardBtn_ByLocator);
 
         }
 
@@ -229,9 +233,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             // Login as user to make resolution comment (All tenants - DevAdmin)
             EnterComment(commentResolutionInput);
             SelectAgreeResolutionCode(); //
-            ClickSave();
+            ClickElement(SaveOnlyBtn_ByLocator);
             //wait for saveforward to load
-            ClickSubmitForward();
+            ClickElement(SaveForwardBtn_ByLocator);
         }
         
         public virtual void _LoggedInUserUploadsDesignDocument()

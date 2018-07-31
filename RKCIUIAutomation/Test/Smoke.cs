@@ -301,14 +301,27 @@ namespace RKCIUIAutomation.Test.Smoke
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
             TableHelper.ClickEnterBtnForRow();
+            WaitForPageReady();
             DesignDocCommentReview.ForwardComment();
             ClickLogoutLink();
             ClickLoginLink();
             LoginAs(UserType.DEVUser);
             NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Response);
+            TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Response);
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
             TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.EnterResponseCommentAndDisagreeResponseCode();
+            ClickLogoutLink();
+            ClickLoginLink();
+            LoginAs(UserType.DEVAdmin);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Response);
+            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            WaitForPageReady();
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.ForwardResponseComment();
+            TableHelper.ClickTab(DesignDocument.TableTab.Dev_Requires_Resolution);
+            DesignDocCommentReview.EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
             Thread.Sleep(5000);
         }
     }
