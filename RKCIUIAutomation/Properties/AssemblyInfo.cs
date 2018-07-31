@@ -11,7 +11,7 @@ using NUnit.Framework;
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: Parallelizable(ParallelScope.All)]
+[assembly: Parallelizable(ParallelScope.Fixtures)]
 
 [assembly: ComVisible(false)]
 

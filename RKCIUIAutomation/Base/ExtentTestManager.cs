@@ -8,46 +8,46 @@ namespace RKCIUIAutomation.Base
 {
     public class ExtentTestManager
     {
+        [ThreadStatic]
+        private static ExtentTest _test;
 
-        private static ExtentTest _parentTest;
-        private static ExtentTest _childTest;
+        //[ThreadStatic]
+        //private static ExtentTest _childTest;
 
-        public static ExtentTest CreateTestParent(string testName, TenantName tenantName, TestEnv testEnv, string url)
-        {
-            Console.WriteLine("@@@Entered CreateTestParent method");
-            try
-            {
-                string tenantEnv = $"{tenantName}({testEnv})";
-                Console.WriteLine($"@@@Test Environment in CreateTestParent method: {tenantEnv}");
-                _parentTest = ExtentManager.Instance
-                    .CreateTest(testName.SplitCamelCase(), tenantEnv);
-                //ExtentManager.Instance.AddSystemInfo("Tenant", _tenantName);
-                //ExtentManager.Instance.AddSystemInfo("Environment", _testEnv);
-                //ExtentManager.Instance.AddSystemInfo("Url", url);
-            }
-            catch (Exception e)
-            {
-                log.Debug($"##### Exception occured in CreateTestParent method : \n{e.Message}");
-            }
-            return _parentTest;
-        }
-
-        public static ExtentTest CreateTestNode(string testName, string description = null)
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public static ExtentTest CreateTest(string testCaseNumber, string testName, string description, TenantName tenantName, TestEnv testEnv)
         {
             try
             {
-                _childTest = _parentTest.CreateNode(testName, description);
+                string tenantEnv = $" - Tenant : {tenantName.ToString()}({testEnv.ToString()})";
+                string name = $"{testCaseNumber} : {testName.SplitCamelCase()} {tenantEnv}<br>{description}";
+                _test = ExtentManager.Instance.CreateTest(name);
             }
             catch (Exception e)
             {
-                log.Debug($"##### Exception occured in CreateTestNode method : \n{e.Message}");
+                log.Debug($"##### Exception occured in CreateTest method : \n{e.Message}");
             }
-            return _childTest;
+            return _test;
         }
 
-        public static ExtentTest GetTestNode()
+        //[MethodImpl(MethodImplOptions.Synchronized)]
+        //public static ExtentTest CreateTestNode(string testName, string description = null)
+        //{
+        //    try
+        //    {
+        //        _childTest = _test.CreateNode(testName, description);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        log.Debug($"##### Exception occured in CreateTestNode method : \n{e.Message}");
+        //    }
+        //    return _childTest;
+        //}
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public static ExtentTest GetTest()
         {
-            return _childTest;
+            return _test;
         }
     }
 }

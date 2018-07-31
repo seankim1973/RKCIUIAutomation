@@ -21,6 +21,7 @@
     <TestProjectType>UnitTest</TestProjectType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,8 +59,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Atlassian.Jira, Version=10.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Atlassian.SDK.10.2.2\lib\net452\Atlassian.Jira.dll</HintPath>
+    <Reference Include="Atlassian.Jira, Version=10.3.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Atlassian.SDK.10.3.2\lib\net452\Atlassian.Jira.dll</HintPath>
     </Reference>
     <Reference Include="AutoItX3.Assembly, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a646454c8d475470, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoItX.Dotnet.3.3.14.2\lib\AutoItX3.Assembly.dll</HintPath>
@@ -91,11 +92,20 @@
     <Reference Include="ExtentReports, Version=3.1.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ExtentReports.3.1.3\lib\ExtentReports.dll</HintPath>
     </Reference>
+    <Reference Include="Ghpr.Core, Version=0.9.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ghpr.Core.0.9.1.1\lib\net452\Ghpr.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Ghpr.LocalFileSystem, Version=0.9.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ghpr.LocalFileSystem.0.9.1.1\lib\net452\Ghpr.LocalFileSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Ghpr.NUnit, Version=0.9.1.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ghpr.NUnit.0.9.1.1\lib\net452\Ghpr.NUnit.dll</HintPath>
+    </Reference>
     <Reference Include="GitHub, Version=1.12.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GitHub.1.12.1\lib\netstandard2.0\GitHub.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.8.4.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.8.4\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="HtmlAgilityPack, Version=1.8.5.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.8.5\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -123,8 +133,25 @@
     <Reference Include="MongoDB.Driver.Core, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Driver.Core.2.7.0\lib\net45\MongoDB.Driver.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.Engine.3.8.0\lib\Mono.Cecil.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit-agent, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.Engine.3.8.0\lib\nunit-agent.exe</HintPath>
+    </Reference>
+    <Reference Include="nunit-agent-x86, Version=3.8.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\NUnit.Engine.3.8.0\lib\nunit-agent-x86.exe</HintPath>
+    </Reference>
+    <Reference Include="nunit.engine, Version=3.8.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.Engine.3.8.0\lib\nunit.engine.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.engine.api, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.Engine.3.8.0\lib\nunit.engine.api.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
@@ -240,10 +267,8 @@
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -397,13 +422,17 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="app.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Ghpr.Core.Settings.json" />
+    <None Include="Ghpr.NUnit.Settings.json" />
     <None Include="license" />
     <None Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -418,6 +447,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="extent-config.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lib\html-report.xslt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lib\html-summary.xslt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Lib\nunit3-junit.xslt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Tools\TestResult.xml" />
