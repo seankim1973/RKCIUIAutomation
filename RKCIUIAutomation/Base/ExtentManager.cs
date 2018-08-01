@@ -63,7 +63,7 @@ namespace RKCIUIAutomation.Base
                 
                 klov.ProjectName = "RKCIUIAutomation";
                 klov.ReportName = reportName;
-                klov.KlovUrl = $"http://{GridVmIP}:8888";
+                klov.KlovUrl = $"http://{GridVmIP}:8888"; 
             }
             catch (Exception e)
             {
