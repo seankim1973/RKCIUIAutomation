@@ -19,7 +19,7 @@ namespace RKCIUIAutomation.Base
         private IWebDriver Driver;
                 
         public static string GridVmIP => gridVmIP;
-        private const string gridVmIP = "localhost";
+        private const string gridVmIP = "10.1.1.207";
 
         protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testName)
         {

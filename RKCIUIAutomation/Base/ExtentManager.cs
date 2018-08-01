@@ -5,6 +5,7 @@ using System.IO;
 using RKCIUIAutomation.Config;
 using static RKCIUIAutomation.Base.BaseClass;
 using AventStack.ExtentReports.Model;
+using MongoDB.Driver;
 
 namespace RKCIUIAutomation.Base
 {
@@ -55,13 +56,13 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
-                string reportName = $"{testEnv.ToString()}{tenantName.ToString()} - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
+                string reportName = $"{tenantName.ToString()}({testEnv.ToString()}) - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 
                 klov = new KlovReporter();
-                klov.InitMongoDbConnection(GridVmIP, 27017);
+                klov.KlovUrl = $"http://{GridVmIP}:8888"; 
                 klov.ProjectName = "RKCIUIAutomation";
                 klov.ReportName = reportName;
-                klov.KlovUrl = $"http://{GridVmIP}:8888";
+                klov.InitMongoDbConnection(GridVmIP, 27017);
             }
             catch (Exception e)
             {
