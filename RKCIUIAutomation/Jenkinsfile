@@ -1,5 +1,4 @@
-﻿#!/usr/bin/env groovy
-pipeline {
+﻿pipeline {
     agent none
     stages {
 		stage ('UI Automation Code Checkout') {
@@ -11,11 +10,11 @@ pipeline {
 			    sleep 2
 			    bat 'nuget.exe restore RKCIUIAutomation.sln'
 			    sleep 2
-			    bat 'MSBuild RKCIUIAutomation.sln /p:OutputPath="C:\\Program Files (x86)\\Jenkins\\workspace\\TestPipeline\\RKCIUIAutomation\\bin\\Debug" /p:Configuration=Debug /p:Platform=\"Any CPU\" /p:ProductVersion=1.0.0.{env.BUILD_NUMBER}'
+			    bat 'MSBuild RKCIUIAutomation.sln'
 			    sleep 2
 			}
 		}
-        stage('Run Tests for Garnet, GLX, & SH249') {
+		stage('Parallel Test Execution') {
             failFast false
             parallel {
                 stage("Garnet") {
@@ -26,8 +25,15 @@ pipeline {
                         label 'GarnetAgent'
                     }
                     steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=Garnet -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_Garnet.xml'
+    					bat 'nunit3-console.exe -p:TestEnv=%TestEnv% -p:Tenant=Garnet -p:Platform=Grid --test=RKCIUIAutomation.Test.Smoke.Verify_LinkCoverage_Level1 ./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll --result=TestResult_Garnet.xml'
+    					sleep 1
+                        nunit testResultsPattern: 'TestResult_Garnet.xml'
+                        sleep 1
+						publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: './RKCIUIAutomation/Report/', reportFiles: 'extent_Garnet.html', reportName: 'HTML Report', reportTitles: 'RKCIUIAutomation'])
 						sleep 1
+                        bat 'nunit-summary.exe ./TestResult_Garnet.xml -out=./TestResult_Garnet.html -xsl=./RKCIUIAutomation/Lib/html-summary.xslt'
+                        sleep 1
+                        emailext body: '${FILE,path="TestResult_Garnet.html"}', subject: '$DEFAULT_SUBJECT', to: 'schongkim@rkci.com'
                     }
                 }
                 stage("GLX") {
@@ -38,97 +44,94 @@ pipeline {
                         label 'GLXAgent'
                     }
                     steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=GLX -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_GLX.xml'
+    					bat 'nunit3-console.exe -p:TestEnv=%TestEnv% -p:Tenant=GLX -p:Platform=Grid --test=RKCIUIAutomation.Test.Smoke.Verify_LinkCoverage_Level1 ./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll --result=TestResult_GLX.xml'
+    					sleep 1
+                        nunit testResultsPattern: 'TestResult_GLX.xml'
+                        sleep 1
+						publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: './RKCIUIAutomation/Report/', reportFiles: 'extent_GLX.html', reportName: 'HTML Report', reportTitles: 'RKCIUIAutomation'])
 						sleep 1
-					}
+                        bat 'nunit-summary.exe ./TestResult_GLX.xml -out=./TestResult_GLX.html -xsl=./RKCIUIAutomation/Lib/html-summary.xslt'
+                        sleep 1
+                        emailext body: '${FILE,path="TestResult_GLX.html"}', subject: '$DEFAULT_SUBJECT', to: '$DEFAULT_RECIPIENTS'
+    				}
                 }
-				stage("SH249") {
-				    when {
-				        expression { params.SH249 == true }
-		            }
-				    agent {
+    			stage("SH249") {
+    			    when {
+    			        expression { params.SH249 == true }
+    	            }
+    			    agent {
                         label 'SH249Agent'
                     }
-					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=SH249 -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_SH249.xml'
+    				steps {
+    					bat 'nunit3-console.exe -p:TestEnv=%TestEnv% -p:Tenant=SH249 -p:Platform=Grid --test=RKCIUIAutomation.Test.Smoke.Verify_LinkCoverage_Level1 ./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll --result=TestResult_SH249.xml'
+    					sleep 1
+                        nunit testResultsPattern: 'TestResult_SH249.xml'
+                        sleep 1
+						publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: './RKCIUIAutomation/Report/', reportFiles: 'extent_SH249.html', reportName: 'HTML Report', reportTitles: 'RKCIUIAutomation'])
 						sleep 1
-					}
+                        bat 'nunit-summary.exe ./TestResult_SH249.xml -out=./TestResult_SH249.html -xsl=./RKCIUIAutomation/Lib/html-summary.xslt'
+                        sleep 1
+                        emailext body: '${FILE,path="TestResult_SH249.html"}', subject: '$DEFAULT_SUBJECT', to: '$DEFAULT_RECIPIENTS'
+    				}
                 }
-			}
-		}
-		stage('Run Tests for SGWay, I15Tech, I15South') {
-            failFast false
-            parallel {
-				stage("SGWay") {
-				    when {
+                stage("SGWay") {
+    			    when {
                         expression { params.SGWay == true }
                     }
-				    agent {
+    			    agent {
                         label 'SGWayAgent'
                     }
                     steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=SGWay -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_SGWay.xml'
+    					bat 'nunit3-console.exe -p:TestEnv=%TestEnv% -p:Tenant=SGWay -p:Platform=Grid --test=RKCIUIAutomation.Test.Smoke.Verify_LinkCoverage_Level1 ./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll --result=TestResult_SGWay.xml'
+    					sleep 1
+                        nunit testResultsPattern: 'TestResult_SGWay.xml'
+                        sleep 1
+						publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: './RKCIUIAutomation/Report/', reportFiles: 'extent_SGWay.html', reportName: 'HTML Report', reportTitles: 'RKCIUIAutomation'])
 						sleep 1
-					}
+                        bat 'nunit-summary.exe ./TestResult_SGWay.xml -out=./TestResult_SGWay.html -xsl=./RKCIUIAutomation/Lib/html-summary.xslt'
+                        sleep 1
+                        emailext body: '${FILE,path="TestResult_SGWay.html"}', subject: '$DEFAULT_SUBJECT', to: '$DEFAULT_RECIPIENTS'
+    				}
                 }
-				stage("I15Tech") {
-				    when {
+    			stage("I15Tech") {
+    			    when {
                         expression { params.I15Tech == true }
                     }
             		agent {
                         label 'I15TechAgent'
                     }
-					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=I15Tech -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_I15Tech.xml'
+    				steps {
+    					bat 'nunit3-console.exe -p:TestEnv=%TestEnv% -p:Tenant=I15Tech -p:Platform=Grid --test=RKCIUIAutomation.Test.Smoke.Verify_LinkCoverage_Level1 ./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll --result=TestResult_I15Tech.xml'
+    					sleep 1
+                        nunit testResultsPattern: 'TestResult_I15Tech.xml'
+                        sleep 1
+						publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: './RKCIUIAutomation/Report/', reportFiles: 'extent_I15Tech.html', reportName: 'HTML Report', reportTitles: 'RKCIUIAutomation'])
 						sleep 1
-					}
+                        bat 'nunit-summary.exe ./TestResult_I15Tech.xml -out=./TestResult_I15Tech.html -xsl=./RKCIUIAutomation/Lib/html-summary.xslt'
+                        sleep 1
+                        emailext body: '${FILE,path="TestResult_I15Tech.html"}', subject: '$DEFAULT_SUBJECT', to: '$DEFAULT_RECIPIENTS'
+    				}
                 }
-				stage("I15South") {
-				    when {
+    			stage("I15South") {
+    			    when {
                         expression { params.I15South == true }
                     }
             		agent {
                         label 'I15SouthAgent'
                     }
-					steps {
-						bat '"C:\\Program Files (x86)\\NUnit.org\\nunit-console\\nunit3-console.exe" -p:TestEnv=%TestEnv% -p:Tenant=I15South -p:Platform=Linux --test=RKCIUIAutomation.Test.Verify_LinkCoverage_Level1 "../TestPipeline/RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll" --result=../TestPipeline/TestResult_I15South.xml'
+    				steps {
+    					bat 'nunit3-console.exe -p:TestEnv=%TestEnv% -p:Tenant=I15South -p:Platform=Grid --test=RKCIUIAutomation.Test.Smoke.Verify_LinkCoverage_Level1 ./RKCIUIAutomation/bin/Debug/RKCIUIAutomation.dll --result=TestResult_I15South.xml'
+    					sleep 1
+                        nunit testResultsPattern: 'TestResult_I15South.xml'
+                        sleep 1
+						publishHTML([allowMissing: false, alwaysLinkToLastBuild: true, keepAll: false, reportDir: './RKCIUIAutomation/Report/', reportFiles: 'extent_I15South.html', reportName: 'HTML Report', reportTitles: 'RKCIUIAutomation'])
 						sleep 1
-					}
+                        bat 'nunit-summary.exe ./TestResult_I15South.xml -out=./TestResult_I15South.html -xsl=./RKCIUIAutomation/Lib/html-summary.xslt'
+                        sleep 1
+                        emailext body: '${FILE,path="TestResult_I15South.html"}', subject: '$DEFAULT_SUBJECT', to: '$DEFAULT_RECIPIENTS'
+    				}
                 }
-            }
-		}
-		stage('Publish NUnit Test Reports') {
-		    agent {
-                label 'MasterAgent'
-            }
-			steps {
-			    nunit testResultsPattern: 'TestResult_Garnet.xml'
-			    sleep 1
-			    nunit testResultsPattern: 'TestResult_GLX.xml'
-			    sleep 1
-				nunit testResultsPattern: 'TestResult_SH249.xml'
-			    sleep 1
-			    nunit testResultsPattern: 'TestResult_SGWay.xml'
-			    sleep 1
-			    nunit testResultsPattern: 'TestResult_I15Tech.xml'
-			    sleep 1
-				nunit testResultsPattern: 'TestResult_I15South.xml'
-			    sleep 1
-			}
-		}
-		stage('Create Emailable Report') {
-		    agent {
-		        label 'MasterAgent'
-            }
-			steps {
-				echo "Step to Generate JUnit HTML report as TestResult.html"
-				sleep 1	
-			}
-		    post {
-    			always {
-    			    emailext body: '${FILE,path="TestResult.html"}', subject: '$DEFAULT_SUBJECT', to: 'schongkim@rkci.com'
-    			}
-			}
-		}
+    		}
+    	}
     }
 }
