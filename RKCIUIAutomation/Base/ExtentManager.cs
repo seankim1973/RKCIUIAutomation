@@ -59,10 +59,11 @@ namespace RKCIUIAutomation.Base
                 string reportName = $"{tenantName.ToString()}({testEnv.ToString()}) - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 
                 klov = new KlovReporter();
-                klov.KlovUrl = $"http://{GridVmIP}:8888"; 
+                klov.InitMongoDbConnection(GridVmIP, 27017);
+                
                 klov.ProjectName = "RKCIUIAutomation";
                 klov.ReportName = reportName;
-                klov.InitMongoDbConnection(GridVmIP, 27017);
+                klov.KlovUrl = $"http://{GridVmIP}:8888";
             }
             catch (Exception e)
             {

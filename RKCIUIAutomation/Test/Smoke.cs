@@ -65,6 +65,23 @@ namespace RKCIUIAutomation.Test.Smoke
     }
 
     [TestFixture]
+    public class Verify_SampleTest : TestBase
+    {
+        [Test]
+        [Category(Component.Submittals)]
+        [Property("TC#", "ELVS3456")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify user can login successfully using project - user account")]
+        public void SampleTest()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.RMCenter_Search();
+            RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
+            Assert.True(VerifyPageTitle("RM Center Search"));
+        }
+    }
+
+    [TestFixture]
     public class Test_Generic : TestBase
     {
         [Test]
