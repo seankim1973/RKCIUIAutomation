@@ -14,14 +14,12 @@
         <protocol>https</protocol>
         
         <!-- title of the document -->
-        <documentTitle>Raba-Kistner Consultants Inc</documentTitle>
-        
-        <appendExisting>true</appendExisting>
-		    
-        <chartVisibilityOnOpen>true</chartVisibilityOnOpen>
+        <documentTitle>Extent</documentTitle>
+		
+		<chartVisibilityOnOpen>true</chartVisibilityOnOpen>
         
         <!-- report name - displayed at top-nav -->
-        <reportName>RKCI ELVIS UI Test Automation Report</reportName>
+        <reportName>Automation Report</reportName>
         
         <!-- location of charts in the test view -->
         <!-- top, bottom -->
