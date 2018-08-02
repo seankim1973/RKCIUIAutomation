@@ -25,7 +25,7 @@ namespace RKCIUIAutomation.Base
             if (reporter == Reporter.Klov)
             {
                 klov = GetKlovReporter();
-                Instance.AttachReporter(htmlReporter, klov);
+                Instance.AttachReporter(klov, htmlReporter);
             }
             else
             {

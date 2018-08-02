@@ -7,8 +7,6 @@ using System.Text;
 
 namespace RKCIUIAutomation.Page
 {
-    extern alias NewtJson;
-
     public class KendoGrid : Action
     {
         public KendoGrid(){ }
@@ -137,7 +135,7 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference();
             jsToBeExecuted = $"{jsToBeExecuted} return JSON.stringify(grid.dataSource.data());";
             var jsResults = ExecuteJsScriptGet(jsToBeExecuted);
-            var items = NewtJson.Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(jsResults.ToString());
+            var items = JsonConvert.DeserializeObject<List<T>>(jsResults.ToString());
             return items;
         }
 
