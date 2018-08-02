@@ -214,24 +214,27 @@ namespace RKCIUIAutomation.Page
             }
             return text;
         }
-        public void ExpandDDL(Enum ddListID)
+        public void ExpandDDL<E>(E ddListID)
         {
-            By locator = new PageHelper().GetExpandDDListButtonByLocator(ddListID);
+            var _ddListID = (ddListID.GetType() == typeof(string)) ? (string)Convert.ChangeType(ddListID, typeof(string)) : ConvertToEnumType(ddListID).GetString();
+            By locator = new PageHelper().GetExpandDDListButtonByLocator(_ddListID);
             try
             {
                 ClickElement(locator);
                 Thread.Sleep(2000);
-                LogInfo($"Expanded DDList - {ddListID?.GetString()}");
+                LogInfo($"Expanded DDList - {_ddListID}");
             }
             catch (Exception e)
             {
                 LogError($"Unable to expand drop down list - {locator}", true, e);
             }
         }
-        public void ExpandAndSelectFromDDList<T>(Enum ddListID, T itemIndexOrName)
+
+        public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName)
         {
-            ExpandDDL(ddListID);
-            ClickElement(new PageHelper().GetDDListItemsByLocator(ddListID, itemIndexOrName));
+            var _ddListID = (ddListID.GetType() == typeof(string)) ? (string)Convert.ChangeType(ddListID, typeof(string)) : ConvertToEnumType(ddListID).GetString();
+            ExpandDDL(_ddListID);
+            ClickElement(new PageHelper().GetDDListItemsByLocator(_ddListID, itemIndexOrName));
         }
 
         private void UploadUsingAutoItX(string filePath)

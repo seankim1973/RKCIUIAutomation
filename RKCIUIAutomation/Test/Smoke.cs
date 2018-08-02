@@ -284,27 +284,27 @@ namespace RKCIUIAutomation.Test.Smoke
         [Description("Verify Component Name")]
         public void CommentReviewPartialFunctions()
         {
-            LoginAs(UserType.IQFUser);//testing glx comment review
-            NavigateToPage.RMCenter_Design_Documents();
-            Assert.True(VerifyPageTitle("Design Document"));
-            DesignDocCommentReview.CreateDocument();
-            ClickLogoutLink();
-            ClickLoginLink();
-            LoginAs(UserType.DOTUser);
-            NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickEnterBtnForRow();
-            DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
-            ClickLogoutLink();
-            ClickLoginLink();
-            LoginAs(UserType.DOTAdmin);
-            NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickEnterBtnForRow();
-            WaitForPageReady();
-            DesignDocCommentReview.ForwardComment();
-            ClickLogoutLink();
-            ClickLoginLink();
+            //LoginAs(UserType.IQFUser);//testing glx comment review
+            //NavigateToPage.RMCenter_Design_Documents();
+            //Assert.True(VerifyPageTitle("Design Document"));
+            //DesignDocCommentReview.CreateDocument();
+            //ClickLogoutLink();
+            //ClickLoginLink();
+            //LoginAs(UserType.DOTUser);
+            //NavigateToPage.RMCenter_Design_Documents();
+            //TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            //TableHelper.ClickEnterBtnForRow();
+            //DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
+            //ClickLogoutLink();
+            //ClickLoginLink();
+            //LoginAs(UserType.DOTAdmin);
+            //NavigateToPage.RMCenter_Design_Documents();
+            //TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            //TableHelper.ClickEnterBtnForRow();
+            //WaitForPageReady();
+            //DesignDocCommentReview.ForwardComment();
+            //ClickLogoutLink();
+            //ClickLoginLink();
             LoginAs(UserType.DEVUser);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Response);
@@ -317,10 +317,13 @@ namespace RKCIUIAutomation.Test.Smoke
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Response);
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            WaitForPageReady();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.ForwardResponseComment();
+            DesignDocCommentReview.ClickBtn_BackToList();
             TableHelper.ClickTab(DesignDocument.TableTab.Dev_Requires_Resolution);
+            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            TableHelper.ClickEnterBtnForRow();
+            WaitForPageReady();
             DesignDocCommentReview.EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
             Thread.Sleep(5000);
         }

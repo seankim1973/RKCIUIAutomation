@@ -10,7 +10,9 @@ namespace RKCIUIAutomation.Page
         public Enum ConvertToEnumType<T>(T enumObject) => (Enum)Convert.ChangeType(enumObject, typeof(Enum));
 
         private string SetDDListFieldXpath(Enum ddListID) => $"//span[@aria-owns='{ddListID.GetString()}_listbox']";
+        private string SetDDListFieldXpath(string ddListID) => $"//span[@aria-owns='{ddListID}_listbox']";
         private string SetDDListFieldExpandArrowXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']/span";
+        private string SetDDListFieldExpandArrowXpath(string ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']/span";
         private string SetMainNavMenuXpath(Enum navEnum) => $"//li[@class='dropdown']/a[contains(text(),'{navEnum.GetString()}')]";
         private string SetNavMenuXpath(Enum navEnum, Enum parentNavEnum = null)
         {
@@ -24,8 +26,9 @@ namespace RKCIUIAutomation.Page
             }          
         }
         private string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
-        private string SetDDListItemsXpath<T>(Enum ddListID, T itemIndexOrName)
+        private string SetDDListItemsXpath<E, T>(E ddListID, T itemIndexOrName)
         {
+            string _ddListID = (ddListID.GetType() == typeof(string)) ? (string)Convert.ChangeType(ddListID, typeof(string)) : ConvertToEnumType(ddListID).GetString();
             Type itemType = itemIndexOrName.GetType();
 
             string locatorXpath = string.Empty;
@@ -39,7 +42,7 @@ namespace RKCIUIAutomation.Page
             {
                 locatorXpath = inputValue;
             }
-            return $"//div[@id='{ddListID.GetString()}-list']//li[{locatorXpath}]";
+            return $"//div[@id='{_ddListID}-list']//li[{locatorXpath}]";
         }
         private string SetDDListItemsXpath(Enum ddListID, int itemIndex) => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";
         private string SetTextInputFieldByLocator(Enum inputEnum) => $"//input[@id='{inputEnum.GetString()}']";
@@ -52,7 +55,9 @@ namespace RKCIUIAutomation.Page
         public By GetInputFieldByLocator(string inputFieldLabel) => By.XPath(SetInputFieldXpath(inputFieldLabel));
         public By GetDDListByLocator(Enum ddListID) => By.XPath(SetDDListFieldXpath(ddListID));
         public By GetExpandDDListButtonByLocator(Enum ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
+        public By GetExpandDDListButtonByLocator(string ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
         public By GetDDListItemsByLocator<T>(Enum ddListID, T itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
+        public By GetDDListItemsByLocator<T>(string ddListID, T itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
         public By GetTextInputFieldByLocator(Enum inputEnum) => By.XPath(SetTextInputFieldByLocator(inputEnum));
         public By GetButtonByLocator(string buttonName) => By.XPath(SetButtonXpath(buttonName));
         public By GetInputButtonByLocator(string buttonName) => By.XPath(SetInputButtonXpath(buttonName));
