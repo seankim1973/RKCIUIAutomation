@@ -44,7 +44,7 @@ namespace RKCIUIAutomation.Base
             _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
             _tenantName = Parameters.Get("Tenant", $"{TenantName.Garnet}");
-            _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
+            _reporter = Parameters.Get("Reporter", $"{Reporter.Html}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);
             browserType = Configs.GetBrowserType(_browserType);
