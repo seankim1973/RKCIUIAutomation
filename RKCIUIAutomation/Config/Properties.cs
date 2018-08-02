@@ -50,4 +50,10 @@
         DEVUser,
         DEVAdmin
     }
+
+    public enum Reporter
+    {
+        Html,
+        Klov
+    }
 }

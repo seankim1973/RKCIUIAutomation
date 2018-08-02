@@ -24,12 +24,14 @@ namespace RKCIUIAutomation.Base
         public static BrowserType browserType;
         public static TestEnv testEnv;
         public static TenantName tenantName;
-        public static string userName = string.Empty;
+        public static Reporter reporter;
         private static string _testPlatform;
         private static string _browserType;
         private static string _testEnv;
         private static string _tenantName;
+        private static string _reporter;
         public static string siteUrl;
+
         private TestStatus testStatus;
         private Cookie cookie = null;
 
@@ -38,19 +40,20 @@ namespace RKCIUIAutomation.Base
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
+            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
             _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
             _tenantName = Parameters.Get("Tenant", $"{TenantName.Garnet}");
+            _reporter = Parameters.Get("Reporter", $"{Reporter.Html}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);
             browserType = Configs.GetBrowserType(_browserType);
             testEnv = Configs.GetTestEnv(_testEnv);
             tenantName = Configs.GetTenantName(_tenantName);
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
+            reporter = Configs.GetReporter(_reporter);
 
             DetermineReportFilePath();
-            
         }
 
         [OneTimeTearDown]

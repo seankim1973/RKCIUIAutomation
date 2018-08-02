@@ -126,6 +126,7 @@ namespace RKCIUIAutomation.Config
             Component.CVL_List_Item,
             Component.Other,
             Component.Project_Configuration,
+            Component.Search,
             Component.Submittals
         };
     }

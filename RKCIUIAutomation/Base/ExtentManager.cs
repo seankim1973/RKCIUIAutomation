@@ -22,22 +22,22 @@ namespace RKCIUIAutomation.Base
         {
             htmlReporter = GetHtmlReporter();
 
-            if (testPlatform == TestPlatform.Local || testPlatform == TestPlatform.Linux)
+            if (reporter == Reporter.Klov)
+            {
+                klov = GetKlovReporter();
+                Instance.AttachReporter(htmlReporter, klov);
+            }
+            else
             {
                 Instance.AttachReporter(htmlReporter);
                 Instance.AddSystemInfo("Tenant", tenantName.ToString());
                 Instance.AddSystemInfo("Environment", testEnv.ToString());
                 Instance.AddSystemInfo("URL", siteUrl);
             }
-            else
-            {
-                klov = GetKlovReporter();
-                Instance.AttachReporter(htmlReporter, klov);
-            }
         }
 
         private static ExtentHtmlReporter GetHtmlReporter()
-        {            
+        {
             try
             {
                 Directory.CreateDirectory(extentReportPath);

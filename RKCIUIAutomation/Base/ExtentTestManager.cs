@@ -11,9 +11,6 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         private static ExtentTest _test;
 
-        //[ThreadStatic]
-        //private static ExtentTest _childTest;
-
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static ExtentTest CreateTest(string testCaseNumber, string testName, string description, TenantName tenantName, TestEnv testEnv)
         {
@@ -29,20 +26,6 @@ namespace RKCIUIAutomation.Base
             }
             return _test;
         }
-
-        //[MethodImpl(MethodImplOptions.Synchronized)]
-        //public static ExtentTest CreateTestNode(string testName, string description = null)
-        //{
-        //    try
-        //    {
-        //        _childTest = _test.CreateNode(testName, description);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        log.Debug($"##### Exception occured in CreateTestNode method : \n{e.Message}");
-        //    }
-        //    return _childTest;
-        //}
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static ExtentTest GetTest()

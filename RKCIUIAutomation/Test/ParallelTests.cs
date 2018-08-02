@@ -86,7 +86,7 @@ namespace RKCIUIAutomation.Test.ParallelTests
     public class FailingTestClass : TestBase
     {
         [Test]
-        [Category(Component.Other)]
+        [Category(Component.Search)]
         [Property("TC#", "ELVS2222")]
         [Property("Priority", "Priority 1")]
         [Description("Verify Test Fails as expected")]
@@ -96,7 +96,7 @@ namespace RKCIUIAutomation.Test.ParallelTests
             NavigateToPage.RMCenter_Search();
             RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
             Assert.True(false);
-            Thread.Sleep(15000);
+            //Thread.Sleep(15000);
         }
     }
 }

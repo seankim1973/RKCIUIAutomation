@@ -13,6 +13,7 @@ namespace RKCIUIAutomation.Config
         public BrowserType GetBrowserType(string nunitArg) => (BrowserType)Enum.Parse(typeof(BrowserType), nunitArg);
         public TestEnv GetTestEnv(string nunitArg) => (TestEnv)Enum.Parse(typeof(TestEnv), nunitArg);
         public TenantName GetTenantName(string nunitArg) => (TenantName)Enum.Parse(typeof(TenantName), nunitArg);
+        public Reporter GetReporter(string nunitArg) => (Reporter)Enum.Parse(typeof(Reporter), nunitArg);
 
         public string GetSiteUrl(TestEnv testEnv, TenantName project)
         {
