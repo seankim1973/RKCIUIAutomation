@@ -95,7 +95,7 @@ namespace RKCIUIAutomation.Test.ParallelTests
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Search();
             RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-            Assert.True(false);
+            Assert.True(VerifyPageTitle("Failed Test"));
             //Thread.Sleep(15000);
         }
     }

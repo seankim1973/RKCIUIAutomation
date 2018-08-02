@@ -14,24 +14,22 @@ namespace RKCIUIAutomation.Base
     {
         public static readonly string reportFilePath = $"{extentReportPath}\\extent_{tenantName.ToString()}.html";
         private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
-
         public static ExtentReports Instance { get { return _lazy.Value; } }
-
-        [ThreadStatic]
         private static ExtentHtmlReporter htmlReporter;
-
-        [ThreadStatic]
         private static KlovReporter klov;
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         static ExtentManager()
         {
+            Directory.CreateDirectory(extentReportPath);
+            htmlReporter = new ExtentHtmlReporter(reportFilePath);
             htmlReporter = GetHtmlReporter();
 
             if (reporter == Reporter.Klov)
             {
+                klov = new KlovReporter();
+                klov.InitMongoDbConnection(GridVmIP, 27017);
                 klov = GetKlovReporter();
-                Instance.AttachReporter(klov, htmlReporter);
+                Instance.AttachReporter(htmlReporter, klov);
             }
             else
             {
@@ -42,13 +40,10 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private static ExtentHtmlReporter GetHtmlReporter()
         {
             try
             {
-                Directory.CreateDirectory(extentReportPath);
-                htmlReporter = new ExtentHtmlReporter(reportFilePath);
                 htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
             }
             catch (Exception e)
@@ -65,9 +60,6 @@ namespace RKCIUIAutomation.Base
             try
             {
                 string reportName = $"{tenantName.ToString()}({testEnv.ToString()}) - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
-
-                klov = new KlovReporter();
-                klov.InitMongoDbConnection(GridVmIP, 27017);
                 
                 klov.ProjectName = "RKCIUIAutomation";
                 klov.ReportName = reportName;

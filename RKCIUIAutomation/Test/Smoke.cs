@@ -25,20 +25,10 @@ namespace RKCIUIAutomation.Test.Smoke
             List<string> pageUrls = new List<string>();
             pageUrls = GetNavMenuUrlList();
 
-            //List<bool> results = new List<bool>();
             foreach (var url in pageUrls)
             {
-                //results.Add(VerifyUrlIsLoaded(url));
                 AddAssertionToList(VerifyUrlIsLoaded(url));
             }
-
-            //Assert.Multiple(() =>
-            //{
-            //    foreach (var result in results)
-            //    {
-            //        Assert.True(result);
-            //    }
-            //});
 
             AssertAll();
         }

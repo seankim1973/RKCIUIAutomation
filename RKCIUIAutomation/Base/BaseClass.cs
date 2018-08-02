@@ -137,9 +137,9 @@ namespace RKCIUIAutomation.Base
         {
             var comp2 = (string.IsNullOrEmpty(component2) || component2 == "Not Defined") ? string.Empty : $", {component2}";        
 
-            log.Info($"#################################################");
+            log.Info($"################################################################");
             log.Info($"#                   RKCI ELVIS UI Test Automation");
-            log.Info($"#################################################");
+            log.Info($"################################################################");
             log.Info($"#  -->> Test Configuration <<--");
             log.Info($"#  Tenant: {projectName}  TestEnv: {testEnv}");
             log.Info($"#  Site URL: {siteUrl}");
@@ -151,7 +151,7 @@ namespace RKCIUIAutomation.Base
             log.Info($"#  TC#: {tcNumber}, {priority}");
             log.Info($"#  Suite: {suite}, Component(s): {component1}{comp2}");
             log.Info($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");
-            log.Info($"#################################################\n");
+            log.Info($"################################################################\n");
         }
 
 
@@ -184,14 +184,14 @@ namespace RKCIUIAutomation.Base
                     ExtentTestManager.GetTest().Debug("Inconclusive Test Result");
                     break;
             }
-                        
-            ExtentManager.Instance.Flush();
 
             if (driver != null)
             {
                 driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
                 driver.Close();
             }
+
+            ExtentManager.Instance.Flush();
         }
     }
 }
