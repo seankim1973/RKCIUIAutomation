@@ -18,10 +18,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Submittal_Document_DocumentDate")] DocumentDate,
             [StringValue("Submittal_TransmittalDate")] TransmittalDate,
             [StringValue("Submittal_TransmittalNumber")] TransmittalNumber,
-            [StringValue("Comment_ReviewTypeId_0_")] ReviewType,
-            [StringValue("SelectedResponseCode")] ResponseCode,
-            [StringValue("SelectedResolutionStamp")] ResolutionStamp,
-            [StringValue("SelectedClosingStamp")] ClosingStamp
+            [StringValue("Comment_ReviewTypeId_")] ReviewType,
+            [StringValue("Comment_ResponseCodeId_")] ResponseCode,
+            [StringValue("Comment_ResolutionStampId_")] ResolutionStamp,
+            [StringValue("Comment_ClosingStampId_")] ClosingStamp
         }
 
         public enum TableTab
@@ -31,7 +31,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Pending Response")] Pending_Response,
             [StringValue("DEV Requires Response")] DEV_Requires_Response, //Garnet
             [StringValue("Requires Resolution")] Requires_Resolution,
-            [StringValue("DEV Requires Response")] Dev_Requires_Resolution, //Garnet
+            [StringValue("DEV Requires Resolution")] Dev_Requires_Resolution, //Garnet
            [StringValue("Pending Resolution")] Pending_Resolution,
             [StringValue("Pending Closing")] Pending_Closing,
             [StringValue("Closed")] Closed,
@@ -62,7 +62,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void VerifyifClosed();
         void ClickBtn_BackToList();
         void ClickBtn_UploadNewDesignDoc();
-        void SelectRegularCommentReviewType();
+        void SelectRegularCommentReviewType(int commentTabNumber);
 
     }
     #endregion <-- end of Workflow Interface class
@@ -142,13 +142,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForPageReady();
         }
 
-        public virtual void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 3);
-        public  void SelectNoCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 1);
-        public void SelectAgreeResponseCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, 2); //check the index, UI not working so need to confirm later
-        public void SelectDisagreeResponseCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResponseCode, 3);//check the index, UI not working so need to confirm later
-        public void SelectAgreeResolutionCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResolutionStamp, 1); //check the index, UI not working so need to confirm later
-        public void SelectDisagreeResolutionCode() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ResolutionStamp, 2);//check the index, UI not working so need to confirm later
-        public  void SelectDDL_ClosingStamp<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ClosingStamp, itemIndexOrName);
+        internal string SetCommentStamp(DesignDocDetails_InputFields inputFieldEnum, int commentTabIndex) => $"{inputFieldEnum.GetString()}{(commentTabIndex - 1).ToString()}_";
+        public virtual void SelectRegularCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 3);
+        public void SelectNoCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 1);
+        public void SelectAgreeResponseCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 2); //check the index, UI not working so need to confirm later
+        public void SelectDisagreeResponseCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 3);//check the index, UI not working so need to confirm later
+        public void SelectAgreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
+        public void SelectDisagreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
+        public void SelectDDL_ClosingStamp(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
 
         private void SetDesignDocTitleAndNumber()
         {
@@ -223,7 +224,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             //login as user to forward the comment ( All tenants - DevAdmin)
             //find the record you want to edit 
             //wait for loading the comments and make any changes if required
-            ClickElement(SaveForwardBtn_ByLocator);
+            JsClickElement(SaveForwardBtn_ByLocator);
 
         }
 
@@ -270,7 +271,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class DesignDocument_Garnet : DesignDocument
     {
         public DesignDocument_Garnet(IWebDriver driver) : base(driver) { }
-        public override void SelectRegularCommentReviewType() => ExpandAndSelectFromDDList(DesignDocDetails_InputFields.ReviewType, 2);
+        public override void SelectRegularCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 2);
     }
     #endregion <--specific to Garnet
 
