@@ -6,6 +6,7 @@ using RKCIUIAutomation.Config;
 using static RKCIUIAutomation.Base.BaseClass;
 using AventStack.ExtentReports.Model;
 using MongoDB.Driver;
+using System.Runtime.CompilerServices;
 
 namespace RKCIUIAutomation.Base
 {
@@ -15,9 +16,14 @@ namespace RKCIUIAutomation.Base
         private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
 
         public static ExtentReports Instance { get { return _lazy.Value; } }
-        public static ExtentHtmlReporter htmlReporter;
-        public static KlovReporter klov;
 
+        [ThreadStatic]
+        private static ExtentHtmlReporter htmlReporter;
+
+        [ThreadStatic]
+        private static KlovReporter klov;
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
         static ExtentManager()
         {
             htmlReporter = GetHtmlReporter();
@@ -36,6 +42,7 @@ namespace RKCIUIAutomation.Base
             }
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private static ExtentHtmlReporter GetHtmlReporter()
         {
             try
@@ -52,6 +59,7 @@ namespace RKCIUIAutomation.Base
             return htmlReporter;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private static KlovReporter GetKlovReporter()
         {
             try
