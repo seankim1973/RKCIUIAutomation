@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace RKCIUIAutomation.Test
 {
     public class TestUtils : PageBase
@@ -155,7 +154,6 @@ namespace RKCIUIAutomation.Test
                 foreach (bool assertion in assertionList)
                     Assert.True(assertion);
             });
-        }
-
+        }        
     }    
 }

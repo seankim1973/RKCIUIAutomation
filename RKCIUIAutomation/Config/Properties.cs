@@ -32,7 +32,7 @@
     {
         Chrome,
         Firefox,
-        Edge,
+        MicrosoftEdge,
         Safari
     }
 

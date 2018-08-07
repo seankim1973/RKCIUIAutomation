@@ -61,9 +61,7 @@ namespace RKCIUIAutomation.Page
         public By GetTextInputFieldByLocator(Enum inputEnum) => By.XPath(SetTextInputFieldByLocator(inputEnum));
         public By GetButtonByLocator(string buttonName) => By.XPath(SetButtonXpath(buttonName));
         public By GetInputButtonByLocator(string buttonName) => By.XPath(SetInputButtonXpath(buttonName));
-
-
-
+        
     }
 
     public static class EnumHelper

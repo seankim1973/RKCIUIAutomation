@@ -309,5 +309,46 @@ namespace RKCIUIAutomation.Test
             //kendo.Filter("SubmittalNumber", FilterOperator.EqualTo, "Oncor - Wedgemere Drive");
             kendo.Sort("ColumnNameTest", SortType.Ascending);
         }
+
+        [TestMethod]
+        public void ParseUserAcct()
+        {
+            string[] names = {
+            " Welcome Test IQF Records Manager X",
+            " Welcome Test IQF Admin X",
+            " Welcome Test IQF User X",
+            " Welcome Test DOT Admin X",
+            " Welcome Test DOT User X",
+            " Welcome Test DEV Admin X",
+            " Welcome Test DEV User X",
+            " Welcome Test User"
+            };
+
+            foreach (string name in names)
+            {
+                string[] acct = null;
+                try
+                {
+                    if (name.Contains("X"))
+                    {
+                        acct = Regex.Split(name, "Welcome Test ");
+                        acct = Regex.Split(acct[1], " X");
+                        Console.WriteLine(acct[0]);
+                    }
+                    else
+                    {
+                        acct = Regex.Split(name, "Welcome ");
+                        Console.WriteLine(acct[1]);
+                    }
+                    
+                }
+                catch (Exception e)
+                {
+                    log.Debug(e.Message);
+                }
+
+            }
+            
+        }
     }
 }

@@ -53,6 +53,8 @@ namespace RKCIUIAutomation.Base
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
             reporter = Configs.GetReporter(_reporter);
 
+            testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local) ? TestPlatform.Windows : testPlatform;
+
             DetermineReportFilePath();
         }
 
