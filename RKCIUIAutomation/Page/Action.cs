@@ -8,6 +8,7 @@ using OpenQA.Selenium.Support.UI;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace RKCIUIAutomation.Page
@@ -548,6 +549,35 @@ namespace RKCIUIAutomation.Page
 
         public void ClickLoginLink() => driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
         public void ClickLogoutLink() => driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
+
+
+        public string GetCurrentUser()
+        {
+            string[] acct = null;
+            By locator = By.XPath("//a[@href='/Project/Account/']");
+            string userAcct = GetText(locator);
+
+            try
+            {
+                if (userAcct.Contains("X"))
+                {
+                    acct = Regex.Split(userAcct, "Welcome Test ");
+                    acct = Regex.Split(acct[1], " X");
+                    userAcct = acct[0];
+                }
+                else
+                {
+                    acct = Regex.Split(userAcct, "Welcome ");
+                    userAcct = acct[1];
+                }
+            }
+            catch (Exception e)
+            {
+                LogError(e.Message);
+            }
+
+            return userAcct;
+        }
 
     }
 }

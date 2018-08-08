@@ -327,12 +327,14 @@ namespace RKCIUIAutomation.Test.Smoke
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.ForwardResponseComment();
             DesignDocCommentReview.ClickBtn_BackToList();
-            TableHelper.ClickTab(DesignDocument.TableTab.Dev_Requires_Resolution);
+            TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Resolution);
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
             Thread.Sleep(5000);
+
+            
         }
     }
 

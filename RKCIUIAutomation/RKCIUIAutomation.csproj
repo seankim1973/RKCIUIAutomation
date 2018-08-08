@@ -452,6 +452,7 @@
     <Content Include="Lib\nunit3-junit.xslt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Test\SampleTests.txt" />
     <Content Include="Tools\TestResult.xml" />
     <None Include="Jenkinsfile">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

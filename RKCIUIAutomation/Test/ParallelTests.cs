@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
-using System.Threading;
 
 namespace RKCIUIAutomation.Test.ParallelTests
 {

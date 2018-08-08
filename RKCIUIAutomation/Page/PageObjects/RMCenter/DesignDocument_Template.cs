@@ -106,6 +106,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
          * IQFUser [Creating, Requires Comment, Pending Resolution, Pending Closing, Closed]
          **/
 
+        //a[@href='/Project/Account/']
+        //IQF Records Manager --  Welcome Test IQF Records Manager X
+        //IQF Admin --  Welcome Test IQF Admin X
+        //IQF User --  Welcome Test IQF User X
+        //DOT Admin --  Welcome Test DOT Admin X
+        //DOT User --  Welcome Test DOT User X
+        //DEV Admin --  Welcome Test DEV Admin X
+        //DEV User --  Welcome Test DEV User X
+
+
 
         #endregion
 

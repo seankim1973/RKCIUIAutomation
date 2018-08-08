@@ -34,7 +34,7 @@ namespace RKCIUIAutomation.Base
                             return Driver = new ChromeDriver();
                         case BrowserType.Firefox:
                             return Driver = new FirefoxDriver();
-                        case BrowserType.Edge:
+                        case BrowserType.MicrosoftEdge:
                             return Driver = new EdgeDriver();
                         case BrowserType.Safari:
                             return Driver = new SafariDriver();
@@ -108,8 +108,8 @@ namespace RKCIUIAutomation.Base
                 case BrowserType.Firefox:
                     caps.SetCapability(CapabilityType.BrowserName, "firefox");
                     break;
-                case BrowserType.Edge:
-                    caps.SetCapability(CapabilityType.BrowserName, "edge");
+                case BrowserType.MicrosoftEdge:
+                    caps.SetCapability(CapabilityType.BrowserName, "MicrosoftEdge");
                     break;
                 case BrowserType.Safari:
                     caps.SetCapability(CapabilityType.BrowserName, "safari");
