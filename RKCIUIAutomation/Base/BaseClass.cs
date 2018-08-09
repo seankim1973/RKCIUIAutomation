@@ -40,11 +40,11 @@ namespace RKCIUIAutomation.Base
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
+            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Linux}");
             _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            _tenantName = Parameters.Get("Tenant", $"{TenantName.Garnet}");
-            _reporter = Parameters.Get("Reporter", $"{Reporter.Html}");
+            _tenantName = Parameters.Get("Tenant", $"{TenantName.SH249}");
+            _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);
             browserType = Configs.GetBrowserType(_browserType);
