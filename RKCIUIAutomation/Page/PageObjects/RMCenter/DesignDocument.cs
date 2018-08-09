@@ -30,9 +30,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Requires Comment")] Requires_Comment,
             [StringValue("Pending Response")] Pending_Response,
             [StringValue("DEV Requires Response")] DEV_Requires_Response, //Garnet
+            [StringValue("Requires Response")] Requires_Response, //GLX
             [StringValue("Requires Resolution")] Requires_Resolution,
             [StringValue("DEV Requires Resolution")] Dev_Requires_Resolution, //Garnet
-           [StringValue("Pending Resolution")] Pending_Resolution,
+           [StringValue("Pending Resolution")] Pending_Resolution, //GLX
             [StringValue("Pending Closing")] Pending_Closing,
             [StringValue("Closed")] Closed,
         }
@@ -236,7 +237,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             SelectAgreeResolutionCode(); //
             ClickElement(SaveOnlyBtn_ByLocator);
             //wait for saveforward to load
-            ClickElement(SaveForwardBtn_ByLocator);
+            //WaitForPageReady();
+            //ClickElement(SaveForwardBtn_ByLocator);
         }
         
         public virtual void _LoggedInUserUploadsDesignDocument()
