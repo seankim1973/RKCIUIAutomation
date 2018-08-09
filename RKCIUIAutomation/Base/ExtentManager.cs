@@ -14,14 +14,17 @@ namespace RKCIUIAutomation.Base
     {
         public static readonly string reportFilePath = $"{extentReportPath}\\extent_{tenantName.ToString()}.html";
 
+        [ThreadStatic]
         private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
         public static ExtentReports Instance { get { return _lazy.Value; } }
-                
+
+        [ThreadStatic]
         private static readonly Lazy<KlovReporter> _klov = new Lazy<KlovReporter>(() => new KlovReporter());
         private static KlovReporter Klov { get { return _klov.Value; } }
 
         private static ExtentHtmlReporter htmlReporter;
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         static ExtentManager()
         {
             Directory.CreateDirectory(extentReportPath);
@@ -57,6 +60,7 @@ namespace RKCIUIAutomation.Base
             return htmlReporter;
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private static KlovReporter GetKlovReporter()
         {
             try
