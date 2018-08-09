@@ -13,10 +13,14 @@ namespace RKCIUIAutomation.Base
     public class ExtentManager : BaseUtils
     {
         public static readonly string reportFilePath = $"{extentReportPath}\\extent_{tenantName.ToString()}.html";
+
         private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
         public static ExtentReports Instance { get { return _lazy.Value; } }
+                
+        private static readonly Lazy<KlovReporter> _klov = new Lazy<KlovReporter>(() => new KlovReporter());
+        private static KlovReporter Klov { get { return _klov.Value; } }
+
         private static ExtentHtmlReporter htmlReporter;
-        private static KlovReporter klov;
 
         static ExtentManager()
         {
@@ -26,10 +30,9 @@ namespace RKCIUIAutomation.Base
 
             if (reporter == Reporter.Klov)
             {
-                klov = new KlovReporter();
-                klov.InitMongoDbConnection(GridVmIP, 27017);
-                klov = GetKlovReporter();
-                Instance.AttachReporter(htmlReporter, klov);
+                GetKlovReporter();
+                Klov.InitMongoDbConnection(GridVmIP, 27017);
+                Instance.AttachReporter(htmlReporter, Klov);
             }
             else
             {
@@ -54,23 +57,21 @@ namespace RKCIUIAutomation.Base
             return htmlReporter;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private static KlovReporter GetKlovReporter()
         {
             try
             {
                 string reportName = $"{tenantName.ToString()}({testEnv.ToString()}) - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
-                
-                klov.ProjectName = "RKCIUIAutomation";
-                klov.ReportName = reportName;
-                klov.KlovUrl = $"http://{GridVmIP}:8888"; 
+                Klov.ProjectName = "RKCIUIAutomation";
+                Klov.ReportName = reportName;
+                Klov.KlovUrl = $"http://{GridVmIP}:8888"; 
             }
             catch (Exception e)
             {
                 log.Error($"Error in GetKlovReporter method:\n{e.Message}");
             }
 
-            return klov;
+            return Klov;
         }
 
         private ExtentManager() { }
