@@ -189,7 +189,7 @@ namespace RKCIUIAutomation.Page.Navigation
         // QMS_Document / QMS_Document_Search
         /// <summary> 
         /// for SG >QA Record Control>Qms Document, >QA Search>QMS Document Search
-        /// for SH249 >Project>QMS Documents, >QA Search>QMS Document Search
+        /// for SH249 >QA Record Control>QMS Documents, >QA Search>QMS Document Search
         /// for I15Tech, I15South, GLX, Garnet >Project>Qms Document -no QMS Document Search menu item
         /// </summary>
         public virtual void Qms_Document() => Navigate.Menu(NavMenu.Project.Menu.Qms_Document);
@@ -408,7 +408,7 @@ namespace RKCIUIAutomation.Page.Navigation
         {
         }
 
-        public override void Qms_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.Qms_Document);
+        public override void Qms_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.QMS_Document);
     }
     #endregion
 
@@ -420,7 +420,7 @@ namespace RKCIUIAutomation.Page.Navigation
         {
         }
 
-        public override void Qms_Document() => Navigate.Menu(NavMenu.Project.Menu.QMS_Documents);
+        public override void Qms_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.QMS_Document);
     }
     #endregion
 

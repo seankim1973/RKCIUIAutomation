@@ -16,10 +16,7 @@ namespace RKCIUIAutomation.Base
     [TestFixture]
     [Parallelizable]
     public class BaseClass : BaseUtils
-    {
-        public static ExtentTest ParentTest;
-        public static ExtentTest TestNode;
-
+    {        
         public static TestPlatform testPlatform;
         public static BrowserType browserType;
         public static TestEnv testEnv;
@@ -64,7 +61,7 @@ namespace RKCIUIAutomation.Base
             //log.Info(userName);
             //log.Info(displayUrl);
             //log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
-
+            
             if (driver != null)
             {
                 driver.Quit();
@@ -82,8 +79,7 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
-            ExtentTestManager.CreateTest(testCaseNumber, testName, testDescription, tenantName, testEnv);
-            //ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
+            ExtentTestManager.StartTestReport(GetType().Name, testCaseNumber, testName, testDescription, tenantName, testEnv);
 
             ProjectProperties props = new ProjectProperties();
             List<string> tenantComponents = new List<string>();

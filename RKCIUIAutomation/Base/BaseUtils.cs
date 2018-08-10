@@ -24,8 +24,7 @@ namespace RKCIUIAutomation.Base
         private static string fileName = string.Empty;
         private static string dateString = string.Empty;
         private static string screenshotSavePath = string.Empty;
-
-
+        
         public BaseUtils()
         {
             baseTempFolder = $"{GetCodeBasePath()}\\Temp";
