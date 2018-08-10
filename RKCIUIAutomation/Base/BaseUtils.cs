@@ -11,12 +11,14 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
+using static RKCIUIAutomation.Base.BaseClass;
+
 
 namespace RKCIUIAutomation.Base
 {
     public class BaseUtils : ConfigUtils
-    {        
-        internal static readonly ILog log = LogManager.GetLogger("");
+    {
+        public static readonly ILog log = LogManager.GetLogger("");
 
         public static string extentReportPath = string.Empty;
         public static string fullTempFileName = string.Empty;
@@ -84,17 +86,17 @@ namespace RKCIUIAutomation.Base
         //ExtentReports Loggers
         public static void LogIgnore(string msg)
         {
-            ExtentTestManager.GetTest().Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
+            testInstance.Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
             log.Debug(msg);
         }
         public static void LogFail(string details, Exception e = null)
         {
-            ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
+            testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
             log.Error(details);
 
             if (e != null)
             {
-                ExtentTestManager.GetTest().Error(CreateReportMarkupCodeBlock(e));
+                testInstance.Error(CreateReportMarkupCodeBlock(e));
                 log.Error(e.Message);
             }
         }
@@ -106,39 +108,43 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                ExtentTestManager.GetTest().Error(CreateReportMarkupLabel(details, ExtentColor.Red));               
+                testInstance.Error(CreateReportMarkupLabel(details, ExtentColor.Red));               
             }
             log.Error(details);
 
             if (e != null)
             {
-                ExtentTestManager.GetTest().Error(CreateReportMarkupCodeBlock(e));
+                testInstance.Error(CreateReportMarkupCodeBlock(e));
                 log.Error(e.Message);
             }
         }
-        public static void LogDebug(string details)
+        public static void LogDebug(string details, Exception exception = null)
         {
             if (details.Contains(">>>"))
             {
-                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
             }
             else
-                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
+                testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
 
-            log.Debug(details);
+            if (exception != null)
+            {
+                log.Debug(details, exception);
+            }
         }
         public void LogErrorWithScreenshot()
         {
-            string screenshotPath = CaptureScreenshot(driver, GetTestName());
-            ExtentTestManager.GetTest().Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
+            string screenshotPath = CaptureScreenshot(Driver, GetTestName());
+            testInstance.Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
         }
+
         public static void LogInfo(string details)
         {
             string[] detailsBr = null;
 
             if (details.Contains("<br>"))
             {
-                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
                 detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
                 for (int i = 0; i < detailsBr.Length; i++)
                 {
@@ -147,40 +153,16 @@ namespace RKCIUIAutomation.Base
             }
             else if (details.Contains("#####"))
             {
-                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details));
+                testInstance.Info(CreateReportMarkupLabel(details));
             }
             else if (details.Contains(">>>"))
             {
-                ExtentTestManager.GetTest().Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
+                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
             }
             else
             {
-                ExtentTestManager.GetTest().Info(details);
+                testInstance.Info(details);
                 log.Info(details);
-            }
-        }
-        public static void LogInfo(string details, Exception e)
-        {
-            string[] detailsBr = null;
-
-            ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
-            if (details.Contains("<br>"))
-            {
-                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
-                for (int i = 0; i < detailsBr.Length; i++)
-                {
-                    log.Info(detailsBr[i]);
-                }
-            }
-            else
-            {
-                log.Debug(details);
-            }
-                       
-            if(e != null)
-            {
-                ExtentTestManager.GetTest().Debug(CreateReportMarkupLabel(e.Message, ExtentColor.Grey));
-                log.Debug(e.Message);
             }
         }
 
@@ -197,7 +179,7 @@ namespace RKCIUIAutomation.Base
 
             if (assertion)
             {
-                ExtentTestManager.GetTest().Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
+                testInstance.Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
                 if (hasPgBreak)
                 {
                     for (int i = 0; i < detailsBr.Length; i++)
@@ -210,7 +192,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                ExtentTestManager.GetTest().Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
+                testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
                 LogErrorWithScreenshot();
                 if (hasPgBreak)
                 {

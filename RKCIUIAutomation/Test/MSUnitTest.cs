@@ -305,7 +305,7 @@ namespace RKCIUIAutomation.Test
         [TestMethod]
         public void KendoGridClassTest()
         {
-            KendoGrid kendo = new KendoGrid(driver);
+            KendoGrid kendo = new KendoGrid(Driver);
             //kendo.Filter("SubmittalNumber", FilterOperator.EqualTo, "Oncor - Wedgemere Drive");
             kendo.Sort("ColumnNameTest", SortType.Ascending);
         }

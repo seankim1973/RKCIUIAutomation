@@ -2,7 +2,6 @@
 using AventStack.ExtentReports.Reporter;
 using System;
 using System.IO;
-using System.Runtime.CompilerServices;
 using RKCIUIAutomation.Config;
 using static RKCIUIAutomation.Base.BaseClass;
 
@@ -12,19 +11,19 @@ namespace RKCIUIAutomation.Base
     {
         public static readonly string reportFilePath = $"{extentReportPath}\\extent_{tenantName.ToString()}.html";
 
-        [ThreadStatic]
-        private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
+        private static readonly Lazy<ExtentReports> _lazy;
         public static ExtentReports Instance { get { return _lazy.Value; } }
 
         private static ExtentHtmlReporter htmlReporter;
         private static KlovReporter klov;
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         static ExtentManager()
         {
             Directory.CreateDirectory(extentReportPath);
             htmlReporter = new ExtentHtmlReporter(reportFilePath);
             htmlReporter = GetHtmlReporter();
+
+            _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
 
             if (reporter == Reporter.Klov)
             {
@@ -39,6 +38,7 @@ namespace RKCIUIAutomation.Base
                 Instance.AddSystemInfo("Environment", testEnv.ToString());
                 Instance.AddSystemInfo("URL", siteUrl);
             }
+            
         }
 
         private static ExtentHtmlReporter GetHtmlReporter()
@@ -75,7 +75,5 @@ namespace RKCIUIAutomation.Base
 
             return klov;
         }
-
-        private ExtentManager() { }
     }
 }

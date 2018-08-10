@@ -10,7 +10,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// Common pageObjects and workflows are inherited from abstract _Impl class
         /// </summary>
         public Search(){}
-        public Search(IWebDriver driver) => this.driver = driver;
+        public Search(IWebDriver driver) => this.Driver = driver;
     }
     #endregion end of Search Generic class
 

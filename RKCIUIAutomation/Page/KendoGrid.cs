@@ -10,7 +10,7 @@ namespace RKCIUIAutomation.Page
     public class KendoGrid : Action
     {
         public KendoGrid(){ }
-        public KendoGrid(IWebDriver driver) => this.driver = driver;
+        public KendoGrid(IWebDriver driver) => this.Driver = driver;
 
 
         public void ClickCommentTab(int commentNumber)
@@ -39,20 +39,20 @@ namespace RKCIUIAutomation.Page
 
         private void ExecuteJsScript(string jsToBeExecuted)
         {
-            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
+            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
             executor.ExecuteScript(jsToBeExecuted);
         }
 
         private object ExecuteJsScriptGet(string jsToBeExecuted)
         {
-            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
+            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
             return executor.ExecuteScript(jsToBeExecuted);
         }
 
         private int GetElementIndex(By findElementsLocator, string matchValue)
         {
             IList<IWebElement> elements = new List<IWebElement>();
-            elements = driver.FindElements(findElementsLocator);
+            elements = Driver.FindElements(findElementsLocator);
 
             int index = 0;
             for (int i = 0; i < elements.Count; i++)
@@ -189,7 +189,7 @@ namespace RKCIUIAutomation.Page
         {
             string jsToBeExecuted = this.GetGridReference();
             jsToBeExecuted = $"{jsToBeExecuted} return grid.dataSource.page();";
-            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
+            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
             var result = executor.ExecuteScript(jsToBeExecuted);
             int pageNumber = int.Parse(result.ToString());
             return pageNumber;
