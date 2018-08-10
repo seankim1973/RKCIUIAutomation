@@ -4,7 +4,7 @@ namespace RKCIUIAutomation.Page.PageObjects.Project
 {
     public class MyDetails : PageBase
     {
-        public MyDetails(IWebDriver driver) => this.driver = driver;
+        public MyDetails(IWebDriver driver) => this.Driver = driver;
 
 
     }

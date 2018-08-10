@@ -28,7 +28,7 @@ namespace RKCIUIAutomation.Page
             {
                 string javaScript = jsAction.GetString();
                 IWebElement element = GetElement(elementByLocator);
-                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
+                IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
                 executor.ExecuteScript(javaScript, element);
                 LogInfo($"{jsAction.ToString()}ed on javascript element: - {elementByLocator}");
                 WaitForPageReady();
@@ -51,7 +51,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 LogInfo($"...waiting for element: - {elementByLocator}");
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeOutInSeconds))
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
                 };
@@ -63,13 +63,13 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogInfo($"WaitForElement timeout occured for element: - {elementByLocator}", e);
+                LogDebug($"WaitForElement timeout occured for element: - {elementByLocator}", e);
             }
         }
 
         internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 500)
         {
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+            WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeOutInSeconds))
             {
                 PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
             };
@@ -93,13 +93,12 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                elem = driver.FindElement(elementByLocator);
+                elem = Driver.FindElement(elementByLocator);
                 return elem;
             }
             catch (Exception e)
             {
-                LogDebug($"Unable to locate element: - {elementByLocator}");
-                log.Debug(e.Message);
+                LogDebug($"Unable to locate element: - {elementByLocator}", e);
             }
             
             return elem;
@@ -112,11 +111,11 @@ namespace RKCIUIAutomation.Page
             try
             {
                 elements = new List<IWebElement>();
-                elements = driver.FindElements(elementByLocator);
+                elements = Driver.FindElements(elementByLocator);
             }
             catch (Exception e)
             {
-                LogInfo($"Unable to locate elements: - {elementByLocator}", e);
+                LogDebug($"Unable to locate elements: - {elementByLocator}", e);
             }
 
             return elements;
@@ -129,14 +128,28 @@ namespace RKCIUIAutomation.Page
                 
         public void ClickElement(By elementByLocator)
         {
+            IWebElement elem = null;
+            string logMsg = string.Empty;
+
             try
             {
-                GetElement(elementByLocator).Click();
-                LogInfo($"Clicked element: - {elementByLocator}");
+                elem = GetElement(elementByLocator);
+
+                if (elem != null)
+                {
+                    elem.Click();
+                    logMsg = $"Clicked element: - {elementByLocator}";
+                    LogInfo(logMsg);
+                }
+                else
+                {
+                    logMsg = $"Null element: - {elementByLocator}";
+                    Assert.IsNotNull(elem, logMsg);
+                }
             }
             catch (Exception e)
             {
-                LogError($"Unable to click element: - {elementByLocator}", true, e);
+                LogError(logMsg, true, e);
             }
         }
         public void ClickElement(IWebElement webElement)
@@ -263,7 +276,7 @@ namespace RKCIUIAutomation.Page
             {
                 filePath = GetUploadFilePath(fileName, true); //TODO - check if path format needs to change in docker environment
                 LogInfo("Uploading files in remote environment");
-                IAllowsFileDetection allowsFileDetection = driver as IAllowsFileDetection;
+                IAllowsFileDetection allowsFileDetection = Driver as IAllowsFileDetection;
                 allowsFileDetection.FileDetector = new LocalFileDetector();
                 UploadUsingAutoItX(filePath);
             }
@@ -287,7 +300,7 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                driver.SwitchTo().Alert().Accept();
+                Driver.SwitchTo().Alert().Accept();
                 LogInfo("Accepted browser alert message");
             }
             catch (Exception e)
@@ -298,7 +311,7 @@ namespace RKCIUIAutomation.Page
         }
         public bool VerifyAlertMessage(string expectedMessage)
         {            
-            string actualAlertMsg = driver.SwitchTo().Alert().Text;
+            string actualAlertMsg = Driver.SwitchTo().Alert().Text;
             bool msgMatch = (actualAlertMsg).Contains(expectedMessage) ? true : false;
             LogInfo($"## Expected Alert Message: {expectedMessage} <br>&nbsp;&nbsp;## Actual Alert Message: {actualAlertMsg}", msgMatch);
             return msgMatch;
@@ -405,9 +418,9 @@ namespace RKCIUIAutomation.Page
             By resourceNotFoundH2Tag = By.XPath("//h2/i[text()='The resource cannot be found.']");
             By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
 
-            IWebElement pageErrElement = driver.FindElement(serverErrorH1Tag) ?? driver.FindElement(stackTraceTagByLocator) ?? driver.FindElement(resourceNotFoundH2Tag);
+            IWebElement pageErrElement = Driver.FindElement(serverErrorH1Tag) ?? Driver.FindElement(stackTraceTagByLocator) ?? Driver.FindElement(resourceNotFoundH2Tag);
             bool foundKnownError = pageErrElement.Displayed ? true : false;
-            string pageUrl = $"<br>&nbsp;&nbsp;@URL: {driver.Url}";
+            string pageUrl = $"<br>&nbsp;&nbsp;@URL: {Driver.Url}";
             pageErrLogMsg = foundKnownError ? $"!!! Page Error - {pageErrElement.Text}{pageUrl}" : $"!!! Page did not load as expected.{pageUrl}";
             return false;
         }
@@ -419,8 +432,8 @@ namespace RKCIUIAutomation.Page
             
             try
             {
-                driver.Navigate().GoToUrl(pageUrl);
-                pageTitle = driver.Title;
+                Driver.Navigate().GoToUrl(pageUrl);
+                pageTitle = Driver.Title;
 
                 isLoaded = (pageTitle.Contains("ELVIS PMC")) ? true : FoundKnownPageErrors();                 
             }
@@ -432,7 +445,7 @@ namespace RKCIUIAutomation.Page
                 LogInfo($"{logMsg}<br>&nbsp;&nbsp;{pageTitleMsg}", isLoaded);
                 if (!isLoaded)
                 {
-                    LogDebug($"Page Error seen at URL: {driver.Url}");
+                    LogDebug($"Page Error seen at URL: {Driver.Url}");
                 }
                 WriteToFile(pageTitleMsg, "_PageTitle.txt");
             }
@@ -447,7 +460,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                pageTitle = driver.Title;
+                pageTitle = Driver.Title;
                 isLoaded = (pageTitle.Contains(expectedPageTitle)) ? true : FoundKnownPageErrors();
                 logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : pageErrLogMsg;
                 LogInfo(logMsg, isLoaded);
@@ -457,8 +470,8 @@ namespace RKCIUIAutomation.Page
                     if (continueTestIfPageNotLoaded == true)
                     {
                         LogInfo(">>> Attempting to navigate back to previous page to continue testing <<<");
-                        driver.Navigate().Back();
-                        pageTitle = driver.Title;
+                        Driver.Navigate().Back();
+                        pageTitle = Driver.Title;
                         isLoaded = pageTitle.Contains("ELVIS PMC") ? true : FoundKnownPageErrors();
                         if (isLoaded)
                         {
@@ -540,15 +553,15 @@ namespace RKCIUIAutomation.Page
 
         public void ScrollToElement(By elementByLocator)
         {
-            IWebElement elem = driver.FindElement(elementByLocator);
-            Actions actions = new Actions(driver);
+            IWebElement elem = Driver.FindElement(elementByLocator);
+            Actions actions = new Actions(Driver);
             actions.MoveToElement(elem);
             actions.Perform();
         }
 
 
-        public void ClickLoginLink() => driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
-        public void ClickLogoutLink() => driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
+        public void ClickLoginLink() => Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+        public void ClickLogoutLink() => Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
 
 
         public string GetCurrentUser()

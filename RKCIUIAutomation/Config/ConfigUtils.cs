@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Configuration;
-
 using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Config
 {
-#pragma warning disable IDE0044 // Add readonly modifier
     public class ConfigUtils : ProjectProperties
     {
         public TestPlatform GetTestPlatform(string nunitArg) => (TestPlatform)Enum.Parse(typeof(TestPlatform), nunitArg);
@@ -52,7 +50,7 @@ namespace RKCIUIAutomation.Config
             }
             catch (Exception e)
             {
-                LogInfo($"Exception occured in GetValueFromConfigManager method - ", e);
+                log.Error($"Exception occured in GetValueFromConfigManager method - ", e);
             }
             return collection[$"{key}"];
         }

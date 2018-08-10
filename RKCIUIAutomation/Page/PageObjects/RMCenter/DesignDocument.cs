@@ -10,7 +10,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class DesignDocument : DesignDocument_Impl
     {
         public DesignDocument(){}
-        public DesignDocument(IWebDriver driver) => this.driver = driver;
+        public DesignDocument(IWebDriver driver) => this.Driver = driver;
 
         public enum DesignDocDetails_InputFields
         {

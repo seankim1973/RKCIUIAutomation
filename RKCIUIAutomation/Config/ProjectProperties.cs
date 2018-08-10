@@ -1,6 +1,7 @@
-﻿using RKCIUIAutomation.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using RKCIUIAutomation.Base;
+using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Config
 {
@@ -42,6 +43,7 @@ namespace RKCIUIAutomation.Config
             public const string QAField = "QAField";
         }
 
+        
         public List<string> GetComponentsForProject(TenantName tenantName)
         {
             List<string> components = new List<string>();
@@ -52,7 +54,7 @@ namespace RKCIUIAutomation.Config
             }
             catch (Exception e)
             {
-                BaseUtils.LogInfo("Exception occured during GetComponentsForProject method", e);
+                log.Error("Exception occured during GetComponentsForProject method", e);
             }
 
             return components;

@@ -16,7 +16,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     public class QADIRs : QADIRs_Impl
     {
-        public QADIRs(IWebDriver driver) => this.driver = driver;
+        public QADIRs(IWebDriver driver) => this.Driver = driver;
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -27,43 +27,43 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public T SetClass<T>() => (T)SetPageClassBasedOnTenant();
         public IQADIRs SetPageClassBasedOnTenant()
         {
-            IQADIRs instance = new QADIRs(driver);
+            IQADIRs instance = new QADIRs(Driver);
 
             if (tenantName == TenantName.SGWay)
             {
                 LogInfo($"###### using QADIRs_SGWay instance ###### ");
-                instance = new QADIRs_SGWay(driver);
+                instance = new QADIRs_SGWay(Driver);
             }
             else if (tenantName == TenantName.SH249)
             {
                 LogInfo($"###### using QADIRs_SH249 instance ###### ");
-                instance = new QADIRs_SH249(driver);
+                instance = new QADIRs_SH249(Driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
                 LogInfo($"###### using QADIRs_Garnet instance ###### ");
-                instance = new QADIRs_Garnet(driver);
+                instance = new QADIRs_Garnet(Driver);
             }
             else if (tenantName == TenantName.GLX)
             {
                 LogInfo($"###### using QADIRs_GLX instance ###### ");
-                instance = new QADIRs_GLX(driver);
+                instance = new QADIRs_GLX(Driver);
             }
             else if (tenantName == TenantName.I15South)
             {
                 LogInfo($"###### using QADIRs_I15South instance ###### ");
-                instance = new QADIRs_I15South(driver);
+                instance = new QADIRs_I15South(Driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
                 LogInfo($"###### using QADIRs_I15Tech instance ###### ");
-                instance = new QADIRs_I15Tech(driver);
+                instance = new QADIRs_I15Tech(Driver);
             }
 
             return instance;
         }
 
-        public virtual bool IsLoaded() => driver.Title.Equals("DIR List - ELVIS PMC");
+        public virtual bool IsLoaded() => Driver.Title.Equals("DIR List - ELVIS PMC");
 
     }
 

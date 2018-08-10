@@ -4,11 +4,8 @@ using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page;
-using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using static NUnit.Framework.TestContext;
 
 namespace RKCIUIAutomation.Base
@@ -17,8 +14,14 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class BaseClass : BaseUtils
     {
-        public static ExtentTest ParentTest;
-        public static ExtentTest TestNode;
+        [ThreadStatic]
+        public static ExtentReports reportInstance;
+
+        [ThreadStatic]
+        public static ExtentTest parentTest;
+
+        [ThreadStatic]
+        public static ExtentTest testInstance;
 
         public static TestPlatform testPlatform;
         public static BrowserType browserType;
@@ -43,7 +46,7 @@ namespace RKCIUIAutomation.Base
             _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Linux}");
             _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            _tenantName = Parameters.Get("Tenant", $"{TenantName.SH249}");
+            _tenantName = Parameters.Get("Tenant", $"{TenantName.SGWay}");
             _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);
@@ -64,10 +67,10 @@ namespace RKCIUIAutomation.Base
             //log.Info(userName);
             //log.Info(displayUrl);
             //log.Info($"ExtentReports HTML Test Report page created at {ExtentManager.reportFilePath}");
-
-            if (driver != null)
+            
+            if (Driver != null)
             {
-                driver.Quit();
+                Driver.Quit();
             }
         }
 
@@ -82,8 +85,17 @@ namespace RKCIUIAutomation.Base
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
 
-            ExtentTestManager.CreateTest(testCaseNumber, testName, testDescription, tenantName, testEnv);
-            //ExtentTestManager.CreateTestNode($"{testCaseNumber} : {testName}", testDescription);
+            reportInstance = ExtentManager.Instance;
+
+            if (reporter == Reporter.Html)
+            {
+                parentTest = reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv);
+                testInstance = parentTest.CreateNode(testDescription);
+            }
+            else
+            {
+                testInstance = reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv);
+            }
 
             ProjectProperties props = new ProjectProperties();
             List<string> tenantComponents = new List<string>();
@@ -94,11 +106,11 @@ namespace RKCIUIAutomation.Base
             {
                 if (tenantComponents.Contains(testComponent2) || testComponent2 == "Not Defined")
                 {
-                    driver = GetWebDriver(testPlatform, browserType, testName);
+                    Driver = GetWebDriver(testPlatform, browserType, testName);
 
-                    driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
-                    driver.Manage().Window.Maximize();
-                    driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
+                    Driver.Manage().Window.Maximize();
+                    Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 
                     string component2 = string.Empty;
 
@@ -110,7 +122,7 @@ namespace RKCIUIAutomation.Base
                     LogTestDetails(tenantName, testEnv, siteUrl, browserType, testName,
                         testCaseNumber, testSuite, testDescription, testPriority, testComponent1, component2);
 
-                    ExtentTestManager.GetTest()
+                    testInstance
                         .AssignCategory(tenantName.ToString())
                         .AssignCategory(testPriority)
                         .AssignCategory(testComponent1, component2)
@@ -159,41 +171,43 @@ namespace RKCIUIAutomation.Base
 
         [TearDown]
         public void AfterTest()
-        {         
+        {
+            CheckForTestStatusInjection();
             ResultAdapter result = CurrentContext.Result;
             testStatus = result.Outcome.Status;
-            CheckForTestStatusInjection();
-                        
+            
             switch (testStatus)
             {
                 case TestStatus.Failed:
                     string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? "" : $"<pre>{result.StackTrace}</pre>";
-                    string screenshotPath = CaptureScreenshot(driver, GetTestName());
-                    ExtentTestManager.GetTest().Fail($"Test Failed:<br> {stacktrace}")
+                    string screenshotPath = CaptureScreenshot(Driver, GetTestName());
+                    testInstance.Fail($"Test Failed:<br> {stacktrace}")
                         .AddScreenCaptureFromPath(screenshotPath);
                     cookie = new Cookie("zaleniumTestPassed", "false");
-                    driver.Manage().Cookies.AddCookie(cookie);
                     break;
                 case TestStatus.Passed:
-                    ExtentTestManager.GetTest().Pass("Test Passed");
+                    testInstance.Pass("Test Passed");
                     cookie = new Cookie("zaleniumTestPassed", "true");
-                    driver.Manage().Cookies.AddCookie(cookie);
                     break;
                 case TestStatus.Skipped:
-                    ExtentTestManager.GetTest().Skip("Test Skipped");
+                    testInstance.Skip("Test Skipped");
                     break;
                 default:
-                    ExtentTestManager.GetTest().Debug("Inconclusive Test Result");
+                    testInstance.Debug("Inconclusive Test Result");
                     break;
             }
+            
+            reportInstance.Flush();
 
-            if (driver != null)
+            if (Driver != null)
             {
-                driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
-                driver.Close();
-            }
-
-            ExtentManager.Instance.Flush();
+                if (cookie != null)
+                {
+                    Driver.Manage().Cookies.AddCookie(cookie);
+                }
+                Driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+                Driver.Close();
+            }            
         }
     }
 }

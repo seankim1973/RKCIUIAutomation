@@ -10,7 +10,7 @@ namespace RKCIUIAutomation.Test
     public class TestUtils : PageBase
     {
         public TestUtils(){}
-        public TestUtils(IWebDriver driver) => this.driver = driver;
+        public TestUtils(IWebDriver driver) => this.Driver = driver;
 
         private static List<string> pageUrlList;
 
@@ -32,7 +32,7 @@ namespace RKCIUIAutomation.Test
             WriteToFile(Environment.NewLine);
 
             IList<IWebElement> elements = new List<IWebElement>();
-            elements = driver.FindElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
+            elements = Driver.FindElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
             if (elements?.Any() == true)
             {
                 foreach (IWebElement mainNavElem in elements)
