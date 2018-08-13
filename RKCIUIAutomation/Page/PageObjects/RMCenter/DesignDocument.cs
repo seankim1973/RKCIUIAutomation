@@ -2,6 +2,7 @@
 using RKCIUIAutomation.Config;
 using MiniGuids;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
+using RKCIUIAutomation.Test;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -9,7 +10,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class DesignDocument : DesignDocument_Impl
     {
         public DesignDocument(){}
-        public DesignDocument(IWebDriver driver) => this.driver = driver;
+        public DesignDocument(IWebDriver driver) => this.Driver = driver;
 
         public enum DesignDocDetails_InputFields
         {
@@ -27,15 +28,33 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public enum TableTab
         {
             [StringValue("Creating")] Creating,
+            [StringValue("IQF Creating")] IQF_Creating,   
+            
+            [StringValue("DEV Pending Comment")] DEV_Pending_Comment,
+            [StringValue("DOT Requires Comment")] DOT_Requires_Comment,
+            [StringValue("IQF Pending Comment")] IQF_Pending_Comment,
+            [StringValue("Pending Comment")] Pending_Comment,
             [StringValue("Requires Comment")] Requires_Comment,
-            [StringValue("Pending Response")] Pending_Response,
+
             [StringValue("DEV Requires Response")] DEV_Requires_Response, //Garnet
-            [StringValue("Requires Response")] Requires_Response, //GLX
+            [StringValue("DOT Pending Response")] DOT_Pending_Response,
+            [StringValue("IQF Pending Response")] IQF_Pending_Response,
+            [StringValue("Pending Response")] Pending_Response,
+            [StringValue("Requires Response")] Requires_Response,
+                        
+            [StringValue("DEV Requires Resolution")] DEV_Requires_Resolution, //Garnet
+            [StringValue("DOT Pending Resolution")] DOT_Pending_Resolution,
+            [StringValue("IQF Pending Resolution")] IQF_Pending_Resolution,
+            [StringValue("Pending Resolution")] Pending_Resolution,
             [StringValue("Requires Resolution")] Requires_Resolution,
-            [StringValue("DEV Requires Resolution")] Dev_Requires_Resolution, //Garnet
-           [StringValue("Pending Resolution")] Pending_Resolution, //GLX
+
             [StringValue("Pending Closing")] Pending_Closing,
+            [StringValue("Requires Closing")] Requires_Closing,
+
             [StringValue("Closed")] Closed,
+            [StringValue("DOT Closed")] DOT_Closed,
+            [StringValue("DEV Closed")] DEV_Closed,
+            [StringValue("IQF Closed")] IQF_Closed
         }
 
         public enum ColumnName
@@ -52,6 +71,31 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Workflow Interface class
     public interface IDesignDocument
     {
+        void SelectTab_Creating();
+        void SelectTab_IQF_Creating();
+        void SelectTab_DEV_Pending_Comment();
+        void SelectTab_DOT_Requires_Comment();
+        void SelectTab_IQF_Pending_Comment();
+        void SelectTab_Pending_Comment();        
+        void SelectTab_Requires_Comment();       
+        void SelectTab_DEV_Requires_Response();
+        void SelectTab_DOT_Pending_Response();
+        void SelectTab_IQF_Pending_Response();
+        void SelectTab_Pending_Response();
+        void SelectTab_Requires_Response();
+        void SelectTab_DEV_Requires_Resolution();
+        void SelectTab_DOT_Pending_Resolution();
+        void SelectTab_IQF_Pending_Resolution();
+        void SelectTab_Requires_Resolution();       
+        void SelectTab_Pending_Resolution();
+        void SelectTab_Pending_Closing();
+        void SelectTab_Requires_Closing();
+        void SelectTab_Closed();
+        void SelectTab_DOT_Closed();
+        void SelectTab_DEV_Closed();
+        void SelectTab_IQF_Closed();
+
+
         void CreateDocument();
         void EnterDesignDocTitleAndNumber();
         void EnterRegularCommentAndDrawingPageNo();
@@ -60,10 +104,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void EnterResponseCommentAndDisagreeResponseCode();
         void ForwardResponseComment();
         void EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
-        void VerifyifClosed();
+        bool VerifyifClosed(string recordTitleOrNumber);
         void ClickBtn_BackToList();
         void ClickBtn_UploadNewDesignDoc();
         void SelectRegularCommentReviewType(int commentTabNumber);
+        bool VerifyTitleFieldErrorMsgIsDisplayed();
+        bool VerifyDocumentNumberFieldErrorMsgIsDisplayed();
+        bool VerifyUploadFileErrorMsgIsDisplayed();
 
     }
     #endregion <-- end of Workflow Interface class
@@ -130,6 +177,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         private By BackToListBtn_ByLocator => By.XPath("//button[text()='Back To List']");
         //private By SaveOnlyBtnComment1_ByLocator => By.Id("btnSave_0_");
         //private By SaveForwardBtnComment1_ByLocator => By.Id("btnSaveForward_0_");
+
 
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(UploadNewDesignDoc_ByLocator);
         public virtual void ClickBtn_BackToList() => ClickElement(BackToListBtn_ByLocator);
@@ -252,16 +300,47 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickSubmitForward();
         }
 
-        public virtual void VerifyifClosed()
+        
+
+        private bool VerifyRequiredFieldErrorMsg(string errorMsg) => ElementIsDisplayed(By.XPath($"//li[text()='{errorMsg}']"));
+        public virtual bool VerifyTitleFieldErrorMsgIsDisplayed() => VerifyRequiredFieldErrorMsg("Submittal Title is required.");
+        public virtual bool VerifyDocumentNumberFieldErrorMsgIsDisplayed() => VerifyRequiredFieldErrorMsg("Submittal Number is required.");
+        public virtual bool VerifyUploadFileErrorMsgIsDisplayed() => VerifyRequiredFieldErrorMsg("At least one file must be added.");
+
+        private bool VerifyRecordIsShownInTab(TableTab tableTab, string recordTitleOrNumber)
         {
-            //verify if records made it to Dev Closed tab.
+            SelectTab(tableTab);
+            return ElementIsDisplayed(GetTableRowLocator(recordTitleOrNumber));
         }
+        public virtual bool VerifyifClosed(string recordTitleOrNumber) => VerifyRecordIsShownInTab(TableTab.Closed, recordTitleOrNumber);
 
+        //TODO - use CurrentUser variable to determine tab name (i.e. DOT, DEV, IQF, etc)
+        private string CurrentUser => GetCurrentUser();
 
-     
-       
-
-
+        private void SelectTab(TableTab tableTab) => ClickTab(tableTab);
+        public void SelectTab_Creating() => SelectTab(TableTab.Creating);
+        public void SelectTab_IQF_Creating() => SelectTab(TableTab.IQF_Creating);
+        public void SelectTab_DEV_Pending_Comment() => SelectTab(TableTab.DEV_Pending_Comment);
+        public void SelectTab_DOT_Requires_Comment() => SelectTab(TableTab.DOT_Requires_Comment);
+        public void SelectTab_IQF_Pending_Comment() => SelectTab(TableTab.IQF_Pending_Comment);
+        public void SelectTab_Pending_Comment() => SelectTab(TableTab.Pending_Comment);
+        public void SelectTab_Requires_Comment() => SelectTab(TableTab.Requires_Comment);
+        public void SelectTab_DEV_Requires_Response() => SelectTab(TableTab.DEV_Requires_Response);
+        public void SelectTab_DOT_Pending_Response() => SelectTab(TableTab.DOT_Pending_Response);
+        public void SelectTab_IQF_Pending_Response() => SelectTab(TableTab.IQF_Pending_Response);
+        public void SelectTab_Pending_Response() => SelectTab(TableTab.Pending_Response);
+        public void SelectTab_Requires_Response() => SelectTab(TableTab.Requires_Response);
+        public void SelectTab_DEV_Requires_Resolution() => SelectTab(TableTab.DEV_Requires_Resolution);
+        public void SelectTab_DOT_Pending_Resolution() => SelectTab(TableTab.DOT_Pending_Resolution);
+        public void SelectTab_IQF_Pending_Resolution() => SelectTab(TableTab.IQF_Pending_Resolution);
+        public void SelectTab_Requires_Resolution() => SelectTab(TableTab.Requires_Resolution);
+        public void SelectTab_Pending_Resolution() => SelectTab(TableTab.Pending_Resolution);
+        public void SelectTab_Pending_Closing() => SelectTab(TableTab.Pending_Closing);
+        public void SelectTab_Requires_Closing() => SelectTab(TableTab.Requires_Closing);
+        public void SelectTab_Closed() => SelectTab(TableTab.Closed);
+        public void SelectTab_DOT_Closed() => SelectTab(TableTab.DOT_Closed);
+        public void SelectTab_DEV_Closed() => SelectTab(TableTab.DEV_Closed);
+        public void SelectTab_IQF_Closed() => SelectTab(TableTab.IQF_Closed);
     }
     #endregion <--end of common implementation class
 

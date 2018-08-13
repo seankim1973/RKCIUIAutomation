@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
-using System.Threading;
 
 namespace RKCIUIAutomation.Test.ParallelTests
 {
@@ -76,7 +75,7 @@ namespace RKCIUIAutomation.Test.ParallelTests
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Search();
-            RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
+            //RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
             Assert.True(VerifyPageTitle("RM Center Search"));
         }
     }
@@ -94,7 +93,7 @@ namespace RKCIUIAutomation.Test.ParallelTests
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Search();
-            RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
+            //RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
             Assert.True(VerifyPageTitle("Failed Test"));
             //Thread.Sleep(15000);
         }

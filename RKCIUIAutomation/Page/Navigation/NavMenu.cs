@@ -9,7 +9,7 @@ namespace RKCIUIAutomation.Page.Navigation
 {
     public class NavMenu : PageBase
     {
-        public NavMenu(IWebDriver driver) => this.driver = driver;
+        public NavMenu(IWebDriver driver) => this.Driver = driver;
 
         public void Menu<T>(T navEnum)
         {
@@ -153,35 +153,35 @@ namespace RKCIUIAutomation.Page.Navigation
 
                 if (adminEnum != null)
                 {
-                    builder = new Actions(driver);
-                    element = driver.FindElement(GetNavMenuByLocator(adminEnum));
+                    builder = new Actions(Driver);
+                    element = Driver.FindElement(GetNavMenuByLocator(adminEnum));
                     builder.MoveToElement(element).Perform();
                     clickLocator = GetNavMenuByLocator(ConvertToEnumType(navEnum));
 
                     if (userMgmtEnum != null)
                     {
-                        element = driver.FindElement(GetNavMenuByLocator(userMgmtEnum));
+                        element = Driver.FindElement(GetNavMenuByLocator(userMgmtEnum));
                         builder.MoveToElement(element).Perform();
                     }
                     else if (sysConfigEnum != null)
                     {
-                        element = driver.FindElement(GetNavMenuByLocator(sysConfigEnum));
+                        element = Driver.FindElement(GetNavMenuByLocator(sysConfigEnum));
                         builder.MoveToElement(element).Perform();
 
                         if (sysConfigEquipEnum != null)
                         {
-                            element = driver.FindElement(GetNavMenuByLocator(sysConfigEquipEnum));
+                            element = Driver.FindElement(GetNavMenuByLocator(sysConfigEquipEnum));
                             builder.MoveToElement(element).Perform();
                         }
                         else if (sysConfigGradeMgmtEnum != null)
                         {
-                            element = driver.FindElement(GetNavMenuByLocator(sysConfigGradeMgmtEnum));
+                            element = Driver.FindElement(GetNavMenuByLocator(sysConfigGradeMgmtEnum));
                             builder.MoveToElement(element).Perform();
                         }
                     }
                     else if (adminToolsEnum != null)
                     {
-                        element = driver.FindElement(GetNavMenuByLocator(adminToolsEnum));
+                        element = Driver.FindElement(GetNavMenuByLocator(adminToolsEnum));
                         builder.MoveToElement(element).Perform();
                     }
                 }
@@ -192,7 +192,7 @@ namespace RKCIUIAutomation.Page.Navigation
             }
             catch (Exception e)
             {
-                LogInfo($"Exception occured during Menu Navigation", e);
+                log.Error($"Exception occured during Menu Navigation", e);
             }
             finally
             {
@@ -369,7 +369,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Concrete Paving Quantity Tracker")] Concrete_Paving_Quantity_Tracker,
                 [StringValue("MPL Tracker")] MPL_Tracker,
                 [StringValue("Girder Tracker")] Girder_Tracker,
-                [StringValue("Qms Document")] Qms_Document,
+                [StringValue("QMS Document")] QMS_Document,
                 [StringValue("QA Test - Retest Report")] QA_Test_Retest_Report,
                 [StringValue("Environmental Document")] Environmental_Document
             }

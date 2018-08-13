@@ -327,7 +327,7 @@ namespace RKCIUIAutomation.Test.Smoke
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.ForwardResponseComment();
             DesignDocCommentReview.ClickBtn_BackToList();
-            TableHelper.ClickTab(DesignDocument.TableTab.Dev_Requires_Resolution);
+            TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Resolution);
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
@@ -341,6 +341,8 @@ namespace RKCIUIAutomation.Test.Smoke
             WaitForPageReady();
             DesignDocCommentReview.ForwardComment();
             Thread.Sleep(5000);
+
+            
         }
     }
         [TestFixture]

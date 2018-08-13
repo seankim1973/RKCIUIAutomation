@@ -4,17 +4,16 @@ using System;
 using System.IO;
 using RKCIUIAutomation.Config;
 using static RKCIUIAutomation.Base.BaseClass;
-using AventStack.ExtentReports.Model;
-using MongoDB.Driver;
-using System.Runtime.CompilerServices;
 
 namespace RKCIUIAutomation.Base
 {
     public class ExtentManager : BaseUtils
     {
         public static readonly string reportFilePath = $"{extentReportPath}\\extent_{tenantName.ToString()}.html";
-        private static readonly Lazy<ExtentReports> _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
+
+        private static readonly Lazy<ExtentReports> _lazy;
         public static ExtentReports Instance { get { return _lazy.Value; } }
+
         private static ExtentHtmlReporter htmlReporter;
         private static KlovReporter klov;
 
@@ -24,11 +23,12 @@ namespace RKCIUIAutomation.Base
             htmlReporter = new ExtentHtmlReporter(reportFilePath);
             htmlReporter = GetHtmlReporter();
 
+            _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
+
             if (reporter == Reporter.Klov)
             {
-                klov = new KlovReporter();
+                GetKlovReporter();
                 klov.InitMongoDbConnection(GridVmIP, 27017);
-                klov = GetKlovReporter();
                 Instance.AttachReporter(htmlReporter, klov);
             }
             else
@@ -38,6 +38,7 @@ namespace RKCIUIAutomation.Base
                 Instance.AddSystemInfo("Environment", testEnv.ToString());
                 Instance.AddSystemInfo("URL", siteUrl);
             }
+            
         }
 
         private static ExtentHtmlReporter GetHtmlReporter()
@@ -54,16 +55,18 @@ namespace RKCIUIAutomation.Base
             return htmlReporter;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
         private static KlovReporter GetKlovReporter()
         {
             try
             {
                 string reportName = $"{tenantName.ToString()}({testEnv.ToString()}) - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
-                
-                klov.ProjectName = "RKCIUIAutomation";
-                klov.ReportName = reportName;
-                klov.KlovUrl = $"http://{GridVmIP}:8888"; 
+
+                klov = new KlovReporter
+                {
+                    ProjectName = "RKCIUIAutomation",
+                    ReportName = reportName,
+                    KlovUrl = $"http://{GridVmIP}:8888"
+                };
             }
             catch (Exception e)
             {
@@ -72,7 +75,5 @@ namespace RKCIUIAutomation.Base
 
             return klov;
         }
-
-        private ExtentManager() { }
     }
 }

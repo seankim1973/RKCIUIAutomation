@@ -11,7 +11,7 @@ namespace RKCIUIAutomation.Page.Workflows
     public class LinkCoverageWF : LinkCoverageWF_Impl
     {
         public LinkCoverageWF(){}
-        public LinkCoverageWF(IWebDriver driver) => this.driver = driver;
+        public LinkCoverageWF(IWebDriver driver) => this.Driver = driver;
 
         /// <summary>
         /// Common pageObjects and workflows are inherited from abstract _Impl class

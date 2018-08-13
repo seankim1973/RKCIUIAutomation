@@ -10,10 +10,10 @@ namespace RKCIUIAutomation.Page
     public class TableHelper : Action
     {        
         public TableHelper(){}
-        public TableHelper(IWebDriver driver) => this.driver = driver;
+        public TableHelper(IWebDriver driver) => this.Driver = driver;
 
         private KendoGrid kendo;
-        private KendoGrid Kendo => kendo = new KendoGrid(driver);
+        private KendoGrid Kendo => kendo = new KendoGrid(Driver);
 
 
         #region Kendo Grid Public Methods
@@ -111,10 +111,12 @@ namespace RKCIUIAutomation.Page
             }
             return xPathExt;
         }
-        private string ActiveTableDiv = "//div[@class='k-content k-state-active']";
-        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn = null) => (string.IsNullOrEmpty(textInRowForAnyColumn)) ? $"//tr[1]/td" : $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
+        private readonly string ActiveTableDiv = "//div[@class='k-content k-state-active']";
+        private string TableByTestInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
+        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn = null) => (string.IsNullOrEmpty(textInRowForAnyColumn)) ? "//tr[1]/td" : $"{TableByTestInRow(textInRowForAnyColumn)}";
         private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn = null) => By.XPath($"{ActiveTableDiv}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
 
+        public By GetTableRowLocator(string textInRowForAnyColumn) => By.XPath($"{ActiveTableDiv}{TableByTestInRow(textInRowForAnyColumn)}");
 
         //<<-- Table Row Button Public Methods -->>
         /// <summary>
