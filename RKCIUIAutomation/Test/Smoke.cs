@@ -297,6 +297,8 @@ namespace RKCIUIAutomation.Test.Smoke
             DesignDocCommentReview.CreateDocument();
             ClickLogoutLink();
             ClickLoginLink();
+
+            LogInfo("!!!!Login As DOT User");
             LoginAs(UserType.DOTUser);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
@@ -304,6 +306,8 @@ namespace RKCIUIAutomation.Test.Smoke
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
             ClickLogoutLink();
             ClickLoginLink();
+
+
             LoginAs(UserType.DOTAdmin);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
@@ -335,78 +339,77 @@ namespace RKCIUIAutomation.Test.Smoke
             Thread.Sleep(2000);
             DesignDocCommentReview.ClickBtn_BackToList();
             WaitForPageReady();
-            TableHelper.ClickTab(DesignDocument.TableTab.Dev_Requires_Resolution);
+            TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Resolution);
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ForwardComment();
-            Thread.Sleep(5000);
-
-            
+            Assert.True(DesignDocCommentReview.VerifyifClosed());
+            Thread.Sleep(5000);   
         }
     }
-        [TestFixture]
-        public class Test_CommentReviewForGLX : TestBase
-        {
-            [Test]
-            [Category(Component.Other)]
-            [Property("TC#", "ELVS2222")]
-            [Property("Priority", "Priority 1")]
-            [Description("Verify Component Name")]
-            public void CommentReviewForGLX()
-            {
-            LoginAs(UserType.IQFUser);//testing glx comment review
-            NavigateToPage.RMCenter_Design_Documents();
-            Assert.True(VerifyPageTitle("Design Document"));
-            DesignDocCommentReview.CreateDocument();
-            ClickLogoutLink();
-            ClickLoginLink();
-            LoginAs(UserType.DOTUser);
-            NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickEnterBtnForRow();
-            DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
-            ClickLogoutLink();
-            ClickLoginLink();
-            LoginAs(UserType.DOTAdmin);
-            NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickEnterBtnForRow();
-            WaitForPageReady();
-            DesignDocCommentReview.ForwardComment();
-            Thread.Sleep(2000);
-            ClickLogoutLink();
-            ClickLoginLink();
-            LoginAs(UserType.DEVUser);
-            NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickEnterBtnForRow();
-            DesignDocCommentReview.EnterResponseCommentAndDisagreeResponseCode();
-            ClickLogoutLink();
-            ClickLoginLink();
-            LoginAs(UserType.DEVAdmin);
-            NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickEnterBtnForRow();
-            DesignDocCommentReview.ForwardResponseComment();
-            DesignDocCommentReview.ClickBtn_BackToList();
-            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickEnterBtnForRow();
-            WaitForPageReady();
-            DesignDocCommentReview.EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
-            Thread.Sleep(2000);
-            DesignDocCommentReview.ClickBtn_BackToList();
-            WaitForPageReady();
-            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickEnterBtnForRow();
-            WaitForPageReady();
-            DesignDocCommentReview.ForwardComment();
-            Thread.Sleep(5000);
-        }
-        }
 
+    [TestFixture]
+    public class Test_CommentReviewForGLX : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void CommentReviewForGLX()
+        {
+        LoginAs(UserType.IQFUser);//testing glx comment review
+        NavigateToPage.RMCenter_Design_Documents();
+        Assert.True(VerifyPageTitle("Design Document"));
+        DesignDocCommentReview.CreateDocument();
+        ClickLogoutLink();
+        ClickLoginLink();
+        LoginAs(UserType.DOTUser);
+        NavigateToPage.RMCenter_Design_Documents();
+        TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+        TableHelper.ClickEnterBtnForRow();
+        DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
+        ClickLogoutLink();
+        ClickLoginLink();
+        LoginAs(UserType.DOTAdmin);
+        NavigateToPage.RMCenter_Design_Documents();
+        TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+        TableHelper.ClickEnterBtnForRow();
+        WaitForPageReady();
+        DesignDocCommentReview.ForwardComment();
+        Thread.Sleep(2000);
+        ClickLogoutLink();
+        ClickLoginLink();
+        LoginAs(UserType.DEVUser);
+        NavigateToPage.RMCenter_Design_Documents();
+        TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
+        TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+        TableHelper.ClickEnterBtnForRow();
+        DesignDocCommentReview.EnterResponseCommentAndDisagreeResponseCode();
+        ClickLogoutLink();
+        ClickLoginLink();
+        LoginAs(UserType.DEVAdmin);
+        NavigateToPage.RMCenter_Design_Documents();
+        TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
+        TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+        TableHelper.ClickEnterBtnForRow();
+        DesignDocCommentReview.ForwardResponseComment();
+        DesignDocCommentReview.ClickBtn_BackToList();
+        TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
+        TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+        TableHelper.ClickEnterBtnForRow();
+        WaitForPageReady();
+        DesignDocCommentReview.EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
+        Thread.Sleep(2000);
+        DesignDocCommentReview.ClickBtn_BackToList();
+        WaitForPageReady();
+        TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
+        TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+        TableHelper.ClickEnterBtnForRow();
+        WaitForPageReady();
+        DesignDocCommentReview.ForwardComment();
+        Thread.Sleep(5000);
+        }
+    }
 }
