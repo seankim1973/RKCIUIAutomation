@@ -23,6 +23,9 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         public static ExtentTest testInstance;
 
+        [ThreadStatic]
+        public static TestStatus testStatus;
+
         public static TestPlatform testPlatform;
         public static BrowserType browserType;
         public static TestEnv testEnv;
@@ -35,7 +38,7 @@ namespace RKCIUIAutomation.Base
         private static string _reporter;
         public static string siteUrl;
 
-        private TestStatus testStatus;
+
         private Cookie cookie = null;
 
         ConfigUtils Configs = new ConfigUtils();
@@ -172,15 +175,16 @@ namespace RKCIUIAutomation.Base
         [TearDown]
         public void AfterTest()
         {
-            CheckForTestStatusInjection();
+            
             ResultAdapter result = CurrentContext.Result;
             testStatus = result.Outcome.Status;
-            
+            CheckForTestStatusInjection();
+
             switch (testStatus)
             {
                 case TestStatus.Failed:
                     string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? "" : $"<pre>{result.StackTrace}</pre>";
-                    string screenshotPath = CaptureScreenshot(Driver, GetTestName());
+                    string screenshotPath = CaptureScreenshot(GetTestName());
                     testInstance.Fail($"Test Failed:<br> {stacktrace}")
                         .AddScreenCaptureFromPath(screenshotPath);
                     cookie = new Cookie("zaleniumTestPassed", "false");

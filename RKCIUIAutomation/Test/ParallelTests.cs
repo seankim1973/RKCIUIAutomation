@@ -98,4 +98,72 @@ namespace RKCIUIAutomation.Test.ParallelTests
             //Thread.Sleep(15000);
         }
     }
+
+    [TestFixture]
+    [Parallelizable]
+    public class ScreenshotTestClass1 : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Test Fails with valid screenshot")]
+        public void ProjDetails_ScreenshotTest()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Admin_Project_Details();
+            Assert.True(VerifyPageTitle("Failed Test"));
+        }
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class ScreenshotTestClass2 : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Test Fails with valid screenshot")]
+        public void MenuEditor_ScreenshotTest()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Admin_Menu_Editor();
+            Assert.True(VerifyPageTitle("Failed Test"));
+        }
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class ScreenshotTestClass3 : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Test Fails with valid screenshot")]
+        public void Contracts_ScreenshotTest()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Admin_Contracts();
+            Assert.True(VerifyPageTitle("Failed Test"));
+        }
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    public class ScreenshotTestClass4 : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Test Fails with valid screenshot")]
+        public void Companies_ScreenshotTest()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Admin_Companies();
+            Assert.True(VerifyPageTitle("Failed Test"));
+        }
+    }
 }

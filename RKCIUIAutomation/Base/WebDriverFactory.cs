@@ -39,7 +39,7 @@ namespace RKCIUIAutomation.Base
                         case BrowserType.Safari:
                             return _Driver = new SafariDriver();
                         default:
-                            LogDebug("Unrecognized Browser Type... using ChromeDriver");
+                            log.Debug("Unrecognized Browser Type... using ChromeDriver");
                             return _Driver = new ChromeDriver();
                     }
                 }
@@ -92,7 +92,7 @@ namespace RKCIUIAutomation.Base
                     Caps.SetCapability(CapabilityType.Platform, "Mac");
                     break;
                 default:
-                    LogDebug("Unrecognized Platform... using Linux");
+                    log.Debug("Unrecognized Platform... using Linux");
                     Caps.SetCapability(CapabilityType.Platform, "Linux");
                     break;
             }
@@ -115,7 +115,7 @@ namespace RKCIUIAutomation.Base
                     Caps.SetCapability(CapabilityType.BrowserName, "safari");
                     break;
                 default:
-                    LogDebug("Unrecognized browser capabilities... using Chrome");
+                    log.Debug("Unrecognized browser capabilities... using Chrome");
                     Caps.SetCapability(CapabilityType.BrowserName, "chrome");
                     break;
             }
