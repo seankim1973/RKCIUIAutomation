@@ -26,7 +26,9 @@ namespace RKCIUIAutomation.Base
         private static string fileName = string.Empty;
         private static string dateString = string.Empty;
         private static string screenshotSavePath = string.Empty;
-        
+
+        public BaseUtils(IWebDriver driver) => this.Driver = driver; 
+
         public BaseUtils()
         {
             baseTempFolder = $"{GetCodeBasePath()}\\Temp";
@@ -72,11 +74,11 @@ namespace RKCIUIAutomation.Base
             return baseDir;
         }
 
-        public static string CaptureScreenshot(IWebDriver driver, string fileName)
+        public string CaptureScreenshot(string fileName)
         {
             string uniqueFileName = $"{fileName}{DateTime.Now.Second}_{BaseClass.tenantName.ToString()}.png";
             Directory.CreateDirectory(screenshotSavePath);
-            var screenshot = driver.TakeScreenshot();
+            var screenshot = Driver.TakeScreenshot();
             screenshot.SaveAsFile($"{screenshotSavePath}{uniqueFileName}", ScreenshotImageFormat.Png);
 
             string fileRef = "errorscreenshots/";//TODO: <<--Temp until bug fix by ExtentReports.  >>-Use when bug fixed ->> (BaseClass.testPlatform == TestPlatform.Local) ? "errorscreenshots/" : "upload/reports/";
@@ -84,12 +86,13 @@ namespace RKCIUIAutomation.Base
         }
 
         //ExtentReports Loggers
-        public static void LogIgnore(string msg)
+        public void LogIgnore(string msg)
         {
             testInstance.Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
             log.Debug(msg);
         }
-        public static void LogFail(string details, Exception e = null)
+
+        public void LogFail(string details, Exception e = null)
         {
             testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
             log.Error(details);
@@ -100,6 +103,7 @@ namespace RKCIUIAutomation.Base
                 log.Error(e.Message);
             }
         }
+
         public void LogError(string details, bool takeScreenshot = true, Exception e = null)
         {
             if (takeScreenshot)
@@ -118,7 +122,8 @@ namespace RKCIUIAutomation.Base
                 log.Error(e.Message);
             }
         }
-        public static void LogDebug(string details, Exception exception = null)
+
+        public void LogDebug(string details, Exception exception = null)
         {
             if (details.Contains(">>>"))
             {
@@ -132,9 +137,10 @@ namespace RKCIUIAutomation.Base
                 log.Debug(details, exception);
             }
         }
+
         public void LogErrorWithScreenshot()
         {
-            string screenshotPath = CaptureScreenshot(Driver, GetTestName());
+            string screenshotPath = CaptureScreenshot(GetTestName());
             testInstance.Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
         }
 
@@ -215,6 +221,7 @@ namespace RKCIUIAutomation.Base
         {
             return MarkupHelper.CreateLabel(details, extentColor);
         }
+
         private static IMarkup CreateReportMarkupCodeBlock(Exception e)
         {
             return MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");
@@ -262,6 +269,7 @@ namespace RKCIUIAutomation.Base
             var prop = testInstance.Properties.Get(context) ?? "Not Defined";
             return prop.ToString();
         }
+
         private enum TestContextProperty
         {
             TestName,
@@ -331,6 +339,7 @@ namespace RKCIUIAutomation.Base
         }
 
         private static PageBaseHelper pgbHelper = new PageBaseHelper();
+
         public static void InjectTestStatus(TestStatus status, string logMsg)
         {
             string testName = GetTestName();
@@ -347,7 +356,7 @@ namespace RKCIUIAutomation.Base
             switch (injStatus)
             {
                 case "Failed":
-                    Assert.Fail(logMessage);
+                    testStatus = TestStatus.Failed;
                     break;
             }
         }

@@ -2,7 +2,7 @@
 
 namespace RKCIUIAutomation.Base
 {
-    public class BaseHooks
+    public class BaseHooks : WebDriverFactory
     {
     }
 }
