@@ -350,7 +350,38 @@ namespace RKCIUIAutomation.Test
                 }
 
             }
-            
+        }
+
+
+       
+
+        [TestMethod]
+        public void StaticValues()
+        {
+
+            TestClass testclass = new TestClass();
+            testclass.SetValue1();
+
+            Console.WriteLine(TestClass.Value1);
+            Console.WriteLine(testclass.Value2);
+
+        }
+    }
+
+    public class TestClass
+    {
+
+        public static string Value1;
+        public string Value2;
+
+        static TestClass()
+        {
+        }
+
+        public void SetValue1()
+        {
+            Value1 = "Testing123";
+            Value2 = "TestTest";
         }
 
 

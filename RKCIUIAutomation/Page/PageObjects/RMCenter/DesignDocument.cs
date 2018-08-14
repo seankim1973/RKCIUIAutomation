@@ -3,6 +3,7 @@ using RKCIUIAutomation.Config;
 using MiniGuids;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 using RKCIUIAutomation.Test;
+using System;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -104,7 +105,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void EnterResponseCommentAndDisagreeResponseCode();
         void ForwardResponseComment();
         void EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
-        bool VerifyifClosed(string recordTitleOrNumber);
+        bool VerifyifClosed();
         void ClickBtn_BackToList();
         void ClickBtn_UploadNewDesignDoc();
         void SelectRegularCommentReviewType(int commentTabNumber);
@@ -160,14 +161,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return instance;
         }
 
+        [ThreadStatic]
+        private static string designDocTitle;
 
-        private string designDocTitle;
-        private string designDocNumber;
-        private string docTitleKey;
-        private string docNumberKey;
+        [ThreadStatic]
+        private static string designDocNumber;
+
+        [ThreadStatic]
+        private static string docTitleKey;
+
+        [ThreadStatic]
+        private static string docNumberKey;
+
         private MiniGuid guid;
 
-       
         private By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
         private By CancelBtnUploadPage_ByLocator => By.Id("btnCancel");
         private By SaveOnlyBtnUploadPage_ByLocator => By.Id("btnSave");
@@ -180,7 +187,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
 
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(UploadNewDesignDoc_ByLocator);
-        public virtual void ClickBtn_BackToList() => ClickElement(BackToListBtn_ByLocator);
+        public virtual void ClickBtn_BackToList()
+        {
+            IWebElement backToListBtn = null;
+            try
+            {
+                backToListBtn = Driver.FindElement(BackToListBtn_ByLocator);
+                backToListBtn?.Click();
+            }
+            catch (Exception e)
+            {
+                log.Debug(e.Message);
+            }
+        }
 
         public virtual void CreateDocument()
         {
@@ -285,7 +304,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             SelectAgreeResolutionCode(); //
             ClickElement(SaveOnlyBtn_ByLocator);
             //wait for saveforward to load
-            ClickElement(SaveForwardBtn_ByLocator);
+            //WaitForPageReady();
+            //ClickElement(SaveForwardBtn_ByLocator);
         }
         
         public virtual void _LoggedInUserUploadsDesignDocument()
@@ -306,12 +326,44 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual bool VerifyDocumentNumberFieldErrorMsgIsDisplayed() => VerifyRequiredFieldErrorMsg("Submittal Number is required.");
         public virtual bool VerifyUploadFileErrorMsgIsDisplayed() => VerifyRequiredFieldErrorMsg("At least one file must be added.");
 
-        private bool VerifyRecordIsShownInTab(TableTab tableTab, string recordTitleOrNumber)
+        internal bool VerifyRecordIsShownInTab(TableTab tableTab)
+        {
+            string tabName = tableTab.GetString();
+            string tabPrefix = string.Empty;
+
+            if (CurrentUser.Contains("IQF"))
+            {
+                tabPrefix = "IQF";
+            }
+            else if (CurrentUser.Contains("DEV"))
+            {
+                tabPrefix = "DEV";
+            }
+            else if (CurrentUser.Contains("DOT"))
+            {
+                tabPrefix = "DOT";
+            }
+            else
+            {
+                LogDebug("Current user does not have access to Design Documents");
+            }
+
+            tableTab = (TableTab)Enum.Parse(typeof(TableTab), $"{tabPrefix}_{tabName}");
+
+            SelectTab(tableTab);
+            
+            SortColumnDescending(ColumnName.Action);
+            return ElementIsDisplayed(GetTableRowLocator(designDocNumber));
+        }
+
+        internal bool VerifyRecordIsShownInTab_StdUser(TableTab tableTab)
         {
             SelectTab(tableTab);
-            return ElementIsDisplayed(GetTableRowLocator(recordTitleOrNumber));
+            SortColumnDescending(ColumnName.Action);
+            return ElementIsDisplayed(GetTableRowLocator(designDocNumber));
         }
-        public virtual bool VerifyifClosed(string recordTitleOrNumber) => VerifyRecordIsShownInTab(TableTab.Closed, recordTitleOrNumber);
+
+        public virtual bool VerifyifClosed() => VerifyRecordIsShownInTab(TableTab.Closed);
 
         //TODO - use CurrentUser variable to determine tab name (i.e. DOT, DEV, IQF, etc)
         private string CurrentUser => GetCurrentUser();
@@ -360,6 +412,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class DesignDocument_GLX : DesignDocument
     {
         public DesignDocument_GLX(IWebDriver driver) : base(driver) { }
+
+        public override bool VerifyifClosed() => VerifyRecordIsShownInTab_StdUser(TableTab.Closed);
     }
     #endregion specific to GLX
 
@@ -368,6 +422,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class DesignDocument_SH249 : DesignDocument
     {
         public DesignDocument_SH249(IWebDriver driver) : base(driver) { }
+
+        public override bool VerifyifClosed() => VerifyRecordIsShownInTab_StdUser(TableTab.Closed);
 
     }
     #endregion <--specific toSGway
