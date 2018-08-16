@@ -291,6 +291,7 @@ namespace RKCIUIAutomation.Test.Smoke
         [Description("Verify Component Name")]
         public void CommentReviewPartialFunctions()
         {
+            LogInfo("--------------------------1.Login As IQF User----------------------");
             LoginAs(UserType.IQFUser);//testing glx comment review
             NavigateToPage.RMCenter_Design_Documents();
             Assert.True(VerifyPageTitle("Design Document"));
@@ -298,7 +299,7 @@ namespace RKCIUIAutomation.Test.Smoke
             ClickLogoutLink();
             ClickLoginLink();
 
-            LogInfo("!!!!Login As DOT User");
+            LogInfo("--------------------------2.Login As DOT User----------------------");
             LoginAs(UserType.DOTUser);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
@@ -307,7 +308,7 @@ namespace RKCIUIAutomation.Test.Smoke
             ClickLogoutLink();
             ClickLoginLink();
 
-
+            LogInfo("--------------------------3. Login As DOT Admin----------------------");
             LoginAs(UserType.DOTAdmin);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
@@ -316,6 +317,8 @@ namespace RKCIUIAutomation.Test.Smoke
             DesignDocCommentReview.ForwardComment();
             ClickLogoutLink();
             ClickLoginLink();
+
+            LogInfo("--------------------------4.Login As DEV User----------------------");
             LoginAs(UserType.DEVUser);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Response);
@@ -324,6 +327,8 @@ namespace RKCIUIAutomation.Test.Smoke
             DesignDocCommentReview.EnterResponseCommentAndDisagreeResponseCode();
             ClickLogoutLink();
             ClickLoginLink();
+
+            LogInfo("--------------------------5. Login As DEV Admin----------------------");
             LoginAs(UserType.DEVAdmin);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Response);
@@ -331,6 +336,8 @@ namespace RKCIUIAutomation.Test.Smoke
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.ForwardResponseComment();
             DesignDocCommentReview.ClickBtn_BackToList();
+
+            LogInfo("--------------------------6. DEV Admin enters Resolution='Disagree workflow'----------------------");
             TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Resolution);
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
             TableHelper.ClickEnterBtnForRow();
@@ -339,11 +346,15 @@ namespace RKCIUIAutomation.Test.Smoke
             Thread.Sleep(2000);
             DesignDocCommentReview.ClickBtn_BackToList();
             WaitForPageReady();
+
+            LogInfo("--------------------------7. DEV Admin forwards Resolution='Disagree workflow'----------------------");
             TableHelper.ClickTab(DesignDocument.TableTab.DEV_Requires_Resolution);
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ForwardComment();
+
+            LogInfo("--------------------------8. DEV Admin verifies if record in closed tab ----------------------");
             Assert.True(DesignDocCommentReview.VerifyifClosed());
             Thread.Sleep(5000);   
         }
@@ -359,12 +370,16 @@ namespace RKCIUIAutomation.Test.Smoke
         [Description("Verify Component Name")]
         public void CommentReviewForGLX()
         {
+
+        LogInfo("--------------------------1. Log in as IQF User'----------------------");
         LoginAs(UserType.IQFUser);//testing glx comment review
         NavigateToPage.RMCenter_Design_Documents();
         Assert.True(VerifyPageTitle("Design Document"));
         DesignDocCommentReview.CreateDocument();
         ClickLogoutLink();
         ClickLoginLink();
+
+        LogInfo("--------------------------2. Log in as DOT User, enters Comments----------------------");
         LoginAs(UserType.DOTUser);
         NavigateToPage.RMCenter_Design_Documents();
         TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
@@ -372,6 +387,8 @@ namespace RKCIUIAutomation.Test.Smoke
         DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
         ClickLogoutLink();
         ClickLoginLink();
+
+        LogInfo("--------------------------3. Log in as DOT Admin, forwards Comments----------------------");
         LoginAs(UserType.DOTAdmin);
         NavigateToPage.RMCenter_Design_Documents();
         TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
@@ -381,6 +398,8 @@ namespace RKCIUIAutomation.Test.Smoke
         Thread.Sleep(2000);
         ClickLogoutLink();
         ClickLoginLink();
+
+        LogInfo("--------------------------4. Log in as DEV User, enters Response----------------------");
         LoginAs(UserType.DEVUser);
         NavigateToPage.RMCenter_Design_Documents();
         TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
@@ -389,14 +408,18 @@ namespace RKCIUIAutomation.Test.Smoke
         DesignDocCommentReview.EnterResponseCommentAndDisagreeResponseCode();
         ClickLogoutLink();
         ClickLoginLink();
-        LoginAs(UserType.DEVAdmin);
+
+            LogInfo("--------------------------5. Log in as DEV Admin, forwards Comments----------------------");
+            LoginAs(UserType.DEVAdmin);
         NavigateToPage.RMCenter_Design_Documents();
         TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
         TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
         TableHelper.ClickEnterBtnForRow();
         DesignDocCommentReview.ForwardResponseComment();
         DesignDocCommentReview.ClickBtn_BackToList();
-        TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
+
+            LogInfo("--------------------------6. Log in as DEV Admin, enters Resolution ='Disagree' workflow----------------------");
+            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
         TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
         TableHelper.ClickEnterBtnForRow();
         WaitForPageReady();
@@ -404,12 +427,17 @@ namespace RKCIUIAutomation.Test.Smoke
         Thread.Sleep(2000);
         DesignDocCommentReview.ClickBtn_BackToList();
         WaitForPageReady();
-        TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
+
+            LogInfo("--------------------------2. Log in as DEV Admin, forwards Resolution----------------------");
+            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
         TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
         TableHelper.ClickEnterBtnForRow();
         WaitForPageReady();
         DesignDocCommentReview.ForwardComment();
-        Thread.Sleep(5000);
+
+            LogInfo("--------------------------8. DEV Admin verifies if record in closed tab ----------------------");
+            Assert.True(DesignDocCommentReview.VerifyifClosed());
+            Thread.Sleep(5000);
         }
     }
 }
