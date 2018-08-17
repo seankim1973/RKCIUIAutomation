@@ -3,13 +3,18 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
-using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Support.UI;
+using Quellatalo.Nin.TheEyes;
+using Quellatalo.Nin.TheHands;
 using RKCIUIAutomation.Config;
+using SikuliWrapper.Interfaces;
+using SikuliWrapper.Models;
+using SikuliWrapper.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace RKCIUIAutomation.Page
 {
@@ -47,6 +52,7 @@ namespace RKCIUIAutomation.Page
 
         public void JsHover(By elementByLocator)
         {
+            WaitForPageReady();
             ExecuteJsAction(JSAction.Hover, elementByLocator);
             Thread.Sleep(1000);
         }
@@ -260,10 +266,47 @@ namespace RKCIUIAutomation.Page
         {
             if (isRemoteUpload)
             {
-                LogInfo("Uploading files in GRID environment");
-                AutoItX.WinWaitActive("Open Files");
-                AutoItX.Send("{filePath}");
-                AutoItX.Send("{ENTER}");
+                string logMsg = string.Empty;
+                
+                try
+                {
+                    string imgRefPath = $"{GetCodeBasePath()}\\Tools\\Sikuli";
+                    LogInfo("Uploading files in GRID environment");
+                    string linuxOpenFilesDialog = $"{imgRefPath}\\linuxOpenFilesDialog.png";
+                    string linuxOpenFilesDialog_OpenBtn = $"{imgRefPath}\\linuxOpenFilesDialog_OpenBtn.png";
+                    //Screen scr = new Screen();
+                    //scr = Driver as Screen;
+                    //if (scr.Exists(linuxOpenFilesDialog))
+                    //{
+                    //    LogInfo("Located Linux Open Files Dialog");
+                    //    scr.Click(linuxOpenFilesDialog);
+                    //    scr.Type(linuxOpenFilesDialog, filePath);
+                    //    LogInfo($"Entered as upload file path - {filePath}");
+                    //    scr.Click(linuxOpenFilesDialog_OpenBtn);
+                    //    LogInfo("Clicked Open button on Linux Open Files Dialog");
+                    //}
+                    //else
+                    //{
+                    //    logMsg = "Unable to locate Linux Open Files Dialog Box";
+                    //}
+
+                    Driver.SwitchTo().Window("Open Files");
+
+                    //MouseHandler mouse = new MouseHandler(); 
+                    //mouse = Driver as MouseHandler;
+                    //mouse.Click(300, 150);
+
+                    //Thread.Sleep(5000);
+                    KeyboardHandler kb = new KeyboardHandler();
+                    kb = Driver as KeyboardHandler;
+                    kb.StringInput(filePath);
+                    kb.KeyTyping(System.Windows.Forms.Keys.Enter);
+
+                }
+                catch (Exception e)
+                {
+                    LogError(logMsg, true, e);
+                }
             }
             else
             {
