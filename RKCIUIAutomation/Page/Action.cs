@@ -39,7 +39,12 @@ namespace RKCIUIAutomation.Page
                 throw;
             }
         }
-        public void JsClickElement(By elementByLocator) => ExecuteJsAction(JSAction.Click, elementByLocator);
+        public void JsClickElement(By elementByLocator)
+        {
+            WaitForPageReady();
+            ExecuteJsAction(JSAction.Click, elementByLocator);
+        }
+
         public void JsHover(By elementByLocator)
         {
             ExecuteJsAction(JSAction.Hover, elementByLocator);
@@ -80,7 +85,7 @@ namespace RKCIUIAutomation.Page
                     ExecuteScript("return $('.k-loading-image').is(':visible') == false");
                 bool isAjaxFinished = (bool)((IJavaScriptExecutor)driver).
                     ExecuteScript("return jQuery.active == 0");
-                return isAjaxFinished & isLoaderHidden;
+                return isAjaxFinished && isLoaderHidden;
             });
 
             Thread.Sleep(1000);
@@ -129,28 +134,25 @@ namespace RKCIUIAutomation.Page
         public void ClickElement(By elementByLocator)
         {
             IWebElement elem = null;
-            string logMsg = string.Empty;
-
+            
             try
             {
                 elem = GetElement(elementByLocator);
-
+                elem?.Click();
                 if (elem != null)
                 {
-                    elem.Click();
-                    logMsg = $"Clicked element: - {elementByLocator}";
-                    LogInfo(logMsg);
+                    LogInfo($"Clicked element: - {elementByLocator}");
                 }
                 else
                 {
-                    logMsg = $"Null element: - {elementByLocator}";
-                    Assert.IsNotNull(elem, logMsg);
+                    LogError($"Null element: - {elementByLocator}");
                 }
             }
             catch (Exception e)
             {
-                LogError(logMsg, true, e);
+                LogError(e.Message);
             }
+
         }
         public void ClickElement(IWebElement webElement)
         {
@@ -174,6 +176,8 @@ namespace RKCIUIAutomation.Page
 
         public void EnterComment(By elementByLocator)
         {
+            ScrollToElement(elementByLocator);
+
             try
             {
                 string text = "Comment 123";
@@ -246,20 +250,33 @@ namespace RKCIUIAutomation.Page
 
         public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName)
         {
+            WaitForPageReady();
             var _ddListID = (ddListID.GetType() == typeof(string)) ? (string)Convert.ChangeType(ddListID, typeof(string)) : ConvertToEnumType(ddListID).GetString();
             ExpandDDL(_ddListID);
             ClickElement(new PageHelper().GetDDListItemsByLocator(_ddListID, itemIndexOrName));
         }
 
-        private void UploadUsingAutoItX(string filePath)
+        private void UploadUsingAutoItX(string filePath, bool isRemoteUpload = false)
         {
-            AutoItX.WinWaitActive("Open");
-            LogInfo("...Waiting for File Open Dialog Window");
-            AutoItX.ControlSend("Open", "", "Edit1", filePath);
-            LogInfo($"Entered filepath {filePath}");
-            AutoItX.ControlClick("Open", "&Open", "Button1");
-            LogInfo("Clicked Open button on the File Open Dialog Window");
+            if (isRemoteUpload)
+            {
+                LogInfo("Uploading files in GRID environment");
+                AutoItX.WinWaitActive("Open Files");
+                AutoItX.Send("{filePath}");
+                AutoItX.Send("{ENTER}");
+            }
+            else
+            {
+                LogInfo("Uploading files in local environment");
+                AutoItX.WinWaitActive("Open");
+                LogInfo("...Waiting for File Open Dialog Window");
+                AutoItX.ControlSend("Open", "", "Edit1", filePath);
+                LogInfo($"Entered filepath {filePath}");
+                AutoItX.ControlClick("Open", "&Open", "Button1");
+                LogInfo("Clicked Open button on the File Open Dialog Window");
+            }
         }
+
         public void UploadFile(string fileName)
         {
             ClickElement(By.XPath("//div[@aria-label='Select files...']"));
@@ -268,17 +285,15 @@ namespace RKCIUIAutomation.Page
             string filePath = null;
             if (testPlatform == TestPlatform.Local)
             {
-                filePath = GetUploadFilePath(fileName);
-                LogInfo("Uploading files in local environment");
+                filePath = GetUploadFilePath(fileName);             
                 UploadUsingAutoItX(filePath);
             }
             else
             {
                 filePath = GetUploadFilePath(fileName, true); //TODO - check if path format needs to change in docker environment
-                LogInfo("Uploading files in remote environment");
-                IAllowsFileDetection allowsFileDetection = Driver as IAllowsFileDetection;
-                allowsFileDetection.FileDetector = new LocalFileDetector();
-                UploadUsingAutoItX(filePath);
+                //IAllowsFileDetection allowsFileDetection = Driver as IAllowsFileDetection;
+                //allowsFileDetection.FileDetector = new LocalFileDetector();
+                UploadUsingAutoItX(filePath, true);
             }
         }
         private string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
@@ -290,7 +305,7 @@ namespace RKCIUIAutomation.Page
             }
             else
             {
-                uploadPath = ""; //TODO - check if path format needs to change in docker environment
+                uploadPath = $"/home/seluser/UploadFiles/{fileName}"; //TODO - check if path format needs to change in docker environment
             }
 
             return uploadPath;
@@ -553,15 +568,35 @@ namespace RKCIUIAutomation.Page
 
         public void ScrollToElement(By elementByLocator)
         {
-            IWebElement elem = Driver.FindElement(elementByLocator);
-            Actions actions = new Actions(Driver);
-            actions.MoveToElement(elem);
-            actions.Perform();
+            try
+            {
+                IWebElement elem = GetElement(elementByLocator);
+
+                if (elem != null)
+                {
+                    Actions actions = new Actions(Driver);
+                    actions.MoveToElement(elem);
+                    actions.Perform();
+                    LogInfo($"Scrolled to element - {elementByLocator}");
+                }
+            }
+            catch (Exception e)
+            {
+                LogError("Exception occured in ScrollToElement method", true, e);
+            }
         }
 
 
-        public void ClickLoginLink() => Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
-        public void ClickLogoutLink() => Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
+        public void ClickLoginLink()
+        {
+            WaitForPageReady();
+            Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+        }
+        public void ClickLogoutLink()
+        {
+            WaitForPageReady();
+            Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
+        }
 
 
         public string GetCurrentUser()

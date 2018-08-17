@@ -3,6 +3,7 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Remote;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,9 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         public static TestStatus testStatus;
 
+        [ThreadStatic]
+        public static string nodeHost;
+
         public static TestPlatform testPlatform;
         public static BrowserType browserType;
         public static TestEnv testEnv;
@@ -46,11 +50,11 @@ namespace RKCIUIAutomation.Base
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
+            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
             _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
+            _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Test}");
             _tenantName = Parameters.Get("Tenant", $"{TenantName.Garnet}");
-            _reporter = Parameters.Get("Reporter", $"{Reporter.Html}");
+            _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);
             browserType = Configs.GetBrowserType(_browserType);
@@ -110,7 +114,6 @@ namespace RKCIUIAutomation.Base
                 if (tenantComponents.Contains(testComponent2) || testComponent2 == "Not Defined")
                 {
                     Driver = GetWebDriver(testPlatform, browserType, testName);
-
                     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");

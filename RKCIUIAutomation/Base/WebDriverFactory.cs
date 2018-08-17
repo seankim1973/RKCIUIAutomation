@@ -46,7 +46,10 @@ namespace RKCIUIAutomation.Base
                 else
                 {
                     DesiredCapabilities caps = DetermineCapabilities(platform, browser, testName);
-                    return _Driver = new RemoteWebDriver(new Uri($"http://{GridVmIP}:4444/wd/hub"), caps);
+                    _Driver = new RemoteWebDriver(new Uri($"http://{GridVmIP}:4444/wd/hub"), caps);
+                    string sessionId = ((RemoteWebDriver)_Driver).SessionId.ToString();
+                    Console.WriteLine($"DRIVER SESSION ID#: {sessionId}");
+                    return _Driver;
                 }
             }
             else

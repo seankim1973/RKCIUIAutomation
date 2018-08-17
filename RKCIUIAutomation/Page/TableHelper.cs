@@ -20,6 +20,7 @@ namespace RKCIUIAutomation.Page
 
         public void ClickCommentTabNumber(int commentNumber) => Kendo.ClickCommentTab(commentNumber);
         public void ClickTab(Enum tblTabEnum) => Kendo.ClickTableTab(tblTabEnum.GetString());
+        public void ClickTab(string tblTabName) => Kendo.ClickTableTab(tblTabName);
         public void RefreshTable() => Kendo.Reload();
         public int GetTableRowCount() => Kendo.TotalNumberRows();
 

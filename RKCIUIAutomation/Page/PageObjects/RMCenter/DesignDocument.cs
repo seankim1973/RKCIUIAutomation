@@ -4,6 +4,7 @@ using MiniGuids;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 using RKCIUIAutomation.Test;
 using System;
+using System.Threading;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -29,23 +30,23 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public enum TableTab
         {
             [StringValue("Creating")] Creating,
-            [StringValue("IQF Creating")] IQF_Creating,   
+            //[StringValue("IQF Creating")] IQF_Creating,   
             
-            [StringValue("DEV Pending Comment")] DEV_Pending_Comment,
-            [StringValue("DOT Requires Comment")] DOT_Requires_Comment,
-            [StringValue("IQF Pending Comment")] IQF_Pending_Comment,
+            //[StringValue("DEV Pending Comment")] DEV_Pending_Comment,
+            //[StringValue("DOT Requires Comment")] DOT_Requires_Comment,
+            //[StringValue("IQF Pending Comment")] IQF_Pending_Comment,
             [StringValue("Pending Comment")] Pending_Comment,
             [StringValue("Requires Comment")] Requires_Comment,
 
-            [StringValue("DEV Requires Response")] DEV_Requires_Response, //Garnet
-            [StringValue("DOT Pending Response")] DOT_Pending_Response,
-            [StringValue("IQF Pending Response")] IQF_Pending_Response,
+            //[StringValue("DEV Requires Response")] DEV_Requires_Response, //Garnet
+            //[StringValue("DOT Pending Response")] DOT_Pending_Response,
+            //[StringValue("IQF Pending Response")] IQF_Pending_Response,
             [StringValue("Pending Response")] Pending_Response,
             [StringValue("Requires Response")] Requires_Response,
                         
-            [StringValue("DEV Requires Resolution")] DEV_Requires_Resolution, //Garnet
-            [StringValue("DOT Pending Resolution")] DOT_Pending_Resolution,
-            [StringValue("IQF Pending Resolution")] IQF_Pending_Resolution,
+            //[StringValue("DEV Requires Resolution")] DEV_Requires_Resolution, //Garnet
+            //[StringValue("DOT Pending Resolution")] DOT_Pending_Resolution,
+            //[StringValue("IQF Pending Resolution")] IQF_Pending_Resolution,
             [StringValue("Pending Resolution")] Pending_Resolution,
             [StringValue("Requires Resolution")] Requires_Resolution,
 
@@ -53,9 +54,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Requires Closing")] Requires_Closing,
 
             [StringValue("Closed")] Closed,
-            [StringValue("DOT Closed")] DOT_Closed,
-            [StringValue("DEV Closed")] DEV_Closed,
-            [StringValue("IQF Closed")] IQF_Closed
+            //[StringValue("DOT Closed")] DOT_Closed,
+            //[StringValue("DEV Closed")] DEV_Closed,
+            //[StringValue("IQF Closed")] IQF_Closed
         }
 
         public enum ColumnName
@@ -72,31 +73,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     #region Workflow Interface class
     public interface IDesignDocument
     {
-        void SelectTab_Creating();
-        void SelectTab_IQF_Creating();
-        void SelectTab_DEV_Pending_Comment();
-        void SelectTab_DOT_Requires_Comment();
-        void SelectTab_IQF_Pending_Comment();
-        void SelectTab_Pending_Comment();        
-        void SelectTab_Requires_Comment();       
-        void SelectTab_DEV_Requires_Response();
-        void SelectTab_DOT_Pending_Response();
-        void SelectTab_IQF_Pending_Response();
-        void SelectTab_Pending_Response();
-        void SelectTab_Requires_Response();
-        void SelectTab_DEV_Requires_Resolution();
-        void SelectTab_DOT_Pending_Resolution();
-        void SelectTab_IQF_Pending_Resolution();
-        void SelectTab_Requires_Resolution();       
-        void SelectTab_Pending_Resolution();
-        void SelectTab_Pending_Closing();
-        void SelectTab_Requires_Closing();
-        void SelectTab_Closed();
-        void SelectTab_DOT_Closed();
-        void SelectTab_DEV_Closed();
-        void SelectTab_IQF_Closed();
-
-
+        void SelectTab(TableTab tableTab);
+        void SortTable_Descending();
+        void SortTable_Ascending();
+        void ClickTab_Creating();
+        void ClickTab_Pending_Comment();
+        void ClickTab_Requires_Comment();
+        void ClickTab_Pending_Response();
+        void ClickTab_Requires_Response();
+        void ClickTab_Pending_Resolution();
+        void ClickTab_Requires_Resolution();
+        void ClickTab_Pending_Closing();
+        void ClickTab_Requires_Closing();
+        void ClickTab_Closed();
         void CreateDocument();
         void EnterDesignDocTitleAndNumber();
         void EnterRegularCommentAndDrawingPageNo();
@@ -104,9 +93,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void EnterResponseCommentAndAgreeResponseCode();
         void EnterResponseCommentAndDisagreeResponseCode();
         void ForwardResponseComment();
-        void EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
-        bool VerifyifClosed();
+        void Workflow_EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
+        void Workflow_ForwardResolutionCommentAndCodeForDisagreeResponse();
+        bool VerifyItemStatusIsClosed();
         void ClickBtn_BackToList();
+        void ClickBtn_SaveOnly();
+        void ClickBtn_SaveForward();
         void ClickBtn_UploadNewDesignDoc();
         void SelectRegularCommentReviewType(int commentTabNumber);
         bool VerifyTitleFieldErrorMsgIsDisplayed();
@@ -179,8 +171,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         private By CancelBtnUploadPage_ByLocator => By.Id("btnCancel");
         private By SaveOnlyBtnUploadPage_ByLocator => By.Id("btnSave");
         private By SaveForwardBtnUploadPage_ByLocator => By.Id("btnSaveForward");
-        private By SaveOnlyBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(text(),'Save Only')]");
-        private By SaveForwardBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(text(),'Save & Forward')]");
+        private By SaveOnlyBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSave_')]");
+        private By SaveForwardBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSaveForward_')]");
         private By BackToListBtn_ByLocator => By.XPath("//button[text()='Back To List']");
         //private By SaveOnlyBtnComment1_ByLocator => By.Id("btnSave_0_");
         //private By SaveForwardBtnComment1_ByLocator => By.Id("btnSaveForward_0_");
@@ -189,17 +181,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(UploadNewDesignDoc_ByLocator);
         public virtual void ClickBtn_BackToList()
         {
-            IWebElement backToListBtn = null;
-            try
+            IWebElement elem = GetElement(BackToListBtn_ByLocator);
+
+            if (elem != null)
             {
-                backToListBtn = Driver.FindElement(BackToListBtn_ByLocator);
-                backToListBtn?.Click();
-            }
-            catch (Exception e)
-            {
-                log.Debug(e.Message);
+                elem.Click();
+                LogInfo($"Clicked element - {BackToListBtn_ByLocator}");
             }
         }
+        public virtual void ClickBtn_SaveOnly() => ClickElement(SaveOnlyBtn_ByLocator);
+        public virtual void ClickBtn_SaveForward() => ClickElement(SaveForwardBtn_ByLocator);
 
         public virtual void CreateDocument()
         {
@@ -244,19 +235,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.DocumentNumber), designDocNumber);            
         }
         
-        By commentInput = By.Id("Comment_Text_0_");
-        By commentResponseInput = By.Id("Comment_Response_0_");
-        By commentResolutionInput = By.Id("Comment_ResolutionMeetingDecision_0_");
-        By commentClosingInput = By.Id("Comment_ClosingComment_0_");
+        internal By commentInput = By.Id("Comment_Text_0_");
+        internal By commentResponseInput = By.Id("Comment_Response_0_");
+        internal By commentResolutionInput = By.Id("Comment_ResolutionMeetingDecision_0_");
+        internal By commentClosingInput = By.Id("Comment_ClosingComment_0_");
 
         public virtual void EnterRegularCommentAndDrawingPageNo()
         {
             //login as commenting user (SG- IQFuser, DoTuser | SH249-- IQFUser | Garenet and GLX-- DOTUser)
             SelectRegularCommentReviewType();
-            SelectRegularCommentReviewType();
+            //SelectRegularCommentReviewType();
             EnterComment(commentInput);
             EnterText(By.Id("Comment_DrawingPageNumber_0_"), "Draw123");
-            ClickElement(SaveOnlyBtn_ByLocator);
+            ClickBtn_SaveOnly();
 
         }
 
@@ -265,7 +256,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             //login as user to forward the comment ( SG-- IQFadmin and DOTAdmin both | SH249 -- IQFAdmin/IQFRecordsMgr | Garnet and GLX-- DOTadmin)
             //find the record you want to edit 
             //wait for loading the comments and make any changes if required
-            ClickElement(SaveForwardBtn_ByLocator);
+            ClickBtn_SaveForward();
 
         }
 
@@ -275,7 +266,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             // Login as user to make response comment (All tenants - DevUser)
             EnterComment(commentResponseInput);
             SelectAgreeResponseCode(); //Disagree then different workflow
-            ClickElement(SaveOnlyBtn_ByLocator);
+            ClickBtn_SaveOnly();
         }
 
         public virtual void EnterResponseCommentAndDisagreeResponseCode()
@@ -284,7 +275,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             // Login as user to make response comment (All tenants - DevUser)
             EnterComment(commentResponseInput);
             SelectDisagreeResponseCode(); //agree then different workflow
-            ClickElement(SaveOnlyBtn_ByLocator);
+            ClickBtn_SaveOnly();
         }
 
         public virtual void ForwardResponseComment()
@@ -293,21 +284,42 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             //find the record you want to edit 
             //wait for loading the comments and make any changes if required
             JsClickElement(SaveForwardBtn_ByLocator);
-
+            WaitForPageReady();
         }
 
-        public virtual void EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
+        public virtual void Workflow_EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
         {
+            LogInfo($"<<-- WORKFLOW ({tenantName}): EnterResolutionCommentAndResolutionCodeforDisagreeResponse -->>");
+            ClickTab_Requires_Resolution();
+            SortTable_Descending();
+            ClickEnterBtnForRow();
+            WaitForPageReady();
+
 
             // Login as user to make resolution comment (All tenants - DevAdmin)
             EnterComment(commentResolutionInput);
-            SelectAgreeResolutionCode(); //
-            ClickElement(SaveOnlyBtn_ByLocator);
+            SelectDisagreeResolutionCode(); //
+            ClickBtn_SaveOnly();
             //wait for saveforward to load
             //WaitForPageReady();
             //ClickElement(SaveForwardBtn_ByLocator);
+
+
+            Thread.Sleep(2000);
+            ClickBtn_BackToList();
+            WaitForPageReady();
         }
-        
+
+        public virtual void Workflow_ForwardResolutionCommentAndCodeForDisagreeResponse()
+        {
+            ClickTab_Requires_Resolution();
+            SortTable_Descending();
+            ClickEnterBtnForRow();
+            WaitForPageReady();
+            ClickBtn_SaveForward();
+        }
+
+
         public virtual void _LoggedInUserUploadsDesignDocument()
         {
 
@@ -328,70 +340,57 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal bool VerifyRecordIsShownInTab(TableTab tableTab)
         {
-            string tabName = tableTab.GetString();
-            string tabPrefix = string.Empty;
+            SelectTab(tableTab);
+            SortColumnDescending(ColumnName.Action);
+            return ElementIsDisplayed(GetTableRowLocator(designDocNumber));
+        }
+
+        //internal bool VerifyRecordIsShownInTab_StdUser(TableTab tableTab)
+        //{
+        //    SelectTab(tableTab);
+        //    SortColumnDescending(ColumnName.Action);
+        //    return ElementIsDisplayed(GetTableRowLocator(designDocNumber));
+        //}
+
+        public virtual bool VerifyItemStatusIsClosed() => VerifyRecordIsShownInTab(TableTab.Closed);
+
+        private string CurrentUser => GetCurrentUser();
+
+        public virtual void SelectTab(TableTab tableTab)
+        {
+            string tabName = string.Empty;
+            string tabPrefix = "";
 
             if (CurrentUser.Contains("IQF"))
             {
-                tabPrefix = "IQF";
+                tabPrefix = "IQF ";
             }
             else if (CurrentUser.Contains("DEV"))
             {
-                tabPrefix = "DEV";
+                tabPrefix = "DEV ";
             }
             else if (CurrentUser.Contains("DOT"))
             {
-                tabPrefix = "DOT";
-            }
-            else
-            {
-                LogDebug("Current user does not have access to Design Documents");
+                tabPrefix = "DOT ";
             }
 
-            tableTab = (TableTab)Enum.Parse(typeof(TableTab), $"{tabPrefix}_{tabName}");
-
-            SelectTab(tableTab);
-            
-            SortColumnDescending(ColumnName.Action);
-            return ElementIsDisplayed(GetTableRowLocator(designDocNumber));
+            tabName = $"{tabPrefix}{tableTab.GetString()}";
+            ClickTab(tabName);
         }
 
-        internal bool VerifyRecordIsShownInTab_StdUser(TableTab tableTab)
-        {
-            SelectTab(tableTab);
-            SortColumnDescending(ColumnName.Action);
-            return ElementIsDisplayed(GetTableRowLocator(designDocNumber));
-        }
+        public virtual void ClickTab_Creating() => SelectTab(TableTab.Creating);
+        public virtual void ClickTab_Pending_Comment() => SelectTab(TableTab.Pending_Comment);
+        public virtual void ClickTab_Requires_Comment() => SelectTab(TableTab.Requires_Comment);
+        public virtual void ClickTab_Pending_Response() => SelectTab(TableTab.Pending_Response);
+        public virtual void ClickTab_Requires_Response() => SelectTab(TableTab.Requires_Response);
+        public virtual void ClickTab_Pending_Resolution() => SelectTab(TableTab.Pending_Resolution);
+        public virtual void ClickTab_Requires_Resolution() => SelectTab(TableTab.Requires_Resolution);
+        public virtual void ClickTab_Pending_Closing() => SelectTab(TableTab.Pending_Closing);
+        public virtual void ClickTab_Requires_Closing() => SelectTab(TableTab.Requires_Closing);
+        public virtual void ClickTab_Closed() => SelectTab(TableTab.Closed);
 
-        public virtual bool VerifyifClosed() => VerifyRecordIsShownInTab(TableTab.Closed);
-
-        //TODO - use CurrentUser variable to determine tab name (i.e. DOT, DEV, IQF, etc)
-        private string CurrentUser => GetCurrentUser();
-
-        private void SelectTab(TableTab tableTab) => ClickTab(tableTab);
-        public void SelectTab_Creating() => SelectTab(TableTab.Creating);
-        public void SelectTab_IQF_Creating() => SelectTab(TableTab.IQF_Creating);
-        public void SelectTab_DEV_Pending_Comment() => SelectTab(TableTab.DEV_Pending_Comment);
-        public void SelectTab_DOT_Requires_Comment() => SelectTab(TableTab.DOT_Requires_Comment);
-        public void SelectTab_IQF_Pending_Comment() => SelectTab(TableTab.IQF_Pending_Comment);
-        public void SelectTab_Pending_Comment() => SelectTab(TableTab.Pending_Comment);
-        public void SelectTab_Requires_Comment() => SelectTab(TableTab.Requires_Comment);
-        public void SelectTab_DEV_Requires_Response() => SelectTab(TableTab.DEV_Requires_Response);
-        public void SelectTab_DOT_Pending_Response() => SelectTab(TableTab.DOT_Pending_Response);
-        public void SelectTab_IQF_Pending_Response() => SelectTab(TableTab.IQF_Pending_Response);
-        public void SelectTab_Pending_Response() => SelectTab(TableTab.Pending_Response);
-        public void SelectTab_Requires_Response() => SelectTab(TableTab.Requires_Response);
-        public void SelectTab_DEV_Requires_Resolution() => SelectTab(TableTab.DEV_Requires_Resolution);
-        public void SelectTab_DOT_Pending_Resolution() => SelectTab(TableTab.DOT_Pending_Resolution);
-        public void SelectTab_IQF_Pending_Resolution() => SelectTab(TableTab.IQF_Pending_Resolution);
-        public void SelectTab_Requires_Resolution() => SelectTab(TableTab.Requires_Resolution);
-        public void SelectTab_Pending_Resolution() => SelectTab(TableTab.Pending_Resolution);
-        public void SelectTab_Pending_Closing() => SelectTab(TableTab.Pending_Closing);
-        public void SelectTab_Requires_Closing() => SelectTab(TableTab.Requires_Closing);
-        public void SelectTab_Closed() => SelectTab(TableTab.Closed);
-        public void SelectTab_DOT_Closed() => SelectTab(TableTab.DOT_Closed);
-        public void SelectTab_DEV_Closed() => SelectTab(TableTab.DEV_Closed);
-        public void SelectTab_IQF_Closed() => SelectTab(TableTab.IQF_Closed);
+        public void SortTable_Descending() => SortColumnDescending(ColumnName.Action);
+        public void SortTable_Ascending() => SortColumnAscending(ColumnName.Action);
     }
     #endregion <--end of common implementation class
 
@@ -413,7 +412,36 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public DesignDocument_GLX(IWebDriver driver) : base(driver) { }
 
-        public override bool VerifyifClosed() => VerifyRecordIsShownInTab_StdUser(TableTab.Closed);
+        public override void SelectTab(TableTab tableTab) => ClickTab(tableTab);
+
+        public override void Workflow_EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
+        {
+            LogInfo($"<<-- WORKFLOW ({tenantName}): EnterResolutionCommentAndResolutionCodeforDisagreeResponse -->>");
+
+            ClickTab_Pending_Resolution();
+            SortTable_Descending();
+            ClickEnterBtnForRow();
+            WaitForPageReady();
+
+
+            EnterComment(commentResolutionInput);
+            SelectDisagreeResolutionCode(); //
+            ClickBtn_SaveOnly();
+
+
+            Thread.Sleep(2000);
+            ClickBtn_BackToList();
+            WaitForPageReady();
+        }
+        
+        public override void Workflow_ForwardResolutionCommentAndCodeForDisagreeResponse()
+        {
+            ClickTab_Pending_Resolution();
+            SortTable_Descending();
+            ClickEnterBtnForRow();
+            WaitForPageReady();
+            ClickBtn_SaveForward();
+        }
     }
     #endregion specific to GLX
 
@@ -423,7 +451,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public DesignDocument_SH249(IWebDriver driver) : base(driver) { }
 
-        public override bool VerifyifClosed() => VerifyRecordIsShownInTab_StdUser(TableTab.Closed);
+        //public override bool VerifyifClosed() => VerifyRecordIsShownInTab_StdUser(TableTab.Closed);
 
     }
     #endregion <--specific toSGway

@@ -26,15 +26,27 @@ namespace RKCIUIAutomation.Page
 
         public void ClickTableTab(string tblTabName)
         {
-            string jsToBeExecuted = GetTabStripReference();
+            try
+            {
+                string jsToBeExecuted = GetTabStripReference();
 
-            By locator = By.XPath("//ul[@class='k-reset k-tabstrip-items']/li");
-            var tabIndex = GetElementIndex(locator, tblTabName);
-            string tabSelect = $"tab.select('{tabIndex.ToString()}');";
-            jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
-            ExecuteJsScript(jsToBeExecuted);
-            LogInfo($"Clicked Table Tab - {tblTabName}");
-            WaitForPageReady();
+                By locator = By.XPath("//ul[@class='k-reset k-tabstrip-items']/li");
+                int tabIndex = GetElementIndex(locator, tblTabName);
+                if (tabIndex >= 0)
+                {
+                    string tabSelect = $"tab.select('{tabIndex.ToString()}');";
+                    jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
+                    ExecuteJsScript(jsToBeExecuted);
+                    LogInfo($"Clicked Table Tab - {tblTabName}");
+                    WaitForPageReady();
+                }
+            }
+            catch (Exception e)
+            {
+                LogError($"Exception occured in ClickTableTab method", true, e);
+                throw;
+            }
+            
         }
 
         private void ExecuteJsScript(string jsToBeExecuted)
@@ -54,7 +66,7 @@ namespace RKCIUIAutomation.Page
             IList<IWebElement> elements = new List<IWebElement>();
             elements = Driver.FindElements(findElementsLocator);
 
-            int index = 0;
+            int index = -1;
             for (int i = 0; i < elements.Count; i++)
             {
                 string queueValue = elements[i].GetAttribute("queue");
