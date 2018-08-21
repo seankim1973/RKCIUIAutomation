@@ -7,6 +7,8 @@ using RKCIUIAutomation.Page;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using RKCIUIAutomation.Base;
+using System.Diagnostics;
+using System;
 
 namespace RKCIUIAutomation.Test.Smoke
 {
@@ -224,6 +226,34 @@ namespace RKCIUIAutomation.Test.Smoke
             NavigateToPage.QALab_Early_Break_Calendar();
         }
 
+    }
+
+    [TestFixture]
+    public class Execute_JavaProgram : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property("TC#", "ELVS2222")]
+        [Property("Priority", "Priority 1")]
+        [Description("Verify Component Name")]
+        public void ExecuteJava(string grideNode)
+        {
+            var processInfo = new ProcessStartInfo("docker.exe", $"exec -ti {grideNode} sh -c \"java -jar /home/seluser/UploadFiles/sikulirestapi-1.0.jar\"")
+            {
+                CreateNoWindow = false,
+                UseShellExecute = false
+            };
+            Process proc;
+
+            if ((proc = Process.Start(processInfo)) == null)
+            {
+                throw new InvalidOperationException("??");
+            }
+
+            proc.WaitForExit();
+            int exitCode = proc.ExitCode;
+            proc.Close();
+        }
     }
 
     [TestFixture]

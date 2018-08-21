@@ -14,6 +14,7 @@ using MiniGuids;
 using System.Text.RegularExpressions;
 using System.Net.NetworkInformation;
 using System.Net;
+using System.Diagnostics;
 
 namespace RKCIUIAutomation.Test
 {
@@ -408,6 +409,8 @@ namespace RKCIUIAutomation.Test
             bool isPingable = (reply.Status == IPStatus.Success) ? true : false;
             Console.WriteLine(isPingable);
         }
+
+
 
     }
 }

@@ -4,17 +4,12 @@ using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
-using Quellatalo.Nin.TheEyes;
-using Quellatalo.Nin.TheHands;
 using RKCIUIAutomation.Config;
-using SikuliWrapper.Interfaces;
-using SikuliWrapper.Models;
-using SikuliWrapper.Utilities;
+using Sikuli4Net.sikuli_REST;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace RKCIUIAutomation.Page
 {
@@ -272,36 +267,24 @@ namespace RKCIUIAutomation.Page
                 {
                     string imgRefPath = $"{GetCodeBasePath()}\\Tools\\Sikuli";
                     LogInfo("Uploading files in GRID environment");
-                    string linuxOpenFilesDialog = $"{imgRefPath}\\linuxOpenFilesDialog.png";
-                    string linuxOpenFilesDialog_OpenBtn = $"{imgRefPath}\\linuxOpenFilesDialog_OpenBtn.png";
-                    //Screen scr = new Screen();
-                    //scr = Driver as Screen;
-                    //if (scr.Exists(linuxOpenFilesDialog))
-                    //{
-                    //    LogInfo("Located Linux Open Files Dialog");
-                    //    scr.Click(linuxOpenFilesDialog);
-                    //    scr.Type(linuxOpenFilesDialog, filePath);
-                    //    LogInfo($"Entered as upload file path - {filePath}");
-                    //    scr.Click(linuxOpenFilesDialog_OpenBtn);
-                    //    LogInfo("Clicked Open button on Linux Open Files Dialog");
-                    //}
-                    //else
-                    //{
-                    //    logMsg = "Unable to locate Linux Open Files Dialog Box";
-                    //}
+                    Pattern linuxOpenFilesDialog = new Pattern($"{imgRefPath}\\linuxOpenFilesDialog.png");
+                    Pattern linuxOpenFilesDialog_OpenBtn = new Pattern($"{imgRefPath}\\linuxOpenFilesDialog_OpenBtn.png");
 
-                    Driver.SwitchTo().Window("Open Files");
-
-                    //MouseHandler mouse = new MouseHandler(); 
-                    //mouse = Driver as MouseHandler;
-                    //mouse.Click(300, 150);
-
-                    //Thread.Sleep(5000);
-                    KeyboardHandler kb = new KeyboardHandler();
-                    kb = Driver as KeyboardHandler;
-                    kb.StringInput(filePath);
-                    kb.KeyTyping(System.Windows.Forms.Keys.Enter);
-
+                    Screen scr = new Screen();
+                    scr = Driver as Screen;
+                    if (scr.Exists(linuxOpenFilesDialog))
+                    {
+                        LogInfo("Located Linux Open Files Dialog");
+                        scr.Click(linuxOpenFilesDialog);
+                        scr.Type(linuxOpenFilesDialog, filePath);
+                        LogInfo($"Entered as upload file path - {filePath}");
+                        scr.Click(linuxOpenFilesDialog_OpenBtn);
+                        LogInfo("Clicked Open button on Linux Open Files Dialog");
+                    }
+                    else
+                    {
+                        logMsg = "Unable to locate Linux Open Files Dialog Box";
+                    }
                 }
                 catch (Exception e)
                 {
