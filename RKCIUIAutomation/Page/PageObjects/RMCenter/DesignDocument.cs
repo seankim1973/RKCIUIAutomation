@@ -197,7 +197,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickElement(UploadNewDesignDoc_ByLocator);
             EnterDesignDocTitleAndNumber();
             UploadFile("test.xlsx");
-            Thread.Sleep(15000);
             ClickElement(SaveForwardBtnUploadPage_ByLocator);
             WaitForPageReady();
         }

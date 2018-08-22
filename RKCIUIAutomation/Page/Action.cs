@@ -257,84 +257,22 @@ namespace RKCIUIAutomation.Page
             ClickElement(new PageHelper().GetDDListItemsByLocator(_ddListID, itemIndexOrName));
         }
 
-        private void UploadUsingAutoItX(string filePath, bool isRemoteUpload = false)
-        {
-            if (isRemoteUpload)
-            {
-                string logMsg = string.Empty;
-                
-                try
-                {
-                    string imgRefPath = $"{GetCodeBasePath()}\\Tools\\Sikuli";
-                    LogInfo("Uploading files in GRID environment");
-                    Pattern linuxOpenFilesDialog = new Pattern($"{imgRefPath}\\linuxOpenFilesDialog.png");
-                    Pattern linuxOpenFilesDialog_OpenBtn = new Pattern($"{imgRefPath}\\linuxOpenFilesDialog_OpenBtn.png");
-
-                    Screen scr = new Screen();
-                    scr = Driver as Screen;
-                    if (scr.Exists(linuxOpenFilesDialog))
-                    {
-                        LogInfo("Located Linux Open Files Dialog");
-                        scr.Click(linuxOpenFilesDialog);
-                        scr.Type(linuxOpenFilesDialog, filePath);
-                        LogInfo($"Entered as upload file path - {filePath}");
-                        scr.Click(linuxOpenFilesDialog_OpenBtn);
-                        LogInfo("Clicked Open button on Linux Open Files Dialog");
-                    }
-                    else
-                    {
-                        logMsg = "Unable to locate Linux Open Files Dialog Box";
-                    }
-                }
-                catch (Exception e)
-                {
-                    LogError(logMsg, true, e);
-                }
-            }
-            else
-            {
-                LogInfo("Uploading files in local environment");
-                AutoItX.WinWaitActive("Open");
-                LogInfo("...Waiting for File Open Dialog Window");
-                AutoItX.ControlSend("Open", "", "Edit1", filePath);
-                LogInfo($"Entered filepath {filePath}");
-                AutoItX.ControlClick("Open", "&Open", "Button1");
-                LogInfo("Clicked Open button on the File Open Dialog Window");
-            }
-        }
-
         public void UploadFile(string fileName)
         {
-            ClickElement(By.XPath("//div[@aria-label='Select files...']"));
-            Thread.Sleep(1000);
+            string filePath = (testPlatform == TestPlatform.Local) ? $"{GetCodeBasePath()}\\UploadFiles\\{fileName}" : $"/home/seluser/UploadFiles/{fileName}";
 
-            string filePath = null;
-            if (testPlatform == TestPlatform.Local)
+            try
             {
-                filePath = GetUploadFilePath(fileName);             
-                UploadUsingAutoItX(filePath);
+                By uploadInput_ByLocator = By.Id("UploadFiles_0_");
+                EnterText(uploadInput_ByLocator, filePath);
+                LogInfo($"Entered {filePath}' for file upload");
             }
-            else
+            catch (Exception e)
             {
-                filePath = GetUploadFilePath(fileName, true); //TODO - check if path format needs to change in docker environment
-                //IAllowsFileDetection allowsFileDetection = Driver as IAllowsFileDetection;
-                //allowsFileDetection.FileDetector = new LocalFileDetector();
-                UploadUsingAutoItX(filePath, true);
-            }
-        }
-        private string GetUploadFilePath(string fileName, bool isRemoteUpload = false)
-        {
-            string uploadPath = string.Empty;
-            if (!isRemoteUpload)
-            {
-                uploadPath = $"{GetCodeBasePath()}\\UploadFiles\\{fileName}";
-            }
-            else
-            {
-                uploadPath = $"/home/seluser/UploadFiles/{fileName}"; //TODO - check if path format needs to change in docker environment
+                LogError("Exception occured during fiel upload", true, e);
             }
 
-            return uploadPath;
+            WaitForPageReady();
         }
 
         public void AcceptAlertMessage()
