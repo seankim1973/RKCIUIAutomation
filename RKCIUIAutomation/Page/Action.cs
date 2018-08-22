@@ -1,11 +1,9 @@
-﻿using AutoIt;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using RKCIUIAutomation.Config;
-using Sikuli4Net.sikuli_REST;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
