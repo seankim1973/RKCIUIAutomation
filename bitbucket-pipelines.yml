@@ -11,7 +11,7 @@ pipelines:
         caches:
           - dotnetcore
         script: # Modify the comma`nds below to build your repository.
-          - export PROJECT_NAME=RKCIUIAutomation
+          - export PROJECT_NAME=RKCIUIAutomation.sln
           - export TEST_NAME=RKCIUIAutomation.Test.Smoke.Verify_SampleTest
           - dotnet build $PROJECT_NAME
           - dotnet restore
