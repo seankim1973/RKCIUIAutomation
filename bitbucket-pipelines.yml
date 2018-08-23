@@ -3,14 +3,16 @@
 # Only use spaces to indent your .yml configuration.
 # -----
 # You can specify a custom docker image from Docker Hub as your build environment.
-image: microsoft/dotnet:sdk
+image: microsoft/dotnet:latest
 
 pipelines:
   default:
     - step:
+        caches:
+          - dotnetcore
         script: # Modify the comma`nds below to build your repository.
-          - export PROJECT_NAME=RKCIUIAutomation.sln
+          - export PROJECT_NAME=RKCIUIAutomation
           - export TEST_NAME=RKCIUIAutomation.Test.Smoke.Verify_SampleTest
-          - nuget restore
-          - dotnet build $PROJECT_NAME
+          - dotnet restore
+          - dotnet build
           - dotnet test $TEST_NAME
