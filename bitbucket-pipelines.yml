@@ -16,3 +16,7 @@ pipelines:
           - dotnet restore
           - dotnet build $PROJECT_NAME
           - dotnet test $TEST_NAME
+
+definitions:
+  caches:
+    dotnetcore: ~/.nuget/packages
