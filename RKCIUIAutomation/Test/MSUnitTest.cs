@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Xml.Serialization;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
-using static RKCIUIAutomation.Config.ProjectProperties;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
-using static RKCIUIAutomation.Base.BaseUtils;
 using RKCIUIAutomation.Page;
 using MiniGuids;
 using System.Text.RegularExpressions;
 using System.Net.NetworkInformation;
 using System.Net;
-using System.Diagnostics;
+using RestSharp;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace RKCIUIAutomation.Test
 {
@@ -354,30 +349,27 @@ namespace RKCIUIAutomation.Test
         }
 
 
-       
+
 
         [TestMethod]
         public void StaticValues()
         {
 
-            TestClass testclass = new TestClass();
+            SimpleTestClass testclass = new SimpleTestClass();
             testclass.SetValue1();
 
-            Console.WriteLine(TestClass.Value1);
+            Console.WriteLine(SimpleTestClass.Value1);
             Console.WriteLine(testclass.Value2);
 
         }
     }
 
-    public class TestClass
+    [TestClass]
+    public class SimpleTestClass
     {
 
         public static string Value1;
         public string Value2;
-
-        static TestClass()
-        {
-        }
 
         public void SetValue1()
         {
@@ -410,6 +402,12 @@ namespace RKCIUIAutomation.Test
             Console.WriteLine(isPingable);
         }
 
+
+        [TestMethod]
+        public void VerifyHipTestApi()
+        {
+            Console.WriteLine(HipTestApi.GetResponse().Content);
+        }
 
 
     }

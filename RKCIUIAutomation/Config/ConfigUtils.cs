@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Configuration;
 using static RKCIUIAutomation.Base.BaseUtils;
+using static RKCIUIAutomation.Tools.HipTestApi;
 
 namespace RKCIUIAutomation.Config
 {
@@ -27,7 +28,13 @@ namespace RKCIUIAutomation.Config
             return usernamePassword;
         }
 
-        private string GetValueFromConfigManager(string siteUrlKey = "", string userTypeKey = "")
+        public string GetHipTestCreds(HipTestKey credType)
+        {
+            string credKey = $"{credType}";
+            return GetValueFromConfigManager(hiptestKey: credKey);
+        }
+
+        private string GetValueFromConfigManager(string hiptestKey = "", string siteUrlKey = "", string userTypeKey = "")
         {
             string sectionType = null;
             string key = null;
@@ -35,7 +42,12 @@ namespace RKCIUIAutomation.Config
 
             try
             {
-                if (!string.IsNullOrWhiteSpace(userTypeKey))
+                if (!string.IsNullOrWhiteSpace(hiptestKey))
+                {
+                    sectionType = "HipTest";
+                    key = hiptestKey;
+                }
+                else if (!string.IsNullOrWhiteSpace(userTypeKey))
                 {
                     sectionType = "UserType";
                     key = userTypeKey;

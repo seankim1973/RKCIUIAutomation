@@ -2,7 +2,6 @@
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System.Threading;
-using static RKCIUIAutomation.Config.ProjectProperties;
 
 namespace RKCIUIAutomation
 {

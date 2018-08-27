@@ -50,7 +50,7 @@ namespace RKCIUIAutomation.Base
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
+            _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
             _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Test}");
             _tenantName = Parameters.Get("Tenant", $"{TenantName.Garnet}");
