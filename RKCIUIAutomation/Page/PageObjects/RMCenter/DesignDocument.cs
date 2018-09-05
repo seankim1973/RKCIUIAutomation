@@ -24,7 +24,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Comment_ReviewTypeId_")] ReviewType,
             [StringValue("Comment_ResponseCodeId_")] ResponseCode,
             [StringValue("Comment_ResolutionStampId_")] ResolutionStamp,
-            [StringValue("Comment_ClosingStampId_")] ClosingStamp
+            [StringValue("Comment_ClosingStampId_")] ClosingStamp,
+            [StringValue("Comment_CommentTypeId_")] CommentType,
+            [StringValue("Comment_CategoryId_")] Category,
+            [StringValue("Comment_DisciplineId_")] Discipline
         }
 
         public enum TableTab
@@ -104,6 +107,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         bool VerifyTitleFieldErrorMsgIsDisplayed();
         bool VerifyDocumentNumberFieldErrorMsgIsDisplayed();
         bool VerifyUploadFileErrorMsgIsDisplayed();
+        void EnterClosingCommentAndCode();
 
     }
     #endregion <-- end of Workflow Interface class
@@ -189,8 +193,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 LogInfo($"Clicked element - {BackToListBtn_ByLocator}");
             }
         }
-        public virtual void ClickBtn_SaveOnly() => ClickElement(SaveOnlyBtn_ByLocator);
-        public virtual void ClickBtn_SaveForward() => ClickElement(SaveForwardBtn_ByLocator);
+        public virtual void ClickBtn_SaveOnly()
+        {
+            ScrollToElement(SaveOnlyBtn_ByLocator);
+            ClickElement(SaveOnlyBtn_ByLocator);
+        }
+
+        public virtual void ClickBtn_SaveForward()
+        {
+            ScrollToElement(SaveForwardBtn_ByLocator);
+            ClickElement(SaveForwardBtn_ByLocator);
+        }
 
         public virtual void CreateDocument()
         {
@@ -209,6 +222,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public void SelectAgreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
         public void SelectDisagreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
         public void SelectDDL_ClosingStamp(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
+        public void SelectCommentType(int commentTypeTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.CommentType, commentTypeTabNumber), 1);
+        public void SelectDiscipline(int disciplineNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Discipline, disciplineNumber), 1);
+        public void SelectCategory(int categoryNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Category, categoryNumber), 1);
 
         private void SetDesignDocTitleAndNumber()
         {
@@ -319,6 +335,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickBtn_SaveForward();
         }
 
+        public virtual void EnterClosingCommentAndCode()
+        {
+
+           
+            EnterComment(commentClosingInput);
+            SelectDDL_ClosingStamp(); 
+            ClickBtn_SaveOnly();
+           // WaitForPageReady();
+            ClickBtn_SaveForward();
+        }
 
         public virtual void _LoggedInUserUploadsDesignDocument()
         {
@@ -452,6 +478,30 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public DesignDocument_SH249(IWebDriver driver) : base(driver) { }
 
         //public override bool VerifyifClosed() => VerifyRecordIsShownInTab_StdUser(TableTab.Closed);
+        public override void EnterRegularCommentAndDrawingPageNo()
+        {
+            //login as commenting user (SG- IQFuser, DoTuser | SH249-- IQFUser | Garenet and GLX-- DOTUser)
+            SelectRegularCommentReviewType();
+            SelectCommentType();
+            SelectCategory();
+            SelectDiscipline();
+            EnterComment(commentInput);
+            EnterText(By.Id("Comment_ContractReference_0_"), "Contract123");
+            EnterText(By.Id("Comment_DrawingPageNumber_0_"), "Draw123");
+            ClickBtn_SaveOnly();
+
+        }
+
+        public override void EnterResponseCommentAndDisagreeResponseCode()
+        {
+            //This will add response and resolution both together for 249 tenant.
+            EnterComment(commentResponseInput);
+            EnterComment(commentResolutionInput);
+            SelectDisagreeResolutionCode();
+            ClickBtn_SaveOnly();
+      
+            ClickBtn_SaveForward();
+        }
 
     }
     #endregion <--specific toSGway
