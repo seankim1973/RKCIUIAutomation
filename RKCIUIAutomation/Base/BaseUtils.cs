@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Security.Principal;
 using System.IO;
 using System.Text.RegularExpressions;
 using AventStack.ExtentReports;
@@ -13,9 +12,6 @@ using OpenQA.Selenium.Support.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using static RKCIUIAutomation.Base.BaseClass;
-using SimpleImpersonation;
-using System.Runtime.InteropServices;
-using System.ComponentModel;
 
 namespace RKCIUIAutomation.Base
 {
@@ -80,7 +76,6 @@ namespace RKCIUIAutomation.Base
         {
             Directory.CreateDirectory(screenshotSavePath);
             string uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
-            string fileRef = $"errorscreenshots/{uniqueFileName}";
             string fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
 
             try
@@ -101,7 +96,7 @@ namespace RKCIUIAutomation.Base
                 log.Debug($"Exception occured: {e.Message}");
             }
 
-            return fileRef;
+            return uniqueFileName;
         }
 
         

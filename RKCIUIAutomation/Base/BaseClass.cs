@@ -3,7 +3,6 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Remote;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
@@ -41,7 +40,6 @@ namespace RKCIUIAutomation.Base
         private static string _tenantName;
         private static string _reporter;
         public static string siteUrl;
-
 
         private Cookie cookie = null;
 
@@ -178,51 +176,66 @@ namespace RKCIUIAutomation.Base
         [TearDown]
         public void AfterTest()
         {
-            ResultAdapter result = CurrentContext.Result;
-            testStatus = result.Outcome.Status;
-            CheckForTestStatusInjection();
-            switch (testStatus)
+            try
             {
-                case TestStatus.Failed:
-                    string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? "" : $"<pre>{result.StackTrace}</pre>";
-                    string screenshotPath = CaptureScreenshot(GetTestName());
-                    try
-                    {
-                        //upload screenshot to MongoDB server
-                        //testInstance.AddScreenCaptureFromPath(screenshotPath); <-- uncomment when bug is fixed
-                        //attach the screenshot to the report instance
-                        testInstance.Fail($"Test Failed:<br> {stacktrace}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"Exception occured for Failed TC in AfterTest method {e.Message}");
-                    }
-
-                    cookie = new Cookie("zaleniumTestPassed", "false");
-                    break;
-                case TestStatus.Passed:
-                    testInstance.Pass("Test Passed");
-                    cookie = new Cookie("zaleniumTestPassed", "true");
-                    break;
-                case TestStatus.Skipped:
-                    testInstance.Skip("Test Skipped");
-                    break;
-                default:
-                    testInstance.Debug("Inconclusive Test Result");
-                    break;
-            }
-            
-            reportInstance.Flush();
-
-            if (Driver != null)
-            {
-                if (cookie != null)
+                ResultAdapter result = CurrentContext.Result;
+                testStatus = result.Outcome.Status;
+                CheckForTestStatusInjection();
+                switch (testStatus)
                 {
-                    Driver.Manage().Cookies.AddCookie(cookie);
+                    case TestStatus.Failed:
+                        string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? "" : $"<pre>{result.StackTrace}</pre>";
+                        string screenshotName = CaptureScreenshot(GetTestName());
+                       
+                        if(reporter == Reporter.Klov)
+                        {
+                            /*Use when Klov Reporter bug is fixed
+                            //Upload screenshot to MongoDB server
+                            var screenshotPath = $"\\\\10.1.1.207\\errorscreenshots\\{screenshotName}";
+                            testInstance.Fail($"Test Failed: <br> {stacktrace}").AddScreenCaptureFromPath(screenshotPath, screenshotName);
+                            */
+
+                            //Workaround due to bug in Klov Reporter
+                            var screenshotRemotePath = $"\\\\10.1.1.207\\errorscreenshots\\{screenshotName}";
+                            testInstance.Fail($"Test Failed:<br> {stacktrace}<br> <img rel=\"external\" data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">");
+                        }
+                        else
+                        {
+                            //Attach screenshot to log
+                            var screenshotPath = $"errorscreenshots/{screenshotName}";
+                            testInstance.Fail($"Test Failed: <br> {stacktrace}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath, screenshotName).Build());
+                        }
+
+                        cookie = new Cookie("zaleniumTestPassed", "false");
+                        break;
+                    case TestStatus.Passed:
+                        testInstance.Pass("Test Passed");
+                        cookie = new Cookie("zaleniumTestPassed", "true");
+                        break;
+                    case TestStatus.Skipped:
+                        testInstance.Skip("Test Skipped");
+                        break;
+                    default:
+                        testInstance.Debug("Inconclusive Test Result");
+                        break;
                 }
-                Driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
-                Driver.Close();
-            }            
+
+                reportInstance.Flush();
+
+                if (Driver != null)
+                {
+                    if (cookie != null)
+                    {
+                        Driver.Manage().Cookies.AddCookie(cookie);
+                    }
+                    Driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+                    Driver.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Exception occured for Failed TC in AfterTest method {e.Message}");
+            }
         }
     }
 }
