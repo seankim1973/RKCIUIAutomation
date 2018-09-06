@@ -138,6 +138,9 @@
     <Reference Include="RestSharp, Version=106.3.1.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.3.1\lib\net452\RestSharp.dll</HintPath>
     </Reference>
+    <Reference Include="SimpleImpersonation, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleImpersonation.3.0.0\lib\net46\SimpleImpersonation.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
@@ -297,6 +300,7 @@
     <Compile Include="Base\WebDriverFactory.cs" />
     <Compile Include="Base\ZaleniumService.cs" />
     <Compile Include="Config\ConfigUtils.cs" />
+    <Compile Include="Config\ImpersonateUser.cs" />
     <Compile Include="Config\ProjectProperties.cs" />
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\Action.cs" />

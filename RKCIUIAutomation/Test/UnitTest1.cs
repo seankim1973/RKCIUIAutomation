@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
+using System;
+using System.Security.Principal;
 using System.Threading;
 using static RKCIUIAutomation.Config.ProjectProperties;
 
@@ -18,9 +20,11 @@ namespace RKCIUIAutomation
         [Description("Test Method 1")]
         public void TestMethod1()
         {
-            //driver.Navigate().GoToUrl("http://www.google.com");
-            Thread.Sleep(5000);
-            Assert.True(true);
+            ////driver.Navigate().GoToUrl("http://www.google.com");
+            //Thread.Sleep(5000);
+            //Assert.True(true);
+
+
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 
 namespace RKCIUIAutomation.Test.ParallelTests
@@ -94,7 +95,9 @@ namespace RKCIUIAutomation.Test.ParallelTests
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Search();
             //RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-            Assert.True(VerifyPageTitle("Failed Test"));
+            By locator = By.XPath("//h3");
+            string title = GetText(locator);
+            Assert.True(title == "Failed Test");
             //Thread.Sleep(15000);
         }
     }
