@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Security.Principal;
 using System.IO;
 using System.Text.RegularExpressions;
 using AventStack.ExtentReports;
@@ -12,7 +13,9 @@ using OpenQA.Selenium.Support.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using static RKCIUIAutomation.Base.BaseClass;
-
+using SimpleImpersonation;
+using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 namespace RKCIUIAutomation.Base
 {
@@ -26,6 +29,7 @@ namespace RKCIUIAutomation.Base
         private static string fileName = string.Empty;
         private static string dateString = string.Empty;
         private static string screenshotSavePath = string.Empty;
+        private readonly string klovPath = @"\\10.1.1.207\errorscreenshots\";
 
         public BaseUtils(IWebDriver driver) => this.Driver = driver; 
 
@@ -62,9 +66,7 @@ namespace RKCIUIAutomation.Base
         public static void DetermineReportFilePath()
         {
             extentReportPath = $"{GetCodeBasePath()}\\Report";
-            string klovPath = $"{extentReportPath}\\errorscreenshots\\"; //TODO: <<--Temp until bug fix by ExtentReports.  >>-Use when bug fixed ->> "C:\\Automation\\klov-0.1.1\\upload\\reports\\";
-            screenshotSavePath = (BaseClass.testPlatform == TestPlatform.Local) ?
-                $"{extentReportPath}\\errorscreenshots\\" : klovPath;
+            screenshotSavePath = $"{extentReportPath}\\errorscreenshots\\";
         }
 
         public static string GetCodeBasePath()
@@ -76,15 +78,33 @@ namespace RKCIUIAutomation.Base
 
         public string CaptureScreenshot(string fileName)
         {
-            string uniqueFileName = $"{fileName}{DateTime.Now.Second}_{BaseClass.tenantName.ToString()}.png";
             Directory.CreateDirectory(screenshotSavePath);
-            var screenshot = Driver.TakeScreenshot();
-            screenshot.SaveAsFile($"{screenshotSavePath}{uniqueFileName}", ScreenshotImageFormat.Png);
+            string uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
+            string fileRef = $"errorscreenshots/{uniqueFileName}";
+            string fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
 
-            string fileRef = "errorscreenshots/";//TODO: <<--Temp until bug fix by ExtentReports.  >>-Use when bug fixed ->> (BaseClass.testPlatform == TestPlatform.Local) ? "errorscreenshots/" : "upload/reports/";
-            return $"{fileRef}{uniqueFileName}";
+            try
+            {
+                if (reporter == Reporter.Klov)
+                {
+                    ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
+                    impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
+                }
+                else
+                {
+                    var screenshot = Driver.TakeScreenshot();
+                    screenshot.SaveAsFile(fullFilePath);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Debug($"Exception occured: {e.Message}");
+            }
+
+            return fileRef;
         }
 
+        
         //ExtentReports Loggers
         public void LogIgnore(string msg)
         {
@@ -353,11 +373,14 @@ namespace RKCIUIAutomation.Base
             string logMessage = pgbHelper.GetVar($"{testName}_msgKey");
             string injStatus = pgbHelper.GetVar($"{testName}_statusKey");
 
-            switch (injStatus)
+            if (!string.IsNullOrEmpty(injStatus))
             {
-                case "Failed":
-                    testStatus = TestStatus.Failed;
-                    break;
+                switch (injStatus)
+                {
+                    case "Failed":
+                        testStatus = TestStatus.Failed;
+                        break;
+                }
             }
         }
     }

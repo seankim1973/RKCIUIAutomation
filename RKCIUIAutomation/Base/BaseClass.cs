@@ -52,8 +52,8 @@ namespace RKCIUIAutomation.Base
         {
             _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
             _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Test}");
-            _tenantName = Parameters.Get("Tenant", $"{TenantName.Garnet}");
+            _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
+            _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
             _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
 
             testPlatform = Configs.GetTestPlatform(_testPlatform);
@@ -178,18 +178,26 @@ namespace RKCIUIAutomation.Base
         [TearDown]
         public void AfterTest()
         {
-            
             ResultAdapter result = CurrentContext.Result;
             testStatus = result.Outcome.Status;
             CheckForTestStatusInjection();
-
             switch (testStatus)
             {
                 case TestStatus.Failed:
                     string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? "" : $"<pre>{result.StackTrace}</pre>";
                     string screenshotPath = CaptureScreenshot(GetTestName());
-                    testInstance.Fail($"Test Failed:<br> {stacktrace}")
-                        .AddScreenCaptureFromPath(screenshotPath);
+                    try
+                    {
+                        //upload screenshot to MongoDB server
+                        //testInstance.AddScreenCaptureFromPath(screenshotPath); <-- uncomment when bug is fixed
+                        //attach the screenshot to the report instance
+                        testInstance.Fail($"Test Failed:<br> {stacktrace}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Exception occured for Failed TC in AfterTest method {e.Message}");
+                    }
+
                     cookie = new Cookie("zaleniumTestPassed", "false");
                     break;
                 case TestStatus.Passed:
