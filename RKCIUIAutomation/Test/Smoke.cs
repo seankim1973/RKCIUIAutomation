@@ -404,7 +404,7 @@ namespace RKCIUIAutomation.Test.Smoke
         {
 
             LogInfo("--------------------------1. Log in as IQFRM'----------------------");
-            LoginAs(UserType.IQFRecordsMgr);//testing glx comment review
+            LoginAs(UserType.IQFRecordsMgr);
             NavigateToPage.RMCenter_Design_Documents();
             Assert.True(VerifyPageTitle("Design Document"));
             DesignDocCommentReview.CreateDocument();
@@ -420,7 +420,16 @@ namespace RKCIUIAutomation.Test.Smoke
             ClickLogoutLink();
             ClickLoginLink();
 
-            LogInfo("--------------------------3. Log in as DOT Admin, forwards Comments----------------------");
+            LogInfo("--------------------------3. Log in as IQF User, enters Comments----------------------");
+            LoginAs(UserType.IQFUser);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------4. Log in as DOT Admin, forwards Comments----------------------");
             LoginAs(UserType.DOTAdmin);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
@@ -428,15 +437,6 @@ namespace RKCIUIAutomation.Test.Smoke
             WaitForPageReady();
             DesignDocCommentReview.ForwardComment();
             Thread.Sleep(2000);
-            ClickLogoutLink();
-            ClickLoginLink();
-
-            LogInfo("--------------------------4. Log in as IQF User, enters Comments----------------------");
-            LoginAs(UserType.IQFUser);
-            NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickEnterBtnForRow();
-            DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
             ClickLogoutLink();
             ClickLoginLink();
 
