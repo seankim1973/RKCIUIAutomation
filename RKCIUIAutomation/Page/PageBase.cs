@@ -8,15 +8,13 @@ namespace RKCIUIAutomation.Page
     {
         public PageHelper PageHelper => new PageHelper();
         public PageBaseHelper HashMap => new PageBaseHelper();
-
     }
 
     public class PageBaseHelper : TableHelper
     {
         private Hashtable Hashtable { get; set; }
         private Hashtable GetHashTable() => Hashtable ?? new Hashtable();
-
-        
+      
         public void CreateVar<T>(string key, T value)
         {
             Hashtable = GetHashTable();
@@ -26,7 +24,18 @@ namespace RKCIUIAutomation.Page
         public string GetVar(string key)
         {
             Hashtable = GetHashTable();
-            return (Hashtable.ContainsKey(key)) ?  Hashtable[key].ToString() : $"Key ({key}) does not exist";
+            var varValue = string.Empty;
+
+            if (Hashtable.ContainsKey(key))
+            {
+                varValue = Hashtable[key].ToString();
+            }
+            else
+            {
+                log.Debug($"GetVar Key does not exist: {key}");
+            }
+
+            return varValue;
         }
     }
 }

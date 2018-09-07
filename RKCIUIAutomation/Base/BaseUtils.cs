@@ -11,6 +11,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
+using static NUnit.Framework.TestContext;
 using static RKCIUIAutomation.Base.BaseClass;
 
 namespace RKCIUIAutomation.Base
@@ -155,8 +156,10 @@ namespace RKCIUIAutomation.Base
 
         public void LogErrorWithScreenshot()
         {
-            string screenshotPath = CaptureScreenshot(GetTestName());
-            testInstance.Error($"Error Screenshot:", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath).Build());
+            string screenshotName = CaptureScreenshot(GetTestName());
+            var screenshotRemotePath = $"http://10.1.1.207/errorscreenshots/{screenshotName}";
+            var detailsWithScreenshot = $"Error Screenshot:<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">";
+            testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, ExtentColor.Red));
         }
 
         public static void LogInfo(string details)
@@ -166,7 +169,7 @@ namespace RKCIUIAutomation.Base
             if (details.Contains("<br>"))
             {
                 testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
-                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                detailsBr = Regex.Split(details, "<br>");
                 for (int i = 0; i < detailsBr.Length; i++)
                 {
                     log.Info(detailsBr[i]);
@@ -194,7 +197,7 @@ namespace RKCIUIAutomation.Base
 
             if (details.Contains("<br>"))
             {
-                detailsBr = Regex.Split(details, "<br>&nbsp;&nbsp;");
+                detailsBr = Regex.Split(details, "<br>");
                 hasPgBreak = true;
             }
 
@@ -232,15 +235,8 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
-        {
-            return MarkupHelper.CreateLabel(details, extentColor);
-        }
-
-        private static IMarkup CreateReportMarkupCodeBlock(Exception e)
-        {
-            return MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");
-        }
+        private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue) => MarkupHelper.CreateLabel(details, extentColor);
+        private static IMarkup CreateReportMarkupCodeBlock(Exception e) => MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");
 
 
         //Helper methods to gather Test Context Details
@@ -250,7 +246,7 @@ namespace RKCIUIAutomation.Base
         public static string GetTestDescription() => GetTestContextProperty(TestContextProperty.TestDescription);
         public static string GetTestPriority() => GetTestContextProperty(TestContextProperty.TestPriority);
         public static string GetTestCaseNumber() => GetTestContextProperty(TestContextProperty.TestCaseNumber);
-        public static string GetTestSuiteName() => GetTestContextProperty(TestContextProperty.TestSuite);
+        public static string GetTestClassName() => GetTestContextProperty(TestContextProperty.TestClass);
 
         private static string GetTestContextProperty(TestContextProperty testContextProperty)
         {
@@ -262,7 +258,7 @@ namespace RKCIUIAutomation.Base
             {
                 case TestContextProperty.TestName:
                     return testInstance.Name;
-                case TestContextProperty.TestSuite:
+                case TestContextProperty.TestClass:
                     return (testInstance.FullName).Split('.')[2];
                 case TestContextProperty.TestComponent1:
                     context = "Category";
@@ -281,14 +277,14 @@ namespace RKCIUIAutomation.Base
                     break;
             }
 
-            var prop = testInstance.Properties.Get(context) ?? "Not Defined";
+            var prop = testInstance.Properties.Get(context) ?? string.Empty;
             return prop.ToString();
         }
 
         private enum TestContextProperty
         {
             TestName,
-            TestSuite,
+            TestClass,
             TestComponent1,
             TestComponent2,
             TestDescription,
@@ -353,18 +349,50 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        private static PageBaseHelper pgbHelper = new PageBaseHelper();
+    }
 
+    public static class BaseHelper
+    {
+        static PageBaseHelper pgbHelper = new PageBaseHelper();
+
+        public static string SplitCamelCase(this string str, bool removeUnderscore = true)
+        {
+            string value = (removeUnderscore == true) ? Regex.Replace(str, @"_", "") : str;
+            return Regex.Replace(Regex.Replace(value, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
+        }
+
+        public static void AssignReportCategories(this ExtentTest testInstance, params string[] category)
+        {
+            for (int i = 0; i < category.Length; i++)
+            {
+                testInstance
+                    .AssignCategory(category[i]);
+            }
+        }
+
+        /// <summary>
+        /// Allows for test cases to continue running when an error, which is not related to the objective of the test case, occurs but impacts the overall result of the test case.
+        /// Used in conjection with CheckForTestStatusInjection method, which is part of the TearDown attribute in the BaseClass.
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="logMsg"></param>
         public static void InjectTestStatus(TestStatus status, string logMsg)
         {
-            string testName = GetTestName();
+            string testName = BaseUtils.GetTestName();
             pgbHelper.CreateVar($"{testName}_msgKey", logMsg);
             pgbHelper.CreateVar($"{testName}_statusKey", status.ToString());
         }
 
-        public static void CheckForTestStatusInjection()
+        /// <summary>
+        /// Used in conjunction with InjectTestStatus method.
+        /// </summary>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static TestStatus CheckForTestStatusInjection(this ResultAdapter result)
         {
-            string testName = GetTestName();
+            TestStatus _testStatus = TestStatus.Inconclusive;
+
+            string testName = BaseUtils.GetTestName();
             string logMessage = pgbHelper.GetVar($"{testName}_msgKey");
             string injStatus = pgbHelper.GetVar($"{testName}_statusKey");
 
@@ -372,20 +400,23 @@ namespace RKCIUIAutomation.Base
             {
                 switch (injStatus)
                 {
+                    case "Warning":
+                        _testStatus = TestStatus.Warning;
+                        break;
                     case "Failed":
-                        testStatus = TestStatus.Failed;
+                        _testStatus = TestStatus.Failed;
+                        break;
+                    default:
+                        _testStatus = TestStatus.Inconclusive;
                         break;
                 }
             }
-        }
-    }
+            else
+            {
+                _testStatus = result.Outcome.Status;
+            }
 
-    public static class BaseHelper
-    {
-        public static string SplitCamelCase(this string str, bool removeUnderscore = true)
-        {
-            string value = (removeUnderscore == true) ? Regex.Replace(str, @"_", "") : str;
-            return Regex.Replace(Regex.Replace(value, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
+            return _testStatus;
         }
     }
 }

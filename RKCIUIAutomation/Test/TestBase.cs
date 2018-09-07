@@ -11,6 +11,10 @@ namespace RKCIUIAutomation.Test
 {
     public class TestBase : TestUtils
     {
+        internal const string Component2 = "Component2";
+        internal const string TestCaseNumber = "TC#";
+        internal const string Priority = "Priority";
+
         public TestDetails TestDetails => new TestDetails(Driver);
 
         private ILoginPage LoginPage => new LoginPage().SetClass<ILoginPage>(Driver);

@@ -3,6 +3,7 @@ using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
+using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace RKCIUIAutomation.Page
                     "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
                     "arguments[0].dispatchEvent(evObj);")] Hover
         }
+
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
         {
             try
@@ -37,6 +39,7 @@ namespace RKCIUIAutomation.Page
                 throw;
             }
         }
+
         public void JsClickElement(By elementByLocator)
         {
             WaitForPageReady();
@@ -107,6 +110,7 @@ namespace RKCIUIAutomation.Page
             
             return elem;
         }
+
         private IList<IWebElement> GetElements(By elementByLocator)
         {
             IList<IWebElement> elements = null;
@@ -124,6 +128,7 @@ namespace RKCIUIAutomation.Page
 
             return elements;
         }
+
         public int GetElementsCount(By elementByLocator)
         {
             IList<IWebElement> elements = GetElements(elementByLocator);
@@ -151,8 +156,8 @@ namespace RKCIUIAutomation.Page
             {
                 LogError(e.Message);
             }
-
         }
+
         public void ClickElement(IWebElement webElement)
         {
             try
@@ -201,6 +206,7 @@ namespace RKCIUIAutomation.Page
                 LogError($"Unable to enter text in field - {elementByLocator}", true, e);
             }
         }
+
         public string GetText(By elementByLocator)
         {
             string text = string.Empty;
@@ -286,13 +292,15 @@ namespace RKCIUIAutomation.Page
                 throw;
             }          
         }
+
         public bool VerifyAlertMessage(string expectedMessage)
         {            
             string actualAlertMsg = Driver.SwitchTo().Alert().Text;
             bool msgMatch = (actualAlertMsg).Contains(expectedMessage) ? true : false;
-            LogInfo($"## Expected Alert Message: {expectedMessage} <br>&nbsp;&nbsp;## Actual Alert Message: {actualAlertMsg}", msgMatch);
+            LogInfo($"## Expected Alert Message: {expectedMessage}<br>## Actual Alert Message: {actualAlertMsg}", msgMatch);
             return msgMatch;
         }
+
         public bool VerifyFieldErrorIsDisplayed(By elementByLocator )
         {
             IWebElement elem = GetElement(elementByLocator);
@@ -301,6 +309,7 @@ namespace RKCIUIAutomation.Page
             LogInfo($"Field error is{not} displayed for - {elementByLocator}", elementDisplayed);
             return elementDisplayed;
         }
+
         public bool VerifySuccessMessageIsDisplayed()
         {
             By elementByLocator = By.XPath("//div[contains(@class,'bootstrap-growl')]");
@@ -310,6 +319,7 @@ namespace RKCIUIAutomation.Page
             LogInfo($"Success Message is{not} displayed", elementDisplayed);
             return elementDisplayed;
         }
+
         public bool VerifySchedulerIsDisplayed() //TODO - move to Early Break Calendar class when more test cases are created
         {
             IWebElement scheduler = GetElement(By.Id("scheduler"));
@@ -318,6 +328,7 @@ namespace RKCIUIAutomation.Page
             LogInfo($"Scheduler is{not} displayed", isDisplayed);
             return isDisplayed;
         }
+
         public bool ElementIsDisplayed(By elementByLocator)
         {
             IWebElement element = GetElement(elementByLocator);
@@ -339,6 +350,7 @@ namespace RKCIUIAutomation.Page
   
             return isDisplayed;
         }
+
         public bool VerifyPageTitle(string expectedPageTitle)
         {
             bool isMatchingTitle = false;
@@ -364,7 +376,7 @@ namespace RKCIUIAutomation.Page
                         if (!isDisplayed)
                         {                            
                             string logMsg = $"Could not find any Page element with h2 or h3 tag";
-                            InjectTestStatus(TestStatus.Failed, logMsg);
+                            BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                         }
                     }
                 }
@@ -372,19 +384,16 @@ namespace RKCIUIAutomation.Page
 
             isMatchingTitle = PageTitle.Equals(expectedPageTitle);
                
-
             if (isDisplayed)
-            {
-                
-                LogInfo($"## Expect Page Title: {expectedPageTitle} <br>&nbsp;&nbsp;## Actual Page Title: {PageTitle}", isMatchingTitle);
+            {               
+                LogInfo($"## Expect Page Title: {expectedPageTitle}<br>## Actual Page Title: {PageTitle}", isMatchingTitle);
 
                 if (!isMatchingTitle)
                 {
                     string logMsg = $"Page titles did not match: Expected: {expectedPageTitle}, Actual: {PageTitle}";
-                    InjectTestStatus(TestStatus.Failed, logMsg);
+                    BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                 }
             }
-
             return isMatchingTitle;
         }
 
@@ -428,6 +437,7 @@ namespace RKCIUIAutomation.Page
             }
             return isLoaded;
         }
+
         public void VerifyPageIsLoaded(bool checkingLoginPage = false, bool continueTestIfPageNotLoaded = true)
         {
             string pageTitle = null;
@@ -456,7 +466,7 @@ namespace RKCIUIAutomation.Page
                         }
                         else
                         {
-                            LogInfo($"!!! Page did not load properly, when navigating to the previous page !!!<br>&nbsp;&nbsp;{pageErrLogMsg}");
+                            LogInfo($"!!! Page did not load properly, when navigating to the previous page !!!<br>{pageErrLogMsg}");
                             Assert.Fail();
                         }
                     }
@@ -465,11 +475,12 @@ namespace RKCIUIAutomation.Page
                         Assert.Fail();
                     }
 
-                    InjectTestStatus(TestStatus.Failed, pageErrLogMsg);
+                    BaseHelper.InjectTestStatus(TestStatus.Failed, pageErrLogMsg);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                log.Error(e.Message);
                 throw;
             }
         }
@@ -482,11 +493,12 @@ namespace RKCIUIAutomation.Page
             JsClickElement(By.XPath(ModalCloseBtn));
             Thread.Sleep(500);
         }
+
         public bool VerifyActiveModalTitle(string expectedModalTitle)
         {
             string actualTitle = GetText(By.XPath(ModalTitle));
             bool titlesMatch = actualTitle.Contains(expectedModalTitle) ? true : false;
-            LogInfo($"## Expected Modal Title: {expectedModalTitle} <br>&nbsp;&nbsp;## Actual Modal Title: {actualTitle}", titlesMatch);
+            LogInfo($"## Expected Modal Title: {expectedModalTitle}<br>## Actual Modal Title: {actualTitle}", titlesMatch);
             return titlesMatch;
         }
 
@@ -505,28 +517,31 @@ namespace RKCIUIAutomation.Page
                 LogError("Unable to click Cancel");
             }
         }
+
         public void ClickSave()
         {
             VerifyPageIsLoaded();
             ClickElement(By.Id("SaveSubmittal"));
         }
+
         public void ClickSubmitForward()
         {
             VerifyPageIsLoaded();
             ClickElement(By.Id("SaveForwardSubmittal"));
         }
+
         public void ClickCreate()
         {
             VerifyPageIsLoaded();
             ClickElement(By.Id("btnCreate"));
         }
+
         public void ClickNew()
         {
             VerifyPageIsLoaded();
             IWebElement newBtn = GetElement(GetButtonByLocator("New")) ?? GetElement(GetInputButtonByLocator("Create New"));
             ClickElement(newBtn);
         }
-
 
         public void ScrollToElement(By elementByLocator)
         {
@@ -547,20 +562,19 @@ namespace RKCIUIAutomation.Page
                 LogError("Exception occured in ScrollToElement method", true, e);
             }
         }
-
-
+        
         public void ClickLoginLink()
         {
             WaitForPageReady();
             Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
         }
+
         public void ClickLogoutLink()
         {
             WaitForPageReady();
             Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
         }
-
-
+        
         public string GetCurrentUser()
         {
             string[] acct = null;

@@ -12,13 +12,12 @@ using System.Threading;
 namespace RKCIUIAutomation.UnitTest
 {
     [TestFixture]
-    [Parallelizable]
     public class BaseTest : TestBase
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void DynamicNavigation()
         {
@@ -34,8 +33,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Submittals)]
-        [Property("TC#", "ELVS1234")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS1234")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify user can cancel out of Owner Submittal Page Successfully")]
         public void VerifyCancelOutOfOwnerSubmittalPage()
         {
@@ -54,8 +53,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Submittals)]
-        [Property("TC#", "ELVS3456")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS3456")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
         public void SampleTest()
         {
@@ -71,8 +70,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Submittals)]
-        [Property("TC#", "ELVS3456")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS3456")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
         public void Generic()
         {
@@ -101,8 +100,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Submittals)]
-        [Property("TC#", "ELVS8988")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS8988")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify proper required fields show error when clicking Save button without Submittal Name and Title")]
         public void VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle()
         {
@@ -125,8 +124,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category("")]
-        [Property("TC#", "ELVS1111")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS1111")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify proper required fields show error when clicking Save button with Submittal Name and Title")]
         public void VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle()
         {
@@ -146,8 +145,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Submittals)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL")]
         public void VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL()
         {
@@ -162,16 +161,67 @@ namespace RKCIUIAutomation.UnitTest
     }
 
     [TestFixture]
-    public class Test_ComponentTestIsSkipped : TestBase
+    public class Test_Runs_One_Valid_Component : TestBase
+    {
+        [Test]
+        
+        [Category(Component.Other)]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
+        [Description("Verify test runs/passes with only component1 (valid) property attribute is specified")]
+        public void VerifyOnlyComponent1Specified()
+        {
+            LogInfo($"This test should be skipped due to Component1");
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.RMCenter_Upload_QA_Submittal();
+        }
+    }
+
+    [TestFixture]
+    public class Test_Skipped_One_Invalid_Component : TestBase
     {
         [Test]
         [Category(Component.Control_Point)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
-        [Description("Verify Component Name")]
-        public void VerifyComponentTestIsSkipped()
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
+        [Description("Verify test is skipped due to component1 not part of tenant's component list")]
+        public void VerifyComponent1TestIsSkipped()
         {
-            LogInfo($"Control Point component test - This test should be skipped");
+            LogInfo($"This test should be skipped due to Component1");
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.RMCenter_Upload_QA_Submittal();
+        }
+    }
+
+    [TestFixture]
+    public class Test_Runs_Two_Valid_Components : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property(Component2, Component.Submittals)]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
+        [Description("Verify test runs/passes with component1 and 2 properties are part of tenant's component list")]
+        public void VerifyComponent2Test()
+        {
+            LogInfo($"Two components test - This test should pass");
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.RMCenter_Upload_QA_Submittal();
+        }
+    }
+
+    [TestFixture]
+    public class Test_Skipped_Invalid_Component2 : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property(Component2, Component.Control_Point)]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
+        [Description("Verify test is skipped due to only component2 not part of tenant's component list")]
+        public void VerifyComponent2TestIsSkipped()
+        {
+            LogInfo($"This test should be skipped due to Component2");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
         }
@@ -182,8 +232,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void VerifyComponentTestRuns()
         {
@@ -203,8 +253,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void NewGWQALabMenu()
         {
@@ -221,8 +271,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void ExecuteJava(string grideNode)
         {
@@ -249,8 +299,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void DynamicNavigation()
         {
@@ -266,8 +316,8 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void VerifyTableHelper()
         {
@@ -298,13 +348,12 @@ namespace RKCIUIAutomation.UnitTest
     }
 
     [TestFixture]
-    [Parallelizable]
     public class TestDynamicNavigationClass : TestBase
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QMS Documents page")]
         public void TestDynamicNavigation()
         {
@@ -315,13 +364,12 @@ namespace RKCIUIAutomation.UnitTest
     }
 
     [TestFixture]
-    [Parallelizable]
     public class VerifyComponentTestRunsClass : TestBase
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Navigation for sub menu items under Project")]
         public void VerifyComponentTestRuns()
         {
@@ -338,13 +386,12 @@ namespace RKCIUIAutomation.UnitTest
     }
 
     [TestFixture]
-    [Parallelizable]
     public class VerifySkipTestBasedOnComponent : TestBase
     {
         [Test]
-        [Category(Component.Other), Property("Component2", Component.OV_Test)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Category(Component.Other), Property(Component2, Component.OV_Test)]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Test is Skipped for non-I15 Tenants")]
         public void SkipTestBasedOnComponent()
         {
@@ -357,13 +404,12 @@ namespace RKCIUIAutomation.UnitTest
     }
 
     [TestFixture]
-    [Parallelizable]
     public class LatestTestClass : TestBase
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Test Runs without specifying Component2 annotation")]
         public void LatestTest()
         {
@@ -375,34 +421,36 @@ namespace RKCIUIAutomation.UnitTest
     }
 
     [TestFixture]
-    [Parallelizable]
     public class FailingTestClass : TestBase
     {
         [Test]
         [Category(Component.Search)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Test Fails as expected")]
         public void FailingTest()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Search();
             //RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
+            Assert.True(VerifyPageTitle("Failed Test"));
+            
+            /*
+            //Use for quicker test failure
             By locator = By.XPath("//h3");
             string title = GetText(locator);
             Assert.True(title == "Failed Test");
-            //Thread.Sleep(15000);
+            */
         }
     }
 
     [TestFixture]
-    [Parallelizable]
     public class ScreenshotTestClass1 : TestBase
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Test Fails with valid screenshot")]
         public void ProjDetails_ScreenshotTest()
         {
@@ -413,13 +461,12 @@ namespace RKCIUIAutomation.UnitTest
     }
 
     [TestFixture]
-    [Parallelizable]
     public class ScreenshotTestClass2 : TestBase
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Test Fails with valid screenshot")]
         public void MenuEditor_ScreenshotTest()
         {
@@ -430,13 +477,12 @@ namespace RKCIUIAutomation.UnitTest
     }
 
     [TestFixture]
-    [Parallelizable]
     public class ScreenshotTestClass3 : TestBase
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Test Fails with valid screenshot")]
         public void Contracts_ScreenshotTest()
         {
@@ -447,13 +493,12 @@ namespace RKCIUIAutomation.UnitTest
     }
 
     [TestFixture]
-    [Parallelizable]
     public class ScreenshotTestClass4 : TestBase
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Test Fails with valid screenshot")]
         public void Companies_ScreenshotTest()
         {

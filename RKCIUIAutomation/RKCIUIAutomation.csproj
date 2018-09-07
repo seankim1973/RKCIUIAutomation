@@ -395,7 +395,6 @@
     <Compile Include="Page\Workflows\LinkCoverageWF.cs" />
     <Compile Include="Test\LinkCoverageTest.cs" />
     <Compile Include="Test\MSUnitTest.cs" />
-    <Compile Include="Test\ParallelTests.cs" />
     <Compile Include="Test\Smoke.cs" />
     <Compile Include="Test\TestBase.cs" />
     <Compile Include="Test\TestUtils.cs" />

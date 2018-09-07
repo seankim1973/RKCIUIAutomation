@@ -17,8 +17,8 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property("TC#", "ELVS2345")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2345")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Site Pages Load Successfully")]
         public void LinkCoverage_Level1()
         {
@@ -41,8 +41,8 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void CommentReviewPartialFunctions()
         {
@@ -122,8 +122,8 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void CommentReviewForSG()
         {
@@ -226,8 +226,8 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Other)]
-        [Property("TC#", "ELVS2222")]
-        [Property("Priority", "Priority 1")]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void CommentReviewForSH249()
         {

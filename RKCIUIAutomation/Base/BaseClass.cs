@@ -1,4 +1,5 @@
 ﻿using AventStack.ExtentReports;
+using AventStack.ExtentReports.MarkupUtils;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
@@ -6,12 +7,12 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using static NUnit.Framework.TestContext;
 
 namespace RKCIUIAutomation.Base
 {
     [TestFixture]
-    [Parallelizable]
     public class BaseClass : BaseUtils
     {
         [ThreadStatic]
@@ -34,12 +35,14 @@ namespace RKCIUIAutomation.Base
         public static TestEnv testEnv;
         public static TenantName tenantName;
         public static Reporter reporter;
+
+        private string[] reportCategories;
         private static string _testPlatform;
         private static string _browserType;
         private static string _testEnv;
         private static string _tenantName;
         private static string _reporter;
-        public static string siteUrl;
+        public static string siteUrl;      
 
         private Cookie cookie = null;
 
@@ -83,12 +86,27 @@ namespace RKCIUIAutomation.Base
         public void BeforeTest()
         {
             string testName = GetTestName();
-            string testSuite = GetTestSuiteName();            
+            string testClass = GetTestClassName();
+            //string testSuite = GetTestSuiteName();
+            var _suite = Regex.Split(GetType().Namespace, "\\.");
+            string testSuite = _suite[_suite.Length -1];
             string testPriority = GetTestPriority();
             string testCaseNumber = GetTestCaseNumber();         
             string testComponent1 = GetTestComponent1();
             string testComponent2 = GetTestComponent2();
             string testDescription = GetTestDescription();
+
+            reportCategories = new string[]
+            {
+                testEnv.ToString(),
+                tenantName.ToString(),
+                testSuite,
+                testClass,
+                testPriority,
+                testCaseNumber,
+                testComponent1,
+                testComponent2
+            };
 
             reportInstance = ExtentManager.Instance;
 
@@ -109,28 +127,17 @@ namespace RKCIUIAutomation.Base
 
             if (tenantComponents.Contains(testComponent1))
             {
-                if (tenantComponents.Contains(testComponent2) || testComponent2 == "Not Defined")
+                if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
                 {
                     Driver = GetWebDriver(testPlatform, browserType, testName);
                     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 
-                    string component2 = string.Empty;
-
-                    if (testComponent2 != "Not Defined")
-                    {
-                        component2 = $"{testComponent2}";
-                    }
-
                     LogTestDetails(tenantName, testEnv, siteUrl, browserType, testName,
-                        testCaseNumber, testSuite, testDescription, testPriority, testComponent1, component2);
-
-                    testInstance
-                        .AssignCategory(tenantName.ToString())
-                        .AssignCategory(testPriority)
-                        .AssignCategory(testComponent1, component2)
-                        .AssignCategory(testSuite);
+                        testCaseNumber, testClass, testDescription, testPriority, testComponent1, testComponent2);
+                    //testInstance.AssignCategory(reportCategories);
+                    testInstance.AssignReportCategories(reportCategories);
                 }
                 else
                 {
@@ -146,6 +153,7 @@ namespace RKCIUIAutomation.Base
         private void SkipTest(string testComponent)
         {
             string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
+            testInstance.AssignReportCategories(reportCategories);
             LogIgnore(msg);
             Assert.Ignore(msg);
         }
@@ -153,7 +161,7 @@ namespace RKCIUIAutomation.Base
         private void LogTestDetails(TenantName projectName, TestEnv testEnv, string siteUrl, BrowserType browserType,
             string tcName, string tcNumber, string suite, string tcDesc, string priority, string component1, string component2)
         {
-            var comp2 = (string.IsNullOrEmpty(component2) || component2 == "Not Defined") ? string.Empty : $", {component2}";        
+            var components = (string.IsNullOrEmpty(component2)) ? $": {component1}" : $"s: {component1}, {component2}";
 
             log.Info($"################################################################");
             log.Info($"#                   RKCI ELVIS UI Test Automation");
@@ -167,7 +175,7 @@ namespace RKCIUIAutomation.Base
             log.Info($"#  Name: {tcName}");
             log.Info($"#  Desription: {tcDesc}");
             log.Info($"#  TC#: {tcNumber}, {priority}");
-            log.Info($"#  Suite: {suite}, Component(s): {component1}{comp2}");
+            log.Info($"#  Suite: {suite}, Component{components}");
             log.Info($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");
             log.Info($"################################################################\n");
         }
@@ -179,8 +187,8 @@ namespace RKCIUIAutomation.Base
             try
             {
                 ResultAdapter result = CurrentContext.Result;
-                testStatus = result.Outcome.Status;
-                CheckForTestStatusInjection();
+                testStatus = result.CheckForTestStatusInjection();
+
                 switch (testStatus)
                 {
                     case TestStatus.Failed:
@@ -197,7 +205,8 @@ namespace RKCIUIAutomation.Base
 
                             //Workaround due to bug in Klov Reporter
                             var screenshotRemotePath = $"http://10.1.1.207/errorscreenshots/{screenshotName}";
-                            testInstance.Fail($"Test Failed:<br> {stacktrace}<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">");
+                            var detailsWithScreenshot = $"Test Failed:<br> {stacktrace}<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">";
+                            testInstance.Fail(MarkupHelper.CreateLabel(detailsWithScreenshot, ExtentColor.Red));
                         }
                         else
                         {
@@ -209,14 +218,14 @@ namespace RKCIUIAutomation.Base
                         cookie = new Cookie("zaleniumTestPassed", "false");
                         break;
                     case TestStatus.Passed:
-                        testInstance.Pass("Test Passed");
+                        testInstance.Pass(MarkupHelper.CreateLabel("Test Passed", ExtentColor.Green));
                         cookie = new Cookie("zaleniumTestPassed", "true");
                         break;
                     case TestStatus.Skipped:
-                        testInstance.Skip("Test Skipped");
+                        testInstance.Skip(MarkupHelper.CreateLabel("Test Skipped", ExtentColor.Yellow));
                         break;
                     default:
-                        testInstance.Debug("Inconclusive Test Result");
+                        testInstance.Debug(MarkupHelper.CreateLabel("Inconclusive Test Result", ExtentColor.Orange));
                         break;
                 }
 

@@ -10,7 +10,7 @@ using RKCIUIAutomation.Tools;
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Test;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
-
+using System.Linq;
 
 namespace RKCIUIAutomation.Sandbox
 {
@@ -227,7 +227,7 @@ namespace RKCIUIAutomation.Sandbox
         }
 
 
-        //[TestMethod]
+        [TestMethod]
         public void TestCreateGetVar()
         {
             CreateVar("Int", 1500000);
@@ -236,8 +236,6 @@ namespace RKCIUIAutomation.Sandbox
             Console.WriteLine(GetVar("Int"));
             Console.WriteLine(GetVar("String"));
             Console.WriteLine(GetVar("NotThere"));
-
-            //
         }
 
         //[TestMethod]
@@ -390,6 +388,43 @@ namespace RKCIUIAutomation.Sandbox
         public void VerifyHipTestApi()
         {
             Console.WriteLine(HipTestApi.GetResponse().Content);
+        }
+
+        [TestMethod]
+        public void NestedIfElse()
+        {
+            bool boolean = false;
+
+            if (!boolean)
+            {
+                Console.WriteLine("1");
+                if (!boolean)
+                {
+                    Console.WriteLine("2");
+                    if (!boolean)
+                    {
+                        boolean = true;
+                        Console.WriteLine("3");
+                        if (!boolean)
+                        {
+                            Console.WriteLine("4"); 
+                        }
+                    }
+                }
+            }
+
+            if (boolean)
+            {
+                Console.WriteLine("Eureka!!");
+            }
+        }
+
+        [TestMethod]
+        public void GetNamespace()
+        {
+            string[] name = Regex.Split(GetType().Namespace, "\\.");
+            Console.WriteLine($"INDEX: {name.Length}");
+            Console.WriteLine(name[name.Length -1]);
         }
     }
 
