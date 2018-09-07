@@ -196,8 +196,8 @@ namespace RKCIUIAutomation.Base
                             */
 
                             //Workaround due to bug in Klov Reporter
-                            var screenshotRemotePath = $"\\\\10.1.1.207\\errorscreenshots\\{screenshotName}";
-                            testInstance.Fail($"Test Failed:<br> {stacktrace}<br> <img rel=\"external\" data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">");
+                            var screenshotRemotePath = $"http://10.1.1.207/errorscreenshots/{screenshotName}";
+                            testInstance.Fail($"Test Failed:<br> {stacktrace}<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">");
                         }
                         else
                         {

@@ -109,19 +109,21 @@
       <HintPath>..\packages\MongoDB.Driver.Core.2.7.0\lib\net45\MongoDB.Driver.Core.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.Engine.3.8.0\lib\Mono.Cecil.dll</HintPath>
+      <HintPath>..\packages\NUnit.Engine.3.9.0\lib\Mono.Cecil.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="nunit-agent, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.Engine.3.8.0\lib\nunit-agent.exe</HintPath>
+    <Reference Include="nunit-agent, Version=3.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.Engine.3.9.0\lib\nunit-agent.exe</HintPath>
     </Reference>
-    <Reference Include="nunit.engine, Version=3.8.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.Engine.3.8.0\lib\nunit.engine.dll</HintPath>
+    <Reference Include="nunit.engine, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.Engine.3.9.0\lib\nunit.engine.dll</HintPath>
     </Reference>
     <Reference Include="nunit.engine.api, Version=3.0.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.Engine.3.8.0\lib\nunit.engine.api.dll</HintPath>
+      <HintPath>..\packages\NUnit.Engine.3.9.0\lib\nunit.engine.api.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
@@ -270,11 +272,11 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebDriver, Version=3.13.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.WebDriver.3.13.1\lib\net45\WebDriver.dll</HintPath>
+    <Reference Include="WebDriver, Version=3.14.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.WebDriver.3.14.0\lib\net45\WebDriver.dll</HintPath>
     </Reference>
-    <Reference Include="WebDriver.Support, Version=3.13.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Selenium.Support.3.13.1\lib\net45\WebDriver.Support.dll</HintPath>
+    <Reference Include="WebDriver.Support, Version=3.14.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Selenium.Support.3.14.0\lib\net45\WebDriver.Support.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -282,6 +284,7 @@
     <Compile Include="Base\BaseClass.cs" />
     <Compile Include="Base\BaseHooks.cs" />
     <Compile Include="Base\BaseUtils.cs" />
+    <Compile Include="Base\DriverOptionsFactory.cs" />
     <Compile Include="Base\ExtentManager.cs" />
     <Compile Include="Base\ExtentTestManager.cs" />
     <Compile Include="Base\RestUtils.cs" />
