@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
-using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Tools;
-using static RKCIUIAutomation.Page.Navigation.NavMenu;
-using RKCIUIAutomation.Page;
-using MiniGuids;
 using System.Text.RegularExpressions;
 using System.Net.NetworkInformation;
-using System.Net;
-using RestSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MiniGuids;
+using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Tools;
+using RKCIUIAutomation.Page;
+using RKCIUIAutomation.Test;
+using static RKCIUIAutomation.Page.Navigation.NavMenu;
 
-namespace RKCIUIAutomation.Test
+
+namespace RKCIUIAutomation.Sandbox
 {
     /// <summary>
     /// Summary description for JUnitTest
@@ -26,23 +27,11 @@ namespace RKCIUIAutomation.Test
             //
         }
 
-        private TestContext testContextInstance;
-
         /// <summary>
         ///Gets or sets the test context which provides
         ///information about and functionality for the current test run.
         ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -173,7 +162,6 @@ namespace RKCIUIAutomation.Test
             Assert.IsTrue(numberOneType.Equals(typeof(int)));
 
         }
-
 
         [TestMethod]
         public void VerifyMSUnitTest5()
@@ -348,9 +336,6 @@ namespace RKCIUIAutomation.Test
             }
         }
 
-
-
-
         [TestMethod]
         public void StaticValues()
         {
@@ -377,7 +362,6 @@ namespace RKCIUIAutomation.Test
             Value2 = "TestTest";
         }
 
-
         [TestMethod]
         public void Ping()
         {
@@ -402,13 +386,11 @@ namespace RKCIUIAutomation.Test
             Console.WriteLine(isPingable);
         }
 
-
         [TestMethod]
         public void VerifyHipTestApi()
         {
             Console.WriteLine(HipTestApi.GetResponse().Content);
         }
-
-
     }
+
 }
