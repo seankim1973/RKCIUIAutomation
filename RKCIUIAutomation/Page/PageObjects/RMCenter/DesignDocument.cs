@@ -511,7 +511,33 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class DesignDocument_SGWay : DesignDocument
     {
         public DesignDocument_SGWay(IWebDriver driver) : base(driver) { }
+        public override void EnterRegularCommentAndDrawingPageNo()
+        {
+           
+            SelectRegularCommentReviewType();
+            SelectCommentType();
+            SelectCategory();
+            SelectDiscipline();
+            EnterComment(commentInput);
+            EnterText(By.Id("Comment_ContractReference_0_"), "Contract123");
+            EnterText(By.Id("Comment_DrawingPageNumber_0_"), "Draw123");
+            ClickBtn_SaveOnly();
 
+        }
+        public override void EnterResponseCommentAndDisagreeResponseCode()
+        {
+            
+            EnterComment(commentResponseInput);
+            SelectDisagreeResponseCode();
+            ClickBtn_SaveOnly();
+
+            ClickCommentTabNumber(2);
+
+            EnterComment(commentResponseInput);
+            SelectDisagreeResponseCode();
+            ClickBtn_SaveOnly();
+            
+        }
     }
     #endregion <--specific toSGway
 
