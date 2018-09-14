@@ -393,13 +393,16 @@ namespace RKCIUIAutomation.Sandbox
         public void HipTest_CreateTestRun()
         {
             HipTestApi hipTest = new HipTestApi();
-            string testRunName = "Test Scenario Run";
-            int[] scenarioIDs = new int[]
-            {
-                2221072
-            };
+            string[] testRunDetails = new string[]
+                { "Test Scenario Run"
+                };
 
-            var response = hipTest.CreateTestRun(testRunName, scenarioIDs);
+            List<int> scenarioIDs = new List<int>
+                {
+                    2221072
+                };
+
+            var response = hipTest.CreateTestRun(scenarioIDs, testRunDetails);
 
             //hipTest = new HipTestApi();
             //string testDesc = "Test Description Details -- Tentant, Environment";

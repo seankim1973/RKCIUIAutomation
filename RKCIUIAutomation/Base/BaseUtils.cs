@@ -11,7 +11,6 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
-using static NUnit.Framework.TestContext;
 using static RKCIUIAutomation.Base.BaseClass;
 
 namespace RKCIUIAutomation.Base
@@ -388,7 +387,7 @@ namespace RKCIUIAutomation.Base
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        public static TestStatus CheckForTestStatusInjection(this ResultAdapter result)
+        public static TestStatus CheckForTestStatusInjection(this TestContext.ResultAdapter result)
         {
             TestStatus _testStatus = TestStatus.Inconclusive;
 

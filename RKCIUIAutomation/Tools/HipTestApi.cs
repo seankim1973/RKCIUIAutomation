@@ -17,7 +17,7 @@ namespace RKCIUIAutomation.Tools
         readonly string _userId;
         readonly string _userPw;
         readonly static string proj_rkci = "95332";
-        readonly static string proj_sandbox = "658856";
+        //readonly static string proj_sandbox = "658856";
         readonly string ApiBase = $"https://app.hiptest.com/api/projects/{proj_rkci}";
 
         public enum HipTestKey
@@ -60,7 +60,7 @@ namespace RKCIUIAutomation.Tools
             return request;
         }
       
-        private IRestResponse ExecuteRequest<T>(Method requestMethod, ResourceType resource, params T[] postParams)
+        private IRestResponse ExecuteRequest<T>(Method requestMethod, ResourceType resource, T[] postParams)
         {
             IRestResponse response = null;
             IRestRequest request = null;
@@ -72,7 +72,7 @@ namespace RKCIUIAutomation.Tools
             string testStatus;
             string testRunId;
             int testResultId;
-            string testRunName;
+            string[] testRunParams;
             string testDescription;
             string endPoint = string.Empty;
             string content = string.Empty;
@@ -82,10 +82,10 @@ namespace RKCIUIAutomation.Tools
                 switch (resource)
                 {
                     case ResourceType.TestRuns:
-                        testRunName = ConvertToType<string>(postParams[0]);
-                        scenarioIDs = ConvertToType<int[]>(postParams[1]);
+                        scenarioIDs = ConvertToType<int[]>(postParams[0]);
+                        testRunParams = ConvertToType<string[]>(postParams[1]);
                         endPoint = "/test_runs";
-                        json = JSON_CreateTestRun(testRunName, scenarioIDs);
+                        json = JSON_CreateTestRun(scenarioIDs, testRunParams);
                         break;
                     case ResourceType.TestResults:
                         if (requestMethod == Method.POST)
@@ -138,11 +138,14 @@ namespace RKCIUIAutomation.Tools
                 throw;
             }
         }
+        
 
-
-        public IRestResponse CreateTestRun(string testRunName, int[] scenarioIDs)
-        {            
+        public IRestResponse CreateTestRun(List<int> scenarioIDs, string[] testRunDetails)
+        {
             string content = string.Empty;
+            string testRunName = testRunDetails[0]; //TODO: correct index value
+
+
             try
             {
                 var postParams = new object[]
@@ -201,8 +204,8 @@ namespace RKCIUIAutomation.Tools
                 response = ExecuteRequest(Method.GET, ResourceType.TestSnapshots, postParams);
                 content = response.Content;
 
-                DataList root = new DataList();
-                root = (DataList)JsonConvert.DeserializeObject(content, typeof(DataList));
+                DatumList root = new DatumList();
+                root = (DatumList)JsonConvert.DeserializeObject(content, typeof(DatumList));
 
                 int dataCount = root.data.Count;
                 List<KeyValuePair<string, int>> snapshotKVs = new List<KeyValuePair<string, int>>();
@@ -291,7 +294,6 @@ namespace RKCIUIAutomation.Tools
             }
         }
 
-
         public IRestResponse AssignResultsToTestRunBuild(string testRunId, int buildId, int testId, string testStatus, string description)
         {
             IRestResponse response = null;
@@ -317,7 +319,6 @@ namespace RKCIUIAutomation.Tools
             }
         }
 
-
         public void ReadJSON(string json)
         {
             if (!string.IsNullOrEmpty(json))
@@ -328,6 +329,9 @@ namespace RKCIUIAutomation.Tools
             }
         }
 
+
+
+        //Generate JSON Object
 
         private RootObject JSON_AssignResultsToTestRunBuild(string testRunId, int buildId, int testId, string testStatus, string description)
         {
@@ -378,8 +382,22 @@ namespace RKCIUIAutomation.Tools
             return root;
         }
 
-        private RootObject JSON_CreateTestRun(string testRunName, int[] scenarioIDs)
+        /// <summary>
+        /// Provide testRunParams as following index: [0]TestSuite, [1]TestEnv, [2]TenantName
+        /// </summary>
+        /// <param name="testRunName"></param>
+        /// <param name="scenarioIDs"></param>
+        /// <param name="testRunParams"></param>
+        /// <returns></returns>
+        private RootObject JSON_CreateTestRun(int[] scenarioIDs, string[] testRunParams)
         {
+            string testSuite = testRunParams[0];
+            string testEnv = testRunParams[1];
+            string tenantName = testRunParams[2];
+
+            string testRunName = $"{tenantName}({testEnv})";
+            string testDescription = $"UI Automation Run for: {testRunName}\nStartTime: {DateTime.Now.ToShortDateString()}, {DateTime.Now.ToShortTimeString()}\nTestSuite: {testSuite}";
+
             var root = new RootObject
             {
                 data = new Datum
@@ -387,14 +405,41 @@ namespace RKCIUIAutomation.Tools
                     attributes = new Attributes
                     {
                         name = testRunName,
+                        description = testDescription,
                         scenario_ids = scenarioIDs
+                    },
+                    relationships = new Relationships
+                    {
+                        tags = new Tags
+                        {
+                            data = new List<TagData>
+                            {
+                                new TagData
+                                {
+                                    type = "tags",
+                                    key = "Tenant",
+                                    value = tenantName
+                                },
+                                new TagData
+                                {
+                                    type = "tags",
+                                    key = "TestEnv",
+                                    value = testEnv
+                                },
+                                new TagData
+                                {
+                                    type = "tags",
+                                    key = "TestSuite",
+                                    value = testSuite
+                                }
+                            }
+                        }
                     }
                 }
             };
             return root;
         }
-
-
+        
 
     }
 
@@ -440,6 +485,14 @@ namespace RKCIUIAutomation.Tools
 
         public class Tags
         {
+            public List<TagData> data { get; set; }
+        }
+
+        public class TagData
+        {
+            public string type { get; set; }
+            public string key { get; set; }
+            public string value { get; set; }
         }
 
         public class BuildData
@@ -503,7 +556,7 @@ namespace RKCIUIAutomation.Tools
             public Relationships relationships { get; set; }
         }
 
-        public class DataList
+        public class DatumList
         {
             public List<Datum> data { get; set; }
         }
@@ -521,8 +574,5 @@ namespace RKCIUIAutomation.Tools
         }
 
     }
-
-
-
-
+    
 }
