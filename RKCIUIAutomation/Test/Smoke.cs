@@ -127,7 +127,7 @@ namespace RKCIUIAutomation.Test.Smoke
         [Description("Verify Component Name")]
         public void CommentReviewForSG()
         {
-
+            /*
             LogInfo("--------------------------1. Log in as IQFRM'----------------------");
             LoginAs(UserType.IQFRecordsMgr);
             NavigateToPage.RMCenter_Design_Documents();
@@ -195,11 +195,12 @@ namespace RKCIUIAutomation.Test.Smoke
             DesignDocCommentReview.ForwardResponseComment();
             ClickLogoutLink();
             ClickLoginLink();
-
+            */
         
             LogInfo("--------------------------8. Log in as IQF Admin,add resolution----------------------");
             LoginAs(UserType.IQFAdmin);
-            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper.ClickTab(DesignDocument.TableTab.Requires_Resolution);
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();

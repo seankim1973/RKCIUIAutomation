@@ -70,6 +70,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("DocumentId")] Action
         }
 
+        public enum CommentType
+        {
+            [StringValue("Comment_Text_")]CommentInput,
+            [StringValue("Comment_Response_")] CommentResponseInput,
+            [StringValue("Comment_ResolutionMeetingDecision_")] CommentResolutionInput,
+            [StringValue("Comment_ClosingComment_")] CommentClosingInput
+        }
+
     }
     #endregion  <-- end of DesignDocument Generic Class
 
@@ -251,17 +259,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.DocumentNumber), designDocNumber);            
         }
         
-        internal By commentInput = By.Id("Comment_Text_0_");
-        internal By commentResponseInput = By.Id("Comment_Response_0_");
-        internal By commentResolutionInput = By.Id("Comment_ResolutionMeetingDecision_0_");
-        internal By commentClosingInput = By.Id("Comment_ClosingComment_0_");
+
+        //internal By commentInput = By.Id("Comment_Text_0_");
+        //internal By commentResponseInput = By.Id("Comment_Response_0_");
+        //internal By commentResponseInput_byTabNumber(int commentTabNumber = 2) => By.Id($"Comment_Response_{commentTabNumber -1}_");
+        //internal By commentResolutionInput = By.Id("Comment_ResolutionMeetingDecision_0_");
+        //internal By commentClosingInput = By.Id("Comment_ClosingComment_0_");
 
         public virtual void EnterRegularCommentAndDrawingPageNo()
         {
             //login as commenting user (SG- IQFuser, DoTuser | SH249-- IQFUser | Garenet and GLX-- DOTUser)
             SelectRegularCommentReviewType();
             //SelectRegularCommentReviewType();
-            EnterComment(commentInput);
+            EnterComment(CommentType.CommentInput);
             EnterText(By.Id("Comment_DrawingPageNumber_0_"), "Draw123");
             ClickBtn_SaveOnly();
 
@@ -280,7 +290,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
 
             // Login as user to make response comment (All tenants - DevUser)
-            EnterComment(commentResponseInput);
+            EnterComment(CommentType.CommentResponseInput);
             SelectAgreeResponseCode(); //Disagree then different workflow
             ClickBtn_SaveOnly();
         }
@@ -289,7 +299,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
 
             // Login as user to make response comment (All tenants - DevUser)
-            EnterComment(commentResponseInput);
+            EnterComment(CommentType.CommentResponseInput);
             SelectDisagreeResponseCode(); //agree then different workflow
             ClickBtn_SaveOnly();
         }
@@ -310,10 +320,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             SortTable_Descending();
             ClickEnterBtnForRow();
             WaitForPageReady();
-
+            Thread.Sleep(2000);
 
             // Login as user to make resolution comment (All tenants - DevAdmin)
-            EnterComment(commentResolutionInput);
+            EnterComment(CommentType.CommentResolutionInput);
             SelectDisagreeResolutionCode(); //
             ClickBtn_SaveOnly();
             //wait for saveforward to load
@@ -339,7 +349,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
 
            
-            EnterComment(commentClosingInput);
+            EnterComment(CommentType.CommentClosingInput);
             SelectDDL_ClosingStamp(); 
             ClickBtn_SaveOnly();
            // WaitForPageReady();
@@ -350,7 +360,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
 
             // Login as user to make resolution comment (All tenants - DevAdmin)
-            EnterComment(commentResolutionInput);
+            EnterComment(CommentType.CommentResolutionInput);
             SelectAgreeResolutionCode(); //
             ClickSave();
             //wait for saveforward to load
@@ -449,8 +459,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickEnterBtnForRow();
             WaitForPageReady();
 
-
-            EnterComment(commentResolutionInput);
+            Thread.Sleep(2000);
+            EnterComment(CommentType.CommentResolutionInput);
             SelectDisagreeResolutionCode(); //
             ClickBtn_SaveOnly();
 
@@ -485,7 +495,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             SelectCommentType();
             SelectCategory();
             SelectDiscipline();
-            EnterComment(commentInput);
+            EnterComment(CommentType.CommentInput);
             EnterText(By.Id("Comment_ContractReference_0_"), "Contract123");
             EnterText(By.Id("Comment_DrawingPageNumber_0_"), "Draw123");
             ClickBtn_SaveOnly();
@@ -495,8 +505,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
             //This will add response and resolution both together for 249 tenant.
-            EnterComment(commentResponseInput);
-            EnterComment(commentResolutionInput);
+            EnterComment(CommentType.CommentResponseInput);
+            EnterComment(CommentType.CommentResolutionInput);
             SelectDisagreeResolutionCode();
             ClickBtn_SaveOnly();
       
@@ -518,7 +528,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             SelectCommentType();
             SelectCategory();
             SelectDiscipline();
-            EnterComment(commentInput);
+            EnterComment(CommentType.CommentInput);
             EnterText(By.Id("Comment_ContractReference_0_"), "Contract123");
             EnterText(By.Id("Comment_DrawingPageNumber_0_"), "Draw123");
             ClickBtn_SaveOnly();
@@ -527,14 +537,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
             
-            EnterComment(commentResponseInput);
+            EnterComment(CommentType.CommentResponseInput);
             SelectDisagreeResponseCode();
             ClickBtn_SaveOnly();
 
-            ClickCommentTabNumber(2);
-
-            EnterComment(commentResponseInput);
-            SelectDisagreeResponseCode();
+            int commentTabNumber = 2;
+            ClickCommentTabNumber(commentTabNumber);
+            EnterComment(CommentType.CommentResponseInput, commentTabNumber);
+            SelectDisagreeResponseCode(commentTabNumber);
             ClickBtn_SaveOnly();
             
         }

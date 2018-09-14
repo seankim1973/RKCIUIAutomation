@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
+using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 
 namespace RKCIUIAutomation.Page
 {
@@ -177,6 +178,23 @@ namespace RKCIUIAutomation.Page
         }
 
         public string GetAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetProperty(attributeName);
+
+        public void EnterComment(CommentType commentType, int commentTabNumber = 1)
+        {
+            By commentTypeLocator = By.Id($"{commentType.GetString()}{commentTabNumber -1}_");
+            ScrollToElement(commentTypeLocator);
+
+            try
+            {
+                string text = "Comment 123";
+                GetElement(commentTypeLocator).SendKeys(text);
+                LogInfo($"Entered '{text}' in field - {commentTypeLocator}");
+            }
+            catch (Exception e)
+            {
+                LogError($"Unable to enter text in field - {commentTypeLocator}", true, e);
+            }
+        }
 
         public void EnterComment(By elementByLocator)
         {
