@@ -1,14 +1,8 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 using RestSharp;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Test;
-using SimpleJson;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using static RKCIUIAutomation.Tools.DataClass;
 
