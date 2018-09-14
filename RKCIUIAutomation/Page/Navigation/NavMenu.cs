@@ -2,8 +2,6 @@
 using OpenQA.Selenium.Interactions;
 using System;
 using System.Threading;
-using static RKCIUIAutomation.Page.Action;
-using static RKCIUIAutomation.Page.PageHelper;
 
 namespace RKCIUIAutomation.Page.Navigation
 {
@@ -156,7 +154,7 @@ namespace RKCIUIAutomation.Page.Navigation
                     builder = new Actions(Driver);
                     element = Driver.FindElement(GetNavMenuByLocator(adminEnum));
                     builder.MoveToElement(element).Perform();
-                    clickLocator = GetNavMenuByLocator(ConvertToEnumType(navEnum));
+                    clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum));
 
                     if (userMgmtEnum != null)
                     {
@@ -187,7 +185,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 }
                 else
                 {
-                    clickLocator = GetNavMenuByLocator(ConvertToEnumType(navEnum), ConvertToEnumType(mainNavEnum));
+                    clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum), ConvertToType<Enum>(mainNavEnum));
                 }
             }
             catch (Exception e)

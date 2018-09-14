@@ -7,7 +7,19 @@ namespace RKCIUIAutomation.Page
 {
     public class PageHelper : BaseClass
     {
-        public Enum ConvertToEnumType<T>(T enumObject) => (Enum)Convert.ChangeType(enumObject, typeof(Enum));
+        public OutType ConvertToType<OutType>(object objToConvert)
+        {
+            try
+            {
+                Type inputType = objToConvert.GetType();
+                return (OutType)Convert.ChangeType(objToConvert, typeof(OutType));
+            }
+            catch (Exception e)
+            {
+                log.Error($"Error occured in ConvertToType method:\n{e.Message}");
+                throw;
+            }
+        }
 
         private string SetDDListFieldXpath(Enum ddListID) => $"//span[@aria-owns='{ddListID.GetString()}_listbox']";
         private string SetDDListFieldXpath(string ddListID) => $"//span[@aria-owns='{ddListID}_listbox']";
@@ -28,11 +40,11 @@ namespace RKCIUIAutomation.Page
         private string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
         private string SetDDListItemsXpath<E, T>(E ddListID, T itemIndexOrName)
         {
-            string _ddListID = (ddListID.GetType() == typeof(string)) ? (string)Convert.ChangeType(ddListID, typeof(string)) : ConvertToEnumType(ddListID).GetString();
+            string _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
             Type itemType = itemIndexOrName.GetType();
 
             string locatorXpath = string.Empty;
-            string inputValue = (string)Convert.ChangeType(itemIndexOrName, typeof(string));
+            string inputValue = ConvertToType<string>(itemIndexOrName);
 
             if (itemType.Equals(typeof(string)))
             {

@@ -239,7 +239,7 @@ namespace RKCIUIAutomation.Page
         }
         public void ExpandDDL<E>(E ddListID)
         {
-            var _ddListID = (ddListID.GetType() == typeof(string)) ? (string)Convert.ChangeType(ddListID, typeof(string)) : ConvertToEnumType(ddListID).GetString();
+            var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
             By locator = new PageHelper().GetExpandDDListButtonByLocator(_ddListID);
             try
             {
@@ -256,7 +256,7 @@ namespace RKCIUIAutomation.Page
         public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName)
         {
             WaitForPageReady();
-            var _ddListID = (ddListID.GetType() == typeof(string)) ? (string)Convert.ChangeType(ddListID, typeof(string)) : ConvertToEnumType(ddListID).GetString();
+            var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
             ExpandDDL(_ddListID);
             ClickElement(new PageHelper().GetDDListItemsByLocator(_ddListID, itemIndexOrName));
         }

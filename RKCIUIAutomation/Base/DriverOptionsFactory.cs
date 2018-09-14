@@ -4,8 +4,10 @@ using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Safari;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page;
 using System;
 using static RKCIUIAutomation.Base.BaseUtils;
+using static RKCIUIAutomation.Page.PageHelper;
 
 namespace RKCIUIAutomation.Base
 {
@@ -62,6 +64,8 @@ namespace RKCIUIAutomation.Base
     
     internal static class DriverOptionsHelper
     {
+        internal static PageHelper pageHelper = new PageHelper();
+
         internal static DriverOptions DeterminePlatform(this DriverOptions options, TestPlatform platform)
         {
             PlatformType platformType = PlatformType.Linux;
@@ -99,21 +103,21 @@ namespace RKCIUIAutomation.Base
         {
             if (browser == BrowserType.Chrome)
             {
-                ChromeOptions chromeOptions = (ChromeOptions)Convert.ChangeType(options, typeof(ChromeOptions));
+                ChromeOptions chromeOptions = pageHelper.ConvertToType<ChromeOptions>(options);
                 chromeOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
                 chromeOptions.AddAdditionalCapability("zal:name", testName, true);
                 chromeOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
             }
             else if (browser == BrowserType.Firefox)
             {
-                FirefoxOptions firefoxOptions = (FirefoxOptions)Convert.ChangeType(options, typeof(FirefoxOptions));
+                FirefoxOptions firefoxOptions = pageHelper.ConvertToType<FirefoxOptions>(options);
                 firefoxOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
                 firefoxOptions.AddAdditionalCapability("zal:name", testName, true);
                 firefoxOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
             }
             else
             {
-                DriverOptions _options = (DriverOptions)Convert.ChangeType(options, typeof(DriverOptions));
+                DriverOptions _options = pageHelper.ConvertToType<DriverOptions>(options);
                 _options.AddAdditionalCapability("zal:tz", "America/Chicago");
                 _options.AddAdditionalCapability("zal:name", testName);
                 _options.AddAdditionalCapability("zal:screenResolution", "1600x900");

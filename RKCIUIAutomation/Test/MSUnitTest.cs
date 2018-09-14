@@ -11,6 +11,8 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Test;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
 using System.Linq;
+using static RKCIUIAutomation.Tools.DataClass;
+using NUnit.Framework.Interfaces;
 
 namespace RKCIUIAutomation.Sandbox
 {
@@ -282,8 +284,11 @@ namespace RKCIUIAutomation.Sandbox
 
             Type enumType = tblTabEnum.GetType();
             object kendoTabStripEnum = Enum.Parse(enumType, "KendoTabStripId");
-            Enum tabStripEnum = ConvertToEnumType(kendoTabStripEnum);
-            Console.WriteLine($"#### {tabStripEnum.GetString()}");
+            Enum tabStripEnum = ConvertToType<Enum>(kendoTabStripEnum);
+            string expected = "KENDOUItabStripID";
+            string actual = tabStripEnum.GetString();
+            Console.WriteLine($"EXPECTED VALUE: {expected}\nACTUAL VALUE: {actual}");
+            Assert.AreEqual(expected,actual);
         }
 
         [TestMethod]
@@ -385,9 +390,49 @@ namespace RKCIUIAutomation.Sandbox
         }
 
         [TestMethod]
-        public void VerifyHipTestApi()
+        public void HipTest_CreateTestRun()
         {
-            Console.WriteLine(HipTestApi.GetResponse().Content);
+            HipTestApi hipTest = new HipTestApi();
+            string testRunName = "Test Scenario Run";
+            int[] scenarioIDs = new int[]
+            {
+                2221072
+            };
+
+            var response = hipTest.CreateTestRun(testRunName, scenarioIDs);
+
+            //hipTest = new HipTestApi();
+            //string testDesc = "Test Description Details -- Tentant, Environment";
+            //string testRunId = hipTest.GetTestRunId(response);
+            //response = hipTest.AddTestResultToTestRun(testRunId, scenarioIDs[0], "passed", testDesc);
+            Console.WriteLine(response.Content);
+        }
+
+        [TestMethod]
+        public void HipTest_GetTestRunScenarios()
+        {
+            HipTestApi hipTest = new HipTestApi();
+            hipTest.GetTestSnapshotResultsID("193991");
+        }
+
+        [TestMethod]
+        public void HipTest_UpdateTestResult()
+        {
+            /*
+                TestName: TEST_SCENARIO
+                TestSnapshotID: 7735629
+                2018-09-13 19:34:17,838 DEBUG :  API Endpoint: /test_runs/193991/test_snapshots/7735629?include=last-result
+                LastResult ID: 7735629
+             */
+
+            string testRunId = "193991";
+            int testId = 7735629;
+            string testResultId = "7735629";
+            string testStatus = TestStatus.Passed.ToString();
+            string description = "Test Description - (Env)Tenant";
+
+            HipTestApi hipTest = new HipTestApi();
+            hipTest.UpdateTestResult(testRunId, testId, testResultId, testStatus, description);
         }
 
         [TestMethod]
