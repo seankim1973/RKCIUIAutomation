@@ -63,20 +63,28 @@ namespace RKCIUIAutomation.Page
 
         private int GetElementIndex(By findElementsLocator, string matchValue)
         {
-            IList<IWebElement> elements = new List<IWebElement>();
-            elements = Driver.FindElements(findElementsLocator);
-
             int index = -1;
-            for (int i = 0; i < elements.Count; i++)
+            try
             {
-                string queueValue = elements[i].GetAttribute("queue");
-                bool match = (queueValue == matchValue) ? true : false;
+                IList<IWebElement> elements = new List<IWebElement>();
+                elements = Driver.FindElements(findElementsLocator);
 
-                if (match == true)
+                for (int i = 0; i < elements.Count; i++)
                 {
-                    index = i;
-                    break;
+                    string queueValue = elements[i].GetAttribute("queue");
+                    bool match = (queueValue == matchValue) ? true : false;
+
+                    if (match == true)
+                    {
+                        index = i;
+                        break;
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                LogError("Error occured while getting element index", true, e);
+                throw;
             }
             return index;
         }
