@@ -9,11 +9,13 @@ namespace RKCIUIAutomation.Config
     {
         public class Component
         {
-            public const string Breaksheet = "Breaksheet";
+            public const string Breaksheet_Module = "Breaksheet_Module";
             public const string CDR = "CDR";
             public const string Control_Point = "Control_Point";
             public const string Correspondence_Log = "Correspondence_Log";
-            public const string CVL_List_Item = "CVL_List_Item";
+            public const string CVL_List_Items = "CVL_List_Items";
+            public const string CVL_Lists = "CVL_Lists";
+            public const string CVL_List = "CVL_List";
             public const string Design_Comment_Review = "Design_Comment_Review";
             public const string DIR = "DIR";
             public const string Document_Repository = "Document_Repository";
@@ -123,9 +125,9 @@ namespace RKCIUIAutomation.Config
         private readonly List<string> CommonComponents = new List<string>
         {
             Component.Link_Coverage,
-            Component.Breaksheet,
+            Component.Breaksheet_Module,
             Component.CDR,
-            Component.CVL_List_Item,
+            Component.CVL_List_Items,
             Component.Other,
             Component.Project_Configuration,
             Component.Search,

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -101,10 +102,11 @@ namespace RKCIUIAutomation.Base
 
         
         //ExtentReports Loggers
-        public void LogIgnore(string msg)
+        public void LogAssertIgnore(string msg)
         {
             testInstance.Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
             log.Debug(msg);
+            Assert.Ignore(msg);
         }
 
         public void LogFail(string details, Exception e = null)
@@ -249,9 +251,8 @@ namespace RKCIUIAutomation.Base
 
         private static string GetTestContextProperty(TestContextProperty testContextProperty)
         {
-            string context = string.Empty;
-
             TestContext.TestAdapter testInstance = TestContext.CurrentContext.Test;
+            string context = string.Empty;
 
             switch (testContextProperty)
             {
@@ -360,7 +361,7 @@ namespace RKCIUIAutomation.Base
             return Regex.Replace(Regex.Replace(value, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
         }
 
-        public static void AssignReportCategories(this ExtentTest testInstance, params string[] category)
+        public static void AssignReportCategories(this ExtentTest testInstance, string[] category)
         {
             for (int i = 0; i < category.Length; i++)
             {
@@ -378,8 +379,9 @@ namespace RKCIUIAutomation.Base
         public static void InjectTestStatus(TestStatus status, string logMsg)
         {
             string testName = BaseUtils.GetTestName();
-            pgbHelper.CreateVar($"{testName}_msgKey", logMsg);
-            pgbHelper.CreateVar($"{testName}_statusKey", status.ToString());
+            var prefix = $"{testEnv}_{tenantName}_{testName}";
+            pgbHelper.CreateVar($"{prefix}_msgKey", logMsg);
+            pgbHelper.CreateVar($"{prefix}_statusKey", status.ToString());
         }
 
         /// <summary>
@@ -387,16 +389,26 @@ namespace RKCIUIAutomation.Base
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        public static TestStatus CheckForTestStatusInjection(this TestContext.ResultAdapter result)
+        public static List<object> CheckForTestStatusInjection(this TestContext.ResultAdapter result)
         {
+            PageHelper pageHelper = new PageHelper();
+            List<object> testResults = new List<object>();
+
             TestStatus _testStatus = TestStatus.Inconclusive;
 
             string testName = BaseUtils.GetTestName();
-            string logMessage = pgbHelper.GetVar($"{testName}_msgKey");
-            string injStatus = pgbHelper.GetVar($"{testName}_statusKey");
+            var prefix = $"{testEnv}_{tenantName}_{testName}";
+            var injStatusKey = $"{prefix}_statusKey";
+            var injMsgKey = $"{prefix}_msgKey";
 
-            if (!string.IsNullOrEmpty(injStatus))
+            string injStatus = string.Empty;
+            string injMsg = string.Empty;
+
+            if (pgbHelper.HashKeyExists(injStatusKey))
             {
+                injStatus = pgbHelper.GetVar(injStatusKey);
+                injMsg = pgbHelper.GetVar(injMsgKey);
+
                 switch (injStatus)
                 {
                     case "Warning":
@@ -415,7 +427,10 @@ namespace RKCIUIAutomation.Base
                 _testStatus = result.Outcome.Status;
             }
 
-            return _testStatus;
+            testResults.Add(_testStatus);
+            testResults.Add(injMsg);
+
+            return testResults;
         }
     }
 }

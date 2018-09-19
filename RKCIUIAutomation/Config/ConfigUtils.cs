@@ -9,12 +9,6 @@ namespace RKCIUIAutomation.Config
 {
     public class ConfigUtils : ProjectProperties
     {
-        //public TestPlatform GetTestPlatform(string nunitArg) => (TestPlatform)Enum.Parse(typeof(TestPlatform), nunitArg);
-        //public BrowserType GetBrowserType(string nunitArg) => (BrowserType)Enum.Parse(typeof(BrowserType), nunitArg);
-        //public TestEnv GetTestEnv(string nunitArg) => (TestEnv)Enum.Parse(typeof(TestEnv), nunitArg);
-        //public TenantName GetTenantName(string nunitArg) => (TenantName)Enum.Parse(typeof(TenantName), nunitArg);
-        //public Reporter GetReporter(string nunitArg) => (Reporter)Enum.Parse(typeof(Reporter), nunitArg);
-
         public TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg) => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nunitArg);
         
         public string GetSiteUrl(TestEnv testEnv, TenantName project)
@@ -33,7 +27,7 @@ namespace RKCIUIAutomation.Config
 
         public string GetHipTestCreds(HipTestKey credType)
         {
-            string credKey = $"{credType}";
+            string credKey = $"{credType}2";
             return GetValueFromConfigManager(hiptestKey: credKey);
         }
 

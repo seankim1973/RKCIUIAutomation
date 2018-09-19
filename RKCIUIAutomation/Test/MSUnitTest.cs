@@ -10,8 +10,6 @@ using RKCIUIAutomation.Tools;
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Test;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
-using System.Linq;
-using static RKCIUIAutomation.Tools.DataClass;
 using NUnit.Framework.Interfaces;
 
 namespace RKCIUIAutomation.Sandbox
@@ -408,14 +406,15 @@ namespace RKCIUIAutomation.Sandbox
             //string testDesc = "Test Description Details -- Tentant, Environment";
             //string testRunId = hipTest.GetTestRunId(response);
             //response = hipTest.AddTestResultToTestRun(testRunId, scenarioIDs[0], "passed", testDesc);
-            Console.WriteLine(response.Content);
+            Console.WriteLine(response);
         }
 
         [TestMethod]
         public void HipTest_GetTestRunScenarios()
         {
+            int testCaseNumber = 1234;
             HipTestApi hipTest = new HipTestApi();
-            hipTest.GetTestSnapshotResultsID("193991");
+            hipTest.BuildTestRunSnapshotData(195019, testCaseNumber);
         }
 
         [TestMethod]
@@ -428,14 +427,15 @@ namespace RKCIUIAutomation.Sandbox
                 LastResult ID: 7735629
              */
 
-            string testRunId = "193991";
-            int testId = 7735629;
-            string testResultId = "7735629";
-            string testStatus = TestStatus.Passed.ToString();
+            int testRunId = 195019;
+            int testCaseNumber = 2238576;
+            //int testResultId = 7735629;
+            TestStatus testStatus = TestStatus.Passed;
             string description = "Test Description - (Env)Tenant";
 
             HipTestApi hipTest = new HipTestApi();
-            hipTest.UpdateTestResult(testRunId, testId, testResultId, testStatus, description);
+            hipTest.BuildTestRunSnapshotData(testRunId, testCaseNumber);
+            hipTest.UpdateHipTestRunData(testCaseNumber, testStatus, description);
         }
 
         [TestMethod]

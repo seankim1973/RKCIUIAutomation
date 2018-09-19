@@ -26,6 +26,14 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         public static TestStatus testStatus;
 
+        [ThreadStatic]
+        public int hiptestRunId;
+        [ThreadStatic]
+        public string[] testRunDetails;
+        [ThreadStatic]
+        public List<int> hiptestRunTestCaseIDs;
+
+
         //Test Environment
         public static TestPlatform testPlatform;
         public static BrowserType browserType;
@@ -36,8 +44,6 @@ namespace RKCIUIAutomation.Base
         public static bool hiptest;
 
         //TestCase Details
-        private List<int> testCaseIDs;
-        private string[] testRunDetails;
         private string testName;
         private string testSuite;
         private string testPriority;
@@ -48,7 +54,8 @@ namespace RKCIUIAutomation.Base
 
         private Cookie cookie = null;
         ConfigUtils Configs = new ConfigUtils();
-        
+        HipTestApi HiptestAPI;
+
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
@@ -67,9 +74,15 @@ namespace RKCIUIAutomation.Base
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
-            testCaseIDs = (hiptest) ? new List<int> { } : null;
+            hiptestRunTestCaseIDs = (hiptest) ? new List<int> { } : null;
             testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local) ? TestPlatform.Windows : testPlatform;
             DetermineReportFilePath();
+
+            if (hiptest)
+            {
+                
+                
+            }
         }
 
         [OneTimeTearDown]
@@ -77,9 +90,16 @@ namespace RKCIUIAutomation.Base
         {
             if (hiptest)
             {
-                string testRunName = $"{tenantName}({testEnv})";
-                HipTestApi hipTestApi = new HipTestApi();
-                hipTestApi.CreateTestRun(testCaseIDs, testRunDetails);
+                try
+                {
+                    HiptestAPI = new HipTestApi();
+                    HiptestAPI.SyncTestRun(hiptestRunId);
+                }
+                catch (Exception e)
+                {
+                    log.Error(e.Message);
+                    throw;
+                }
             }
             
             if (Driver != null)
@@ -103,7 +123,7 @@ namespace RKCIUIAutomation.Base
 
             if (hiptest)
             {
-                testCaseIDs.Add(int.Parse(testCaseNumber));
+                hiptestRunTestCaseIDs.Add(int.Parse(testCaseNumber));
             }
 
             testRunDetails = new string[]
@@ -126,7 +146,7 @@ namespace RKCIUIAutomation.Base
             List<string> tenantComponents = new List<string>();
             ProjectProperties props = new ProjectProperties();
             tenantComponents = props.GetComponentsForProject(tenantName);
-
+            
             if (tenantComponents.Contains(testComponent1))
             {
                 if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
@@ -154,11 +174,10 @@ namespace RKCIUIAutomation.Base
         {
             string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
             testInstance.AssignReportCategories(reportCategories);
-            LogIgnore(msg);
-            Assert.Ignore(msg);
+            LogAssertIgnore(msg);
         }
 
-        private void LogTestDetails(params string[] testDetails)
+        private void LogTestDetails(string[] testDetails)
         {
             string _suite = testDetails[0];
             string _priority = testDetails[1];
@@ -194,12 +213,14 @@ namespace RKCIUIAutomation.Base
             try
             {
                 ResultAdapter result = CurrentContext.Result;
-                testStatus = result.CheckForTestStatusInjection();
-
+                List<object> testResults = result.CheckForTestStatusInjection();
+                testStatus = (TestStatus)testResults[0];
+                
                 switch (testStatus)
                 {
                     case TestStatus.Failed:
-                        string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? "" : $"<pre>{result.StackTrace}</pre>";
+                        string injMsg = (string)testResults[1];
+                        string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? (injMsg = string.IsNullOrEmpty(injMsg) ? "": $"{injMsg}<br> ") : $"<pre>{result.StackTrace}</pre>";
                         string screenshotName = CaptureScreenshot(GetTestName());
                        
                         if(reporter == Reporter.Klov)
@@ -246,6 +267,30 @@ namespace RKCIUIAutomation.Base
                     }
                     Driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
                     Driver.Close();
+
+                    if (hiptest)
+                    {
+                        try
+                        {
+                            HiptestAPI = new HipTestApi();
+                            int tcNumber = int.Parse(testCaseNumber);
+                            hiptestRunId = HiptestAPI.CreateTestRun(hiptestRunTestCaseIDs, testRunDetails);
+                            HiptestAPI.BuildTestRunSnapshotData(hiptestRunId, tcNumber);
+                            HiptestAPI.UpdateHipTestRunData(tcNumber, testStatus, testDescription);
+                            HiptestAPI.SyncTestRun(hiptestRunId);
+
+                            //--get tcSnapshotId and create map of original TC# with tcSnapshotId
+                            //--get test case result and get tcSnapshotId from hashmap
+                            //--create map of tcSnapshotId and result
+                            //--update testCaseRun>tcSnapshot with result
+                            //--sync testCaseRun in hipTest
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error(e.Message);
+                            throw;
+                        }
+                    }
                 }
             }
             catch (Exception e)

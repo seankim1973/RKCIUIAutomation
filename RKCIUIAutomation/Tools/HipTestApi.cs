@@ -1,24 +1,29 @@
-﻿using Newtonsoft.Json;
+﻿using System;
 using RestSharp;
+using Newtonsoft.Json;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Test;
-using System;
 using System.Collections.Generic;
-using static RKCIUIAutomation.Tools.DataClass;
+using RKCIUIAutomation.Page;
+using NUnit.Framework.Interfaces;
+using System.Net;
 
 namespace RKCIUIAutomation.Tools
 {
-    public class HipTestApi : TestBase
+    public class HipTestApi : HipTestData
     {
         [ThreadStatic]
-        readonly IRestClient client;
-        readonly string _accessToken;
-        readonly string _clientId;
-        readonly string _userId;
-        readonly string _userPw;
-        readonly static string proj_rkci = "95332";
-        //readonly static string proj_sandbox = "658856";
-        readonly string ApiBase = $"https://app.hiptest.com/api/projects/{proj_rkci}";
+        private readonly IRestClient client;
+        private readonly string _accessToken;
+        private readonly string _clientId;
+        private readonly string _userId;
+        private readonly string _userPw;
+        //private readonly static string proj_rkci = "95332";
+        private readonly static string newRKCI = "100288";
+        private readonly string ApiBase = $"https://app.hiptest.com/api/projects/{newRKCI}";
+
+        [ThreadStatic]
+        public List<KeyValuePair<int, List<object>>> hipTestRunData;
+
 
         public enum HipTestKey
         {
@@ -33,8 +38,13 @@ namespace RKCIUIAutomation.Tools
             BuildIDs,
             TestRuns,
             TestResults,
-            TestSnapshots
-            
+            TestSnapshots            
+        }
+
+        enum TestRunType
+        {
+            Sync,
+            GetTest
         }
                 
         public HipTestApi()
@@ -47,33 +57,40 @@ namespace RKCIUIAutomation.Tools
             _userPw = config.GetHipTestCreds(HipTestKey.HipTest_PWD);
         }
                 
-#pragma warning disable IDE0017 // Simplify object initialization
         public IRestRequest SetRequest(Method requestMethod, string resource)
         {
-            var request = new RestRequest(requestMethod);
-            request.Resource = resource;
-            request
-                .AddHeader("Accept", "application/vnd.api+json; version=1")
-                .AddHeader("access-token", _accessToken)
-                .AddHeader("client", _clientId)
-                .AddHeader("uid", _userId);
-            return request;
+            RestRequest request = null;
+            try
+            {
+                request = new RestRequest(requestMethod)
+                {
+                    Resource = resource
+                };
+
+                request
+                    .AddHeader("Accept", "application/vnd.api+json; version=1")
+                    .AddHeader("access-token", _accessToken)
+                    .AddHeader("client", _clientId)
+                    .AddHeader("uid", _userId);
+                return request;
+            }
+            catch (Exception e)
+            {
+                log.Error($"Error occured in SetRequest Method.\n{e.Message}");
+                throw;
+            }
         }
       
-        private IRestResponse ExecuteRequest<T>(Method requestMethod, ResourceType resource, T[] postParams)
+        private IRestResponse ExecuteRequest(Method requestMethod, ResourceType resource, RootObject json = null, params object[] requestParams)
         {
             IRestResponse response = null;
             IRestRequest request = null;
-            object json = null;
 
-            int testId;
             int buildId;
-            int[] scenarioIDs;
-            string testStatus;
-            string testRunId;
+            int testRunId;
             int testResultId;
-            string[] testRunParams;
-            string testDescription;
+            int testSnapshotId;
+
             string endPoint = string.Empty;
             string content = string.Empty;
 
@@ -82,41 +99,51 @@ namespace RKCIUIAutomation.Tools
                 switch (resource)
                 {
                     case ResourceType.TestRuns:
-                        scenarioIDs = ConvertToType<int[]>(postParams[0]);
-                        testRunParams = ConvertToType<string[]>(postParams[1]);
-                        endPoint = "/test_runs";
-                        json = JSON_CreateTestRun(scenarioIDs, testRunParams);
+
+                        if (requestMethod == Method.GET)
+                        {
+                            TestRunType testRunType = (TestRunType)requestParams[0];
+                            testRunId = ConvertToType<int>(requestParams[1]);
+
+                            if (testRunType == TestRunType.GetTest)
+                            {
+                                testSnapshotId = ConvertToType<int>(requestParams[3]);
+                                bool allTests = ConvertToType<bool>(requestParams[2]);
+                                endPoint = allTests ? $"/test_runs/{testRunId}/test_snapshots" : $"/test_runs/{testRunId}";
+                            }
+                            else if (testRunType == TestRunType.Sync)
+                            {
+                                endPoint = $"/test_runs/{testRunId}?show_synchronization_information=true";
+                            }
+                        }
+                        else
+                        {
+                            endPoint = "/test_runs";
+                        }
                         break;
                     case ResourceType.TestResults:
                         if (requestMethod == Method.POST)
                         {
-                            testRunId = ConvertToType<string>(postParams[0]);
-                            buildId = ConvertToType<int>(postParams[1]);
-                            testId = ConvertToType<int>(postParams[2]);
-                            testStatus = ConvertToType<string>(postParams[3]);
-                            testDescription = ConvertToType<string>(postParams[4]);
+                            testRunId = ConvertToType<int>(requestParams[0]);
+                            buildId = ConvertToType<int>(requestParams[1]);
                             endPoint = $"/test_runs/{testRunId}/builds/{buildId}/test_results";
-                            json = JSON_AssignResultsToTestRunBuild(testRunId, buildId, testId, testStatus, testDescription); 
                         }
                         else if (requestMethod == Method.PATCH)
                         {
-                            testRunId = ConvertToType<string>(postParams[0]);
-                            testId = ConvertToType<int>(postParams[1]);
-                            testResultId = ConvertToType<int>(postParams[2]);
-                            testStatus = ConvertToType<string>(postParams[3].ToString());
-                            testDescription = ConvertToType<string>(postParams[4]);
-                            endPoint = $"/test_runs/{testRunId}/test_snapshots/{testId}/test_results/{testResultId}";
-                            json = JSON_UpdateTestResult(testResultId, testStatus, testDescription);
+                            testRunId = ConvertToType<int>(requestParams[0]);
+                            testSnapshotId = ConvertToType<int>(requestParams[1]);
+                            testResultId = ConvertToType<int>(requestParams[2]);
+                            endPoint = $"/test_runs/{testRunId}/test_snapshots/{testSnapshotId}/test_results/{testResultId}";
                         }
                         else
                         {
-                            testRunId = ConvertToType<string>(postParams[0]);
-                            testId = ConvertToType<int>(postParams[1]);
-                            endPoint = $"/test_runs/{testRunId}/test_snapshots/{testId}?include=last-result";
+                            testRunId = ConvertToType<int>(requestParams[0]);
+                            testSnapshotId = ConvertToType<int>(requestParams[1]);
+                            endPoint = $"/test_runs/{testRunId}/test_snapshots/{testSnapshotId}?include=last-result";
                         }
                         break;
                     case ResourceType.TestSnapshots:
-                        testRunId = ConvertToType<string>(postParams[0]);
+                        testRunId = ConvertToType<int>(requestParams[0]);
                         endPoint = $"/test_runs/{testRunId}/test_snapshots";
                         break;
                 }
@@ -130,160 +157,329 @@ namespace RKCIUIAutomation.Tools
                 log.Debug($"API Endpoint: {endPoint}");
 
                 response = client.Execute(request);
+                Console.WriteLine(response.Content);
+
                 return response;
             }
             catch (Exception e)
             {
-                log.Error($"{response.Content}\n{e}");
+                var statusCode = response.StatusCode;
+                log.Error($"CreateTestRun StatusCode: {statusCode.ToString()}\n{e.Message}");
                 throw;
             }
         }
-        
 
-        public IRestResponse CreateTestRun(List<int> scenarioIDs, string[] testRunDetails)
+
+        /// <summary>
+        /// Provide test case numbers(scenarioIDs), as string[] array, to be included in the Hiptest Test Run.
+        /// Provide testRunParams as following index: [0]TestSuite, [1]TestEnv, [2]TenantName.
+        /// </summary>
+        /// <param name="scenarioIDs"></param>
+        /// <param name="testRunDetails"></param>
+        /// <returns></returns>
+        public int CreateTestRun(List<int> scenarioIDs, string[] testRunDetails)
         {
+            IRestResponse response = null;
             string content = string.Empty;
-            string testRunName = testRunDetails[0]; //TODO: correct index value
-
 
             try
             {
-                var postParams = new object[]
+                string testSuite = testRunDetails[0];
+                string testEnv = testRunDetails[1];
+                string tenantName = testRunDetails[2];
+
+                string testRunName = $"{testEnv}_{tenantName}_{testSuite}";
+                string testDescription = $"UI Automation Run for: ({testEnv}){tenantName}\nStartTime: {DateTime.Now.ToShortDateString()}, {DateTime.Now.ToShortTimeString()}\nTestSuite: {testSuite}";
+
+                var json = new RootObject
                 {
-                    testRunName,
-                    scenarioIDs
+                    data = new Datum
+                    {
+                        attributes = new Attributes
+                        {
+                            name = testRunName,
+                            description = testDescription,
+                            scenario_ids = scenarioIDs.ToArray()
+                        },
+                        relationships = new Relationships
+                        {
+                            tags = new Tags
+                            {
+                                data = new List<TagData>
+                                {
+                                    new TagData
+                                    {
+                                        type = "tags",
+                                        key = "Tenant",
+                                        value = tenantName
+                                    },
+                                    new TagData
+                                    {
+                                        type = "tags",
+                                        key = "TestEnv",
+                                        value = testEnv
+                                    },
+                                    new TagData
+                                    {
+                                        type = "tags",
+                                        key = "TestSuite",
+                                        value = testSuite
+                                    }
+                                }
+                            }
+                        }
+                    }
                 };
 
-                IRestResponse response = ExecuteRequest(Method.POST, ResourceType.TestRuns, postParams);
+                response = ExecuteRequest(Method.POST, ResourceType.TestRuns, json);
                 content = response.Content;
-                return response;
-            }
-            catch (Exception e)
-            {
-                log.Error($"{content}\n{e}");
-                throw;
-            }       
-        }
-
-        public string GetTestRunId(IRestResponse response)
-        {
-            string content = string.Empty;
-            string testRunId = string.Empty;
-
-            try
-            {
-                content = response.Content;
-                if (!string.IsNullOrEmpty(content))
-                {
-                    RootObject root = JsonConvert.DeserializeObject<RootObject>(content);
-                    testRunId = (root.data.id).ToString();
-                }
                 
-                Console.WriteLine($"TEST RUN ID: {testRunId}");
-                return testRunId;
+                try
+                {
+                    //Get Test Run ID
+                    RootObject root = JsonConvert.DeserializeObject<RootObject>(content);
+                    hiptestRunId = root.data.id;
+                    log.Debug($"Created TestRun:\nName: {testRunName}\n ID: {hiptestRunId}");
+                    return hiptestRunId;
+                }
+                catch (Exception e)
+                {
+                    var statusCode = response?.StatusCode;
+                    log.Error($"GetTestRunID StatusCode: {statusCode.ToString()}\n{e.Message}");
+                    throw;
+                }
             }
             catch (Exception e)
             {
-                log.Error($"{content}\n{e}");
+                var statusCode = response?.StatusCode;
+                log.Error($"CreateTestRun StatusCode: {statusCode.ToString()}\n{e.Message}");
                 throw;
             }
         }
 
-        public List<KeyValuePair<string, int>> GetTestRunSnapshotDetails(string testRunId)
-        {
-            string content = string.Empty;
-            IRestResponse response = null;
 
-            var postParams = new object[]
+        /// <summary>
+        /// Creates a List of KeyValue Pairs containing testCaseNumber as key and List with index [0](int)testRunId, [1](int)scenarioSnapshotId, [2](int)lastResultId as value
+        /// </summary>
+        /// <param name="testRunId"></param>
+        /// <returns></returns>
+        public void BuildTestRunSnapshotData(int testRunId, int testCaseNumber)
+        {
+            IRestResponse response = null;
+            string content = string.Empty;
+            string testName = string.Empty;
+            int scenarioSnapshotId = -1;
+            int lastResultId = -1;
+
+            var requestParams = new object[]
             {
                 testRunId
             };
 
             try
             {
-                response = ExecuteRequest(Method.GET, ResourceType.TestSnapshots, postParams);
+                response = ExecuteRequest(Method.GET, ResourceType.TestSnapshots, null, requestParams);
                 content = response.Content;
 
-                DatumList root = new DatumList();
-                root = (DatumList)JsonConvert.DeserializeObject(content, typeof(DatumList));
-
-                int dataCount = root.data.Count;
-                List<KeyValuePair<string, int>> snapshotKVs = new List<KeyValuePair<string, int>>();
-
+                DatumList dataList = new DatumList();
+                dataList = (DatumList)JsonConvert.DeserializeObject(content, typeof(DatumList));
+                
+                int dataCount = dataList.data.Count;
                 for (int i = 0; i < dataCount; i++)
                 {
-                    int testSnapshotID = root.data[i].id;
-                    string testName = root.data[i].attributes.name;
-                    snapshotKVs.Add(new KeyValuePair<string, int>(testName, testSnapshotID));
-                }
+                    //tcNumber = dataList.data[i].id;
+                    testName = dataList.data[i].attributes.name;
+                    scenarioSnapshotId = dataList.data[i].attributes.scenario_snapshot_id;
+                    log.Debug($"\n### TestSnapshotID: {testCaseNumber}\n### TestName: {testName}\n### ScenarioSnapshotID: {scenarioSnapshotId}");
 
-                return snapshotKVs;
-            }
-            catch (Exception e)
-            {
-                content = response == null ? "NULL Response" : content;
-                log.Error($"{content}\n{e.Message}");
-                throw;
-            }
-        }
-
-        public IRestResponse GetTestSnapshotResultsID(string testRunId)
-        {
-            IRestResponse response = null;
-            string content = string.Empty;
-
-            try
-            {
-                List<KeyValuePair<string, int>> kvPairs = GetTestRunSnapshotDetails(testRunId);
-                for (int i = 0; i < kvPairs.Count; i++)
-                {
-                    string testName = kvPairs[i].Key;
-                    int testSnapshotId = kvPairs[i].Value;
-                    Console.WriteLine($"TestName: {testName}\nTestSnapshotId{testSnapshotId}");
-                    var postParams = new object[]
+                    try
+                    {
+                        requestParams = new object[]
                         {
                             testRunId,
-                            testSnapshotId
+                            testCaseNumber
                         };
 
-                    response = ExecuteRequest(Method.GET, ResourceType.TestResults, postParams);
-                    content = response.Content;
+                        response = ExecuteRequest(Method.GET, ResourceType.TestResults, null, requestParams);
+                        content = response.Content;
+                        
+                        RootObject root = new RootObject();
+                        root = (RootObject)JsonConvert.DeserializeObject(content, typeof(RootObject));
 
-                    RootObject root = new RootObject();
-                    root = (RootObject)JsonConvert.DeserializeObject(content, typeof(RootObject));
-
-                    string lastResultId = root.included[0].id;
-                    Console.WriteLine($"LastResult ID: {lastResultId}\n");
+                        lastResultId = root.included[0].id;
+                        log.Debug($"\n### LastResultID: {lastResultId}\n");
+                    }
+                    catch (Exception e)
+                    {
+                        var statusCode = response?.StatusCode;
+                        log.Error($"TestResult StatusCode: {statusCode.ToString()}\n{e.Message}");
+                        throw;
+                    }
                 }
 
-                return response;
+                List<object> scenarioSnapshotData = new List<object>
+                {
+                    testRunId,
+                    scenarioSnapshotId,
+                    lastResultId
+                };
+
+                hipTestRunData = new List<KeyValuePair<int, List<object>>>
+                {
+                    new KeyValuePair<int, List<object>>(testCaseNumber, scenarioSnapshotData)
+                };                
             }
             catch (Exception e)
             {
-                content = response == null ? "NULL Response" : content;
-                log.Error($"{content}\n{e.Message}");
+                var statusCode = response?.StatusCode;
+                log.Error($"ScenarioSnapshot StatusCode: {statusCode.ToString()}\n{e.Message}");
                 throw;
             }
-            
         }
 
-        public IRestResponse UpdateTestResult(string testRunId, int testId, string testResultId, string testStatus, string description)
+        /// <summary>
+        /// Updates Hiptest TestRun with TestStatus and Description
+        /// </summary>
+        /// <param name="testCaseNumber"></param>
+        /// <param name="testStatus"></param>
+        /// <param name="description"></param>
+        public void UpdateHipTestRunData(int testCaseNumber, TestStatus testStatus, string description)
+        {
+            IRestResponse response = null;
+
+            int testRunId;
+            int testSnapshotId;
+            int testResultId;
+
+            var kvPairsCount = hipTestRunData.Count;
+            try
+            {
+                PageHelper pageHelper = new PageHelper();
+
+                for (int i = 0; i < kvPairsCount; i++)
+                {
+                    KeyValuePair<int, List<object>> pair = hipTestRunData[i];
+
+                    if (pair.Key == testCaseNumber)
+                    {
+                        List<object> snapshotData = pair.Value;
+
+                        var requestParams = new object[]
+                        {
+                            testRunId = (int)snapshotData[0],
+                            testSnapshotId = (int)snapshotData[1],
+                            testResultId = (int)snapshotData[2]
+                        };
+
+                        var json = new RootObject
+                        {
+                            data = new Datum
+                            {
+                                type = "test-results",
+                                id = testResultId,
+                                attributes = new Attributes
+                                {
+                                    status = testStatus.ToString().ToLower(),
+                                    status_author = "RKCIUIAutomation",
+                                    description = description
+                                }
+                            }
+                        };
+
+                        response = ExecuteRequest(Method.PATCH, ResourceType.TestResults, json, requestParams);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                var statusCode = response?.StatusCode;
+                log.Error($"StatusCode: {statusCode.ToString()}\n{e.Message}");
+                throw;
+            }
+        }
+
+
+        /// <summary>
+        /// Provide taskParams[] with index: [0](int)TestRunID, [1](bool)AllTests, **[2](int)testSnapshotID
+        /// **testSnapshotID is not required if performing Sync for AllTests
+        /// </summary>
+        /// <param name="taskParams"></param>
+        /// <returns></returns>
+        public IRestResponse GetTestRun(object[] taskParams) => GetTestRunTask(TestRunType.GetTest, taskParams);
+        
+        /// <summary>
+        /// Syncs test results for test cases in a TestRun
+        /// </summary>
+        /// <param name="taskParams"></param>
+        /// <returns></returns>
+        public void SyncTestRun(int testRunId) => GetTestRunTask(TestRunType.Sync, testRunId);
+        
+        private IRestResponse GetTestRunTask<T>(TestRunType testRunType, T taskParams)
+        {
+            IRestResponse response = null;
+            Type paramType = taskParams.GetType();
+            int testBuildId = -1;
+
+            try
+            {
+                if (paramType == typeof(int))
+                {
+                    testBuildId = ConvertToType<int>(taskParams);
+                }
+                else if (paramType == typeof(object[]))
+                {
+                    testBuildId = (int)ConvertToType<object[]>(taskParams)[0];
+                }
+
+                var testRunTaskParms = new object[]
+                {
+                    testRunType,
+                    testBuildId,
+                };
+
+                response = ExecuteRequest(Method.GET, ResourceType.TestRuns, null, testRunTaskParms);
+            }
+            catch (Exception e)
+            {
+                var statusCode = response?.StatusCode;
+                log.Error($"ScenarioSnapshot StatusCode: {statusCode.ToString()}\n{e.Message}");
+                throw;
+            }
+
+            return response;
+        }
+
+
+        public IRestResponse UpdateTestResult(int testRunId, int testSnapshotId, int testResultId, string testStatus, string description)
         {
             IRestResponse response = null;
 
             try
             {
-                var postParams = new object[]
-                    {
-                        testRunId,
-                        testId,
-                        testResultId,
-                        testStatus,
-                        description
-                    };
+                var requestParams = new object[]
+                {
+                    testRunId,
+                    testSnapshotId,
+                    testResultId
+                };
 
-                response = ExecuteRequest(Method.PATCH, ResourceType.TestResults, postParams);
-                Console.WriteLine($"RESPONSE: {response.Content}");
+                var json = new RootObject
+                {
+                    data = new Datum
+                    {
+                        type = "test-results",
+                        id = testResultId,
+                        attributes = new Attributes
+                        {
+                            status = testStatus.ToLower(),
+                            status_author = "RKCIUIAutomation",
+                            description = description
+                        }
+                    }
+                };
+
+                response = ExecuteRequest(Method.PATCH, ResourceType.TestResults, json, requestParams);
+                log.Debug($"RESPONSE: {response.Content}");
                 return response;
             }
             catch (Exception e)
@@ -300,21 +496,44 @@ namespace RKCIUIAutomation.Tools
 
             try
             {
-                var postParams = new object[]
-                    {
-                        testRunId,
-                        buildId,
-                        testId,
-                        testStatus,
-                        description
-                    };
+                var requestParams = new object[]
+                {
+                    testRunId,
+                    buildId
+                };
 
-                response = ExecuteRequest(Method.POST, ResourceType.TestResults, postParams);
+                var json = new RootObject
+                {
+                    data = new Datum
+                    {
+                        type = "test-results",
+                        attributes = new Attributes
+                        {
+                            status = testStatus,
+                            status_author = "RKCIUIAutomation",
+                            description = description
+                        },
+                        relationships = new Relationships
+                        {
+                            build = new Build
+                            {
+                                data = new BuildData
+                                {
+                                    type = "build",
+                                    id = testId
+                                }
+                            }
+                        }
+                    }
+                };
+
+                response = ExecuteRequest(Method.POST, ResourceType.TestResults, json, requestParams);
                 return response;
             }
             catch (Exception e)
             {
-                log.Error($"{response.Content}\n{e.Message}");
+                var content = (response == null) ? "Null Response" : response.Content;
+                log.Error($"{content}\n{e.Message}");
                 throw;
             }
         }
@@ -329,250 +548,5 @@ namespace RKCIUIAutomation.Tools
             }
         }
 
-
-
-        //Generate JSON Object
-
-        private RootObject JSON_AssignResultsToTestRunBuild(string testRunId, int buildId, int testId, string testStatus, string description)
-        {
-            var root = new RootObject
-            {
-                data = new Datum
-                {
-                    type = "test-results",
-                    attributes = new Attributes
-                    {
-                        status = testStatus,
-                        status_author = "RKCIUIAutomation",
-                        description = description
-                    },
-                    relationships = new Relationships
-                    {
-                        build = new Build
-                        {
-                            data = new BuildData
-                            {
-                                type = "build",
-                                id = testId
-                            }
-                        }
-                    }
-                }
-            };
-                        
-            return root;
-        }
-
-        private RootObject JSON_UpdateTestResult(int testResultId, string testStatus, string description)
-        {
-            var root = new RootObject
-            {
-                data = new Datum
-                {
-                    type = "test-results",
-                    id = testResultId,
-                    attributes = new Attributes
-                    {
-                        status = testStatus,
-                        status_author = "RKCIUIAutomation",
-                        description = description
-                    }
-                }
-            };
-            return root;
-        }
-
-        /// <summary>
-        /// Provide testRunParams as following index: [0]TestSuite, [1]TestEnv, [2]TenantName
-        /// </summary>
-        /// <param name="testRunName"></param>
-        /// <param name="scenarioIDs"></param>
-        /// <param name="testRunParams"></param>
-        /// <returns></returns>
-        private RootObject JSON_CreateTestRun(int[] scenarioIDs, string[] testRunParams)
-        {
-            string testSuite = testRunParams[0];
-            string testEnv = testRunParams[1];
-            string tenantName = testRunParams[2];
-
-            string testRunName = $"{tenantName}({testEnv})";
-            string testDescription = $"UI Automation Run for: {testRunName}\nStartTime: {DateTime.Now.ToShortDateString()}, {DateTime.Now.ToShortTimeString()}\nTestSuite: {testSuite}";
-
-            var root = new RootObject
-            {
-                data = new Datum
-                {
-                    attributes = new Attributes
-                    {
-                        name = testRunName,
-                        description = testDescription,
-                        scenario_ids = scenarioIDs
-                    },
-                    relationships = new Relationships
-                    {
-                        tags = new Tags
-                        {
-                            data = new List<TagData>
-                            {
-                                new TagData
-                                {
-                                    type = "tags",
-                                    key = "Tenant",
-                                    value = tenantName
-                                },
-                                new TagData
-                                {
-                                    type = "tags",
-                                    key = "TestEnv",
-                                    value = testEnv
-                                },
-                                new TagData
-                                {
-                                    type = "tags",
-                                    key = "TestSuite",
-                                    value = testSuite
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-            return root;
-        }
-        
-
     }
-
-#pragma warning disable IDE1006 // Naming Styles
-    public class DataClass
-    {
-        public class Statuses
-        {
-            public int passed { get; set; }
-            public int failed { get; set; }
-            public int wip { get; set; }
-            public int retest { get; set; }
-            public int blocked { get; set; }
-            public int skipped { get; set; }
-            public int undefined { get; set; }
-        }
-        
-        public class Attributes
-        {
-            [JsonProperty("scenario-snapshot-id")]
-            public int scenario_snapshot_id { get; set; }
-            [JsonProperty("created-at")]
-            public DateTime created_at { get; set; }
-            [JsonProperty("updated-at")]
-            public DateTime updated_at { get; set; }
-            [JsonProperty("last-author")]
-            public string last_author { get; set; }
-            public string name { get; set; }
-            public string description { get; set; }
-            public Statuses statuses { get; set; }
-            public string status { get; set; }
-            [JsonProperty("status-author")]
-            public string status_author { get; set; }
-            public bool archived { get; set; }
-            public int[] scenario_ids { get; set; }
-        }
-
-        public class Links
-        {
-            public string self { get; set; }
-            public string related { get; set; }
-        }
-
-        public class Tags
-        {
-            public List<TagData> data { get; set; }
-        }
-
-        public class TagData
-        {
-            public string type { get; set; }
-            public string key { get; set; }
-            public string value { get; set; }
-        }
-
-        public class BuildData
-        {
-            public string type { get; set; }
-            public int id { get; set; }
-        }
-
-        public class Build
-        {
-            public BuildData data { get; set; }
-        }
-
-        public class TestData
-        {
-            public string type { get; set; }
-            public int id { get; set; }
-        }
-
-        public class TestSnapshot
-        {
-            public TestData data { get; set; }
-        }
-
-        public class LastResultData
-        {
-            public string type { get; set; }
-            public string id { get; set; }
-        }
-
-        public class TagSnapshots
-        {
-        }
-
-        public class LastResult
-        {
-            public Links links { get; set; }
-            public LastResultData data { get; set; }
-
-            public Tags tags { get; set; }
-            [JsonProperty("tag-snapshots")]
-            public TagSnapshots tagSnapshots { get; set; }           
-        }
-
-        public class Relationships
-        {
-            [JsonProperty("test-snapshot")]
-            public TestSnapshot testSnapshot { get; set; }
-            [JsonProperty("last-result")]
-            public LastResult lastResult { get; set; }
-            public Tags tags { get; set; }
-            public Build build { get; set; }
-        }
-                        
-        public class Datum
-        {
-            public string type { get; set; }
-            public int id { get; set; }
-            public Attributes attributes { get; set; }  
-            public Links links { get; set; }
-            public Relationships relationships { get; set; }
-        }
-
-        public class DatumList
-        {
-            public List<Datum> data { get; set; }
-        }
-
-        public class Included
-        {
-            public string type { get; set; }
-            public string id { get; set; }
-        }
-
-        public class RootObject
-        {
-            public Datum data { get; set; }
-            public List<Included> included { get; set; }
-        }
-
-    }
-    
 }
