@@ -114,6 +114,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void ClickBtn_SaveForward();
         void ClickBtn_UploadNewDesignDoc();
         void SelectRegularCommentReviewType(int commentTabNumber);
+        void SelectNoCommentReviewType(int commentTabNumber);
         bool VerifyTitleFieldErrorMsgIsDisplayed();
         bool VerifyDocumentNumberFieldErrorMsgIsDisplayed();
         bool VerifyUploadFileErrorMsgIsDisplayed();
@@ -226,7 +227,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal string SetCommentStamp(DesignDocDetails_InputFields inputFieldEnum, int commentTabIndex) => $"{inputFieldEnum.GetString()}{(commentTabIndex - 1).ToString()}_";
         public virtual void SelectRegularCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 3);
-        public void SelectNoCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 1);
+        public virtual void SelectNoCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 1);
         public void SelectAgreeResponseCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 2); //check the index, UI not working so need to confirm later
         public void SelectDisagreeResponseCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 3);//check the index, UI not working so need to confirm later
         public void SelectAgreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
@@ -463,6 +464,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public DesignDocument_Garnet(IWebDriver driver) : base(driver) { }
         public override void SelectRegularCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 2);
+        public override void SelectNoCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 3);
     }
     #endregion <--specific to Garnet
 
