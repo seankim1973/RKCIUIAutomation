@@ -106,7 +106,6 @@ namespace RKCIUIAutomation.Base
         {
             testInstance.Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
             log.Debug(msg);
-            Assert.Ignore(msg);
         }
 
         public void LogFail(string details, Exception e = null)
@@ -379,7 +378,8 @@ namespace RKCIUIAutomation.Base
         public static void InjectTestStatus(TestStatus status, string logMsg)
         {
             string testName = BaseUtils.GetTestName();
-            var prefix = $"{testEnv}_{tenantName}_{testName}";
+            string tcNumber = BaseUtils.GetTestCaseNumber();
+            var prefix = $"{tcNumber}{testEnv}{tenantName}{testName}";
             pgbHelper.CreateVar($"{prefix}_msgKey", logMsg);
             pgbHelper.CreateVar($"{prefix}_statusKey", status.ToString());
         }
@@ -397,7 +397,8 @@ namespace RKCIUIAutomation.Base
             TestStatus _testStatus = TestStatus.Inconclusive;
 
             string testName = BaseUtils.GetTestName();
-            var prefix = $"{testEnv}_{tenantName}_{testName}";
+            string tcNumber = BaseUtils.GetTestCaseNumber();
+            var prefix = $"{tcNumber}{testEnv}{tenantName}{testName}";
             var injStatusKey = $"{prefix}_statusKey";
             var injMsgKey = $"{prefix}_msgKey";
 
@@ -416,6 +417,9 @@ namespace RKCIUIAutomation.Base
                         break;
                     case "Failed":
                         _testStatus = TestStatus.Failed;
+                        break;
+                    case "Skipped":
+                        _testStatus = TestStatus.Skipped;
                         break;
                     default:
                         _testStatus = TestStatus.Inconclusive;

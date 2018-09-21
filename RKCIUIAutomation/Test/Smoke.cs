@@ -41,7 +41,7 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Other)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2238579)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void CommentReviewPartialFunctions()
@@ -122,7 +122,7 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Other)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2238580)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void CommentReviewForSG()
@@ -226,7 +226,7 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Other)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2238577)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void CommentReviewForSH249()

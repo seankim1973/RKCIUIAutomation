@@ -8,7 +8,9 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static NUnit.Framework.TestContext;
 
 namespace RKCIUIAutomation.Base
@@ -26,12 +28,19 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         public static TestStatus testStatus;
 
+        //HipTest
         [ThreadStatic]
-        public int hiptestRunId;
+        public HipTestApi hipTestInstance;
         [ThreadStatic]
-        public string[] testRunDetails;
+        public int hipTestRunId;
         [ThreadStatic]
-        public List<int> hiptestRunTestCaseIDs;
+        public string[] hipTestRunDetails;
+        [ThreadStatic]
+        public List<int> hipTestRunTestCaseIDs;
+        [ThreadStatic]
+        public List<KeyValuePair<int, List<int>>> hipTestRunData;
+        [ThreadStatic]
+        public List<KeyValuePair<int, KeyValuePair<TestStatus, string>>> hipTestResults;
 
 
         //Test Environment
@@ -51,10 +60,9 @@ namespace RKCIUIAutomation.Base
         private string testComponent1;
         private string testComponent2;
         private string testDescription;
-
+        private string[] testRunDetails;
         private Cookie cookie = null;
         ConfigUtils Configs = new ConfigUtils();
-        HipTestApi HiptestAPI;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -74,39 +82,39 @@ namespace RKCIUIAutomation.Base
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
-            hiptestRunTestCaseIDs = (hiptest) ? new List<int> { } : null;
             testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local) ? TestPlatform.Windows : testPlatform;
             DetermineReportFilePath();
 
+            hipTestInstance = HipTestApi.HipTestInstance;
             if (hiptest)
             {
-                
-                
+                //hipTestInstance = HipTestApi.HipTestInstance;
             }
         }
+
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
+            hipTestInstance.GetTestRunDataset();
+
             if (hiptest)
-            {
-                try
-                {
-                    HiptestAPI = new HipTestApi();
-                    HiptestAPI.SyncTestRun(hiptestRunId);
-                }
-                catch (Exception e)
-                {
-                    log.Error(e.Message);
-                    throw;
-                }
+            {                
+                hipTestRunId = hipTestInstance.CreateTestRunInstance(hipTestRunTestCaseIDs, hipTestRunDetails);
+                hipTestRunData = hipTestInstance.BuildTestRunSnapshotDataInstance(hipTestRunId);
+                hipTestInstance.UpdateHipTestRunDataInstance(hipTestRunData, hipTestResults);
+                hipTestInstance.SyncTestRunInstance(hipTestRunId);
             }
-            
+
+            reportInstance.Flush();
+
             if (Driver != null)
             {
+                Driver.Close();
                 Driver.Quit();
             }
         }
+
 
         [SetUp]
         public void BeforeTest()
@@ -121,11 +129,6 @@ namespace RKCIUIAutomation.Base
             testComponent2 = GetTestComponent2();
             testDescription = GetTestDescription();
 
-            if (hiptest)
-            {
-                hiptestRunTestCaseIDs.Add(int.Parse(testCaseNumber));
-            }
-
             testRunDetails = new string[]
             {
                 testSuite,
@@ -136,7 +139,20 @@ namespace RKCIUIAutomation.Base
                 testEnv.ToString(),
                 tenantName.ToString()
             };
-            
+
+            int currentTestCaseNumber = int.Parse(testCaseNumber);
+
+            hipTestInstance.CreateTestRunDataset(testSuite, currentTestCaseNumber);
+
+            if (hiptest)
+            {
+                
+                //hipTestInstance.CreateTestRunDataset(testSuite, currentTestCaseNumber);
+
+                hipTestRunTestCaseIDs = hipTestInstance.SetTestCaseID(currentTestCaseNumber);
+                hipTestRunDetails = hipTestInstance.SetTestRunDetails(testRunDetails);
+            }
+                        
             reportInstance = ExtentManager.Instance;
             parentTest = (reporter == Reporter.Html) ? 
                 reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv) : null;
@@ -175,6 +191,8 @@ namespace RKCIUIAutomation.Base
             string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
             testInstance.AssignReportCategories(reportCategories);
             LogAssertIgnore(msg);
+            BaseHelper.InjectTestStatus(TestStatus.Skipped, msg);
+            Assert.Ignore(msg);
         }
 
         private void LogTestDetails(string[] testDetails)
@@ -257,7 +275,12 @@ namespace RKCIUIAutomation.Base
                         break;
                 }
 
-                reportInstance.Flush();
+                if (hiptest)
+                {
+                    var resultDesc = new KeyValuePair<TestStatus, string>(testStatus, testDescription);
+                    var tcResultPair = new KeyValuePair<int, KeyValuePair<TestStatus, string>>(int.Parse(testCaseNumber), resultDesc);
+                    hipTestResults = hipTestInstance.SetTestResultInstance(tcResultPair);
+                }
 
                 if (Driver != null)
                 {
@@ -266,31 +289,6 @@ namespace RKCIUIAutomation.Base
                         Driver.Manage().Cookies.AddCookie(cookie);
                     }
                     Driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
-                    Driver.Close();
-
-                    if (hiptest)
-                    {
-                        try
-                        {
-                            HiptestAPI = new HipTestApi();
-                            int tcNumber = int.Parse(testCaseNumber);
-                            hiptestRunId = HiptestAPI.CreateTestRun(hiptestRunTestCaseIDs, testRunDetails);
-                            HiptestAPI.BuildTestRunSnapshotData(hiptestRunId, tcNumber);
-                            HiptestAPI.UpdateHipTestRunData(tcNumber, testStatus, testDescription);
-                            HiptestAPI.SyncTestRun(hiptestRunId);
-
-                            //--get tcSnapshotId and create map of original TC# with tcSnapshotId
-                            //--get test case result and get tcSnapshotId from hashmap
-                            //--create map of tcSnapshotId and result
-                            //--update testCaseRun>tcSnapshot with result
-                            //--sync testCaseRun in hipTest
-                        }
-                        catch (Exception e)
-                        {
-                            log.Error(e.Message);
-                            throw;
-                        }
-                    }
                 }
             }
             catch (Exception e)

@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
 
-namespace RKCIUIAutomation.Test
+namespace RKCIUIAutomation.Test.Hiptest
 {
     public class HiptestUnit
     {
@@ -63,7 +63,12 @@ namespace RKCIUIAutomation.Test
                 NavigateToPage.SysConfig_CVL_Lists();
                 Assert.True(true);
             }
+        }
 
+
+        [TestFixture]
+        public class CVL_List_Items5 : TestBase
+        {
             [Test]
             [Category(Component.CVL_List)]
             [Property(Component2, Component.CVL_Lists)]
@@ -76,7 +81,12 @@ namespace RKCIUIAutomation.Test
                 NavigateToPage.SysConfig_CVL_Lists();
                 Assert.True(true);
             }
+        }
 
+
+        [TestFixture]
+        public class CVL_List_Items4 : TestBase
+        {
             [Test]
             [Category(Component.CVL_List)]
             [Property(Component2, Component.CVL_Lists)]
@@ -94,7 +104,7 @@ namespace RKCIUIAutomation.Test
 
 
         [TestFixture]
-        public class CVL_List_Items : TestBase
+        public class CVL_List_Items3 : TestBase
         {
             [Test]
             [Category(Component.CVL_List)]
@@ -108,7 +118,12 @@ namespace RKCIUIAutomation.Test
                 NavigateToPage.SysConfig_CVL_List_Items();
                 Assert.True(true);
             }
+        }
 
+
+        [TestFixture]
+        public class CVL_List_Items2 : TestBase
+        {
             [Test]
             [Category(Component.CVL_List)]
             [Property(Component2, Component.CVL_List_Items)]
@@ -121,7 +136,12 @@ namespace RKCIUIAutomation.Test
                 NavigateToPage.SysConfig_CVL_List_Items();
                 Assert.True(true);
             }
+        }
 
+
+        [TestFixture]
+        public class CVL_List_Items1 : TestBase
+        {
             [Test]
             [Category(Component.CVL_List)]
             [Property(Component2, Component.CVL_List_Items)]

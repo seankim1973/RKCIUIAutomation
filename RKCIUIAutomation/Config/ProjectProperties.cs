@@ -127,6 +127,8 @@ namespace RKCIUIAutomation.Config
             Component.Link_Coverage,
             Component.Breaksheet_Module,
             Component.CDR,
+            Component.CVL_List,
+            Component.CVL_Lists,
             Component.CVL_List_Items,
             Component.Other,
             Component.Project_Configuration,

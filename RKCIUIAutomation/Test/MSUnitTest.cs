@@ -11,6 +11,8 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Test;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
 using NUnit.Framework.Interfaces;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace RKCIUIAutomation.Sandbox
 {
@@ -387,55 +389,66 @@ namespace RKCIUIAutomation.Sandbox
             Console.WriteLine(isPingable);
         }
 
-        [TestMethod]
-        public void HipTest_CreateTestRun()
-        {
-            HipTestApi hipTest = new HipTestApi();
-            string[] testRunDetails = new string[]
-                { "Test Scenario Run"
-                };
-
-            List<int> scenarioIDs = new List<int>
-                {
-                    2221072
-                };
-
-            var response = hipTest.CreateTestRun(scenarioIDs, testRunDetails);
-
-            //hipTest = new HipTestApi();
-            //string testDesc = "Test Description Details -- Tentant, Environment";
-            //string testRunId = hipTest.GetTestRunId(response);
-            //response = hipTest.AddTestResultToTestRun(testRunId, scenarioIDs[0], "passed", testDesc);
-            Console.WriteLine(response);
-        }
 
         [TestMethod]
         public void HipTest_GetTestRunScenarios()
         {
-            int testCaseNumber = 1234;
-            HipTestApi hipTest = new HipTestApi();
-            hipTest.BuildTestRunSnapshotData(195019, testCaseNumber);
+            //int testCaseNumber = 1234;
+            //HipTestApi hipTest = new HipTestApi();
+            //hipTest.BuildTestRunSnapshotData(195019);
         }
 
         [TestMethod]
         public void HipTest_UpdateTestResult()
         {
-            /*
-                TestName: TEST_SCENARIO
-                TestSnapshotID: 7735629
-                2018-09-13 19:34:17,838 DEBUG :  API Endpoint: /test_runs/193991/test_snapshots/7735629?include=last-result
-                LastResult ID: 7735629
-             */
+            string[] testRunDetails = new string[]
+            {
+                "testSuite",
+                "testPriority",
+                "testCaseNumber",
+                "testComponent1",
+                "testComponent2",
+                "testEnv",
+                "tenantName"
+            };
 
-            int testRunId = 195019;
-            int testCaseNumber = 2238576;
-            //int testResultId = 7735629;
-            TestStatus testStatus = TestStatus.Passed;
+            List<int> scenarioIDs = new List<int>
+            {
+                2238584,
+                2238585,
+                2238586
+            };
+
+
             string description = "Test Description - (Env)Tenant";
 
+            var passDescPair = new KeyValuePair<TestStatus, string>(TestStatus.Passed, description);
+            var failDescPair = new KeyValuePair<TestStatus, string>(TestStatus.Failed, description);
+
+            var testResults = new List<KeyValuePair<int, KeyValuePair<TestStatus, string>>>
+            {
+                new KeyValuePair<int, KeyValuePair<TestStatus, string>>(2238585, passDescPair),
+                new KeyValuePair<int, KeyValuePair<TestStatus, string>>(2238586, failDescPair),
+                new KeyValuePair<int, KeyValuePair<TestStatus, string>>(2238584, passDescPair)
+            };
+
             HipTestApi hipTest = new HipTestApi();
-            hipTest.BuildTestRunSnapshotData(testRunId, testCaseNumber);
-            hipTest.UpdateHipTestRunData(testCaseNumber, testStatus, description);
+            int testRunID = hipTest.CreateTestRun(scenarioIDs, testRunDetails);
+            Console.WriteLine($"TESTRUN ID: {testRunID}");
+            Thread.Sleep(5000);
+            var runData = hipTest.BuildTestRunSnapshotData(testRunID);
+            Thread.Sleep(5000);
+            hipTest.UpdateHipTestRunData(runData, testResults);
+            //RunCreateTestRunTask(scenarioIDs, testRunDetails, testResults);
+        }
+
+        public void RunCreateTestRunTask(List<int> scenarioIDs, string[] testRunDetails, List<KeyValuePair<int, KeyValuePair<TestStatus, string>>> testResults)
+        {
+            HipTestApi hipTest = new HipTestApi();
+            int testRunID = hipTest.CreateTestRun(scenarioIDs, testRunDetails);
+            Console.WriteLine($"TESTRUN ID: {testRunID}");
+            var runData = hipTest.BuildTestRunSnapshotData(testRunID);
+            hipTest.UpdateHipTestRunData(runData, testResults);
         }
 
         [TestMethod]
