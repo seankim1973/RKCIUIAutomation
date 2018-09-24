@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework.Internal;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
-using OpenQA.Selenium;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
-using RKCIUIAutomation.Base;
-using System.Diagnostics;
-using System;
 
 namespace RKCIUIAutomation.Test.Smoke
 {
