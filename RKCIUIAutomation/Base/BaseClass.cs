@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using static NUnit.Framework.TestContext;
 
 namespace RKCIUIAutomation.Base
@@ -85,10 +86,11 @@ namespace RKCIUIAutomation.Base
             testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local) ? TestPlatform.Windows : testPlatform;
             DetermineReportFilePath();
 
-            hipTestInstance = HipTestApi.HipTestInstance;
             if (hiptest)
             {
-                //hipTestInstance = HipTestApi.HipTestInstance;
+                hipTestInstance = HipTestApi.HipTestInstance;
+                hipTestRunTestCaseIDs = new List<int>();
+                hipTestResults = new List<KeyValuePair<int, KeyValuePair<TestStatus, string>>>();
             }
         }
 
@@ -96,14 +98,14 @@ namespace RKCIUIAutomation.Base
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            hipTestInstance.GetTestRunDataset();
-
             if (hiptest)
-            {                
-                hipTestRunId = hipTestInstance.CreateTestRunInstance(hipTestRunTestCaseIDs, hipTestRunDetails);
-                hipTestRunData = hipTestInstance.BuildTestRunSnapshotDataInstance(hipTestRunId);
-                hipTestInstance.UpdateHipTestRunDataInstance(hipTestRunData, hipTestResults);
-                hipTestInstance.SyncTestRunInstance(hipTestRunId);
+            {
+                hipTestRunDetails = testRunDetails;
+
+                hipTestRunId = hipTestInstance.CreateTestRun(hipTestRunTestCaseIDs, hipTestRunDetails);
+                hipTestRunData = hipTestInstance.BuildTestRunSnapshotData(hipTestRunId);
+                hipTestInstance.UpdateHipTestRunData(hipTestRunData, hipTestResults);
+                hipTestInstance.SyncTestRun(hipTestRunId);
             }
 
             reportInstance.Flush();
@@ -142,15 +144,11 @@ namespace RKCIUIAutomation.Base
 
             int currentTestCaseNumber = int.Parse(testCaseNumber);
 
-            hipTestInstance.CreateTestRunDataset(testSuite, currentTestCaseNumber);
 
             if (hiptest)
             {
+                hipTestRunTestCaseIDs.Add(currentTestCaseNumber);
                 
-                //hipTestInstance.CreateTestRunDataset(testSuite, currentTestCaseNumber);
-
-                hipTestRunTestCaseIDs = hipTestInstance.SetTestCaseID(currentTestCaseNumber);
-                hipTestRunDetails = hipTestInstance.SetTestRunDetails(testRunDetails);
             }
                         
             reportInstance = ExtentManager.Instance;
@@ -279,7 +277,7 @@ namespace RKCIUIAutomation.Base
                 {
                     var resultDesc = new KeyValuePair<TestStatus, string>(testStatus, testDescription);
                     var tcResultPair = new KeyValuePair<int, KeyValuePair<TestStatus, string>>(int.Parse(testCaseNumber), resultDesc);
-                    hipTestResults = hipTestInstance.SetTestResultInstance(tcResultPair);
+                    hipTestResults.Add(tcResultPair);
                 }
 
                 if (Driver != null)

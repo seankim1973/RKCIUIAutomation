@@ -8,6 +8,8 @@ using RKCIUIAutomation.Test;
 using static RKCIUIAutomation.Tools.HipTest;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace RKCIUIAutomation.Tools
 {
@@ -60,13 +62,12 @@ namespace RKCIUIAutomation.Tools
             Sync,
             GetTest
         }
- 
+
         private IRestRequest CreateRequest(Method requestMethod, string resource)
         {
-            RestRequest request = null;
             try
             {
-                request = new RestRequest(requestMethod)
+                var request = new RestRequest(requestMethod)
                 {
                     Resource = resource
                 };
@@ -84,8 +85,14 @@ namespace RKCIUIAutomation.Tools
                 throw;
             }
         }
-      
-        private IRestResponse ExecuteRequest(Method requestMethod, ResourceType resource, RootObject json = null, params object[] requestParams)
+
+        private Task<IRestResponse> CallExecuteRequest(Method requestMethod, ResourceType resource, RootObject json = null, params object[] requestParams)
+        {
+            var executeTask = ExecuteRequest(requestMethod, resource, json, requestParams);
+            Task.WaitAll(executeTask);
+            return executeTask;
+        }
+        private Task<IRestResponse> ExecuteRequest(Method requestMethod, ResourceType resource, RootObject json = null, params object[] requestParams)
         {            
             int buildId;
             int testRunId;
@@ -95,8 +102,6 @@ namespace RKCIUIAutomation.Tools
             string endPoint = string.Empty;
             string content = string.Empty;
             string statusCode = string.Empty;
-
-            IRestResponse response = null;
 
             try
             {
@@ -162,11 +167,13 @@ namespace RKCIUIAutomation.Tools
                 log.Info($"API Endpoint: {endPoint}");
                 IRestClient client = new RestClient(ApiBase);
 
-                response = client.Execute(request);
+                var responseTask = Task.Factory.StartNew(() => client.Execute(request));
+                Task.WaitAny(responseTask);
+                var response = responseTask.Result;
                 statusCode = response.StatusCode.ToString();
                 content = response.Content;
 
-                return response;
+                return responseTask;
             }
             catch (Exception e)
             {
@@ -176,6 +183,7 @@ namespace RKCIUIAutomation.Tools
             }
         }
 
+
         /// <summary>
         /// Provide test case numbers(scenarioIDs), as string[] array, to be included in the Hiptest Test Run.
         /// Provide testRunParams as following index: [0]TestSuite, [1]TestEnv, [2]TenantName.
@@ -183,11 +191,11 @@ namespace RKCIUIAutomation.Tools
         /// <param name="scenarioIDs"></param>
         /// <param name="testRunDetails"></param>
         /// <returns></returns>
-        internal int CreateTestRun(List<int> scenarioIDs, string[] testRunDetails)
+        public int CreateTestRun(List<int> scenarioIDs, string[] testRunDetails)
         {
+            Task<IRestResponse> responseTask = null;
             string statusCode = string.Empty;
             string content = string.Empty;
-            int testRunId = 0;
 
             try
             {
@@ -238,14 +246,30 @@ namespace RKCIUIAutomation.Tools
                     }
                 };
 
-                var response = ExecuteRequest(Method.POST, ResourceType.TestRuns, json);
+                responseTask = CallExecuteRequest(Method.POST, ResourceType.TestRuns, json);
+
+                do
+                {
+                    Thread.Sleep(1000);
+                }
+                while (responseTask == null);
+
+                Task.WaitAll(responseTask);
+                
+                var response = responseTask.Result;
                 statusCode = response.StatusCode.ToString();
                 content = response.Content;
 
+                
                 //Get Test Run ID
                 RootObject root = JsonConvert.DeserializeObject<RootObject>(content);
-                testRunId = root.data.id;
+                var testRunId = root.data.id;
                 log.Info($"Created TestRun:\nName: {testRunName}\n ID: {testRunId}");
+
+                Console.WriteLine($"TESTRUN ID: {testRunId}");
+                Console.WriteLine(content);
+
+                
                 return testRunId;
             }
             catch (Exception e)
@@ -262,16 +286,14 @@ namespace RKCIUIAutomation.Tools
         /// </summary>
         /// <param name="testRunId"></param>
         /// <returns></returns>
-        internal List<KeyValuePair<int, List<int>>> BuildTestRunSnapshotData(int testRunId)
+        public List<KeyValuePair<int, List<int>>> BuildTestRunSnapshotData(int testRunId)
         {
-            IRestResponse response = null;
             string content = string.Empty;
             string testName = string.Empty;
             int scenarioId = -1;
             int scenarioSnapshotId = -1;
             int lastResultId = -1;
-
-            
+  
             var runData = new List<KeyValuePair<int, List<int>>>();
 
             var snapshotRequestParams = new object[]
@@ -281,11 +303,15 @@ namespace RKCIUIAutomation.Tools
 
             try
             {
-                response = ExecuteRequest(Method.GET, ResourceType.TestSnapshots, null, snapshotRequestParams);
-                content = response.Content;
+                var snapshotIdTask = Task.Factory.StartNew(() => CallExecuteRequest(Method.GET, ResourceType.TestSnapshots, null, snapshotRequestParams));
+                var snapshotResultTask = snapshotIdTask.Result;
+                var snapshotTaskList = new Task[] { snapshotIdTask, snapshotResultTask };
+                Task.WaitAll(snapshotTaskList);
+
+                var snapshotIdContent = snapshotResultTask.Result.Content;
 
                 DatumList dataList = new DatumList();
-                dataList = (DatumList)JsonConvert.DeserializeObject(content, typeof(DatumList));
+                dataList = (DatumList)JsonConvert.DeserializeObject(snapshotIdContent, typeof(DatumList));
                 
                 int dataCount = dataList.data.Count;
                 for (int i = 0; i < dataCount; i++)
@@ -302,11 +328,12 @@ namespace RKCIUIAutomation.Tools
                         scenarioSnapshotId
                     };
 
-                    response = ExecuteRequest(Method.GET, ResourceType.TestResults, null, testResultRequestParams);
-                    content = response.Content;
+                    var resultIdTask = CallExecuteRequest(Method.GET, ResourceType.TestResults, null, testResultRequestParams);
+                    Task.WaitAll(resultIdTask);
+                    var resultIdContent = resultIdTask.Result.Content;
                         
                     RootObject root = new RootObject();
-                    root = (RootObject)JsonConvert.DeserializeObject(content, typeof(RootObject));
+                    root = (RootObject)JsonConvert.DeserializeObject(resultIdContent, typeof(RootObject));
 
                     lastResultId = root.included[0].id;
                     Console.WriteLine($"\n### LastResultID: {lastResultId}\n");
@@ -325,8 +352,7 @@ namespace RKCIUIAutomation.Tools
             }
             catch (Exception e)
             {
-                log.Debug($"BuildSnapshotData StatusCode: {response.StatusCode.ToString()}\n{e.Message}");
-                log.Debug(response.Content);
+                log.Debug(e.Message);
                 throw;
             }
         }
@@ -337,10 +363,10 @@ namespace RKCIUIAutomation.Tools
         /// <para>testResults: List&lt;KeyValuePair&lt;(int)testCaseNumber&gt;, KeyValuePair&lt;(TestStatus)testStatus, (string)testDescription&gt;&gt;&gt;</para>
         /// </summary>
         /// <param name="testResultsDataset"></param>
-        internal void UpdateHipTestRunData(List<KeyValuePair<int, List<int>>> hipTestRunDataset, List<KeyValuePair<int, KeyValuePair<TestStatus, string>>> testResultsDataset)
+        public void UpdateHipTestRunData(List<KeyValuePair<int, List<int>>> hipTestRunDataset, List<KeyValuePair<int, KeyValuePair<TestStatus, string>>> testResultsDataset)
         {
-            IRestResponse response = null;
-
+            string content = string.Empty;
+            string statusCode = string.Empty;
             int hipTestCount = hipTestRunDataset.Count;
             int resultsCount = testResultsDataset.Count;
 
@@ -402,7 +428,12 @@ namespace RKCIUIAutomation.Tools
                                 }
                             };
 
-                            response = ExecuteRequest(Method.PATCH, ResourceType.TestResults, json, requestParams);
+                            var testResultsTask = CallExecuteRequest(Method.PATCH, ResourceType.TestResults, json, requestParams);
+                            
+                            Task.WaitAll(testResultsTask);
+                            var response = testResultsTask.Result;
+                            statusCode = response.StatusCode.ToString();
+                            content = response.Content;
                             //Console.WriteLine(response.Content);
                         }
                     }
@@ -410,8 +441,8 @@ namespace RKCIUIAutomation.Tools
             }
             catch (Exception e)
             {
-                log.Debug($"UpdateHipTestRunData StatusCode: {response.StatusCode.ToString()}\n{e.Message}");
-                log.Debug(response.Content);
+                log.Debug($"UpdateHipTestRunData StatusCode: {statusCode}\n{e.Message}");
+                log.Debug(content);
                 throw;
             }
         }
@@ -422,17 +453,18 @@ namespace RKCIUIAutomation.Tools
         /// </summary>
         /// <param name="taskParams"></param>
         /// <returns></returns>
-        internal IRestResponse GetTestRun(object[] taskParams) => GetTestRunTask(TestRunType.GetTest, taskParams);
+        private IRestResponse GetTestRun(object[] taskParams) => GetTestRunTask(TestRunType.GetTest, taskParams);
 
         /// <summary>
         /// Syncs test results for test cases in a TestRun
         /// </summary>
         /// <param name="testRunId"></param>
-        internal void SyncTestRun(int testRunId) => GetTestRunTask(TestRunType.Sync, testRunId);
+        public void SyncTestRun(int testRunId) => GetTestRunTask(TestRunType.Sync, testRunId);
         
         private IRestResponse GetTestRunTask<T>(TestRunType testRunType, T taskParams)
         {
-            IRestResponse response = null;
+            string content = string.Empty;
+            string statusCode = string.Empty;
             Type paramType = taskParams.GetType();
             int testBuildId = -1;
 
@@ -453,21 +485,25 @@ namespace RKCIUIAutomation.Tools
                     testBuildId,
                 };
 
-                response = ExecuteRequest(Method.GET, ResourceType.TestRuns, null, testRunTaskParms);
+                var testRunTask = CallExecuteRequest(Method.GET, ResourceType.TestRuns, null, testRunTaskParms);
+                Task.WaitAll(testRunTask);
+                var response = testRunTask.Result;
+                statusCode = response.StatusCode.ToString();
+                content = response.Content;
+                return response;
             }
             catch (Exception e)
             {
-                log.Debug($"Get TestRun Task StatusCode: {response.StatusCode.ToString()}\n{e.Message}");
-                log.Debug(response.Content);
+                log.Debug($"Get TestRun Task StatusCode: {statusCode}\n{e.Message}");
+                log.Debug(content);
                 throw;
             }
-
-            return response;
         }
 
-        internal IRestResponse AssignResultsToTestRunBuild(string testRunId, int buildId, int testId, string testStatus, string description)
+        private IRestResponse AssignResultsToTestRunBuild(string testRunId, int buildId, int testId, string testStatus, string description)
         {
-            IRestResponse response = null;
+            string content = string.Empty;
+            string statusCode = string.Empty;
 
             try
             {
@@ -502,13 +538,18 @@ namespace RKCIUIAutomation.Tools
                     }
                 };
 
-                response = ExecuteRequest(Method.POST, ResourceType.TestResults, json, requestParams);
+
+                var testResultsTask = CallExecuteRequest(Method.POST, ResourceType.TestResults, json, requestParams);
+                Task.WaitAll(testResultsTask);
+                var response = testResultsTask.Result;
+                statusCode = response.StatusCode.ToString();
+                content = response.Content;
                 return response;
             }
             catch (Exception e)
             {
-                log.Debug($"AssignResultsToTestRunBuild StatusCode: {response.StatusCode.ToString()}\n{e.Message}");
-                log.Debug(response.Content);
+                log.Debug($"AssignResultsToTestRunBuild StatusCode: {statusCode}\n{e.Message}");
+                log.Debug(content);
                 throw;
             }
         }
@@ -603,7 +644,8 @@ namespace RKCIUIAutomation.Tools
                     log.Info($"TestCase Number: {testCase}");
                 }
             }
-
         }
+
+
     }
 }
