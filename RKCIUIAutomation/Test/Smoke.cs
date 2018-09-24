@@ -117,6 +117,46 @@ namespace RKCIUIAutomation.Test.Smoke
         }
     }
 
+    public class Test_CommentReviewNoCommentGarnetGLX : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
+        [Description("Verify Component Name")]
+        public void CommentReviewNoCommentGarnetGLX()
+        {
+            LogInfo("--------------------------1.Login As IQF User----------------------");
+            LoginAs(UserType.IQFUser);//testing glx comment review
+            NavigateToPage.RMCenter_Design_Documents();
+            Assert.True(VerifyPageTitle("Design Document"));
+            DesignDocCommentReview.CreateDocument();
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------2.Login As DOT User----------------------");
+            LoginAs(UserType.DOTUser);
+            NavigateToPage.RMCenter_Design_Documents();
+            DesignDocCommentReview.SortTable_Descending();
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.EnterNoComment();
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------3. Login As DOT Admin----------------------");
+            LoginAs(UserType.DOTAdmin);
+            NavigateToPage.RMCenter_Design_Documents();
+            DesignDocCommentReview.SortTable_Descending();
+            TableHelper.ClickEnterBtnForRow();
+            WaitForPageReady();
+            DesignDocCommentReview.ForwardComment();
+         
+            LogInfo("--------------------------4. DEV Admin verifies if record in closed tab ----------------------");
+            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
+            Thread.Sleep(5000);
+        }
+    }
+
     [TestFixture]
     public class Test_CommentReviewForSG : TestBase
     {
@@ -127,9 +167,9 @@ namespace RKCIUIAutomation.Test.Smoke
         [Description("Verify Component Name")]
         public void CommentReviewForSG()
         {
-
+          
             LogInfo("--------------------------1. Log in as IQFRM'----------------------");
-            LoginAs(UserType.IQFRecordsMgr);//testing glx comment review
+            LoginAs(UserType.IQFRecordsMgr);
             NavigateToPage.RMCenter_Design_Documents();
             Assert.True(VerifyPageTitle("Design Document"));
             DesignDocCommentReview.CreateDocument();
@@ -139,16 +179,25 @@ namespace RKCIUIAutomation.Test.Smoke
             LogInfo("--------------------------2. Log in as DOT User, enters Comments----------------------");
             LoginAs(UserType.DOTUser);
             NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            DesignDocCommentReview.FilterTableByValue();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
             ClickLogoutLink();
             ClickLoginLink();
 
-            LogInfo("--------------------------3. Log in as DOT Admin, forwards Comments----------------------");
+            LogInfo("--------------------------3. Log in as IQF User, enters Comments----------------------");
+            LoginAs(UserType.IQFUser);
+            NavigateToPage.RMCenter_Design_Documents();
+            DesignDocCommentReview.FilterTableByValue();
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------4. Log in as DOT Admin, forwards Comments----------------------");
             LoginAs(UserType.DOTAdmin);
             NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            DesignDocCommentReview.FilterTableByValue();
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ForwardComment();
@@ -156,19 +205,10 @@ namespace RKCIUIAutomation.Test.Smoke
             ClickLogoutLink();
             ClickLoginLink();
 
-            LogInfo("--------------------------4. Log in as IQF User, enters Comments----------------------");
-            LoginAs(UserType.IQFUser);
-            NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.ClickEnterBtnForRow();
-            DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
-            ClickLogoutLink();
-            ClickLoginLink();
-
             LogInfo("--------------------------5. Log in as IQF Admin, forwards Comments----------------------");
             LoginAs(UserType.IQFAdmin);
             NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            DesignDocCommentReview.FilterTableByValue();
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ForwardComment();
@@ -180,7 +220,7 @@ namespace RKCIUIAutomation.Test.Smoke
             LoginAs(UserType.DEVUser);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            DesignDocCommentReview.FilterTableByValue();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterResponseCommentAndDisagreeResponseCode();
             ClickLogoutLink();
@@ -190,17 +230,18 @@ namespace RKCIUIAutomation.Test.Smoke
             LoginAs(UserType.DEVAdmin);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            DesignDocCommentReview.FilterTableByValue();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.ForwardResponseComment();
             ClickLogoutLink();
             ClickLoginLink();
+      
 
-        
             LogInfo("--------------------------8. Log in as IQF Admin,add resolution----------------------");
             LoginAs(UserType.IQFAdmin);
-            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper.ClickTab(DesignDocument.TableTab.Requires_Resolution);
+            DesignDocCommentReview.FilterTableByValue();
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.Workflow_EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
@@ -209,18 +250,125 @@ namespace RKCIUIAutomation.Test.Smoke
             WaitForPageReady();
 
             LogInfo("--------------------------9. Log in as IQF Admin, forwards Resolution----------------------");
-            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Resolution);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            TableHelper.ClickTab(DesignDocument.TableTab.Requires_Resolution);
+            DesignDocCommentReview.FilterTableByValue();
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ForwardComment();
 
-            LogInfo("--------------------------10. DEV Admin verifies if record in closed tab ----------------------");
+            LogInfo("--------------------------10. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+
+            WaitForPageReady();
+            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Closing);
+            DesignDocCommentReview.FilterTableByValue();
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.EnterClosingCommentAndCode();
+
+            LogInfo("--------------------------11. IQF Admin verifies if record in closed tab ----------------------");
+            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
+            Thread.Sleep(5000);
+         
+           
+
+        }
+    }
+
+    [TestFixture]
+    public class Test_NoCommentWfCommentReviewForSG : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(Priority, "Priority 1")]
+        [Description("Verify Component Name")]
+        public void NoCommentWfCommentReviewForSG()
+        {
+            LogInfo("--------------------------No comment Workflow begins----------------------");
+            LogInfo("--------------------------1. Log in as IQFRM'----------------------");
+            LoginAs(UserType.IQFRecordsMgr);
+            NavigateToPage.RMCenter_Design_Documents();
+            Assert.True(VerifyPageTitle("Design Document"));
+            DesignDocCommentReview.CreateDocument();
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------2. Log in as DOT User, enters Comments----------------------");
+            LoginAs(UserType.DOTUser);
+            NavigateToPage.RMCenter_Design_Documents();
+            DesignDocCommentReview.FilterTableByValue();
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.EnterNoComment();
+
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------3. Log in as IQF User, enters Comments----------------------");
+            LoginAs(UserType.IQFUser);
+            NavigateToPage.RMCenter_Design_Documents();
+            DesignDocCommentReview.FilterTableByValue();
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.EnterNoComment();
+
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------4. Log in as DOT Admin, forwards Comments----------------------");
+            LoginAs(UserType.DOTAdmin);
+            NavigateToPage.RMCenter_Design_Documents();
+            DesignDocCommentReview.FilterTableByValue();
+            TableHelper.ClickEnterBtnForRow();
+            WaitForPageReady();
+            DesignDocCommentReview.ForwardComment();
+            Thread.Sleep(2000);
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------5. Log in as IQF Admin, forwards Comments----------------------");
+            LoginAs(UserType.IQFAdmin);
+            NavigateToPage.RMCenter_Design_Documents();
+            DesignDocCommentReview.FilterTableByValue();
+            TableHelper.ClickEnterBtnForRow();
+            WaitForPageReady();
+            DesignDocCommentReview.ForwardComment();
+            Thread.Sleep(2000);
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------6. Log in as DEV User, enters Response----------------------");
+            LoginAs(UserType.DEVUser);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
+            DesignDocCommentReview.FilterTableByValue();
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.EnterResponseCommentAndAgreeResponseCode();
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------7. Log in as DEV Admin, forwards Comments----------------------");
+            LoginAs(UserType.DEVAdmin);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
+            DesignDocCommentReview.FilterTableByValue();
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.ForwardResponseComment();
+            ClickLogoutLink();
+            ClickLoginLink();
+
+            LogInfo("--------------------------8. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+
+            WaitForPageReady();
+            LoginAs(UserType.IQFAdmin);
+            NavigateToPage.RMCenter_Design_Documents();
+            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Closing);
+            DesignDocCommentReview.FilterTableByValue();
+            TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.EnterClosingCommentAndCode();
+
+            LogInfo("--------------------------9. IQF Admin verifies if record in closed tab ----------------------");
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
             Thread.Sleep(5000);
         }
     }
-    
     [TestFixture]
     public class Test_CommentReviewForSH249 : TestBase
     {
@@ -244,7 +392,7 @@ namespace RKCIUIAutomation.Test.Smoke
             LoginAs(UserType.IQFUser);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.ClickTab(DesignDocument.TableTab.Requires_Comment);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            DesignDocCommentReview.FilterTableByValue();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
             ClickLogoutLink();
@@ -254,7 +402,7 @@ namespace RKCIUIAutomation.Test.Smoke
             LoginAs(UserType.IQFAdmin);
             NavigateToPage.RMCenter_Design_Documents();
             TableHelper.ClickTab(DesignDocument.TableTab.Requires_Comment);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            DesignDocCommentReview.FilterTableByValue();
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ForwardComment();
@@ -263,7 +411,7 @@ namespace RKCIUIAutomation.Test.Smoke
             DesignDocCommentReview.EnterResponseCommentAndDisagreeResponseCode();
             TableHelper.ClickEnterBtnForRow();
             LogInfo("--------------------------5. Log in as IQF Admin, Enters,forwards closing comment----------------------");
-           
+
             WaitForPageReady();
             DesignDocCommentReview.EnterClosingCommentAndCode();
 
@@ -273,4 +421,57 @@ namespace RKCIUIAutomation.Test.Smoke
             Thread.Sleep(5000);
         }
     }
+
+        [TestFixture]
+        public class Test_CommentReviewNoCommentForSH249 : TestBase
+        {
+            [Test]
+            [Category(Component.Other)]
+            [Property(TestCaseNumber, "ELVS2222")]
+            [Property(Priority, "Priority 1")]
+            [Description("Verify Component Name")]
+            public void CommentReviewNoCommentForSH249()
+            {
+
+                LogInfo("--------------------------1. Log in as IQF RecordsManager'----------------------");
+                LoginAs(UserType.IQFRecordsMgr);//testing glx comment review
+                NavigateToPage.RMCenter_Design_Documents();
+                Assert.True(VerifyPageTitle("Design Document"));
+                DesignDocCommentReview.CreateDocument();
+                ClickLogoutLink();
+                ClickLoginLink();
+
+                LogInfo("--------------------------2. Log in as IQF User, enters Comments----------------------");
+                LoginAs(UserType.IQFUser);
+                NavigateToPage.RMCenter_Design_Documents();
+                TableHelper.ClickTab(DesignDocument.TableTab.Requires_Comment);
+                DesignDocCommentReview.FilterTableByValue();
+                TableHelper.ClickEnterBtnForRow();
+                DesignDocCommentReview.EnterNoComment();
+                ClickLogoutLink();
+                ClickLoginLink();
+
+                LogInfo("--------------------------3. Log in as IQF Admin, forwards Comments----------------------");
+                LoginAs(UserType.IQFAdmin);
+                NavigateToPage.RMCenter_Design_Documents();
+                TableHelper.ClickTab(DesignDocument.TableTab.Requires_Comment);
+                DesignDocCommentReview.FilterTableByValue();
+                TableHelper.ClickEnterBtnForRow();
+                WaitForPageReady();
+                DesignDocCommentReview.ForwardComment();
+                TableHelper.ClickEnterBtnForRow();
+                LogInfo("-------------------------4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode----------------------");
+                DesignDocCommentReview.EnterResponseCommentAndDisagreeResponseCode();
+                TableHelper.ClickEnterBtnForRow();
+                LogInfo("--------------------------5. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+
+                WaitForPageReady();
+                DesignDocCommentReview.EnterClosingCommentAndCode();
+
+                LogInfo("--------------------------6. IQF Admin verifies if record in closed tab ----------------------");
+
+                Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
+                Thread.Sleep(5000);
+            }
+        }
 }
