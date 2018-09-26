@@ -4,14 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-
 namespace RKCIUIAutomation.Page
 {
     public class KendoGrid : Action
     {
-        public KendoGrid(){ }
-        public KendoGrid(IWebDriver driver) => this.Driver = driver;
+        public KendoGrid()
+        {
+        }
 
+        public KendoGrid(IWebDriver driver) => this.Driver = driver;
 
         public void ClickCommentTab(int commentNumber)
         {
@@ -46,7 +47,6 @@ namespace RKCIUIAutomation.Page
                 LogError($"Exception occured in ClickTableTab method", true, e);
                 throw;
             }
-            
         }
 
         private void ExecuteJsScript(string jsToBeExecuted)
@@ -88,7 +88,6 @@ namespace RKCIUIAutomation.Page
             }
             return index;
         }
-
 
         public void RemoveFilters()
         {
@@ -215,7 +214,6 @@ namespace RKCIUIAutomation.Page
             return pageNumber;
         }
 
-
         private string GetTabStripReference()
         {
             WaitForPageReady();
@@ -239,6 +237,7 @@ namespace RKCIUIAutomation.Page
 
             return $"var tab = $('#{tabStripId}').data('kendoTabStrip');";
         }
+
         private string GetGridReference()
         {
             WaitForPageReady();
@@ -272,6 +271,7 @@ namespace RKCIUIAutomation.Page
         [StringValue("asc")] Ascending,
         [StringValue("desc")] Descending
     }
+
     public enum FilterOperator
     {
         [StringValue("eq")] EqualTo,
@@ -289,14 +289,16 @@ namespace RKCIUIAutomation.Page
         [StringValue("lt")] IsBefore,
         [StringValue("lte")] IsBeforeOrEqualTo
     }
+
     public enum FilterLogic
     {
         [StringValue("and")] And,
         [StringValue("or")] Or
     }
+
     public class GridFilter
     {
-        public GridFilter (string columnName, FilterOperator filterOperator, string filterValue, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
+        public GridFilter(string columnName, FilterOperator filterOperator, string filterValue, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
         {
             ColumnName = columnName;
             FilterOperator = filterOperator;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text.RegularExpressions;
-using AventStack.ExtentReports;
+﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.MarkupUtils;
 using log4net;
 using NUnit.Framework;
@@ -12,6 +7,11 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.BaseClass;
 
 namespace RKCIUIAutomation.Base
@@ -28,7 +28,7 @@ namespace RKCIUIAutomation.Base
         private static string screenshotSavePath = string.Empty;
         private readonly string klovPath = @"\\10.1.1.207\errorscreenshots\";
 
-        public BaseUtils(IWebDriver driver) => this.Driver = driver; 
+        public BaseUtils(IWebDriver driver) => this.Driver = driver;
 
         public BaseUtils()
         {
@@ -54,8 +54,8 @@ namespace RKCIUIAutomation.Base
             string month = shortDate[0];
             string date = shortDate[1];
 
-            month = (month.Length > 1)?month : $"0{month}";
-            date = (date.Length > 1)?date : $"0{date}";
+            month = (month.Length > 1) ? month : $"0{month}";
+            date = (date.Length > 1) ? date : $"0{date}";
 
             return $"{month}{date}{shortDate[2]}";
         }
@@ -100,7 +100,6 @@ namespace RKCIUIAutomation.Base
             return uniqueFileName;
         }
 
-        
         //ExtentReports Loggers
         public void LogAssertIgnore(string msg)
         {
@@ -128,7 +127,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                testInstance.Error(CreateReportMarkupLabel(details, ExtentColor.Red));               
+                testInstance.Error(CreateReportMarkupLabel(details, ExtentColor.Red));
             }
             log.Error(details);
 
@@ -236,16 +235,22 @@ namespace RKCIUIAutomation.Base
         }
 
         private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue) => MarkupHelper.CreateLabel(details, extentColor);
-        private static IMarkup CreateReportMarkupCodeBlock(Exception e) => MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");
 
+        private static IMarkup CreateReportMarkupCodeBlock(Exception e) => MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");
 
         //Helper methods to gather Test Context Details
         public static string GetTestName() => GetTestContextProperty(TestContextProperty.TestName);
+
         public static string GetTestComponent1() => GetTestContextProperty(TestContextProperty.TestComponent1);
+
         public static string GetTestComponent2() => GetTestContextProperty(TestContextProperty.TestComponent2);
+
         public static string GetTestDescription() => GetTestContextProperty(TestContextProperty.TestDescription);
+
         public static string GetTestPriority() => GetTestContextProperty(TestContextProperty.TestPriority);
+
         public static string GetTestCaseNumber() => GetTestContextProperty(TestContextProperty.TestCaseNumber);
+
         public static string GetTestClassName() => GetTestContextProperty(TestContextProperty.TestClass);
 
         private static string GetTestContextProperty(TestContextProperty testContextProperty)
@@ -257,20 +262,26 @@ namespace RKCIUIAutomation.Base
             {
                 case TestContextProperty.TestName:
                     return testInstance.Name;
+
                 case TestContextProperty.TestClass:
                     return (testInstance.FullName).Split('.')[2];
+
                 case TestContextProperty.TestComponent1:
                     context = "Category";
                     break;
+
                 case TestContextProperty.TestComponent2:
                     context = "Component2";
                     break;
+
                 case TestContextProperty.TestDescription:
                     context = "Description";
                     break;
+
                 case TestContextProperty.TestPriority:
                     context = "Priority";
                     break;
+
                 case TestContextProperty.TestCaseNumber:
                     context = "TC#";
                     break;
@@ -290,7 +301,6 @@ namespace RKCIUIAutomation.Base
             TestPriority,
             TestCaseNumber
         }
-
 
         //Helper methods for working with files
         public static void RunExternalExecutible(string executible, string cmdLineArgument)
@@ -347,12 +357,11 @@ namespace RKCIUIAutomation.Base
                 throw;
             }
         }
-
     }
 
     public static class BaseHelper
     {
-        static PageBaseHelper pgbHelper = new PageBaseHelper();
+        private static PageBaseHelper pgbHelper = new PageBaseHelper();
 
         public static string SplitCamelCase(this string str, bool removeUnderscore = true)
         {
@@ -415,12 +424,15 @@ namespace RKCIUIAutomation.Base
                     case "Warning":
                         _testStatus = TestStatus.Warning;
                         break;
+
                     case "Failed":
                         _testStatus = TestStatus.Failed;
                         break;
+
                     case "Skipped":
                         _testStatus = TestStatus.Skipped;
                         break;
+
                     default:
                         _testStatus = TestStatus.Inconclusive;
                         break;

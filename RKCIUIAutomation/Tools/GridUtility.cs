@@ -2,12 +2,6 @@
 using OpenQA.Selenium.Remote;
 using RestSharp;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RKCIUIAutomation.Tools
 {
@@ -22,7 +16,6 @@ namespace RKCIUIAutomation.Tools
             this.gridPort = gridPort;
         }
 
-
         public GridNode GetNodeInfoForSession(SessionId sessionId)
         {
             GridNode node = null;
@@ -35,12 +28,9 @@ namespace RKCIUIAutomation.Tools
                 response = client.Execute(request);
                 string json = JsonConvert.SerializeObject(response);
                 Object obj = JsonConvert.DeserializeObject<Object>(json);
-                
-
             }
             catch (Exception)
             {
-
                 throw;
             }
 

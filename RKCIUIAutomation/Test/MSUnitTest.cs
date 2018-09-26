@@ -1,18 +1,17 @@
-﻿using System;
-using System.Net;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Net.NetworkInformation;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MiniGuids;
+using NUnit.Framework.Interfaces;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Tools;
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Test;
-using static RKCIUIAutomation.Page.Navigation.NavMenu;
-using NUnit.Framework.Interfaces;
-using System.Threading.Tasks;
+using RKCIUIAutomation.Tools;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
 using System.Threading;
+using static RKCIUIAutomation.Page.Navigation.NavMenu;
 
 namespace RKCIUIAutomation.Sandbox
 {
@@ -36,6 +35,7 @@ namespace RKCIUIAutomation.Sandbox
         public TestContext TestContext { get; set; }
 
         #region Additional test attributes
+
         //
         // You can use the following additional attributes as you write your tests:
         //
@@ -47,7 +47,7 @@ namespace RKCIUIAutomation.Sandbox
         // [ClassCleanup()]
         // public static void MyClassCleanup() { }
         //
-        // Use TestInitialize to run code before running each test 
+        // Use TestInitialize to run code before running each test
         // [TestInitialize()]
         // public void MyTestInitialize() { }
         //
@@ -55,7 +55,8 @@ namespace RKCIUIAutomation.Sandbox
         // [TestCleanup()]
         // public void MyTestCleanup() { }
         //
-        #endregion
+
+        #endregion Additional test attributes
 
         //[TestMethod]
         public void MSUnitTest1()
@@ -76,7 +77,6 @@ namespace RKCIUIAutomation.Sandbox
             //string username = userPw[0];
             //string password = userPw[1];
             //log.Info($"Username : {username} and Password : {password}");
-
 
             //By locator = PageHelper.GetExpandDDListByLocator(DDListID.Action);
             //string locatorName = locator.GetType().Namespace;
@@ -139,7 +139,6 @@ namespace RKCIUIAutomation.Sandbox
             Assert.IsTrue(reflectedType.Equals(typeof(Project.Administration.UserManagement)));
             //try
             //{
-
             //    //Assert.IsTrue(reflectedTypeName == typeof(Project).ToString());
             //}
             //catch (Exception e)
@@ -162,7 +161,6 @@ namespace RKCIUIAutomation.Sandbox
             Assert.IsTrue(stringOneType.Equals(typeof(string)));
             log.Error(numberOne.GetType().ToString());
             Assert.IsTrue(numberOneType.Equals(typeof(int)));
-
         }
 
         [TestMethod]
@@ -212,7 +210,6 @@ namespace RKCIUIAutomation.Sandbox
                     log.Info(detailsBr[i]);
                 }
             }
-
         }
 
         //[TestMethod]
@@ -227,7 +224,6 @@ namespace RKCIUIAutomation.Sandbox
             var value = GetVar(key);
             Console.WriteLine(value);
         }
-
 
         [TestMethod]
         public void TestCreateGetVar()
@@ -251,7 +247,8 @@ namespace RKCIUIAutomation.Sandbox
         {
             internal const string Cat1 = "Cat1";
         }
-        enum TableButton
+
+        private enum TableButton
         {
             [StringValue("", BtnCategory.Cat1)] QMS_Attachments_View,
             [StringValue("-1")] Report_View,
@@ -288,7 +285,7 @@ namespace RKCIUIAutomation.Sandbox
             string expected = "KENDOUItabStripID";
             string actual = tabStripEnum.GetString();
             Console.WriteLine($"EXPECTED VALUE: {expected}\nACTUAL VALUE: {actual}");
-            Assert.AreEqual(expected,actual);
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
@@ -329,33 +326,28 @@ namespace RKCIUIAutomation.Sandbox
                         acct = Regex.Split(name, "Welcome ");
                         Console.WriteLine(acct[1]);
                     }
-                    
                 }
                 catch (Exception e)
                 {
                     log.Debug(e.Message);
                 }
-
             }
         }
 
         [TestMethod]
         public void StaticValues()
         {
-
             SimpleTestClass testclass = new SimpleTestClass();
             testclass.SetValue1();
 
             Console.WriteLine(SimpleTestClass.Value1);
             Console.WriteLine(testclass.Value2);
-
         }
     }
 
     [TestClass]
     public class SimpleTestClass
     {
-
         public static string Value1;
         public string Value2;
 
@@ -389,7 +381,6 @@ namespace RKCIUIAutomation.Sandbox
             Console.WriteLine(isPingable);
         }
 
-
         [TestMethod]
         public void HipTest_GetTestRunScenarios()
         {
@@ -418,7 +409,6 @@ namespace RKCIUIAutomation.Sandbox
                 2238585,
                 2238586
             };
-
 
             string description = "Test Description - (Env)Tenant";
 
@@ -468,7 +458,7 @@ namespace RKCIUIAutomation.Sandbox
                         Console.WriteLine("3");
                         if (!boolean)
                         {
-                            Console.WriteLine("4"); 
+                            Console.WriteLine("4");
                         }
                     }
                 }
@@ -485,8 +475,7 @@ namespace RKCIUIAutomation.Sandbox
         {
             string[] name = Regex.Split(GetType().Namespace, "\\.");
             Console.WriteLine($"INDEX: {name.Length}");
-            Console.WriteLine(name[name.Length -1]);
+            Console.WriteLine(name[name.Length - 1]);
         }
     }
-
 }

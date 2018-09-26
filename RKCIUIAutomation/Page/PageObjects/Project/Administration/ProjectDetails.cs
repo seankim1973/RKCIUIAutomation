@@ -1,6 +1,4 @@
-﻿using OpenQA.Selenium;
-
-namespace RKCIUIAutomation.Page.PageObjects.Project.Administration
+﻿namespace RKCIUIAutomation.Page.PageObjects.Project.Administration
 {
     public class ProjectDetails : PageBase
     {

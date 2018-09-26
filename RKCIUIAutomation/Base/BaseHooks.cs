@@ -1,6 +1,4 @@
-﻿using RKCIUIAutomation.Config;
-
-namespace RKCIUIAutomation.Base
+﻿namespace RKCIUIAutomation.Base
 {
     public class BaseHooks : WebDriverFactory
     {

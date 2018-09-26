@@ -86,7 +86,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     public class VerifyQAFieldMenu : LinkCoverageWF
     {
         [Test]
-        [Category(Component.Link_Coverage), Property(Component2,Component.QAField)]
+        [Category(Component.Link_Coverage), Property(Component2, Component.QAField)]
         [Property(TestCaseNumber, "ELVS2222")]
         [Property(Priority, "Priority 1")]
         [Description("Verify QA Field Menu only")]
@@ -182,7 +182,6 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         public void NavigateToVerifyQCEngineerMenu() => LinkCoverageWF._NavigateToVerifyQCEngineerMenu();
     }
 
-    
     [TestFixture]
     public class VerifyQCSearchMenu : LinkCoverageWF
     {

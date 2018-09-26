@@ -8,44 +8,50 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using static NUnit.Framework.TestContext;
 
 namespace RKCIUIAutomation.Base
 {
     [TestFixture]
+    [Parallelizable]
     public class BaseClass : BaseUtils
     {
         //ExtentReports
         [ThreadStatic]
         public static ExtentReports reportInstance;
+
         [ThreadStatic]
         public static ExtentTest parentTest;
+
         [ThreadStatic]
         public static ExtentTest testInstance;
+
         [ThreadStatic]
         public static TestStatus testStatus;
 
         //HipTest
         [ThreadStatic]
         public HipTestApi hipTestInstance;
+
         [ThreadStatic]
         public int hipTestRunId;
+
         [ThreadStatic]
         public string[] hipTestRunDetails;
+
         [ThreadStatic]
         public List<int> hipTestRunTestCaseIDs;
+
         [ThreadStatic]
         public List<KeyValuePair<int, List<int>>> hipTestRunData;
+
         [ThreadStatic]
         public List<KeyValuePair<int, KeyValuePair<TestStatus, string>>> hipTestResults;
 
-
         //Test Environment
         public static TestPlatform testPlatform;
+
         public static BrowserType browserType;
         public static TestEnv testEnv;
         public static TenantName tenantName;
@@ -55,6 +61,7 @@ namespace RKCIUIAutomation.Base
 
         //TestCase Details
         private string testName;
+
         private string testSuite;
         private string testPriority;
         private string testCaseNumber;
@@ -63,16 +70,16 @@ namespace RKCIUIAutomation.Base
         private string testDescription;
         private string[] testRunDetails;
         private Cookie cookie = null;
-        ConfigUtils Configs = new ConfigUtils();
+        private ConfigUtils Configs = new ConfigUtils();
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
+            string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
             string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
-            string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
+            string _reporter = Parameters.Get("Reporter", $"{Reporter.Html}");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
             testPlatform = Configs.GetTestRunEnv<TestPlatform>(_testPlatform);
@@ -94,7 +101,6 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
@@ -108,15 +114,9 @@ namespace RKCIUIAutomation.Base
                 hipTestInstance.SyncTestRun(hipTestRunId);
             }
 
-            reportInstance.Flush();
-
-            if (Driver != null)
-            {
-                Driver.Close();
-                Driver.Quit();
-            }
+            Driver?.Close();
+            Driver?.Quit();
         }
-
 
         [SetUp]
         public void BeforeTest()
@@ -124,9 +124,9 @@ namespace RKCIUIAutomation.Base
             var _suite = Regex.Split(GetType().Namespace, "\\.");
 
             testName = GetTestName();
-            testSuite = _suite[_suite.Length -1];
+            testSuite = _suite[_suite.Length - 1];
             testPriority = GetTestPriority();
-            testCaseNumber = GetTestCaseNumber();         
+            testCaseNumber = GetTestCaseNumber();
             testComponent1 = GetTestComponent1();
             testComponent2 = GetTestComponent2();
             testDescription = GetTestDescription();
@@ -144,23 +144,21 @@ namespace RKCIUIAutomation.Base
 
             int currentTestCaseNumber = int.Parse(testCaseNumber);
 
-
             if (hiptest)
             {
                 hipTestRunTestCaseIDs.Add(currentTestCaseNumber);
-                
             }
-                        
+
             reportInstance = ExtentManager.Instance;
-            parentTest = (reporter == Reporter.Html) ? 
+            parentTest = (reporter == Reporter.Html) ?
                 reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv) : null;
-            testInstance = (reporter == Reporter.Html) ? 
+            testInstance = (reporter == Reporter.Html) ?
                 parentTest.CreateNode(testDescription) : testInstance = reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv);
 
             List<string> tenantComponents = new List<string>();
             ProjectProperties props = new ProjectProperties();
             tenantComponents = props.GetComponentsForProject(tenantName);
-            
+
             if (tenantComponents.Contains(testComponent1))
             {
                 if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
@@ -222,7 +220,6 @@ namespace RKCIUIAutomation.Base
             log.Info($"################################################################\n");
         }
 
-
         [TearDown]
         public void AfterTest()
         {
@@ -231,15 +228,15 @@ namespace RKCIUIAutomation.Base
                 ResultAdapter result = CurrentContext.Result;
                 List<object> testResults = result.CheckForTestStatusInjection();
                 testStatus = (TestStatus)testResults[0];
-                
+
                 switch (testStatus)
                 {
                     case TestStatus.Failed:
                         string injMsg = (string)testResults[1];
-                        string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? (injMsg = string.IsNullOrEmpty(injMsg) ? "": $"{injMsg}<br> ") : $"<pre>{result.StackTrace}</pre>";
+                        string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? (injMsg = string.IsNullOrEmpty(injMsg) ? "" : $"{injMsg}<br> ") : $"<pre>{result.StackTrace}</pre>";
                         string screenshotName = CaptureScreenshot(GetTestName());
-                       
-                        if(reporter == Reporter.Klov)
+
+                        if (reporter == Reporter.Klov)
                         {
                             /*Use when Klov Reporter bug is fixed
                             //Upload screenshot to MongoDB server
@@ -261,13 +258,16 @@ namespace RKCIUIAutomation.Base
 
                         cookie = new Cookie("zaleniumTestPassed", "false");
                         break;
+
                     case TestStatus.Passed:
                         testInstance.Pass(MarkupHelper.CreateLabel("Test Passed", ExtentColor.Green));
                         cookie = new Cookie("zaleniumTestPassed", "true");
                         break;
+
                     case TestStatus.Skipped:
                         testInstance.Skip(MarkupHelper.CreateLabel("Test Skipped", ExtentColor.Yellow));
                         break;
+
                     default:
                         testInstance.Debug(MarkupHelper.CreateLabel("Inconclusive Test Result", ExtentColor.Orange));
                         break;
@@ -282,6 +282,8 @@ namespace RKCIUIAutomation.Base
 
                 if (Driver != null)
                 {
+                    reportInstance.Flush();
+
                     if (cookie != null)
                     {
                         Driver.Manage().Cookies.AddCookie(cookie);

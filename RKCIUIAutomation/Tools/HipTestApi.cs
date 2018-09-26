@@ -1,45 +1,46 @@
-﻿using System;
-using RestSharp;
-using Newtonsoft.Json;
-using RKCIUIAutomation.Config;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
 using NUnit.Framework.Interfaces;
+using RestSharp;
+using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
-using static RKCIUIAutomation.Tools.HipTest;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
+using static RKCIUIAutomation.Tools.HipTest;
 
 namespace RKCIUIAutomation.Tools
 {
     public class HipTestApi : TestBase
     {
         private static Lazy<List<KeyValuePair<string, List<int>>>> _suiteTestCaseDataset;
-        private List<KeyValuePair<string, List<int>>> SuiteTestCaseDataset { get { return _suiteTestCaseDataset.Value; } set { }  }
+        private List<KeyValuePair<string, List<int>>> SuiteTestCaseDataset { get { return _suiteTestCaseDataset.Value; } set { } }
 
         private static ConfigUtils config = new ConfigUtils();
         private static readonly string _accessToken;
         private static readonly string _clientId;
         private static readonly string _userId;
         private static readonly string _userPw;
+
         //private readonly static string proj_rkci = "95332";
         private readonly static string newRKCI = "100288";
+
         private readonly string ApiBase = $"https://app.hiptest.com/api/projects/{newRKCI}";
-        
 
         private static readonly Lazy<HipTestApi> _lazy;
         public static HipTestApi HipTestInstance { get { return _lazy.Value; } }
+
         static HipTestApi()
         {
             _lazy = new Lazy<HipTestApi>(() => new HipTestApi());
-             
+
             _accessToken = config.GetHipTestCreds(HipTestKey.HipTest_Token);
             _clientId = config.GetHipTestCreds(HipTestKey.HipTest_ClientID);
             _userId = config.GetHipTestCreds(HipTestKey.HipTest_UID);
             _userPw = config.GetHipTestCreds(HipTestKey.HipTest_PWD);
         }
-
 
         public enum HipTestKey
         {
@@ -54,7 +55,7 @@ namespace RKCIUIAutomation.Tools
             BuildIDs,
             TestRuns,
             TestResults,
-            TestSnapshots            
+            TestSnapshots
         }
 
         private enum TestRunType
@@ -92,8 +93,9 @@ namespace RKCIUIAutomation.Tools
             Task.WaitAll(executeTask);
             return executeTask;
         }
+
         private Task<IRestResponse> ExecuteRequest(Method requestMethod, ResourceType resource, RootObject json = null, params object[] requestParams)
-        {            
+        {
             int buildId;
             int testRunId;
             int testResultId;
@@ -130,6 +132,7 @@ namespace RKCIUIAutomation.Tools
                             endPoint = "/test_runs";
                         }
                         break;
+
                     case ResourceType.TestResults:
                         if (requestMethod == Method.POST)
                         {
@@ -151,6 +154,7 @@ namespace RKCIUIAutomation.Tools
                             endPoint = $"/test_runs/{testRunId}/test_snapshots/{testSnapshotId}?include=last-result";
                         }
                         break;
+
                     case ResourceType.TestSnapshots:
                         testRunId = ConvertToType<int>(requestParams[0]);
                         endPoint = $"/test_runs/{testRunId}/test_snapshots?include=scenario";
@@ -163,7 +167,7 @@ namespace RKCIUIAutomation.Tools
                 {
                     request.AddJsonBody(json);
                 }
-                                
+
                 log.Info($"API Endpoint: {endPoint}");
                 IRestClient client = new RestClient(ApiBase);
 
@@ -182,7 +186,6 @@ namespace RKCIUIAutomation.Tools
                 throw;
             }
         }
-
 
         /// <summary>
         /// Provide test case numbers(scenarioIDs), as string[] array, to be included in the Hiptest Test Run.
@@ -255,12 +258,11 @@ namespace RKCIUIAutomation.Tools
                 while (responseTask == null);
 
                 Task.WaitAll(responseTask);
-                
+
                 var response = responseTask.Result;
                 statusCode = response.StatusCode.ToString();
                 content = response.Content;
 
-                
                 //Get Test Run ID
                 RootObject root = JsonConvert.DeserializeObject<RootObject>(content);
                 var testRunId = root.data.id;
@@ -269,7 +271,6 @@ namespace RKCIUIAutomation.Tools
                 Console.WriteLine($"TESTRUN ID: {testRunId}");
                 Console.WriteLine(content);
 
-                
                 return testRunId;
             }
             catch (Exception e)
@@ -293,7 +294,7 @@ namespace RKCIUIAutomation.Tools
             int scenarioId = -1;
             int scenarioSnapshotId = -1;
             int lastResultId = -1;
-  
+
             var runData = new List<KeyValuePair<int, List<int>>>();
 
             var snapshotRequestParams = new object[]
@@ -312,7 +313,7 @@ namespace RKCIUIAutomation.Tools
 
                 DatumList dataList = new DatumList();
                 dataList = (DatumList)JsonConvert.DeserializeObject(snapshotIdContent, typeof(DatumList));
-                
+
                 int dataCount = dataList.data.Count;
                 for (int i = 0; i < dataCount; i++)
                 {
@@ -331,7 +332,7 @@ namespace RKCIUIAutomation.Tools
                     var resultIdTask = CallExecuteRequest(Method.GET, ResourceType.TestResults, null, testResultRequestParams);
                     Task.WaitAll(resultIdTask);
                     var resultIdContent = resultIdTask.Result.Content;
-                        
+
                     RootObject root = new RootObject();
                     root = (RootObject)JsonConvert.DeserializeObject(resultIdContent, typeof(RootObject));
 
@@ -382,7 +383,6 @@ namespace RKCIUIAutomation.Tools
 
                         KeyValuePair<int, List<int>> hipTestRunPair = hipTestRunDataset[h];
                         var scenarioId = hipTestRunPair.Key;
-                        
 
                         if (scenarioId == tcNumber)
                         {
@@ -395,7 +395,7 @@ namespace RKCIUIAutomation.Tools
                             var scenarioSnapshotId = snapshotData[1];
                             var testResultId = snapshotData[2];
 
-                            string logMsg = 
+                            string logMsg =
                                 $"\n####HipTest ScenarioID: {scenarioId}\n" +
                                 $"####ScenarioSnapshotID: {scenarioSnapshotId}\n" +
                                 $"####Status: {tcStatus}\n" +
@@ -429,7 +429,7 @@ namespace RKCIUIAutomation.Tools
                             };
 
                             var testResultsTask = CallExecuteRequest(Method.PATCH, ResourceType.TestResults, json, requestParams);
-                            
+
                             Task.WaitAll(testResultsTask);
                             var response = testResultsTask.Result;
                             statusCode = response.StatusCode.ToString();
@@ -460,7 +460,7 @@ namespace RKCIUIAutomation.Tools
         /// </summary>
         /// <param name="testRunId"></param>
         public void SyncTestRun(int testRunId) => GetTestRunTask(TestRunType.Sync, testRunId);
-        
+
         private IRestResponse GetTestRunTask<T>(TestRunType testRunType, T taskParams)
         {
             string content = string.Empty;
@@ -538,7 +538,6 @@ namespace RKCIUIAutomation.Tools
                     }
                 };
 
-
                 var testResultsTask = CallExecuteRequest(Method.POST, ResourceType.TestResults, json, requestParams);
                 Task.WaitAll(testResultsTask);
                 var response = testResultsTask.Result;
@@ -599,7 +598,7 @@ namespace RKCIUIAutomation.Tools
                             {
                                 log.Info($"Existing TC#: {existingTCNumbersList[n]}");
                             }
-                            
+
                             existingTCNumbersList.Add(currentTestCaseNumber);
                             var newSuiteTCPair = new KeyValuePair<string, List<int>>(existingSuiteName, existingTCNumbersList);
                             newSuiteTCPair = SuiteTestCaseDataset.First(p => p.Key == existingSuiteName);
@@ -645,7 +644,5 @@ namespace RKCIUIAutomation.Tools
                 }
             }
         }
-
-
     }
 }

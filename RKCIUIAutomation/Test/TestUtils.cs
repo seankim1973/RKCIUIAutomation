@@ -9,7 +9,10 @@ namespace RKCIUIAutomation.Test
 {
     public class TestUtils : PageBase
     {
-        public TestUtils(){}
+        public TestUtils()
+        {
+        }
+
         public TestUtils(IWebDriver driver) => this.Driver = driver;
 
         private static List<string> pageUrlList;
@@ -19,6 +22,7 @@ namespace RKCIUIAutomation.Test
             IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
             return $"{anchorElem.GetAttribute("innerText")}";
         }
+
         private static string GetElementHref(IWebElement listElement)
         {
             IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
@@ -62,7 +66,7 @@ namespace RKCIUIAutomation.Test
                         else
                         {
                             subMainNavMsg = $"  > {GetInnerText(subMainNavElem)}";
-                            //log.Info(subMainNavMsg); //i.e. Project>>Administration 
+                            //log.Info(subMainNavMsg); //i.e. Project>>Administration
                             WriteToFile(subMainNavMsg); //write to txt file
 
                             IList<IWebElement> subMenuElements = subMainNavElem.FindElements(By.XPath("./ul/li"));
@@ -138,6 +142,7 @@ namespace RKCIUIAutomation.Test
         }
 
         private List<bool> assertionList;
+
         public void AddAssertionToList(bool assertion)
         {
             if (assertionList?.Any() != true)
@@ -147,6 +152,7 @@ namespace RKCIUIAutomation.Test
             else
                 assertionList.Add(assertion);
         }
+
         public void AssertAll()
         {
             Assert.Multiple(testDelegate: () =>
@@ -154,6 +160,6 @@ namespace RKCIUIAutomation.Test
                 foreach (bool assertion in assertionList)
                     Assert.True(assertion);
             });
-        }        
-    }    
+        }
+    }
 }

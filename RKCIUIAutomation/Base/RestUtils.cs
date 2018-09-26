@@ -1,10 +1,10 @@
-﻿using System;
-using RestSharp;
+﻿using RestSharp;
+using System;
 
 namespace RKCIUIAutomation.Base
 {
     public class RestUtils : BaseUtils
-    {        
+    {
         public string GetJsonResponse(string baseUrl, string endpoint)
         {
             RestClient client = new RestClient();
@@ -30,6 +30,5 @@ namespace RKCIUIAutomation.Base
 
             return json;
         }
-
     }
 }

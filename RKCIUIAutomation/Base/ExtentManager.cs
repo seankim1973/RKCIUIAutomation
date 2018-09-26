@@ -1,8 +1,8 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.Reporter;
+using RKCIUIAutomation.Config;
 using System;
 using System.IO;
-using RKCIUIAutomation.Config;
 using static RKCIUIAutomation.Base.BaseClass;
 
 namespace RKCIUIAutomation.Base

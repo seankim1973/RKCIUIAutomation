@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace RKCIUIAutomation.Tools
 {
     public class XMLUtil : NUnitClass
-    {        
+    {
         public void XMLDocumentTool()
         {
             string filePath = @"C:\Users\schong\source\repos\RKCIUIAutomation\RKCIUIAutomation\Tools\TestResult.xml";
@@ -34,7 +28,6 @@ namespace RKCIUIAutomation.Tools
             Console.WriteLine($"Skipped: {skipped}");
             Console.WriteLine($"Inconclusive: {inconclusive}\n");
 
-
             XmlNodeList tcList = elem.SelectNodes("//test-case");
             foreach (XmlNode tc in tcList)
             {
@@ -46,7 +39,7 @@ namespace RKCIUIAutomation.Tools
                 duration = duration - remainder;
                 int mins = Convert.ToInt32(duration / 60);
                 int secs = Convert.ToInt32(remainder);
-                
+
                 Console.WriteLine($"Name: {name} \nResult: {tcResult} \nDuration: {mins} mins {remainder.ToString("00")} secs\n");
 
                 XmlNode outputNode = tc.SelectSingleNode("output");
@@ -58,9 +51,6 @@ namespace RKCIUIAutomation.Tools
             XmlNode testSuiteOutput = elem.SelectSingleNode("//test-run/test-suite/test-suite/test-suite/test-suite/test-suite/output");
             string[] output = Regex.Split(testSuiteOutput.InnerText, "  :  ");
             Console.WriteLine(output[1] + "\n");
-
         }
     }
-
-
 }

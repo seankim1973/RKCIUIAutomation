@@ -236,6 +236,7 @@ namespace RKCIUIAutomation.Page.Navigation
             {
                 [StringValue("Administration")] Administration,
             }
+
             public enum Menu
             {
                 [StringValue("My Details")] My_Details,
@@ -252,6 +253,7 @@ namespace RKCIUIAutomation.Page.Navigation
                     [StringValue("System Configuration")] System_Configuration,
                     [StringValue("Admin Tools")] Admin_Tools
                 }
+
                 public new enum Menu
                 {
                     [StringValue("Project Details")] Project_Details,
@@ -545,7 +547,6 @@ namespace RKCIUIAutomation.Page.Navigation
             }
         }
 
-
         //QC Record Control Menu Navigation Enums
         public class QCRecordControl
         {
@@ -554,7 +555,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QC Test - Original Report")] QC_Test_Original_Report,
                 [StringValue("QC Test - All")] QC_Test_All,
                 [StringValue("QC Test Correction Report")] QC_Test_Correction_Report,
-                [StringValue("QC DIRs")] QC_DIRs               
+                [StringValue("QC DIRs")] QC_DIRs
             }
         }
 
@@ -567,7 +568,6 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QC Test  - Authorization")] QC_Test_Authorization
             }
         }
-
 
         //QC Search Menu Navigation Enums
         public class QCSearch

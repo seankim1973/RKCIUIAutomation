@@ -3,51 +3,49 @@ using RKCIUIAutomation.Config;
 
 namespace RKCIUIAutomation.Test.Hiptest
 {
-    public class HiptestUnit
+    [TestFixture]
+    public class BreakSheet_Module : TestBase
     {
-        [TestFixture]
-        public class BreakSheet_Module : TestBase
+        [Test]
+        [Category(Component.Breaksheet_Module)]
+        [Property(TestCaseNumber, 2238575)]
+        [Property(Priority, "High")]
+        [Description("To produce a Cylinder Break Sheet")]
+        public void Create_a_BreakSheet_Document_Defect_EPA_691()
         {
-            [Test]
-            [Category(Component.Breaksheet_Module)]
-            [Property(TestCaseNumber, 2238575)]
-            [Property(Priority, "High")]
-            [Description("To produce a Cylinder Break Sheet")]
-            public void Create_a_BreakSheet_Document_Defect_EPA_691()
-            {
-                LoginAs(UserType.Bhoomi);
-                NavigateToPage.QALab_BreakSheet_Creation();
-                Assert.True(true);
-            }
-
-            [Test]
-            [Category(Component.Breaksheet_Module)]
-            [Property(TestCaseNumber, 2238576)]
-            [Property(Priority, "High")]
-            [Description("Revise that the system is displaying the Break Sheet Legacy PDF properly.")]
-            public void Produce_a_PDF_record_of_the_BreakSheet_Legacy_information()
-            {
-                LoginAs(UserType.Bhoomi);
-                NavigateToPage.QALab_BreakSheet_Legacy();
-                Assert.True(true);
-            }
-
-            [Test]
-            [Category(Component.Breaksheet_Module)]
-            [Property(TestCaseNumber, 2238577)]
-            [Property(Priority, "High")]
-            [Description("To produce a Cylinder Break Sheet")]
-            public void Produce_a_Cylinder_BreakSheet()
-            {
-                LoginAs(UserType.Bhoomi);
-                NavigateToPage.QCLab_BreakSheet_Creation();
-                Assert.True(false);
-            }
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QALab_BreakSheet_Creation();
+            Assert.True(true);
         }
 
+        [Test]
+        [Category(Component.Breaksheet_Module)]
+        [Property(TestCaseNumber, 2238576)]
+        [Property(Priority, "High")]
+        [Description("Revise that the system is displaying the Break Sheet Legacy PDF properly.")]
+        public void Produce_a_PDF_record_of_the_BreakSheet_Legacy_information()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QALab_BreakSheet_Legacy();
+            Assert.True(true);
+        }
 
+        [Test]
+        [Category(Component.Breaksheet_Module)]
+        [Property(TestCaseNumber, 2238577)]
+        [Property(Priority, "High")]
+        [Description("To produce a Cylinder Break Sheet")]
+        public void Produce_a_Cylinder_BreakSheet()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QCLab_BreakSheet_Creation();
+            Assert.True(false);
+        }
+    }
 
-
+    [TestFixture]
+    public class HiptestUnit
+    {
         [TestFixture]
         public class CVL_Lists : TestBase
         {
@@ -64,7 +62,6 @@ namespace RKCIUIAutomation.Test.Hiptest
                 Assert.True(true);
             }
         }
-
 
         [TestFixture]
         public class CVL_List_Items5 : TestBase
@@ -83,7 +80,6 @@ namespace RKCIUIAutomation.Test.Hiptest
             }
         }
 
-
         [TestFixture]
         public class CVL_List_Items4 : TestBase
         {
@@ -99,9 +95,7 @@ namespace RKCIUIAutomation.Test.Hiptest
                 NavigateToPage.SysConfig_CVL_Lists();
                 Assert.True(false);
             }
-
         }
-
 
         [TestFixture]
         public class CVL_List_Items3 : TestBase
@@ -120,7 +114,6 @@ namespace RKCIUIAutomation.Test.Hiptest
             }
         }
 
-
         [TestFixture]
         public class CVL_List_Items2 : TestBase
         {
@@ -138,7 +131,6 @@ namespace RKCIUIAutomation.Test.Hiptest
             }
         }
 
-
         [TestFixture]
         public class CVL_List_Items1 : TestBase
         {
@@ -154,8 +146,6 @@ namespace RKCIUIAutomation.Test.Hiptest
                 NavigateToPage.SysConfig_CVL_List_Items();
                 Assert.True(false);
             }
-
         }
-
     }
 }

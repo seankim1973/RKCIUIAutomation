@@ -6,7 +6,7 @@ namespace RKCIUIAutomation.Tools
 {
     public class JiraUtil
     {
-        enum RestMethod
+        private enum RestMethod
         {
             GET,
             POST,
@@ -34,9 +34,5 @@ namespace RKCIUIAutomation.Tools
             Issue response = await jira.Issues.GetIssueAsync(issueNumber);
             return response;
         }
-
-
-        
-
     }
 }

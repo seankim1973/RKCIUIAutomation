@@ -1,5 +1,4 @@
-﻿using OpenQA.Selenium;
-using System;
+﻿using System;
 using System.Collections;
 
 namespace RKCIUIAutomation.Page
@@ -13,8 +12,9 @@ namespace RKCIUIAutomation.Page
     public class PageBaseHelper : TableHelper
     {
         private Hashtable Hashtable { get; set; }
+
         private Hashtable GetHashTable() => Hashtable ?? new Hashtable();
-      
+
         public void CreateVar<T>(string key, T value)
         {
             try

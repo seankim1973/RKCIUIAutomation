@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RKCIUIAutomation.Page.PageObjects.Project.Administration.SystemConfiguration
+﻿namespace RKCIUIAutomation.Page.PageObjects.Project.Administration.SystemConfiguration
 {
-    class Disciplines
+    internal class Disciplines
     {
     }
 }

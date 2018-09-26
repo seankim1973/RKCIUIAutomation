@@ -29,9 +29,8 @@
       border:0;
       border-collapse: collapse;
       }
-
     </style>
-    <xsl:apply-templates/>
+    <xsl:apply-templates />
   </xsl:template>
 
   <xsl:template match="test-run">
@@ -39,9 +38,9 @@
     <!-- Command Line -->
     <h4>Command Line</h4>
     <pre>
-      <xsl:value-of select="command-line"/>
+      <xsl:value-of select="command-line" />
     </pre>
-    
+
     <!-- Runtime Environment -->
     <h4>Runtime Environment</h4>
 
@@ -49,13 +48,13 @@
       <tr>
         <td class="smllabel right">OS Version:</td>
         <td class="left">
-          <xsl:value-of select="test-suite/environment/@os-version[1]"/>
+          <xsl:value-of select="test-suite/environment/@os-version[1]" />
         </td>
       </tr>
       <tr>
         <td class="smllabel right">CLR Version:</td>
         <td class="left">
-          <xsl:value-of select="@clr-version"/>
+          <xsl:value-of select="@clr-version" />
         </td>
       </tr>
       <tr>
@@ -66,7 +65,7 @@
       <tr>
         <td class="smllabel right">NUnit Version:</td>
         <td class="left">
-          <xsl:value-of select="@engine-version"/>
+          <xsl:value-of select="@engine-version" />
         </td>
       </tr>
     </table>
@@ -78,7 +77,7 @@
         <ol>
           <xsl:for-each select="test-suite[@type='Assembly']">
             <li>
-              <xsl:value-of select="@fullname"/>
+              <xsl:value-of select="@fullname" />
             </li>
           </xsl:for-each>
         </ol>
@@ -89,7 +88,7 @@
     <xsl:if test="//test-case[@result='Skipped']">
       <h4>Tests Not Run</h4>
       <ol>
-        <xsl:apply-templates select="//test-case[@result='Skipped']"/>
+        <xsl:apply-templates select="//test-case[@result='Skipped']" />
       </ol>
     </xsl:if>
 
@@ -97,7 +96,7 @@
     <xsl:if test="//test-case[failure]">
       <h4>Errors and Failures</h4>
       <ol>
-        <xsl:apply-templates select="//test-case[failure]"/>
+        <xsl:apply-templates select="//test-case[failure]" />
       </ol>
     </xsl:if>
 
@@ -107,25 +106,25 @@
     <h4>Run Settings</h4>
     <ul>
       <li>
-        DefaultTimeout: <xsl:value-of select="$settings/setting[@name='DefaultTimeout']/@value"/>
+        DefaultTimeout: <xsl:value-of select="$settings/setting[@name='DefaultTimeout']/@value" />
       </li>
       <li>
-        WorkDirectory: <xsl:value-of select="$settings/setting[@name='WorkDirectory']/@value"/>
+        WorkDirectory: <xsl:value-of select="$settings/setting[@name='WorkDirectory']/@value" />
       </li>
       <li>
-        ImageRuntimeVersion: <xsl:value-of select="$settings/setting[@name='ImageRuntimeVersion']/@value"/>
+        ImageRuntimeVersion: <xsl:value-of select="$settings/setting[@name='ImageRuntimeVersion']/@value" />
       </li>
       <li>
-        ImageTargetFrameworkName: <xsl:value-of select="$settings/setting[@name='ImageTargetFrameworkName']/@value"/>
+        ImageTargetFrameworkName: <xsl:value-of select="$settings/setting[@name='ImageTargetFrameworkName']/@value" />
       </li>
       <li>
-        ImageRequiresX86: <xsl:value-of select="$settings/setting[@name='ImageRequiresX86']/@value"/>
+        ImageRequiresX86: <xsl:value-of select="$settings/setting[@name='ImageRequiresX86']/@value" />
       </li>
       <li>
-        ImageRequiresDefaultAppDomainAssemblyResolver: <xsl:value-of select="$settings/setting[@name='ImageRequiresDefaultAppDomainAssemblyResolver']/@value"/>
+        ImageRequiresDefaultAppDomainAssemblyResolver: <xsl:value-of select="$settings/setting[@name='ImageRequiresDefaultAppDomainAssemblyResolver']/@value" />
       </li>
       <li>
-        NumberOfTestWorkers: <xsl:value-of select="$settings/setting[@name='NumberOfTestWorkers']/@value"/>
+        NumberOfTestWorkers: <xsl:value-of select="$settings/setting[@name='NumberOfTestWorkers']/@value" />
       </li>
     </ul>
 
@@ -134,13 +133,13 @@
       <tr>
         <td class="smllabel right">Overall result:</td>
         <td class="left">
-          <xsl:value-of select="@result"/>
+          <xsl:value-of select="@result" />
         </td>
       </tr>
       <tr>
         <td class="smllabel right">Test Count:</td>
         <td class="left">
-          <xsl:value-of select="@total"/>, Passed: <xsl:value-of select="@passed"/>, Failed: <xsl:value-of select="@failed"/>, Inconclusive: <xsl:value-of select="@inconclusive"/>, Skipped: <xsl:value-of select="@skipped"/>
+          <xsl:value-of select="@total" />, Passed: <xsl:value-of select="@passed" />, Failed: <xsl:value-of select="@failed" />, Inconclusive: <xsl:value-of select="@inconclusive" />, Skipped: <xsl:value-of select="@skipped" />
         </td>
       </tr>
 
@@ -152,7 +151,7 @@
         <tr>
           <td class="smllabel right">Failed Tests: </td>
           <td class="left">
-            Failures: <xsl:value-of select="$failedTotal"/>, Errors: <xsl:value-of select="$errorsTotal"/>, Invalid: <xsl:value-of select="$invalidTotal"/>
+            Failures: <xsl:value-of select="$failedTotal" />, Errors: <xsl:value-of select="$errorsTotal" />, Invalid: <xsl:value-of select="$invalidTotal" />
           </td>
         </tr>
       </xsl:if>
@@ -165,7 +164,7 @@
         <tr>
           <td class="smllabel right">Skipped Tests: </td>
           <td class="left">
-            Ignored: <xsl:value-of select="$ignoredTotal"/>, Explicit: <xsl:value-of select="$explicitTotal"/>, Other: <xsl:value-of select="$otherTotal"/>
+            Ignored: <xsl:value-of select="$ignoredTotal" />, Explicit: <xsl:value-of select="$explicitTotal" />, Other: <xsl:value-of select="$otherTotal" />
           </td>
         </tr>
       </xsl:if>
@@ -174,19 +173,19 @@
       <tr>
         <td class="smllabel right">Start time: </td>
         <td class="left">
-          <xsl:value-of select="@start-time"/>
+          <xsl:value-of select="@start-time" />
         </td>
       </tr>
       <tr>
         <td class="smllabel right">End time: </td>
         <td class="left">
-          <xsl:value-of select="@end-time"/>
+          <xsl:value-of select="@end-time" />
         </td>
       </tr>
       <tr>
         <td class="smllabel right">Duration: </td>
         <td class="left">
-          <xsl:value-of select="format-number(@duration,'0.000')"/> seconds
+          <xsl:value-of select="format-number(@duration,'0.000')" /> seconds
         </td>
       </tr>
     </table>
@@ -199,25 +198,25 @@
         <xsl:when test="@result='Skipped'">
           <xsl:choose>
             <xsl:when test="@label='Ignored' or @label='Explicit'">
-              <xsl:value-of select="@label"/>
+              <xsl:value-of select="@label" />
             </xsl:when>
             <xsl:otherwise>
-              <xsl:value-of select="'Other'"/>
+              <xsl:value-of select="'Other'" />
             </xsl:otherwise>
           </xsl:choose>
         </xsl:when>
         <xsl:when test="@result='Failed'">
           <xsl:choose>
             <xsl:when test="@label='Error' or @label='Invalid'">
-              <xsl:value-of select="@label"/>
+              <xsl:value-of select="@label" />
             </xsl:when>
             <xsl:otherwise>
-              <xsl:value-of select="'Failed'"/>
+              <xsl:value-of select="'Failed'" />
             </xsl:otherwise>
           </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:value-of select="'Unknown'"/>
+          <xsl:value-of select="'Unknown'" />
         </xsl:otherwise>
       </xsl:choose>
     </xsl:variable>
@@ -226,24 +225,23 @@
     <li>
       <pre>
         <xsl:value-of select="concat($type,' : ', @fullname)" />
-        <br/>
-        <xsl:value-of select="child::node()/message"/>
+        <br />
+        <xsl:value-of select="child::node()/message" />
 
         <xsl:choose>
           <xsl:when test="$type='Failed'">
-            <br/>
+            <br />
           </xsl:when>
           <xsl:when test="$type='Error'">
-            <br/>
+            <br />
           </xsl:when>
         </xsl:choose>
 
         <!-- Stack trace for failures -->
         <xsl:if test="failure and ($type='Failed' or $type='Error')">
-          <xsl:value-of select="failure/stack-trace"/>
+          <xsl:value-of select="failure/stack-trace" />
         </xsl:if>
       </pre>
     </li>
   </xsl:template>
-
 </xsl:stylesheet>

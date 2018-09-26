@@ -1,40 +1,50 @@
-﻿using Newtonsoft.Json;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 
 namespace RKCIUIAutomation.Page
 {
     public class TableHelper : Action
-    {        
-        public TableHelper(){}
+    {
+        public TableHelper()
+        {
+        }
+
         public TableHelper(IWebDriver driver) => this.Driver = driver;
 
         private KendoGrid kendo;
         private KendoGrid Kendo => kendo = new KendoGrid(Driver);
 
-
         #region Kendo Grid Public Methods
 
         public void ClickCommentTabNumber(int commentNumber) => Kendo.ClickCommentTab(commentNumber);
+
         public void ClickTab(Enum tblTabEnum) => Kendo.ClickTableTab(tblTabEnum.GetString());
+
         public void ClickTab(string tblTabName) => Kendo.ClickTableTab(tblTabName);
+
         public void RefreshTable() => Kendo.Reload();
+
         public int GetTableRowCount() => Kendo.TotalNumberRows();
 
         //<<-- Table Page Navigation Helpers -->>
         private By GetGoToTblPgBtn_ByLocator(TableButton tblPageNavBtn) => By.XPath($"//a[contains(@aria-label,'{tblPageNavBtn.GetString()}')]");
+
         public void GoToFirstPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.First));
+
         public void GoToPreviousPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Previous));
+
         public void GoToNextPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Next));
+
         public void GoToLastPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Last));
+
         public int GetCurrentPageNumber() => Kendo.GetCurrentPageNumber();
+
         public void GoToPageNumber(int pageNumber) => Kendo.GoToTablePage(pageNumber);
+
         public int GetCurrentViewItemsPerPageSize() => Kendo.GetPageSize();
+
         public void SetViewItemsPerPageSize(int newSize) => Kendo.ChangePageSize(newSize);
-                
+
         /// <summary>
         /// ColumnName enumerator and FilterValue is required. FilterOperator has a default value of 'Equal To'.
         /// The default value for FilerLogic is 'AND' and Additional FilterOperator 'Equal To'.
@@ -54,29 +64,33 @@ namespace RKCIUIAutomation.Page
             string additionalFilterValue = null,
             FilterOperator additionalFilterOperator = FilterOperator.EqualTo
             ) => Kendo.Filter(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator);
+
         public void ClearFilters() => Kendo.RemoveFilters();
+
         public void SortColumnAscending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Ascending);
+
         public void SortColumnDescending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Descending);
+
         public void SortColumnToDefault(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Default);
-        
-        #endregion
 
+        #endregion Kendo Grid Public Methods
 
+        #region Table Row Button Methods
 
-        #region Table Row Button Methods       
         //<<-- Table Row Button Helpers -->>
         private class BtnCategory
-        {            
+        {
             internal const string LastOrOnlyInRow = "LastOrOnlyInRow";
             internal const string MultiDupsInRow = "MultiDupsInRow";
             internal const string DblInCell = "DblInCell";
-        }      
+        }
+
         private enum TableButton
         {
             [StringValue("/input", BtnCategory.LastOrOnlyInRow)] CheckBox,
             [StringValue("/a", BtnCategory.LastOrOnlyInRow)] QMS_Attachments_View,
             [StringValue("/a", BtnCategory.LastOrOnlyInRow)] Action_Edit,
-            [StringValue("-1", BtnCategory.MultiDupsInRow)]Report_View,
+            [StringValue("-1", BtnCategory.MultiDupsInRow)] Report_View,
             [StringValue("-2", BtnCategory.MultiDupsInRow)] WebForm_View,
             [StringValue("-3", BtnCategory.MultiDupsInRow)] Attachments_View,
             [StringValue("Revise", BtnCategory.DblInCell)] Action_Revise,
@@ -91,7 +105,7 @@ namespace RKCIUIAutomation.Page
         {
             string xPathExt = string.Empty;
             string xPathLast(string value = "") => $"[last(){value}]";
-            
+
             string xPathExtValue = tblBtn.GetString();
             string btnCategory = tblBtn.GetString(true);
 
@@ -100,21 +114,28 @@ namespace RKCIUIAutomation.Page
                 case BtnCategory.LastOrOnlyInRow:
                     xPathExt = $"{xPathLast()}{xPathExtValue}";
                     break;
+
                 case BtnCategory.MultiDupsInRow:
                     xPathExt = $"{xPathLast(xPathExtValue)}/a";
                     break;
+
                 case BtnCategory.DblInCell:
                     xPathExt = $"{xPathLast()}/a[text()='{xPathExtValue}']";
                     break;
+
                 default:
                     xPathExt = xPathExtValue;
                     break;
             }
             return xPathExt;
         }
+
         private readonly string ActiveTableDiv = "//div[@class='k-content k-state-active']";
+
         private string TableByTestInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
+
         private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn = null) => (string.IsNullOrEmpty(textInRowForAnyColumn)) ? "//tr[1]/td" : $"{TableByTestInRow(textInRowForAnyColumn)}";
+
         private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn = null) => By.XPath($"{ActiveTableDiv}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
 
         public By GetTableRowLocator(string textInRowForAnyColumn) => By.XPath($"{ActiveTableDiv}{TableByTestInRow(textInRowForAnyColumn)}");
@@ -125,7 +146,7 @@ namespace RKCIUIAutomation.Page
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
         public void ToggleCheckBoxForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.CheckBox, textInRowForAnyColumn));
-        
+
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
@@ -168,9 +189,7 @@ namespace RKCIUIAutomation.Page
         /// <param name="textInRowForAnyColumn"></param>
         public void ClickViewReportForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.Report_View, textInRowForAnyColumn));
 
-        #endregion <-- end of Table Row Button Methods
-
-
+        #endregion Table Row Button Methods
 
         //TODO: Horizontal scroll in table (i.e. QA Search>ProctorCurveSummary)
     }

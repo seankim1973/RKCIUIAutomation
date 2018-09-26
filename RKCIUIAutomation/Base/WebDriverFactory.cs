@@ -16,19 +16,20 @@ namespace RKCIUIAutomation.Base
     public class WebDriverFactory : DriverOptionsFactory
     {
         protected IWebDriver Driver { get; set; }
-        private IWebDriver _Driver;
-                
+        private IWebDriver _Driver = null;
+
         public static string GridVmIP => gridVmIP;
         private const string gridVmIP = "10.1.1.207";
 
         protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testName)
         {
-            _Driver = Driver;
+            //_Driver = Driver;
             if (Driver == null)
             {
                 if (platform == TestPlatform.Local)
                 {
-                    return DetermineLocalDriver(browser);
+                    _Driver = DetermineLocalDriver(browser);
+                    //return DetermineLocalDriver(browser);
                 }
                 else
                 {
@@ -37,13 +38,14 @@ namespace RKCIUIAutomation.Base
 
                     string sessionId = ((RemoteWebDriver)_Driver).SessionId.ToString();
                     Console.WriteLine($"DRIVER SESSION ID#: {sessionId}");
-                    return _Driver;
+                    //return _Driver;
                 }
+                Driver = _Driver;
+                return Driver;
             }
             else
-                return _Driver;
+                return Driver;
         }
-
 
         private IWebDriver DetermineLocalDriver(BrowserType browser)
         {
@@ -51,12 +53,16 @@ namespace RKCIUIAutomation.Base
             {
                 case BrowserType.Chrome:
                     return new ChromeDriver();
+
                 case BrowserType.Firefox:
                     return new FirefoxDriver();
+
                 case BrowserType.MicrosoftEdge:
                     return new EdgeDriver();
+
                 case BrowserType.Safari:
                     return new SafariDriver();
+
                 default:
                     log.Debug("Unrecognized Browser type specified ... defaulting to ChromeDriver");
                     return new ChromeDriver();

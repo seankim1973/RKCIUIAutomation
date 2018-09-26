@@ -5,9 +5,7 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Safari;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
-using System;
 using static RKCIUIAutomation.Base.BaseUtils;
-using static RKCIUIAutomation.Page.PageHelper;
 
 namespace RKCIUIAutomation.Base
 {
@@ -16,7 +14,7 @@ namespace RKCIUIAutomation.Base
         protected DriverOptions Options { get; set; }
 
         public DriverOptions DetermineDriverOptions(TestPlatform platform, BrowserType browser, string testName)
-        {            
+        {
             Options = DetermineBrowser(browser, testName);
             Options.DeterminePlatform(platform);
             return Options;
@@ -43,6 +41,7 @@ namespace RKCIUIAutomation.Base
                     case BrowserType.MicrosoftEdge:
                         Options = new EdgeOptions();
                         break;
+
                     case BrowserType.Safari:
                         Options = new SafariOptions();
                         break;
@@ -61,7 +60,6 @@ namespace RKCIUIAutomation.Base
         }
     }
 
-    
     internal static class DriverOptionsHelper
     {
         internal static PageHelper pageHelper = new PageHelper();
@@ -75,21 +73,27 @@ namespace RKCIUIAutomation.Base
                 case TestPlatform.Grid:
                     platformType = PlatformType.Linux;
                     break;
+
                 case TestPlatform.Linux:
                     platformType = PlatformType.Linux;
                     break;
+
                 case TestPlatform.Windows:
                     platformType = PlatformType.Windows;
                     break;
+
                 case TestPlatform.Mac:
                     platformType = PlatformType.Mac;
                     break;
+
                 case TestPlatform.IOS:
                     platformType = PlatformType.Mac;
                     break;
+
                 case TestPlatform.Android:
                     platformType = PlatformType.Android;
                     break;
+
                 default:
                     log.Debug("Unrecognized Platform... defaulting to Linux");
                     break;

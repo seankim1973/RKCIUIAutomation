@@ -1,5 +1,4 @@
-﻿using RKCIUIAutomation.Page;
-using System;
+﻿using System;
 using System.Collections.Specialized;
 using System.Configuration;
 using static RKCIUIAutomation.Base.BaseUtils;
@@ -10,18 +9,18 @@ namespace RKCIUIAutomation.Config
     public class ConfigUtils : ProjectProperties
     {
         public TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg) => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nunitArg);
-        
+
         public string GetSiteUrl(TestEnv testEnv, TenantName project)
         {
             string siteKey = $"{project}_{testEnv}";
-            return GetValueFromConfigManager(siteUrlKey:siteKey);
+            return GetValueFromConfigManager(siteUrlKey: siteKey);
         }
 
         //return string array of username[0] and password[1]
         public string[] GetUser(UserType userType)
         {
             string userKey = $"{userType}";
-            string[] usernamePassword = GetValueFromConfigManager(userTypeKey:userKey).Split(',');
+            string[] usernamePassword = GetValueFromConfigManager(userTypeKey: userKey).Split(',');
             return usernamePassword;
         }
 

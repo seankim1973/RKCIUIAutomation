@@ -1,11 +1,6 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 {
@@ -20,11 +15,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
-    {        
+    {
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
         public T SetClass<T>() => (T)SetPageClassBasedOnTenant();
+
         public IQADIRs SetPageClassBasedOnTenant()
         {
             IQADIRs instance = new QADIRs(Driver);
@@ -64,7 +60,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public virtual bool IsLoaded() => Driver.Title.Equals("DIR List - ELVIS PMC");
-
     }
 
     public class QADIRs_Garnet : QADIRs
@@ -108,5 +103,4 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
     }
-
 }

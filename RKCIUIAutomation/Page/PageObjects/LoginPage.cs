@@ -7,35 +7,51 @@ using System.Collections.Generic;
 namespace RKCIUIAutomation.Page.PageObjects
 {
     #region LoginPage Generic class
+
     public class LoginPage : LoginPage_Impl
     {
-        public LoginPage() { }
+        public LoginPage()
+        {
+        }
+
         public LoginPage(IWebDriver driver) => this.Driver = driver;
     }
-    #endregion end of LoginPage Generic class
 
+    #endregion LoginPage Generic class
 
     #region LoginPage Interface class
+
     public interface ILoginPage
     {
         void LoginUser(UserType userType);
+
         void ToggleRememberMeChkbox();
 
         void LoginAsSysAdmin();
+
         void LoginAsProjAdmin();
+
         void LoginAsProjUser();
+
         void LoginAsIQFRecordsMgr();
+
         void LoginAsIQFAdmin();
+
         void LoginAsIQFUser();
+
         void LoginAsDOTAdmin();
+
         void LoginAsDOTUser();
+
         void LoginAsDEVAdmin();
+
         void LoginAsDEVUser();
     }
-    #endregion end of LoginPage Interface class
 
+    #endregion LoginPage Interface class
 
     #region LoginPage Common Implementation class
+
     public abstract class LoginPage_Impl : PageBase, ILoginPage
     {
         internal readonly By field_Email = By.Name("Email");
@@ -92,19 +108,25 @@ namespace RKCIUIAutomation.Page.PageObjects
             ClickElement(chkbx_RememberMe);
         }
 
-
         public virtual void LoginAsSysAdmin() => LoginUser(UserType.SysAdmin);
+
         public virtual void LoginAsProjAdmin() => LoginUser(UserType.ProjAdmin);
+
         public virtual void LoginAsProjUser() => LoginUser(UserType.ProjUser);
 
         public virtual void LoginAsIQFRecordsMgr() => LoginUser(UserType.IQFRecordsMgr);
-        public virtual void LoginAsIQFAdmin() => LoginUser(UserType.IQFAdmin);
-        public virtual void LoginAsIQFUser() => LoginUser(UserType.IQFUser);
-        public virtual void LoginAsDOTAdmin() => LoginUser(UserType.DOTAdmin);
-        public virtual void LoginAsDOTUser() => LoginUser(UserType.DOTUser);
-        public virtual void LoginAsDEVAdmin() => LoginUser(UserType.DEVAdmin);
-        public virtual void LoginAsDEVUser() => LoginUser(UserType.DEVUser);
 
+        public virtual void LoginAsIQFAdmin() => LoginUser(UserType.IQFAdmin);
+
+        public virtual void LoginAsIQFUser() => LoginUser(UserType.IQFUser);
+
+        public virtual void LoginAsDOTAdmin() => LoginUser(UserType.DOTAdmin);
+
+        public virtual void LoginAsDOTUser() => LoginUser(UserType.DOTUser);
+
+        public virtual void LoginAsDEVAdmin() => LoginUser(UserType.DEVAdmin);
+
+        public virtual void LoginAsDEVUser() => LoginUser(UserType.DEVUser);
 
         //Only SH249 and SG use IQF Records Mgr accts
         // --> SH249 use only IQFRecordsMgr, IQFAdmin, and IQFUser accts
@@ -112,8 +134,8 @@ namespace RKCIUIAutomation.Page.PageObjects
         // --> Garnet and GLX do not use IQFRecordsMgr and IQFAdmin accts
         //I15Tech and I15South do not use IQF Accts
 
-
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
+
         private ILoginPage SetPageClassBasedOnTenant(IWebDriver driver)
         {
             ILoginPage instance = new LoginPage(driver);
@@ -150,69 +172,73 @@ namespace RKCIUIAutomation.Page.PageObjects
             }
             return instance;
         }
-
     }
-    #endregion end of LoginPage Common Implementation class
 
-
+    #endregion LoginPage Common Implementation class
 
     #region Implementation specific to SGWay
+
     public class LoginPage_SGWay : LoginPage
     {
         public LoginPage_SGWay(IWebDriver driver) : base(driver)
         {
         }
     }
-    #endregion
 
+    #endregion Implementation specific to SGWay
 
     #region Implementation specific to SH249
+
     public class LoginPage_SH249 : LoginPage
     {
         public LoginPage_SH249(IWebDriver driver) : base(driver)
         {
         }
     }
-    #endregion
 
+    #endregion Implementation specific to SH249
 
     #region Implementation specific to Garnet
+
     public class LoginPage_Garnet : LoginPage
     {
         public LoginPage_Garnet(IWebDriver driver) : base(driver)
         {
         }
     }
-    #endregion
 
+    #endregion Implementation specific to Garnet
 
     #region Implementation specific to GLX
+
     public class LoginPage_GLX : LoginPage
     {
         public LoginPage_GLX(IWebDriver driver) : base(driver)
         {
         }
     }
-    #endregion
 
+    #endregion Implementation specific to GLX
 
     #region Implementation specific to I15South
+
     public class LoginPage_I15South : LoginPage
     {
         public LoginPage_I15South(IWebDriver driver) : base(driver)
         {
         }
     }
-    #endregion
 
+    #endregion Implementation specific to I15South
 
     #region Implementation specific to I15Tech
+
     public class LoginPage_I15Tech : LoginPage
     {
         public LoginPage_I15Tech(IWebDriver driver) : base(driver)
         {
         }
     }
-    #endregion
-    
+
+    #endregion Implementation specific to I15Tech
 }

@@ -5,6 +5,7 @@ using System.Web.Script.Serialization;
 namespace RKCIUIAutomation.Base
 {
 #pragma warning disable IDE1006 // Naming Styles
+
     public class ZaleniumService : BaseUtils
     {
         public void Start()
@@ -22,7 +23,6 @@ namespace RKCIUIAutomation.Base
             Service(cmdLineArgument);
         }
 
-        
         private void Service(string cmdLineArgument)
         {
             if (!ZaleniumIsRunning())
@@ -74,16 +74,19 @@ namespace RKCIUIAutomation.Base
             public string time { get; set; }
             public string version { get; set; }
         }
+
         public class Os
         {
             public string arch { get; set; }
             public string name { get; set; }
             public string version { get; set; }
         }
+
         public class Java
         {
             public string version { get; set; }
         }
+
         public class Value
         {
             public bool ready { get; set; }
@@ -92,11 +95,11 @@ namespace RKCIUIAutomation.Base
             public Os os { get; set; }
             public Java java { get; set; }
         }
+
         public class RootObject
         {
             public int status { get; set; }
             public Value value { get; set; }
         }
-
     }
 }

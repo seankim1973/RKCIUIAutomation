@@ -15,9 +15,10 @@ namespace RKCIUIAutomation.Config
     public class ImpersonateUser : BaseUtils
     {
         public ImpersonateUser(IWebDriver driver) => this.Driver = driver;
-        static string userName;
-        static string domain;
-        static string password;
+
+        private static string userName;
+        private static string domain;
+        private static string password;
 
         /// <summary>
         /// The type of logon operation to perform.

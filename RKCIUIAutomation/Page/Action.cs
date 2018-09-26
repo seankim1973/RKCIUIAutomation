@@ -18,9 +18,11 @@ namespace RKCIUIAutomation.Page
         private enum JSAction
         {
             [StringValue("arguments[0].click();")] Click,
+
             [StringValue("var evObj = document.createEvent('MouseEvents');" +
                     "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
-                    "arguments[0].dispatchEvent(evObj);")] Hover
+                    "arguments[0].dispatchEvent(evObj);")]
+            Hover
         }
 
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
@@ -108,7 +110,7 @@ namespace RKCIUIAutomation.Page
             {
                 LogDebug($"Unable to locate element: - {elementByLocator}", e);
             }
-            
+
             return elem;
         }
 
@@ -135,11 +137,11 @@ namespace RKCIUIAutomation.Page
             IList<IWebElement> elements = GetElements(elementByLocator);
             return elements.Count;
         }
-                
+
         public void ClickElement(By elementByLocator)
         {
             IWebElement elem = null;
-            
+
             try
             {
                 elem = GetElement(elementByLocator);
@@ -168,7 +170,7 @@ namespace RKCIUIAutomation.Page
                 {
                     buttonTxt = webElement.Text;
                     webElement.Click();
-                }               
+                }
                 LogInfo($"Clicked {buttonTxt}");
             }
             catch (Exception e)
@@ -181,7 +183,7 @@ namespace RKCIUIAutomation.Page
 
         public void EnterComment(CommentType commentType, int commentTabNumber = 1)
         {
-            By commentTypeLocator = By.Id($"{commentType.GetString()}{commentTabNumber -1}_");
+            By commentTypeLocator = By.Id($"{commentType.GetString()}{commentTabNumber - 1}_");
             ScrollToElement(commentTypeLocator);
 
             try
@@ -237,7 +239,7 @@ namespace RKCIUIAutomation.Page
             {
                 LogError($"Unable to retrieve text from element - {elementByLocator}", true, e);
             }
-            
+
             return text;
         }
 
@@ -255,6 +257,7 @@ namespace RKCIUIAutomation.Page
             }
             return text;
         }
+
         public void ExpandDDL<E>(E ddListID)
         {
             var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
@@ -308,18 +311,18 @@ namespace RKCIUIAutomation.Page
             {
                 LogError($"Unable to accept browser alert message", true, e);
                 throw;
-            }          
+            }
         }
 
         public bool VerifyAlertMessage(string expectedMessage)
-        {            
+        {
             string actualAlertMsg = Driver.SwitchTo().Alert().Text;
             bool msgMatch = (actualAlertMsg).Contains(expectedMessage) ? true : false;
             LogInfo($"## Expected Alert Message: {expectedMessage}<br>## Actual Alert Message: {actualAlertMsg}", msgMatch);
             return msgMatch;
         }
 
-        public bool VerifyFieldErrorIsDisplayed(By elementByLocator )
+        public bool VerifyFieldErrorIsDisplayed(By elementByLocator)
         {
             IWebElement elem = GetElement(elementByLocator);
             bool elementDisplayed = elem.Displayed;
@@ -355,6 +358,7 @@ namespace RKCIUIAutomation.Page
         }
 
         private string PageTitle = string.Empty;
+
         private bool IsHeadingDisplayed(By elementByLocator)
         {
             IWebElement element = GetElement(elementByLocator);
@@ -365,7 +369,7 @@ namespace RKCIUIAutomation.Page
                 PageTitle = element.Text;
                 isDisplayed = true;
             }
-  
+
             return isDisplayed;
         }
 
@@ -392,7 +396,7 @@ namespace RKCIUIAutomation.Page
                         headingElement = By.XPath("//h2");
                         isDisplayed = IsHeadingDisplayed(headingElement);
                         if (!isDisplayed)
-                        {                            
+                        {
                             string logMsg = $"Could not find any Page element with h2 or h3 tag";
                             BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                         }
@@ -401,9 +405,9 @@ namespace RKCIUIAutomation.Page
             }
 
             isMatchingTitle = PageTitle.Equals(expectedPageTitle);
-               
+
             if (isDisplayed)
-            {               
+            {
                 LogInfo($"## Expect Page Title: {expectedPageTitle}<br>## Actual Page Title: {PageTitle}", isMatchingTitle);
 
                 if (!isMatchingTitle)
@@ -416,8 +420,9 @@ namespace RKCIUIAutomation.Page
         }
 
         private string pageErrLogMsg = string.Empty;
+
         private bool FoundKnownPageErrors()
-        {            
+        {
             By serverErrorH1Tag = By.XPath("//h1[contains(text(),'Server Error')]");
             By resourceNotFoundH2Tag = By.XPath("//h2/i[text()='The resource cannot be found.']");
             By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
@@ -433,19 +438,19 @@ namespace RKCIUIAutomation.Page
         {
             bool isLoaded = false;
             string pageTitle = string.Empty;
-            
+
             try
             {
                 Driver.Navigate().GoToUrl(pageUrl);
                 pageTitle = Driver.Title;
 
-                isLoaded = (pageTitle.Contains("ELVIS PMC")) ? true : FoundKnownPageErrors();                 
+                isLoaded = (pageTitle.Contains("ELVIS PMC")) ? true : FoundKnownPageErrors();
             }
             finally
             {
                 string pageTitleMsg = $"{pageUrl} - Page Title: {pageTitle}<br>&nbsp;&nbsp;";
-                string logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : pageErrLogMsg;            
-                
+                string logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : pageErrLogMsg;
+
                 LogInfo($"{logMsg}<br>&nbsp;&nbsp;{pageTitleMsg}", isLoaded);
                 if (!isLoaded)
                 {
@@ -502,10 +507,11 @@ namespace RKCIUIAutomation.Page
                 throw;
             }
         }
-        
+
         private static string ActiveModalXpath => "//div[contains(@style,'opacity: 1')]";
         private static string ModalTitle => $"{ActiveModalXpath}//div[contains(@class,'k-header')]";
         private static string ModalCloseBtn => $"{ActiveModalXpath}//a[@aria-label='Close']";
+
         public void CloseActiveModalWindow()
         {
             JsClickElement(By.XPath(ModalCloseBtn));
@@ -580,7 +586,7 @@ namespace RKCIUIAutomation.Page
                 LogError("Exception occured in ScrollToElement method", true, e);
             }
         }
-        
+
         public void ClickLoginLink()
         {
             WaitForPageReady();
@@ -592,7 +598,7 @@ namespace RKCIUIAutomation.Page
             WaitForPageReady();
             Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
         }
-        
+
         public string GetCurrentUser()
         {
             string[] acct = null;
@@ -620,6 +626,5 @@ namespace RKCIUIAutomation.Page
 
             return userAcct;
         }
-
     }
 }

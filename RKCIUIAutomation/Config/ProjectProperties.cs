@@ -1,6 +1,6 @@
-﻿using System;
+﻿using RKCIUIAutomation.Base;
+using System;
 using System.Collections.Generic;
-using RKCIUIAutomation.Base;
 using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Config
@@ -42,10 +42,10 @@ namespace RKCIUIAutomation.Config
 
             //Secondary Components (not in Jira)
             public const string OV_Test = "OV_Test";
+
             public const string QAField = "QAField";
         }
 
-        
         public List<string> GetComponentsForProject(TenantName tenantName)
         {
             List<string> components = new List<string>();
@@ -61,6 +61,7 @@ namespace RKCIUIAutomation.Config
 
             return components;
         }
+
         private List<string> DefineAdditionalComponents(TenantName tenantName)
         {
             List<string> additionalComponents = new List<string>();
@@ -69,18 +70,23 @@ namespace RKCIUIAutomation.Config
                 case TenantName.Garnet:
                     additionalComponents = Components_Garnet;
                     break;
+
                 case TenantName.GLX:
                     additionalComponents = Components_GreenLineExt;
                     break;
+
                 case TenantName.I15South:
                     additionalComponents = Components_I15Southbound;
                     break;
+
                 case TenantName.I15Tech:
                     additionalComponents = Components_I15TechCorridor;
                     break;
+
                 case TenantName.SH249:
                     additionalComponents = Components_SH249Ext;
                     break;
+
                 case TenantName.SGWay:
                     additionalComponents = Components_SouthernGateway;
                     break;
@@ -119,7 +125,6 @@ namespace RKCIUIAutomation.Config
         private readonly List<string> Components_SouthernGateway = new List<string>
         {
             Component.QAField
-
         };
 
         private readonly List<string> CommonComponents = new List<string>

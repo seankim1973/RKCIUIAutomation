@@ -1,57 +1,79 @@
-﻿using RKCIUIAutomation.Config;
+﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
-using OpenQA.Selenium;
+using RKCIUIAutomation.Page.PageObjects.QAField;
 using RKCIUIAutomation.Test;
 using System;
-using RKCIUIAutomation.Page.PageObjects.QAField;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
     #region LinkCoverage Generic class
+
     public class LinkCoverageWF : LinkCoverageWF_Impl
     {
-        public LinkCoverageWF(){}
+        public LinkCoverageWF()
+        {
+        }
+
         public LinkCoverageWF(IWebDriver driver) => this.Driver = driver;
 
         /// <summary>
         /// Common pageObjects and workflows are inherited from abstract _Impl class
         /// </summary>
-
     }
-    #endregion <-- end of LinkCoverage Generic class
 
+    #endregion LinkCoverage Generic class
 
     #region Workflow Interface class
+
     public interface ILinkCoverageWF
     {
         void _NavigateToVerifyProjectConfigurationMenu();
+
         void _NavigateToVerifyQALabMenu();
+
         void _NavigateToOVMenu();
+
         void _NavigateToVerifyQARecordControlMenu();
+
         void _NavigateToVerifyQAEngineerMenu();
+
         void _NavigateToReportsAndNoticesMenu();
+
         void _NavigateToQASearchMenu();
+
         void _NavigateToQAFieldMenu();
+
         void _NavigateToControlPointMenu();
+
         void _NavigateToOwnerMenu();
+
         void _NavigateToMaterialMixCodeMenu();
+
         void _NavigateToRMCenterMenu();
+
         void _NavigateToRFIMenu();
+
         void _NavigateToVerifyQCLabMenu();
+
         void _NavigateToVerifyQCRecordControlMenu();
+
         void _NavigateToVerifyQCEngineerMenu();
+
         void _NavigateToQCSearchMenu();
     }
-    #endregion <-- end of Workflow Interface class
 
+    #endregion Workflow Interface class
 
     #region Common Workflow Implementation class
+
     public abstract class LinkCoverageWF_Impl : TestBase, ILinkCoverageWF
     {
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
+
         private ILinkCoverageWF SetPageClassBasedOnTenant(IWebDriver driver)
         {
             ILinkCoverageWF instance = new LinkCoverageWF(driver);
@@ -90,8 +112,6 @@ namespace RKCIUIAutomation.Page.Workflows
             return instance;
         }
 
-
-
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
@@ -99,7 +119,6 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogInfo($"Project Configuration component test - This test should run");
             LoginAs(UserType.Bhoomi);
-
 
             NavigateToPage.My_Details();
             AddAssertionToList(VerifyPageTitle("Account Details"));
@@ -118,7 +137,6 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(VerifyPageTitle("Menu Editor"));
             NavigateToPage.Admin_Suport();
             AddAssertionToList(VerifyPageTitle("Cache Management"));
-
 
             //Project>Administration>User Management
             NavigateToPage.UserMgmt_Roles();
@@ -161,7 +179,6 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(VerifyPageTitle("Grade Type"));
             NavigateToPage.SysConfig_Grades();
             AddAssertionToList(VerifyPageTitle("Grades"));
-
 
             //Project>Administration>Admin Tools
             NavigateToPage.AdminTools_Locked_Records();
@@ -235,7 +252,6 @@ namespace RKCIUIAutomation.Page.Workflows
             ClickNew();
             ClickCancel();
             AssertAll();
-
         }
 
         /// <summary>
@@ -275,7 +291,6 @@ namespace RKCIUIAutomation.Page.Workflows
             AssertAll();
         }
 
-
         /// <summary>
         /// Common workflow method for Tenants:I15South, I15Tech, & SH249
         /// </summary>
@@ -291,7 +306,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
             AssertAll();
         }
-
 
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
@@ -349,7 +363,7 @@ namespace RKCIUIAutomation.Page.Workflows
             ClickNew();
             AddAssertionToList(VerifyAlertMessage("Week Ending Date is required!"));
             AcceptAlertMessage();
-            EnterText(WeeklyEnvMonitoring.WeekEndingDateField,DateTime.Now.ToShortDateString()); //TODO - Create method
+            EnterText(WeeklyEnvMonitoring.WeekEndingDateField, DateTime.Now.ToShortDateString()); //TODO - Create method
             ClickNew();
             ClickCancel();
 
@@ -492,7 +506,6 @@ namespace RKCIUIAutomation.Page.Workflows
             ClickNew();
             ClickCancel();
             AssertAll();
-
         }
 
         /// <summary>
@@ -506,7 +519,7 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(VerifyPageTitle("Lab Supervisor Review"));
             NavigateToPage.QCEngineer_QC_Test_Authorization();
             AddAssertionToList(VerifyPageTitle("Authorizations"));
-          
+
             AssertAll();
         }
 
@@ -524,10 +537,9 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(VerifyPageTitle("Daily Inspection Report Search"));
             NavigateToPage.QCSearch_DIR_Summary_Report();
             AddAssertionToList(VerifyPageTitle("DIR Summary Report Search"));
-           
+
             AssertAll();
         }
-
 
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, SGWay, & SH249
@@ -540,7 +552,7 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(VerifyPageTitle("RM Center Search"));
             NavigateToPage.RMCenter_Design_Documents();
             AddAssertionToList(VerifyPageTitle("Design Document"));
-           // ClickCreate();
+            // ClickCreate();
             //ClickCancel();
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             AddAssertionToList(VerifyPageTitle("Submittal Details"));
@@ -566,19 +578,20 @@ namespace RKCIUIAutomation.Page.Workflows
             AssertAll();
         }
     }
-    #endregion <-- end of common implementation class
 
-
-
+    #endregion Common Workflow Implementation class
 
     /// <summary>
     /// Tenant specific implementation of LinkCoverage
     /// </summary>
 
     #region Implementation specific to Garnet
+
     public class LinkCoverageWF_Garnet : LinkCoverageWF
     {
-        public LinkCoverageWF_Garnet(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_Garnet(IWebDriver driver) : base(driver)
+        {
+        }
 
         public override void _NavigateToVerifyQALabMenu()
         {
@@ -598,27 +611,32 @@ namespace RKCIUIAutomation.Page.Workflows
             AssertAll();
         }
     }
-    #endregion
 
+    #endregion Implementation specific to Garnet
 
     #region Implementation specific to GLX
+
     public class LinkCoverageWF_GLX : LinkCoverageWF
     {
-        public LinkCoverageWF_GLX(IWebDriver driver) : base(driver) { }
-
+        public LinkCoverageWF_GLX(IWebDriver driver) : base(driver)
+        {
+        }
     }
-    #endregion
 
+    #endregion Implementation specific to GLX
 
     #region Implementation specific to SH249
+
     public class LinkCoverageWF_SH249 : LinkCoverageWF
     {
-        public LinkCoverageWF_SH249(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_SH249(IWebDriver driver) : base(driver)
+        {
+        }
 
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
-            
+
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
             AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
@@ -645,13 +663,16 @@ namespace RKCIUIAutomation.Page.Workflows
             AssertAll();
         }
     }
-    #endregion
 
+    #endregion Implementation specific to SH249
 
     #region Implementation specific to SGWay
+
     public class LinkCoverageWF_SGWay : LinkCoverageWF
     {
-        public LinkCoverageWF_SGWay(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_SGWay(IWebDriver driver) : base(driver)
+        {
+        }
 
         public override void _NavigateToVerifyQALabMenu()
         {
@@ -706,7 +727,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
-       
+
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
             AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
@@ -737,21 +758,27 @@ namespace RKCIUIAutomation.Page.Workflows
             AssertAll();
         }
     }
-    #endregion
 
+    #endregion Implementation specific to SGWay
 
     #region Implementation specific to I15South
+
     public class LinkCoverageWF_I15South : LinkCoverageWF
     {
-        public LinkCoverageWF_I15South(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_I15South(IWebDriver driver) : base(driver)
+        {
+        }
     }
-    #endregion
 
+    #endregion Implementation specific to I15South
 
     #region Implementation specific to I15Tech
+
     public class LinkCoverageWF_I15Tech : LinkCoverageWF
     {
-        public LinkCoverageWF_I15Tech(IWebDriver driver) : base(driver) { }
+        public LinkCoverageWF_I15Tech(IWebDriver driver) : base(driver)
+        {
+        }
 
         public override void _NavigateToVerifyQARecordControlMenu()
         {
@@ -783,6 +810,6 @@ namespace RKCIUIAutomation.Page.Workflows
             AssertAll();
         }
     }
-    #endregion
 
+    #endregion Implementation specific to I15Tech
 }

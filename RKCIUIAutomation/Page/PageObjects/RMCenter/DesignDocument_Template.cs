@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RKCIUIAutomation.Page.PageObjects.RMCenter
+﻿namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
-    class DesignDocument_Template
+    internal class DesignDocument_Template
     {
-
         #region Workflow - Design Document - Comment Review
+
         ////Create Document
         //login as testiqfuser <SG&SH249 = TestIQFRecordsManager>
         //@@Nav to RMCenter DesignDocument
         //@@click Create Design doc button
-        //@@enter required fields (title, doc#, select file )    
+        //@@enter required fields (title, doc#, select file )
         //@@click save&fwd button
         //@@logout
 
@@ -63,11 +57,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         //switch tab to DEV Closed and verify record is present
         //logout
 
-        #endregion
-
-
+        #endregion Workflow - Design Document - Comment Review
 
         #region Design Document Tabs/Acct
+
         //KendoUI divId schema for Design Documents tables - grid: DesignDocumentListGrid_0...tabStrip: DesignDocumentList
 
         //Garnet
@@ -89,7 +82,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
          **/
 
         //SGWay
-        /** 
+        /**
          * IQFRecordsMgr [Creating, Requires Comment, Pending Response, Requires Resolution, Requires Closing, Closed]
          * IQFAdmin [Requires Comment, Pending Response, Requires Resolution, Pending Closing, Closed]
          * IQFUser [Requires Comment, Pending Response, Requires Resolution, Pending Closing, Closed]
@@ -115,9 +108,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         //DEV Admin --  Welcome Test DEV Admin X
         //DEV User --  Welcome Test DEV User X
 
-
-
-        #endregion
-
+        #endregion Design Document Tabs/Acct
     }
 }

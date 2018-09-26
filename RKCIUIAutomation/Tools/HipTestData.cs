@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using NUnit.Framework.Interfaces;
-using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,22 +8,25 @@ using System.Threading;
 using static RKCIUIAutomation.Base.BaseUtils;
 
 #pragma warning disable IDE1006 // Naming Styles
+
 namespace RKCIUIAutomation.Tools
 {
     public static class HipTest
     {
-
         [ThreadStatic]
         private static int _testRunId;
+
         [ThreadStatic]
         private static string[] _testRunDetails;
+
         [ThreadStatic]
         private static List<int> _hiptestRunTestCaseIDs;
+
         [ThreadStatic]
         private static List<KeyValuePair<int, List<int>>> _hiptestRunData;
+
         [ThreadStatic]
         private static List<KeyValuePair<int, KeyValuePair<TestStatus, string>>> _hipTestResults;
-
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static int CreateTestRunInstance(this HipTestApi hipTestInstance, List<int> scenarioIDs, string[] testRunDetails)
@@ -169,9 +171,6 @@ namespace RKCIUIAutomation.Tools
             }
         }
 
-
-
-
         public class Statuses
         {
             public int passed { get; set; }
@@ -187,18 +186,24 @@ namespace RKCIUIAutomation.Tools
         {
             [JsonProperty("scenario-snapshot-id")]
             public int scenario_snapshot_id { get; set; }
+
             [JsonProperty("created-at")]
             public DateTime created_at { get; set; }
+
             [JsonProperty("updated-at")]
             public DateTime updated_at { get; set; }
+
             [JsonProperty("last-author")]
             public string last_author { get; set; }
+
             public string name { get; set; }
             public string description { get; set; }
             public Statuses statuses { get; set; }
             public string status { get; set; }
+
             [JsonProperty("status-author")]
             public string status_author { get; set; }
+
             public bool archived { get; set; }
             public int[] scenario_ids { get; set; }
         }
@@ -259,6 +264,7 @@ namespace RKCIUIAutomation.Tools
             public LastResultData data { get; set; }
 
             public Tags tags { get; set; }
+
             [JsonProperty("tag-snapshots")]
             public TagSnapshots tagSnapshots { get; set; }
         }
@@ -278,12 +284,13 @@ namespace RKCIUIAutomation.Tools
         {
             [JsonProperty("test-snapshot")]
             public TestSnapshot testSnapshot { get; set; }
+
             [JsonProperty("last-result")]
             public LastResult lastResult { get; set; }
+
             public Tags tags { get; set; }
             public Build build { get; set; }
             public Scenario scenario { get; set; }
-            
         }
 
         public class Datum
@@ -311,7 +318,7 @@ namespace RKCIUIAutomation.Tools
             public Datum data { get; set; }
             public List<Included> included { get; set; }
         }
-                
     }
 }
+
 #pragma warning restore IDE1006 // Naming Styles

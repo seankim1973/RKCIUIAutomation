@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RKCIUIAutomation.Page.PageObjects.MaterialMixCodes
+﻿namespace RKCIUIAutomation.Page.PageObjects.MaterialMixCodes
 {
-    class MaterialCode_HMAAggregate
+    internal class MaterialCode_HMAAggregate
     {
     }
 }

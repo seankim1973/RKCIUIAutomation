@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
@@ -7,7 +6,6 @@ using RKCIUIAutomation.Test;
 using System;
 using System.Diagnostics;
 using System.Threading;
-
 
 namespace RKCIUIAutomation.UnitTest
 {
@@ -164,7 +162,6 @@ namespace RKCIUIAutomation.UnitTest
     public class Test_Runs_One_Valid_Component : TestBase
     {
         [Test]
-        
         [Category(Component.Other)]
         [Property(TestCaseNumber, "ELVS2222")]
         [Property(Priority, "Priority 1")]
@@ -434,7 +431,7 @@ namespace RKCIUIAutomation.UnitTest
             NavigateToPage.RMCenter_Search();
             //RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
             Assert.True(VerifyPageTitle("Failed Test"));
-            
+
             /*
             //Use for quicker test failure
             By locator = By.XPath("//h3");
@@ -507,5 +504,4 @@ namespace RKCIUIAutomation.UnitTest
             Assert.True(VerifyPageTitle("Failed Test"));
         }
     }
-    
 }

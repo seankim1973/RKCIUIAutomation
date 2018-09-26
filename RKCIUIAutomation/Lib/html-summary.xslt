@@ -29,12 +29,10 @@
       border:0;
       border-collapse: collapse;
       }
-
     </style>
-    <xsl:apply-templates/>
-
-  </xsl:template>	  
-  <xsl:template match="test-run">	  
+    <xsl:apply-templates />
+  </xsl:template>
+  <xsl:template match="test-run">
     <!-- Runtime Environment -->
     <h4>Runtime Environment</h4>
 
@@ -42,13 +40,13 @@
       <tr>
         <td class="smllabel right">OS Version:</td>
         <td class="left">
-          <xsl:value-of select="test-suite/environment/@os-version[1]"/>
+          <xsl:value-of select="test-suite/environment/@os-version[1]" />
         </td>
       </tr>
       <tr>
         <td class="smllabel right">CLR Version:</td>
         <td class="left">
-          <xsl:value-of select="@clr-version"/>
+          <xsl:value-of select="@clr-version" />
         </td>
       </tr>
       <tr>
@@ -59,7 +57,7 @@
       <tr>
         <td class="smllabel right">NUnit Version:</td>
         <td class="left">
-          <xsl:value-of select="@engine-version"/>
+          <xsl:value-of select="@engine-version" />
         </td>
       </tr>
     </table>
@@ -69,13 +67,13 @@
       <tr>
         <td class="smllabel right">Overall result:</td>
         <td class="left">
-          <xsl:value-of select="@result"/>
+          <xsl:value-of select="@result" />
         </td>
       </tr>
       <tr>
         <td class="smllabel right">Test Count:</td>
         <td class="left">
-          <xsl:value-of select="@total"/>, Passed: <xsl:value-of select="@passed"/>, Failed: <xsl:value-of select="@failed"/>, Inconclusive: <xsl:value-of select="@inconclusive"/>, Skipped: <xsl:value-of select="@skipped"/>
+          <xsl:value-of select="@total" />, Passed: <xsl:value-of select="@passed" />, Failed: <xsl:value-of select="@failed" />, Inconclusive: <xsl:value-of select="@inconclusive" />, Skipped: <xsl:value-of select="@skipped" />
         </td>
       </tr>
 
@@ -87,7 +85,7 @@
         <tr>
           <td class="smllabel right">Failed Tests: </td>
           <td class="left">
-            Failures: <xsl:value-of select="$failedTotal"/>, Errors: <xsl:value-of select="$errorsTotal"/>, Invalid: <xsl:value-of select="$invalidTotal"/>
+            Failures: <xsl:value-of select="$failedTotal" />, Errors: <xsl:value-of select="$errorsTotal" />, Invalid: <xsl:value-of select="$invalidTotal" />
           </td>
         </tr>
       </xsl:if>
@@ -100,7 +98,7 @@
         <tr>
           <td class="smllabel right">Skipped Tests: </td>
           <td class="left">
-            Ignored: <xsl:value-of select="$ignoredTotal"/>, Explicit: <xsl:value-of select="$explicitTotal"/>, Other: <xsl:value-of select="$otherTotal"/>
+            Ignored: <xsl:value-of select="$ignoredTotal" />, Explicit: <xsl:value-of select="$explicitTotal" />, Other: <xsl:value-of select="$otherTotal" />
           </td>
         </tr>
       </xsl:if>
@@ -109,23 +107,21 @@
       <tr>
         <td class="smllabel right">Start time: </td>
         <td class="left">
-          <xsl:value-of select="@start-time"/>
+          <xsl:value-of select="@start-time" />
         </td>
       </tr>
       <tr>
         <td class="smllabel right">End time: </td>
         <td class="left">
-          <xsl:value-of select="@end-time"/>
+          <xsl:value-of select="@end-time" />
         </td>
       </tr>
       <tr>
         <td class="smllabel right">Duration: </td>
         <td class="left">
-          <xsl:value-of select="format-number(@duration,'0.000')"/> seconds
+          <xsl:value-of select="format-number(@duration,'0.000')" /> seconds
         </td>
       </tr>
     </table>
-   
   </xsl:template>
-
 </xsl:stylesheet>

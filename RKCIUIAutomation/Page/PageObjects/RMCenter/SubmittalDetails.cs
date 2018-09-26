@@ -29,7 +29,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public static By Err_DDListQuantityUnitId { get; } = By.XPath("//span[@data-valmsg-for='QuantityUnitId']");
         public static By Err_Attachments { get; } = By.XPath("//span[@data-valmsg-for='UploadFiles[0].Files']");
 
-
         public static By Txt_PageTitle { get; } = By.XPath("//h3[1]");
         public static By Input_Name { get; } = By.Id("SubmittalNo");
         public static By Txt_SubmittalType { get; } = By.XPath("//span[@data-valmsg-for='SubmittalTypeId']");
@@ -43,9 +42,5 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public static By Btn_ActionBy_Filter { get; } = By.XPath("//th[@data-title='Action By']/a[1]");
         public static By Btn_ActionBy_Column { get; } = By.XPath("//th[@data-title='Action By']/a[2]");
         public static By Form_ColumnFilterBox { get; } = By.XPath("//form[@data-role='popup'][contains(@style,'display: block;')]");
-
-
-
-
     }
 }
