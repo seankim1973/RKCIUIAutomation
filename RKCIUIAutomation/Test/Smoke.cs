@@ -13,7 +13,7 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2345")]
+        [Property(TestCaseNumber, 2188206)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Site Pages Load Successfully")]
         public void LinkCoverage_Level1()
@@ -117,7 +117,7 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Other)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, "111")]
         [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void CommentReviewNoCommentGarnetGLX()
@@ -274,7 +274,7 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Other)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, "222")]
         [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
         public void NoCommentWfCommentReviewForSG()
@@ -423,7 +423,7 @@ namespace RKCIUIAutomation.Test.Smoke
         {
             [Test]
             [Category(Component.Other)]
-            [Property(TestCaseNumber, "ELVS2222")]
+            [Property(TestCaseNumber, "333")]
             [Property(Priority, "Priority 1")]
             [Description("Verify Component Name")]
             public void CommentReviewNoCommentForSH249()
