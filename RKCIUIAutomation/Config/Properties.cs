@@ -13,6 +13,7 @@
         GLX,
         I15South,
         I15Tech,
+        LAX,
         SH249,
         SGWay,
     }

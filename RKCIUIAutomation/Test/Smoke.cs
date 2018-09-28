@@ -13,7 +13,7 @@ namespace RKCIUIAutomation.Test.Smoke
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, 123456)]
+        [Property(TestCaseNumber, 2188206)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Site Pages Load Successfully")]
         public void LinkCoverage_Level1()

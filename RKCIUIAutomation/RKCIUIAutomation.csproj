@@ -445,6 +445,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Test\SampleTests.txt" />
+    <Content Include="Test\Smoke.txt" />
     <None Include="Jenkinsfile">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
