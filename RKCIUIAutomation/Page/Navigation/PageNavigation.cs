@@ -560,6 +560,11 @@ namespace RKCIUIAutomation.Page.Navigation
                 LogInfo($"###### using Navigation_I15Tech instance ###### ");
                 instance = new PageNavigation_I15Tech(driver);
             }
+            else if (tenantName == TenantName.LAX)
+            {
+                LogInfo($"###### using Navigation_LAX instance ###### ");
+                instance = new PageNavigation_LAX(driver);
+            }
 
             return instance;
         }
@@ -641,4 +646,15 @@ namespace RKCIUIAutomation.Page.Navigation
     }
 
     #endregion Implementation specific to I15Tech
+
+    #region Implementation specific to LAX
+
+    public class PageNavigation_LAX : PageNavigation
+    {
+        public PageNavigation_LAX(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+
+    #endregion Implementation specific to LAX
 }

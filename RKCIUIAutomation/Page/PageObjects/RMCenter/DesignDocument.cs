@@ -160,6 +160,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         bool VerifyUploadFileErrorMsgIsDisplayed();
 
         void EnterClosingCommentAndCode();
+
+        void SelectDisagreeResolutionCode(int commentTabNumber = 1);
     }
 
     #endregion Workflow Interface class
@@ -207,7 +209,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 LogInfo($"###### using DesignDocument_I15Tech instance ###### ");
                 instance = new DesignDocument_I15Tech(driver);
             }
-
+            else if (tenantName == TenantName.LAX)
+            {
+                LogInfo($"###### using DesignDocument_LAX instance ###### ");
+                instance = new DesignDocument_LAX(driver);
+            }
             return instance;
         }
 
@@ -281,7 +287,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public void SelectAgreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
 
-        public void SelectDisagreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
+        public virtual void SelectDisagreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
 
         public void SelectDDL_ClosingStamp(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
 
@@ -706,4 +712,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
 
     #endregion Implementation specific to I15Tech
+
+    #region Implementation specific to LAX
+
+    public class DesignDocument_LAX : DesignDocument
+    {
+        public DesignDocument_LAX(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+
+    #endregion Implementation specific to LAX
 }

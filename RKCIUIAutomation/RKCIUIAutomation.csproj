@@ -369,7 +369,6 @@
     <Compile Include="Page\PageObjects\RFI\Create.cs" />
     <Compile Include="Page\PageObjects\RFI\List.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DesignDocument.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\DesignDocument_Template.cs" />
     <Compile Include="Page\PageObjects\RMCenter\DOTProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittal.cs" />
@@ -381,6 +380,7 @@
     <Compile Include="Page\PageObjects\RMCenter\UploadOwnerSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadQASubmittal.cs" />
     <Compile Include="Page\PageObjects\LabFieldTests\TestDetails.cs" />
+    <Compile Include="Page\Workflows\DesignDocumentWF.cs" />
     <Compile Include="Page\TableHelper.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -409,7 +409,9 @@
     <Compile Include="Tools\TestResultUtil.cs" />
     <Compile Include="Tools\XMLUtil.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Page\PageObjects\RMCenter\Workflows\" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

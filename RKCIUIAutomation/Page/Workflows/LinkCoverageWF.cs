@@ -108,7 +108,11 @@ namespace RKCIUIAutomation.Page.Workflows
                 LogInfo($"###### using LinkCoverage_I15Tech instance ###### ");
                 instance = new LinkCoverageWF_I15Tech(driver);
             }
-
+            else if (tenantName == TenantName.LAX)
+            {
+                LogInfo($"###### using LinkCoverage_LAX instance ###### ");
+                instance = new LinkCoverageWF_LAX(driver);
+            }
             return instance;
         }
 
@@ -812,4 +816,15 @@ namespace RKCIUIAutomation.Page.Workflows
     }
 
     #endregion Implementation specific to I15Tech
+
+    #region Implementation specific to LAX
+
+    public class LinkCoverageWF_LAX : LinkCoverageWF
+    {
+        public LinkCoverageWF_LAX(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+
+    #endregion Implementation specific to LAX
 }

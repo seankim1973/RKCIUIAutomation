@@ -8,7 +8,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Project Configuration Menu only")]
         public void NavigateToVerifyProjectConfigurationMenu() => LinkCoverageWF._NavigateToVerifyProjectConfigurationMenu();
@@ -20,7 +20,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Test]
         [Category(Component.Link_Coverage)]
         [Property(Component2, Component.Other)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QA Lab Menu only")]
         public void NavigateToVerifyQALabMenu() => LinkCoverageWF._NavigateToVerifyQALabMenu();
@@ -31,7 +31,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QA Record Control Menu only")]
         public void NavigateToVerifyQARecordControlMenu() => LinkCoverageWF._NavigateToVerifyQARecordControlMenu();
@@ -43,7 +43,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Test]
         [Category(Component.Link_Coverage)]
         [Property(Component2, Component.OV_Test)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for OV Menu only")]
         public void NavigateToOVMenu() => LinkCoverageWF._NavigateToOVMenu();
@@ -54,7 +54,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QA Engineer Menu only")]
         public void NavigateToVerifyQAEngineerMenu() => LinkCoverageWF._NavigateToVerifyQAEngineerMenu();
@@ -65,7 +65,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Reports & Notices Menu only")]
         public void NavigateToReportsAndNoticesMenu() => LinkCoverageWF._NavigateToReportsAndNoticesMenu();
@@ -76,7 +76,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for RM Center Menu only")]
         public void NavigateToQASearchMenu() => LinkCoverageWF._NavigateToQASearchMenu();
@@ -87,7 +87,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage), Property(Component2, Component.QAField)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify QA Field Menu only")]
         public void NavigateToQAFieldMenu() => LinkCoverageWF._NavigateToQAFieldMenu();
@@ -98,7 +98,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Control Point Menu only")]
         public void NavigateToControlPointMenu() => LinkCoverageWF._NavigateToControlPointMenu();
@@ -109,7 +109,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Control Point Menu only")]
         public void NavigateToOwnerMenu() => LinkCoverageWF._NavigateToOwnerMenu();
@@ -120,7 +120,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Control Point Menu only")]
         public void NavigateToMaterialMixCodeMenu() => LinkCoverageWF._NavigateToMaterialMixCodeMenu();
@@ -131,7 +131,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for RM Center Menu only")]
         public void NavigateToRMCenterMenu() => LinkCoverageWF._NavigateToRMCenterMenu();
@@ -142,7 +142,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for RM Center Menu only")]
         public void NavigateToRFIMenu() => LinkCoverageWF._NavigateToRFIMenu();
@@ -154,7 +154,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Test]
         [Category(Component.Link_Coverage)]
         [Property(Component2, Component.Other)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QC Lab Menu only")]
         public void NavigateToVerifyQCLabMenu() => LinkCoverageWF._NavigateToVerifyQCLabMenu();
@@ -165,7 +165,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QC Record Control Menu only")]
         public void NavigateToVerifyQCRecordControlMenu() => LinkCoverageWF._NavigateToVerifyQCRecordControlMenu();
@@ -176,7 +176,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QC Engineer Menu only")]
         public void NavigateToVerifyQCEngineerMenu() => LinkCoverageWF._NavigateToVerifyQCEngineerMenu();
@@ -187,7 +187,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, "ELVS2222")]
+        [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title forQC Search Menu only")]
         public void NavigateToQCSearchMenu() => LinkCoverageWF._NavigateToQCSearchMenu();
