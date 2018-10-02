@@ -395,9 +395,7 @@
     <Compile Include="Tools\TestResultUtil.cs" />
     <Compile Include="Tools\XMLUtil.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Page\PageObjects\RMCenter\Workflows\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="app.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -3,6 +3,7 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects;
 using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
+using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using RKCIUIAutomation.Page.Workflows;
 
@@ -31,5 +32,7 @@ namespace RKCIUIAutomation.Test
         public IDesignDocument DesignDocCommentReview => new DesignDocument().SetClass<IDesignDocument>(Driver);
 
         public IDesignDocumentWF DesignDocCommentReviewWF => new DesignDocumentWF().SetClass<IDesignDocumentWF>(Driver);
+
+        public IGeneralNCR GeneralNCR => new GeneralNCR().SetClass<IGeneralNCR>(Driver);
     }
 }
