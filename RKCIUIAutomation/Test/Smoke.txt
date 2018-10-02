@@ -1,1 +1,3 @@
 ﻿RKCIUIAutomation.Test.Smoke.Verify_LinkCoverage_Level1
+RKCIUIAutomation.Test.Smoke.Verify_CommentReviewRegularComment
+RKCIUIAutomation.Test.Smoke.Verify_CommentReviewNoComment

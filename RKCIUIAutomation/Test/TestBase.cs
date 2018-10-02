@@ -30,6 +30,6 @@ namespace RKCIUIAutomation.Test
 
         public IDesignDocument DesignDocCommentReview => new DesignDocument().SetClass<IDesignDocument>(Driver);
 
-        public IDesignDocumentWF DesignDocCommentReviewWF => new DesignDocumentWF().SetClass<DesignDocumentWF>(Driver);
+        public IDesignDocumentWF DesignDocCommentReviewWF => new DesignDocumentWF().SetClass<IDesignDocumentWF>(Driver);
     }
 }

@@ -16,7 +16,7 @@ namespace RKCIUIAutomation.Config
             public const string CVL_List_Items = "CVL_List_Items";
             public const string CVL_Lists = "CVL_Lists";
             public const string CVL_List = "CVL_List";
-            public const string Design_Comment_Review = "Design_Comment_Review";
+            public const string DesignDoc_CommentReview = "DesignDoc_CommentReview";
             public const string DIR = "DIR";
             public const string Document_Repository = "Document_Repository";
             public const string Environmental = "Environmental";
@@ -42,8 +42,17 @@ namespace RKCIUIAutomation.Config
 
             //Secondary Components (not in Jira)
             public const string OV_Test = "OV_Test";
-
             public const string QAField = "QAField";
+
+            //Tenant Specific Components
+            public const string Garnet = "Garnet";
+            public const string GLX = "GLX";
+            public const string I15South = "I15South";
+            public const string I15Tech = "I15Tech";
+            public const string LAX = "LAX";
+            public const string SGWay = "SGWay";
+            public const string SH249 = "SH249";
+            
         }
 
         public List<string> GetComponentsForProject(TenantName tenantName)
@@ -90,41 +99,60 @@ namespace RKCIUIAutomation.Config
                 case TenantName.SGWay:
                     additionalComponents = Components_SouthernGateway;
                     break;
+
+                case TenantName.LAX:
+                    additionalComponents = Components_LAX;
+                    break;
             }
             return additionalComponents;
         }
 
         private readonly List<string> Components_Garnet = new List<string>
         {
+            Component.Garnet,
+            Component.DesignDoc_CommentReview,
             Component.RFI,
             Component.QAField
         };
 
         private readonly List<string> Components_GreenLineExt = new List<string>
         {
+            Component.GLX,
+            Component.DesignDoc_CommentReview,
             Component.RFI
         };
 
         private readonly List<string> Components_I15Southbound = new List<string>
         {
+            Component.I15South,
             Component.OV_Test,
             Component.QAField
         };
 
         private readonly List<string> Components_I15TechCorridor = new List<string>
         {
+            Component.I15Tech,
             Component.OV_Test,
             Component.QAField
         };
 
         private readonly List<string> Components_SH249Ext = new List<string>
         {
+            Component.SH249,
+            Component.DesignDoc_CommentReview,
             Component.QAField
         };
 
         private readonly List<string> Components_SouthernGateway = new List<string>
         {
+            Component.SGWay,
+            Component.DesignDoc_CommentReview,
             Component.QAField
+        };
+
+        private readonly List<string> Components_LAX = new List<string>
+        {
+            Component.LAX,
         };
 
         private readonly List<string> CommonComponents = new List<string>
