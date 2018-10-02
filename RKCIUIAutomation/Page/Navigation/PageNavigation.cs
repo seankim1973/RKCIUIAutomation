@@ -253,6 +253,10 @@ namespace RKCIUIAutomation.Page.Navigation
 
         void QCRecordControl_QC_DIRs();
 
+        void QCRecordControl_QC_NCR();
+
+        void QCRecordControl_QC_CDR();
+
         //QC Engineer Menu
         void QCEngineer_QC_Test_Lab_Supervisor_Review();
 
@@ -509,6 +513,10 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QCRecordControl_QC_Test_All() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_Test_All);
 
         public virtual void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_DIRs);
+
+        public virtual void QCRecordControl_QC_NCR() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_NCR);
+
+        public virtual void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_CDR);
 
         //QC Engineer Menu
         public virtual void QCEngineer_QC_Test_Lab_Supervisor_Review() => Navigate.Menu(NavMenu.QCEngineer.Menu.QC_Test_Lab_Supervisor_Review);
