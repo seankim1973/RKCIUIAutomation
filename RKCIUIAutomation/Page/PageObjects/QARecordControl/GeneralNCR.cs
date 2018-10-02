@@ -35,13 +35,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public enum TableTab
         {
-            [StringValue("Creating/Revise")] Creating,
-            [StringValue("CQM Review")] CQMReview,
-            [StringValue("Resolution/Disposition")] ResolutionDisposition,
-            [StringValue("Developer Concurrence")] DeveloperConcurrence,
-            [StringValue("DOT Approval")] DOTApproval,
-            [StringValue("Verification and Closure")] VerificationAndClosure,
-            [StringValue("All NCRs")] AllNCRs
+            [StringValue("All NCRs")] All_NCRs,
+            [StringValue("Closed NCR")] Closed_NCR,
+            [StringValue("CQM Review")] CQM_Review,
+            [StringValue("Creating/Revise")] Creating_Revise,
+            [StringValue("Developer Concurrence")] Developer_Concurrence,
+            [StringValue("DOT Approval")] DOT_Approval,
+            [StringValue("Engineer Concurrence")] Engineer_Concurrence,
+            [StringValue("Originator Concurrence")] Originator_Concurrence,
+            [StringValue("Owner Concurrence")] Owner_Concurrence,
+            [StringValue("QC Review")] QC_Review,
+            [StringValue("Resolution/Disposition")] Resolution_Disposition,
+            [StringValue("Review/Assign NCR")] Review_Assign_NCR,
+            [StringValue("Revise")] Revise,
+            [StringValue("To Be Closed")] To_Be_Closed,
+            [StringValue("Verification")] Verification,
+            [StringValue("Verification and Closure")] Verification_and_Closure
         }
 
         public enum ColumnName
