@@ -159,6 +159,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 LogInfo($"###### using Search_I15Tech instance ###### ");
                 instance = new Search_I15Tech(driver);
             }
+            else if (tenantName == TenantName.LAX)
+            {
+                LogInfo($"###### using Search_LAX instance ###### ");
+                instance = new Search_LAX(driver);
+            }
             return instance;
         }
     }
@@ -258,4 +263,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
 
     #endregion Implementation specific to I15Tech
+
+    #region Implementation specific to LAX
+
+    public class Search_LAX : Search
+    {
+        public Search_LAX(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+
+    #endregion Implementation specific to LAX
 }

@@ -125,7 +125,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         void EnterNoComment();
 
-        void ForwardComment();
+        //void ForwardComment();
 
         void EnterResponseCommentAndAgreeResponseCode();
 
@@ -133,7 +133,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         void FilterTableByValue(ColumnName columnName = ColumnName.Number, string filterByValue = "");
 
-        void ForwardResponseComment();
+        void ClickBtnJs_SaveForward();
 
         void Workflow_EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
 
@@ -160,6 +160,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         bool VerifyUploadFileErrorMsgIsDisplayed();
 
         void EnterClosingCommentAndCode();
+
+        void SelectDisagreeResolutionCode(int commentTabNumber = 1);
+
+        void SelectDisagreeResponseCode(int commentTabNumber = 1);
     }
 
     #endregion Workflow Interface class
@@ -207,7 +211,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 LogInfo($"###### using DesignDocument_I15Tech instance ###### ");
                 instance = new DesignDocument_I15Tech(driver);
             }
-
+            else if (tenantName == TenantName.LAX)
+            {
+                LogInfo($"###### using DesignDocument_LAX instance ###### ");
+                instance = new DesignDocument_LAX(driver);
+            }
             return instance;
         }
 
@@ -259,6 +267,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ScrollToElement(SaveForwardBtn_ByLocator);
             ClickElement(SaveForwardBtn_ByLocator);
         }
+        
+        public virtual void ClickBtnJs_SaveForward()
+        {
+            JsClickElement(SaveForwardBtn_ByLocator);
+            WaitForPageReady();
+        }
 
         public virtual void CreateDocument()
         {
@@ -277,11 +291,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public void SelectAgreeResponseCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 2); //check the index, UI not working so need to confirm later
 
-        public void SelectDisagreeResponseCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 3);//check the index, UI not working so need to confirm later
+        public virtual void SelectDisagreeResponseCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 3);//check the index, UI not working so need to confirm later
 
         public void SelectAgreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
 
-        public void SelectDisagreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
+        public virtual void SelectDisagreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
 
         public void SelectDDL_ClosingStamp(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
 
@@ -354,13 +368,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickBtn_SaveOnly();
         }
 
-        public virtual void ForwardComment()
-        {
-            //login as user to forward the comment ( SG-- IQFadmin and DOTAdmin both | SH249 -- IQFAdmin/IQFRecordsMgr | Garnet and GLX-- DOTadmin)
-            //find the record you want to edit
-            //wait for loading the comments and make any changes if required
-            ClickBtn_SaveForward();
-        }
+        //public virtual void ForwardComment()
+        //{
+        //    //login as user to forward the comment ( SG-- IQFadmin and DOTAdmin both | SH249 -- IQFAdmin/IQFRecordsMgr | Garnet and GLX-- DOTadmin)
+        //    //find the record you want to edit
+        //    //wait for loading the comments and make any changes if required
+        //    ClickBtn_SaveForward();
+        //}
 
         public virtual void EnterResponseCommentAndAgreeResponseCode()
         {
@@ -376,15 +390,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterComment(CommentType.CommentResponseInput);
             SelectDisagreeResponseCode(); //agree then different workflow
             ClickBtn_SaveOnly();
-        }
-
-        public virtual void ForwardResponseComment()
-        {
-            //login as user to forward the comment ( All tenants - DevAdmin)
-            //find the record you want to edit
-            //wait for loading the comments and make any changes if required
-            JsClickElement(SaveForwardBtn_ByLocator);
-            WaitForPageReady();
         }
 
         public virtual void Workflow_EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
@@ -420,6 +425,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void EnterClosingCommentAndCode()
         {
+            WaitForPageReady();
             EnterComment(CommentType.CommentClosingInput);
             SelectDDL_ClosingStamp();
             ClickBtn_SaveOnly();
@@ -445,11 +451,34 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual bool VerifyUploadFileErrorMsgIsDisplayed() => VerifyRequiredFieldErrorMsg("At least one file must be added.");
 
-        internal bool VerifyRecordIsShownInTab(TableTab tableTab)
+        private bool VerifyRecordIsShownInTab(TableTab tableTab, ColumnName column, string recordNameOrNumber)
         {
-            SelectTab(tableTab);
-            SortColumnDescending(ColumnName.Action);
-            return ElementIsDisplayed(GetTableRowLocator(designDocNumber));
+            bool isDisplayed = false;
+
+            try
+            {
+                SelectTab(tableTab);
+                FilterTableByValue(column, recordNameOrNumber);
+                //SortColumnDescending(ColumnName.Action);
+                LogDebug($"Searching for record: {recordNameOrNumber}");
+
+                isDisplayed = ElementIsDisplayed(GetTableRowLocator(recordNameOrNumber)) ? true : isDisplayed;
+
+                if (isDisplayed)
+                {
+                    LogInfo($"Record ({recordNameOrNumber}) found under {tableTab.GetString()} tab.");
+                }
+                else
+                {
+                    LogDebug($"Unable to find record ({recordNameOrNumber}), under {tableTab.GetString()} tab.");
+                }
+            }
+            catch (Exception e)
+            {
+                LogError("Error occured in VerifyRecordIsShownInTab method", true, e);
+            }
+            
+            return isDisplayed;
         }
 
         //internal bool VerifyRecordIsShownInTab_StdUser(TableTab tableTab)
@@ -459,7 +488,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         //    return ElementIsDisplayed(GetTableRowLocator(designDocNumber));
         //}
 
-        public virtual bool VerifyItemStatusIsClosed() => VerifyRecordIsShownInTab(TableTab.Closed);
+        public virtual bool VerifyItemStatusIsClosed() => VerifyRecordIsShownInTab(TableTab.Closed, ColumnName.Number, designDocNumber);
 
         private string CurrentUser => GetCurrentUser();
 
@@ -669,6 +698,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void EnterClosingCommentAndCode()
         {
+            WaitForPageReady();
             EnterComment(CommentType.CommentClosingInput);
             SelectDDL_ClosingStamp();
             ClickBtn_SaveOnly();
@@ -706,4 +736,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
 
     #endregion Implementation specific to I15Tech
+
+    #region Implementation specific to LAX
+
+    public class DesignDocument_LAX : DesignDocument
+    {
+        public DesignDocument_LAX(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+
+    #endregion Implementation specific to LAX
 }

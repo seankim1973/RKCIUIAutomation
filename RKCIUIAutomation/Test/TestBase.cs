@@ -29,5 +29,7 @@ namespace RKCIUIAutomation.Test
         public ILinkCoverageWF LinkCoverageWF => new LinkCoverageWF().SetClass<ILinkCoverageWF>(Driver);
 
         public IDesignDocument DesignDocCommentReview => new DesignDocument().SetClass<IDesignDocument>(Driver);
+
+        public IDesignDocumentWF DesignDocCommentReviewWF => new DesignDocumentWF().SetClass<IDesignDocumentWF>(Driver);
     }
 }

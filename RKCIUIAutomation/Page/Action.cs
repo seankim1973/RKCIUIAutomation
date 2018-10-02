@@ -352,8 +352,19 @@ namespace RKCIUIAutomation.Page
 
         public bool ElementIsDisplayed(By elementByLocator)
         {
-            IWebElement element = GetElement(elementByLocator);
-            bool isDisplayed = (element != null) ? true : false;
+            bool isDisplayed = false;
+
+            try
+            {
+                WaitForPageReady();
+                IWebElement element = GetElement(elementByLocator);
+                isDisplayed = (element != null) ? true : isDisplayed;
+            }
+            catch (Exception e)
+            {
+                LogError("Error occured in ElementIsDisplayed method", true, e);
+            }
+
             return isDisplayed;
         }
 

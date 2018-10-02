@@ -55,7 +55,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 LogInfo($"###### using QADIRs_I15Tech instance ###### ");
                 instance = new QADIRs_I15Tech(Driver);
             }
-
+            else if (tenantName == TenantName.LAX)
+            {
+                LogInfo($"###### using QADIRs_LAX instance ###### ");
+                instance = new QADIRs_LAX(Driver);
+            }
             return instance;
         }
 
@@ -100,6 +104,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     public class QADIRs_I15Tech : QADIRs
     {
         public QADIRs_I15Tech(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+
+    public class QADIRs_LAX : QADIRs
+    {
+        public QADIRs_LAX(IWebDriver driver) : base(driver)
         {
         }
     }
