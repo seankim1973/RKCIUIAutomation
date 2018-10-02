@@ -31,7 +31,27 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("QualityManager")] QualityManager,
             [StringValue("QualityManagerApprovedDate")] QualityManagerApprovedDate
         }
+        public enum TableTab
+        {
+            [StringValue("Creating/Revise")] Creating,
+            [StringValue("CQM Review")] CQMReview,
+            [StringValue("Resolution/Disposition")] ResolutionDisposition,
+            [StringValue("Developer Concurrence")] DeveloperConcurrence,
+            [StringValue("DOT Approval")] DOTApproval,
+            [StringValue("Verification and Closure")] VerificationAndClosure,
+            [StringValue("All NCRs")] AllNCRs
+        }
 
+        public enum ColumnName
+        {
+            [StringValue("NcrNo")] NcrNo,
+            [StringValue("RevisedBy")] SentBy,
+            [StringValue("RevisedDate")] SentDate,
+            [StringValue("Description")] Description,
+            [StringValue("StatusFlowItemName")] WorkflowLocation,
+            [StringValue("LockedBy")] LockedBy,
+            [StringValue("LockedDate")] LockedDate
+        }
     }
     #endregion  <-- end of NCR Generic Class 
 
