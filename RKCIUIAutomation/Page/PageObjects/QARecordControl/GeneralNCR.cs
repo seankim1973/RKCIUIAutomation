@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static RKCIUIAutomation.Page.Action;
+using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 {
@@ -14,10 +16,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public GeneralNCR() { }
         public GeneralNCR(IWebDriver driver) => this.Driver = driver;
 
-        public enum GeneralNCR_InputFields
+        public enum InputFields
         {
-            [StringValue("IssuedDate")] NCRIssueDate,
-            [StringValue("NcrDescription")] NcrDescription,
+            [StringValue("IssuedDate")] IssuedDate,
+            [StringValue("NonConformance")] Description,
             [StringValue("OtherLocation")] OtherLocation,
             [StringValue("ContainmentActions")] ContainmentActions,
             [StringValue("CorrectiveAction")] CorrectiveAction,
@@ -63,12 +65,37 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("LockedBy")] LockedBy,
             [StringValue("LockedDate")] LockedDate
         }
+
+        public enum SubmitButtons
+        {
+            [StringValue("Cancel")] Cancel,
+            [StringValue("Revise")] Revise,
+            [StringValue("Approve")] Approve,
+            [StringValue("Disapprove & Close")] DisapproveClose,
+            [StringValue("Save Only")] SaveOnly,
+            [StringValue("Save & Forward")] SaveForward
+        }
     }
     #endregion  <-- end of NCR Generic Class 
 
     #region workflow interface class
     public interface IGeneralNCR
     {
+        void ClickBtn_New();
+
+        void ClickBtn_Cancel();
+
+        void ClickBtn_SaveOnly();
+
+        void ClickBtn_SaveForward();
+        
+        void ClickTab_Creating();
+
+        void ClickTab_Revise();
+
+        void PopulateRequiredFieldsAndSave();
+
+        bool VerifyNCRDocInReviseTab();
     }
     #endregion workflow interface class
 
@@ -79,7 +106,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
         private IGeneralNCR SetPageClassBasedOnTenant(IWebDriver driver)
         {
             IGeneralNCR instance = new GeneralNCR(driver);
@@ -121,6 +147,39 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             return instance;
         }
+
+        private readonly By newBtn_ByLocator = By.XPath("//div[@id='NcrGrid_Revise']/div/a[contains(@class, 'k-button')]");
+        private By GetSubmitBtnLocator(SubmitButtons buttonName)
+        {
+            string buttonValue = buttonName.GetString();
+            By locator = By.XPath($"//input[@value='{buttonValue}']");
+            return locator;
+        }
+
+
+        public virtual void ClickBtn_Cancel() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Cancel));
+
+        public virtual void ClickBtn_SaveOnly() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveOnly));
+
+        public virtual void ClickBtn_SaveForward() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveForward));
+
+        public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
+
+        public virtual void ClickTab_Creating() => ClickTab(TableTab.Creating_Revise);
+
+        public virtual void ClickTab_Revise() => ClickTab(TableTab.Revise);
+
+        public void PopulateRequiredFieldsAndSave()
+        {
+            throw new NotImplementedException(); //TODO
+        }
+
+        public bool VerifyNCRDocInReviseTab()
+        {
+            return true; //TODO - need a way to get value unique to newly created NCR
+        }
+        
+
     }
     #endregion Common Workflow Implementation class
 
