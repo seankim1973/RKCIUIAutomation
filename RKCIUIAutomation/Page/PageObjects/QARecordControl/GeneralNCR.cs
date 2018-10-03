@@ -231,6 +231,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickTab_Verification_and_Closure() => ClickTab(TableTab.Verification_and_Closure);
 
+
+
+
+
         public void PopulateRequiredFieldsAndSave()
         {
             throw new NotImplementedException(); //TODO
