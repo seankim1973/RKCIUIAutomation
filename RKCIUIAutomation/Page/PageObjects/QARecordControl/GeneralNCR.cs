@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Developer Concurrence")] DeveloperConcurrence,
             [StringValue("DOT Approval")] DOTApproval,
             [StringValue("Verification and Closure")] VerificationAndClosure,
-            [StringValue("All NCRs")] AllNCRs
+            [StringValue("All NCRs")] AllNCRs,
+            [StringValue("Revise")] Revise,
+            [StringValue("QC Review")] QCReview,
+            [StringValue("To Be Closed")] ToBeClosed,
+            [StringValue("Closed NCR")] ClosedNCR,
+            [StringValue("Review/Assign NCR")] ReviewAssignNCR,
+            [StringValue("Engineer Concurrence")] EngineerConcurrence,
+            [StringValue("Owner Concurrence")] OwnerConcurrence,
+            [StringValue("Verification")] Verification
         }
 
         public enum ColumnName
@@ -64,10 +73,52 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     #region Common Workflow Implementation class
     public abstract class GeneralNCR_Impl : PageBase, IGeneralNCR
     {
-        /// <summary>
+        / /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
-        /// 
+        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
+
+        private IGeneralNCR SetPageClassBasedOnTenant(IWebDriver driver)
+        {
+            IGeneralNCR instance = new GeneralNCR(driver);
+
+            if (tenantName == TenantName.SGWay)
+            {
+                LogInfo($"###### using GeneralNCR_SGWay instance ###### ");
+                instance = new GeneralNCR_SGWay(driver);
+            }
+            else if (tenantName == TenantName.SH249)
+            {
+                LogInfo($"###### using  GeneralNCR_SH249 instance ###### ");
+                instance = new GeneralNCR_SH249(driver);
+            }
+            else if (tenantName == TenantName.Garnet)
+            {
+                LogInfo($"###### using  GeneralNCR_Garnet instance ###### ");
+                instance = new GeneralNCR_Garnet(driver);
+            }
+            else if (tenantName == TenantName.GLX)
+            {
+                LogInfo($"###### using  GeneralNCR_GLX instance ###### ");
+                instance = new GeneralNCR_GLX(driver);
+            }
+            else if (tenantName == TenantName.I15South)
+            {
+                LogInfo($"###### using  GeneralNCR_I15South instance ###### ");
+                instance = new GeneralNCR_I15South(driver);
+            }
+            else if (tenantName == TenantName.I15Tech)
+            {
+                LogInfo($"###### using GeneralNCR_I15Tech instance ###### ");
+                instance = new GeneralNCR_I15Tech(driver);
+            }
+            else if (tenantName == TenantName.LAX)
+            {
+                LogInfo($"###### using GeneralNCR_LAX instance ###### ");
+                instance = new GeneralNCR_LAX(driver);
+            }
+            return instance;
+        }
     }
     #endregion Common Workflow Implementation class
 
@@ -119,4 +170,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     }
     #endregion <--specific to I15Tech
 
+    #region Implementation specific to LAX
+    public class GeneralNCR_LAX : GeneralNCR
+    {
+        public GeneralNCR_LAX(IWebDriver driver) : base(driver) { }
+    }
+    #endregion <--specific to I15Tech
 }
