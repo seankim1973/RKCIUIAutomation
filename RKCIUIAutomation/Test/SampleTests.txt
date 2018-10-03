@@ -1,1 +1,1 @@
-﻿RKCIUIAutomation.Test.NCR.TestGeneralNCR.Verify_NCR_UserAccts
+﻿RKCIUIAutomation.Test.NCR.Verify_NCR_UserAccts
