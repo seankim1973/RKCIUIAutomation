@@ -13,7 +13,7 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To validate successful create and save of an NCR (Nonconformance Report) document.")]
         public void Create_And_Save_NCR_Document()
         {
-            LoginAs(UserType.Bhoomi);
+            LoginAs(UserType.NCRTech);
             NavigateToPage.QARecordControl_General_NCR();
             GeneralNCR.ClickBtn_New();
             GeneralNCR.PopulateRequiredFieldsAndSave();
@@ -31,6 +31,8 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To validate the QC review part of an NCR (Nonconformance Report).")]
         public void QC_Review_of_NCR_document_by_NCR_Manager()
         {
+            LoginAs(UserType.NCRMgr);
+            NavigateToPage.QARecordControl_General_NCR();
         }
     }
 
@@ -44,6 +46,8 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To successfully revising an NCR (Nonconformance Report) document.")]
         public void Revise_the_NCR_Document()
         {
+            LoginAs(UserType.NCRMgr);
+            NavigateToPage.QARecordControl_General_NCR();
         }
     }
 
@@ -57,6 +61,8 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To successfully close an NCR (Nonconformance Report) document.")]
         public void Close_the_NCR_Document()
         {
+            LoginAs(UserType.NCRMgr);
+            NavigateToPage.QARecordControl_General_NCR();
         }
     }
 
@@ -70,6 +76,8 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To successfully edit an NCR (Nonconformance Report) document.")]
         public void Edit_the_NCR_Document()
         {
+            LoginAs(UserType.NCRMgr);
+            NavigateToPage.QARecordControl_General_NCR();
         }
     }
 
@@ -83,6 +91,8 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To successfully view the report of an NCR (Nonconformance Report) document.")]
         public void View_NCR_Document_Report()
         {
+            LoginAs(UserType.NCRMgr);
+            NavigateToPage.QARecordControl_General_NCR();
         }
     }
 
@@ -132,6 +142,30 @@ namespace RKCIUIAutomation.Test.NCR
             GeneralNCR.ClickTab_All_NCRs();
             GeneralNCR.ClickTab_Creating_Revise();
             GeneralNCR.ClickBtn_New();
+        }
+    }
+
+    [TestFixture]
+    public class Verify_NCR_UserAccts : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(TestCaseNumber, 123456)]
+        [Property(Priority, "High")]
+        [Description("NCR UserAccts")]
+        public void NCR_UserAccts()
+        {
+            LogInfo($"Testing, UserAccts for {tenantName}");
+            LoginAs(UserType.NCRMgr);
+            string CurrentUser = GetCurrentUser();
+            System.Console.WriteLine($"USER: {CurrentUser}");
+            Assert.True(CurrentUser == "NCR Mgr");
+            ClickLogoutLink();
+            ClickLoginLink();
+            LoginAs(UserType.NCRTech);
+            CurrentUser = GetCurrentUser();
+            System.Console.WriteLine($"USER: {CurrentUser}");
+            Assert.True(CurrentUser == "NCR Tech");
         }
     }
 
