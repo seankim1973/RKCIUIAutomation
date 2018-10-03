@@ -477,5 +477,12 @@ namespace RKCIUIAutomation.Sandbox
             Console.WriteLine($"INDEX: {name.Length}");
             Console.WriteLine(name[name.Length - 1]);
         }
+
+        [TestMethod]
+        public void ShortDate()
+        {
+            string shortDate = DateTime.Now.ToShortDateString();
+            Console.WriteLine(shortDate);
+        }
     }
 }

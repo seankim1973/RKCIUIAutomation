@@ -387,6 +387,7 @@
     <Compile Include="Test\TestUtils.cs" />
     <Compile Include="Test\UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test\TestGeneralNCR.cs" />
     <Compile Include="Tools\GridUtility.cs" />
     <Compile Include="Tools\HipTestApi.cs" />
     <Compile Include="Tools\HipTestData.cs" />
