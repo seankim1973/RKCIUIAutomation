@@ -555,7 +555,9 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QC Test - Original Report")] QC_Test_Original_Report,
                 [StringValue("QC Test - All")] QC_Test_All,
                 [StringValue("QC Test Correction Report")] QC_Test_Correction_Report,
-                [StringValue("QC DIRs")] QC_DIRs
+                [StringValue("QC DIRs")] QC_DIRs,
+                [StringValue("QC NCR")] QC_NCR,
+                [StringValue("QC CDR")] QC_CDR
             }
         }
 

@@ -1,9 +1,11 @@
 ﻿using NUnit.Framework;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using RKCIUIAutomation.Test;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
@@ -502,6 +504,31 @@ namespace RKCIUIAutomation.UnitTest
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Admin_Companies();
             Assert.True(VerifyPageTitle("Failed Test"));
+        }
+    }
+
+
+    [TestFixture]
+    public class NCRTabNames : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property(TestCaseNumber, 2222)]
+        [Property(Priority, "Priority 1")]
+        [Description("Get NCR Tab Names")]
+        public void Get_NCR_Tab_Names()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QARecordControl_General_NCR();
+
+            IList<IWebElement> elements = new List<IWebElement>();
+            elements = Driver.FindElements(By.XPath("//ul[@class='k-reset k-tabstrip-items']/li/span[text()]"));
+            Console.WriteLine($"TENANT: {tenantName}");
+            for (int i = 0; i < elements.Count; i++)
+            {
+                string elem = elements[i].Text;
+                Console.WriteLine(elem);
+            }
         }
     }
 }

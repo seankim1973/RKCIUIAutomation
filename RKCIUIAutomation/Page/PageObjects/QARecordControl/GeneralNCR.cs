@@ -32,23 +32,25 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("QualityManager")] QualityManager,
             [StringValue("QualityManagerApprovedDate")] QualityManagerApprovedDate
         }
+
         public enum TableTab
         {
-            [StringValue("Creating/Revise")] Creating,
-            [StringValue("CQM Review")] CQMReview,
-            [StringValue("Resolution/Disposition")] ResolutionDisposition,
-            [StringValue("Developer Concurrence")] DeveloperConcurrence,
-            [StringValue("DOT Approval")] DOTApproval,
-            [StringValue("Verification and Closure")] VerificationAndClosure,
-            [StringValue("All NCRs")] AllNCRs,
+            [StringValue("All NCRs")] All_NCRs,
+            [StringValue("Closed NCR")] Closed_NCR,
+            [StringValue("CQM Review")] CQM_Review,
+            [StringValue("Creating/Revise")] Creating_Revise,
+            [StringValue("Developer Concurrence")] Developer_Concurrence,
+            [StringValue("DOT Approval")] DOT_Approval,
+            [StringValue("Engineer Concurrence")] Engineer_Concurrence,
+            [StringValue("Originator Concurrence")] Originator_Concurrence,
+            [StringValue("Owner Concurrence")] Owner_Concurrence,
+            [StringValue("QC Review")] QC_Review,
+            [StringValue("Resolution/Disposition")] Resolution_Disposition,
+            [StringValue("Review/Assign NCR")] Review_Assign_NCR,
             [StringValue("Revise")] Revise,
-            [StringValue("QC Review")] QCReview,
-            [StringValue("To Be Closed")] ToBeClosed,
-            [StringValue("Closed NCR")] ClosedNCR,
-            [StringValue("Review/Assign NCR")] ReviewAssignNCR,
-            [StringValue("Engineer Concurrence")] EngineerConcurrence,
-            [StringValue("Owner Concurrence")] OwnerConcurrence,
-            [StringValue("Verification")] Verification
+            [StringValue("To Be Closed")] To_Be_Closed,
+            [StringValue("Verification")] Verification,
+            [StringValue("Verification and Closure")] Verification_and_Closure
         }
 
         public enum ColumnName
@@ -73,7 +75,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     #region Common Workflow Implementation class
     public abstract class GeneralNCR_Impl : PageBase, IGeneralNCR
     {
-        / /// <summary>
+        /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
@@ -175,5 +177,5 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     {
         public GeneralNCR_LAX(IWebDriver driver) : base(driver) { }
     }
-    #endregion <--specific to I15Tech
+    #endregion <--specific to LAX
 }

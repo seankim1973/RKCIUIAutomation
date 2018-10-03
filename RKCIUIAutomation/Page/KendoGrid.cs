@@ -31,7 +31,7 @@ namespace RKCIUIAutomation.Page
             {
                 string jsToBeExecuted = GetTabStripReference();
 
-                By locator = By.XPath("//ul[@class='k-reset k-tabstrip-items']/li");
+                By locator = By.XPath("//ul[@class='k-reset k-tabstrip-items']/li/span[text()]");
                 int tabIndex = GetElementIndex(locator, tblTabName);
                 if (tabIndex >= 0)
                 {
@@ -71,8 +71,8 @@ namespace RKCIUIAutomation.Page
 
                 for (int i = 0; i < elements.Count; i++)
                 {
-                    string queueValue = elements[i].GetAttribute("queue");
-                    bool match = (queueValue == matchValue) ? true : false;
+                    string spanText = elements[i].Text;
+                    bool match = (spanText == matchValue) ? true : false;
 
                     if (match == true)
                     {
