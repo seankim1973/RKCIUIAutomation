@@ -484,5 +484,13 @@ namespace RKCIUIAutomation.Sandbox
             string shortDate = DateTime.Now.ToShortDateString();
             Console.WriteLine(shortDate);
         }
+
+        [TestMethod]
+        public void StringContains()
+        {
+            string userAcct = "Test IQF Comment Review";
+            bool containsX = userAcct.Contains("IQF") ? true : false;
+            Console.WriteLine($"Contains IQF: {containsX}");
+        }
     }
 }

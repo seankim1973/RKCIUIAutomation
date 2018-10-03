@@ -598,6 +598,14 @@ namespace RKCIUIAutomation.Page
             }
         }
 
+        public void LogoutToLoginPage()
+        {
+            WaitForPageReady();
+            Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
+            WaitForPageReady();
+            Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+        }
+
         public void ClickLoginLink()
         {
             WaitForPageReady();

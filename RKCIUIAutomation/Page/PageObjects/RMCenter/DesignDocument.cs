@@ -164,6 +164,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void SelectDisagreeResolutionCode(int commentTabNumber = 1);
 
         void SelectDisagreeResponseCode(int commentTabNumber = 1);
+
+        void SelectDDL_ClosingStamp(int commentTabNumber = 1);
     }
 
     #endregion Workflow Interface class
@@ -297,7 +299,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void SelectDisagreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
 
-        public void SelectDDL_ClosingStamp(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
+        public virtual void SelectDDL_ClosingStamp(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
 
         public void SelectCommentType(int commentTypeTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.CommentType, commentTypeTabNumber), 1);
 
@@ -429,7 +431,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterComment(CommentType.CommentClosingInput);
             SelectDDL_ClosingStamp();
             ClickBtn_SaveOnly();
-            // WaitForPageReady();
             ClickBtn_SaveForward();
         }
 
@@ -490,22 +491,22 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual bool VerifyItemStatusIsClosed() => VerifyRecordIsShownInTab(TableTab.Closed, ColumnName.Number, designDocNumber);
 
-        private string CurrentUser => GetCurrentUser();
-
         public virtual void SelectTab(TableTab tableTab)
         {
+            WaitForPageReady();
+            string currentUser = GetCurrentUser();
             string tabName = string.Empty;
             string tabPrefix = "";
 
-            if (CurrentUser.Contains("IQF"))
+            if (currentUser.Contains("IQF"))
             {
                 tabPrefix = "IQF ";
             }
-            else if (CurrentUser.Contains("DEV"))
+            else if (currentUser.Contains("DEV"))
             {
                 tabPrefix = "DEV ";
             }
-            else if (CurrentUser.Contains("DOT"))
+            else if (currentUser.Contains("DOT"))
             {
                 tabPrefix = "DOT ";
             }
@@ -609,7 +610,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        //public override bool VerifyifClosed() => VerifyRecordIsShownInTab_StdUser(TableTab.Closed);
+        public override void SelectTab(TableTab tableTab) => ClickTab(tableTab);
+
         public override void EnterRegularCommentAndDrawingPageNo()
         {
             //login as commenting user (SG- IQFuser, DoTuser | SH249-- IQFUser | Garenet and GLX-- DOTUser)
@@ -631,6 +633,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             SelectDisagreeResolutionCode();
             ClickBtn_SaveOnly();
 
+            ClickBtn_SaveForward();
+        }
+
+        public override void EnterClosingCommentAndCode()
+        {
+            ClickTab_Requires_Closing();
+            FilterTableByValue();
+            ClickEnterBtnForRow();
+            WaitForPageReady();
+            EnterComment(CommentType.CommentClosingInput);
+            SelectDDL_ClosingStamp();
+            ClickBtn_SaveOnly();
+            // WaitForPageReady();
             ClickBtn_SaveForward();
         }
     }

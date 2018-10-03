@@ -86,6 +86,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     {
         void ClickBtn_New();
 
+        void ClickBtn_ExportToExcel();
+
         void ClickBtn_Cancel();
 
         void ClickBtn_SaveOnly();
@@ -183,6 +185,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         private readonly By newBtn_ByLocator = By.XPath("//div[@id='NcrGrid_Revise']/div/a[contains(@class, 'k-button')]");
+        private readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
 
         private By GetSubmitBtnLocator(SubmitButtons buttonName)
         {
@@ -198,6 +201,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickBtn_SaveForward() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveForward));
 
         public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
+
+        public virtual void ClickBtn_ExportToExcel() => JsClickElement(exportToExcel_ByLocator);
 
         public virtual void ClickTab_All_NCRs() => ClickTab(TableTab.All_NCRs);
 
