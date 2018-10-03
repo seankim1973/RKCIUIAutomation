@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
 
-namespace RKCIUIAutomation.Test
+namespace RKCIUIAutomation.Test.NCR
 {
     [TestFixture]
     public class Verify_Create_And_Save_NCR_Document : TestBase
@@ -15,7 +15,6 @@ namespace RKCIUIAutomation.Test
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_General_NCR();
-            GeneralNCR.ClickTab_Creating();
             GeneralNCR.ClickBtn_New();
             GeneralNCR.PopulateRequiredFieldsAndSave();
             Assert.True(GeneralNCR.VerifyNCRDocInReviseTab());
@@ -84,6 +83,55 @@ namespace RKCIUIAutomation.Test
         [Description("To successfully view the report of an NCR (Nonconformance Report) document.")]
         public void View_NCR_Document_Report()
         {
+        }
+    }
+
+    [TestFixture]
+    public class Verify_NCR_UnitTest_Garnet : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(TestCaseNumber, 123456)]
+        [Property(Priority, "High")]
+        [Description("NCR UnitTest for Garnet")]
+        public void NCR_UnitTest_Garnet()
+        {
+            LogInfo("Unit test for Garnet");
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QARecordControl_General_NCR();
+            GeneralNCR.ClickTab_Review_Assign_NCR();
+            GeneralNCR.ClickTab_Resolution_Disposition();
+            GeneralNCR.ClickTab_Engineer_Concurrence();
+            GeneralNCR.ClickTab_Owner_Concurrence();
+            GeneralNCR.ClickTab_Originator_Concurrence();
+            GeneralNCR.ClickTab_Verification();
+            GeneralNCR.ClickTab_Closed_NCR();
+            GeneralNCR.ClickTab_Creating_Revise();
+            GeneralNCR.ClickBtn_New();
+        }
+    }
+
+    [TestFixture]
+    public class Verify_NCR_UnitTest_GLX : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(TestCaseNumber, 123456)]
+        [Property(Priority, "High")]
+        [Description("NCR UnitTest for GLX")]
+        public void NCR_UnitTest_GLX()
+        {
+            LogInfo("Unit test for GLX");
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QARecordControl_General_NCR();
+            GeneralNCR.ClickTab_CQM_Review();
+            GeneralNCR.ClickTab_Resolution_Disposition();
+            GeneralNCR.ClickTab_Developer_Concurrence();
+            GeneralNCR.ClickTab_DOT_Approval();
+            GeneralNCR.ClickTab_Verification_and_Closure();
+            GeneralNCR.ClickTab_All_NCRs();
+            GeneralNCR.ClickTab_Creating_Revise();
+            GeneralNCR.ClickBtn_New();
         }
     }
 
