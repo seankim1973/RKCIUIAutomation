@@ -49,7 +49,9 @@
         DOTUser,
         DOTAdmin,
         DEVUser,
-        DEVAdmin
+        DEVAdmin,
+        NCRTech,
+        NCRMgr
     }
 
     public enum Reporter

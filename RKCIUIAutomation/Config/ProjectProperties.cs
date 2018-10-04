@@ -163,6 +163,7 @@ namespace RKCIUIAutomation.Config
             Component.CVL_List,
             Component.CVL_Lists,
             Component.CVL_List_Items,
+            Component.NCR,
             Component.Other,
             Component.Project_Configuration,
             Component.Search,
