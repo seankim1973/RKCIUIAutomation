@@ -1,7 +1,10 @@
 ﻿using MiniGuids;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
@@ -28,6 +31,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("RoadwayId")] Roadway,
             [StringValue("ResponsibleManager")] Manager,
             [StringValue("NonConformance")] Description_of_Nonconformance,
+            [StringValue("FeatureId")] Feature,
+            [StringValue("SubFeatureId")] SubFeature,
             [StringValue("OtherLocation")] OtherLocation,
             [StringValue("ContainmentActions")] ContainmentActions,
             [StringValue("CorrectiveAction")] CorrectiveAction,
@@ -150,15 +155,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectRadioBtn_Approval_NA();
 
-        void SelectDDL_Originator(int selectionIndex = 0);
+        void SelectDDL_Originator(int selectionIndexOrName = 1);
 
-        void SelectDDL_Foreman(int selectionIndex = 0);
+        void SelectDDL_Foreman(int selectionIndex = 1);
 
-        void SelectDDL_Specification(int selectionIndex = 0);
+        void SelectDDL_Specification(int selectionIndex = 1);
 
-        void SelectDDL_Area(int selectionIndex = 0);
+        void SelectDDL_Area(int selectionIndex = 1);
 
-        void SelectDDL_Roadway(int selectionIndex = 0);
+        void SelectDDL_Roadway(int selectionIndex = 1);
+
+        void SelectDDL_Feature(int selectionIndex = 2);
+
+        void SelectDDL_SubFeature(int selectionIndex = 1);
 
         void EnterIssuedDate(string shortDate = "1/1/9999");
 
@@ -170,9 +179,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void EnterDescription(string description);
 
-        void PopulateRequiredFieldsAndSave();
+        void PopulateRequiredFieldsAndSaveForward();
 
-        bool VerifyNCRDocInReviseTab();
+        bool VerifyNCRDocIsDisplayed(TableTab tableTab, string NCRDescription = "");
+
+        string GetNCRDocDescription();
+
+        IList<string> GetRequiredFieldIDs();
 
     }
 
@@ -315,8 +328,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void SelectRadioBtn_Approval_No() => SelectApprovalRadioBtn("No");
 
         public virtual void SelectRadioBtn_Approval_NA() => SelectApprovalRadioBtn("N/A");
-
-
+        
         public virtual void SelectDDL_Originator(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
 
         public virtual void SelectDDL_Foreman(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Foreman, selectionIndex);
@@ -327,11 +339,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectDDL_Roadway(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
 
+        public virtual void SelectDDL_Feature(int selectionIndex = 2) => ExpandAndSelectFromDDList(InputFields.Feature, selectionIndex);
+
+        public virtual void SelectDDL_SubFeature(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.SubFeature, selectionIndex);
 
         public virtual void EnterIssuedDate(string shortDate = "1/1/9999") 
             => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
 
-        private string shortDateTime = $"{GetMaxShortDate()} {GetShortTime()}";
+        private readonly string shortDateTime = $"{GetMaxShortDate()} {GetShortTime()}";
 
         public virtual void EnterForemanNotificationDate(string dateTime = "1/1/9999 12:00 AM") 
             => EnterText(GetTextInputFieldByLocator(InputFields.ForemanNotificationDate), dateTime = shortDateTime);
@@ -350,6 +365,29 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterText(GetTextAreaFieldByLocator(InputFields.Description_of_Nonconformance), description);
         }
 
+        public virtual IList<string> GetRequiredFieldIDs()
+        {
+            List<string> RequiredFieldIDs = new List<string>
+            {
+                InputFields.IssuedDate.GetString(),
+                InputFields.Originator.GetString(),
+                InputFields.Foreman.GetString(),
+                InputFields.ForemanNotificationDate.GetString(),
+                InputFields.Manager.GetString(),
+                InputFields.ManagerNotificationDate.GetString(),
+                //InputFields.Specification.GetString(),
+                "SpecificationId",
+                InputFields.Area.GetString(),
+                InputFields.Roadway.GetString(),
+                InputFields.Feature.GetString(),
+                InputFields.SubFeature.GetString(),
+                InputFields.Description_of_Nonconformance.GetString(),
+                "UploadFiles[0].Files"
+            };
+
+            return RequiredFieldIDs;
+        }
+
         private void CreateNcrDescription()
         {
             guid = MiniGuid.NewGuid();
@@ -361,23 +399,71 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Console.WriteLine($"#####NCR Description: {ncrDescription}");
         }
 
-        public void PopulateRequiredFieldsAndSave()
+        public virtual string GetNCRDocDescription() => GetVar(ncrDescKey);
+        
+        private bool VerifyReqFieldsErrorLabelsForNewDoc()
         {
+            try
+            {
+                bool errorLabelsDisplayed = false;
+
+                IList<IWebElement> ReqFieldErrorLabelElements = Driver.FindElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')]"));
+
+                IList<string> RequiredFieldIDs = GetRequiredFieldIDs();
+
+                IList<bool> results = new List<bool>();
+
+                foreach (IWebElement elem in ReqFieldErrorLabelElements)
+                {
+                    if (elem.Displayed && elem.Enabled)
+                    {
+                        var id = elem.GetAttribute("data-valmsg-for");
+                        Console.WriteLine(id);
+                        results.Add(RequiredFieldIDs.Contains(id));
+                    }
+                }
+
+                Console.WriteLine($"REQUIRED FIELD COUNT: {results.Count}");
+                errorLabelsDisplayed = results.Contains(false) ? false : true;
+
+                return errorLabelsDisplayed;
+            }
+            catch (Exception e)
+            {
+                LogError(e.Message);
+                return false;
+            }
+        }
+
+        public virtual void PopulateRequiredFieldsAndSaveForward()
+        {
+            ClickBtn_SaveForward();
+            Assert.True(VerifyReqFieldsErrorLabelsForNewDoc());
             EnterIssuedDate();
             SelectDDL_Originator();
             SelectDDL_Foreman();
             EnterForemanNotificationDate();
-            EnterResponsibleManager("LastName, TestMgr");
+            EnterResponsibleManager("Bhoomi Purohit");
             EnterManagerNotificationDate();
             SelectDDL_Specification();
             SelectDDL_Area();
             SelectDDL_Roadway();
+            SelectDDL_Feature();
+            SelectDDL_SubFeature();
             EnterDescription();
-            ClickBtn_SaveOnly();
+            UploadFile("test.xlsx");
+            ClickBtn_SaveForward();
             WaitForPageReady();
         }
 
-        public bool VerifyNCRDocInReviseTab() => VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
+        public virtual bool VerifyNCRDocIsDisplayed(TableTab tableTab, string NCRDescription = "")
+        {
+            ClickTab(tableTab);
+            ncrDescription = string.IsNullOrWhiteSpace(NCRDescription) ? ncrDescription : NCRDescription;
+            return VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
+        }
+
+        
 
     }
 
@@ -405,6 +491,26 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     {
         public GeneralNCR_GLX(IWebDriver driver) : base(driver)
         {
+        }
+
+        public override IList<string> GetRequiredFieldIDs()
+        {
+            IList<string> RequiredFieldIDs = new List<string>
+            {
+                InputFields.IssuedDate.GetString(),
+                InputFields.Originator.GetString(),
+                InputFields.Foreman.GetString(),
+                InputFields.ForemanNotificationDate.GetString(),
+                InputFields.Manager.GetString(),
+                InputFields.ManagerNotificationDate.GetString(),
+                //InputFields.Specification.GetString(),
+                "SpecificationId",
+                InputFields.Area.GetString(),
+                InputFields.Roadway.GetString(),
+                InputFields.Description_of_Nonconformance.GetString(),
+            };
+
+            return RequiredFieldIDs;
         }
     }
 
