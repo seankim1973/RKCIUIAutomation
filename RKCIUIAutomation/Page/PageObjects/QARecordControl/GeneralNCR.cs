@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using MiniGuids;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
@@ -18,12 +19,20 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public enum InputFields
         {
             [StringValue("IssuedDate")] IssuedDate,
-            [StringValue("NonConformance")] Description,
+            [StringValue("ForemanNotificationDate")] ForemanNotificationDate,
+            [StringValue("ManagerNotificationDate")] ManagerNotificationDate,
+            [StringValue("Originator")] Originator,
+            [StringValue("CrewForeman")] Foreman,
+            [StringValue("Specification")] Specification,
+            [StringValue("AreaId")] Area,
+            [StringValue("RoadwayId")] Roadway,
+            [StringValue("ResponsibleManager")] Manager,
+            [StringValue("NonConformance")] Description_of_Nonconformance,
             [StringValue("OtherLocation")] OtherLocation,
             [StringValue("ContainmentActions")] ContainmentActions,
             [StringValue("CorrectiveAction")] CorrectiveAction,
             [StringValue("RepairPlan")] RepairPlan,
-            [StringValue("RecordEngineer")] RecordEngineer,
+            [StringValue("RecordEngineer")] Engineer_of_Record,
             [StringValue("RecordEngineerApprovedDate")] RecordEngineerApprovedDate,
             [StringValue("Owner")] Owner,
             [StringValue("OwnerDate")] OwnerDate,
@@ -31,7 +40,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("CIQM")] CIQM,
             [StringValue("CIQMDate")] CIQMDate,
             [StringValue("QualityManager")] QualityManager,
-            [StringValue("QualityManagerApprovedDate")] QualityManagerApprovedDate
+            [StringValue("QualityManagerApprovedDate")] QualityManagerApprovedDate,
         }
 
         public enum TableTab
@@ -62,7 +71,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Description")] Description,
             [StringValue("StatusFlowItemName")] WorkflowLocation,
             [StringValue("LockedBy")] LockedBy,
-            [StringValue("LockedDate")] LockedDate
+            [StringValue("LockedDate")] LockedDate,
+            [StringValue("Id")] Action
         }
 
         public enum SubmitButtons
@@ -126,9 +136,44 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void ClickTab_Verification_and_Closure();
 
+        void FilterDescription(string description = "");
+
+        void SortTable_Descending();
+
+        void SortTable_Ascending();
+
+        void SortTable_ToDefault();
+
+        void SelectRadioBtn_Approval_Yes();
+
+        void SelectRadioBtn_Approval_No();
+
+        void SelectRadioBtn_Approval_NA();
+
+        void SelectDDL_Originator(int selectionIndex = 0);
+
+        void SelectDDL_Foreman(int selectionIndex = 0);
+
+        void SelectDDL_Specification(int selectionIndex = 0);
+
+        void SelectDDL_Area(int selectionIndex = 0);
+
+        void SelectDDL_Roadway(int selectionIndex = 0);
+
+        void EnterIssuedDate(string shortDate = "1/1/9999");
+
+        void EnterForemanNotificationDate(string dateTime = "1/1/9999 12:00 AM");
+
+        void EnterManagerNotificationDate(string dateTime = "1/1/9999 12:00 AM");
+
+        void EnterResponsibleManager(string mgrName);
+
+        void EnterDescription(string description);
+
         void PopulateRequiredFieldsAndSave();
 
         bool VerifyNCRDocInReviseTab();
+
     }
 
     #endregion workflow interface class
@@ -184,8 +229,24 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return instance;
         }
 
+        [ThreadStatic]
+        private static string ncrDescription;
+
+        [ThreadStatic]
+        private static string ncrDescKey;
+
+        private MiniGuid guid;
+
         private readonly By newBtn_ByLocator = By.XPath("//div[@id='NcrGrid_Revise']/div/a[contains(@class, 'k-button')]");
+
         private readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
+
+
+        public virtual void FilterDescription(string description = "")
+        {
+            ncrDescription = !string.IsNullOrWhiteSpace(description) ? description : ncrDescription;
+            FilterTableColumnByValue(ColumnName.Description, ncrDescription);
+        }
 
         private By GetSubmitBtnLocator(SubmitButtons buttonName)
         {
@@ -237,18 +298,87 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickTab_Verification_and_Closure() => ClickTab(TableTab.Verification_and_Closure);
 
 
+        public virtual void SortTable_Descending() => SortColumnDescending(ColumnName.Action);
+
+        public virtual void SortTable_Ascending() => SortColumnAscending(ColumnName.Action);
+
+        public virtual void SortTable_ToDefault() => SortColumnToDefault(ColumnName.Action);
 
 
+        private void SelectApprovalRadioBtn(string radioBtnLabel)
+        {
+            By locator = By.XPath($"//label[contains(text(),'Approval')]/following::label[text()='{radioBtnLabel}']/preceding-sibling::input");
+            ClickElement(locator);
+        }
+        public virtual void SelectRadioBtn_Approval_Yes() => SelectApprovalRadioBtn("Yes");
+
+        public virtual void SelectRadioBtn_Approval_No() => SelectApprovalRadioBtn("No");
+
+        public virtual void SelectRadioBtn_Approval_NA() => SelectApprovalRadioBtn("N/A");
+
+
+        public virtual void SelectDDL_Originator(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
+
+        public virtual void SelectDDL_Foreman(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Foreman, selectionIndex);
+
+        public virtual void SelectDDL_Specification(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Specification, selectionIndex);
+
+        public virtual void SelectDDL_Area(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Area, selectionIndex);
+
+        public virtual void SelectDDL_Roadway(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
+
+
+        public virtual void EnterIssuedDate(string shortDate = "1/1/9999") 
+            => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
+
+        private string shortDateTime = $"{GetMaxShortDate()} {GetShortTime()}";
+
+        public virtual void EnterForemanNotificationDate(string dateTime = "1/1/9999 12:00 AM") 
+            => EnterText(GetTextInputFieldByLocator(InputFields.ForemanNotificationDate), dateTime = shortDateTime);
+
+        public virtual void EnterManagerNotificationDate(string dateTime = "1/1/9999 12:00 AM") 
+            => EnterText(GetTextInputFieldByLocator(InputFields.ManagerNotificationDate), dateTime = shortDateTime);
+
+        public virtual void EnterResponsibleManager(string mgrName)
+            => EnterText(GetTextInputFieldByLocator(InputFields.Manager), mgrName);
+
+        public virtual void EnterDescription(string description = "")
+        {
+            CreateNcrDescription();
+            description = ncrDescription;
+            ScrollToElement(By.Id($"{InputFields.Description_of_Nonconformance.GetString()}"));
+            EnterText(GetTextAreaFieldByLocator(InputFields.Description_of_Nonconformance), description);
+        }
+
+        private void CreateNcrDescription()
+        {
+            guid = MiniGuid.NewGuid();
+
+            string descKey = $"{tenantName}{GetTestName()}";
+            ncrDescKey = $"{descKey}_NcrDescription";
+            CreateVar(ncrDescKey, guid);
+            ncrDescription = GetVar(ncrDescKey);
+            Console.WriteLine($"#####NCR Description: {ncrDescription}");
+        }
 
         public void PopulateRequiredFieldsAndSave()
         {
-            throw new NotImplementedException(); //TODO
+            EnterIssuedDate();
+            SelectDDL_Originator();
+            SelectDDL_Foreman();
+            EnterForemanNotificationDate();
+            EnterResponsibleManager("LastName, TestMgr");
+            EnterManagerNotificationDate();
+            SelectDDL_Specification();
+            SelectDDL_Area();
+            SelectDDL_Roadway();
+            EnterDescription();
+            ClickBtn_SaveOnly();
+            WaitForPageReady();
         }
 
-        public bool VerifyNCRDocInReviseTab()
-        {
-            return true; //TODO - need a way to get value unique to newly created NCR
-        }
+        public bool VerifyNCRDocInReviseTab() => VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
+
     }
 
     #endregion Common Workflow Implementation class

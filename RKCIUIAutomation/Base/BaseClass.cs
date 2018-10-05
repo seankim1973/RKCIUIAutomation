@@ -78,7 +78,7 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
@@ -163,7 +163,8 @@ namespace RKCIUIAutomation.Base
             {
                 if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
                 {
-                    Driver = GetWebDriver(testPlatform, browserType, testName);
+                    string testDetails = $"({testEnv}){tenantName} - {testName}";
+                    Driver = GetWebDriver(testPlatform, browserType, testDetails);
                     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
