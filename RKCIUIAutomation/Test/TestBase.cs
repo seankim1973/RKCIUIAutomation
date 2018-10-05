@@ -33,6 +33,6 @@ namespace RKCIUIAutomation.Test
 
         public IDesignDocumentWF DesignDocCommentReviewWF => new DesignDocumentWF().SetClass<IDesignDocumentWF>(Driver);
 
-        public IGeneralNCR GeneralNCR => new Page.PageObjects.QARecordControl.GeneralNCR().SetClass<IGeneralNCR>(Driver);
+        public IGeneralNCR QaRcrdCtrl_GeneralNCR => new GeneralNCR().SetClass<IGeneralNCR>(Driver);
     }
 }

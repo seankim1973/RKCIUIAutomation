@@ -21,24 +21,21 @@ namespace RKCIUIAutomation.Base
         public static string GridVmIP => gridVmIP;
         private const string gridVmIP = "10.1.1.207";
 
-        protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testName)
+        protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testDetails)
         {
-            //_Driver = Driver;
             if (Driver == null)
             {
                 if (platform == TestPlatform.Local)
                 {
                     _Driver = DetermineLocalDriver(browser);
-                    //return DetermineLocalDriver(browser);
                 }
                 else
                 {
-                    var options = DetermineDriverOptions(platform, browser, testName);
+                    var options = DetermineDriverOptions(platform, browser, testDetails);
                     _Driver = new RemoteWebDriver(new Uri($"http://{GridVmIP}:4444/wd/hub"), options);
 
-                    string sessionId = ((RemoteWebDriver)_Driver).SessionId.ToString();
-                    Console.WriteLine($"DRIVER SESSION ID#: {sessionId}");
-                    //return _Driver;
+                    //string sessionId = ((RemoteWebDriver)_Driver).SessionId.ToString();
+                    //Console.WriteLine($"DRIVER SESSION ID#: {sessionId}");
                 }
                 Driver = _Driver;
                 return Driver;

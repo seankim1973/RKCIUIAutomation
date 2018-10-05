@@ -65,7 +65,7 @@ namespace RKCIUIAutomation.Page
             FilterOperator additionalFilterOperator = FilterOperator.EqualTo
             ) => Kendo.Filter(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator);
 
-        public void ClearFilters() => Kendo.RemoveFilters();
+        public void ClearTableFilters() => Kendo.RemoveFilters();
 
         public void SortColumnAscending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Ascending);
 
@@ -132,13 +132,13 @@ namespace RKCIUIAutomation.Page
 
         private readonly string ActiveTableDiv = "//div[@class='k-content k-state-active']";
 
-        private string TableByTestInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
+        private string TableByTextInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
 
-        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn = null) => (string.IsNullOrEmpty(textInRowForAnyColumn)) ? "//tr[1]/td" : $"{TableByTestInRow(textInRowForAnyColumn)}";
+        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn = null) => (string.IsNullOrEmpty(textInRowForAnyColumn)) ? "//tr[1]/td" : $"{TableByTextInRow(textInRowForAnyColumn)}";
 
         private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn = null) => By.XPath($"{ActiveTableDiv}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
 
-        public By GetTableRowLocator(string textInRowForAnyColumn) => By.XPath($"{ActiveTableDiv}{TableByTestInRow(textInRowForAnyColumn)}");
+        public By GetTableRowLocator(string textInRowForAnyColumn) => By.XPath($"{ActiveTableDiv}{TableByTextInRow(textInRowForAnyColumn)}");
 
         //<<-- Table Row Button Public Methods -->>
         /// <summary>
@@ -190,6 +190,41 @@ namespace RKCIUIAutomation.Page
         public void ClickViewReportForRow(string textInRowForAnyColumn = null) => JsClickElement(GetTblRowBtn_ByLocator(TableButton.Report_View, textInRowForAnyColumn));
 
         #endregion Table Row Button Methods
+
+        public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber)
+        {
+            WaitForPageReady();
+            FilterColumn(columnName, recordNameOrNumber);
+        }
+
+        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber)
+        {
+            bool isDisplayed = false;
+
+            try
+            {
+                FilterTableColumnByValue(columnName, recordNameOrNumber);
+                LogDebug($"Searching for record: {recordNameOrNumber}");
+
+                isDisplayed = ElementIsDisplayed(GetTableRowLocator(recordNameOrNumber)) ? true : isDisplayed;
+
+                if (isDisplayed)
+                {
+                    LogInfo($"Found record: {recordNameOrNumber}.");
+                }
+                else
+                {
+                    LogDebug($"Unable to find record {recordNameOrNumber}.");
+                }
+            }
+            catch (Exception e)
+            {
+                LogError("Error occured in VerifyRecordIsShownInTab method", true, e);
+            }
+
+            return isDisplayed;
+        }
+
 
         //TODO: Horizontal scroll in table (i.e. QA Search>ProctorCurveSummary)
     }

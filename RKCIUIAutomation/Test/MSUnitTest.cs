@@ -481,8 +481,10 @@ namespace RKCIUIAutomation.Sandbox
         [TestMethod]
         public void ShortDate()
         {
-            string shortDate = DateTime.Now.ToShortDateString();
-            Console.WriteLine(shortDate);
+            string shortDate = DateTime.MaxValue.Date.ToShortDateString();
+            //DateTime.Now.ToShortDateString();
+            string shortTime = DateTime.Now.ToShortTimeString();
+            Console.WriteLine($"{shortDate} {shortTime}");
         }
 
         [TestMethod]

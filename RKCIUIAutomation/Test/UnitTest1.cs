@@ -322,14 +322,14 @@ namespace RKCIUIAutomation.UnitTest
         {
             LoginAs(UserType.IQFAdmin);
             NavigateToPage.RMCenter_Design_Documents();
-            //TableHelper.ClickTab(DesignDocument.TableTab.Pending_Response);
-            //TableHelper.SortColumnAscending(DesignDocument.ColumnName.Action);
-            //TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            //TableHelper.SortColumnToDefault(DesignDocument.ColumnName.Action);
-            TableHelper.FilterColumn(DesignDocument.ColumnName.Number, "lJKOSBwPrNQupkvjPnJFEeVhEP");
-            TableHelper.ClearFilters();
-            //TableHelper.FilterColumn(DesignDocument.ColumnName.Number, "NDC-DQP-3.08_00018", FilterOperator.EqualTo, FilterLogic.Or, "ATM-PLC-T-00011_UTL-ATM_HDPE-RPLMNT");
-            //TableHelper.ClickEnterBtnForRow();
+            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Response);
+            TableHelper.SortColumnAscending(DesignDocument.ColumnName.Action);
+            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            TableHelper.SortColumnToDefault(DesignDocument.ColumnName.Action);
+            TableHelper.FilterColumn(DesignDocument.ColumnName.Number, "AJhZSDRCBLSKvmwANBPbkiVSWn");
+            TableHelper.ClearTableFilters();
+            TableHelper.FilterColumn(DesignDocument.ColumnName.Title, "GarnetCommentReviewRegularComment_DsgnDocTtl", FilterOperator.EqualTo, FilterLogic.Or, "ATM-PLC-T-00011_UTL-ATM_HDPE-RPLMNT");
+            TableHelper.ClickEnterBtnForRow();
             //TableHelper.ClickCommentTabNumber(2);
             //DesignDocCommentReview.ClickBtn_BackToList();
 

@@ -109,7 +109,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
         }
@@ -119,7 +119,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterNoComment();
         }
@@ -128,7 +128,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -139,7 +139,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Response();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.ClickBtnJs_SaveForward();
             DesignDocCommentReview.ClickBtn_BackToList();
@@ -150,7 +150,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Response();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             EnterResponseCommentAndDisagreeResponseCode();
         }
@@ -159,7 +159,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void ForwardResolutionCommentAndCodeForDisagreeResponse()
         {
             DesignDocCommentReview.ClickTab_Requires_Resolution();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -173,7 +173,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
         {
             DesignDocCommentReview.ClickTab_Requires_Resolution();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             WaitForPageReady();
             ClickEnterBtnForRow();
             WaitForPageReady();
@@ -274,7 +274,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void ForwardResolutionCommentAndCodeForDisagreeResponse()
         {
             DesignDocCommentReview.ClickTab_Pending_Resolution();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -283,7 +283,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
         {            
             DesignDocCommentReview.ClickTab_Pending_Resolution();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             WaitForPageReady();
             ClickEnterBtnForRow();
             WaitForPageReady();
@@ -361,7 +361,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Comment();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
         }
@@ -371,7 +371,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Comment();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterNoComment();
         }
@@ -381,7 +381,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Comment();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -390,7 +390,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
             DesignDocCommentReview.ClickTab_Requires_Resolution();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             EnterComment(CommentType.CommentResponseInput);
             EnterComment(CommentType.CommentResolutionInput);
@@ -402,7 +402,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void EnterClosingCommentAndCode()
         {
             DesignDocCommentReview.ClickTab_Requires_Closing();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             ClickEnterBtnForRow();
             WaitForPageReady();
             EnterComment(CommentType.CommentClosingInput);
@@ -503,7 +503,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
         }
@@ -512,7 +512,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterNoComment();
         }
@@ -521,7 +521,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -533,7 +533,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Response();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.ClickBtnJs_SaveForward();
         }
@@ -543,7 +543,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Response();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             EnterResponseCommentAndDisagreeResponseCode();
         }
@@ -553,7 +553,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Resolution();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
 
@@ -574,7 +574,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void ForwardResolutionCommentAndCodeForDisagreeResponse()
         {
             DesignDocCommentReview.ClickTab_Requires_Resolution();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -596,7 +596,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             WaitForPageReady();
             DesignDocCommentReview.ClickTab_Pending_Closing();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             EnterClosingCommentAndCode();
         }
@@ -628,7 +628,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Response();
-            DesignDocCommentReview.FilterTableByValue();
+            DesignDocCommentReview.FilterDocNumber();
             TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterResponseCommentAndAgreeResponseCode();
         }
