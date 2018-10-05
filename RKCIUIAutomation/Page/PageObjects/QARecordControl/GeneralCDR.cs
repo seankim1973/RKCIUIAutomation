@@ -208,7 +208,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     #endregion Common Workflow Implementation class
 
     /// <summary>
-    /// Tenant specific implementation of DesignDocument Comment Review
+    /// Tenant specific implementation of CDR/DN Comment Review
     /// </summary>
     ///
 
