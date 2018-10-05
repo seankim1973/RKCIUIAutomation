@@ -163,7 +163,8 @@ namespace RKCIUIAutomation.Base
             {
                 if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
                 {
-                    Driver = GetWebDriver(testPlatform, browserType, testName);
+                    string testDetails = $"({testEnv}){tenantName} - {testName}";
+                    Driver = GetWebDriver(testPlatform, browserType, testDetails);
                     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");

@@ -13,25 +13,25 @@ namespace RKCIUIAutomation.Base
     {
         protected DriverOptions Options { get; set; }
 
-        public DriverOptions DetermineDriverOptions(TestPlatform platform, BrowserType browser, string testName)
+        public DriverOptions DetermineDriverOptions(TestPlatform platform, BrowserType browser, string testDetails)
         {
-            Options = DetermineBrowser(browser, testName);
+            Options = DetermineBrowser(browser, testDetails);
             Options.DeterminePlatform(platform);
             return Options;
         }
 
-        private DriverOptions DetermineBrowser(BrowserType browser, string testName)
+        private DriverOptions DetermineBrowser(BrowserType browser, string testDetails)
         {
             if (browser == BrowserType.Chrome)
             {
                 ChromeOptions chromeOptions = new ChromeOptions();
-                chromeOptions.AddAdditionalCaps(browser, testName);
+                chromeOptions.AddAdditionalCaps(browser, testDetails);
                 Options = chromeOptions;
             }
             else if (browser == BrowserType.Firefox)
             {
                 FirefoxOptions ffOptions = new FirefoxOptions();
-                ffOptions.AddAdditionalCaps(browser, testName);
+                ffOptions.AddAdditionalCaps(browser, testDetails);
                 Options = ffOptions;
             }
             else if (browser == BrowserType.MicrosoftEdge || browser == BrowserType.Safari)
@@ -47,13 +47,13 @@ namespace RKCIUIAutomation.Base
                         break;
                 }
 
-                Options.AddAdditionalCaps(browser, testName);
+                Options.AddAdditionalCaps(browser, testDetails);
             }
             else
             {
                 log.Debug("Unrecognized browser type specified ...defaulting to Chrome");
                 ChromeOptions chromeOptions = new ChromeOptions();
-                chromeOptions.AddAdditionalCaps(browser, testName);
+                chromeOptions.AddAdditionalCaps(browser, testDetails);
                 Options = chromeOptions;
             }
             return Options;
@@ -103,27 +103,27 @@ namespace RKCIUIAutomation.Base
             return options;
         }
 
-        internal static void AddAdditionalCaps<T>(this T options, BrowserType browser, string testName)
+        internal static void AddAdditionalCaps<T>(this T options, BrowserType browser, string testDetails)
         {
             if (browser == BrowserType.Chrome)
             {
                 ChromeOptions chromeOptions = pageHelper.ConvertToType<ChromeOptions>(options);
                 chromeOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
-                chromeOptions.AddAdditionalCapability("zal:name", testName, true);
+                chromeOptions.AddAdditionalCapability("zal:name", testDetails, true);
                 chromeOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
             }
             else if (browser == BrowserType.Firefox)
             {
                 FirefoxOptions firefoxOptions = pageHelper.ConvertToType<FirefoxOptions>(options);
                 firefoxOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
-                firefoxOptions.AddAdditionalCapability("zal:name", testName, true);
+                firefoxOptions.AddAdditionalCapability("zal:name", testDetails, true);
                 firefoxOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
             }
             else
             {
                 DriverOptions _options = pageHelper.ConvertToType<DriverOptions>(options);
                 _options.AddAdditionalCapability("zal:tz", "America/Chicago");
-                _options.AddAdditionalCapability("zal:name", testName);
+                _options.AddAdditionalCapability("zal:name", testDetails);
                 _options.AddAdditionalCapability("zal:screenResolution", "1600x900");
             }
         }

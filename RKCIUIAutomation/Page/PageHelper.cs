@@ -7,6 +7,12 @@ namespace RKCIUIAutomation.Page
 {
     public class PageHelper : BaseClass
     {
+        public static string GetMaxShortDate() => DateTime.MaxValue.Date.ToShortDateString();
+
+        public static string GetShortDate() => DateTime.Now.ToShortDateString();
+
+        public static string GetShortTime() => DateTime.Now.ToShortTimeString();
+
         public OutType ConvertToType<OutType>(object objToConvert)
         {
             try
@@ -68,6 +74,8 @@ namespace RKCIUIAutomation.Page
 
         private string SetTextInputFieldByLocator(Enum inputEnum) => $"//input[@id='{inputEnum.GetString()}']";
 
+        private string SetTextAreaFieldByLocator(Enum textAreaEnum) => $"//textarea[@id='{textAreaEnum.GetString()}']";
+
         private string SetButtonXpath(string buttonName) => $"//a[text()='{buttonName}']";
 
         private string SetInputButtonXpath(string buttonName) => $"//input[@value='{buttonName}']";
@@ -89,6 +97,8 @@ namespace RKCIUIAutomation.Page
         public By GetDDListItemsByLocator<T>(string ddListID, T itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
 
         public By GetTextInputFieldByLocator(Enum inputEnum) => By.XPath(SetTextInputFieldByLocator(inputEnum));
+
+        public By GetTextAreaFieldByLocator(Enum textAreaEnum) => By.XPath(SetTextAreaFieldByLocator(textAreaEnum));
 
         public By GetButtonByLocator(string buttonName) => By.XPath(SetButtonXpath(buttonName));
 

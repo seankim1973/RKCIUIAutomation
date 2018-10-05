@@ -72,7 +72,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             [StringValue("Number")] Number,
             [StringValue("Title")] Title,
-            [StringValue("Deadline")] Deadline,
             [StringValue("DocumentId")] Action
         }
 
@@ -125,13 +124,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         void EnterNoComment();
 
-        //void ForwardComment();
-
         void EnterResponseCommentAndAgreeResponseCode();
 
         void EnterResponseCommentAndDisagreeResponseCode();
 
-        void FilterTableByValue(ColumnName columnName = ColumnName.Number, string filterByValue = "");
+        void FilterDocNumber(string filterByValue = "");
 
         void ClickBtnJs_SaveForward();
 
@@ -164,6 +161,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void SelectDisagreeResolutionCode(int commentTabNumber = 1);
 
         void SelectDisagreeResponseCode(int commentTabNumber = 1);
+
+        void SelectDDL_ClosingStamp(int commentTabNumber = 1);
     }
 
     #endregion Workflow Interface class
@@ -240,8 +239,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         private By SaveOnlyBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSave_')]");
         private By SaveForwardBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSaveForward_')]");
         private By BackToListBtn_ByLocator => By.XPath("//button[text()='Back To List']");
-        //private By SaveOnlyBtnComment1_ByLocator => By.Id("btnSave_0_");
-        //private By SaveForwardBtnComment1_ByLocator => By.Id("btnSaveForward_0_");
 
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(UploadNewDesignDoc_ByLocator);
 
@@ -267,7 +264,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ScrollToElement(SaveForwardBtn_ByLocator);
             ClickElement(SaveForwardBtn_ByLocator);
         }
-        
+
         public virtual void ClickBtnJs_SaveForward()
         {
             JsClickElement(SaveForwardBtn_ByLocator);
@@ -297,7 +294,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void SelectDisagreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
 
-        public void SelectDDL_ClosingStamp(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
+        public virtual void SelectDDL_ClosingStamp(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
 
         public void SelectCommentType(int commentTypeTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.CommentType, commentTypeTabNumber), 1);
 
@@ -314,14 +311,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             docNumberKey = $"{docKey}_DsgnDocNumb";
             CreateVar(docTitleKey, docTitleKey);
             CreateVar(docNumberKey, guid);
-            SetDesignDocTitle();
-            SetDesignDocNumber();
+            designDocTitle = GetVar(docTitleKey).ToString();
+            designDocNumber = GetVar(docNumberKey).ToString();
             Console.WriteLine($"#####Title: {designDocTitle}\nNumber: {designDocNumber}");
         }
-
-        private void SetDesignDocTitle() => designDocTitle = GetVar(docTitleKey).ToString();
-
-        private void SetDesignDocNumber() => designDocNumber = GetVar(docNumberKey).ToString();
 
         public void EnterDesignDocTitleAndNumber()
         {
@@ -336,25 +329,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// </summary>
         /// <param name="columnName"></param>
         /// <param name="filterByValue"></param>
-        public virtual void FilterTableByValue(ColumnName columnName = ColumnName.Number, string filterByValue = "")
+        public virtual void FilterDocNumber(string filterByValue = "")
         {
-            filterByValue = designDocNumber;
-            Console.WriteLine($"#### FilterValue: {filterByValue}");
-            WaitForPageReady();
-            FilterColumn(columnName, filterByValue);
+            designDocNumber = !string.IsNullOrWhiteSpace(filterByValue) ? filterByValue : designDocNumber;
+            FilterTableColumnByValue(ColumnName.Number, filterByValue = designDocNumber);
         }
-
-        //internal By commentInput = By.Id("Comment_Text_0_");
-        //internal By commentResponseInput = By.Id("Comment_Response_0_");
-        //internal By commentResponseInput_byTabNumber(int commentTabNumber = 2) => By.Id($"Comment_Response_{commentTabNumber -1}_");
-        //internal By commentResolutionInput = By.Id("Comment_ResolutionMeetingDecision_0_");
-        //internal By commentClosingInput = By.Id("Comment_ClosingComment_0_");
 
         public virtual void EnterRegularCommentAndDrawingPageNo()
         {
             //login as commenting user (SG- IQFuser, DoTuser | SH249-- IQFUser | Garenet and GLX-- DOTUser)
             SelectRegularCommentReviewType();
-            //SelectRegularCommentReviewType();
             EnterComment(CommentType.CommentInput);
             EnterText(By.Id("Comment_DrawingPageNumber_0_"), "Draw123");
             ClickBtn_SaveOnly();
@@ -367,14 +351,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             ClickBtn_SaveOnly();
         }
-
-        //public virtual void ForwardComment()
-        //{
-        //    //login as user to forward the comment ( SG-- IQFadmin and DOTAdmin both | SH249 -- IQFAdmin/IQFRecordsMgr | Garnet and GLX-- DOTadmin)
-        //    //find the record you want to edit
-        //    //wait for loading the comments and make any changes if required
-        //    ClickBtn_SaveForward();
-        //}
 
         public virtual void EnterResponseCommentAndAgreeResponseCode()
         {
@@ -429,7 +405,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterComment(CommentType.CommentClosingInput);
             SelectDDL_ClosingStamp();
             ClickBtn_SaveOnly();
-            // WaitForPageReady();
             ClickBtn_SaveForward();
         }
 
@@ -451,61 +426,28 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual bool VerifyUploadFileErrorMsgIsDisplayed() => VerifyRequiredFieldErrorMsg("At least one file must be added.");
 
-        private bool VerifyRecordIsShownInTab(TableTab tableTab, ColumnName column, string recordNameOrNumber)
+        public virtual bool VerifyItemStatusIsClosed()
         {
-            bool isDisplayed = false;
-
-            try
-            {
-                SelectTab(tableTab);
-                FilterTableByValue(column, recordNameOrNumber);
-                //SortColumnDescending(ColumnName.Action);
-                LogDebug($"Searching for record: {recordNameOrNumber}");
-
-                isDisplayed = ElementIsDisplayed(GetTableRowLocator(recordNameOrNumber)) ? true : isDisplayed;
-
-                if (isDisplayed)
-                {
-                    LogInfo($"Record ({recordNameOrNumber}) found under {tableTab.GetString()} tab.");
-                }
-                else
-                {
-                    LogDebug($"Unable to find record ({recordNameOrNumber}), under {tableTab.GetString()} tab.");
-                }
-            }
-            catch (Exception e)
-            {
-                LogError("Error occured in VerifyRecordIsShownInTab method", true, e);
-            }
-            
-            return isDisplayed;
+            SelectTab(TableTab.Closed);
+            return VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber);
         }
-
-        //internal bool VerifyRecordIsShownInTab_StdUser(TableTab tableTab)
-        //{
-        //    SelectTab(tableTab);
-        //    SortColumnDescending(ColumnName.Action);
-        //    return ElementIsDisplayed(GetTableRowLocator(designDocNumber));
-        //}
-
-        public virtual bool VerifyItemStatusIsClosed() => VerifyRecordIsShownInTab(TableTab.Closed, ColumnName.Number, designDocNumber);
-
-        private string CurrentUser => GetCurrentUser();
 
         public virtual void SelectTab(TableTab tableTab)
         {
+            WaitForPageReady();
+            string currentUser = GetCurrentUser();
             string tabName = string.Empty;
             string tabPrefix = "";
 
-            if (CurrentUser.Contains("IQF"))
+            if (currentUser.Contains("IQF"))
             {
                 tabPrefix = "IQF ";
             }
-            else if (CurrentUser.Contains("DEV"))
+            else if (currentUser.Contains("DEV"))
             {
                 tabPrefix = "DEV ";
             }
-            else if (CurrentUser.Contains("DOT"))
+            else if (currentUser.Contains("DOT"))
             {
                 tabPrefix = "DOT ";
             }
@@ -609,7 +551,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        //public override bool VerifyifClosed() => VerifyRecordIsShownInTab_StdUser(TableTab.Closed);
+        public override void SelectTab(TableTab tableTab) => ClickTab(tableTab);
+
         public override void EnterRegularCommentAndDrawingPageNo()
         {
             //login as commenting user (SG- IQFuser, DoTuser | SH249-- IQFUser | Garenet and GLX-- DOTUser)
@@ -631,6 +574,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             SelectDisagreeResolutionCode();
             ClickBtn_SaveOnly();
 
+            ClickBtn_SaveForward();
+        }
+
+        public override void EnterClosingCommentAndCode()
+        {
+            ClickTab_Requires_Closing();
+            FilterDocNumber();
+            ClickEnterBtnForRow();
+            WaitForPageReady();
+            EnterComment(CommentType.CommentClosingInput);
+            SelectDDL_ClosingStamp();
+            ClickBtn_SaveOnly();
+            // WaitForPageReady();
             ClickBtn_SaveForward();
         }
     }
