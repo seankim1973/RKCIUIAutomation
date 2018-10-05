@@ -331,8 +331,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// <param name="filterByValue"></param>
         public virtual void FilterDocNumber(string filterByValue = "")
         {
-            designDocNumber = !string.IsNullOrWhiteSpace(filterByValue) ? filterByValue : designDocNumber;
-            FilterTableColumnByValue(ColumnName.Number, filterByValue = designDocNumber);
+            designDocNumber = string.IsNullOrWhiteSpace(filterByValue) ? designDocNumber : filterByValue;
+            FilterTableColumnByValue(ColumnName.Number, designDocNumber);
         }
 
         public virtual void EnterRegularCommentAndDrawingPageNo()

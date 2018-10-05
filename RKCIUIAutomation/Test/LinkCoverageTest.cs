@@ -11,7 +11,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Project Configuration Menu only")]
-        public void NavigateToVerifyProjectConfigurationMenu() => LinkCoverageWF._NavigateToVerifyProjectConfigurationMenu();
+        public void NavigateToVerifyProjectConfigurationMenu() => WF_LinkCoverage._NavigateToVerifyProjectConfigurationMenu();
     }
 
     [TestFixture]
@@ -23,7 +23,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QA Lab Menu only")]
-        public void NavigateToVerifyQALabMenu() => LinkCoverageWF._NavigateToVerifyQALabMenu();
+        public void NavigateToVerifyQALabMenu() => WF_LinkCoverage._NavigateToVerifyQALabMenu();
     }
 
     [TestFixture]
@@ -34,7 +34,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QA Record Control Menu only")]
-        public void NavigateToVerifyQARecordControlMenu() => LinkCoverageWF._NavigateToVerifyQARecordControlMenu();
+        public void NavigateToVerifyQARecordControlMenu() => WF_LinkCoverage._NavigateToVerifyQARecordControlMenu();
     }
 
     [TestFixture]
@@ -46,7 +46,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for OV Menu only")]
-        public void NavigateToOVMenu() => LinkCoverageWF._NavigateToOVMenu();
+        public void NavigateToOVMenu() => WF_LinkCoverage._NavigateToOVMenu();
     }
 
     [TestFixture]
@@ -57,7 +57,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QA Engineer Menu only")]
-        public void NavigateToVerifyQAEngineerMenu() => LinkCoverageWF._NavigateToVerifyQAEngineerMenu();
+        public void NavigateToVerifyQAEngineerMenu() => WF_LinkCoverage._NavigateToVerifyQAEngineerMenu();
     }
 
     [TestFixture]
@@ -68,7 +68,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Reports & Notices Menu only")]
-        public void NavigateToReportsAndNoticesMenu() => LinkCoverageWF._NavigateToReportsAndNoticesMenu();
+        public void NavigateToReportsAndNoticesMenu() => WF_LinkCoverage._NavigateToReportsAndNoticesMenu();
     }
 
     [TestFixture]
@@ -79,7 +79,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for RM Center Menu only")]
-        public void NavigateToQASearchMenu() => LinkCoverageWF._NavigateToQASearchMenu();
+        public void NavigateToQASearchMenu() => WF_LinkCoverage._NavigateToQASearchMenu();
     }
 
     [TestFixture]
@@ -90,7 +90,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify QA Field Menu only")]
-        public void NavigateToQAFieldMenu() => LinkCoverageWF._NavigateToQAFieldMenu();
+        public void NavigateToQAFieldMenu() => WF_LinkCoverage._NavigateToQAFieldMenu();
     }
 
     [TestFixture]
@@ -101,7 +101,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Control Point Menu only")]
-        public void NavigateToControlPointMenu() => LinkCoverageWF._NavigateToControlPointMenu();
+        public void NavigateToControlPointMenu() => WF_LinkCoverage._NavigateToControlPointMenu();
     }
 
     [TestFixture]
@@ -112,7 +112,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Control Point Menu only")]
-        public void NavigateToOwnerMenu() => LinkCoverageWF._NavigateToOwnerMenu();
+        public void NavigateToOwnerMenu() => WF_LinkCoverage._NavigateToOwnerMenu();
     }
 
     [TestFixture]
@@ -123,7 +123,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Control Point Menu only")]
-        public void NavigateToMaterialMixCodeMenu() => LinkCoverageWF._NavigateToMaterialMixCodeMenu();
+        public void NavigateToMaterialMixCodeMenu() => WF_LinkCoverage._NavigateToMaterialMixCodeMenu();
     }
 
     [TestFixture]
@@ -134,7 +134,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for RM Center Menu only")]
-        public void NavigateToRMCenterMenu() => LinkCoverageWF._NavigateToRMCenterMenu();
+        public void NavigateToRMCenterMenu() => WF_LinkCoverage._NavigateToRMCenterMenu();
     }
 
     [TestFixture]
@@ -145,7 +145,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for RM Center Menu only")]
-        public void NavigateToRFIMenu() => LinkCoverageWF._NavigateToRFIMenu();
+        public void NavigateToRFIMenu() => WF_LinkCoverage._NavigateToRFIMenu();
     }
 
     [TestFixture]
@@ -157,7 +157,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QC Lab Menu only")]
-        public void NavigateToVerifyQCLabMenu() => LinkCoverageWF._NavigateToVerifyQCLabMenu();
+        public void NavigateToVerifyQCLabMenu() => WF_LinkCoverage._NavigateToVerifyQCLabMenu();
     }
 
     [TestFixture]
@@ -168,7 +168,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QC Record Control Menu only")]
-        public void NavigateToVerifyQCRecordControlMenu() => LinkCoverageWF._NavigateToVerifyQCRecordControlMenu();
+        public void NavigateToVerifyQCRecordControlMenu() => WF_LinkCoverage._NavigateToVerifyQCRecordControlMenu();
     }
 
     [TestFixture]
@@ -179,7 +179,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for QC Engineer Menu only")]
-        public void NavigateToVerifyQCEngineerMenu() => LinkCoverageWF._NavigateToVerifyQCEngineerMenu();
+        public void NavigateToVerifyQCEngineerMenu() => WF_LinkCoverage._NavigateToVerifyQCEngineerMenu();
     }
 
     [TestFixture]
@@ -190,6 +190,6 @@ namespace RKCIUIAutomation.Test.LinkCoverage
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title forQC Search Menu only")]
-        public void NavigateToQCSearchMenu() => LinkCoverageWF._NavigateToQCSearchMenu();
+        public void NavigateToQCSearchMenu() => WF_LinkCoverage._NavigateToQCSearchMenu();
     }
 }
