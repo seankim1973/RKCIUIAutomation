@@ -33,8 +33,26 @@ namespace RKCIUIAutomation.Test.NCR
         {
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
             LogoutToLoginPage();
-            WF_QaRcrdCtrl_GeneralNCR.ReviewNCRDocument(UserType.NCRMgr, ncrDescription);
-            
+            WF_QaRcrdCtrl_GeneralNCR.ReviewAndApproveNCRDocument(UserType.NCRMgr, ncrDescription);
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+
+        }
+    }
+
+    [TestFixture]
+    public class Verify_Disapprove_and_Close_of_NCR_document_by_NCR_Manager : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(TestCaseNumber, 2299482)]
+        [Property(Priority, "High")]
+        [Description("To validate the QC disapprove and close part of an NCR (Nonconformance Report).")]
+        public void QC_Review_of_NCR_document_by_NCR_Manager()
+        {
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralNCR.DisapproveCloseDocument(UserType.NCRMgr, ncrDescription);
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.All_NCRs, ncrDescription));
         }
     }
 
