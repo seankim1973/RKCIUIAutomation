@@ -98,6 +98,7 @@ namespace RKCIUIAutomation.Page
 
         internal IWebElement GetElement(By elementByLocator)
         {
+            WaitForPageReady();
             IWebElement elem = null;
             WaitForElement(elementByLocator);
 
@@ -116,6 +117,7 @@ namespace RKCIUIAutomation.Page
 
         private IList<IWebElement> GetElements(By elementByLocator)
         {
+            WaitForPageReady();
             IList<IWebElement> elements = null;
             WaitForElement(elementByLocator);
 

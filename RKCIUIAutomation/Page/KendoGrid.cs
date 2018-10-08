@@ -25,21 +25,29 @@ namespace RKCIUIAutomation.Page
             WaitForPageReady();
         }
 
+        private readonly By currenTabLocator = By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']");
+        private string GetCurrentTabName() => GetText(currenTabLocator);
+
         public void ClickTableTab(string tblTabName)
         {
             try
             {
-                string jsToBeExecuted = GetTabStripReference();
+                string currentTabName = GetCurrentTabName();
 
-                By locator = By.XPath("//ul[@class='k-reset k-tabstrip-items']/li/span[text()]");
-                int tabIndex = GetElementIndex(locator, tblTabName);
-                if (tabIndex >= 0)
+                if (currentTabName != tblTabName)
                 {
-                    string tabSelect = $"tab.select('{tabIndex.ToString()}');";
-                    jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
-                    ExecuteJsScript(jsToBeExecuted);
-                    LogInfo($"Clicked Table Tab - {tblTabName}");
-                    WaitForPageReady();
+                    string jsToBeExecuted = GetTabStripReference();
+
+                    By locator = By.XPath("//ul[@class='k-reset k-tabstrip-items']/li/span[text()]");
+                    int tabIndex = GetElementIndex(locator, tblTabName);
+                    if (tabIndex >= 0)
+                    {
+                        string tabSelect = $"tab.select('{tabIndex.ToString()}');";
+                        jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
+                        ExecuteJsScript(jsToBeExecuted);
+                        LogInfo($"Clicked Table Tab - {tblTabName}");
+                        WaitForPageReady();
+                    }
                 }
             }
             catch (Exception e)
