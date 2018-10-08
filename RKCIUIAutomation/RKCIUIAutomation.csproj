@@ -368,6 +368,7 @@
     <Compile Include="Page\PageObjects\LabFieldTests\TestDetails.cs" />
     <Compile Include="Page\Workflows\DesignDocumentWF.cs" />
     <Compile Include="Page\TableHelper.cs" />
+    <Compile Include="Page\Workflows\QaRcrdCtrl_GeneralNCR_WF.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -387,7 +388,8 @@
     <Compile Include="Test\TestUtils.cs" />
     <Compile Include="Test\UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Test\TestGeneralNCR.cs" />
+    <Compile Include="Test\QaRcrdCtrl_GeneralNCR_Test.cs" />
+    <Compile Include="Test\UnitTests\QaRcrdCtrl_GeneralNCR_UnitTest.cs" />
     <Compile Include="Tools\GridUtility.cs" />
     <Compile Include="Tools\HipTestApi.cs" />
     <Compile Include="Tools\HipTestData.cs" />

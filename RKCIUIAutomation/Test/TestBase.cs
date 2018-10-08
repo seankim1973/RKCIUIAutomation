@@ -27,12 +27,20 @@ namespace RKCIUIAutomation.Test
 
         public ISearch RMCenter_SearchPage => new Search().SetClass<ISearch>(Driver);
 
-        public ILinkCoverageWF LinkCoverageWF => new LinkCoverageWF().SetClass<ILinkCoverageWF>(Driver);
-
         public IDesignDocument DesignDocCommentReview => new DesignDocument().SetClass<IDesignDocument>(Driver);
 
-        public IDesignDocumentWF DesignDocCommentReviewWF => new DesignDocumentWF().SetClass<IDesignDocumentWF>(Driver);
-
         public IGeneralNCR QaRcrdCtrl_GeneralNCR => new GeneralNCR().SetClass<IGeneralNCR>(Driver);
+
+
+
+        #region Workflow SetClass method calls
+
+        public ILinkCoverageWF WF_LinkCoverage => new LinkCoverageWF().SetClass<ILinkCoverageWF>(Driver);
+
+        public IDesignDocumentWF WF_DesignDocCommentReview => new DesignDocumentWF().SetClass<IDesignDocumentWF>(Driver);
+
+        public IQaRcrdCtrl_GeneralNCR_WF WF_QaRcrdCtrl_GeneralNCR => new QaRcrdCtrl_GeneralNCR_WF().SetClass<IQaRcrdCtrl_GeneralNCR_WF>(Driver);
+
+        #endregion End of Workflow SetClass method calls
     }
 }

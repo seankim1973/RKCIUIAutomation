@@ -43,7 +43,7 @@ namespace RKCIUIAutomation.Test.Smoke
         [Description("Verify Comment Review Regular Comment")]
         public void CommentReviewRegularComment()
         {
-            DesignDocCommentReviewWF.TCWF_CommentReviewRegularComment();
+            WF_DesignDocCommentReview.TCWF_CommentReviewRegularComment();
         }
     }
 
@@ -57,7 +57,7 @@ namespace RKCIUIAutomation.Test.Smoke
         [Description("Verify Comment Review Regular Comment")]
         public void CommentReviewNoComment()
         {
-            DesignDocCommentReviewWF.TCWF_CommentReviewNoComment();
+            WF_DesignDocCommentReview.TCWF_CommentReviewNoComment();
         }
     }
 
