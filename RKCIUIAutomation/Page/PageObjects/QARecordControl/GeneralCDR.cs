@@ -1,6 +1,9 @@
-﻿using OpenQA.Selenium;
+﻿using MiniGuids;
+using NUnit.Framework;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
+using System.Collections.Generic;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralCDR;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
@@ -34,7 +37,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("CQCM")] CQCM,
             [StringValue("CQCMDate")] CQCMDate,
             [StringValue("CQManager")] CQManager,
-            [StringValue("CQApprovedDate")] CQApprovedDate
+            [StringValue("CQApprovedDate")] CQApprovedDate,
+            [StringValue("Originator")] Originator,
+           
         }
 
         public enum TableTab
@@ -55,7 +60,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("RevisedDate")] SentDate,
             [StringValue("Description")] Description,
             [StringValue("LockedBy")] LockBy,
-            [StringValue("LockedDate")] LockDate
+            [StringValue("LockedDate")] LockDate,
+            [StringValue("Action")] Action
         }
 
         public enum SubmitButtons
@@ -97,9 +103,25 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void ClickTab_To_Be_Closed();
 
-        void PopulateRequiredFieldsAndSave();
+        void FilterCDRNo(string CDRNo = "");
 
-        bool VerifyCDRDocInReviseTab();
+        void SortTable_Descending();
+
+        void SortTable_Ascending();
+
+        void SortTable_ToDefault();
+
+        void SelectDDL_Originator(int selectionIndexOrName = 1);
+
+        void EnterIssuedDate(string shortDate = "1/1/9999");
+
+        void PopulateRequiredFieldsAndSaveForward();
+
+        bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRNo = "");
+
+        
+
+        IList<string> GetRequiredFieldIDs();
     }
 
     #endregion workflow interface class
@@ -154,10 +176,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             return instance;
         }
+        [ThreadStatic]
+        private static string cdrNo;
 
         private readonly By newBtn_ByLocator = By.XPath("//div[@id='CDRGrid_Revise']/div/a[contains(@class, 'k-button')]");
-        private readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
-
+       
         private By GetSubmitBtnLocator(SubmitButtons buttonName)
         {
             string buttonValue = buttonName.GetString();
@@ -187,20 +210,88 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickTab_To_Be_Closed() => ClickTab(TableTab.To_Be_Closed);
 
-       
+        public virtual void SortTable_Descending() => SortColumnDescending(ColumnName.Action);
 
+        public virtual void SortTable_Ascending() => SortColumnAscending(ColumnName.Action);
 
+        public virtual void SortTable_ToDefault() => SortColumnToDefault(ColumnName.Action);
 
+        public virtual void SelectDDL_Originator(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
 
-        public void PopulateRequiredFieldsAndSave()
+        public virtual void EnterIssuedDate(string shortDate = "1/1/9999")
+           => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
+
+        private bool VerifyReqFieldsErrorLabelsForNewDoc()
         {
-            throw new NotImplementedException(); //TODO
+            try
+            {
+                bool errorLabelsDisplayed = false;
+
+                IList<IWebElement> ReqFieldErrorLabelElements = Driver.FindElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')]"));
+
+                IList<string> RequiredFieldIDs = GetRequiredFieldIDs();
+
+                IList<bool> results = new List<bool>();
+
+                foreach (IWebElement elem in ReqFieldErrorLabelElements)
+                {
+                    if (elem.Displayed && elem.Enabled)
+                    {
+                        var id = elem.GetAttribute("data-valmsg-for");
+                        Console.WriteLine(id);
+                        results.Add(RequiredFieldIDs.Contains(id));
+                    }
+                }
+
+                Console.WriteLine($"REQUIRED FIELD COUNT: {results.Count}");
+                errorLabelsDisplayed = results.Contains(false) ? false : true;
+
+                return errorLabelsDisplayed;
+            }
+            catch (Exception e)
+            {
+                LogError(e.Message);
+                return false;
+            }
         }
 
-        public bool VerifyCDRDocInReviseTab()
+
+        public void PopulateRequiredFieldsAndSaveForward()
         {
-            return true; //TODO - need a way to get value unique to newly created CDR
+            ClickBtn_SaveForward();
+            Assert.True(VerifyReqFieldsErrorLabelsForNewDoc());
+            EnterIssuedDate();
+            SelectDDL_Originator();
+          
+            
+            ClickBtn_SaveForward();
+            WaitForPageReady();
         }
+        public virtual IList<string> GetRequiredFieldIDs()
+        {
+            List<string> RequiredFieldIDs = new List<string>
+            {
+                InputFields.IssuedDate.GetString(),
+                InputFields.Originator.GetString(),
+              
+            };
+
+            return RequiredFieldIDs;
+        }
+
+        public virtual bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRNo = "")
+        {
+            ClickTab(tableTab);
+            CDRNo = string.IsNullOrWhiteSpace(CDRNo) ? cdrNo : CDRNo;
+            return VerifyRecordIsDisplayed(ColumnName.Description, cdrNo);
+        }
+
+        public virtual void FilterCDRNo(string cdrno = "")
+        {
+            cdrno = !string.IsNullOrWhiteSpace(cdrno) ? cdrno : cdrNo;
+            FilterTableColumnByValue(ColumnName.CdrNo, cdrNo);
+        }
+        
 
        
     }
