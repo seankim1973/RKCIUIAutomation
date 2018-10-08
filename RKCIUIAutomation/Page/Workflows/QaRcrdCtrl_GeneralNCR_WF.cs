@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -24,7 +25,9 @@ namespace RKCIUIAutomation.Page.Workflows
     {
         string CreateAndSaveForwardNCRDocument(UserType user);
 
-        void ReviewNCRDocument(UserType user, string ncrDescription);
+        void ReviewAndApproveNCRDocument(UserType user, string ncrDescription);
+
+        void DisapproveCloseDocument(UserType user, string ncrDescription);
     }
 
     public abstract class QaRcrdCtrl_GeneralNCR_WF_Impl : TestBase, IQaRcrdCtrl_GeneralNCR_WF
@@ -85,11 +88,19 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.QARecordControl_General_NCR();
             Assert.True(VerifyPageTitle("List of NCR Reports"));
             QaRcrdCtrl_GeneralNCR.ClickBtn_New();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc());
             QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward();
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
 
-        public virtual void ReviewNCRDocument(UserType user, string ncrDescription)
+        /// <summary>
+        /// Verifies a document is shown in 'Revise' tab, after clicking Revise button for a document in the 'Review' tab.
+        /// <para>Verifies a document is shown in 'To Be Closed' tab, after clicking Save & Fwd button for a document in the 'Review' tab.</para>
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="ncrDescription"></param>
+        public virtual void ReviewAndApproveNCRDocument(UserType user, string ncrDescription)
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_NCR();
@@ -97,8 +108,30 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickTab_CQM_Review();
             QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
             TableHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.EnterOtherLocation(); //makes change in document by entering text into Other Location field
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
+            QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
+            TableHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level1();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
+
+            //from Review tab, edit document and click Save & Fwd
+            //verify document is under To Be Closed tab
+
             //Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(GeneralNCR.TableTab.CQM_Review, ncrDescription));
 
+        }
+
+        public virtual void DisapproveCloseDocument(UserType user, string ncrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_NCR();
+            Assert.True(VerifyPageTitle("List of NCR Reports"));
+            QaRcrdCtrl_GeneralNCR.ClickTab_CQM_Review();
+            QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
+            TableHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_DisapproveClose();
         }
     }
 
