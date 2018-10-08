@@ -119,7 +119,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRNo = "");
 
-        
+        string GetCDRDocNo();
 
         IList<string> GetRequiredFieldIDs();
     }
@@ -179,6 +179,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         [ThreadStatic]
         private static string cdrNo;
 
+        [ThreadStatic]
+        private static string cdrNoKey;
+
         private readonly By newBtn_ByLocator = By.XPath("//div[@id='CDRGrid_Revise']/div/a[contains(@class, 'k-button')]");
        
         private By GetSubmitBtnLocator(SubmitButtons buttonName)
@@ -220,6 +223,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void EnterIssuedDate(string shortDate = "1/1/9999")
            => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
+
+        public virtual string GetCDRDocNo() => GetVar(cdrNoKey);
 
         private bool VerifyReqFieldsErrorLabelsForNewDoc()
         {
