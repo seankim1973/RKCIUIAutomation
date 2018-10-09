@@ -30,51 +30,51 @@ namespace RKCIUIAutomation.Page.Workflows
     {
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
 
-        private IQaRcrdCtrl_GeneralNCR_WF SetPageClassBasedOnTenant(IWebDriver driver)
+        private IQaRcrdCtrl_GeneralCDR_WF SetPageClassBasedOnTenant(IWebDriver driver)
         {
-            IQaRcrdCtrl_GeneralNCR_WF instance = new QaRcrdCtrl_GeneralNCR_WF(driver);
+            IQaRcrdCtrl_GeneralCDR_WF instance = new QaRcrdCtrl_GeneralCDR_WF(driver);
 
             if (tenantName == TenantName.SGWay)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralNCR_WF_SGWay instance ###### ");
-                instance = new QaRcrdCtrl_GeneralNCR_WF_SGWay(driver);
+                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_SGWay instance ###### ");
+                instance = new QaRcrdCtrl_GeneralCDR_WF_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralNCR_WF_SH249 instance ###### ");
-                instance = new QaRcrdCtrl_GeneralNCR_WF_SH249(driver);
+                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_SH249 instance ###### ");
+                instance = new QaRcrdCtrl_GeneralCDR_WF_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralNCR_WF_Garnet instance ###### ");
-                instance = new QaRcrdCtrl_GeneralNCR_WF_Garnet(driver);
+                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_Garnet instance ###### ");
+                instance = new QaRcrdCtrl_GeneralCDR_WF_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralNCR_WF_GLX instance ###### ");
-                instance = new QaRcrdCtrl_GeneralNCR_WF_GLX(driver);
+                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_GLX instance ###### ");
+                instance = new QaRcrdCtrl_GeneralCDR_WF_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralNCR_WF_I15South instance ###### ");
-                instance = new QaRcrdCtrl_GeneralNCR_WF_I15South(driver);
+                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_I15South instance ###### ");
+                instance = new QaRcrdCtrl_GeneralCDR_WF_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralNCR_WF_I15Tech instance ###### ");
-                instance = new QaRcrdCtrl_GeneralNCR_WF_I15Tech(driver);
+                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_I15Tech instance ###### ");
+                instance = new QaRcrdCtrl_GeneralCDR_WF_I15Tech(driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralNCR_WF_LAX instance ###### ");
-                instance = new QaRcrdCtrl_GeneralNCR_WF_LAX(driver);
+                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_LAX instance ###### ");
+                instance = new QaRcrdCtrl_GeneralCDR_WF_LAX(driver);
             }
             return instance;
         }
 
         /// <summary>
         /// Verifies Required field error labels in a new document then populates required fields and clicks Save & Forward button
-        /// <para>Returns unique NCR document description string value</para>
+        /// <para>Returns unique CDR document description string value</para>
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -85,20 +85,65 @@ namespace RKCIUIAutomation.Page.Workflows
             Assert.True(VerifyPageTitle("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickBtn_New();
             QaRcrdCtrl_GeneralCDR.PopulateRequiredFieldsAndSaveForward();
-            return QaRcrdCtrl_GeneralCDR.GetCDRDocNo();
+            return QaRcrdCtrl_GeneralCDR.GetCDRDocDescription();
         }
 
-        public virtual void ReviewCDRDocument(UserType user, string cdrNo)
+        public virtual void ReviewCDRDocument(UserType user, string cdrDescription)
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
             Assert.True(VerifyPageTitle("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
-            QaRcrdCtrl_GeneralCDR.FilterCDRNo(cdrNo);
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
-            //Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(GeneralNCR.TableTab.CQM_Review, ncrDescription));
+            //Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(GeneralCDR.TableTab.CQM_Review, ncrDescription));
 
         }
     }
 
- }
+    internal class QaRcrdCtrl_GeneralCDR_WF_GLX : QaRcrdCtrl_GeneralCDR_WF
+    {
+        public QaRcrdCtrl_GeneralCDR_WF_GLX(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+
+    internal class QaRcrdCtrl_GeneralCDR_WF_Garnet : QaRcrdCtrl_GeneralCDR_WF
+    {
+        public QaRcrdCtrl_GeneralCDR_WF_Garnet(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+
+    internal class QaRcrdCtrl_GeneralCDR_WF_SH249 : QaRcrdCtrl_GeneralCDR_WF
+    {
+        public QaRcrdCtrl_GeneralCDR_WF_SH249(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+    internal class QaRcrdCtrl_GeneralCDR_WF_SGWay : QaRcrdCtrl_GeneralCDR_WF
+    {
+        public QaRcrdCtrl_GeneralCDR_WF_SGWay(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+    internal class QaRcrdCtrl_GeneralCDR_WF_I15Tech : QaRcrdCtrl_GeneralCDR_WF
+    {
+        public QaRcrdCtrl_GeneralCDR_WF_I15Tech(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+    internal class QaRcrdCtrl_GeneralCDR_WF_I15South : QaRcrdCtrl_GeneralCDR_WF
+    {
+        public QaRcrdCtrl_GeneralCDR_WF_I15South(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+    internal class QaRcrdCtrl_GeneralCDR_WF_LAX : QaRcrdCtrl_GeneralCDR_WF
+    {
+        public QaRcrdCtrl_GeneralCDR_WF_LAX(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+
+}
