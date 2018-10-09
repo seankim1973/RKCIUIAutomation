@@ -40,8 +40,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("RepairPlan")] RepairPlan,
             [StringValue("RecordEngineer")] Engineer_of_Record,
             [StringValue("RecordEngineerApprovedDate")] RecordEngineerApprovedDate,
-            [StringValue("Owner")] DOT_Review,
+            [StringValue("RecordEngineerSignature")] RecordEngineer_SignBtn,
+            [StringValue("Owner")] Owner_Review,
             [StringValue("OwnerDate")] OwnerDate,
+            [StringValue("OwnerSignature")] Owner_SignBtn,
             [StringValue("CompletionDate")] CompletionDate,
             [StringValue("CIQM")] CIQM,
             [StringValue("CIQMDate")] CIQMDate,
@@ -101,9 +103,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("RecordEngineerApproval_")] Engineer_Approval_NA,
             [StringValue("RecordEngineerApproval_True")] Engineer_Approval_Yes,
             [StringValue("RecordEngineerApproval_False")] Engineer_Approval_No,
-            [StringValue("OwnerApproval_")] DOT_Approval_NA,
-            [StringValue("OwnerApproval_True")] DOT_Approval_Yes,
-            [StringValue("OwnerApproval_False")] DOT_Approval_No,
+            [StringValue("OwnerApproval_")] Owner_Approval_NA,
+            [StringValue("OwnerApproval_True")] Owner_Approval_Yes,
+            [StringValue("OwnerApproval_False")] Owner_Approval_No,
             [StringValue("AsBuiltRequired")] As_Built_Required,
             [StringValue("ActionCorrect")] RcmndDisposition_Correct_Rework,
             [StringValue("ActionReplace")] RcmndDisposition_Replace,
@@ -118,6 +120,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     public interface IGeneralNCR
     {
+        void ClickBtn_Sign_RecordEngineer();
+
+        void ClickBtn_Sign_Owner();
+
+        void ClickBtn_SignaturePanel_OK();
+
+        void ClickBtn_SignaturePanel_Clear();
+
         void ClickBtn_New();
 
         void ClickBtn_ExportToExcel();
@@ -180,11 +190,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectRdoBtn_TypeOfNCR_Level3();
 
-        void SelectRdoBtn_DOTApproval_Yes();
+        void SelectRdoBtn_OwnerApproval_Yes();
 
-        void SelectRdoBtn_DOTApproval_No();
+        void SelectRdoBtn_OwnerApproval_No();
 
-        void SelectRdoBtn_DOTApproval_NA();
+        void SelectRdoBtn_OwnerApproval_NA();
 
         void SelectRdoBtn_EngOfRecordApproval_Yes();
 
@@ -232,11 +242,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void EnterDescription(string description);
 
-        void EnterOtherLocation(string otherLocation = "");
-
         void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "");
 
         void EnterRepairPlan(string repairPlanText = "");
+
+        void EnterEngineerOfRecord(string engOfRecordText = "");
+
+        void EnterRecordEngineerApprovedDate();
+
+        void EnterOwnerReview(string ownerReviewText = "");
+
+        void EnterOwnerApprovedDate();
 
         void PopulateRequiredFieldsAndSaveForward();
 
@@ -342,14 +358,26 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_Approve()
         {
-            AcceptAlertMessage();
-            JsClickElement(GetSubmitBtnLocator(SubmitButtons.Approve));
+            try
+            {
+                JsClickElement(GetSubmitBtnLocator(SubmitButtons.Approve));
+            }
+            catch (UnhandledAlertException f)
+            {
+                ConfirmActionDialog(f);
+            }
         }
 
         public virtual void ClickBtn_DisapproveClose()
         {
-            AcceptAlertMessage();
-            JsClickElement(GetSubmitBtnLocator(SubmitButtons.DisapproveClose));
+            try
+            {
+                JsClickElement(GetSubmitBtnLocator(SubmitButtons.DisapproveClose));
+            }
+            catch (UnhandledAlertException f)
+            {
+                ConfirmActionDialog(f);
+            }
         }
 
         public virtual void ClickBtn_SaveOnly() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveOnly));
@@ -359,6 +387,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
 
         public virtual void ClickBtn_ExportToExcel() => JsClickElement(exportToExcel_ByLocator);
+
+        private void ClickBtn_Sign(InputFields signBtnType) => ClickElement(By.Id(signBtnType.GetString()));
+
+        public virtual void ClickBtn_Sign_RecordEngineer() => ClickBtn_Sign(InputFields.RecordEngineer_SignBtn);
+
+        public virtual void ClickBtn_Sign_Owner() => ClickBtn_Sign(InputFields.Owner_SignBtn);
+
+        private By SignaturePanelBtnXPathLocator(string btnName) => By.XPath($"//div[@id='ncrSignaturePopup']//a[text()='{btnName}']");
+
+        public virtual void ClickBtn_SignaturePanel_OK() => JsClickElement(SignaturePanelBtnXPathLocator("OK"));
+
+        public virtual void ClickBtn_SignaturePanel_Clear() => JsClickElement(SignaturePanelBtnXPathLocator("Clear"));
 
         public virtual void ClickTab_All_NCRs() => ClickTab(TableTab.All_NCRs);
 
@@ -398,7 +438,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SortTable_ToDefault() => SortColumnToDefault(ColumnName.Action);
 
-        private void SelectRadioBtnOrChkbox(Enum radioBtn) => ClickElement(By.Id(radioBtn.GetString()));
+        private void SelectRadioBtnOrChkbox(Enum radioBtn)
+        {
+            By locator = By.Id(radioBtn.GetString());
+            ScrollToElement(locator);
+            JsClickElement(locator);
+        }
 
         public virtual void SelectRdoBtn_TypeOfNCR_Level1() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level1);
 
@@ -412,11 +457,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectRdoBtn_EngOfRecordApproval_NA() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_NA);
 
-        public virtual void SelectRdoBtn_DOTApproval_Yes() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.DOT_Approval_Yes);
+        public virtual void SelectRdoBtn_OwnerApproval_Yes() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_Yes);
 
-        public virtual void SelectRdoBtn_DOTApproval_No() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.DOT_Approval_No);
+        public virtual void SelectRdoBtn_OwnerApproval_No() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_No);
 
-        public virtual void SelectRdoBtn_DOTApproval_NA() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.DOT_Approval_NA);
+        public virtual void SelectRdoBtn_OwnerApproval_NA() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_NA);
 
         public virtual void SelectChkbox_AsBuiltRequired() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.As_Built_Required);
 
@@ -462,6 +507,20 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterResponsibleManager(string mgrName)
             => EnterText(GetTextInputFieldByLocator(InputFields.Manager), mgrName);
 
+        public virtual void EnterEngineerOfRecord(string engOfRecordText = "")
+            => EnterText(GetTextInputFieldByLocator(InputFields.Engineer_of_Record),
+                engOfRecordText = (string.IsNullOrWhiteSpace(engOfRecordText) ? "RKCIUIAutomation RecordEngineer" : engOfRecordText));
+
+        public virtual void EnterRecordEngineerApprovedDate()
+            => EnterText(GetTextInputFieldByLocator(InputFields.RecordEngineerApprovedDate), GetShortDate());
+
+        public virtual void EnterOwnerReview(string ownerReviewText = "")
+            => EnterText(GetTextInputFieldByLocator(InputFields.Engineer_of_Record),
+                ownerReviewText = (string.IsNullOrWhiteSpace(ownerReviewText) ? "RKCIUIAutomation Owner" : ownerReviewText));
+
+        public virtual void EnterOwnerApprovedDate()
+            => EnterText(GetTextInputFieldByLocator(InputFields.OwnerDate), GetShortDate());
+
         public virtual void EnterDescription(string description = "")
         {
             CreateNcrDescription();
@@ -469,10 +528,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ScrollToElement(By.Id($"{InputFields.Description_of_Nonconformance.GetString()}"));
             EnterText(GetTextAreaFieldByLocator(InputFields.Description_of_Nonconformance), description);
         }
-
-        public virtual void EnterOtherLocation(string otherLocation = "")
-            => EnterText(GetTextInputFieldByLocator(InputFields.OtherLocation),
-                otherLocation = (string.IsNullOrWhiteSpace(otherLocation) ? "Other Location" : otherLocation));
 
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
             => EnterText(GetTextInputFieldByLocator(InputFields.CorrectiveAction),

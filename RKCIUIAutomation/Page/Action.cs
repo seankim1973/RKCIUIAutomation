@@ -15,6 +15,12 @@ namespace RKCIUIAutomation.Page
 {
     public class Action : PageHelper
     {
+        public Action()
+        {
+        }
+
+        public Action(IWebDriver driver) => this.Driver = driver;
+
         private enum JSAction
         {
             [StringValue("arguments[0].click();")] Click,
@@ -300,6 +306,28 @@ namespace RKCIUIAutomation.Page
             }
 
             WaitForPageReady();
+        }
+
+        public void ConfirmActionDialog(UnhandledAlertException unhandledAlert, bool confirmYes = true)
+        {
+            try
+            {
+                IAlert alert = Driver.SwitchTo().Alert();
+                if (confirmYes)
+                {
+                    alert.Accept();
+                    LogInfo($"Confirmed Confirmation Dialog: {unhandledAlert.AlertText}");
+                }
+                else
+                {
+                    alert.Dismiss();
+                    LogInfo($"Dismissed Confirmation Dialog: {unhandledAlert.AlertText}");
+                }
+            }
+            catch (Exception e)
+            {
+                LogError(e.StackTrace.ToString());
+            }
         }
 
         public void AcceptAlertMessage()
