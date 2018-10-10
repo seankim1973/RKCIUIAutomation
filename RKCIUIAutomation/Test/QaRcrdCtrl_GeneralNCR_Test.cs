@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
+using System;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 
 namespace RKCIUIAutomation.Test.NCR
@@ -30,11 +31,44 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To validate the QC review part of an NCR (Nonconformance Report).")]
         public void QC_Review_of_NCR_document_by_NCR_Manager()
         {
-            //string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
-            //LogoutToLoginPage();
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
+            LogoutToLoginPage();
 
-            string ncrDescription = "vGYIfxuESzquJMzzfLYKxDAwEf";
-            WF_QaRcrdCtrl_GeneralNCR.ReviewAndApproveNCRDocument(UserType.NCRMgr, ncrDescription);
+            //string ncrDescription = "vGYIfxuESzquJMzzfLYKxDAwEf";
+            WF_QaRcrdCtrl_GeneralNCR.ReviewAndApproveNCR_ReturnToConformance(UserType.NCRMgr, ncrDescription);
+        }
+    }
+
+    [TestFixture]
+    public class Verify_Close_NCR_document_ConcessionRequest_ReturnToConformance : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(TestCaseNumber, 12345)]
+        [Property(Priority, "High")]
+        [Description("To validate workflow for closing NCR (Nonconformance Report), using Concession Request: Return To Conformance")]
+        public void Close_NCR_document_ConcessionRequest_ReturnToConformance()
+        {
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralNCR.ReviewAndApproveNCR_ReturnToConformance(UserType.NCRMgr, ncrDescription);
+        }
+    }
+
+
+    [TestFixture]
+    public class Verify_Close_NCR_document_ConcessionRequest_ConcessionDeviation : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(TestCaseNumber, 12345)]
+        [Property(Priority, "High")]
+        [Description("To validate workflow for closing NCR (Nonconformance Report), using Concession Request: Concession Deviation")]
+        public void Close_NCR_document_ConcessionRequest_ConcessionDeviation()
+        {
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralNCR.ReviewAndApproveNCR_ConcessionDeviation(UserType.NCRMgr, ncrDescription);
         }
     }
 
