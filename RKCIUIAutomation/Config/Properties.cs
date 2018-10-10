@@ -51,7 +51,9 @@
         DEVUser,
         DEVAdmin,
         NCRTech,
-        NCRMgr
+        NCRMgr,
+        CDRTech,
+        CDRMgr
     }
 
     public enum Reporter

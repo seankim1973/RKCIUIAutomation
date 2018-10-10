@@ -1,12 +1,8 @@
-﻿using RKCIUIAutomation.Config;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using OpenQA.Selenium;
+using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralCDR;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -21,9 +17,25 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public interface IQaRcrdCtrl_GeneralCDR_WF
     {
+        /// <summary>
+        /// Verifies Required field error labels in a new document then populates required fields and clicks Save & Forward button
+        /// <para>Returns unique CDR document description string value</para>
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         string CreateAndSaveForwardCDRDocument(UserType user);
 
         void ReviewCDRDocument(UserType user, string cdrNo);
+
+        /// <summary>
+        /// Verifies a document is shown in 'Revise' tab, after clicking Revise button for a document in the 'Review' tab.
+        /// <para>Verifies a document is shown in 'To Be Closed' tab, after clicking Save & Fwd button for a document in the 'Review' tab.</para>
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cdrDescription"></param>
+        void ReviewAndApproveCDRDocument(UserType user, string cdrDescription);
+
+        void CloseDocument(UserType user, string cdrDescription);
     }
 
     public abstract class QaRcrdCtrl_GeneralCDR_WF_Impl : TestBase, IQaRcrdCtrl_GeneralCDR_WF
@@ -99,9 +111,37 @@ namespace RKCIUIAutomation.Page.Workflows
             //Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(GeneralCDR.TableTab.CQM_Review, ncrDescription));
 
         }
+        public virtual void ReviewAndApproveCDRDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            TableHelper.ClickEditBtnForRow();
+
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+           
+           
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            TableHelper.ClickEditBtnForRow();
+        }
+
+        public virtual void CloseDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            TableHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+        }
     }
 
-    internal class QaRcrdCtrl_GeneralCDR_WF_GLX : QaRcrdCtrl_GeneralCDR_WF
+
+
+internal class QaRcrdCtrl_GeneralCDR_WF_GLX : QaRcrdCtrl_GeneralCDR_WF
     {
         public QaRcrdCtrl_GeneralCDR_WF_GLX(IWebDriver driver) : base(driver)
         {

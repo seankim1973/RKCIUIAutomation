@@ -201,6 +201,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_SaveForward() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveForward));
 
+        public virtual void ClickBtn_CloseCDR() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Close_CDR));
+
         public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
 
         public virtual void ClickTab_All() => ClickTab(TableTab.All);
