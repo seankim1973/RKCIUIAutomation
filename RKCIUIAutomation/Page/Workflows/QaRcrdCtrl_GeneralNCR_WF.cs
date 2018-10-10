@@ -1,13 +1,7 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using RKCIUIAutomation.Test;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 
 namespace RKCIUIAutomation.Page.Workflows
@@ -23,8 +17,20 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public interface IQaRcrdCtrl_GeneralNCR_WF
     {
+        /// <summary>
+        /// Verifies Required field error labels in a new document then populates required fields and clicks Save & Forward button
+        /// <para>Returns unique NCR document description string value</para>
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         string CreateAndSaveForwardNCRDocument(UserType user);
 
+        /// <summary>
+        /// Verifies a document is shown in 'Revise' tab, after clicking Revise button for a document in the 'Review' tab.
+        /// <para>Verifies a document is shown in 'To Be Closed' tab, after clicking Save & Fwd button for a document in the 'Review' tab.</para>
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="ncrDescription"></param>
         void ReviewAndApproveNCRDocument(UserType user, string ncrDescription);
 
         void DisapproveCloseDocument(UserType user, string ncrDescription);
@@ -76,12 +82,6 @@ namespace RKCIUIAutomation.Page.Workflows
             return instance;
         }
 
-        /// <summary>
-        /// Verifies Required field error labels in a new document then populates required fields and clicks Save & Forward button
-        /// <para>Returns unique NCR document description string value</para>
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
         public virtual string CreateAndSaveForwardNCRDocument(UserType user)
         {
             LoginAs(user);
@@ -94,12 +94,6 @@ namespace RKCIUIAutomation.Page.Workflows
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
 
-        /// <summary>
-        /// Verifies a document is shown in 'Revise' tab, after clicking Revise button for a document in the 'Review' tab.
-        /// <para>Verifies a document is shown in 'To Be Closed' tab, after clicking Save & Fwd button for a document in the 'Review' tab.</para>
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="ncrDescription"></param>
         public virtual void ReviewAndApproveNCRDocument(UserType user, string ncrDescription)
         {
             LoginAs(user);
@@ -108,19 +102,48 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickTab_CQM_Review();
             QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
             TableHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.EnterOtherLocation(); //makes change in document by entering text into Other Location field
-            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
-            QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
-            TableHelper.ClickEditBtnForRow();
+
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelForTypeOfNCR());
             QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level1();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
+            TableHelper.ClickEditBtnForRow();
 
-            //from Review tab, edit document and click Save & Fwd
-            //verify document is under To Be Closed tab
+            //>>>WORKFLOW for (Concession Request DDList) Return To Conformance
+            //click Save&Fwd button and verify required field error label is shown for Concession Request DDList
+            QaRcrdCtrl_GeneralNCR.SelectDDL_ConcessionRequest_ReturnToConformance();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
+            //click Save&Fwd button and verify required field error label is shown
+            //select return to conformance --> workflow for Kick back button <-- verify in Resolution/Disposition tab
+            //select return to conformance --> workflow for Revise button <-- verify in Resolution/Disposition tab
+            //select return to conformance --> workflow for Close button <-- verify in AllNCR tab
 
-            //Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(GeneralNCR.TableTab.CQM_Review, ncrDescription));
-
+            //TODO - move to a new test case for ConcessionRequest_ConcessionDeviation
+            //>>>WORKFLOW for (Concession Request DDList) Concession Deviation
+            //click Save&Fwd button and verify required field error label is shown for Concession Request DDList
+            QaRcrdCtrl_GeneralNCR.SelectDDL_ConcessionRequest_ConcessionDeviation();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription));
+            TableHelper.ClickEditBtnForRow();
+            //click Save&Fwd button and verify required field error label is shown (RecordEngineer_SignBtn, EngOfRecord, EngApprovalDate, ApprovalRadioBtn)
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Sign_RecordEngineer();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SignaturePanel_OK();
+            QaRcrdCtrl_GeneralNCR.EnterEngineerOfRecord();//Enter Engineer_of_Record field
+            QaRcrdCtrl_GeneralNCR.EnterRecordEngineerApprovedDate();//Enter RecordEngineerApprovedDate field
+            QaRcrdCtrl_GeneralNCR.SelectRdoBtn_EngOfRecordApproval_Yes();//Select Approval RdoBtn (Yes/No)
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription));
+            TableHelper.ClickEditBtnForRow();
+            //click Save&Fwd button and verify required field error label is shown(Owner_SignBtn, DOTReview, OwnerApprovalDate, OwnerApprovalRdoBtn)
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Sign_Owner();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SignaturePanel_OK();
+            QaRcrdCtrl_GeneralNCR.EnterOwnerReview();//Enter Owner field
+            QaRcrdCtrl_GeneralNCR.EnterOwnerApprovedDate();//Enter OwnerApprovedDate field
+            QaRcrdCtrl_GeneralNCR.SelectRdoBtn_OwnerApproval_Yes();//Select Approval RdoBtn (Yes/No)
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.All_NCRs, ncrDescription));
         }
 
         public virtual void DisapproveCloseDocument(UserType user, string ncrDescription)
@@ -155,29 +178,32 @@ namespace RKCIUIAutomation.Page.Workflows
         {
         }
     }
+
     internal class QaRcrdCtrl_GeneralNCR_WF_SGWay : QaRcrdCtrl_GeneralNCR_WF
     {
         public QaRcrdCtrl_GeneralNCR_WF_SGWay(IWebDriver driver) : base(driver)
         {
         }
     }
+
     internal class QaRcrdCtrl_GeneralNCR_WF_I15Tech : QaRcrdCtrl_GeneralNCR_WF
     {
         public QaRcrdCtrl_GeneralNCR_WF_I15Tech(IWebDriver driver) : base(driver)
         {
         }
     }
+
     internal class QaRcrdCtrl_GeneralNCR_WF_I15South : QaRcrdCtrl_GeneralNCR_WF
     {
         public QaRcrdCtrl_GeneralNCR_WF_I15South(IWebDriver driver) : base(driver)
         {
         }
     }
+
     internal class QaRcrdCtrl_GeneralNCR_WF_LAX : QaRcrdCtrl_GeneralNCR_WF
     {
         public QaRcrdCtrl_GeneralNCR_WF_LAX(IWebDriver driver) : base(driver)
         {
         }
     }
-
 }
