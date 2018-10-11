@@ -27,25 +27,25 @@ namespace RKCIUIAutomation.Page.PageObjects
 
         void ToggleRememberMeChkbox();
 
-        void LoginAsSysAdmin();
+        //void LoginAsSysAdmin();
 
-        void LoginAsProjAdmin();
+        //void LoginAsProjAdmin();
 
-        void LoginAsProjUser();
+        //void LoginAsProjUser();
 
-        void LoginAsIQFRecordsMgr();
+        //void LoginAsIQFRecordsMgr();
 
-        void LoginAsIQFAdmin();
+        //void LoginAsIQFAdmin();
 
-        void LoginAsIQFUser();
+        //void LoginAsIQFUser();
 
-        void LoginAsDOTAdmin();
+        //void LoginAsDOTAdmin();
 
-        void LoginAsDOTUser();
+        //void LoginAsDOTUser();
 
-        void LoginAsDEVAdmin();
+        //void LoginAsDEVAdmin();
 
-        void LoginAsDEVUser();
+        //void LoginAsDEVUser();
     }
 
     #endregion LoginPage Interface class
@@ -108,25 +108,20 @@ namespace RKCIUIAutomation.Page.PageObjects
             ClickElement(chkbx_RememberMe);
         }
 
-        public virtual void LoginAsSysAdmin() => LoginUser(UserType.SysAdmin);
 
-        public virtual void LoginAsProjAdmin() => LoginUser(UserType.ProjAdmin);
+        //public virtual void LoginAsIQFRecordsMgr() => LoginUser(UserType.IQFRecordsMgr);
 
-        public virtual void LoginAsProjUser() => LoginUser(UserType.ProjUser);
+        //public virtual void LoginAsIQFAdmin() => LoginUser(UserType.IQFAdmin);
 
-        public virtual void LoginAsIQFRecordsMgr() => LoginUser(UserType.IQFRecordsMgr);
+        //public virtual void LoginAsIQFUser() => LoginUser(UserType.IQFUser);
 
-        public virtual void LoginAsIQFAdmin() => LoginUser(UserType.IQFAdmin);
+        //public virtual void LoginAsDOTAdmin() => LoginUser(UserType.DOTAdmin);
 
-        public virtual void LoginAsIQFUser() => LoginUser(UserType.IQFUser);
+        //public virtual void LoginAsDOTUser() => LoginUser(UserType.DOTUser);
 
-        public virtual void LoginAsDOTAdmin() => LoginUser(UserType.DOTAdmin);
+        //public virtual void LoginAsDEVAdmin() => LoginUser(UserType.DEVAdmin);
 
-        public virtual void LoginAsDOTUser() => LoginUser(UserType.DOTUser);
-
-        public virtual void LoginAsDEVAdmin() => LoginUser(UserType.DEVAdmin);
-
-        public virtual void LoginAsDEVUser() => LoginUser(UserType.DEVUser);
+        //public virtual void LoginAsDEVUser() => LoginUser(UserType.DEVUser);
 
         //Only SH249 and SG use IQF Records Mgr accts
         // --> SH249 use only IQFRecordsMgr, IQFAdmin, and IQFUser accts

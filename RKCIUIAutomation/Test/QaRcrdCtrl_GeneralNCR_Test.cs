@@ -15,8 +15,8 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To validate successful create and save of an NCR (Nonconformance Report) document.")]
         public void Create_And_Save_NCR_Document()
         {
-            WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
-            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review));
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR_Document(UserType.NCRTech);
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
             LogoutToLoginPage();
         }
     }
@@ -31,11 +31,10 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To validate the QC review part of an NCR (Nonconformance Report).")]
         public void QC_Review_of_NCR_document_by_NCR_Manager()
         {
-            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR_Document(UserType.NCRTech);
             LogoutToLoginPage();
-
-            //string ncrDescription = "vGYIfxuESzquJMzzfLYKxDAwEf";
-            WF_QaRcrdCtrl_GeneralNCR.ReviewAndApproveNCR_ReturnToConformance(UserType.NCRMgr, ncrDescription);
+            WF_QaRcrdCtrl_GeneralNCR.Review_and_Approve_NCR_Document(UserType.NCRMgr, ncrDescription);
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
         }
     }
 
@@ -49,9 +48,10 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To validate workflow for closing NCR (Nonconformance Report), using Concession Request: Return To Conformance")]
         public void Close_NCR_document_ConcessionRequest_ReturnToConformance()
         {
-            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR_Document(UserType.NCRTech);
             LogoutToLoginPage();
-            WF_QaRcrdCtrl_GeneralNCR.ReviewAndApproveNCR_ReturnToConformance(UserType.NCRMgr, ncrDescription);
+            WF_QaRcrdCtrl_GeneralNCR.CloseNCR_ConcessionRequest_Return_To_Conformance(UserType.NCRMgr, ncrDescription);
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.All_NCRs, ncrDescription));
         }
     }
 
@@ -66,7 +66,7 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To validate workflow for closing NCR (Nonconformance Report), using Concession Request: Concession Deviation")]
         public void Close_NCR_document_ConcessionRequest_ConcessionDeviation()
         {
-            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR_Document(UserType.NCRTech);
             LogoutToLoginPage();
             WF_QaRcrdCtrl_GeneralNCR.ReviewAndApproveNCR_ConcessionDeviation(UserType.NCRMgr, ncrDescription);
         }
@@ -82,7 +82,7 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To validate the QC disapprove and close part of an NCR (Nonconformance Report).")]
         public void QC_Review_of_NCR_document_by_NCR_Manager()
         {
-            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.CreateAndSaveForwardNCRDocument(UserType.NCRTech);
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR_Document(UserType.NCRTech);
             LogoutToLoginPage();
             WF_QaRcrdCtrl_GeneralNCR.DisapproveCloseDocument(UserType.NCRMgr, ncrDescription);
             Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.All_NCRs, ncrDescription));

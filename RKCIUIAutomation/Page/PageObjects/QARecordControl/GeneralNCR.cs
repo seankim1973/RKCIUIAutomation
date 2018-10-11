@@ -379,7 +379,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void FilterDescription(string description = "")
         {
-            ncrDescription = !string.IsNullOrWhiteSpace(description) ? description : ncrDescription;
+            ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : description;
             FilterTableColumnByValue(ColumnName.Description, ncrDescription);
         }
 
@@ -430,7 +430,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_ExportToExcel() => JsClickElement(exportToExcel_ByLocator);
 
-        private void ClickBtn_Sign(InputFields signBtnType) => ClickElement(By.Id(signBtnType.GetString()));
+        private void ClickBtn_Sign(InputFields signBtnType) => JsClickElement(By.XPath($"//a[@signaturehidden='{signBtnType.GetString()}']"));
 
         public virtual void ClickBtn_Sign_RecordEngineer() => ClickBtn_Sign(InputFields.RecordEngineer_SignBtn);
 
@@ -595,21 +595,21 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void EnterEngineerOfRecord(string engOfRecordText = "")
             => EnterText(GetTextInputFieldByLocator(InputFields.Engineer_of_Record),
-                engOfRecordText = (string.IsNullOrWhiteSpace(engOfRecordText) ? "RKCIUIAutomation RecordEngineer" : engOfRecordText));
+                engOfRecordText = (string.IsNullOrEmpty(engOfRecordText) ? "RKCIUIAutomation RecordEngineer" : engOfRecordText));
 
         public virtual void EnterRecordEngineerApprovedDate()
             => EnterText(GetTextInputFieldByLocator(InputFields.RecordEngineerApprovedDate), GetShortDate());
 
         public virtual void EnterOwnerReview(string ownerReviewText = "")
             => EnterText(GetTextInputFieldByLocator(InputFields.Owner_Review),
-                ownerReviewText = (string.IsNullOrWhiteSpace(ownerReviewText) ? "RKCIUIAutomation Owner" : ownerReviewText));
+                ownerReviewText = (string.IsNullOrEmpty(ownerReviewText) ? "RKCIUIAutomation Owner" : ownerReviewText));
 
         public virtual void EnterOwnerApprovedDate()
             => EnterText(GetTextInputFieldByLocator(InputFields.OwnerDate), GetShortDate());
 
         public virtual void EnterIQFManager(string iqfMgrText = "")
             => EnterText(GetTextInputFieldByLocator(InputFields.IQF_Manager),
-                iqfMgrText = (string.IsNullOrWhiteSpace(iqfMgrText) ? "RKCIUIAutomation IQFMgr" : iqfMgrText));
+                iqfMgrText = (string.IsNullOrEmpty(iqfMgrText) ? "RKCIUIAutomation IQFMgr" : iqfMgrText));
 
 
         public virtual void EnterIQFManagerApprovedDate()
@@ -617,7 +617,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void EnterQCManager(string qcMgrText = "") 
             => EnterText(GetTextInputFieldByLocator(InputFields.QC_Manager),
-                qcMgrText = (string.IsNullOrWhiteSpace(qcMgrText) ? "RKCIUIAutomation QCMgr" : qcMgrText));
+                qcMgrText = (string.IsNullOrEmpty(qcMgrText) ? "RKCIUIAutomation QCMgr" : qcMgrText));
 
         public virtual void EnterQCManagerApprovedDate()
             => EnterText(GetTextInputFieldByLocator(InputFields.QCManagerApprovedDate), GetShortDate());
@@ -625,18 +625,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterDescription(string description = "")
         {
             CreateNcrDescription();
-            description = ncrDescription;
+            ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : GetNCRDocDescription();
             ScrollToElement(By.Id($"{InputFields.Description_of_Nonconformance.GetString()}"));
-            EnterText(GetTextAreaFieldByLocator(InputFields.Description_of_Nonconformance), description);
+            EnterText(GetTextAreaFieldByLocator(InputFields.Description_of_Nonconformance), ncrDescription);
         }
 
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
             => EnterText(GetTextInputFieldByLocator(InputFields.CorrectiveAction),
-               actionPlanText = (string.IsNullOrWhiteSpace(actionPlanText) ? "Corrective Action Plan To Resolve Nonconformance." : actionPlanText));
+               actionPlanText = (string.IsNullOrEmpty(actionPlanText) ? "Corrective Action Plan To Resolve Nonconformance." : actionPlanText));
 
         public virtual void EnterRepairPlan(string repairPlanText = "")
                         => EnterText(GetTextInputFieldByLocator(InputFields.RepairPlan),
-               repairPlanText = (string.IsNullOrWhiteSpace(repairPlanText) ? "Repair Plan To Repair Issue If Applicable." : repairPlanText));
+               repairPlanText = (string.IsNullOrEmpty(repairPlanText) ? "Repair Plan To Repair Issue If Applicable." : repairPlanText));
 
         //GLX, I15Tech
         public virtual IList<string> GetRequiredFieldIDs()
@@ -665,7 +665,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
-        private void CreateNcrDescription()
+        private string CreateNcrDescription()
         {
             guid = MiniGuid.NewGuid();
 
@@ -674,10 +674,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             CreateVar(ncrDescKey, guid);
             ncrDescription = GetVar(ncrDescKey);
             Console.WriteLine($"#####NCR Description: {ncrDescription}");
+
+            return ncrDescKey;
         }
 
         public virtual string GetNCRDocDescription() => GetVar(ncrDescKey);
-
+        
         public virtual bool VerifyReqFieldErrorLabelsForNewDoc()
         {
             try
@@ -765,10 +767,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             WaitForPageReady();
         }
 
-        public virtual bool VerifyNCRDocIsDisplayed(TableTab tableTab, string ncrDescription = "")
+        public virtual bool VerifyNCRDocIsDisplayed(TableTab tableTab, string description = "")
         {
             ClickTab(tableTab);
-            ncrDescription = string.IsNullOrWhiteSpace(ncrDescription) ? GetNCRDocDescription() : ncrDescription;
+            ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : description;
             return VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
         }
 

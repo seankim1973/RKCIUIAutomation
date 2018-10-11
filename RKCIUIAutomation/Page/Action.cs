@@ -19,7 +19,7 @@ namespace RKCIUIAutomation.Page
         {
         }
 
-        public Action(IWebDriver driver) => this.Driver = driver;
+        //public Action(IWebDriver driver) => this.Driver = driver;
 
         private enum JSAction
         {
@@ -52,6 +52,7 @@ namespace RKCIUIAutomation.Page
         public void JsClickElement(By elementByLocator)
         {
             WaitForPageReady();
+            ScrollToElement(elementByLocator);
             ExecuteJsAction(JSAction.Click, elementByLocator);
         }
 
@@ -153,6 +154,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 elem = GetElement(elementByLocator);
+                ScrollToElement(elementByLocator);
                 elem?.Click();
                 if (elem != null)
                 {

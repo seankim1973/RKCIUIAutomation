@@ -105,7 +105,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify proper required fields show error when clicking Save button without Submittal Name and Title")]
         public void VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             ClickSave();
             AddAssertionToList(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_Name));
@@ -129,7 +129,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify proper required fields show error when clicking Save button with Submittal Name and Title")]
         public void VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
@@ -150,7 +150,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL")]
         public void VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
@@ -237,7 +237,7 @@ namespace RKCIUIAutomation.UnitTest
         public void VerifyComponentTestRuns()
         {
             LogInfo($"Other component test - This test should run");
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.My_Details();
             Assert.True(VerifyPageTitle("Account Details"));
             NavigateToPage.UserMgmt_Roles();

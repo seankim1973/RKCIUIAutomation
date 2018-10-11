@@ -24,7 +24,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        string CreateAndSaveForwardNCRDocument(UserType user);
+        string Create_and_SaveForward_NCR_Document(UserType user);
 
         /// <summary>
         /// Verifies a document is shown in 'Revise' tab, after clicking Revise button for a document in the 'Review' tab.
@@ -32,11 +32,13 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         /// <param name="user"></param>
         /// <param name="ncrDescription"></param>
-        void ReviewAndApproveNCR_ReturnToConformance(UserType user, string ncrDescription);
+        void Review_and_Approve_NCR_Document(UserType user, string ncrDescription);
 
         void ReviewAndApproveNCR_ConcessionDeviation(UserType user, string ncrDescription);
 
         void DisapproveCloseDocument(UserType user, string ncrDescription);
+
+        void CloseNCR_ConcessionRequest_Return_To_Conformance(UserType user, string ncrDescription);
 
     }
 
@@ -86,7 +88,7 @@ namespace RKCIUIAutomation.Page.Workflows
             return instance;
         }
 
-        public virtual string CreateAndSaveForwardNCRDocument(UserType user)
+        public virtual string Create_and_SaveForward_NCR_Document(UserType user)
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_NCR();
@@ -98,7 +100,7 @@ namespace RKCIUIAutomation.Page.Workflows
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
 
-        public virtual void ReviewAndApproveNCR_ReturnToConformance(UserType user, string ncrDescription)
+        public virtual void Review_and_Approve_NCR_Document(UserType user, string ncrDescription)
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_NCR();
@@ -110,16 +112,18 @@ namespace RKCIUIAutomation.Page.Workflows
             //verify required field error label is shown
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
             Assert.True(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelForTypeOfNCR());
-
             QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level1();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
+        }
+
+        public virtual void CloseNCR_ConcessionRequest_Return_To_Conformance(UserType user, string ncrDescription)
+        {
             Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
             QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
             ClickEditBtnForRow();
-
-            //>>>WORKFLOW for (Concession Request DDList) Return To Conformance
             //todo: click Save&Fwd button and verify required field error label is shown for Concession Request DDList
             QaRcrdCtrl_GeneralNCR.SelectDDL_ConcessionRequest_ReturnToConformance();
+            //todo: select checkboxes
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
 
