@@ -25,16 +25,13 @@ namespace RKCIUIAutomation.Page
             WaitForPageReady();
         }
 
-        private readonly By currenTabLocator = By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']");
-        private string GetCurrentTabName() => GetText(currenTabLocator);
-
         public void ClickTableTab(string tblTabName)
         {
             try
             {
-                string currentTabName = GetCurrentTabName();
+                string currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
 
-                if (currentTabName != tblTabName)
+                if (tblTabName != currentTabName)
                 {
                     string jsToBeExecuted = GetTabStripReference();
 

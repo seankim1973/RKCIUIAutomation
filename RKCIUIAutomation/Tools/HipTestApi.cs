@@ -24,10 +24,9 @@ namespace RKCIUIAutomation.Tools
         private static readonly string _userId;
         private static readonly string _userPw;
 
-        //private readonly static string proj_rkci = "95332";
-        private readonly static string newRKCI = "100288";
+        private readonly static string proj_rkci = "95332";
 
-        private readonly string ApiBase = $"https://app.hiptest.com/api/projects/{newRKCI}";
+        private readonly string ApiBase = $"https://app.hiptest.com/api/projects/{proj_rkci}";
 
         private static readonly Lazy<HipTestApi> _lazy;
         public static HipTestApi HipTestInstance { get { return _lazy.Value; } }
