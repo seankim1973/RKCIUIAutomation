@@ -111,6 +111,19 @@ namespace RKCIUIAutomation.Page.Workflows
             //Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(GeneralCDR.TableTab.CQM_Review, ncrDescription));
 
         }
+
+        public virtual void ReviseCDRDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            TableHelper.ClickEditBtnForRow();
+
+            //Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(GeneralCDR.TableTab.CQM_Review, ncrDescription));
+
+        }
         public virtual void ReviewAndApproveCDRDocument(UserType user, string cdrDescription)
         {
             LoginAs(user);

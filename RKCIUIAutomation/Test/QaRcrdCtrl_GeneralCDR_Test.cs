@@ -35,8 +35,8 @@ namespace RKCIUIAutomation.Test.CDR
             //string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.CDRTech);
             //LogoutToLoginPage();
 
-            string cdrDescription = "vGYIfxuESzquJMzzfLYKxDAwEf"; //chnage the name once you create new CDR
-            WF_QaRcrdCtrl_GeneralCDR.ReviewAndApproveCDRDocument(UserType.CDRMgr, cdrDescription);
+            string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS"; //chnage the name once you create new CDR
+            WF_QaRcrdCtrl_GeneralCDR.ReviewAndApproveCDRDocument(UserType.Bhoomi, cdrDescription);
         }
     }
 
@@ -50,10 +50,10 @@ namespace RKCIUIAutomation.Test.CDR
         [Description("To validate the QC disapprove and close part of an CDR (Construction Deficiency Report).")]
         public void QC_Review_of_CDR_document_by_CDR_Manager()
         {
-            string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.CDRTech);
+            string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
             LogoutToLoginPage();
-            WF_QaRcrdCtrl_GeneralCDR.CloseDocument(UserType.CDRMgr, cdrDescription);
-            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Closed_DN, cdrDescription));
+            WF_QaRcrdCtrl_GeneralCDR.CloseDocument(UserType.Bhoomi, cdrDescription);
+            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
         }
     }
 
@@ -67,8 +67,9 @@ namespace RKCIUIAutomation.Test.CDR
         [Description("To successfully revising an CDR (Construction Deficiency Report) document.")]
         public void Revise_the_CDR_Document()
         {
-            LoginAs(UserType.CDRMgr);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_General_CDR();
+
         }
     }
 
