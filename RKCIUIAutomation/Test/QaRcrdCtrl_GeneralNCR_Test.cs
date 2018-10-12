@@ -5,7 +5,7 @@ using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 
 namespace RKCIUIAutomation.Test.NCR
 {
-    [TestFixture]
+    [TestFixture]//complete
     public class Verify_Create_And_Save_NCR_Document : TestBase
     {
         [Test]
@@ -21,7 +21,7 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    [TestFixture]
+    [TestFixture]//complete
     public class Verify_QC_Review_of_NCR_document_by_NCR_Manager : TestBase
     {
         [Test]
@@ -38,6 +38,23 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
+    [TestFixture]//complete
+    public class Verify_Disapprove_and_Close_of_NCR_document_by_NCR_Manager : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(TestCaseNumber, 2299482)]
+        [Property(Priority, "High")]
+        [Description("To validate the QC disapprove and close part of an NCR (Nonconformance Report).")]
+        public void QC_Review_of_NCR_document_by_NCR_Manager()
+        {
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR_Document(UserType.NCRTech);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralNCR.CloseNCR_CQMReview_Disapprove(UserType.NCRMgr, ncrDescription);
+            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.All_NCRs, ncrDescription));
+        }
+    }
+
     [TestFixture]
     public class Verify_Close_NCR_document_ConcessionRequest_ReturnToConformance : TestBase
     {
@@ -48,9 +65,10 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To validate workflow for closing NCR (Nonconformance Report), using Concession Request: Return To Conformance")]
         public void Close_NCR_document_ConcessionRequest_ReturnToConformance()
         {
-            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR_Document(UserType.NCRTech);
-            LogoutToLoginPage();
-            WF_QaRcrdCtrl_GeneralNCR.CloseNCR_ConcessionRequest_Return_To_Conformance(UserType.NCRMgr, ncrDescription);
+            //string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR_Document(UserType.NCRTech);
+            //LogoutToLoginPage();
+            string ncrDescription = "NMlHAMQMwhwuVnPAFBfemgcogP";
+            WF_QaRcrdCtrl_GeneralNCR.CloseNCR_ConcessionRequest_ReturnToConformance(UserType.NCRMgr, ncrDescription);
             Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.All_NCRs, ncrDescription));
         }
     }
@@ -68,26 +86,11 @@ namespace RKCIUIAutomation.Test.NCR
         {
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR_Document(UserType.NCRTech);
             LogoutToLoginPage();
-            WF_QaRcrdCtrl_GeneralNCR.ReviewAndApproveNCR_ConcessionDeviation(UserType.NCRMgr, ncrDescription);
+            WF_QaRcrdCtrl_GeneralNCR.CloseNCR_ConcessionRequest_ConcessionDeviation(UserType.NCRMgr, ncrDescription);
         }
     }
 
-    [TestFixture]
-    public class Verify_Disapprove_and_Close_of_NCR_document_by_NCR_Manager : TestBase
-    {
-        [Test]
-        [Category(Component.NCR)]
-        [Property(TestCaseNumber, 2299482)]
-        [Property(Priority, "High")]
-        [Description("To validate the QC disapprove and close part of an NCR (Nonconformance Report).")]
-        public void QC_Review_of_NCR_document_by_NCR_Manager()
-        {
-            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR_Document(UserType.NCRTech);
-            LogoutToLoginPage();
-            WF_QaRcrdCtrl_GeneralNCR.DisapproveCloseDocument(UserType.NCRMgr, ncrDescription);
-            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.All_NCRs, ncrDescription));
-        }
-    }
+
 
     [TestFixture]
     public class Verify_Revising_the_NCR_Document : TestBase

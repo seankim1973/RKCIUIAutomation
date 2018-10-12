@@ -34,11 +34,11 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <param name="ncrDescription"></param>
         void Review_and_Approve_NCR_Document(UserType user, string ncrDescription);
 
-        void ReviewAndApproveNCR_ConcessionDeviation(UserType user, string ncrDescription);
+        void CloseNCR_ConcessionRequest_ConcessionDeviation(UserType user, string ncrDescription);
 
-        void DisapproveCloseDocument(UserType user, string ncrDescription);
+        void CloseNCR_CQMReview_Disapprove(UserType user, string ncrDescription);
 
-        void CloseNCR_ConcessionRequest_Return_To_Conformance(UserType user, string ncrDescription);
+        void CloseNCR_ConcessionRequest_ReturnToConformance(UserType user, string ncrDescription);
 
     }
 
@@ -116,8 +116,20 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
         }
 
-        public virtual void CloseNCR_ConcessionRequest_Return_To_Conformance(UserType user, string ncrDescription)
+        public virtual void CloseNCR_CQMReview_Disapprove(UserType user, string ncrDescription)
         {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_NCR();
+            Assert.True(VerifyPageTitle("List of NCR Reports"));
+            QaRcrdCtrl_GeneralNCR.ClickTab_CQM_Review();
+            QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_DisapproveClose();
+        }
+
+        public virtual void CloseNCR_ConcessionRequest_ReturnToConformance(UserType user, string ncrDescription)
+        {
+            Review_and_Approve_NCR_Document(user, ncrDescription);
             Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
             QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
             ClickEditBtnForRow();
@@ -132,35 +144,13 @@ namespace RKCIUIAutomation.Page.Workflows
             //todo: select return to conformance --> workflow for Revise button <-- verify in Resolution/Disposition tab
 
             //todo: click Close button and verify required field error labels are shown(IQCMgr SignBtn, IQFMgr, IQFMgrApprovedDate, QCMgr_SignBtn, QCMgr, QCMgrApprovedDate)
-            CloseNCRDocument(ncrDescription);
+            CloseNCR_in_VerificationAndClosure(ncrDescription);
         }
-
-        public virtual void CloseNCRDocument(string ncrDescription)
+                
+        public virtual void CloseNCR_ConcessionRequest_ConcessionDeviation(UserType user, string ncrDescription)
         {
-            ClickTab(TableTab.Verification_and_Closure);
-            QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
-            ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
-            QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
-            //todo: need verification step to check All NCRs tab and confirm 'workflow location' of NCR
-        }
+            Review_and_Approve_NCR_Document(user, ncrDescription);
 
-        public virtual void ReviewAndApproveNCR_ConcessionDeviation(UserType user, string ncrDescription)
-        {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_NCR();
-            Assert.True(VerifyPageTitle("List of NCR Reports"));
-            QaRcrdCtrl_GeneralNCR.ClickTab_CQM_Review();
-            QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
-            ClickEditBtnForRow();
-
-            //verify required field error label is shown
-            QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
-            Assert.True(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelForTypeOfNCR());
-
-            QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level1();
-            QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
             Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
             QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
             ClickEditBtnForRow();
@@ -206,20 +196,21 @@ namespace RKCIUIAutomation.Page.Workflows
             //todo: select Concession Deviation --> workflow for Revise button <-- verify in Resolution/Disposition tab
 
             //todo: click Close button and verify required field error labels are shown(IQCMgr SignBtn, IQFMgr, IQFMgrApprovedDate, QCMgr_SignBtn, QCMgr, QCMgrApprovedDate)
-            CloseNCRDocument(ncrDescription);
+            CloseNCR_in_VerificationAndClosure(ncrDescription);
             Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.All_NCRs, ncrDescription));
         }
 
-        public virtual void DisapproveCloseDocument(UserType user, string ncrDescription)
+        public virtual void CloseNCR_in_VerificationAndClosure(string ncrDescription)
         {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_NCR();
-            Assert.True(VerifyPageTitle("List of NCR Reports"));
-            QaRcrdCtrl_GeneralNCR.ClickTab_CQM_Review();
+            ClickTab(TableTab.Verification_and_Closure);
             QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
             ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.ClickBtn_DisapproveClose();
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
+            //todo: need verification step to check All NCRs tab and confirm 'workflow location' of NCR
         }
+        
     }
 
     internal class QaRcrdCtrl_GeneralNCR_WF_GLX : QaRcrdCtrl_GeneralNCR_WF
