@@ -49,6 +49,9 @@
         DEVAdmin,
         NCRTech,
         NCRMgr,
+        CDRTech,
+        CDRMgr
+        NCRMgr,
         DIRMgr,
         DIRTech
     }
