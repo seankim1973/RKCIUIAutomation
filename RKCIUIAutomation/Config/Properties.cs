@@ -48,6 +48,8 @@
         DEVUser,
         DEVAdmin,
         NCRTech,
+        CDRTech,
+        CDRMgr,
         NCRMgr,
         DIRMgr,
         DIRTech

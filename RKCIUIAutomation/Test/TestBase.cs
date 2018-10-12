@@ -31,7 +31,7 @@ namespace RKCIUIAutomation.Test
 
         public IGeneralNCR QaRcrdCtrl_GeneralNCR => new GeneralNCR().SetClass<IGeneralNCR>(Driver);
 
-
+        public IGeneralCDR QaRcrdCtrl_GeneralCDR => new GeneralCDR().SetClass<IGeneralCDR>(Driver);
 
         #region Workflow SetClass method calls
 
@@ -40,6 +40,8 @@ namespace RKCIUIAutomation.Test
         public IDesignDocumentWF WF_DesignDocCommentReview => new DesignDocumentWF().SetClass<IDesignDocumentWF>(Driver);
 
         public IQaRcrdCtrl_GeneralNCR_WF WF_QaRcrdCtrl_GeneralNCR => new QaRcrdCtrl_GeneralNCR_WF().SetClass<IQaRcrdCtrl_GeneralNCR_WF>(Driver);
+
+        public IQaRcrdCtrl_GeneralCDR_WF WF_QaRcrdCtrl_GeneralCDR => new QaRcrdCtrl_GeneralCDR_WF().SetClass<IQaRcrdCtrl_GeneralCDR_WF>(Driver);
 
         #endregion End of Workflow SetClass method calls
     }

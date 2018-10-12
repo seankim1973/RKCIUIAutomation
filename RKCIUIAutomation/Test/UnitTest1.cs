@@ -53,15 +53,16 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Submittals)]
-        [Property(TestCaseNumber, "ELVS3456")]
+        [Property(TestCaseNumber, 123456)]
         [Property(Priority, "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
         public void SampleTest()
         {
             LoginAs(UserType.Bhoomi);
-            NavigateToPage.RMCenter_Search();
-            RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-            Assert.True(VerifyPageTitle("RM Center Search"));
+            NavigateToPage.QARecordControl_General_CDR();
+            //NavigateToPage.RMCenter_Search();
+            //RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
+            //Assert.True(VerifyPageTitle("RM Center Search"));
         }
     }
 
@@ -520,6 +521,30 @@ namespace RKCIUIAutomation.UnitTest
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_General_NCR();
+
+            IList<IWebElement> elements = new List<IWebElement>();
+            elements = Driver.FindElements(By.XPath("//ul[@class='k-reset k-tabstrip-items']/li/span[text()]"));
+            Console.WriteLine($"TENANT: {tenantName}");
+            for (int i = 0; i < elements.Count; i++)
+            {
+                string elem = elements[i].Text;
+                Console.WriteLine(elem);
+            }
+        }
+    }
+
+    [TestFixture]
+    public class CDRTabNames : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property(TestCaseNumber, 2222)]
+        [Property(Priority, "Priority 1")]
+        [Description("Get CDR Tab Names")]
+        public void Get_CDR_Tab_Names()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QARecordControl_General_CDR();
 
             IList<IWebElement> elements = new List<IWebElement>();
             elements = Driver.FindElements(By.XPath("//ul[@class='k-reset k-tabstrip-items']/li/span[text()]"));
