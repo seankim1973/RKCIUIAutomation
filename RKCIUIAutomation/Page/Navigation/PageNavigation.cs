@@ -629,6 +629,9 @@ namespace RKCIUIAutomation.Page.Navigation
         public PageNavigation_GLX(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.QARecordControl.Menu.General_Deficiency_Notice);
+
     }
 
     #endregion Implementation specific to GLX

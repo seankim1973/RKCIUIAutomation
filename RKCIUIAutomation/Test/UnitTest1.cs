@@ -53,15 +53,16 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Submittals)]
-        [Property(TestCaseNumber, "ELVS3456")]
+        [Property(TestCaseNumber, 123456)]
         [Property(Priority, "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
         public void SampleTest()
         {
             LoginAs(UserType.Bhoomi);
-            NavigateToPage.RMCenter_Search();
-            RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-            Assert.True(VerifyPageTitle("RM Center Search"));
+            NavigateToPage.QARecordControl_General_CDR();
+            //NavigateToPage.RMCenter_Search();
+            //RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
+            //Assert.True(VerifyPageTitle("RM Center Search"));
         }
     }
 
@@ -105,7 +106,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify proper required fields show error when clicking Save button without Submittal Name and Title")]
         public void VerifyRequiredFieldErrorsClickingSaveWithoutNameAndTitle()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             ClickSave();
             AddAssertionToList(VerifyFieldErrorIsDisplayed(SubmittalDetails.Err_Name));
@@ -129,7 +130,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify proper required fields show error when clicking Save button with Submittal Name and Title")]
         public void VerifyRequiredFieldErrorsClickingSaveWithNameAndTitle()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
@@ -150,7 +151,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify success message is shown when clicking Save button with Submittal Name, Title and Action DDL")]
         public void VerifySuccessMsgClickingSaveWithNameTitleAndActionDDL()
         {
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
             EnterText(SubmittalDetails.Input_Name, "Test Name");
             EnterText(SubmittalDetails.Input_SubmittalTitle, "Test Title");
@@ -237,7 +238,7 @@ namespace RKCIUIAutomation.UnitTest
         public void VerifyComponentTestRuns()
         {
             LogInfo($"Other component test - This test should run");
-            LoginAs(UserType.ProjAdmin);
+            LoginAs(UserType.Bhoomi);
             NavigateToPage.My_Details();
             Assert.True(VerifyPageTitle("Account Details"));
             NavigateToPage.UserMgmt_Roles();

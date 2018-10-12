@@ -26,7 +26,7 @@ namespace RKCIUIAutomation.Config
 
         public string GetHipTestCreds(HipTestKey credType)
         {
-            string credKey = $"{credType}2";
+            string credKey = $"{credType}";
             return GetValueFromConfigManager(hiptestKey: credKey);
         }
 
