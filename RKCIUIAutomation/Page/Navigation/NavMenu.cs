@@ -365,6 +365,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QA DIRs")] QA_DIRs,
                 [StringValue("General NCR")] General_NCR,
                 [StringValue("General CDR")] General_CDR,
+                [StringValue("General Deficiency Notice")] General_Deficiency_Notice,
                 [StringValue("Retaining Wall BackFill Quantity Tracker")] Retaining_Wall_BackFill_Quantity_Tracker,
                 [StringValue("Concrete Paving Quantity Tracker")] Concrete_Paving_Quantity_Tracker,
                 [StringValue("MPL Tracker")] MPL_Tracker,

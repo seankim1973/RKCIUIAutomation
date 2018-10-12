@@ -53,15 +53,16 @@ namespace RKCIUIAutomation.UnitTest
     {
         [Test]
         [Category(Component.Submittals)]
-        [Property(TestCaseNumber, "ELVS3456")]
+        [Property(TestCaseNumber, 123456)]
         [Property(Priority, "Priority 1")]
         [Description("Verify user can login successfully using project - user account")]
         public void SampleTest()
         {
             LoginAs(UserType.Bhoomi);
-            NavigateToPage.RMCenter_Search();
-            RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-            Assert.True(VerifyPageTitle("RM Center Search"));
+            NavigateToPage.QARecordControl_General_CDR();
+            //NavigateToPage.RMCenter_Search();
+            //RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
+            //Assert.True(VerifyPageTitle("RM Center Search"));
         }
     }
 
