@@ -71,7 +71,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Close CDR")] Close_CDR,
             [StringValue("Save Only")] SaveOnly,
             [StringValue("Save & Forward")] SaveForward,
-            [StringValue("Back To QC Review")] Back_To_QC_Review
+            [StringValue("Back To QC Review")] Back_To_QC_Review,
+            [StringValue ("Back To Disposition")] Back_To_Disposition
         }
 
        
@@ -90,6 +91,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_SaveOnly();
 
         void ClickBtn_SaveForward();
+
+        void ClickBtn_Revise();
+
+        void ClickBtn_CloseCDR();
 
         void ClickTab_All();
 
@@ -202,6 +207,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickBtn_SaveForward() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveForward));
 
         public virtual void ClickBtn_CloseCDR() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Close_CDR));
+
+        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Revise));
 
         public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
 

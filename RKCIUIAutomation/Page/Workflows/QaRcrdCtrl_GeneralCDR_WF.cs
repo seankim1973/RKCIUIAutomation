@@ -35,6 +35,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <param name="cdrDescription"></param>
         void ReviewAndApproveCDRDocument(UserType user, string cdrDescription);
 
+        void ReviewAndReviseCDRDocument(UserType user, string cdrDescription);
         void CloseDocument(UserType user, string cdrDescription);
     }
 
@@ -108,22 +109,9 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
-            //Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(GeneralCDR.TableTab.CQM_Review, ncrDescription));
-
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
         }
 
-        public virtual void ReviseCDRDocument(UserType user, string cdrDescription)
-        {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageTitle("List of CDR Reports"));
-            QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
-            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
-
-            //Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(GeneralCDR.TableTab.CQM_Review, ncrDescription));
-
-        }
         public virtual void ReviewAndApproveCDRDocument(UserType user, string cdrDescription)
         {
             LoginAs(user);
@@ -140,7 +128,7 @@ namespace RKCIUIAutomation.Page.Workflows
             TableHelper.ClickEditBtnForRow();
         }
 
-        public virtual void CloseDocument(UserType user, string cdrDescription)
+        public virtual void ReviewAndReviseCDRDocument(UserType user, string cdrDescription)
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
@@ -148,7 +136,21 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Revise();
+
+
+        }
+
+        public virtual void CloseDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            TableHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_CloseCDR();
         }
     }
 
