@@ -39,9 +39,6 @@
 
     public enum UserType
     {
-        ProjAdmin,
-        SysAdmin,
-        ProjUser,
         Bhoomi,
         IQFRecordsMgr,
         IQFUser,
@@ -51,7 +48,11 @@
         DEVUser,
         DEVAdmin,
         NCRTech,
-        NCRMgr
+        CDRTech,
+        CDRMgr,
+        NCRMgr,
+        DIRMgr,
+        DIRTech
     }
 
     public enum Reporter

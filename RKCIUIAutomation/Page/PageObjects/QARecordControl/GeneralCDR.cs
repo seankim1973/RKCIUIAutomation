@@ -103,7 +103,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void ClickTab_To_Be_Closed();
 
-        void FilterCDRNo(string CDRNo = "");
+        void FilterDescription(string description = "");
 
         void SortTable_Descending();
 
@@ -117,9 +117,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void PopulateRequiredFieldsAndSaveForward();
 
-        bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRNo = "");
+        bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRDescription = "");
 
-        string GetCDRDocNo();
+        string GetCDRDocDescription();
 
         IList<string> GetRequiredFieldIDs();
     }
@@ -176,13 +176,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             return instance;
         }
-        [ThreadStatic]
-        private static string cdrNo;
+
 
         [ThreadStatic]
-        private static string cdrNoKey;
+        private static string cdrDescription;
 
-        private readonly By newBtn_ByLocator = By.XPath("//div[@id='CDRGrid_Revise']/div/a[contains(@class, 'k-button')]");
+        [ThreadStatic]
+        private static string cdrDescKey;
+
+        private MiniGuid guid;
+
+        private readonly By newBtn_ByLocator = By.XPath("//div[@id='CdrGrid_Revise']/div/a[contains(@class, 'k-button')]");
        
         private By GetSubmitBtnLocator(SubmitButtons buttonName)
         {
@@ -196,6 +200,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickBtn_SaveOnly() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveOnly));
 
         public virtual void ClickBtn_SaveForward() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveForward));
+
+        public virtual void ClickBtn_CloseCDR() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Close_CDR));
 
         public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
 
@@ -224,7 +230,26 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterIssuedDate(string shortDate = "1/1/9999")
            => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
 
-        public virtual string GetCDRDocNo() => GetVar(cdrNoKey);
+        private void CreateCdrDescription()
+        {
+            guid = MiniGuid.NewGuid();
+
+            string descKey = $"{tenantName}{GetTestName()}";
+            cdrDescKey = $"{descKey}_CdrDescription";
+            CreateVar(cdrDescKey, guid);
+            cdrDescription = GetVar(cdrDescKey);
+            Console.WriteLine($"#####NCR Description: {cdrDescription}");
+        }
+
+        public virtual string GetCDRDocDescription() => GetVar(cdrDescKey);
+
+        public virtual void EnterDescription(string description = "")
+        {
+            CreateCdrDescription();
+            description = cdrDescription;
+            ScrollToElement(By.Id($"{InputFields.DeficiencyDescription.GetString()}"));
+            EnterText(GetTextAreaFieldByLocator(InputFields.DeficiencyDescription), description);
+        }
 
         private bool VerifyReqFieldsErrorLabelsForNewDoc()
         {
@@ -267,7 +292,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Assert.True(VerifyReqFieldsErrorLabelsForNewDoc());
             EnterIssuedDate();
             SelectDDL_Originator();
-          
+            EnterDescription();
             
             ClickBtn_SaveForward();
             WaitForPageReady();
@@ -284,21 +309,21 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
-        public virtual bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRNo = "")
+        public virtual bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRDescription = "")
         {
             ClickTab(tableTab);
-            CDRNo = string.IsNullOrWhiteSpace(CDRNo) ? cdrNo : CDRNo;
-            return VerifyRecordIsDisplayed(ColumnName.Description, cdrNo);
+            cdrDescription = string.IsNullOrWhiteSpace(CDRDescription) ? cdrDescription : CDRDescription;
+            return VerifyRecordIsDisplayed(ColumnName.Description, cdrDescription);
         }
 
-        public virtual void FilterCDRNo(string cdrno = "")
+        public virtual void FilterDescription(string description = "")
         {
-            cdrno = !string.IsNullOrWhiteSpace(cdrno) ? cdrno : cdrNo;
-            FilterTableColumnByValue(ColumnName.CdrNo, cdrNo);
+            cdrDescription = !string.IsNullOrWhiteSpace(description) ? description : cdrDescription;
+            FilterTableColumnByValue(ColumnName.Description, cdrDescription);
         }
-        
 
-       
+
+
     }
 
     #endregion Common Workflow Implementation class
