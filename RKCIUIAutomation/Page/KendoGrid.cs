@@ -31,7 +31,7 @@ namespace RKCIUIAutomation.Page
             {
                 string currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
 
-                if (tblTabName != currentTabName)
+                if (!tblTabName.Equals(currentTabName))
                 {
                     string jsToBeExecuted = GetTabStripReference();
 
@@ -204,8 +204,8 @@ namespace RKCIUIAutomation.Page
             sb.Append($"{GetGridReference()}{filterScript}] }});");
             ExecuteJsScript(sb.ToString());
 
-            string addnlFilter = (addnlFilterValue != null) ? $"{filterLogic} {addnlFilterOperator} {addnlFilterValue}" : string.Empty;
-            LogInfo($"Filtered {columnName} : {filterOperator} {filterValue} {addnlFilter}");
+            string addnlFilter = (addnlFilterValue != null) ? $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}" : string.Empty;
+            LogInfo($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilter}");
             WaitForPageReady();
         }
 

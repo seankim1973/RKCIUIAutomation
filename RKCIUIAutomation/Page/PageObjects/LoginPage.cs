@@ -63,44 +63,47 @@ namespace RKCIUIAutomation.Page.PageObjects
 
         public virtual void LoginUser(UserType userType)
         {
-            VerifyPageIsLoaded(true, false);
-
-            ConfigUtils Configs = new ConfigUtils();
-            string[] userAcct = Configs.GetUser(userType);
-            IList<By> loginFields = new List<By>
+            if (Driver.Title.Contains("Log in"))
             {
-                field_Email,
-                field_Password
-            };
+                VerifyPageIsLoaded(true, false);
 
-            foreach (By field in loginFields)
-            {
-                userAcctIndex = (field == field_Email) ? 0 : 1;
-                IWebElement webElem = null;
-
-                credential = userAcct[userAcctIndex];
-
-                try
+                ConfigUtils Configs = new ConfigUtils();
+                string[] userAcct = Configs.GetUser(userType);
+                IList<By> loginFields = new List<By>
                 {
-                    LogInfo($"...waiting for element {field}");
-                    WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(2))
+                    field_Email,
+                    field_Password
+                };
+
+                foreach (By field in loginFields)
+                {
+                    userAcctIndex = (field == field_Email) ? 0 : 1;
+                    IWebElement webElem = null;
+
+                    credential = userAcct[userAcctIndex];
+
+                    try
                     {
-                        PollingInterval = TimeSpan.FromMilliseconds(250)
-                    };
-                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                    wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                    webElem = wait.Until(x => x.FindElement(field));
-                    webElem.SendKeys(credential);
+                        log.Info($"...waiting for element {field}");
+                        WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(2))
+                        {
+                            PollingInterval = TimeSpan.FromMilliseconds(250)
+                        };
+                        wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                        wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                        webElem = wait.Until(x => x.FindElement(field));
+                        webElem.SendKeys(credential);
+                    }
+                    catch (Exception e)
+                    {
+                        LogError($"Exception occured while waiting for element - {field}", true, e);
+                        throw;
+                    }
                 }
-                catch (Exception e)
-                {
-                    LogError($"Exception occured while waiting for element - {field}", true, e);
-                    throw;
-                }
-            }
 
-            LogInfo($"Using account : {userAcct[0]}");
-            ClickElement(btn_Login);
+                LogInfo($"Using account : {userAcct[0]}");
+                ClickElement(btn_Login);
+            }
         }
 
         public virtual void ToggleRememberMeChkbox()
