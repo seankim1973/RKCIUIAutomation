@@ -19,7 +19,7 @@ namespace RKCIUIAutomation.Page
         {
         }
 
-        //public Action(IWebDriver driver) => this.Driver = driver;
+        public Action(IWebDriver driver) => this.Driver = driver;
 
         private enum JSAction
         {
@@ -40,7 +40,6 @@ namespace RKCIUIAutomation.Page
                 IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
                 executor.ExecuteScript(javaScript, element);
                 LogInfo($"{jsAction.ToString()}ed on javascript element: - {elementByLocator}");
-                WaitForPageReady();
             }
             catch (Exception e)
             {
@@ -51,14 +50,12 @@ namespace RKCIUIAutomation.Page
 
         public void JsClickElement(By elementByLocator)
         {
-            WaitForPageReady();
             ScrollToElement(elementByLocator);
             ExecuteJsAction(JSAction.Click, elementByLocator);
         }
 
         public void JsHover(By elementByLocator)
         {
-            WaitForPageReady();
             ExecuteJsAction(JSAction.Hover, elementByLocator);
             Thread.Sleep(1000);
         }
@@ -67,7 +64,8 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                LogInfo($"...waiting for element: - {elementByLocator}");
+                WaitForPageReady();
+                log.Info($"...waiting for element: - {elementByLocator}");
                 WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeOutInSeconds))
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
@@ -105,7 +103,6 @@ namespace RKCIUIAutomation.Page
 
         internal IWebElement GetElement(By elementByLocator)
         {
-            WaitForPageReady();
             IWebElement elem = null;
             WaitForElement(elementByLocator);
 
@@ -124,7 +121,6 @@ namespace RKCIUIAutomation.Page
 
         private IList<IWebElement> GetElements(By elementByLocator)
         {
-            WaitForPageReady();
             IList<IWebElement> elements = null;
             WaitForElement(elementByLocator);
 
@@ -132,6 +128,7 @@ namespace RKCIUIAutomation.Page
             {
                 elements = new List<IWebElement>();
                 elements = Driver.FindElements(elementByLocator);
+                log.Info($"Getting list of WebElements: {elementByLocator}");
             }
             catch (Exception e)
             {
@@ -189,7 +186,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public string GetAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetProperty(attributeName);
+        public string GetAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetAttribute(attributeName);
 
         public void EnterComment(CommentType commentType, int commentTabNumber = 1)
         {
@@ -228,7 +225,9 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                GetElement(elementByLocator).SendKeys(text);
+                IWebElement textField = GetElement(elementByLocator);
+                textField.Clear();
+                textField.SendKeys(text);
                 LogInfo($"Entered '{text}' in field - {elementByLocator}");
             }
             catch (Exception e)
@@ -286,7 +285,6 @@ namespace RKCIUIAutomation.Page
 
         public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName)
         {
-            WaitForPageReady();
             var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
             ExpandDDL(_ddListID);
             ClickElement(new PageHelper().GetDDListItemsByLocator(_ddListID, itemIndexOrName));
@@ -304,32 +302,39 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError("Exception occured during fiel upload", true, e);
+                LogError("Exception occured during file upload", true, e);
             }
-
-            WaitForPageReady();
         }
 
-        public void ConfirmActionDialog(UnhandledAlertException unhandledAlert, bool confirmYes = true)
+        public string ConfirmActionDialog(bool confirmYes = true)
         {
+            IAlert alert = null;
+            string logMsg = string.Empty;
+            string alertText = string.Empty;
+
             try
-            {
-                IAlert alert = Driver.SwitchTo().Alert();
+            {                
+                alert = new WebDriverWait(Driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
+                alert = Driver.SwitchTo().Alert();
+                alertText = alert.Text;
+
                 if (confirmYes)
                 {
                     alert.Accept();
-                    LogInfo($"Confirmed Confirmation Dialog: {unhandledAlert.AlertText}");
+                    logMsg = "Accepted";
                 }
                 else
                 {
                     alert.Dismiss();
-                    LogInfo($"Dismissed Confirmation Dialog: {unhandledAlert.AlertText}");
+                    logMsg = "Dismissed";
                 }
             }
             catch (Exception e)
             {
-                LogError(e.StackTrace.ToString());
+                log.Error($"ConfirmActionDialog - {e.Message}");
             }
+
+            return $"{logMsg} Confirmation Dialog: {alertText}";
         }
 
         public void AcceptAlertMessage()
@@ -388,7 +393,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                WaitForPageReady();
                 IWebElement element = GetElement(elementByLocator);
                 isDisplayed = (element != null) ? true : isDisplayed;
             }
@@ -621,7 +625,7 @@ namespace RKCIUIAutomation.Page
                     Actions actions = new Actions(Driver);
                     actions.MoveToElement(elem);
                     actions.Perform();
-                    LogInfo($"Scrolled to element - {elementByLocator}");
+                    log.Info($"Scrolled to element - {elementByLocator}");
                 }
             }
             catch (Exception e)
@@ -632,10 +636,8 @@ namespace RKCIUIAutomation.Page
 
         public void LogoutToLoginPage()
         {
-            WaitForPageReady();
-            Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
-            WaitForPageReady();
-            Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+            ClickLogoutLink();
+            ClickLoginLink();
         }
 
         public void ClickLoginLink()
@@ -669,6 +671,8 @@ namespace RKCIUIAutomation.Page
                     acct = Regex.Split(userAcct, "Welcome ");
                     userAcct = acct[1];
                 }
+
+                log.Info($"Getting current user: {userAcct}");
             }
             catch (Exception e)
             {

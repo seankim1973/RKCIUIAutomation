@@ -1,16 +1,29 @@
-﻿using System;
+﻿using OpenQA.Selenium;
+using System;
 using System.Collections;
 
 namespace RKCIUIAutomation.Page
 {
     public class PageBase : PageBaseHelper
     {
+        public PageBase()
+        {
+        }
+
+        public PageBase(IWebDriver driver) => this.Driver = driver;
+
         public PageHelper PageHelper => new PageHelper();
         public PageBaseHelper HashMap => new PageBaseHelper();
     }
 
     public class PageBaseHelper : TableHelper
     {
+        public PageBaseHelper()
+        {
+        }
+
+        public PageBaseHelper(IWebDriver driver) => this.Driver = driver;
+
         private Hashtable Hashtable { get; set; }
 
         private Hashtable GetHashTable() => Hashtable ?? new Hashtable();
