@@ -96,6 +96,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void ClickBtn_CloseCDR();
 
+        void ClickBtn_Back_To_QC_Review();
+
+        void ClickBtn_Back_To_Disposition();
+
         void ClickTab_All();
 
         void ClickTab_Closed_DN();
@@ -209,6 +213,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickBtn_CloseCDR() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Close_CDR));
 
         public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Revise));
+
+        public virtual void ClickBtn_Back_To_Disposition() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Back_To_Disposition));
+
+        public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Back_To_QC_Review));
+
 
         public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
 

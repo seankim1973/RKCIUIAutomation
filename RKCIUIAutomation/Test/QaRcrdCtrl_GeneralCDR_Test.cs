@@ -41,7 +41,7 @@ namespace RKCIUIAutomation.Test.CDR
     }
 
     [TestFixture]
-    public class Verify_Disapprove_and_Close_of_CDR_document_by_CDR_Manager : TestBase
+    public class Verify_QC_Review_of_CDR_document_by_CDR_Manager : TestBase
     {
         [Test]
         [Category(Component.CDR)]
@@ -75,6 +75,26 @@ namespace RKCIUIAutomation.Test.CDR
         }
     }
 
+
+    [TestFixture]
+    public class Verify_Disposition_Of_the_CDR_Document : TestBase
+    {
+        [Test]
+        [Category(Component.CDR)]
+        [Property(TestCaseNumber, 2187784)]
+        [Property(Priority, "High")]
+        [Description("To successfully Disposition an CDR (Construction Deficiency Report) document. GLX only")]
+        public void Disposition_Of_the_CDR_Document()
+        {
+            string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralCDR.ReviewCDRDocument(UserType.Bhoomi, cdrDescription);
+            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription));
+            WF_QaRcrdCtrl_GeneralCDR.DispositionCDRDocument(UserType.Bhoomi, cdrDescription);
+            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
+        }
+    }
+
     [TestFixture]
     public class Verify_Closing_the_CDR_Document : TestBase
     {
@@ -87,7 +107,43 @@ namespace RKCIUIAutomation.Test.CDR
         {
             string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS";
             WF_QaRcrdCtrl_GeneralCDR.CloseDocument(UserType.Bhoomi, cdrDescription);
+            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Closed_DN, cdrDescription));
+        }
+    }
 
+    [TestFixture]
+    public class Verify_KickBack_To_Disposition_the_CDR_Document : TestBase
+    {
+        [Test]
+        [Category(Component.CDR)]
+        [Property(TestCaseNumber, 2187784)]
+        [Property(Priority, "High")]
+        [Description("To successfully close an CDR (Construction Deficiency Report) document.")]
+        public void KickBack_To_Disposition_the_CDR_Document()
+        {
+           // string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS";
+            string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralCDR.KickBackToDispositionCDR(UserType.Bhoomi, cdrDescription);
+            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription));
+        }
+    }
+
+    [TestFixture]
+    public class Verify_KickBack_To_QC_Review_the_CDR_Document : TestBase
+    {
+        [Test]
+        [Category(Component.CDR)]
+        [Property(TestCaseNumber, 2187784)]
+        [Property(Priority, "High")]
+        [Description("To successfully close an CDR (Construction Deficiency Report) document.")]
+        public void KickBack_To_QC_Review_the_CDR_Document()
+        {
+           // string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS";
+            string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralCDR.KickBackToQCReviewCDR(UserType.Bhoomi, cdrDescription);
+            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));
         }
     }
 
