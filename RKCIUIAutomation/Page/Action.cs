@@ -67,7 +67,7 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                LogInfo($"...waiting for element: - {elementByLocator}");
+                log.Info($"...waiting for element: - {elementByLocator}");
                 WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeOutInSeconds))
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
@@ -132,6 +132,7 @@ namespace RKCIUIAutomation.Page
             {
                 elements = new List<IWebElement>();
                 elements = Driver.FindElements(elementByLocator);
+                log.Info($"Getting list of WebElements: {elementByLocator}");
             }
             catch (Exception e)
             {
@@ -310,25 +311,27 @@ namespace RKCIUIAutomation.Page
             WaitForPageReady();
         }
 
-        public void ConfirmActionDialog(UnhandledAlertException unhandledAlert, bool confirmYes = true)
+        public void ConfirmActionDialog(bool confirmYes = true)
         {
             try
             {
+                new WebDriverWait(Driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
                 IAlert alert = Driver.SwitchTo().Alert();
+
                 if (confirmYes)
                 {
                     alert.Accept();
-                    LogInfo($"Confirmed Confirmation Dialog: {unhandledAlert.AlertText}");
+                    LogInfo($"Accepted Confirmation Dialog: {alert.Text}");
                 }
                 else
                 {
                     alert.Dismiss();
-                    LogInfo($"Dismissed Confirmation Dialog: {unhandledAlert.AlertText}");
+                    LogInfo($"Dismissed Confirmation Dialog: {alert.Text}");
                 }
             }
-            catch (Exception e)
+            catch
             {
-                LogError(e.StackTrace.ToString());
+                //log.Debug(e.StackTrace.ToString());
             }
         }
 
@@ -621,7 +624,7 @@ namespace RKCIUIAutomation.Page
                     Actions actions = new Actions(Driver);
                     actions.MoveToElement(elem);
                     actions.Perform();
-                    LogInfo($"Scrolled to element - {elementByLocator}");
+                    log.Info($"Scrolled to element - {elementByLocator}");
                 }
             }
             catch (Exception e)
@@ -669,6 +672,8 @@ namespace RKCIUIAutomation.Page
                     acct = Regex.Split(userAcct, "Welcome ");
                     userAcct = acct[1];
                 }
+
+                log.Info($"Getting current user: {userAcct}");
             }
             catch (Exception e)
             {

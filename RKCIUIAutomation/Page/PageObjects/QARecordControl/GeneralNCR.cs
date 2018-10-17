@@ -1,6 +1,7 @@
 ﻿using MiniGuids;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
@@ -305,6 +306,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         /// <returns>Return true if NCR document is shown in the tab specified</returns>
         bool VerifyNCRDocIsDisplayed(TableTab tableTab, string ncrDescription = "");
 
+        bool VerifyNCRDocIsClosed(string ncrDescription = "");
+
         bool VerifyReqFieldErrorLabelForTypeOfNCR();
 
         string GetNCRDocDescription();
@@ -394,27 +397,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Revise));
 
-        public virtual void ClickBtn_Approve()
-        {
-            try
-            {
-                JsClickElement(GetSubmitBtnLocator(SubmitButtons.Approve));
-            }
-            catch (UnhandledAlertException f)
-            {
-                ConfirmActionDialog(f);
-            }
-        }
+        public virtual void ClickBtn_Approve() => ActionConfirmation(SubmitButtons.Approve);
 
-        public virtual void ClickBtn_DisapproveClose()
+        public virtual void ClickBtn_DisapproveClose() => ActionConfirmation(SubmitButtons.DisapproveClose);
+
+        private void ActionConfirmation(SubmitButtons submitButton, bool acceptAlert = true)
         {
             try
             {
-                JsClickElement(GetSubmitBtnLocator(SubmitButtons.DisapproveClose));
+                JsClickElement(GetSubmitBtnLocator(submitButton));
             }
-            catch (UnhandledAlertException f)
+            catch (UnhandledAlertException)
             {
-                ConfirmActionDialog(f);
+                ConfirmActionDialog();
             }
         }
 
@@ -526,9 +521,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         private void SelectRadioBtnOrChkbox(Enum radioBtn)
         {
-            By locator = By.Id(radioBtn.GetString());
+            string rdoBtn = radioBtn.GetString();
+            By locator = By.Id(rdoBtn);
             ScrollToElement(locator);
             JsClickElement(locator);
+            LogInfo($"Selected Radio Button: {rdoBtn}");
         }
 
         public virtual void SelectRdoBtn_TypeOfNCR_Level1() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level1);
@@ -772,6 +769,27 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ClickTab(tableTab);
             ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : description;
             return VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
+        }
+
+        public virtual bool VerifyNCRDocIsClosed(string description = "")
+        {
+            bool ncrIsClosed = false;
+
+            ClickTab(TableTab.All_NCRs);
+            ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : description;
+            bool isDisplayed = VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
+            if (isDisplayed)
+            {
+                string docStatus = GetColumnValueForRow(ncrDescription, "Workflow location");
+                ncrIsClosed = (docStatus.Equals("Closed")) ? true : false;
+                LogInfo($"NCR Document's Workflow location: {docStatus}");
+            }
+            else
+            {
+                LogError($"NCR Document is not displayed");
+            }
+            
+            return ncrIsClosed;
         }
 
         public void SendBackToRevise(UserType user, string ncrDescription)
