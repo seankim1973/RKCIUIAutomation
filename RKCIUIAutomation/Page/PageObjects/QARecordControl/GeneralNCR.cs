@@ -32,7 +32,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("SegmentId")] Segment,
             [StringValue("RoadwayId")] Roadway,
             [StringValue("ResponsibleManager")] Manager,
-            [StringValue("NonConformance")] Description_of_Nonconformance,
+            [StringValue("NonConformance")] Description_of_Nonconformance, //Description input field for Complex workflow
+            [StringValue("NcrDescription")] Description_of_NCR, //Description input field for Simple workflow
             [StringValue("FeatureId")] Feature,
             [StringValue("SubFeatureId")] SubFeature,
             [StringValue("OtherLocation")] OtherLocation,
@@ -46,8 +47,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("OwnerDate")] OwnerDate,
             [StringValue("OwnerSignature")] Owner_SignBtn,
             [StringValue("CompletionDate")] CompletionDate,
-            [StringValue("CIQM")] CIQM,
-            [StringValue("CIQMDate")] CIQMDate,
+            [StringValue("CIQM")] CQCM, //for Simple workflow
+            [StringValue("CIQMDate")] CQCMDate, //for Simple workflow
+            [StringValue("QualityManager")] CQAM, //for Simple workflow
+            [StringValue("QualityManagerApprovedDate")] CQAMDate, //for Simple workflow
             [StringValue("NcrTypeSubmit")] Type_of_NCR,
             [StringValue("ConcessionRequest")] Concession_Request,
             [StringValue("IQFManager")] IQF_Manager,
@@ -293,6 +296,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void EnterQCManagerApprovedDate();
 
+        void EnterCQCM();
+
+        void EnterCQCMDate();
+
+        void EnterCQAM();
+
+        void EnterCQAMDate();
+
         void PopulateRequiredFieldsAndSaveForward();
 
         bool VerifyReqFieldErrorLabelsForNewDoc();
@@ -369,10 +380,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         [ThreadStatic]
-        private static string ncrDescription;
+        internal static string ncrDescription;
 
         [ThreadStatic]
-        private static string ncrDescKey;
+        internal static string ncrDescKey;
 
         private MiniGuid guid;
 
@@ -621,6 +632,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterQCManagerApprovedDate()
             => EnterText(GetTextInputFieldByLocator(InputFields.QCManagerApprovedDate), GetShortDate());
 
+        public virtual void EnterCQCM()
+            => EnterText(GetTextInputFieldByLocator(InputFields.CQCM), "RKCIUIAutomation CQCM");
+
+        public virtual void EnterCQCMDate()
+            => EnterText(GetTextInputFieldByLocator(InputFields.CQCMDate), GetShortDate());
+
+        public virtual void EnterCQAM()
+            => EnterText(GetTextInputFieldByLocator(InputFields.CQAM), "RKCIUIAutomation CQAM");
+
+        public virtual void EnterCQAMDate()
+            => EnterText(GetTextInputFieldByLocator(InputFields.CQAMDate), GetShortDate());
+
         public virtual void EnterDescription(string description = "")
         {
             CreateNcrDescription();
@@ -664,7 +687,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
-        private string CreateNcrDescription()
+        internal string CreateNcrDescription()
         {
             guid = MiniGuid.NewGuid();
 
@@ -801,6 +824,28 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             Assert.True(VerifyNCRDocIsDisplayed(TableTab.Creating_Revise, ncrDescription));
         }
+
+        //NCR Simple workflow internal methods
+        internal void SimpleWF_PopulateRequiredFieldsAndSaveForward()
+        {
+            EnterIssuedDate();
+            SelectDDL_Originator();
+            EnterDescription();
+            EnterCQCM();
+            EnterCQCMDate();
+            EnterCQAM();
+            EnterCQAMDate();
+            UploadFile("test.xlsx");
+            ClickBtn_SaveForward();
+        }
+
+        internal void SimpleWF_EnterDescription(string description = "")
+        {
+            CreateNcrDescription();
+            ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : GetNCRDocDescription();
+            ScrollToElement(By.Id($"{InputFields.Description_of_NCR.GetString()}"));
+            EnterText(GetTextAreaFieldByLocator(InputFields.Description_of_NCR), ncrDescription);
+        }
     }
 
     #endregion Common Workflow Implementation class
@@ -831,28 +876,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     }
 
     #endregion Implementation specific to GLX
-
-    #region Implementation specific to SH249
-
-    public class GeneralNCR_SH249 : GeneralNCR
-    {
-        public GeneralNCR_SH249(IWebDriver driver) : base(driver)
-        {
-        }
-    }
-
-    #endregion Implementation specific to SH249
-
-    #region Implementation specific to SGWay
-
-    public class GeneralNCR_SGWay : GeneralNCR
-    {
-        public GeneralNCR_SGWay(IWebDriver driver) : base(driver)
-        {
-        }
-    }
-
-    #endregion Implementation specific to SGWay
 
     #region Implementation specific to I15South
 
@@ -895,6 +918,36 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     #endregion Implementation specific to I15Tech
 
+    #region Implementation specific to SH249
+
+    public class GeneralNCR_SH249 : GeneralNCR
+    {
+        public GeneralNCR_SH249(IWebDriver driver) : base(driver)
+        {
+        }
+
+        public override void PopulateRequiredFieldsAndSaveForward() => SimpleWF_PopulateRequiredFieldsAndSaveForward();
+
+        public override void EnterDescription(string description = "") => SimpleWF_EnterDescription(description);
+    }
+
+    #endregion Implementation specific to SH249
+
+    #region Implementation specific to SGWay
+
+    public class GeneralNCR_SGWay : GeneralNCR
+    {
+        public GeneralNCR_SGWay(IWebDriver driver) : base(driver)
+        {
+        }
+
+        public override void PopulateRequiredFieldsAndSaveForward() => SimpleWF_PopulateRequiredFieldsAndSaveForward();
+
+        public override void EnterDescription(string description = "") => SimpleWF_EnterDescription(description);
+    }
+
+    #endregion Implementation specific to SGWay
+
     #region Implementation specific to LAX
 
     public class GeneralNCR_LAX : GeneralNCR
@@ -902,6 +955,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public GeneralNCR_LAX(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void PopulateRequiredFieldsAndSaveForward() => SimpleWF_PopulateRequiredFieldsAndSaveForward();
+
+        public override void EnterDescription(string description = "") => SimpleWF_EnterDescription(description);
     }
 
     #endregion Implementation specific to LAX

@@ -37,19 +37,29 @@ namespace RKCIUIAutomation.Page.Workflows
 
         void Review_and_Return_NCR_ForRevise(UserType user, string ncrDescription);
 
-        void Return_ToRevise_FromVerificationClosure_ForReturnToConformance(string ncrDescription);
+        void SaveForward_FromResolutionDisposition_ToVerificationClosure_ReturnToConformance(string ncrDescription);
 
-        void Return_ToResolutionDisposition_FromDeveloperConcurrence(string ncrDescription);
+        void CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(string ncrDescription);
 
-        void Return_ToDeveloperConcurrence_FromDOTApproval(string ncrDescription);
+        void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription);
+
+        void SaveForward_FromDeveloperConcurrence_ToDOTApproval(string ncrDescription, bool approveNCR = true);
+
+        void SaveForward_FromDOTApproval_ToVerificationClosure(string ncrDescription, bool approveNCR = true);
+
+        //void Return_ToResolutionDisposition_FromDeveloperConcurrence(string ncrDescription);
+
+        //void Return_ToDeveloperConcurrence_FromDOTApproval(string ncrDescription);
 
         void CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(string ncrDescription);
 
-        void CloseNCR_ConcessionRequest_ConcessionDeviation(string ncrDescription);
+        //void CloseNCR_ConcessionRequest_ConcessionDeviation(string ncrDescription);
 
         void CloseNCR_CQMReview_Disapprove(UserType user, string ncrDescription);
 
-        void CloseNCR_ConcessionRequest_ReturnToConformance(string ncrDescription);
+        //void CloseNCR_ConcessionRequest_ReturnToConformance(string ncrDescription);
+
+        void CloseNCR_in_VerificationAndClosure(string ncrDescription);
 
     }
 
@@ -159,7 +169,7 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_DisapproveClose();
         }
 
-        private void TraverseNCR_FromResolutionDisposition_ToVerificationClosure_ReturnToConformance(string ncrDescription)
+        public virtual void SaveForward_FromResolutionDisposition_ToVerificationClosure_ReturnToConformance(string ncrDescription)
         {
             LogDebug("------------WF TraverseNCR_FromReview_ToVerificationClosure_ReturnToConformance-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
@@ -170,29 +180,33 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }
 
-        public virtual void Return_ToRevise_FromVerificationClosure_ForReturnToConformance(string ncrDescription)
+        public virtual void CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(string ncrDescription)
         {
-            TraverseNCR_FromResolutionDisposition_ToVerificationClosure_ReturnToConformance(ncrDescription);
-
             LogDebug("------------WF Return_ToRevise_FromVerificationClosure-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            ClickEditBtnForRow();
+            //QaRcrdCtrl_GeneralNCR.SelectDDL_ConcessionRequest_ReturnToConformance();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
         }
 
-        public virtual void CloseNCR_ConcessionRequest_ReturnToConformance(string ncrDescription)
+        //public virtual void CloseNCR_ConcessionRequest_ReturnToConformance(string ncrDescription)
+        //{
+        //    LogDebug("------------WF CloseNCR_ConcessionRequest_ReturnToConformance-------------");
+
+        //    //todo: click Close button and verify required field error labels are shown(IQCMgr SignBtn, IQFMgr, IQFMgrApprovedDate, QCMgr_SignBtn, QCMgr, QCMgrApprovedDate)
+        //    //CloseNCR_in_VerificationAndClosure(ncrDescription);
+        //}
+
+        //SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription);
+        public void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription)
         {
-            LogDebug("------------WF CloseNCR_ConcessionRequest_ReturnToConformance-------------");
-
-            TraverseNCR_FromResolutionDisposition_ToVerificationClosure_ReturnToConformance(ncrDescription);
-
-            //todo: click Close button and verify required field error labels are shown(IQCMgr SignBtn, IQFMgr, IQFMgrApprovedDate, QCMgr_SignBtn, QCMgr, QCMgrApprovedDate)
-            CloseNCR_in_VerificationAndClosure(ncrDescription);
-        }
-
-        private void TraverseNCR_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription)
-        {
-            LogDebug("------------WF TraverseNCR_FromReview_ToDeveloperConcurrence-------------");
+            LogDebug("------------WF SaveForward_FromResolutionDisposition_ToDeveloperConcurrence-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
             ClickEditBtnForRow();
 
@@ -203,9 +217,10 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }
 
-        private void TraverseNCR_FromDeveloperConcurrence_ToDOTApproval(string ncrDescription, bool approveNCR = true)
+        //SaveForward_FromDeveloperConcurrence_ToDOTApproval(string ncrDescription, bool approveNCR = true);
+        public void SaveForward_FromDeveloperConcurrence_ToDOTApproval(string ncrDescription, bool approveNCR = true)
         {
-            LogDebug("------------WF TraverseNCR_FromDeveloperConcurrence_ToDOTApproval-------------");
+            LogDebug("------------WF SaveForward_FromDeveloperConcurrence_ToDOTApproval-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription));
             ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown (RecordEngineer_SignBtn, EngOfRecord, EngApprovalDate, ApprovalRadioBtn)
@@ -222,9 +237,10 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }
 
-        private void TraverseNCR_FromDOTApproval_ToVerificationClosure(string ncrDescription, bool approveNCR = true)
+        //SaveForward_FromDOTApproval_ToVerificationClosure(string ncrDescription, bool approveNCR = true);
+        public void SaveForward_FromDOTApproval_ToVerificationClosure(string ncrDescription, bool approveNCR = true)
         {
-            LogDebug("------------WF TraverseNCR_FromDOTApproval_ToVerificationClosure-------------");
+            LogDebug("------------WF SaveForward_FromDOTApproval_ToVerificationClosure-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription));
             ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown(Owner_SignBtn, DOTReview, OwnerApprovalDate, OwnerApprovalRdoBtn)
@@ -241,51 +257,50 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }
             
-        //TODO: create new test case where No is selected for Approval and NCR returned to Resolution/Disposition
-        public virtual void Return_ToResolutionDisposition_FromDeveloperConcurrence(string ncrDescription)
-        {
-            LogDebug("------------WF Return_ToResolutionDisposition_FromDeveloperConcurrence-------------");
+        ////TODO: create new test case where No is selected for Approval and NCR returned to Resolution/Disposition
+        //public virtual void Return_ToResolutionDisposition_FromDeveloperConcurrence(string ncrDescription)
+        //{
+        //    LogDebug("------------WF Return_ToResolutionDisposition_FromDeveloperConcurrence-------------");
 
-            TraverseNCR_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
-            TraverseNCR_FromDeveloperConcurrence_ToDOTApproval(ncrDescription, false);
-            TraverseNCR_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
-        }
+        //    //SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
+        //    //SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription, false);
+        //    //SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
+        //}
             
-        //TODO: create new test case where No is selected for Owner Approval and NCR is sent back to Developer Concurrence.
-        public virtual void Return_ToDeveloperConcurrence_FromDOTApproval(string ncrDescription)
-        {
-            LogDebug("------------WF Return_ToDeveloperConcurrence_FromDOTApproval-------------");
+        //public virtual void Return_ToDeveloperConcurrence_FromDOTApproval(string ncrDescription)
+        //{
+        //    LogDebug("------------WF Return_ToDeveloperConcurrence_FromDOTApproval-------------");
 
-            TraverseNCR_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
-            TraverseNCR_FromDOTApproval_ToVerificationClosure(ncrDescription, false);
-            TraverseNCR_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
-        }
+        //    //SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
+        //    //SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription, false);
+        //    //SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
+        //}
 
         public virtual void CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(string ncrDescription)
         {
             LogDebug("------------WF Return_ToRevise_FromVerificationClosure_ForConcessionDiviation-------------");
 
-            TraverseNCR_FromDOTApproval_ToVerificationClosure(ncrDescription);
+            SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
-            TraverseNCR_FromDOTApproval_ToVerificationClosure(ncrDescription);
+            SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
         }
 
-        public virtual void CloseNCR_ConcessionRequest_ConcessionDeviation(string ncrDescription)
-        {
-            LogDebug("------------WF CloseNCR_ConcessionRequest_ConcessionDeviation-------------");
-            TraverseNCR_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
-            TraverseNCR_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
-            TraverseNCR_FromDOTApproval_ToVerificationClosure(ncrDescription);
+        //public virtual void CloseNCR_ConcessionRequest_ConcessionDeviation(string ncrDescription)
+        //{
+        //    LogDebug("------------WF CloseNCR_ConcessionRequest_ConcessionDeviation-------------");
+        //    //SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
+        //    //SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
+        //    //SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription);
 
-            //todo: click Close button and verify required field error labels are shown(IQCMgr SignBtn, IQFMgr, IQFMgrApprovedDate, QCMgr_SignBtn, QCMgr, QCMgrApprovedDate)
+        //    //todo: click Close button and verify required field error labels are shown(IQCMgr SignBtn, IQFMgr, IQFMgrApprovedDate, QCMgr_SignBtn, QCMgr, QCMgrApprovedDate)
 
-            CloseNCR_in_VerificationAndClosure(ncrDescription);
-        }
+        //    //CloseNCR_in_VerificationAndClosure(ncrDescription);
+        //}
 
         public virtual void CloseNCR_in_VerificationAndClosure(string ncrDescription)
         {
@@ -296,7 +311,22 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
             //todo: need verification step to check All NCRs tab and confirm 'workflow location' of NCR
-        }        
+        }
+
+
+        //Workflows for NCR Simple-workflow internal methods
+        internal string SimpleWF_Create_and_SaveForward_NCR(UserType user)
+        {
+            LogDebug("------------WF Create_and_SaveForward_NCR_Document-------------");
+
+            LoginAs(user);
+            NavigateToGeneralNcrPage();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_New();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            //AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc()); TODO: create override for SimpleWF
+            QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward();
+            return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
+        }
     }
 
     internal class QaRcrdCtrl_GeneralNCR_WF_GLX : QaRcrdCtrl_GeneralNCR_WF

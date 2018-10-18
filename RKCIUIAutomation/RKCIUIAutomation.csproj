@@ -439,6 +439,7 @@
     <Content Include="Lib\nunit3-junit.xslt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Test\Suite_GeneralNCR.txt" />
     <Content Include="Test\SampleTests.txt" />
     <Content Include="Test\Smoke.txt" />
     <None Include="Jenkinsfile">
