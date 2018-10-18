@@ -134,7 +134,7 @@ namespace RKCIUIAutomation.Page
 
         private string TableByTextInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
 
-        private string TableColumnIndex(string columnName) => $"//th[@data-title={columnName}']";
+        private string TableColumnIndex(string columnName) => $"//th[@data-title='{columnName}']";
         private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn = null) => (string.IsNullOrEmpty(textInRowForAnyColumn)) ? "//tr[1]/td" : $"{TableByTextInRow(textInRowForAnyColumn)}";
 
         private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn = null) => By.XPath($"{ActiveTableDiv}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
@@ -144,9 +144,9 @@ namespace RKCIUIAutomation.Page
         public string GetColumnValueForRow(string textInRowForAnyColumn, string columnName)
         {
             By headerLocator = By.XPath($"{ActiveTableDiv}{TableColumnIndex(columnName)}");
-            string columnIndex = GetElement(headerLocator).GetAttribute("data-index");
-
-            string rowXPath = $"{TableByTextInRow(textInRowForAnyColumn)}[{columnIndex}]";
+            string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
+            int xPathIndex = int.Parse(dataIndexAttribute) + 1;
+            string rowXPath = $"{TableByTextInRow(textInRowForAnyColumn)}[{xPathIndex.ToString()}]";
             return GetText(By.XPath(rowXPath));
         }
 

@@ -140,7 +140,7 @@ namespace RKCIUIAutomation.Base
 
         public void LogDebug(string details, Exception exception = null)
         {
-            if (details.Contains(">>>"))
+            if (details.Contains(">>>") || details.Contains("Unable"))
             {
                 testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
             }
@@ -181,6 +181,10 @@ namespace RKCIUIAutomation.Base
             else if (details.Contains(">>>"))
             {
                 testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
+            }
+            else if (details.Contains("Found"))
+            {
+                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Green));
             }
             else
             {

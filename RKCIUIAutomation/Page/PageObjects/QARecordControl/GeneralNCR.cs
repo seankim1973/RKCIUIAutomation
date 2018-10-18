@@ -298,7 +298,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         bool VerifyReqFieldErrorLabelsForNewDoc();
 
         /// <summary>
-        /// Clicks specified table tab then verifies NCR document is shown.
+        /// Clicks specified table tab, filters table by NCR Description column, then verifies NCR document is shown.
         /// <para>Method will get unique NCR Description value, based on [ThreadStatic] NcrDescKey if, NCRDescription string is not supplied.</para>
         /// </summary>
         /// <param name="tableTab"></param>
@@ -407,10 +407,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 JsClickElement(GetSubmitBtnLocator(submitButton));
             }
-            catch (UnhandledAlertException)
+            catch (UnhandledAlertException e)
             {
-                ConfirmActionDialog();
+                log.Error(e.AlertText);
             }
+
+            LogInfo(ConfirmActionDialog());
         }
 
         public virtual void ClickBtn_KickBack() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.KickBack));
@@ -761,7 +763,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterDescription();
             UploadFile("test.xlsx");
             ClickBtn_SaveForward();
-            WaitForPageReady();
         }
 
         public virtual bool VerifyNCRDocIsDisplayed(TableTab tableTab, string description = "")
