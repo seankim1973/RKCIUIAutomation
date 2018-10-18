@@ -90,6 +90,7 @@ namespace RKCIUIAutomation.Test.CDR
             LogoutToLoginPage();
             WF_QaRcrdCtrl_GeneralCDR.ReviewCDRDocument(UserType.Bhoomi, cdrDescription);
             Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription));
+            LogoutToLoginPage();
             WF_QaRcrdCtrl_GeneralCDR.DispositionCDRDocument(UserType.Bhoomi, cdrDescription);
             Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
         }
@@ -105,7 +106,7 @@ namespace RKCIUIAutomation.Test.CDR
         [Description("To successfully close an CDR (Construction Deficiency Report) document.")]
         public void Close_the_CDR_Document()
         {
-            string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS";
+            string cdrDescription = "DvsNBomRSWtexnmeoPKheNWtmJ";
             WF_QaRcrdCtrl_GeneralCDR.CloseDocument(UserType.Bhoomi, cdrDescription);
             Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Closed_DN, cdrDescription));
         }
@@ -121,8 +122,14 @@ namespace RKCIUIAutomation.Test.CDR
         [Description("To successfully close an CDR (Construction Deficiency Report) document.")]
         public void KickBack_To_Disposition_the_CDR_Document()
         {
-           // string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS";
+            // string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS";
             string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralCDR.ReviewCDRDocument(UserType.Bhoomi, cdrDescription);
+            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription));
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralCDR.DispositionCDRDocument(UserType.Bhoomi, cdrDescription);
+            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
             LogoutToLoginPage();
             WF_QaRcrdCtrl_GeneralCDR.KickBackToDispositionCDR(UserType.Bhoomi, cdrDescription);
             Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription));
@@ -139,8 +146,11 @@ namespace RKCIUIAutomation.Test.CDR
         [Description("To successfully close an CDR (Construction Deficiency Report) document.")]
         public void KickBack_To_QC_Review_the_CDR_Document()
         {
-           // string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS";
+            // string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS";
             string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralCDR.ReviewCDRDocument(UserType.Bhoomi, cdrDescription);
+            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription));
             LogoutToLoginPage();
             WF_QaRcrdCtrl_GeneralCDR.KickBackToQCReviewCDR(UserType.Bhoomi, cdrDescription);
             Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));

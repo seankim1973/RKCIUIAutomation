@@ -69,6 +69,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Cancel")] Cancel,
             [StringValue("Revise")] Revise,
             [StringValue("Close CDR")] Close_CDR,
+            [StringValue("Close DN")] Close_DN,
             [StringValue("Save Only")] SaveOnly,
             [StringValue("Save & Forward")] SaveForward,
             [StringValue("Back To QC Review")] Back_To_QC_Review,
