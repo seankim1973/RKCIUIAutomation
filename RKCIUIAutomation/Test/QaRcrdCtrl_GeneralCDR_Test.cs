@@ -29,14 +29,18 @@ namespace RKCIUIAutomation.Test.CDR
         [Category(Component.CDR)]
         [Property(TestCaseNumber, 2187610)]
         [Property(Priority, "High")]
-        [Description("To validate the QC review part of an CDR (Construction Deficiency Report).")]
+        [Description("To validate the QC review part of an CDR (Construction Deficiency Report).GLX and I15s only")]
         public void QC_Review_of_CDR_document()
         {
+            //string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS"; //chnage the name once you create new CDR
+            //WF_QaRcrdCtrl_GeneralCDR.ReviewAndApproveCDRDocument(UserType.Bhoomi, cdrDescription);
             //string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.CDRTech);
             //LogoutToLoginPage();
-
-            string cdrDescription = "UASpeuycVMIunVSWlLAYEEypBS"; //chnage the name once you create new CDR
-            WF_QaRcrdCtrl_GeneralCDR.ReviewAndApproveCDRDocument(UserType.Bhoomi, cdrDescription);
+            string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralCDR.ReviewCDRDocument(UserType.Bhoomi, cdrDescription);
+            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription));
+           
         }
     }
 
