@@ -1,4 +1,6 @@
-﻿using OpenQA.Selenium;
+﻿using NUnit.Framework.Interfaces;
+using OpenQA.Selenium;
+using RKCIUIAutomation.Base;
 using System;
 
 namespace RKCIUIAutomation.Page
@@ -241,30 +243,9 @@ namespace RKCIUIAutomation.Page
 
         public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber)
         {
-            bool isDisplayed = false;
-
-            try
-            {
-                FilterTableColumnByValue(columnName, recordNameOrNumber);
-                LogDebug($"Searching for record: {recordNameOrNumber}");
-
-                isDisplayed = ElementIsDisplayed(GetTableRowLocator(recordNameOrNumber)) ? true : isDisplayed;
-
-                if (isDisplayed)
-                {
-                    LogInfo($"Found record: {recordNameOrNumber}.");
-                }
-                else
-                {
-                    LogDebug($"Unable to find record {recordNameOrNumber}.");
-                }
-            }
-            catch (Exception e)
-            {
-                LogError("Error occured in VerifyRecordIsShownInTab method", true, e);
-            }
-
-            return isDisplayed;
+            FilterTableColumnByValue(columnName, recordNameOrNumber);
+            LogDebug($"Searching for record: {recordNameOrNumber}");
+            return ElementIsDisplayed(GetTableRowLocator(recordNameOrNumber));
         }
 
 

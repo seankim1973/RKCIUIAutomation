@@ -209,4 +209,23 @@ namespace RKCIUIAutomation.Test.UnitTests
         }
     }
 
+
+    [TestFixture]
+    public class UnitTest_Verify_AssertAll : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(TestCaseNumber, 123456)]
+        [Property(Priority, "High")]
+        [Description("AssertAll")]
+        public void Verify_AssertAll()
+        {
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AddAssertionToList(false);
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AssertAll();
+        }
+    }
 }
