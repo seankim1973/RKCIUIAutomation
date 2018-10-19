@@ -78,7 +78,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogDebug($"WaitForElement timeout occured for element: - {elementByLocator}", e);
+                log.Error($"WaitForElement timeout occured for element: - {elementByLocator}", e);
             }
         }
 
@@ -109,11 +109,10 @@ namespace RKCIUIAutomation.Page
             try
             {
                 elem = Driver.FindElement(elementByLocator);
-                return elem;
             }
             catch (Exception e)
             {
-                LogDebug($"Unable to locate element: - {elementByLocator}", e);
+                LogError($"Unable to GetElement: - {elementByLocator}\n{e.StackTrace}");
             }
 
             return elem;
@@ -394,11 +393,11 @@ namespace RKCIUIAutomation.Page
             try
             {
                 IWebElement element = GetElement(elementByLocator);
-                isDisplayed = (element != null) ? true : isDisplayed;
+                isDisplayed = (element != null) ? true : false;
             }
             catch (Exception e)
             {
-                LogError("Error occured in ElementIsDisplayed method", true, e);
+                log.Error(e.StackTrace);
             }
 
             return isDisplayed;

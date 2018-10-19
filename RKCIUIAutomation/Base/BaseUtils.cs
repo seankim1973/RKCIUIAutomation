@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.BaseClass;
+using Action = RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Base
 {

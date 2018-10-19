@@ -25,7 +25,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        string Create_and_SaveForward_NCR(UserType user);
+        string Create_and_SaveForward_NCR(UserType user, bool isComplexWF = true);
 
         /// <summary>
         /// Verifies a document is shown in 'Revise' tab, after clicking Revise button for a document in the 'Review' tab.
@@ -60,7 +60,6 @@ namespace RKCIUIAutomation.Page.Workflows
         //void CloseNCR_ConcessionRequest_ReturnToConformance(string ncrDescription);
 
         void CloseNCR_in_VerificationAndClosure(string ncrDescription);
-
     }
 
     public abstract class QaRcrdCtrl_GeneralNCR_WF_Impl : TestBase, IQaRcrdCtrl_GeneralNCR_WF
@@ -109,7 +108,7 @@ namespace RKCIUIAutomation.Page.Workflows
             return instance;
         }
 
-        private void NavigateToGeneralNcrPage()
+        internal void NavigateToGeneralNcrPage()
         {
             if (!Driver.Title.Contains("NCR List"))
             {
@@ -118,7 +117,7 @@ namespace RKCIUIAutomation.Page.Workflows
             }
         }
 
-        public virtual string Create_and_SaveForward_NCR(UserType user)
+        public virtual string Create_and_SaveForward_NCR(UserType user, bool isComplexWF = true)
         {
             LogDebug("------------WF Create_and_SaveForward_NCR_Document-------------");
 
@@ -127,7 +126,7 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_New();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc());
-            QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward();
+            QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward(isComplexWF);
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
 
@@ -314,20 +313,14 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
 
-        //Workflows for NCR Simple-workflow internal methods
-        internal string SimpleWF_Create_and_SaveForward_NCR(UserType user)
-        {
-            LogDebug("------------WF Create_and_SaveForward_NCR_Document-------------");
+        /*
+         * NCR SimpleWF internal methods
+         */
 
-            LoginAs(user);
-            NavigateToGeneralNcrPage();
-            QaRcrdCtrl_GeneralNCR.ClickBtn_New();
-            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            //AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc()); TODO: create override for SimpleWF
-            QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward();
-            return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
-        }
+        //internal string SimpleWF_Create_and_SaveForward_NCR(UserType user, bool isComplexWF = false) => Create_and_SaveForward_NCR(user, isComplexWF);
+
     }
+
 
     internal class QaRcrdCtrl_GeneralNCR_WF_GLX : QaRcrdCtrl_GeneralNCR_WF
     {
@@ -339,20 +332,6 @@ namespace RKCIUIAutomation.Page.Workflows
     internal class QaRcrdCtrl_GeneralNCR_WF_Garnet : QaRcrdCtrl_GeneralNCR_WF
     {
         public QaRcrdCtrl_GeneralNCR_WF_Garnet(IWebDriver driver) : base(driver)
-        {
-        }
-    }
-
-    internal class QaRcrdCtrl_GeneralNCR_WF_SH249 : QaRcrdCtrl_GeneralNCR_WF
-    {
-        public QaRcrdCtrl_GeneralNCR_WF_SH249(IWebDriver driver) : base(driver)
-        {
-        }
-    }
-
-    internal class QaRcrdCtrl_GeneralNCR_WF_SGWay : QaRcrdCtrl_GeneralNCR_WF
-    {
-        public QaRcrdCtrl_GeneralNCR_WF_SGWay(IWebDriver driver) : base(driver)
         {
         }
     }
@@ -371,10 +350,33 @@ namespace RKCIUIAutomation.Page.Workflows
         }
     }
 
+    internal class QaRcrdCtrl_GeneralNCR_WF_SH249 : QaRcrdCtrl_GeneralNCR_WF
+    {
+        public QaRcrdCtrl_GeneralNCR_WF_SH249(IWebDriver driver) : base(driver)
+        {
+        }
+
+        //public override string Create_and_SaveForward_NCR(UserType user, bool isComplexWF = false)
+        //    => SimpleWF_Create_and_SaveForward_NCR(user);
+    }
+
+    internal class QaRcrdCtrl_GeneralNCR_WF_SGWay : QaRcrdCtrl_GeneralNCR_WF
+    {
+        public QaRcrdCtrl_GeneralNCR_WF_SGWay(IWebDriver driver) : base(driver)
+        {
+        }
+
+        //public override string Create_and_SaveForward_NCR(UserType user, bool isComplexWF = false)
+        //    => SimpleWF_Create_and_SaveForward_NCR(user);
+    }
+
     internal class QaRcrdCtrl_GeneralNCR_WF_LAX : QaRcrdCtrl_GeneralNCR_WF
     {
         public QaRcrdCtrl_GeneralNCR_WF_LAX(IWebDriver driver) : base(driver)
         {
         }
+
+        //public override string Create_and_SaveForward_NCR(UserType user, bool isComplexWF = false)
+        //    => SimpleWF_Create_and_SaveForward_NCR(user);
     }
 }

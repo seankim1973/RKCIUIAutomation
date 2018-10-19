@@ -274,7 +274,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void EnterResponsibleManager(string mgrName);
 
-        void EnterDescription(string description);
+        void EnterDescription(string description = "", bool isComplexWF = true);
+
+        string EnterNewDescription(string description = "", bool isComplexWF = true);
 
         void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "");
 
@@ -304,7 +306,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void EnterCQAMDate();
 
-        void PopulateRequiredFieldsAndSaveForward();
+        void PopulateRequiredFieldsAndSaveForward(bool isComplexWF = true);
 
         bool VerifyReqFieldErrorLabelsForNewDoc();
 
@@ -317,7 +319,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         /// <returns>Return true if NCR document is shown in the tab specified</returns>
         bool VerifyNCRDocIsDisplayed(TableTab tableTab, string ncrDescription = "");
 
-        bool VerifyNCRDocIsClosed(string ncrDescription = "");
+        bool VerifyNCRDocIsClosed(string ncrDescription = "", bool isComplexWF = true);
 
         bool VerifyReqFieldErrorLabelForTypeOfNCR();
 
@@ -621,7 +623,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => EnterText(GetTextInputFieldByLocator(InputFields.IQF_Manager),
                 iqfMgrText = (string.IsNullOrEmpty(iqfMgrText) ? "RKCIUIAutomation IQFMgr" : iqfMgrText));
 
-
         public virtual void EnterIQFManagerApprovedDate()
             => EnterText(GetTextInputFieldByLocator(InputFields.IQFManagerDate), GetShortDate());
 
@@ -644,12 +645,20 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterCQAMDate()
             => EnterText(GetTextInputFieldByLocator(InputFields.CQAMDate), GetShortDate());
 
-        public virtual void EnterDescription(string description = "")
+        public virtual void EnterDescription(string description = "", bool isComplexWF = true)
         {
+            InputFields descriptionField = isComplexWF ? InputFields.Description_of_Nonconformance : InputFields.Description_of_NCR;
+
             CreateNcrDescription();
             ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : GetNCRDocDescription();
-            ScrollToElement(By.Id($"{InputFields.Description_of_Nonconformance.GetString()}"));
-            EnterText(GetTextAreaFieldByLocator(InputFields.Description_of_Nonconformance), ncrDescription);
+            ScrollToElement(By.Id($"{descriptionField.GetString()}"));
+            EnterText(GetTextAreaFieldByLocator(descriptionField), ncrDescription);
+        }
+
+        public virtual string EnterNewDescription(string description = "", bool isComplexWF = true)
+        {
+            EnterDescription(description, isComplexWF);
+            return GetNCRDocDescription();
         }
 
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
@@ -770,21 +779,33 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        public virtual void PopulateRequiredFieldsAndSaveForward()
+        public virtual void PopulateRequiredFieldsAndSaveForward(bool isComplexWF = true)
         {
             EnterIssuedDate();
             SelectDDL_Originator();
-            SelectDDL_Foreman();
-            EnterForemanNotificationDate();
-            EnterResponsibleManager("Bhoomi Purohit");
-            EnterManagerNotificationDate();
-            SelectDDL_Specification();
-            SelectDDL_Area();
-            SelectDDL_Roadway();
-            SelectDDL_Feature();
-            SelectDDL_SubFeature();
-            EnterDescription();
+
+            if (isComplexWF)
+            {
+                SelectDDL_Foreman();
+                EnterForemanNotificationDate();
+                EnterResponsibleManager("Bhoomi Purohit");
+                EnterManagerNotificationDate();
+                SelectDDL_Specification();
+                SelectDDL_Area();
+                SelectDDL_Roadway();
+                SelectDDL_Feature();
+                SelectDDL_SubFeature();
+            }
+            else
+            {
+                EnterCQCM();
+                EnterCQCMDate();
+                EnterCQAM();
+                EnterCQAMDate();
+            }
+
             UploadFile("test.xlsx");
+            EnterDescription("", isComplexWF);
             ClickBtn_SaveForward();
         }
 
@@ -792,27 +813,46 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             ClickTab(tableTab);
             ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : description;
-            return VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
-        }
-
-        public virtual bool VerifyNCRDocIsClosed(string description = "")
-        {
-            bool ncrIsClosed = false;
-
-            ClickTab(TableTab.All_NCRs);
-            ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : description;
             bool isDisplayed = VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
+
             if (isDisplayed)
             {
-                string docStatus = GetColumnValueForRow(ncrDescription, "Workflow location");
-                ncrIsClosed = (docStatus.Equals("Closed")) ? true : false;
-                LogInfo($"NCR Document's Workflow location: {docStatus}");
+                LogInfo($"Found record under {tableTab.GetString()} tab with description: {ncrDescription}.");
             }
             else
             {
-                LogError($"NCR Document is not displayed");
+                LogError($"Unable to find record under {tableTab.GetString()} tab with description: {ncrDescription}.");
             }
-            
+
+            return isDisplayed;
+        }
+
+        public virtual bool VerifyNCRDocIsClosed(string description = "", bool isComplexWF = true)
+        {
+            TableTab tableTab = isComplexWF ? TableTab.All_NCRs : TableTab.Closed_NCR;
+            bool ncrIsClosed = false;
+
+            try
+            {
+                ClickTab(tableTab);
+                ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : description;
+                bool isDisplayed = VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
+                if (isDisplayed)
+                {
+                    string docStatus = GetColumnValueForRow(ncrDescription, "Workflow location");
+                    ncrIsClosed = (docStatus.Equals("Closed")) ? true : false;
+                    LogInfo($"NCR Document's Workflow location: {docStatus}");
+                }
+                else
+                {
+                    LogError($"NCR Document is not displayed");
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
             return ncrIsClosed;
         }
 
@@ -825,35 +865,30 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Assert.True(VerifyNCRDocIsDisplayed(TableTab.Creating_Revise, ncrDescription));
         }
 
-        //NCR Simple workflow internal methods
-        internal void SimpleWF_PopulateRequiredFieldsAndSaveForward()
-        {
-            EnterIssuedDate();
-            SelectDDL_Originator();
-            EnterDescription();
-            EnterCQCM();
-            EnterCQCMDate();
-            EnterCQAM();
-            EnterCQAMDate();
-            UploadFile("test.xlsx");
-            ClickBtn_SaveForward();
-        }
 
-        internal void SimpleWF_EnterDescription(string description = "")
-        {
-            CreateNcrDescription();
-            ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : GetNCRDocDescription();
-            ScrollToElement(By.Id($"{InputFields.Description_of_NCR.GetString()}"));
-            EnterText(GetTextAreaFieldByLocator(InputFields.Description_of_NCR), ncrDescription);
-        }
+        /*
+         * NCR Simple Workflow internal methods
+         */
+
+        //internal void SimpleWF_PopulateRequiredFieldsAndSaveForward(bool isComplexWF = false)
+        //    => PopulateRequiredFieldsAndSaveForward(isComplexWF);
+
+        //internal void SimpleWF_EnterDescription(string description = "", bool isComplexWF = false)
+        //    => EnterDescription(description, isComplexWF);
+
+        //internal string SimpleWF_EnterNewDescription(string description = "", bool isComplexWF = false)
+        //    => EnterNewDescription(description, isComplexWF);
+
+        //internal bool SimpleWF_VerifyNCRDocIsClosed(string description = "", bool isComplexWF = false)
+        //    => VerifyNCRDocIsClosed(description, isComplexWF);
     }
 
     #endregion Common Workflow Implementation class
 
+
     /// <summary>
     /// Tenant specific implementation of DesignDocument Comment Review
     /// </summary>
-    ///
 
     #region Implementation specific to Garnet
 
@@ -926,9 +961,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
 
-        public override void PopulateRequiredFieldsAndSaveForward() => SimpleWF_PopulateRequiredFieldsAndSaveForward();
+        //public override void PopulateRequiredFieldsAndSaveForward(bool isComplexWF = false)
+        //    => SimpleWF_PopulateRequiredFieldsAndSaveForward(isComplexWF);
 
-        public override void EnterDescription(string description = "") => SimpleWF_EnterDescription(description);
+        //public override void EnterDescription(string description = "", bool isComplexWF = false)
+        //    => SimpleWF_EnterDescription(description, isComplexWF);
+
+        //public override string EnterNewDescription(string description = "", bool isComplexWF = false)
+        //    => SimpleWF_EnterNewDescription(description);
+
+        //public override bool VerifyNCRDocIsClosed(string description = "", bool isComplexWF = false)
+        //    => SimpleWF_VerifyNCRDocIsClosed(description, isComplexWF);
     }
 
     #endregion Implementation specific to SH249
@@ -941,9 +984,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
 
-        public override void PopulateRequiredFieldsAndSaveForward() => SimpleWF_PopulateRequiredFieldsAndSaveForward();
+        //public override void PopulateRequiredFieldsAndSaveForward(bool isComplexWF = false)
+        //    => SimpleWF_PopulateRequiredFieldsAndSaveForward(isComplexWF);
 
-        public override void EnterDescription(string description = "") => SimpleWF_EnterDescription(description);
+        //public override void EnterDescription(string description = "", bool isComplexWF = false)
+        //    => SimpleWF_EnterDescription(description, isComplexWF);
+
+        //public override string EnterNewDescription(string description = "", bool isComplexWF = false)
+        //    => SimpleWF_EnterNewDescription(description);
+
+        //public override bool VerifyNCRDocIsClosed(string description = "", bool isComplexWF = false)
+        //    => SimpleWF_VerifyNCRDocIsClosed(description, isComplexWF);
     }
 
     #endregion Implementation specific to SGWay
@@ -956,9 +1007,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
 
-        public override void PopulateRequiredFieldsAndSaveForward() => SimpleWF_PopulateRequiredFieldsAndSaveForward();
+        //public override void PopulateRequiredFieldsAndSaveForward(bool isComplexWF = false)
+        //    => SimpleWF_PopulateRequiredFieldsAndSaveForward(isComplexWF);
 
-        public override void EnterDescription(string description = "") => SimpleWF_EnterDescription(description);
+        //public override void EnterDescription(string description = "", bool isComplexWF = false)
+        //    => SimpleWF_EnterDescription(description, isComplexWF);
+
+        //public override string EnterNewDescription(string description = "", bool isComplexWF = false)
+        //    => SimpleWF_EnterNewDescription(description);
+
+        //public override bool VerifyNCRDocIsClosed(string description = "", bool isComplexWF = false)
+        //    => SimpleWF_VerifyNCRDocIsClosed(description, isComplexWF);
     }
 
     #endregion Implementation specific to LAX
