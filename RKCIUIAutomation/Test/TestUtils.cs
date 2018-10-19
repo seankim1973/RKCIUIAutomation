@@ -141,7 +141,8 @@ namespace RKCIUIAutomation.Test
             return pageUrlList;
         }
 
-        private List<bool> assertionList;
+        [ThreadStatic]
+        private static List<bool> assertionList;
 
         public void AddAssertionToList(bool assertion)
         {

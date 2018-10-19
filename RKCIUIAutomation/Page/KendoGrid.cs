@@ -22,7 +22,6 @@ namespace RKCIUIAutomation.Page
             jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
             ExecuteJsScript(jsToBeExecuted);
             LogInfo($"Clicked Comment {commentTabIndex} tab");
-            WaitForPageReady();
         }
 
         public void ClickTableTab(string tblTabName)
@@ -43,7 +42,6 @@ namespace RKCIUIAutomation.Page
                         jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
                         ExecuteJsScript(jsToBeExecuted);
                         LogInfo($"Clicked Table Tab - {tblTabName}");
-                        WaitForPageReady();
                     }
                 }
             }
@@ -68,6 +66,7 @@ namespace RKCIUIAutomation.Page
 
         private int GetElementIndex(By findElementsLocator, string matchValue)
         {
+            WaitForPageReady();
             int index = -1;
             try
             {
@@ -99,7 +98,6 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference();
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.filter([]);";
             ExecuteJsScript(jsToBeExecuted);
-            WaitForPageReady();
         }
 
         public int TotalNumberRows()
@@ -115,7 +113,6 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference();
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.read();";
             ExecuteJsScript(jsToBeExecuted);
-            WaitForPageReady();
         }
 
         public int GetPageSize()
@@ -132,7 +129,6 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference();
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.pageSize({newSize});";
             ExecuteJsScript(jsToBeExecuted);
-            WaitForPageReady();
         }
 
         public void GoToTablePage(int pageNumber)
@@ -142,7 +138,6 @@ namespace RKCIUIAutomation.Page
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.page({pageNumber});";
             ExecuteJsScript(jsToBeExecuted);
             LogInfo($"Navigated to table page {pageNumber}");
-            WaitForPageReady();
         }
 
         public void Sort(string columnName, SortType sortType)
@@ -151,7 +146,6 @@ namespace RKCIUIAutomation.Page
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.sort({{field: '{columnName}', dir: '{sortType.GetString()}'}});";
             ExecuteJsScript(jsToBeExecuted);
             LogInfo($"Sorted {columnName} column to {sortType.ToString()} order");
-            WaitForPageReady();
         }
 
         public List<T> GetItems<T>() where T : class
@@ -206,7 +200,6 @@ namespace RKCIUIAutomation.Page
 
             string addnlFilter = (addnlFilterValue != null) ? $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}" : string.Empty;
             LogInfo($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilter}");
-            WaitForPageReady();
         }
 
         public int GetCurrentPageNumber()
@@ -221,8 +214,6 @@ namespace RKCIUIAutomation.Page
 
         private string GetTabStripReference()
         {
-            WaitForPageReady();
-
             string tabStripId = string.Empty;
             try
             {
@@ -231,7 +222,7 @@ namespace RKCIUIAutomation.Page
 
                 if (!string.IsNullOrEmpty(tabStripId))
                 {
-                    LogInfo($"Found Kendo Grid TabStrip ID: {tabStripId}");
+                    log.Info($"Found Kendo Grid TabStrip ID: {tabStripId}");
                 }
             }
             catch (Exception e)
@@ -245,8 +236,6 @@ namespace RKCIUIAutomation.Page
 
         private string GetGridReference()
         {
-            WaitForPageReady();
-
             By singleGridDivLocator = By.XPath("//div[@data-role='grid']");
             By multiActiveGridDivLocator = By.XPath("//div[@class='k-content k-state-active']/div");
             IWebElement gridElem = null;
@@ -258,7 +247,7 @@ namespace RKCIUIAutomation.Page
 
                 if (!string.IsNullOrEmpty(gridId))
                 {
-                    LogInfo($"Found Kendo Grid ID: {gridId}");
+                    log.Info($"Found Kendo Grid ID: {gridId}");
                 }
             }
             catch (Exception e)
