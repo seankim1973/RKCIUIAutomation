@@ -43,6 +43,8 @@ namespace RKCIUIAutomation.Config
             //Secondary Components (not in Jira)
             public const string OV_Test = "OV_Test";
             public const string QAField = "QAField";
+            public const string NCR_WF_Complex = "NCR_WF_Complex";
+            public const string NCR_WF_Simple = "NCR_WF_Simple";
 
             //Tenant Specific Components
             public const string Garnet = "Garnet";
@@ -112,47 +114,54 @@ namespace RKCIUIAutomation.Config
             Component.Garnet,
             Component.DesignDoc_CommentReview,
             Component.RFI,
-            Component.QAField
+            Component.QAField,
+            Component.NCR_WF_Complex
         };
 
         private readonly List<string> Components_GreenLineExt = new List<string>
         {
             Component.GLX,
             Component.DesignDoc_CommentReview,
-            Component.RFI
+            Component.RFI,
+            Component.NCR_WF_Complex
         };
 
         private readonly List<string> Components_I15Southbound = new List<string>
         {
             Component.I15South,
             Component.OV_Test,
-            Component.QAField
+            Component.QAField,
+            Component.NCR_WF_Complex
         };
 
         private readonly List<string> Components_I15TechCorridor = new List<string>
         {
             Component.I15Tech,
             Component.OV_Test,
-            Component.QAField
+            Component.QAField,
+            Component.NCR_WF_Complex
         };
 
         private readonly List<string> Components_SH249Ext = new List<string>
         {
             Component.SH249,
             Component.DesignDoc_CommentReview,
-            Component.QAField
+            Component.QAField,
+            Component.NCR_WF_Simple
         };
 
         private readonly List<string> Components_SouthernGateway = new List<string>
         {
             Component.SGWay,
             Component.DesignDoc_CommentReview,
-            Component.QAField
+            Component.QAField,
+            Component.NCR_WF_Simple
         };
 
         private readonly List<string> Components_LAX = new List<string>
         {
             Component.LAX,
+            Component.NCR_WF_Simple
         };
 
         private readonly List<string> CommonComponents = new List<string>

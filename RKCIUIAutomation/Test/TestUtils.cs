@@ -142,11 +142,11 @@ namespace RKCIUIAutomation.Test
         }
 
         [ThreadStatic]
-        private static List<bool> assertionList;
+        private static List<bool> assertionList = null;
 
         public void AddAssertionToList(bool assertion)
         {
-            if (assertionList?.Any() != true)
+            if (assertionList == null)
             {
                 assertionList = new List<bool>();
             }
@@ -156,12 +156,17 @@ namespace RKCIUIAutomation.Test
 
         public void AssertAll()
         {
+            int AssertionCount = 0;
+
             Assert.Multiple(testDelegate: () =>
             {
                 foreach (bool assertion in assertionList)
+                {
+                    AssertionCount++;
+                    Console.WriteLine($"AssertionCount: {AssertionCount}");
                     Assert.True(assertion);
+                }
             });
         }
-
     }
 }
