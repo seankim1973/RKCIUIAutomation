@@ -170,43 +170,56 @@ namespace RKCIUIAutomation.Test.NCR
     }
 
 
-    [TestFixture]
-    public class Verify_SimpleWF_Create_And_Save_Ncr_Document : TestBase
+    [TestFixture]//complete, updated hiptest
+    public class Verify_NCR_SimpleWF_End_To_End : TestBase
     {
         [Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Simple)]
         [Property(TestCaseNumber, 2187687)]
         [Property(Priority, "High")]
-        [Description("To validate successful create and save of an NCR (Nonconformance Report) document.")]
-        public void SimpleWF_Create_And_Save_Ncr_Document()
+        [Description("To validate simple workflow for NCR module end-to-end.")]
+        public void NCR_SimpleWF_End_To_End()
         {
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech, false);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
             ClickEditBtnForRow();
-            //send to revise from review
+            LogInfo("------------send to revise from Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
             ClickEditBtnForRow();
-            //edit step in revise
-            ncrDescription = QaRcrdCtrl_GeneralNCR.EnterNewDescription(ncrDescription, false);
-            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
-            //saveonly in revise
+
+            LogInfo("------------cancel, edit/saveonly in Revise------------");
+            QaRcrdCtrl_GeneralNCR.EnterNewDescription("New NCR Description", false);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
             ClickEditBtnForRow();
+            ncrDescription = QaRcrdCtrl_GeneralNCR.EnterNewDescription("", false);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();           
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
             ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in ToBeClosed------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed, ncrDescription));
             ClickEditBtnForRow();
-            //send to revise from ToBeClosed
+
+            LogInfo("------------send to revise from ToBeClosed------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
             ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd from Revise to Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
             ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed, ncrDescription));
             ClickEditBtnForRow();
@@ -219,14 +232,14 @@ namespace RKCIUIAutomation.Test.NCR
 
 
     [TestFixture]
-    public class Verify_Closing_the_Ncr_Document : TestBase
+    public class Verify_Locked_Ncr_Document_Cannot_Be_Edited_By_Another_User : TestBase
     {
         //[Test]
         [Category(Component.NCR)]
-        [Property(TestCaseNumber, 2187690)]
+        [Property(TestCaseNumber, 2352692)]
         [Property(Priority, "High")]
-        [Description("To successfully close an NCR (Nonconformance Report) document.")]
-        public void Close_the_Ncr_Document()
+        [Description("The objective of this test case is to verify that a Locked NCR cannot be edited by another user.")]
+        public void Locked_Ncr_Document_Cannot_Be_Edited_By_Another_User()
         {
             LoginAs(UserType.NCRMgr);
             NavigateToPage.QARecordControl_General_NCR();

@@ -385,7 +385,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         internal static string ncrDescription;
 
         [ThreadStatic]
+        internal static string ncrNewDescription;
+
+        [ThreadStatic]
         internal static string ncrDescKey;
+
+        [ThreadStatic]
+        internal static string ncrNewDescKey;
 
         private MiniGuid guid;
 
@@ -650,15 +656,20 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             InputFields descriptionField = isComplexWF ? InputFields.Description_of_Nonconformance : InputFields.Description_of_NCR;
 
             CreateNcrDescription();
-            ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : GetNCRDocDescription();
+            ncrDescription = string.IsNullOrEmpty(description) ? GetNCRDocDescription() : description;
             ScrollToElement(By.Id($"{descriptionField.GetString()}"));
             EnterText(GetTextAreaFieldByLocator(descriptionField), ncrDescription);
         }
 
         public virtual string EnterNewDescription(string description = "", bool isComplexWF = true)
         {
-            EnterDescription(description, isComplexWF);
-            return GetNCRDocDescription();
+            InputFields descriptionField = isComplexWF ? InputFields.Description_of_Nonconformance : InputFields.Description_of_NCR;
+
+            CreateNewNcrDescription();
+            ncrNewDescription = string.IsNullOrEmpty(description) ? GetNewNCRDocDescription() : description;
+            ScrollToElement(By.Id($"{descriptionField.GetString()}"));
+            EnterText(GetTextAreaFieldByLocator(descriptionField), ncrNewDescription);
+            return ncrNewDescription;
         }
 
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
@@ -704,20 +715,35 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ncrDescKey = $"{descKey}_NcrDescription";
             CreateVar(ncrDescKey, guid);
             ncrDescription = GetVar(ncrDescKey);
-            Console.WriteLine($"#####NCR Description: {ncrDescription}");
+            Console.WriteLine($"#####Created a NCR Description: {ncrDescription}");
 
             return ncrDescKey;
         }
 
         public virtual string GetNCRDocDescription() => GetVar(ncrDescKey);
-        
+
+        internal string CreateNewNcrDescription()
+        {
+            guid = MiniGuid.NewGuid();
+
+            string descNewKey = $"{tenantName}{GetTestName()}";
+            ncrNewDescKey = $"{descNewKey}_NcrNewDescription";
+            CreateVar(ncrNewDescKey, guid);
+            ncrNewDescription = GetVar(ncrNewDescKey);
+            Console.WriteLine($"#####Create new NCR Description: {ncrNewDescription}");
+
+            return ncrNewDescKey;
+        }
+
+        public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);
+
         public virtual bool VerifyReqFieldErrorLabelsForNewDoc()
         {
+            bool errorLabelsDisplayed = false;
+
             try
             {
-                bool errorLabelsDisplayed = false;
-
-                IList<IWebElement> ReqFieldErrorLabelElements = Driver.FindElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')]"));
+                IList<IWebElement> ReqFieldErrorLabelElements = GetElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')]"));
 
                 IList<string> RequiredFieldIDs = GetRequiredFieldIDs();
 
@@ -735,14 +761,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 Console.WriteLine($"REQUIRED FIELD COUNT: {results.Count}");
                 errorLabelsDisplayed = results.Contains(false) ? false : true;
-
-                return errorLabelsDisplayed;
             }
             catch (Exception e)
             {
                 LogError(e.Message);
-                return false;
             }
+
+            return errorLabelsDisplayed;
         }
 
         public virtual bool VerifyReqFieldErrorLabelForTypeOfNCR()
@@ -953,52 +978,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     #endregion Implementation specific to I15Tech
 
-    #region Implementation specific to SH249
-
-    public class GeneralNCR_SH249 : GeneralNCR
-    {
-        public GeneralNCR_SH249(IWebDriver driver) : base(driver)
-        {
-        }
-
-        //public override void PopulateRequiredFieldsAndSaveForward(bool isComplexWF = false)
-        //    => SimpleWF_PopulateRequiredFieldsAndSaveForward(isComplexWF);
-
-        //public override void EnterDescription(string description = "", bool isComplexWF = false)
-        //    => SimpleWF_EnterDescription(description, isComplexWF);
-
-        //public override string EnterNewDescription(string description = "", bool isComplexWF = false)
-        //    => SimpleWF_EnterNewDescription(description);
-
-        //public override bool VerifyNCRDocIsClosed(string description = "", bool isComplexWF = false)
-        //    => SimpleWF_VerifyNCRDocIsClosed(description, isComplexWF);
-    }
-
-    #endregion Implementation specific to SH249
-
-    #region Implementation specific to SGWay
-
-    public class GeneralNCR_SGWay : GeneralNCR
-    {
-        public GeneralNCR_SGWay(IWebDriver driver) : base(driver)
-        {
-        }
-
-        //public override void PopulateRequiredFieldsAndSaveForward(bool isComplexWF = false)
-        //    => SimpleWF_PopulateRequiredFieldsAndSaveForward(isComplexWF);
-
-        //public override void EnterDescription(string description = "", bool isComplexWF = false)
-        //    => SimpleWF_EnterDescription(description, isComplexWF);
-
-        //public override string EnterNewDescription(string description = "", bool isComplexWF = false)
-        //    => SimpleWF_EnterNewDescription(description);
-
-        //public override bool VerifyNCRDocIsClosed(string description = "", bool isComplexWF = false)
-        //    => SimpleWF_VerifyNCRDocIsClosed(description, isComplexWF);
-    }
-
-    #endregion Implementation specific to SGWay
-
     #region Implementation specific to LAX
 
     public class GeneralNCR_LAX : GeneralNCR
@@ -1006,19 +985,59 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public GeneralNCR_LAX(IWebDriver driver) : base(driver)
         {
         }
-
-        //public override void PopulateRequiredFieldsAndSaveForward(bool isComplexWF = false)
-        //    => SimpleWF_PopulateRequiredFieldsAndSaveForward(isComplexWF);
-
-        //public override void EnterDescription(string description = "", bool isComplexWF = false)
-        //    => SimpleWF_EnterDescription(description, isComplexWF);
-
-        //public override string EnterNewDescription(string description = "", bool isComplexWF = false)
-        //    => SimpleWF_EnterNewDescription(description);
-
-        //public override bool VerifyNCRDocIsClosed(string description = "", bool isComplexWF = false)
-        //    => SimpleWF_VerifyNCRDocIsClosed(description, isComplexWF);
     }
 
     #endregion Implementation specific to LAX
+
+    #region Implementation specific to SH249 - SimpleWF
+
+    public class GeneralNCR_SH249 : GeneralNCR
+    {
+        public GeneralNCR_SH249(IWebDriver driver) : base(driver)
+        {
+        }
+
+        public override IList<string> GetRequiredFieldIDs()
+        {
+            List<string> RequiredFieldIDs = new List<string>
+            {
+                InputFields.IssuedDate.GetString(),
+                InputFields.Originator.GetString(),
+                InputFields.CQCM.GetString(),
+                InputFields.CQCMDate.GetString(),
+                InputFields.CQAM.GetString(),
+                InputFields.CQAMDate.GetString(),
+            };
+
+            return RequiredFieldIDs;
+        }
+    }
+
+    #endregion Implementation specific to SH249
+
+    #region Implementation specific to SGWay - SimpleWF
+
+    public class GeneralNCR_SGWay : GeneralNCR
+    {
+        public GeneralNCR_SGWay(IWebDriver driver) : base(driver)
+        {
+        }
+
+        public override IList<string> GetRequiredFieldIDs()
+        {
+            List<string> RequiredFieldIDs = new List<string>
+            {
+                InputFields.IssuedDate.GetString(),
+                InputFields.Originator.GetString(),
+                InputFields.CQCM.GetString(),
+                InputFields.CQCMDate.GetString(),
+                InputFields.CQAM.GetString(),
+                InputFields.CQAMDate.GetString(),
+            };
+
+            return RequiredFieldIDs;
+        }
+    }
+
+    #endregion Implementation specific to SGWay
 }
