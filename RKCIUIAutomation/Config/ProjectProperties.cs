@@ -161,7 +161,7 @@ namespace RKCIUIAutomation.Config
         private readonly List<string> Components_LAX = new List<string>
         {
             Component.LAX,
-            Component.NCR_WF_Simple
+            Component.NCR_WF_Complex
         };
 
         private readonly List<string> CommonComponents = new List<string>
