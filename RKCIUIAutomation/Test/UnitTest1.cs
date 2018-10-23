@@ -556,4 +556,28 @@ namespace RKCIUIAutomation.UnitTest
             }
         }
     }
+
+    [TestFixture]
+    public class DIRTabNames : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property(TestCaseNumber, 2222)]
+        [Property(Priority, "Priority 1")]
+        [Description("Get DIR Tab Names")]
+        public void Get_DIR_Tab_Names()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QARecordControl_QA_DIRs();
+
+            IList<IWebElement> elements = new List<IWebElement>();
+            elements = Driver.FindElements(By.XPath("//ul[@class='k-reset k-tabstrip-items']/li/span[text()]"));
+            Console.WriteLine($"TENANT: {tenantName}");
+            for (int i = 0; i < elements.Count; i++)
+            {
+                string elem = elements[i].Text;
+                Console.WriteLine(elem);
+            }
+        }
+    }
 }
