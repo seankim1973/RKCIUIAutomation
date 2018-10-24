@@ -161,6 +161,65 @@ namespace RKCIUIAutomation.Test.NCR
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription, false);
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
 
+            WF_QaRcrdCtrl_GeneralNCR.CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(ncrDescription);
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            //Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            AssertAll();
+        }
+    }
+
+
+    [TestFixture]
+    public class Verify_Edit_Cancel_SaveOnly_Ncr_Document_ConcessionRequest_ReturnToConformance : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(Component2, Component.NCR_WF_Complex)]
+        [Property(TestCaseNumber, 2338474)]
+        [Property(Priority, "High")]
+        [Description("To verify Edit, Cancel, SaveOnly functions for NCR in the Concession Request: Return to Conformance workflow.")]
+        public void Edit_Cancel_SaveOnly_Ncr_Document_ConcessionRequest_ReturnToConformance()
+        {
+            LogInfo("-------------Create and SaveForward NCR---------------");
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralNCR.Review_and_Return_NCR_ForRevise(UserType.NCRMgr, ncrDescription);
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Creating_Revise, ncrDescription));
+            ClickEditBtnForRow();
+            //step for Edit NCR ?
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            WF_QaRcrdCtrl_GeneralNCR.Review_and_Approve_NCR(UserType.NCRMgr, ncrDescription);
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToVerificationClosure_ReturnToConformance(ncrDescription);
+            WF_QaRcrdCtrl_GeneralNCR.CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(ncrDescription);
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            AssertAll();
+        }
+    }
+
+    [TestFixture]
+    public class Verify_Edit_Cancel_SaveOnly_Ncr_Document_ConcessionRequest_ConcessionDiviation : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(Component2, Component.NCR_WF_Complex)]
+        [Property(TestCaseNumber, 2339453)]
+        [Property(Priority, "High")]
+        [Description("To verify Edit, Cancel, SaveOnly functions for NCR in Concession Request: Concession Diviation workflow.")]
+        public void Edit_Cancel_SaveOnly_Ncr_Document_ConcessionRequest_ConcessionDiviation()
+        {
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_GeneralNCR.Review_and_Approve_NCR(UserType.NCRMgr, ncrDescription);
+            //WF_QaRcrdCtrl_GeneralNCR.Return_ToResolutionDisposition_FromDeveloperConcurrence(ncrDescription);
+            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
+            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription, false);
+            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
+
+            //WF_QaRcrdCtrl_GeneralNCR.Return_ToDeveloperConcurrence_FromDOTApproval(ncrDescription);
+            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
+            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription, false);
+            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
 
             WF_QaRcrdCtrl_GeneralNCR.CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(ncrDescription);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
