@@ -866,11 +866,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 {
                     string docStatus = GetColumnValueForRow(ncrDescription, "Workflow location");
                     ncrIsClosed = (docStatus.Equals("Closed")) ? true : false;
-                    LogInfo($"NCR Document's Workflow location: {docStatus}");
+                    LogInfo($"Found NCR Document's Workflow location: {docStatus}");
                 }
                 else
                 {
-                    LogError($"NCR Document is not displayed");
+                    LogError($"Unable to locate NCR Document with description value: {ncrDescription}");
                 }
             }
             catch (Exception e)
