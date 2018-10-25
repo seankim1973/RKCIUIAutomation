@@ -10,6 +10,7 @@ namespace RKCIUIAutomation.Test.NCR
     {
         [Test]
         [Category(Component.NCR)]
+        [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2187687)]
         [Property(Priority, "High")]
         [Description("To validate successful create and save of an NCR (Nonconformance Report) document.")]

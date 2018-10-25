@@ -108,6 +108,7 @@ namespace RKCIUIAutomation.Base
             if (browser == BrowserType.Chrome)
             {
                 ChromeOptions chromeOptions = pageHelper.ConvertToType<ChromeOptions>(options);
+                chromeOptions.PageLoadStrategy = PageLoadStrategy.None;
                 chromeOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
                 chromeOptions.AddAdditionalCapability("zal:name", testDetails, true);
                 chromeOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
@@ -115,6 +116,7 @@ namespace RKCIUIAutomation.Base
             else if (browser == BrowserType.Firefox)
             {
                 FirefoxOptions firefoxOptions = pageHelper.ConvertToType<FirefoxOptions>(options);
+                firefoxOptions.PageLoadStrategy = PageLoadStrategy.None;
                 firefoxOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
                 firefoxOptions.AddAdditionalCapability("zal:name", testDetails, true);
                 firefoxOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
@@ -122,6 +124,7 @@ namespace RKCIUIAutomation.Base
             else
             {
                 DriverOptions _options = pageHelper.ConvertToType<DriverOptions>(options);
+                _options.PageLoadStrategy = PageLoadStrategy.None;
                 _options.AddAdditionalCapability("zal:tz", "America/Chicago");
                 _options.AddAdditionalCapability("zal:name", testDetails);
                 _options.AddAdditionalCapability("zal:screenResolution", "1600x900");
