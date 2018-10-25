@@ -109,6 +109,7 @@ namespace RKCIUIAutomation.Base
             {
                 ChromeOptions chromeOptions = pageHelper.ConvertToType<ChromeOptions>(options);
                 chromeOptions.PageLoadStrategy = PageLoadStrategy.None;
+                chromeOptions.AddArgument("no-sandbox");
                 chromeOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
                 chromeOptions.AddAdditionalCapability("zal:name", testDetails, true);
                 chromeOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
