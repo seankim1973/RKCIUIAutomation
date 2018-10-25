@@ -16,6 +16,8 @@ namespace RKCIUIAutomation.Base
     public class WebDriverFactory : DriverOptionsFactory
     {
         protected IWebDriver Driver { get; set; }
+
+        [ThreadStatic]
         private IWebDriver _Driver = null;
 
         public static string GridVmIP => gridVmIP;

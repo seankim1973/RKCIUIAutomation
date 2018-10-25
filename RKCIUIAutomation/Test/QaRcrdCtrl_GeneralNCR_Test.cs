@@ -13,7 +13,7 @@ namespace RKCIUIAutomation.Test.NCR
         [Property(TestCaseNumber, 2187687)]
         [Property(Priority, "High")]
         [Description("To validate successful create and save of an NCR (Nonconformance Report) document.")]
-        public void Create_And_Save_Ncr_Document()
+        public void Create_And_SaveForward_Ncr_Document()
         {
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
@@ -240,7 +240,7 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To validate simple workflow for NCR module end-to-end.")]
         public void NCR_SimpleWF_End_To_End()
         {
-            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech, false);
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
             ClickEditBtnForRow();
             LogInfo("------------send to revise from Review------------");
@@ -249,11 +249,11 @@ namespace RKCIUIAutomation.Test.NCR
             ClickEditBtnForRow();
 
             LogInfo("------------cancel, edit/saveonly in Revise------------");
-            QaRcrdCtrl_GeneralNCR.EnterNewDescription("New NCR Description", false);
+            QaRcrdCtrl_GeneralNCR.EnterNewDescription("New NCR Description");
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
             ClickEditBtnForRow();
-            ncrDescription = QaRcrdCtrl_GeneralNCR.EnterNewDescription("", false);
+            ncrDescription = QaRcrdCtrl_GeneralNCR.EnterNewDescription("");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();           
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
             ClickEditBtnForRow();
@@ -283,7 +283,7 @@ namespace RKCIUIAutomation.Test.NCR
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed, ncrDescription));
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsClosed(ncrDescription, false));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsClosed(ncrDescription));
             AssertAll();
         }
     }

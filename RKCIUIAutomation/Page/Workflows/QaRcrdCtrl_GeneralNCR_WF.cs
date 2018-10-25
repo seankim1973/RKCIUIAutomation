@@ -25,7 +25,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        string Create_and_SaveForward_NCR(UserType user, bool isComplexWF = true);
+        string Create_and_SaveForward_NCR(UserType user);
 
         /// <summary>
         /// Verifies a document is shown in 'Revise' tab, after clicking Revise button for a document in the 'Review' tab.
@@ -117,7 +117,7 @@ namespace RKCIUIAutomation.Page.Workflows
             }
         }
 
-        public virtual string Create_and_SaveForward_NCR(UserType user, bool isComplexWF = true)
+        public virtual string Create_and_SaveForward_NCR(UserType user)
         {
             LogDebug("------------WF Create_and_SaveForward_NCR_Document-------------");
 
@@ -126,7 +126,7 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_New();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc());
-            QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward(isComplexWF);
+            QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward();
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
 
