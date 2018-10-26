@@ -6,7 +6,7 @@ using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 namespace RKCIUIAutomation.Test.NCR
 {
     [TestFixture]//complete, updated hiptest
-    public class GeneralNCR_Verify_NCR_SimpleWF_End_To_End : TestBase
+    public class Verify_NCR_SimpleWF_End_To_End : TestBase
     {
         [Test]
         [Category(Component.NCR)]
@@ -64,10 +64,10 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    [TestFixture]
+    //[TestFixture]
     public class GeneralNCR_Verify_Complex_Workflow_Scenarios : TestBase
     {
-        [Test]
+        //[Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2187687)]
@@ -81,7 +81,7 @@ namespace RKCIUIAutomation.Test.NCR
             AssertAll();
         }
 
-        [Test]
+        //[Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2187688)]
@@ -97,7 +97,7 @@ namespace RKCIUIAutomation.Test.NCR
             AssertAll();
         }
 
-        [Test]
+        //[Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2299482)]
@@ -114,10 +114,10 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    [TestFixture]
+    //[TestFixture]
     public class GeneralNCR_Verify_ConcessionRequest_ReturnToConformance_Scenarios : TestBase
     {
-        [Test]
+        //[Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2313396)]
@@ -136,7 +136,7 @@ namespace RKCIUIAutomation.Test.NCR
             AssertAll();
         }
 
-        [Test]
+        //[Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2338474)]
@@ -159,7 +159,7 @@ namespace RKCIUIAutomation.Test.NCR
             AssertAll();
         }
 
-        [Test]
+        //[Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2338474)]
@@ -184,10 +184,10 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    [TestFixture]
+    //[TestFixture]
     public class GeneralNCR_Verify_ConcessionRequest_ConcessionDeviation_Scenarios : TestBase
     {
-        [Test]
+        //[Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2338393)]
@@ -208,7 +208,7 @@ namespace RKCIUIAutomation.Test.NCR
             AssertAll();
         }
 
-        [Test]
+        //[Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2339453)]
@@ -235,7 +235,7 @@ namespace RKCIUIAutomation.Test.NCR
             AssertAll();
         }
 
-        [Test]
+        //[Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2339453)]
@@ -268,10 +268,10 @@ namespace RKCIUIAutomation.Test.NCR
 
 
 
-    //[TestFixture]//complete, updated hiptest
+    [TestFixture]//complete, updated hiptest
     public class Verify_Create_And_Save_Ncr_Document : TestBase
     {
-        //[Test]
+        [Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2187687)]
@@ -286,10 +286,10 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    //[TestFixture]//complete, updated hiptest
+    [TestFixture]//complete, updated hiptest
     public class Verify_Review_and_Approval_of_NCR_Document_by_NCRManager : TestBase
     {
-        //[Test]
+        [Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2187688)]
@@ -306,10 +306,10 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    //[TestFixture]//complete, updated hiptest
+    [TestFixture]//complete, updated hiptest
     public class Verify_Disapprove_and_Close_of_Ncr_Document_by_NCRManager : TestBase
     {
-        //[Test]
+        [Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2299482)]
@@ -326,10 +326,10 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    //[TestFixture]//complete, updated hiptest
+    [TestFixture]//complete, updated hiptest
     public class Verify_Close_Ncr_Document_ConcessionRequest_ReturnToConformance : TestBase
     {
-        //[Test]
+        [Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2313396)]
@@ -349,10 +349,10 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    //[TestFixture]//complete, updated hiptest
+    [TestFixture]//complete, updated hiptest
     public class Verify_Close_Ncr_Document_ConcessionRequest_ConcessionDeviation : TestBase
     {
-        //[Test]
+        [Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2338393)]
@@ -374,10 +374,10 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    //[TestFixture]//complete, updated hiptest
+    [TestFixture]//complete, updated hiptest
     public class Verify_Revise_Ncr_Document_ConcessionRequest_ReturnToConformance : TestBase
     {
-        //[Test]
+        [Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2338474)]
@@ -401,10 +401,10 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    //[TestFixture]//complete, updated hiptest
+    [TestFixture]//complete, updated hiptest
     public class Verify_Revise_Ncr_Document_ConcessionRequest_ConcessionDiviation : TestBase
     {
-        //[Test]
+        [Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2339453)]
