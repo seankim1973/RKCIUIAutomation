@@ -116,11 +116,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("OwnerApproval_")] Owner_Approval_NA,
             [StringValue("OwnerApproval_True")] Owner_Approval_Yes,
             [StringValue("OwnerApproval_False")] Owner_Approval_No,
-            [StringValue("AsBuiltRequired")] As_Built_Required,
-            [StringValue("ActionCorrect")] RcmndDisposition_Correct_Rework,
-            [StringValue("ActionReplace")] RcmndDisposition_Replace,
-            [StringValue("ActionAccept")] RcmndDisposition_AcceptAsIs,
-            [StringValue("ActionRepair")] RcmndDisposition_Repair
+            [StringValue("AsBuiltRequired")] ChkBox_As_Built_Required,
+            [StringValue("ActionCorrect")] ChkBox_Correct_Rework,
+            [StringValue("ActionReplace")] ChkBox_Replace,
+            [StringValue("ActionAccept")] ChkBox_AcceptAsIs,
+            [StringValue("ActionRepair")] ChkBox_Repair
         }
 
         public enum Reviewer
@@ -264,9 +264,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectDDL_SubFeature(int selectionIndex = 1);
 
-        void SelectDDL_ConcessionRequest_ReturnToConformance();
+        void SelectDDL_PopulateRelatedFields_forConcessionRequest_ReturnToConformance();
 
-        void SelectDDL_ConcessionRequest_ConcessionDeviation();
+        void SelectDDL_PopulateRelatedFields_forConcessionRequest_ConcessionDeviation();
 
         void EnterIssuedDate(string shortDate = "1/1/9999");
 
@@ -308,7 +308,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void EnterCQAMDate();
 
-        void PopulateRequiredFieldsAndSaveForward();
+        void PopulateRequiredFields();
+
+        void PopulateRequiredFieldsAndSaveForward(bool withDescription = true);
+
+        void PopulateRequiredFieldsAndSaveOnly(bool withDescription = true);
 
         bool VerifyReqFieldErrorLabelsForNewDoc();
 
@@ -324,6 +328,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         bool VerifyNCRDocIsClosed(string ncrDescription = "");
 
         bool VerifyReqFieldErrorLabelForTypeOfNCR();
+
+        bool VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes rdoBtnOrChkBox, bool shouldBeSelected = true);
+
+        bool VerifyDDListSelectedValue(InputFields ddListId, string expectedValue);
+
+        bool VerifySignatureField(Reviewer reviewer, bool shouldBeEmpty = false);
+
+        bool VerifyInputField(InputFields inputField, bool shouldBeEmpty = false);
 
         string GetNCRDocDescription();
 
@@ -543,13 +555,30 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SortTable_ToDefault() => SortColumnToDefault(ColumnName.Action);
 
-        private void SelectRadioBtnOrChkbox(Enum radioBtn)
+        private void SelectRadioBtnOrChkbox(Enum radioBtn, bool toggleChkBox = true)
         {
             string rdoBtn = radioBtn.GetString();
             By locator = By.Id(rdoBtn);
             ScrollToElement(locator);
-            JsClickElement(locator);
-            LogInfo($"Selected Radio Button: {rdoBtn}");
+            if (toggleChkBox)
+            {
+                JsClickElement(locator);
+                LogInfo($"Selected: {rdoBtn}");
+            }
+            else
+            {
+                LogInfo("Specified not to toggle checkbox, if already selected");
+
+                if (!GetElement(locator).Selected)
+                {
+                    JsClickElement(locator);
+                    LogInfo($"Selected: {rdoBtn}");
+                }
+                else
+                {
+                    LogInfo($"Did not select element, because it is already selected: {rdoBtn}");
+                }
+            }
         }
 
         public virtual void SelectRdoBtn_TypeOfNCR_Level1() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level1);
@@ -570,15 +599,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectRdoBtn_OwnerApproval_NA() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_NA);
 
-        public virtual void SelectChkbox_AsBuiltRequired() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.As_Built_Required);
+        public virtual void SelectChkbox_AsBuiltRequired() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required);
 
-        public virtual void SelectChkbox_RcmndDisposition_CorrectRework() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.RcmndDisposition_Correct_Rework);
+        public virtual void SelectChkbox_RcmndDisposition_CorrectRework() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework);
 
-        public virtual void SelectChkbox_RcmndDisposition_Replace() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.RcmndDisposition_Replace);
+        public virtual void SelectChkbox_RcmndDisposition_Replace() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Replace);
 
-        public virtual void SelectChkbox_RcmndDisposition_AcceptAsIs() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.RcmndDisposition_AcceptAsIs);
+        public virtual void SelectChkbox_RcmndDisposition_AcceptAsIs() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_AcceptAsIs);
 
-        public virtual void SelectChkbox_RcmndDisposition_Repair() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.RcmndDisposition_Repair);
+        public virtual void SelectChkbox_RcmndDisposition_Repair() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Repair);
 
         public virtual void SelectDDL_Originator(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
 
@@ -598,9 +627,23 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectDDL_SubFeature(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.SubFeature, selectionIndex);
 
-        public virtual void SelectDDL_ConcessionRequest_ReturnToConformance() => ExpandAndSelectFromDDList(InputFields.Concession_Request, 1);
+        public virtual void SelectDDL_PopulateRelatedFields_forConcessionRequest_ReturnToConformance()
+        {
+            ExpandAndSelectFromDDList(InputFields.Concession_Request, 1);
+            SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, false);
+            SelectChkbox_RcmndDisposition_CorrectRework();
+            SelectChkbox_RcmndDisposition_Replace();
+            EnterCorrectiveActionPlanToResolveNonconformance();
+        }
 
-        public virtual void SelectDDL_ConcessionRequest_ConcessionDeviation() => ExpandAndSelectFromDDList(InputFields.Concession_Request, 2);
+        public virtual void SelectDDL_PopulateRelatedFields_forConcessionRequest_ConcessionDeviation()
+        {
+            ExpandAndSelectFromDDList(InputFields.Concession_Request, 2);
+            SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, false);
+            SelectChkbox_RcmndDisposition_AcceptAsIs();
+            SelectChkbox_RcmndDisposition_Repair();
+            EnterRepairPlan();
+        }
 
         public virtual void EnterIssuedDate(string shortDate = "1/1/9999")
             => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
@@ -682,12 +725,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
             => EnterText(GetTextInputFieldByLocator(InputFields.CorrectiveAction),
                actionPlanText = (string.IsNullOrEmpty(actionPlanText)
-                ? "Corrective Action Plan To Resolve Nonconformance." : actionPlanText));
+                ? "RKCIUIAutomation Corrective Action Plan To Resolve Nonconformance." : actionPlanText));
 
         public virtual void EnterRepairPlan(string repairPlanText = "")
             => EnterText(GetTextInputFieldByLocator(InputFields.RepairPlan),
                repairPlanText = (string.IsNullOrEmpty(repairPlanText)
-                ? "Repair Plan To Repair Issue If Applicable." : repairPlanText));
+                ? "RKCIUIAutomation Repair Plan To Repair Issue If Applicable." : repairPlanText));
 
         //GLX, I15Tech, LAX
         public virtual IList<string> GetRequiredFieldIDs()
@@ -789,6 +832,76 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
+        public virtual bool VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes rdoBtnOrChkBox, bool shouldBeSelected = true)
+        {
+            try
+            {
+                IWebElement rdoBtnOrChkBoxElement = GetElement(By.Id(rdoBtnOrChkBox.GetString()));
+                bool isSelected = rdoBtnOrChkBoxElement.Selected ? true : false;
+                return isSelected.Equals(shouldBeSelected) ? true : false;
+            }
+            catch (Exception e)
+            {
+                LogError(e.Message);
+                return false;
+            }
+        }
+
+        public virtual bool VerifyDDListSelectedValue(InputFields ddListId, string expectedDDListValue)
+        {
+            try
+            {
+                string currentDDListValue = GetTextFromDDL(ddListId);
+                return currentDDListValue.Equals(expectedDDListValue) ? true : false;
+            }
+            catch (Exception e)
+            {
+                LogError(e.Message);
+                return false;
+            }
+        }
+
+        public virtual bool VerifySignatureField(Reviewer reviewer, bool shouldBeEmpty = false)
+        {
+            InputFields reviewerId = InputFields.Engineer_of_Record;
+
+            try
+            {
+                switch (reviewer)
+                {
+                    case Reviewer.EngineerOfRecord:
+                        break;
+                    case Reviewer.Owner:
+                        reviewerId = InputFields.Owner_Review;
+                        break;
+                    case Reviewer.IQF_Manager:
+                        reviewerId = InputFields.IQF_Manager;
+                        break;
+                    case Reviewer.QC_Manager:
+                        reviewerId = InputFields.QC_Manager;
+                        break;
+                }
+
+                IWebElement signatureFieldElement = GetElement(By.Id(reviewerId.GetString()));
+                string signatureValueAttrib = signatureFieldElement.GetAttribute("value");
+
+                bool isEmpty = string.IsNullOrWhiteSpace(signatureValueAttrib) ? true : false;
+                return shouldBeEmpty.Equals(isEmpty) ? false : true;
+            }
+            catch (Exception e)
+            {
+                LogError(e.Message);
+                return false;
+            }
+        }
+
+        public virtual bool VerifyInputField(InputFields inputField, bool shouldBeEmpty = false)
+        {
+            string inputText = GetText(By.XPath($"//input[@id='{inputField.GetString()}']"));
+            bool isEmpty = string.IsNullOrWhiteSpace(inputText) ? true : false;
+            return shouldBeEmpty.Equals(isEmpty);
+        }
+
         public virtual bool VerifyReqFieldErrorLabelForConcessionRequest()
         {
             try
@@ -807,7 +920,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         //I15Tech, LAX
-        public virtual void PopulateRequiredFieldsAndSaveForward()
+        public virtual void PopulateRequiredFields()
         {
             EnterIssuedDate();
             SelectDDL_Originator();
@@ -818,9 +931,32 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Specification();
             SelectDDL_Area();
             SelectDDL_Roadway();
-            EnterDescription("");
+        }
+
+        public virtual void PopulateRequiredFieldsAndSaveForward(bool withDescription = true)
+        {
+            PopulateRequiredFields();
             UploadFile("test.xlsx");
+
+            if (withDescription)
+            {
+                EnterDescription("");
+            }
+            
             ClickBtn_SaveForward();
+        }
+
+        public virtual void PopulateRequiredFieldsAndSaveOnly(bool withDescription = true)
+        {
+            PopulateRequiredFields();
+            UploadFile("test.xlsx");
+
+            if (withDescription)
+            {
+                EnterDescription("");
+            }
+
+            ClickBtn_SaveOnly();
         }
 
         public virtual bool VerifyNCRDocIsDisplayed(TableTab tableTab, string description = "")
@@ -908,7 +1044,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
 
-        public override void PopulateRequiredFieldsAndSaveForward()
+        public override void PopulateRequiredFields()
         {
             EnterIssuedDate();
             SelectDDL_Originator();
@@ -921,9 +1057,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Roadway();
             SelectDDL_Feature();
             SelectDDL_SubFeature();
-            EnterDescription("");
-            UploadFile("test.xlsx");
-            ClickBtn_SaveForward();
         }
     }
 
@@ -956,7 +1089,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
-        public override void PopulateRequiredFieldsAndSaveForward()
+        public override void PopulateRequiredFields()
         {
             EnterIssuedDate();
             SelectDDL_Originator();
@@ -967,9 +1100,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Specification();
             SelectDDL_Segment();
             SelectDDL_Roadway();
-            EnterDescription("");
-            UploadFile("test.xlsx");
-            ClickBtn_SaveForward();
         }
     }
 
@@ -1020,7 +1150,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
-        public override void PopulateRequiredFieldsAndSaveForward()
+        public override void PopulateRequiredFields()
         {
             EnterIssuedDate();
             SelectDDL_Originator();
@@ -1028,9 +1158,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCQCMDate();
             EnterCQAM();
             EnterCQAMDate();
-            UploadFile("test.xlsx");
-            EnterDescription("");
-            ClickBtn_SaveForward();
         }
 
         public override bool VerifyNCRDocIsClosed(string description = "") 
@@ -1068,7 +1195,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
-        public override void PopulateRequiredFieldsAndSaveForward()
+        public override void PopulateRequiredFields()
         {
             EnterIssuedDate();
             SelectDDL_Originator();
@@ -1076,9 +1203,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCQCMDate();
             EnterCQAM();
             EnterCQAMDate();
-            UploadFile("test.xlsx");
-            EnterDescription("");
-            ClickBtn_SaveForward();
         }
 
         public override bool VerifyNCRDocIsClosed(string description = "")
