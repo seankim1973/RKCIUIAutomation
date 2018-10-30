@@ -30,7 +30,7 @@ namespace RKCIUIAutomation.Page
 
         //<<-- Table Page Navigation Helpers -->>
         private By GetGoToTblPgBtn_ByLocator(TableButton tblPageNavBtn) => By.XPath($"//a[contains(@aria-label,'{tblPageNavBtn.GetString()}')]");
-
+               
         public void GoToFirstPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.First));
 
         public void GoToPreviousPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Previous));
@@ -159,7 +159,9 @@ namespace RKCIUIAutomation.Page
         /// <param name="textInRowForAnyColumn"></param>
         public void ToggleCheckBoxForRow(string textInRowForAnyColumn = null)
         {
-            JsClickElement(GetTblRowBtn_ByLocator(TableButton.CheckBox, textInRowForAnyColumn));
+            By locator = GetTblRowBtn_ByLocator(TableButton.CheckBox, textInRowForAnyColumn);
+            ScrollToElement(locator);
+            JsClickElement(locator);
             LogInfo($"Toggled Checkbox for row {textInRowForAnyColumn}");
         }
 
@@ -169,7 +171,9 @@ namespace RKCIUIAutomation.Page
         /// <param name="textInRowForAnyColumn"></param>
         public void ClickEditBtnForRow(string textInRowForAnyColumn = null)
         {
-            JsClickElement(GetTblRowBtn_ByLocator(TableButton.Action_Edit, textInRowForAnyColumn));
+            By locator = GetTblRowBtn_ByLocator(TableButton.Action_Edit, textInRowForAnyColumn);
+            ScrollToElement(locator);
+            JsClickElement(locator);
             LogInfo($"Clicked Edit button for row {textInRowForAnyColumn}");
         }
 

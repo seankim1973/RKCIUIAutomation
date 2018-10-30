@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
 using System;
+using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 
 namespace RKCIUIAutomation.Test.NCR
@@ -433,7 +434,7 @@ namespace RKCIUIAutomation.Test.NCR
     }
 
 
-    [TestFixture] //incomplete
+    [TestFixture] //complete
     public class Verify_Edit_Cancel_SaveOnly_Ncr_Document_ComplexWF : TestBase
     {
         [Test]
@@ -458,15 +459,13 @@ namespace RKCIUIAutomation.Test.NCR
             QaRcrdCtrl_GeneralNCR.EnterNewDescription();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
-            LogInfo("------  edit in revise tab  -------");
+            LogInfo("------  edit in revise tab and saveFwd -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Creating_Revise, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  populate required fields and click saveFwd  -------");
-            QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward(false);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
             LogInfo("------  edit in review tab  -------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
             ClickEditBtnForRow();
 
             LogInfo("------  select Type of NCR (Level 3) and click cancel  -------");
@@ -474,7 +473,7 @@ namespace RKCIUIAutomation.Test.NCR
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
             LogInfo("------  edit in review tab  -------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
             ClickEditBtnForRow();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.TypeOfNCR_Level3, false));
 
@@ -483,7 +482,7 @@ namespace RKCIUIAutomation.Test.NCR
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             LogInfo("------  edit in review tab  -------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
             ClickEditBtnForRow();
 
             LogInfo("------  verify Type of NCR selection is intact and click Approve  -------");
@@ -632,6 +631,7 @@ namespace RKCIUIAutomation.Test.NCR
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
 
             LogInfo("------  verify ncr is closed  -------");
+
             QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsClosed(ncrDescription);
 
             AssertAll();

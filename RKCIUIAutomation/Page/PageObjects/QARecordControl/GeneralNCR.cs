@@ -276,7 +276,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void EnterResponsibleManager(string mgrName);
 
-        void EnterDescription(string description = "");
+        string EnterDescription(string description = "");
 
         string EnterNewDescription(string description = "");
 
@@ -310,9 +310,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void PopulateRequiredFields();
 
-        void PopulateRequiredFieldsAndSaveForward(bool withDescription = true);
+        void PopulateRequiredFieldsAndSaveForward();
 
-        void PopulateRequiredFieldsAndSaveOnly(bool withDescription = true);
+        void PopulateRequiredFieldsAndSaveOnly();
 
         bool VerifyReqFieldErrorLabelsForNewDoc();
 
@@ -481,7 +481,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             InputFields signBtn = InputFields.RecordEngineer_SignBtn;
             InputFields reviewerField = InputFields.Engineer_of_Record;
-            //InputFields approvedDateField = InputFields.RecordEngineerApprovedDate;
             RadioBtnsAndCheckboxes approvalField = Approve ? RadioBtnsAndCheckboxes.Engineer_Approval_Yes : RadioBtnsAndCheckboxes.Engineer_Approval_No;
 
             switch (reviewer)
@@ -491,25 +490,21 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 case Reviewer.Owner:
                     signBtn = InputFields.Owner_SignBtn;
                     reviewerField = InputFields.Owner_Review;
-                    //approvedDateField = InputFields.OwnerDate;
                     approvalField = Approve ? RadioBtnsAndCheckboxes.Owner_Approval_Yes : RadioBtnsAndCheckboxes.Owner_Approval_No;
                     break;
                 case Reviewer.IQF_Manager:
                     signBtn = InputFields.IQFManager_SignBtn;
                     reviewerField = InputFields.IQF_Manager;
-                    //approvedDateField = InputFields.IQFManagerDate;
                     break;
                 case Reviewer.QC_Manager:
                     signBtn = InputFields.QCManager_SignBtn;
                     reviewerField = InputFields.QC_Manager;
-                    //approvedDateField = InputFields.QCManagerApprovedDate;
                     break;
             }
 
             ClickBtn_Sign(signBtn);
             ClickBtn_SignaturePanel_OK();
             EnterText(GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer}");
-            //EnterText(GetTextInputFieldByLocator(approvedDateField), GetShortDate());
 
             if (reviewer == Reviewer.EngineerOfRecord || reviewer == Reviewer.Owner)
             {
@@ -562,6 +557,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ScrollToElement(locator);
             if (toggleChkBox)
             {
+                ScrollToElement(locator);
                 JsClickElement(locator);
                 LogInfo($"Selected: {rdoBtn}");
             }
@@ -571,6 +567,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 if (!GetElement(locator).Selected)
                 {
+                    ScrollToElement(locator);
                     JsClickElement(locator);
                     LogInfo($"Selected: {rdoBtn}");
                 }
@@ -646,15 +643,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public virtual void EnterIssuedDate(string shortDate = "1/1/9999")
-            => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
-
-        private readonly string shortDateTime = $"{GetMaxShortDate()} {GetShortTime()}";
+            => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetShortDate());
 
         public virtual void EnterForemanNotificationDate(string dateTime = "1/1/9999 12:00 AM")
-            => EnterText(GetTextInputFieldByLocator(InputFields.ForemanNotificationDate), dateTime = shortDateTime);
+            => EnterText(GetTextInputFieldByLocator(InputFields.ForemanNotificationDate), dateTime);
 
         public virtual void EnterManagerNotificationDate(string dateTime = "1/1/9999 12:00 AM")
-            => EnterText(GetTextInputFieldByLocator(InputFields.ManagerNotificationDate), dateTime = shortDateTime);
+            => EnterText(GetTextInputFieldByLocator(InputFields.ManagerNotificationDate), dateTime);
 
         public virtual void EnterResponsibleManager(string mgrName)
             => EnterText(GetTextInputFieldByLocator(InputFields.Manager), mgrName);
@@ -699,38 +694,47 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterCQAMDate()
             => EnterText(GetTextInputFieldByLocator(InputFields.CQAMDate), GetShortDate());
 
-        public virtual void EnterDescription(string description = "")
+        public virtual string EnterDescription(string description = "")
             => EnterDesc(description, InputFields.Description_of_Nonconformance);
 
         public virtual string EnterNewDescription(string description = "")
             => EnterNewDesc(description, InputFields.Description_of_Nonconformance);
 
-        internal void EnterDesc(string desc, InputFields descField)
+        internal string EnterDesc(string desc, InputFields descField)
         {
             CreateNcrDescription();
             ncrDescription = string.IsNullOrEmpty(desc) ? GetNCRDocDescription() : desc;
-            ScrollToElement(By.Id($"{descField.GetString()}"));
-            EnterText(GetTextAreaFieldByLocator(descField), ncrDescription);
+            By descLocator = GetTextAreaFieldByLocator(descField);
+            ScrollToElement(descLocator);
+            EnterText(descLocator, ncrDescription);
+            return ncrDescription;
         }
 
         internal string EnterNewDesc(string desc, InputFields descField)
         {
             CreateNewNcrDescription();
             ncrNewDescription = string.IsNullOrEmpty(desc) ? GetNewNCRDocDescription() : desc;
-            ScrollToElement(By.Id($"{descField.GetString()}"));
-            EnterText(GetTextAreaFieldByLocator(descField), ncrNewDescription);
+            By descLocator = GetTextAreaFieldByLocator(descField);
+            ScrollToElement(descLocator);
+            EnterText(descLocator, ncrNewDescription);
             return ncrNewDescription;
         }
 
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
-            => EnterText(GetTextInputFieldByLocator(InputFields.CorrectiveAction),
-               actionPlanText = (string.IsNullOrEmpty(actionPlanText)
-                ? "RKCIUIAutomation Corrective Action Plan To Resolve Nonconformance." : actionPlanText));
+        {
+            By textAreaLocator = GetTextAreaFieldByLocator(InputFields.CorrectiveAction);
+            ScrollToElement(textAreaLocator);
+            EnterText(textAreaLocator, actionPlanText = (string.IsNullOrEmpty(actionPlanText)
+                  ? "RKCIUIAutomation Corrective Action Plan To Resolve Nonconformance." : actionPlanText));
+        }
 
         public virtual void EnterRepairPlan(string repairPlanText = "")
-            => EnterText(GetTextInputFieldByLocator(InputFields.RepairPlan),
-               repairPlanText = (string.IsNullOrEmpty(repairPlanText)
-                ? "RKCIUIAutomation Repair Plan To Repair Issue If Applicable." : repairPlanText));
+        {
+            By textAreaLocator = GetTextAreaFieldByLocator(InputFields.RepairPlan);
+            ScrollToElement(textAreaLocator);
+            EnterText(textAreaLocator, repairPlanText = (string.IsNullOrEmpty(repairPlanText)
+                  ? "RKCIUIAutomation Repair Plan To Repair Issue If Applicable." : repairPlanText));
+        }
 
         //GLX, I15Tech, LAX
         public virtual IList<string> GetRequiredFieldIDs()
@@ -756,11 +760,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             guid = MiniGuid.NewGuid();
 
-            string descKey = $"{tenantName}{GetTestName()}";
-            ncrDescKey = $"{descKey}_NcrDescription";
+            //string descKey = $"{tenantName}{GetTestName()}";
+            ncrDescKey = $"{tenantName}{GetTestName()}_NcrDescription";
             CreateVar(ncrDescKey, guid);
             ncrDescription = GetVar(ncrDescKey);
-            Console.WriteLine($"#####Created a NCR Description: {ncrDescription}");
+            Console.WriteLine($"#####Created a NCR Description:\nKEY: {ncrDescKey}\nVALUE: {ncrDescription}");
 
             return ncrDescKey;
         }
@@ -771,11 +775,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             guid = MiniGuid.NewGuid();
 
-            string descNewKey = $"{tenantName}{GetTestName()}";
-            ncrNewDescKey = $"{descNewKey}_NcrNewDescription";
+            //string descNewKey = $"{tenantName}{GetTestName()}";
+            ncrNewDescKey = $"{tenantName}{GetTestName()}_NcrNewDescription";
             CreateVar(ncrNewDescKey, guid);
             ncrNewDescription = GetVar(ncrNewDescKey);
-            Console.WriteLine($"#####Create new NCR Description: {ncrNewDescription}");
+            Console.WriteLine($"#####Created a new NCR Description:\nKEY: {ncrNewDescKey}\nVALUE: {ncrNewDescription}");
 
             return ncrNewDescKey;
         }
@@ -931,47 +935,49 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Specification();
             SelectDDL_Area();
             SelectDDL_Roadway();
+            EnterDescription("");
         }
 
-        public virtual void PopulateRequiredFieldsAndSaveForward(bool withDescription = true)
+        public virtual void PopulateRequiredFieldsAndSaveForward()
         {
+            WaitForPageReady();
             PopulateRequiredFields();
-            UploadFile("test.xlsx");
-
-            if (withDescription)
-            {
-                EnterDescription("");
-            }
-            
+            UploadFile("test.xlsx");            
             ClickBtn_SaveForward();
+            WaitForPageReady();
         }
 
-        public virtual void PopulateRequiredFieldsAndSaveOnly(bool withDescription = true)
+        public virtual void PopulateRequiredFieldsAndSaveOnly()
         {
+            WaitForPageReady();
             PopulateRequiredFields();
             UploadFile("test.xlsx");
-
-            if (withDescription)
-            {
-                EnterDescription("");
-            }
-
             ClickBtn_SaveOnly();
+            WaitForPageReady();
         }
 
         public virtual bool VerifyNCRDocIsDisplayed(TableTab tableTab, string description = "")
         {
-            ClickTab(tableTab);
-            ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : description;
-            bool isDisplayed = VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
+            bool isDisplayed = false;
 
-            if (isDisplayed)
+            try
             {
-                LogInfo($"Found record under {tableTab.GetString()} tab with description: {ncrDescription}.");
+                ClickTab(tableTab);
+                string _ncrDesc = description.Equals("") ? GetNCRDocDescription() : description;
+                isDisplayed = VerifyRecordIsDisplayed(ColumnName.Description, _ncrDesc);
+
+                if (isDisplayed)
+                {
+                    LogInfo($"Found record under {tableTab.GetString()} tab with description: {_ncrDesc}.");
+                }
+                else
+                {
+                    LogError($"Unable to find record under {tableTab.GetString()} tab with description: {_ncrDesc}.");
+                }
             }
-            else
+            catch (Exception e)
             {
-                LogError($"Unable to find record under {tableTab.GetString()} tab with description: {ncrDescription}.");
+                log.Error(e.StackTrace);
             }
 
             return isDisplayed;
@@ -980,24 +986,25 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual bool VerifyNCRDocIsClosed(string description = "")
             => CheckNCRisClosed(description, TableTab.All_NCRs);
 
-        internal bool CheckNCRisClosed(string desc, TableTab closedTab)
+        internal bool CheckNCRisClosed(string description, TableTab closedTab)
         {
             bool ncrIsClosed = false;
+            WaitForPageReady();
 
             try
             {
-                ClickTab(closedTab);
-                ncrDescription = string.IsNullOrEmpty(desc) ? ncrDescription : desc;
-                bool isDisplayed = VerifyRecordIsDisplayed(ColumnName.Description, ncrDescription);
+                string _ncrDesc = description.Equals("") ? GetNCRDocDescription() : description;
+                bool isDisplayed = VerifyNCRDocIsDisplayed(closedTab, _ncrDesc);
+
                 if (isDisplayed)
                 {
-                    string docStatus = GetColumnValueForRow(ncrDescription, "Workflow location");
+                    string docStatus = GetColumnValueForRow(_ncrDesc, "Workflow location");
                     ncrIsClosed = (docStatus.Equals("Closed")) ? true : false;
-                    LogInfo($"Found NCR Document's Workflow location: {docStatus}");
+                    LogInfo($"Found NCR Workflow location, displayed as: {docStatus}");
                 }
                 else
                 {
-                    LogError($"Unable to locate NCR Document with description value: {ncrDescription}");
+                    LogError($"Unable to locate NCR with description value: {_ncrDesc}");
                 }
             }
             catch (Exception e)
@@ -1057,6 +1064,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Roadway();
             SelectDDL_Feature();
             SelectDDL_SubFeature();
+            EnterDescription("");
         }
     }
 
@@ -1100,6 +1108,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Specification();
             SelectDDL_Segment();
             SelectDDL_Roadway();
+            EnterDescription("");
         }
     }
 
@@ -1158,12 +1167,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCQCMDate();
             EnterCQAM();
             EnterCQAMDate();
+            EnterDescription("");
         }
 
         public override bool VerifyNCRDocIsClosed(string description = "") 
             => CheckNCRisClosed(description, TableTab.Closed_NCR);
 
-        public override void EnterDescription(string description = "")
+        public override string EnterDescription(string description = "")
             => EnterDesc(description, InputFields.Description_of_NCR);
 
         public override string EnterNewDescription(string description = "")
@@ -1203,12 +1213,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCQCMDate();
             EnterCQAM();
             EnterCQAMDate();
+            EnterDescription("");
         }
 
         public override bool VerifyNCRDocIsClosed(string description = "")
             => CheckNCRisClosed(description, TableTab.Closed_NCR);
 
-        public override void EnterDescription(string description = "")
+        public override string EnterDescription(string description = "")
             => EnterDesc(description, InputFields.Description_of_NCR);
 
         public override string EnterNewDescription(string description = "")

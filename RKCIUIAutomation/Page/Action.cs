@@ -50,7 +50,7 @@ namespace RKCIUIAutomation.Page
 
         public void JsClickElement(By elementByLocator)
         {
-            ScrollToElement(elementByLocator);
+            //ScrollToElement(elementByLocator);
             ExecuteJsAction(JSAction.Click, elementByLocator);
         }
 
@@ -78,7 +78,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error($"WaitForElement timeout occured for element: - {elementByLocator}", e);
+                log.Error($"WaitForElement timeout occurred for element: - {elementByLocator}", e);
             }
         }
 
@@ -641,14 +641,14 @@ namespace RKCIUIAutomation.Page
 
         public void ClickLoginLink()
         {
-            WaitForPageReady();
-            Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+            GetElement(By.XPath("//a[contains(text(),'Login')]")).Click();
+            //Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
         }
 
         public void ClickLogoutLink()
         {
-            WaitForPageReady();
-            Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
+            GetElement(By.XPath("//a[contains(text(),'Log out')]")).Click();
+            //Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
         }
 
         public string GetCurrentUser()

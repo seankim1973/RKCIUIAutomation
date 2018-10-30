@@ -267,6 +267,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void ClickBtnJs_SaveForward()
         {
+            ScrollToElement(SaveForwardBtn_ByLocator);
             JsClickElement(SaveForwardBtn_ByLocator);
             WaitForPageReady();
         }

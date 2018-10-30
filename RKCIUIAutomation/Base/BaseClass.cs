@@ -289,6 +289,7 @@ namespace RKCIUIAutomation.Base
                     {
                         Driver.Manage().Cookies.AddCookie(cookie);
                     }
+
                     Driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
                 }
             }
