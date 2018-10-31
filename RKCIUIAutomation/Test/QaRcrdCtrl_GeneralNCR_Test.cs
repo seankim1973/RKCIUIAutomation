@@ -434,15 +434,15 @@ namespace RKCIUIAutomation.Test.NCR
     }
 
 
-    [TestFixture] //complete
+    [TestFixture] //complete, updated hiptest
     public class Verify_Edit_Cancel_SaveOnly_Ncr_Document_ComplexWF : TestBase
     {
         [Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
-        [Property(TestCaseNumber, 2338474)]
+        [Property(TestCaseNumber, 2187691)]
         [Property(Priority, "High")]
-        [Description("To verify Edit, Cancel, SaveOnly functions for NCR in the Concession Request: Return to Conformance workflow.")]
+        [Description("To verify Edit, Cancel, and SaveOnly functions for NCR Complex Workflow.")]
         public void Edit_Cancel_SaveOnly_Ncr_Document_ComplexWF()
         {
             LogInfo("------ Create ncr and enter description then click saveOnly -------");
@@ -631,8 +631,7 @@ namespace RKCIUIAutomation.Test.NCR
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
 
             LogInfo("------  verify ncr is closed  -------");
-
-            QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsClosed(ncrDescription);
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsClosed(ncrDescription));
 
             AssertAll();
         }
@@ -649,9 +648,6 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To verify Edit, Cancel, SaveOnly functions for NCR in Concession Request: Concession Diviation workflow.")]
         public void Edit_Cancel_SaveOnly_Ncr_Document_ConcessionRequest_ConcessionDiviation()
         {
-
-
-
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
             LogoutToLoginPage();
             WF_QaRcrdCtrl_GeneralNCR.Review_and_Approve_NCR(UserType.NCRMgr, ncrDescription);

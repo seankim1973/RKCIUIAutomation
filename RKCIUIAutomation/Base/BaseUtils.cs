@@ -152,6 +152,8 @@ namespace RKCIUIAutomation.Base
             {
                 log.Debug(details, exception);
             }
+            else
+                log.Debug(details);
         }
 
         public void LogErrorWithScreenshot()

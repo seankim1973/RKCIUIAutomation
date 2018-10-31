@@ -19,7 +19,7 @@ namespace RKCIUIAutomation.Page
         {
         }
 
-        public Action(IWebDriver driver) => this.Driver = driver;
+        public Action(IWebDriver driver) => Driver = driver;
 
         private enum JSAction
         {
@@ -60,11 +60,10 @@ namespace RKCIUIAutomation.Page
             Thread.Sleep(1000);
         }
 
-        private void WaitForElement(By elementByLocator, int timeOutInSeconds = 2, int pollingInterval = 250)
+        private void WaitForElement(By elementByLocator, int timeOutInSeconds = 5, int pollingInterval = 250)
         {
             try
             {
-                WaitForPageReady();
                 log.Info($"...waiting for element: - {elementByLocator}");
                 WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeOutInSeconds))
                 {
@@ -89,16 +88,14 @@ namespace RKCIUIAutomation.Page
                 PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
             };
 
-            wait.Until(driver =>
+            wait.Until(Driver =>
             {
-                bool isLoaderHidden = (bool)((IJavaScriptExecutor)driver).
+                bool isLoaderHidden = (bool)((IJavaScriptExecutor)Driver).
                     ExecuteScript("return $('.k-loading-image').is(':visible') == false");
-                bool isAjaxFinished = (bool)((IJavaScriptExecutor)driver).
+                bool isAjaxFinished = (bool)((IJavaScriptExecutor)Driver).
                     ExecuteScript("return jQuery.active == 0");
                 return isAjaxFinished && isLoaderHidden;
             });
-
-            Thread.Sleep(1000);
         }
 
         internal IWebElement GetElement(By elementByLocator)
@@ -256,7 +253,9 @@ namespace RKCIUIAutomation.Page
             string text = string.Empty;
             try
             {
-                text = $"{GetText(new PageHelper().GetDDListByLocator(ddListID))}//span[@class='k-input']";
+                By locator = new PageHelper().GetDDListByLocator(ddListID);
+                ScrollToElement(locator);
+                text = $"{GetText(locator)}//span[@class='k-input']";
                 LogInfo($"Retrieved text '{text}' from element - {ddListID?.GetString()}");
             }
             catch (Exception e)

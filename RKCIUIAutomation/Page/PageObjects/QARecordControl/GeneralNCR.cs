@@ -840,13 +840,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             try
             {
-                IWebElement rdoBtnOrChkBoxElement = GetElement(By.Id(rdoBtnOrChkBox.GetString()));
+                By locator = By.Id(rdoBtnOrChkBox.GetString());
+                ScrollToElement(locator);
+                IWebElement rdoBtnOrChkBoxElement = GetElement(locator);
                 bool isSelected = rdoBtnOrChkBoxElement.Selected ? true : false;
-                return isSelected.Equals(shouldBeSelected) ? true : false;
+                bool selectionsMatch = isSelected.Equals(shouldBeSelected) ? true : false;
+
+                if (shouldBeSelected)
+                {
+                    LogInfo($"Expected Selection: {rdoBtnOrChkBox.GetString()}", selectionsMatch);
+                }
+
+                return selectionsMatch;
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                LogError(e.StackTrace);
                 return false;
             }
         }
@@ -860,7 +869,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                LogError(e.StackTrace);
                 return false;
             }
         }
@@ -886,7 +895,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         break;
                 }
 
-                IWebElement signatureFieldElement = GetElement(By.Id(reviewerId.GetString()));
+                By locator = By.Id(reviewerId.GetString());
+                ScrollToElement(locator);
+                IWebElement signatureFieldElement = GetElement(locator);
                 string signatureValueAttrib = signatureFieldElement.GetAttribute("value");
 
                 bool isEmpty = string.IsNullOrWhiteSpace(signatureValueAttrib) ? true : false;
@@ -894,7 +905,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                LogError(e.StackTrace);
                 return false;
             }
         }
@@ -918,7 +929,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                LogError(e.StackTrace);
                 return false;
             }
         }
@@ -940,20 +951,16 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void PopulateRequiredFieldsAndSaveForward()
         {
-            WaitForPageReady();
             PopulateRequiredFields();
             UploadFile("test.xlsx");            
             ClickBtn_SaveForward();
-            WaitForPageReady();
         }
 
         public virtual void PopulateRequiredFieldsAndSaveOnly()
         {
-            WaitForPageReady();
             PopulateRequiredFields();
             UploadFile("test.xlsx");
             ClickBtn_SaveOnly();
-            WaitForPageReady();
         }
 
         public virtual bool VerifyNCRDocIsDisplayed(TableTab tableTab, string description = "")
@@ -986,10 +993,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual bool VerifyNCRDocIsClosed(string description = "")
             => CheckNCRisClosed(description, TableTab.All_NCRs);
 
+
         internal bool CheckNCRisClosed(string description, TableTab closedTab)
         {
             bool ncrIsClosed = false;
-            WaitForPageReady();
 
             try
             {

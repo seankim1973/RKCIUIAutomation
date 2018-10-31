@@ -145,11 +145,22 @@ namespace RKCIUIAutomation.Page
 
         public string GetColumnValueForRow(string textInRowForAnyColumn, string columnName)
         {
-            By headerLocator = By.XPath($"{ActiveTableDiv}{TableColumnIndex(columnName)}");
-            string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
-            int xPathIndex = int.Parse(dataIndexAttribute) + 1;
-            string rowXPath = $"{TableByTextInRow(textInRowForAnyColumn)}[{xPathIndex.ToString()}]";
-            return GetText(By.XPath(rowXPath));
+            string rowXPath = string.Empty;
+
+            try
+            {
+                By headerLocator = By.XPath($"{ActiveTableDiv}{TableColumnIndex(columnName)}");
+                string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
+                int xPathIndex = int.Parse(dataIndexAttribute) + 1;
+                rowXPath = $"{TableByTextInRow(textInRowForAnyColumn)}[{xPathIndex.ToString()}]";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            string text = GetText(By.XPath(rowXPath));
+            return text;
         }
 
         //<<-- Table Row Button Public Methods -->>
