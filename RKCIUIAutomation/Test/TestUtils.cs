@@ -142,30 +142,39 @@ namespace RKCIUIAutomation.Test
         }
 
         [ThreadStatic]
-        private static List<bool> assertionList = null;
+        private static IList<bool> assertionList;
 
         public void AddAssertionToList(bool assertion)
         {
             if (assertionList == null)
             {
+                log.Info("Created new assertion list");
                 assertionList = new List<bool>();
             }
-            else
-                assertionList.Add(assertion);
+
+            log.Info("Added an assertion to the list");
+            assertionList.Add(assertion);
         }
 
         public void AssertAll()
         {
-            int AssertionCount = 0;
-
             Assert.Multiple(testDelegate: () =>
             {
-                foreach (bool assertion in assertionList)
+                int Assertions = 0;
+
+                if (assertionList != null)
                 {
-                    AssertionCount++;
-                    Console.WriteLine($"AssertionCount: {AssertionCount}");
-                    Assert.True(assertion);
+                    foreach (bool assertion in assertionList)
+                    {
+                        Assertions++;
+                        Assert.True(assertion);
+                    }
+
+                    LogInfo($"Total Number of Assertions in Test Case: {Assertions}");
                 }
+                else
+                    LogInfo($"Did not find any assertions in the list to verify");
+                
             });
         }
     }

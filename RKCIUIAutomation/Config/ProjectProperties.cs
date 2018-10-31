@@ -25,6 +25,8 @@ namespace RKCIUIAutomation.Config
             public const string Material_Mix_Codes = "Material_Mix_Codes";
             public const string MPL_Tracker = "MPL_Tracker";
             public const string NCR = "NCR";
+            public const string NCR_WF_Complex = "NCR_WF_Complex";
+            public const string NCR_WF_Simple = "NCR_WF_Simple";
             public const string Notifications = "Notifications";
             public const string Other = "Other";
             public const string Project_Configuration = "Project_Configuration";
@@ -43,8 +45,7 @@ namespace RKCIUIAutomation.Config
             //Secondary Components (not in Jira)
             public const string OV_Test = "OV_Test";
             public const string QAField = "QAField";
-            public const string NCR_WF_Complex = "NCR_WF_Complex";
-            public const string NCR_WF_Simple = "NCR_WF_Simple";
+
 
             //Tenant Specific Components
             public const string Garnet = "Garnet";
@@ -115,7 +116,6 @@ namespace RKCIUIAutomation.Config
             Component.DesignDoc_CommentReview,
             Component.RFI,
             Component.QAField,
-            Component.NCR_WF_Complex
         };
 
         private readonly List<string> Components_GreenLineExt = new List<string>
@@ -123,6 +123,7 @@ namespace RKCIUIAutomation.Config
             Component.GLX,
             Component.DesignDoc_CommentReview,
             Component.RFI,
+            Component.NCR,
             Component.NCR_WF_Complex
         };
 
@@ -131,6 +132,7 @@ namespace RKCIUIAutomation.Config
             Component.I15South,
             Component.OV_Test,
             Component.QAField,
+            Component.NCR,
             Component.NCR_WF_Complex
         };
 
@@ -139,6 +141,7 @@ namespace RKCIUIAutomation.Config
             Component.I15Tech,
             Component.OV_Test,
             Component.QAField,
+            Component.NCR,
             Component.NCR_WF_Complex
         };
 
@@ -147,6 +150,7 @@ namespace RKCIUIAutomation.Config
             Component.SH249,
             Component.DesignDoc_CommentReview,
             Component.QAField,
+            Component.NCR,
             Component.NCR_WF_Simple
         };
 
@@ -155,12 +159,14 @@ namespace RKCIUIAutomation.Config
             Component.SGWay,
             Component.DesignDoc_CommentReview,
             Component.QAField,
+            Component.NCR,
             Component.NCR_WF_Simple
         };
 
         private readonly List<string> Components_LAX = new List<string>
         {
             Component.LAX,
+            Component.NCR,
             Component.NCR_WF_Complex
         };
 
@@ -172,7 +178,6 @@ namespace RKCIUIAutomation.Config
             Component.CVL_List,
             Component.CVL_Lists,
             Component.CVL_List_Items,
-            Component.NCR,
             Component.Other,
             Component.Project_Configuration,
             Component.Search,

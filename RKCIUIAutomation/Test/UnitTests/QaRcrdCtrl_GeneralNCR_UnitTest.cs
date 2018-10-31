@@ -68,14 +68,13 @@ namespace RKCIUIAutomation.Test.UnitTests
             LogInfo($"Testing, UserAccts for {tenantName}");
             LoginAs(UserType.NCRMgr);
             string CurrentUser = GetCurrentUser();
-            System.Console.WriteLine($"USER: {CurrentUser}");
-            Assert.True(CurrentUser == "NCR Mgr");
+            AddAssertionToList(CurrentUser == "NCR Manager");
             ClickLogoutLink();
             ClickLoginLink();
             LoginAs(UserType.NCRTech);
             CurrentUser = GetCurrentUser();
-            System.Console.WriteLine($"USER: {CurrentUser}");
-            Assert.True(CurrentUser == "NCR Tech");
+            AddAssertionToList(CurrentUser == "NCR Technician");
+            AssertAll();
         }
     }
 

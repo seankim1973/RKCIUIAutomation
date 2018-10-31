@@ -25,7 +25,9 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        string Create_and_SaveForward_NCR(UserType user, bool isComplexWF = true);
+        string Create_and_SaveForward_NCR(UserType user);
+
+        string Create_and_SaveOnly_NCR(UserType user);
 
         /// <summary>
         /// Verifies a document is shown in 'Revise' tab, after clicking Revise button for a document in the 'Review' tab.
@@ -117,7 +119,7 @@ namespace RKCIUIAutomation.Page.Workflows
             }
         }
 
-        public virtual string Create_and_SaveForward_NCR(UserType user, bool isComplexWF = true)
+        public virtual string Create_and_SaveForward_NCR(UserType user)
         {
             LogDebug("------------WF Create_and_SaveForward_NCR_Document-------------");
 
@@ -126,9 +128,21 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_New();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc());
-            QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward(isComplexWF);
+            QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward();
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
+
+        public virtual string Create_and_SaveOnly_NCR(UserType user)
+        {
+            LogDebug("------------WF Create_and_SaveOnly_NCR_Document-------------");
+
+            LoginAs(user);
+            NavigateToGeneralNcrPage();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_New();
+            QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveOnly();
+            return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
+        }
+
 
         public virtual void Review_and_Approve_NCR(UserType user, string ncrDescription)
         {
@@ -174,7 +188,7 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
             ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown for Concession Request DDList
-            QaRcrdCtrl_GeneralNCR.SelectDDL_ConcessionRequest_ReturnToConformance();
+            QaRcrdCtrl_GeneralNCR.SelectDDL_PopulateRelatedFields_forConcessionRequest_ReturnToConformance();
             //todo: select checkboxes
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }
@@ -211,7 +225,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
             //>>>WORKFLOW for (Concession Request DDList) Concession Deviation
             //todo: click Save&Fwd button and verify required field error label is shown for Concession Request DDList
-            QaRcrdCtrl_GeneralNCR.SelectDDL_ConcessionRequest_ConcessionDeviation();
+            QaRcrdCtrl_GeneralNCR.SelectDDL_PopulateRelatedFields_forConcessionRequest_ConcessionDeviation();
             //todo: select checkboxes
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }

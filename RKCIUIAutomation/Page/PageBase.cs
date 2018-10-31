@@ -24,7 +24,8 @@ namespace RKCIUIAutomation.Page
 
         public PageBaseHelper(IWebDriver driver) => this.Driver = driver;
 
-        private Hashtable Hashtable { get; set; }
+        [ThreadStatic]
+        private static Hashtable Hashtable;
 
         private Hashtable GetHashTable() => Hashtable ?? new Hashtable();
 
@@ -63,12 +64,13 @@ namespace RKCIUIAutomation.Page
 
         public string GetVar(string key)
         {
-            Hashtable = GetHashTable();
+            //Hashtable = GetHashTable();
             var varValue = string.Empty;
 
             if (Hashtable.ContainsKey(key))
             {
                 varValue = Hashtable[key].ToString();
+                log.Debug($"Found GetVar Key: {key} with Value: {varValue}");
             }
             else
             {
