@@ -6,66 +6,8 @@ using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 
 namespace RKCIUIAutomation.Test.NCR
 {
-    [TestFixture]//complete, updated hiptest
-    public class Verify_NCR_SimpleWF_End_To_End : TestBase
-    {
-        [Test]
-        [Category(Component.NCR)]
-        [Property(Component2, Component.NCR_WF_Simple)]
-        [Property(TestCaseNumber, 2187687)]
-        [Property(Priority, "High")]
-        [Description("To validate simple workflow for NCR module end-to-end.")]
-        public void NCR_SimpleWF_End_To_End()
-        {
-            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
-            ClickEditBtnForRow();
-            LogInfo("------------send to revise from Review------------");
-            QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
-            ClickEditBtnForRow();
 
-            LogInfo("------------cancel, edit/saveonly in Revise------------");
-            QaRcrdCtrl_GeneralNCR.EnterNewDescription("New NCR Description");
-            QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
-            ClickEditBtnForRow();
-            ncrDescription = QaRcrdCtrl_GeneralNCR.EnterNewDescription("");
-            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
-            ClickEditBtnForRow();
-
-            LogInfo("------------save&fwd in Review------------");
-            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
-            ClickEditBtnForRow();
-
-            LogInfo("------------save&fwd in ToBeClosed------------");
-            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed, ncrDescription));
-            ClickEditBtnForRow();
-
-            LogInfo("------------send to revise from ToBeClosed------------");
-            QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
-            ClickEditBtnForRow();
-
-            LogInfo("------------save&fwd from Revise to Review------------");
-            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
-            ClickEditBtnForRow();
-
-            LogInfo("------------save&fwd in Review------------");
-            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed, ncrDescription));
-            ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsClosed(ncrDescription));
-            AssertAll();
-        }
-    }
-
-    //[TestFixture]
+    //[TestFixture] //grouped TCs - duplicates
     public class GeneralNCR_Verify_Complex_Workflow_Scenarios : TestBase
     {
         //[Test]
@@ -115,7 +57,7 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    //[TestFixture]
+    //[TestFixture] //grouped TCs - duplicates
     public class GeneralNCR_Verify_ConcessionRequest_ReturnToConformance_Scenarios : TestBase
     {
         //[Test]
@@ -185,7 +127,7 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    //[TestFixture]
+    //[TestFixture] //grouped TCs - duplicates
     public class GeneralNCR_Verify_ConcessionRequest_ConcessionDeviation_Scenarios : TestBase
     {
         //[Test]
@@ -267,7 +209,64 @@ namespace RKCIUIAutomation.Test.NCR
     }
 
 
+    [TestFixture]//complete, updated hiptest
+    public class Verify_NCR_SimpleWF_End_To_End : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(Component2, Component.NCR_WF_Simple)]
+        [Property(TestCaseNumber, 2187687)]
+        [Property(Priority, "High")]
+        [Description("To validate simple workflow for NCR module end-to-end.")]
+        public void NCR_SimpleWF_End_To_End()
+        {
+            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
+            ClickEditBtnForRow();
+            LogInfo("------------send to revise from Review------------");
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
+            ClickEditBtnForRow();
 
+            LogInfo("------------cancel, edit/saveonly in Revise------------");
+            QaRcrdCtrl_GeneralNCR.EnterNewDescription("New NCR Description");
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
+            ClickEditBtnForRow();
+            ncrDescription = QaRcrdCtrl_GeneralNCR.EnterNewDescription("");
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in Review------------");
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in ToBeClosed------------");
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed, ncrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------send to revise from ToBeClosed------------");
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd from Revise to Review------------");
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in Review------------");
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed, ncrDescription));
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsClosed(ncrDescription));
+            AssertAll();
+        }
+    }
 
     [TestFixture]//complete, updated hiptest
     public class Verify_Create_And_Save_Ncr_Document : TestBase
@@ -432,7 +431,6 @@ namespace RKCIUIAutomation.Test.NCR
             AssertAll();
         }
     }
-
 
     [TestFixture] //complete, updated hiptest
     public class Verify_Edit_Cancel_SaveOnly_Ncr_Document_ComplexWF : TestBase
@@ -637,36 +635,7 @@ namespace RKCIUIAutomation.Test.NCR
         }
     }
 
-    //[TestFixture] //incomplete
-    public class Verify_Edit_Cancel_SaveOnly_Ncr_Document_ConcessionRequest_ConcessionDiviation : TestBase
-    {
-        //[Test]
-        [Category(Component.NCR)]
-        [Property(Component2, Component.NCR_WF_Complex)]
-        [Property(TestCaseNumber, 2339453)]
-        [Property(Priority, "High")]
-        [Description("To verify Edit, Cancel, SaveOnly functions for NCR in Concession Request: Concession Diviation workflow.")]
-        public void Edit_Cancel_SaveOnly_Ncr_Document_ConcessionRequest_ConcessionDiviation()
-        {
-            string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
-            LogoutToLoginPage();
-            WF_QaRcrdCtrl_GeneralNCR.Review_and_Approve_NCR(UserType.NCRMgr, ncrDescription);
-            //WF_QaRcrdCtrl_GeneralNCR.Return_ToResolutionDisposition_FromDeveloperConcurrence(ncrDescription);
-            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
-            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription, false);
-            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
 
-            //WF_QaRcrdCtrl_GeneralNCR.Return_ToDeveloperConcurrence_FromDOTApproval(ncrDescription);
-            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
-            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription, false);
-            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApproval(ncrDescription);
-
-            WF_QaRcrdCtrl_GeneralNCR.CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(ncrDescription);
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
-            //Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
-            AssertAll();
-        }
-    }
 
     [TestFixture]
     public class Verify_Locked_Ncr_Document_Cannot_Be_Edited_By_Another_User : TestBase
