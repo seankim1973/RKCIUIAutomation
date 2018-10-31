@@ -4,15 +4,41 @@ using RKCIUIAutomation.Test;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 {
+    #region DIR/IDR/DWR Generic Class
+    public class QADIRs : QADIRs_Impl
+    {
+        public QADIRs()
+        {
+        }
+
+        public QADIRs(IWebDriver driver) => this.Driver = driver;
+        public enum InputFields
+        {
+        }
+        public enum TableTab
+        {
+            [StringValue("Creating")] Creating,
+            [StringValue("Create/Revise")] Create_Revise,
+            [StringValue("Attachments")] Attachments,
+            [StringValue("QC Review")] QC_Review,
+            [StringValue("Authorization")] Authorization,
+            [StringValue("Revise")] Revise,
+            [StringValue("To Be Closed")] To_Be_Closed,
+            [StringValue("Closed")] Closed,
+            [StringValue("Create Packages")] Create_Packages,
+            [StringValue("Packages")] Packages
+        }
+    }
+    #endregion DIR Generic class
     public interface IQADIRs
     {
         bool IsLoaded();
     }
 
-    public class QADIRs : QADIRs_Impl
-    {
-        public QADIRs(IWebDriver driver) => this.Driver = driver;
-    }
+    //public class QADIRs : QADIRs_Impl
+    //{
+    //    public QADIRs(IWebDriver driver) => this.Driver = driver;
+    //}
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
     {

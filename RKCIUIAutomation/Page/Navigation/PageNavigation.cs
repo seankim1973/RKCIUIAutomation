@@ -631,6 +631,7 @@ namespace RKCIUIAutomation.Page.Navigation
         }
 
         public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.QARecordControl.Menu.General_Deficiency_Notice);
+        public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_IDRs);
 
     }
 
@@ -663,9 +664,12 @@ namespace RKCIUIAutomation.Page.Navigation
     public class PageNavigation_LAX : PageNavigation
     {
         public PageNavigation_LAX(IWebDriver driver) : base(driver)
-        {
-        }
+        { }
+           public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Deficiency_Notice);
+   
+            //public override void QCRecordControl_General_CDR() => Navigate.Menu(NavMenu.QARecordControl.Menu.QC_Deficiency_Notice);
+    
+    }
     }
 
     #endregion Implementation specific to LAX
-}
