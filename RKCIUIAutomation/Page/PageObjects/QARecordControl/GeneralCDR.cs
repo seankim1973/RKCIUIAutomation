@@ -151,37 +151,37 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             if (tenantName == TenantName.SGWay)
             {
-                LogInfo($"###### using GeneralCDR_SGWay instance ###### ");
+                log.Info($"###### using GeneralCDR_SGWay instance ###### ");
                 instance = new GeneralCDR_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
-                LogInfo($"###### using  GeneralCDR_SH249 instance ###### ");
+                log.Info($"###### using  GeneralCDR_SH249 instance ###### ");
                 instance = new GeneralCDR_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                LogInfo($"###### using  GeneralCDR_Garnet instance ###### ");
+                log.Info($"###### using  GeneralCDR_Garnet instance ###### ");
                 instance = new GeneralCDR_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                LogInfo($"###### using  GeneralCDR_GLX instance ###### ");
+                log.Info($"###### using  GeneralCDR_GLX instance ###### ");
                 instance = new GeneralCDR_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                LogInfo($"###### using  GeneralCDR_I15South instance ###### ");
+                log.Info($"###### using  GeneralCDR_I15South instance ###### ");
                 instance = new GeneralCDR_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                LogInfo($"###### using GeneralCDR_I15Tech instance ###### ");
+                log.Info($"###### using GeneralCDR_I15Tech instance ###### ");
                 instance = new GeneralCDR_I15Tech(driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                LogInfo($"###### using GeneralCDR_LAX instance ###### ");
+                log.Info($"###### using GeneralCDR_LAX instance ###### ");
                 instance = new GeneralCDR_LAX(driver);
             }
             return instance;

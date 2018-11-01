@@ -53,37 +53,37 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             if (tenantName == TenantName.SGWay)
             {
-                LogInfo($"###### using QADIRs_SGWay instance ###### ");
+                log.Info($"###### using QADIRs_SGWay instance ###### ");
                 instance = new QADIRs_SGWay(Driver);
             }
             else if (tenantName == TenantName.SH249)
             {
-                LogInfo($"###### using QADIRs_SH249 instance ###### ");
+                log.Info($"###### using QADIRs_SH249 instance ###### ");
                 instance = new QADIRs_SH249(Driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                LogInfo($"###### using QADIRs_Garnet instance ###### ");
+                log.Info($"###### using QADIRs_Garnet instance ###### ");
                 instance = new QADIRs_Garnet(Driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                LogInfo($"###### using QADIRs_GLX instance ###### ");
+                log.Info($"###### using QADIRs_GLX instance ###### ");
                 instance = new QADIRs_GLX(Driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                LogInfo($"###### using QADIRs_I15South instance ###### ");
+                log.Info($"###### using QADIRs_I15South instance ###### ");
                 instance = new QADIRs_I15South(Driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                LogInfo($"###### using QADIRs_I15Tech instance ###### ");
+                log.Info($"###### using QADIRs_I15Tech instance ###### ");
                 instance = new QADIRs_I15Tech(Driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                LogInfo($"###### using QADIRs_LAX instance ###### ");
+                log.Info($"###### using QADIRs_LAX instance ###### ");
                 instance = new QADIRs_LAX(Driver);
             }
             return instance;

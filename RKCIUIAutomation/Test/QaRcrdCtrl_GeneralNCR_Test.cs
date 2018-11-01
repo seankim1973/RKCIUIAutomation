@@ -443,96 +443,87 @@ namespace RKCIUIAutomation.Test.NCR
         [Description("To verify Edit, Cancel, and SaveOnly functions for NCR Complex Workflow.")]
         public void Edit_Cancel_SaveOnly_Ncr_Document_ComplexWF()
         {
-            LogInfo("------ Create ncr and enter description then click saveOnly -------");
+            LogInfo("------ Login as NCR Technician, create ncr and enter description, click saveOnly then logout -------");
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveOnly_NCR(UserType.NCRTech);
             LogoutToLoginPage();
 
-            LogInfo("------  edit in revise tab  -------");
+            LogInfo("------ Login as NCR Manager, edit NCR in revise tab, modify description then click cancel  -------");
             LoginAs(UserType.NCRMgr);
             NavigateToPage.QARecordControl_General_NCR();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Creating_Revise, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  change desc and click cancel  -------");
             QaRcrdCtrl_GeneralNCR.EnterNewDescription();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
-            LogInfo("------  edit in revise tab and saveFwd -------");
+            LogInfo("------  edit in revise tab then click saveFwd -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Creating_Revise, ncrDescription));
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
-            LogInfo("------  edit in review tab  -------");
+            LogInfo("------  edit in review tab and select Type of NCR (Level 3) then click cancel -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  select Type of NCR (Level 3) and click cancel  -------");
             QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level3();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
-            LogInfo("------  edit in review tab  -------");
+            LogInfo("------  edit in review tab and select Type of NCR (Level 3) then click saveOnly -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
             ClickEditBtnForRow();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.TypeOfNCR_Level3, false));
-
-            LogInfo("------  select Type of NCR (Level 3) and click saveOnly  -------");
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.TypeOfNCR_Level3/*, false*/)); //<----- TODO: uncomment after bug is fixed: Retains selection when clicking Cancel btn after selecting Type Of NCR rdoBtn.
             QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level3();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
-            LogInfo("------  edit in review tab  -------");
+            LogInfo("------  edit in review tab and verify Type of NCR selection is intact then click Approve -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  verify Type of NCR selection is intact and click Approve  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.TypeOfNCR_Level3));
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
 
-            LogInfo("------  edit in Resolution/Disposition tab  -------");
+            LogInfo("------  edit in Resolution/Disposition tab and verify previously selected required field -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
             ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.TypeOfNCR_Level3));
 
-            LogInfo("------  selectDDL Concession Request - Concession Diviation and click Cancel  -------");
-            QaRcrdCtrl_GeneralNCR.SelectDDL_PopulateRelatedFields_forConcessionRequest_ConcessionDeviation();
+            LogInfo("------  selectDDL Concession Request - Concession Diviation and populate required fields then click Cancel  -------");
+            QaRcrdCtrl_GeneralNCR.PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ConcessionDeviation();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
-            LogInfo("------  edit in Resolution/Disposition tab  -------");
+            LogInfo("------  edit in Resolution/Disposition tab then verify Concession Request DDL is set to 'Please Select'  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  verify Concession Request DDL is set to 'Please Select'  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyDDListSelectedValue(InputFields.Concession_Request, "Please Select"));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, false));
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework, false));
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Replace, false));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Accept_As_Is, false));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Repair, false));
 
-            LogInfo("------  selectDDL Concession Request - Concession Diviation select checkboxes then click SaveOnly  -------");
-            QaRcrdCtrl_GeneralNCR.SelectDDL_PopulateRelatedFields_forConcessionRequest_ConcessionDeviation();
+            LogInfo("------  selectDDL Concession Request - Concession Diviation, populate required fields then click SaveOnly  -------");
+            QaRcrdCtrl_GeneralNCR.PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ConcessionDeviation();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
-            LogInfo("------  edit in Resolution/Disposition tab  -------");
+            LogInfo("------  edit in Resolution/Disposition tab and verify Concession Request DDL is set to 'Concession Diviation', checkboxes are selected then click SaveFwd  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  verify Concession Request DDL is set to 'Concession Diviation' and checkboxes are selected then click SaveFwd  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyDDListSelectedValue(InputFields.Concession_Request, "Concession Deviation"));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required));
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework));
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Replace));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Accept_As_Is));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Repair));
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
-            LogInfo("------  edit in Developer Concurrence tab  -------");
+            LogInfo("------  edit in Developer Concurrence tab and verify preivously selected required fields -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription));
             ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyDDListSelectedValue(InputFields.Concession_Request, "Concession Deviation"));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Accept_As_Is));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Repair));
 
             LogInfo("------  provide signature for Engineer of Record then click Cancel  -------");
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
-            LogInfo("------  edit in Developer Concurrence tab  -------");
+            LogInfo("------  edit in Developer Concurrence tab and verify signatature for Eng of Record is empty -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  verify signatature for Eng of Record is empty - //input[@id='RecordEngineerSignature'][@value='']  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.EngineerOfRecord, true));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyInputField(InputFields.Engineer_of_Record, true));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_NA));
@@ -541,29 +532,23 @@ namespace RKCIUIAutomation.Test.NCR
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
-            LogInfo("------  edit in Developer Concurrence tab  -------");
+            LogInfo("------  edit in Developer Concurrence tab and verify signature value attribute is not empty, name field is not empty, approval rdoBtn is selected then click saveFwd  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  verify signature value attribute is not empty, name field is not empty, approval rdoBtn selection is intact then click saveFwd  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.EngineerOfRecord));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyInputField(InputFields.Engineer_of_Record));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_Yes));
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
-            LogInfo("------  edit in DOT Approval tab  -------");
+            LogInfo("------  edit in DOT Approval tab and provide signature for DOT Review then click Cancel -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  provide signature for DOT Review then click Cancel  -------");
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Owner);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
-            LogInfo("------  edit in DOT Approval tab  -------");
+            LogInfo("------  edit in DOT Approval tab and verify signatature for DOT Review is empty  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  verify signatature for DOT Review is empty - //input[@id='OwnerSignature'][@value='']  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.Owner, true));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyInputField(InputFields.Owner_Review, true));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Owner_Approval_NA));
@@ -572,11 +557,9 @@ namespace RKCIUIAutomation.Test.NCR
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Owner);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
-            LogInfo("------  edit in DOT Approval tab  -------");
+            LogInfo("------  edit in DOT Approval tab and verify signature value attribute is not empty, name field is not empty, approval rdoBtn is selected then click saveFwd  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  verify signature value attribute is not empty, name field is not empty, approval rdoBtn selection is intact then click saveFwd  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.Owner));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyInputField(InputFields.Owner_Review));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Owner_Approval_Yes));
@@ -587,27 +570,42 @@ namespace RKCIUIAutomation.Test.NCR
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
 
-            LogInfo("------  edit in Resolution/Disposition tab  -------");
+            LogInfo("------  edit in Resolution/Disposition tab and verify Concession Request DDL is set to 'Concession Deviation' from previous selection -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
             ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyDDListSelectedValue(InputFields.Concession_Request, "Concession Deviation"));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework, false));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Replace, false));
 
-            LogInfo("------  selectDDL Concession Request - Return to Conformance and select checkboxes then click SaveFwd  -------");
-            QaRcrdCtrl_GeneralNCR.SelectDDL_PopulateRelatedFields_forConcessionRequest_ReturnToConformance();
+            LogInfo("------  selectDDL Concession Request - Return To Conformance and select checkboxes then click SaveOnly  -------");
+            QaRcrdCtrl_GeneralNCR.PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ReturnToConformance();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+
+            LogInfo("------  edit in Resolution/Disposition tab and verify Concession Request DDL is set to 'Return to Conformance' and checkboxes are selected then click SaveFwd  -------");
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyDDListSelectedValue(InputFields.Concession_Request, "Return to Conformance"));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Replace));
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
-            LogInfo("------  edit in Verification and Closure tab  -------");
+            LogInfo("------  edit in Verification and Closure tab and verify previously selected required fields -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
             ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyDDListSelectedValue(InputFields.Concession_Request, "Return to Conformance"));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Replace));
 
             LogInfo("------  provide signature for IQF Mgr then click cancel  -------");
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
-            LogInfo("------  edit in Verification and Closure  -------");
+            LogInfo("------  edit in Verification and Closure and verify signature is empty for IQF Mgr -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  verify signature is empty for IQF Mgr - //input[@id='IQFManagerSignature'][@value='']   -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.IQF_Manager, true));
 
             LogInfo("------  enter signature and name for IQF Mgr and QC Mgr then click SaveOnly  -------");
@@ -615,11 +613,9 @@ namespace RKCIUIAutomation.Test.NCR
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
-            LogInfo("------  edit in Verification and Closure  -------");
+            LogInfo("------  edit in Verification and Closure and verify signatures' element value and name field is not empty then click Close  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
             ClickEditBtnForRow();
-
-            LogInfo("------  verify signatures' element value and name field is not empty then click Close  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.IQF_Manager));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyInputField(InputFields.IQF_Manager));
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyInputField(InputFields.IQFManagerDate));

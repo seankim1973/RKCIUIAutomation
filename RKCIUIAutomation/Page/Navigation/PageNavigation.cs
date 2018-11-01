@@ -540,37 +540,37 @@ namespace RKCIUIAutomation.Page.Navigation
 
             if (tenantName == TenantName.SGWay)
             {
-                LogInfo($"###### using Navigation_SGWay instance ###### ");
+                log.Info($"###### using Navigation_SGWay instance ###### ");
                 instance = new PageNavigation_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
-                LogInfo($"###### using Navigation_SH249 instance ###### ");
+                log.Info($"###### using Navigation_SH249 instance ###### ");
                 instance = new PageNavigation_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                LogInfo($"###### using Navigation_Garnet instance ###### ");
+                log.Info($"###### using Navigation_Garnet instance ###### ");
                 instance = new PageNavigation_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                LogInfo($"###### using Navigation_GLX instance ###### ");
+                log.Info($"###### using Navigation_GLX instance ###### ");
                 instance = new PageNavigation_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                LogInfo($"###### using Navigation_I15South instance ###### ");
+                log.Info($"###### using Navigation_I15South instance ###### ");
                 instance = new PageNavigation_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                LogInfo($"###### using Navigation_I15Tech instance ###### ");
+                log.Info($"###### using Navigation_I15Tech instance ###### ");
                 instance = new PageNavigation_I15Tech(driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                LogInfo($"###### using Navigation_LAX instance ###### ");
+                log.Info($"###### using Navigation_LAX instance ###### ");
                 instance = new PageNavigation_LAX(driver);
             }
 

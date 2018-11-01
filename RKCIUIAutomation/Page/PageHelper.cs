@@ -7,6 +7,12 @@ namespace RKCIUIAutomation.Page
 {
     public class PageHelper : BaseClass
     {
+        public PageHelper()
+        {
+        }
+
+        public PageHelper(IWebDriver driver) => this.Driver = driver;
+
         public static string GetMaxShortDate() => DateTime.MaxValue.Date.ToShortDateString();
 
         public static string GetShortDate() => DateTime.Now.ToShortDateString();
@@ -35,6 +41,8 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListFieldExpandArrowXpath(string ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']/span";
 
+        private string SetDDListCurrentSelectionXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-input']";
+        
         private string SetMainNavMenuXpath(Enum navEnum) => $"//li[@class='dropdown']/a[contains(text(),'{navEnum.GetString()}')]";
 
         private string SetNavMenuXpath(Enum navEnum, Enum parentNavEnum = null)
@@ -87,6 +95,8 @@ namespace RKCIUIAutomation.Page
         public By GetInputFieldByLocator(string inputFieldLabel) => By.XPath(SetInputFieldXpath(inputFieldLabel));
 
         public By GetDDListByLocator(Enum ddListID) => By.XPath(SetDDListFieldXpath(ddListID));
+
+        public By GetDDListCurrentSelectionByLocator(Enum ddListID) => By.XPath(SetDDListCurrentSelectionXpath(ddListID));
 
         public By GetExpandDDListButtonByLocator(Enum ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
 

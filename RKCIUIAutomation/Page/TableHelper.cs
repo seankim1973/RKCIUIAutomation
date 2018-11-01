@@ -182,10 +182,9 @@ namespace RKCIUIAutomation.Page
         /// <param name="textInRowForAnyColumn"></param>
         public void ClickEditBtnForRow(string textInRowForAnyColumn = null)
         {
-            By locator = GetTblRowBtn_ByLocator(TableButton.Action_Edit, textInRowForAnyColumn);
-            ScrollToElement(locator);
-            JsClickElement(locator);
+            JsClickElement(GetTblRowBtn_ByLocator(TableButton.Action_Edit, textInRowForAnyColumn));
             LogInfo($"Clicked Edit button for row {textInRowForAnyColumn}");
+            WaitForPageReady();
         }
 
         /// <summary>

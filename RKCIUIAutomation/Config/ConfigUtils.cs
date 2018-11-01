@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenQA.Selenium;
+using System;
 using System.Collections.Specialized;
 using System.Configuration;
 using static RKCIUIAutomation.Base.BaseUtils;
@@ -8,6 +9,12 @@ namespace RKCIUIAutomation.Config
 {
     public class ConfigUtils : ProjectProperties
     {
+        public ConfigUtils()
+        {
+        }
+
+        public ConfigUtils(IWebDriver driver) => this.Driver = driver;
+
         public TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg) => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nunitArg);
 
         public string GetSiteUrl(TestEnv testEnv, TenantName project)

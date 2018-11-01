@@ -209,7 +209,6 @@ namespace RKCIUIAutomation.Base
 
             if (assertion)
             {
-                testInstance.Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
                 if (hasPgBreak)
                 {
                     for (int i = 0; i < detailsBr.Length; i++)
@@ -218,26 +217,33 @@ namespace RKCIUIAutomation.Base
                     }
                 }
                 else
+                {
                     log.Info(details);
+                }
+
+                testInstance.Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
             }
             else
             {
-                testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
-                LogErrorWithScreenshot();
                 if (hasPgBreak)
                 {
                     for (int i = 0; i < detailsBr.Length; i++)
                     {
-                        log.Fatal(detailsBr[i]);
+                        log.Error(detailsBr[i]);
                     }
                 }
                 else
-                    log.Fatal(details);
+                {
+                    log.Error(details);
+                }
 
                 if (e != null)
                 {
-                    log.Fatal(e.Message);
+                    log.Debug(e.StackTrace);
                 }
+
+                testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
+                LogErrorWithScreenshot();
             }
         }
 

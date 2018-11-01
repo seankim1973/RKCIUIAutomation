@@ -47,7 +47,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError($"Exception occured in ClickTableTab method", true, e);
+                log.Error(e.StackTrace);
                 throw;
             }
         }
@@ -66,7 +66,6 @@ namespace RKCIUIAutomation.Page
 
         private int GetElementIndex(By findElementsLocator, string matchValue)
         {
-            WaitForPageReady();
             int index = -1;
             try
             {

@@ -50,37 +50,37 @@ namespace RKCIUIAutomation.Page.Workflows
 
             if (tenantName == TenantName.SGWay)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_SGWay instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_SGWay instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_SH249 instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_SH249 instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_Garnet instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_Garnet instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_GLX instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_GLX instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_I15South instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_I15South instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_I15Tech instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_I15Tech instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_I15Tech(driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_LAX instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_LAX instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_LAX(driver);
             }
             return instance;
