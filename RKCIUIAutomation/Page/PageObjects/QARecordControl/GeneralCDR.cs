@@ -69,9 +69,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Cancel")] Cancel,
             [StringValue("Revise")] Revise,
             [StringValue("Close CDR")] Close_CDR,
+            [StringValue("Close DN")] Close_DN,
             [StringValue("Save Only")] SaveOnly,
             [StringValue("Save & Forward")] SaveForward,
-            [StringValue("Back To QC Review")] Back_To_QC_Review
+            [StringValue("Back To QC Review")] Back_To_QC_Review,
+            [StringValue ("Back To Disposition")] Back_To_Disposition
         }
 
        
@@ -90,6 +92,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_SaveOnly();
 
         void ClickBtn_SaveForward();
+
+        void ClickBtn_Revise();
+
+        void ClickBtn_CloseCDR();
+
+        void ClickBtn_Back_To_QC_Review();
+
+        void ClickBtn_Back_To_Disposition();
 
         void ClickTab_All();
 
@@ -141,37 +151,37 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             if (tenantName == TenantName.SGWay)
             {
-                LogInfo($"###### using GeneralCDR_SGWay instance ###### ");
+                log.Info($"###### using GeneralCDR_SGWay instance ###### ");
                 instance = new GeneralCDR_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
-                LogInfo($"###### using  GeneralCDR_SH249 instance ###### ");
+                log.Info($"###### using  GeneralCDR_SH249 instance ###### ");
                 instance = new GeneralCDR_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                LogInfo($"###### using  GeneralCDR_Garnet instance ###### ");
+                log.Info($"###### using  GeneralCDR_Garnet instance ###### ");
                 instance = new GeneralCDR_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                LogInfo($"###### using  GeneralCDR_GLX instance ###### ");
+                log.Info($"###### using  GeneralCDR_GLX instance ###### ");
                 instance = new GeneralCDR_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                LogInfo($"###### using  GeneralCDR_I15South instance ###### ");
+                log.Info($"###### using  GeneralCDR_I15South instance ###### ");
                 instance = new GeneralCDR_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                LogInfo($"###### using GeneralCDR_I15Tech instance ###### ");
+                log.Info($"###### using GeneralCDR_I15Tech instance ###### ");
                 instance = new GeneralCDR_I15Tech(driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                LogInfo($"###### using GeneralCDR_LAX instance ###### ");
+                log.Info($"###### using GeneralCDR_LAX instance ###### ");
                 instance = new GeneralCDR_LAX(driver);
             }
             return instance;
@@ -202,6 +212,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickBtn_SaveForward() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveForward));
 
         public virtual void ClickBtn_CloseCDR() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Close_CDR));
+
+        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Revise));
+
+        public virtual void ClickBtn_Back_To_Disposition() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Back_To_Disposition));
+
+        public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Back_To_QC_Review));
+
 
         public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
 

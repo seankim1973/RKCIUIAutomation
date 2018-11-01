@@ -15,11 +15,13 @@ namespace RKCIUIAutomation.Page
 {
     public class Action : PageHelper
     {
+        PageHelper pgHelper = new PageHelper();
+
         public Action()
         {
         }
 
-        public Action(IWebDriver driver) => Driver = driver;
+        public Action(IWebDriver driver) => this.Driver = driver;
 
         private enum JSAction
         {
@@ -43,16 +45,13 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError($"Unable to perform {jsAction.ToString()} action on javascript element: - {elementByLocator}", true, e);
+                log.Error(e.StackTrace);
                 throw;
             }
         }
 
-        public void JsClickElement(By elementByLocator)
-        {
-            //ScrollToElement(elementByLocator);
-            ExecuteJsAction(JSAction.Click, elementByLocator);
-        }
+        public void JsClickElement(By elementByLocator) => ExecuteJsAction(JSAction.Click, elementByLocator);
+
 
         public void JsHover(By elementByLocator)
         {
@@ -60,8 +59,10 @@ namespace RKCIUIAutomation.Page
             Thread.Sleep(1000);
         }
 
-        private void WaitForElement(By elementByLocator, int timeOutInSeconds = 5, int pollingInterval = 250)
+        private void WaitForElement(By elementByLocator, int timeOutInSeconds = 5, int pollingInterval = 500)
         {
+            WaitForPageReady();
+
             try
             {
                 log.Info($"...waiting for element: - {elementByLocator}");
@@ -81,21 +82,22 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 500)
+        internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 1000)
         {
-            WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeOutInSeconds))
-            {
-                PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-            };
+            var javaScriptExecutor = Driver as IJavaScriptExecutor;
+            var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeOutInSeconds));
 
-            wait.Until(Driver =>
+            try
             {
-                bool isLoaderHidden = (bool)((IJavaScriptExecutor)Driver).
-                    ExecuteScript("return $('.k-loading-image').is(':visible') == false");
-                bool isAjaxFinished = (bool)((IJavaScriptExecutor)Driver).
-                    ExecuteScript("return jQuery.active == 0");
-                return isAjaxFinished && isLoaderHidden;
-            });
+                Func<IWebDriver, bool> readyCondition = webDriver => (bool)javaScriptExecutor.ExecuteScript("return (document.readyState == 'complete' && jQuery.active == 0)");
+                wait.Until(readyCondition);
+            }
+            catch (InvalidOperationException)
+            {
+                wait.Until(wd => javaScriptExecutor.ExecuteScript("return document.readyState").ToString() == "complete");
+            }
+
+            log.Debug($"##### Waited for page to be in Ready state #####");
         }
 
         internal IWebElement GetElement(By elementByLocator)
@@ -109,7 +111,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError($"Unable to GetElement: - {elementByLocator}\n{e.StackTrace}");
+                log.Error(e.StackTrace);
             }
 
             return elem;
@@ -128,7 +130,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogDebug($"Unable to locate elements: - {elementByLocator}", e);
+                log.Error(e.StackTrace);
             }
 
             return elements;
@@ -143,24 +145,17 @@ namespace RKCIUIAutomation.Page
         public void ClickElement(By elementByLocator)
         {
             IWebElement elem = null;
-
             try
             {
                 elem = GetElement(elementByLocator);
-                ScrollToElement(elementByLocator);
                 elem?.Click();
-                if (elem != null)
-                {
-                    LogInfo($"Clicked element: - {elementByLocator}");
-                }
-                else
-                {
-                    LogError($"Null element: - {elementByLocator}");
-                }
+                bool elemNotNull = elem != null ? true : false;
+                string logMsg = elemNotNull ? "Clicked" : "Null element";
+                LogInfo($"{logMsg} element: - {elementByLocator}", elemNotNull);
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                log.Error(e.StackTrace);
             }
         }
 
@@ -178,7 +173,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError($"Unable to click element", true, e);
+                log.Error(e.StackTrace);
             }
         }
 
@@ -197,7 +192,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError($"Unable to enter text in field - {commentTypeLocator}", true, e);
+                log.Error(e.StackTrace);
             }
         }
 
@@ -213,7 +208,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError($"Unable to enter text in field - {elementByLocator}", true, e);
+                log.Error(e.StackTrace);
             }
         }
 
@@ -228,7 +223,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError($"Unable to enter text in field - {elementByLocator}", true, e);
+                log.Error(e.StackTrace);
             }
         }
 
@@ -237,47 +232,36 @@ namespace RKCIUIAutomation.Page
             string text = string.Empty;
             try
             {
-                text = GetElement(elementByLocator).Text;
-                LogInfo($"Retrieved text, '{text}', from element - {elementByLocator}");
+                ScrollToElement(elementByLocator);
+                text = GetElement(elementByLocator)?.Text;
+                bool textNotEmpty = !string.IsNullOrEmpty(text);
+                string logMsg = textNotEmpty ? $"Retrieved '{text}'" : "Unable to retrieve text";
+                LogInfo($"{logMsg} from element - {elementByLocator}", textNotEmpty);
             }
             catch (Exception e)
             {
-                LogError($"Unable to retrieve text from element - {elementByLocator}", true, e);
+                log.Error(e.StackTrace);
             }
 
             return text;
         }
 
-        public string GetTextFromDDL(Enum ddListID)
-        {
-            string text = string.Empty;
-            try
-            {
-                By locator = new PageHelper().GetDDListByLocator(ddListID);
-                ScrollToElement(locator);
-                text = $"{GetText(locator)}//span[@class='k-input']";
-                LogInfo($"Retrieved text '{text}' from element - {ddListID?.GetString()}");
-            }
-            catch (Exception e)
-            {
-                LogError($"Unable to retrieve text from drop-down element - {ddListID?.GetString()}", true, e);
-            }
-            return text;
-        }
+        public string GetTextFromDDL(Enum ddListID) 
+            => GetText(pgHelper.GetDDListCurrentSelectionByLocator(ddListID));
 
         public void ExpandDDL<E>(E ddListID)
         {
             var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
-            By locator = new PageHelper().GetExpandDDListButtonByLocator(_ddListID);
+            By locator = pgHelper.GetExpandDDListButtonByLocator(_ddListID);
             try
             {
                 ClickElement(locator);
                 Thread.Sleep(2000);
-                LogInfo($"Expanded DDList - {_ddListID}");
+                log.Info($"Expanded DDList - {_ddListID}");
             }
             catch (Exception e)
             {
-                LogError($"Unable to expand drop down list - {locator}", true, e);
+                log.Error(e.StackTrace);
             }
         }
 
@@ -285,7 +269,7 @@ namespace RKCIUIAutomation.Page
         {
             var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
             ExpandDDL(_ddListID);
-            ClickElement(new PageHelper().GetDDListItemsByLocator(_ddListID, itemIndexOrName));
+            ClickElement(pgHelper.GetDDListItemsByLocator(_ddListID, itemIndexOrName));
         }
 
         public void UploadFile(string fileName)
@@ -296,11 +280,11 @@ namespace RKCIUIAutomation.Page
             {
                 By uploadInput_ByLocator = By.Id("UploadFiles_0_");
                 EnterText(uploadInput_ByLocator, filePath);
-                LogInfo($"Entered {filePath}' for file upload");
+                log.Info($"Entered {filePath}' for file upload");
             }
             catch (Exception e)
             {
-                LogError("Exception occured during file upload", true, e);
+                log.Error(e.StackTrace);
             }
         }
 
@@ -344,7 +328,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError($"Unable to accept browser alert message", true, e);
+                log.Error(e.StackTrace);
                 throw;
             }
         }
@@ -391,8 +375,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IWebElement element = GetElement(elementByLocator);
-                isDisplayed = (element != null) ? true : false;
+                isDisplayed = GetElement(elementByLocator).Displayed ? true : false;
             }
             catch (Exception e)
             {
@@ -641,13 +624,11 @@ namespace RKCIUIAutomation.Page
         public void ClickLoginLink()
         {
             GetElement(By.XPath("//a[contains(text(),'Login')]")).Click();
-            //Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
         }
 
         public void ClickLogoutLink()
         {
             GetElement(By.XPath("//a[contains(text(),'Log out')]")).Click();
-            //Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogOut");
         }
 
         public string GetCurrentUser()

@@ -494,5 +494,50 @@ namespace RKCIUIAutomation.Sandbox
             bool containsX = userAcct.Contains("IQF") ? true : false;
             Console.WriteLine($"Contains IQF: {containsX}");
         }
+
+        [TestMethod]
+        public void NestedInLineIfElseStatement()
+        {
+            string expected = string.Empty;
+            string actual = string.Empty;
+
+            bool shouldBeSelected = true;
+            bool isSelected = true;
+            SetValues();
+            bool selectionMeetsExpectation = isSelected.Equals(shouldBeSelected) ? true : false;
+            string logMsg = selectionMeetsExpectation ? $"field meets expectation: {expected} and {actual}" : $"field does not meet expectation: {expected}, but {actual}";
+            //string logMsg = isSelected ? selectionMeetsExpectation ? "is selected as expected(1)" : "is not selected as expected(2)" : $"field does not meet expectation\n{expected}, but {actual}";
+            Console.WriteLine($"ShouldBeSelected: {shouldBeSelected.ToString()}\nIsSelected: {isSelected.ToString()}\nMeets Expectation: {selectionMeetsExpectation}\nRadio button {logMsg}\n");
+
+            shouldBeSelected = true;
+            isSelected = false;
+            SetValues();
+            selectionMeetsExpectation = isSelected.Equals(shouldBeSelected) ? true : false;
+            logMsg = selectionMeetsExpectation ? $"field meets expectation: {expected} and {actual}" : $"field does not meet expectation: {expected}, but {actual}";
+            //logMsg = isSelected ? selectionMeetsExpectation ? "is selected as expected(1)" : "is not selected as expected(2)" : $"field does not meet expectation\n{expected}, but {actual}";
+            Console.WriteLine($"ShouldBeSelected: {shouldBeSelected.ToString()}\nIsSelected: {isSelected.ToString()}\nMeets Expectation: {selectionMeetsExpectation}\nRadio button {logMsg}\n");
+
+            shouldBeSelected = false;
+            isSelected = true;
+            SetValues();
+            selectionMeetsExpectation = isSelected.Equals(shouldBeSelected) ? true : false;
+            logMsg = selectionMeetsExpectation ? $"field meets expectation: {expected} and {actual}" : $"field does not meet expectation: {expected}, but {actual}";
+            //logMsg = isSelected ? selectionMeetsExpectation ? "is selected as expected(1)" : "is not selected as expected(2)" : $"field does not meet expectation\n{expected}, but {actual}";
+            Console.WriteLine($"ShouldBeSelected: {shouldBeSelected.ToString()}\nIsSelected: {isSelected.ToString()}\nMeets Expectation: {selectionMeetsExpectation}\nRadio button {logMsg}\n");
+
+            shouldBeSelected = false;
+            isSelected = false;
+            SetValues();
+            selectionMeetsExpectation = isSelected.Equals(shouldBeSelected) ? true : false;
+            logMsg = selectionMeetsExpectation ? $"field meets expectation: {expected} and {actual}" : $"field does not meet expectation: {expected}, but {actual}";
+            //logMsg = isSelected ? selectionMeetsExpectation ? "is selected as expected(1)" : "is not selected as expected(2)" : $"field does not meet expectation\n{expected}, but {actual}";
+            Console.WriteLine($"ShouldBeSelected: {shouldBeSelected.ToString()}\nIsSelected: {isSelected.ToString()}\nMeets Expectation: {selectionMeetsExpectation}\nRadio button {logMsg}\n");
+
+            void SetValues()
+            {
+                expected = shouldBeSelected ? "should be selected" : "should not be selected";
+                actual = isSelected ? "is selected" : "is not selected";
+            }
+        }
     }
 }

@@ -25,8 +25,8 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <returns></returns>
         string CreateAndSaveForwardCDRDocument(UserType user);
 
-        void ReviewCDRDocument(UserType user, string cdrNo);
-
+        void ReviewCDRDocument(UserType user, string cdrDescription);
+        void DispositionCDRDocument(UserType user, string cdrDescription);
         /// <summary>
         /// Verifies a document is shown in 'Revise' tab, after clicking Revise button for a document in the 'Review' tab.
         /// <para>Verifies a document is shown in 'To Be Closed' tab, after clicking Save & Fwd button for a document in the 'Review' tab.</para>
@@ -34,7 +34,9 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <param name="user"></param>
         /// <param name="cdrDescription"></param>
         void ReviewAndApproveCDRDocument(UserType user, string cdrDescription);
-
+        void KickBackToDispositionCDR(UserType user, string cdrDescription);
+        void KickBackToQCReviewCDR(UserType user, string cdrDescription);
+        void ReviewAndReviseCDRDocument(UserType user, string cdrDescription);
         void CloseDocument(UserType user, string cdrDescription);
     }
 
@@ -48,37 +50,37 @@ namespace RKCIUIAutomation.Page.Workflows
 
             if (tenantName == TenantName.SGWay)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_SGWay instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_SGWay instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_SH249 instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_SH249 instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_Garnet instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_Garnet instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_GLX instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_GLX instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_I15South instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_I15South instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_I15Tech instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_I15Tech instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_I15Tech(driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                LogInfo($"###### using QaRcrdCtrl_GeneralCDR_WF_LAX instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_LAX instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_LAX(driver);
             }
             return instance;
@@ -108,9 +110,41 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
-            //Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(GeneralCDR.TableTab.CQM_Review, ncrDescription));
-
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
         }
+
+        public virtual void DispositionCDRDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            QaRcrdCtrl_GeneralCDR.ClickTab_Disposition();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            TableHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+        }
+
+        public virtual void KickBackToDispositionCDR(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            TableHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_Disposition();
+        }
+        public virtual void KickBackToQCReviewCDR(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            QaRcrdCtrl_GeneralCDR.ClickTab_Disposition();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            TableHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_QC_Review();
+        }
+
         public virtual void ReviewAndApproveCDRDocument(UserType user, string cdrDescription)
         {
             LoginAs(user);
@@ -127,7 +161,7 @@ namespace RKCIUIAutomation.Page.Workflows
             TableHelper.ClickEditBtnForRow();
         }
 
-        public virtual void CloseDocument(UserType user, string cdrDescription)
+        public virtual void ReviewAndReviseCDRDocument(UserType user, string cdrDescription)
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
@@ -135,7 +169,21 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Revise();
+
+
+        }
+
+        public virtual void CloseDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            TableHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_CloseCDR();
         }
     }
 

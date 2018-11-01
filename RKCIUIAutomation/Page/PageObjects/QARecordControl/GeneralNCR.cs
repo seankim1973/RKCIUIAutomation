@@ -58,7 +58,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("IQFManagerSignature")] IQFManager_SignBtn,
             [StringValue("QualityManager")] QC_Manager,
             [StringValue("QualityManagerApprovedDate")] QCManagerApprovedDate,
-            [StringValue("QualityManagerSignature")] QCManager_SignBtn
+            [StringValue("QualityManagerSignature")] QCManager_SignBtn,
+            [StringValue("ContainmentActionSignature")] ContainmentActionManager_SignBtn
         }
 
         public enum TableTab
@@ -119,8 +120,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("AsBuiltRequired")] ChkBox_As_Built_Required,
             [StringValue("ActionCorrect")] ChkBox_Correct_Rework,
             [StringValue("ActionReplace")] ChkBox_Replace,
-            [StringValue("ActionAccept")] ChkBox_AcceptAsIs,
-            [StringValue("ActionRepair")] ChkBox_Repair
+            [StringValue("ActionAccept")] ChkBox_Accept_As_Is,
+            [StringValue("ActionRepair")] ChkBox_Repair,
+            [StringValue("Critical")] ChkBox_Critical
         }
 
         public enum Reviewer
@@ -236,15 +238,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectRdoBtn_EngOfRecordApproval_NA();
 
-        void SelectChkbox_AsBuiltRequired();
+        void SelectChkbox_AsBuiltRequired(bool toggleChkboxIfAlreadySelected = true);
 
-        void SelectChkbox_RcmndDisposition_CorrectRework();
+        void SelectChkbox_RcmndDisposition_CorrectRework(bool toggleChkboxIfAlreadySelected = true);
 
-        void SelectChkbox_RcmndDisposition_Replace();
+        void SelectChkbox_RcmndDisposition_Replace(bool toggleChkboxIfAlreadySelected = true);
 
-        void SelectChkbox_RcmndDisposition_AcceptAsIs();
+        void SelectChkbox_RcmndDisposition_AcceptAsIs(bool toggleChkboxIfAlreadySelected = true);
 
-        void SelectChkbox_RcmndDisposition_Repair();
+        void SelectChkbox_RcmndDisposition_Repair(bool toggleChkboxIfAlreadySelected = true);
 
         void SelectDDL_Originator(int selectionIndexOrName = 1);
 
@@ -264,9 +266,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectDDL_SubFeature(int selectionIndex = 1);
 
-        void SelectDDL_PopulateRelatedFields_forConcessionRequest_ReturnToConformance();
+        void PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ReturnToConformance();
 
-        void SelectDDL_PopulateRelatedFields_forConcessionRequest_ConcessionDeviation();
+        void PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ConcessionDeviation();
 
         void EnterIssuedDate(string shortDate = "1/1/9999");
 
@@ -359,37 +361,37 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             if (tenantName == TenantName.SGWay)
             {
-                LogInfo($"###### using GeneralNCR_SGWay instance ###### ");
+                log.Info($"###### using GeneralNCR_SGWay instance ###### ");
                 instance = new GeneralNCR_SGWay(driver);             
             }
             else if (tenantName == TenantName.SH249)
             {
-                LogInfo($"###### using  GeneralNCR_SH249 instance ###### ");
+                log.Info($"###### using  GeneralNCR_SH249 instance ###### ");
                 instance = new GeneralNCR_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                LogInfo($"###### using  GeneralNCR_Garnet instance ###### ");
+                log.Info($"###### using  GeneralNCR_Garnet instance ###### ");
                 instance = new GeneralNCR_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                LogInfo($"###### using  GeneralNCR_GLX instance ###### ");
+                log.Info($"###### using  GeneralNCR_GLX instance ###### ");
                 instance = new GeneralNCR_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                LogInfo($"###### using  GeneralNCR_I15South instance ###### ");
+                log.Info($"###### using  GeneralNCR_I15South instance ###### ");
                 instance = new GeneralNCR_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                LogInfo($"###### using GeneralNCR_I15Tech instance ###### ");
+                log.Info($"###### using GeneralNCR_I15Tech instance ###### ");
                 instance = new GeneralNCR_I15Tech(driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                LogInfo($"###### using GeneralNCR_LAX instance ###### ");
+                log.Info($"###### using GeneralNCR_LAX instance ###### ");
                 instance = new GeneralNCR_LAX(driver);
             }
             
@@ -550,12 +552,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SortTable_ToDefault() => SortColumnToDefault(ColumnName.Action);
 
-        private void SelectRadioBtnOrChkbox(Enum radioBtn, bool toggleChkBox = true)
+        private void SelectRadioBtnOrChkbox(Enum radioBtn, bool toggleChkBoxIfAlreadySelected = true)
         {
             string rdoBtn = radioBtn.GetString();
             By locator = By.Id(rdoBtn);
             ScrollToElement(locator);
-            if (toggleChkBox)
+            if (toggleChkBoxIfAlreadySelected)
             {
                 ScrollToElement(locator);
                 JsClickElement(locator);
@@ -596,15 +598,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectRdoBtn_OwnerApproval_NA() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_NA);
 
-        public virtual void SelectChkbox_AsBuiltRequired() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required);
+        public virtual void SelectChkbox_AsBuiltRequired(bool toggleChkboxIfAlreadySelected = true) => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, toggleChkboxIfAlreadySelected);
 
-        public virtual void SelectChkbox_RcmndDisposition_CorrectRework() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework);
+        public virtual void SelectChkbox_RcmndDisposition_CorrectRework(bool toggleChkboxIfAlreadySelected = true) => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework, toggleChkboxIfAlreadySelected);
 
-        public virtual void SelectChkbox_RcmndDisposition_Replace() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Replace);
+        public virtual void SelectChkbox_RcmndDisposition_Replace(bool toggleChkboxIfAlreadySelected = true) => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Replace, toggleChkboxIfAlreadySelected);
 
-        public virtual void SelectChkbox_RcmndDisposition_AcceptAsIs() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_AcceptAsIs);
+        public virtual void SelectChkbox_RcmndDisposition_AcceptAsIs(bool toggleChkboxIfAlreadySelected = true) => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Accept_As_Is, toggleChkboxIfAlreadySelected);
 
-        public virtual void SelectChkbox_RcmndDisposition_Repair() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Repair);
+        public virtual void SelectChkbox_RcmndDisposition_Repair(bool toggleChkboxIfAlreadySelected = true) => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Repair, toggleChkboxIfAlreadySelected);
 
         public virtual void SelectDDL_Originator(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
 
@@ -624,7 +626,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectDDL_SubFeature(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.SubFeature, selectionIndex);
 
-        public virtual void SelectDDL_PopulateRelatedFields_forConcessionRequest_ReturnToConformance()
+        public virtual void PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ReturnToConformance()
         {
             ExpandAndSelectFromDDList(InputFields.Concession_Request, 1);
             SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, false);
@@ -633,7 +635,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCorrectiveActionPlanToResolveNonconformance();
         }
 
-        public virtual void SelectDDL_PopulateRelatedFields_forConcessionRequest_ConcessionDeviation()
+        public virtual void PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ConcessionDeviation()
         {
             ExpandAndSelectFromDDList(InputFields.Concession_Request, 2);
             SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, false);
@@ -760,11 +762,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             guid = MiniGuid.NewGuid();
 
-            //string descKey = $"{tenantName}{GetTestName()}";
             ncrDescKey = $"{tenantName}{GetTestName()}_NcrDescription";
             CreateVar(ncrDescKey, guid);
             ncrDescription = GetVar(ncrDescKey);
-            Console.WriteLine($"#####Created a NCR Description:\nKEY: {ncrDescKey}\nVALUE: {ncrDescription}");
+            log.Debug($"#####Created a NCR Description - KEY: {ncrDescKey} || VALUE: {ncrDescription}");
 
             return ncrDescKey;
         }
@@ -775,11 +776,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             guid = MiniGuid.NewGuid();
 
-            //string descNewKey = $"{tenantName}{GetTestName()}";
             ncrNewDescKey = $"{tenantName}{GetTestName()}_NcrNewDescription";
             CreateVar(ncrNewDescKey, guid);
             ncrNewDescription = GetVar(ncrNewDescKey);
-            Console.WriteLine($"#####Created a new NCR Description:\nKEY: {ncrNewDescKey}\nVALUE: {ncrNewDescription}");
+            log.Debug($"#####Created a new NCR Description:\nKEY: {ncrNewDescKey}\nVALUE: {ncrNewDescription}");
 
             return ncrNewDescKey;
         }
@@ -840,18 +840,35 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             try
             {
+                //string selectionId = rdoBtnOrChkBox.GetString();
                 By locator = By.Id(rdoBtnOrChkBox.GetString());
                 ScrollToElement(locator);
-                IWebElement rdoBtnOrChkBoxElement = GetElement(locator);
-                bool isSelected = rdoBtnOrChkBoxElement.Selected ? true : false;
-                bool selectionsMatch = isSelected.Equals(shouldBeSelected) ? true : false;
+                //IWebElement rdoBtnOrChkBoxElement = GetElement(locator);
 
-                if (shouldBeSelected)
-                {
-                    LogInfo($"Expected Selection: {rdoBtnOrChkBox.GetString()}", selectionsMatch);
-                }
+                bool isSelected = GetElement(locator).Selected ? true : false;
+                bool isResultExpected = isSelected.Equals(shouldBeSelected) ? true : false;
 
-                return selectionsMatch;
+                string expected = shouldBeSelected ? " " : " Not ";
+                string actual = isSelected ? " " : " Not ";
+                string[] resultLogMsg = isResultExpected
+                    ? new string[] 
+                    {
+                        "meets",
+                        " and"
+                    }
+                    : new string[]
+                    {
+                        "does not meet",
+                        ", but"
+                    };
+
+                string logMsg = $"- Result {resultLogMsg[0]} expectations: Should{expected}be selected{resultLogMsg[1]} Is{actual}selected";
+
+                //logMsg = selectionMeetsExpectation ? $"field meets expectation: should{expected}be selected and is{actual}selected" : $"field does not meet expectation: should{expected}be selected, but is{actual}selected";
+
+                LogInfo($"IsSelected: {isSelected}<br>ShouldBeSelected: {shouldBeSelected}<br>{rdoBtnOrChkBox.ToString()} {logMsg} ", isResultExpected);
+
+                return isResultExpected;
             }
             catch (Exception e)
             {
@@ -862,21 +879,28 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual bool VerifyDDListSelectedValue(InputFields ddListId, string expectedDDListValue)
         {
+            bool meetsExpectation = false;
+
             try
             {
                 string currentDDListValue = GetTextFromDDL(ddListId);
-                return currentDDListValue.Equals(expectedDDListValue) ? true : false;
+                meetsExpectation = currentDDListValue.Equals(expectedDDListValue) ? true : false;
+
+                LogInfo($"Expected drop-down field value: {expectedDDListValue}" +
+                    $"<br>Actual drop-down field value: {currentDDListValue}", meetsExpectation);
             }
             catch (Exception e)
             {
-                LogError(e.StackTrace);
-                return false;
+                log.Error(e.StackTrace);
             }
+
+            return meetsExpectation;
         }
 
-        public virtual bool VerifySignatureField(Reviewer reviewer, bool shouldBeEmpty = false)
+        public virtual bool VerifySignatureField(Reviewer reviewer, bool shouldFieldBeEmpty = false)
         {
             InputFields reviewerId = InputFields.Engineer_of_Record;
+            string signatureValueAttrib = string.Empty;
 
             try
             {
@@ -898,10 +922,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 By locator = By.Id(reviewerId.GetString());
                 ScrollToElement(locator);
                 IWebElement signatureFieldElement = GetElement(locator);
-                string signatureValueAttrib = signatureFieldElement.GetAttribute("value");
+                signatureValueAttrib = signatureFieldElement.GetAttribute("value");
 
-                bool isEmpty = string.IsNullOrWhiteSpace(signatureValueAttrib) ? true : false;
-                return shouldBeEmpty.Equals(isEmpty) ? false : true;
+                bool isFieldEmpty = string.IsNullOrEmpty(signatureValueAttrib) ? true : false;
+                bool isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty) ? true : false;
+
+                string logMsg = isResultExpected ? "Result As Expected" : "Unexpected Result";
+
+                LogInfo($"Signature Field: {logMsg}", isResultExpected);
+                return isResultExpected;
             }
             catch (Exception e)
             {
@@ -910,11 +939,26 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        public virtual bool VerifyInputField(InputFields inputField, bool shouldBeEmpty = false)
+        public virtual bool VerifyInputField(InputFields inputField, bool shouldFieldBeEmpty = false)
         {
-            string inputText = GetText(By.XPath($"//input[@id='{inputField.GetString()}']"));
-            bool isEmpty = string.IsNullOrWhiteSpace(inputText) ? true : false;
-            return shouldBeEmpty.Equals(isEmpty);
+            string text = string.Empty;
+            bool isResultExpected = false;
+            try
+            {
+                text = GetAttribute(By.XPath($"//input[@id='{inputField.GetString()}']"), "value");
+
+                bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
+                string logMsg = isFieldEmpty ? "Empty Field: Unable to retrieve text" : $"Retrieved '{text}'";
+            
+                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty);
+                LogInfo($"{logMsg} from field - {inputField.ToString()}", isResultExpected);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return isResultExpected;
         }
 
         public virtual bool VerifyReqFieldErrorLabelForConcessionRequest()
@@ -946,7 +990,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Specification();
             SelectDDL_Area();
             SelectDDL_Roadway();
-            EnterDescription("");
+            EnterDescription();
         }
 
         public virtual void PopulateRequiredFieldsAndSaveForward()
@@ -972,15 +1016,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 ClickTab(tableTab);
                 string _ncrDesc = description.Equals("") ? GetNCRDocDescription() : description;
                 isDisplayed = VerifyRecordIsDisplayed(ColumnName.Description, _ncrDesc);
-
-                if (isDisplayed)
-                {
-                    LogInfo($"Found record under {tableTab.GetString()} tab with description: {_ncrDesc}.");
-                }
-                else
-                {
-                    LogError($"Unable to find record under {tableTab.GetString()} tab with description: {_ncrDesc}.");
-                }
+                string logMsg = isDisplayed ? "Found" : "Unable to find";
+                LogInfo($"{logMsg} record under {tableTab.GetString()} tab with description: {_ncrDesc}.", isDisplayed);
             }
             catch (Exception e)
             {
@@ -1006,7 +1043,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 if (isDisplayed)
                 {
                     string docStatus = GetColumnValueForRow(_ncrDesc, "Workflow location");
-                    ncrIsClosed = (docStatus.Equals("Closed")) ? true : false;
+                    ncrIsClosed = docStatus.Equals("Closed") ? true : false;
                     LogInfo($"Found NCR Workflow location, displayed as: {docStatus}");
                 }
                 else
@@ -1071,7 +1108,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Roadway();
             SelectDDL_Feature();
             SelectDDL_SubFeature();
-            EnterDescription("");
+            EnterDescription();
         }
     }
 
@@ -1115,7 +1152,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Specification();
             SelectDDL_Segment();
             SelectDDL_Roadway();
-            EnterDescription("");
+            EnterDescription();
         }
     }
 
@@ -1174,7 +1211,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCQCMDate();
             EnterCQAM();
             EnterCQAMDate();
-            EnterDescription("");
+            EnterDescription();
         }
 
         public override bool VerifyNCRDocIsClosed(string description = "") 
@@ -1220,7 +1257,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCQCMDate();
             EnterCQAM();
             EnterCQAMDate();
-            EnterDescription("");
+            EnterDescription();
         }
 
         public override bool VerifyNCRDocIsClosed(string description = "")
