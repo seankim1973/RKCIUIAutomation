@@ -58,7 +58,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("IQFManagerSignature")] IQFManager_SignBtn,
             [StringValue("QualityManager")] QC_Manager,
             [StringValue("QualityManagerApprovedDate")] QCManagerApprovedDate,
-            [StringValue("QualityManagerSignature")] QCManager_SignBtn
+            [StringValue("QualityManagerSignature")] QCManager_SignBtn,
+            [StringValue("ContainmentActionSignature")] ContainmentActionManager_SignBtn
         }
 
         public enum TableTab
@@ -120,7 +121,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("ActionCorrect")] ChkBox_Correct_Rework,
             [StringValue("ActionReplace")] ChkBox_Replace,
             [StringValue("ActionAccept")] ChkBox_Accept_As_Is,
-            [StringValue("ActionRepair")] ChkBox_Repair
+            [StringValue("ActionRepair")] ChkBox_Repair,
+            [StringValue("Critical")] ChkBox_Critical
         }
 
         public enum Reviewer
@@ -838,21 +840,35 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             try
             {
-                string selectionId = rdoBtnOrChkBox.GetString();
-                By locator = By.Id(selectionId);
+                //string selectionId = rdoBtnOrChkBox.GetString();
+                By locator = By.Id(rdoBtnOrChkBox.GetString());
                 ScrollToElement(locator);
-                IWebElement rdoBtnOrChkBoxElement = GetElement(locator);
+                //IWebElement rdoBtnOrChkBoxElement = GetElement(locator);
 
-                bool isSelected = rdoBtnOrChkBoxElement.Selected ? true : false;
-                bool selectionMeetsExpectation = isSelected.Equals(shouldBeSelected) ? true : false;
+                bool isSelected = GetElement(locator).Selected ? true : false;
+                bool isResultExpected = isSelected.Equals(shouldBeSelected) ? true : false;
 
-                string expected = shouldBeSelected ? "should be selected" : "should not be selected";
-                string actual = isSelected ? "is selected" : "is not selected";
-                string logMsg = selectionMeetsExpectation ? $"field meets expectation: {expected} and {actual}" : $"field does not meet expectation: {expected}, but {actual}";
+                string expected = shouldBeSelected ? " " : " Not ";
+                string actual = isSelected ? " " : " Not ";
+                string[] resultLogMsg = isResultExpected
+                    ? new string[] 
+                    {
+                        "meets",
+                        " and"
+                    }
+                    : new string[]
+                    {
+                        "does not meet",
+                        ", but"
+                    };
 
-                LogInfo($"IsSelected: {isSelected}<br>ShouldBeSelected: {shouldBeSelected}<br>{selectionId} {logMsg} ", selectionMeetsExpectation);
+                string logMsg = $"- Result {resultLogMsg[0]} expectations: Should{expected}be selected{resultLogMsg[1]} Is{actual}selected";
 
-                return selectionMeetsExpectation;
+                //logMsg = selectionMeetsExpectation ? $"field meets expectation: should{expected}be selected and is{actual}selected" : $"field does not meet expectation: should{expected}be selected, but is{actual}selected";
+
+                LogInfo($"IsSelected: {isSelected}<br>ShouldBeSelected: {shouldBeSelected}<br>{rdoBtnOrChkBox.ToString()} {logMsg} ", isResultExpected);
+
+                return isResultExpected;
             }
             catch (Exception e)
             {
@@ -881,9 +897,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return meetsExpectation;
         }
 
-        public virtual bool VerifySignatureField(Reviewer reviewer, bool shouldBeEmpty = false)
+        public virtual bool VerifySignatureField(Reviewer reviewer, bool shouldFieldBeEmpty = false)
         {
             InputFields reviewerId = InputFields.Engineer_of_Record;
+            string signatureValueAttrib = string.Empty;
 
             try
             {
@@ -905,10 +922,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 By locator = By.Id(reviewerId.GetString());
                 ScrollToElement(locator);
                 IWebElement signatureFieldElement = GetElement(locator);
-                string signatureValueAttrib = signatureFieldElement.GetAttribute("value");
+                signatureValueAttrib = signatureFieldElement.GetAttribute("value");
 
-                bool isEmpty = string.IsNullOrWhiteSpace(signatureValueAttrib) ? true : false;
-                return shouldBeEmpty.Equals(isEmpty) ? false : true;
+                bool isFieldEmpty = string.IsNullOrEmpty(signatureValueAttrib) ? true : false;
+                bool isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty) ? true : false;
+
+                string logMsg = isResultExpected ? "Result As Expected" : "Unexpected Result";
+
+                LogInfo($"Signature Field: {logMsg}", isResultExpected);
+                return isResultExpected;
             }
             catch (Exception e)
             {
@@ -917,11 +939,26 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        public virtual bool VerifyInputField(InputFields inputField, bool shouldBeEmpty = false)
+        public virtual bool VerifyInputField(InputFields inputField, bool shouldFieldBeEmpty = false)
         {
-            string inputText = GetText(By.XPath($"//input[@id='{inputField.GetString()}']"));
-            bool isEmpty = string.IsNullOrWhiteSpace(inputText) ? true : false;
-            return shouldBeEmpty.Equals(isEmpty);
+            string text = string.Empty;
+            bool isResultExpected = false;
+            try
+            {
+                text = GetAttribute(By.XPath($"//input[@id='{inputField.GetString()}']"), "value");
+
+                bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
+                string logMsg = isFieldEmpty ? "Empty Field: Unable to retrieve text" : $"Retrieved '{text}'";
+            
+                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty);
+                LogInfo($"{logMsg} from field - {inputField.ToString()}", isResultExpected);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return isResultExpected;
         }
 
         public virtual bool VerifyReqFieldErrorLabelForConcessionRequest()

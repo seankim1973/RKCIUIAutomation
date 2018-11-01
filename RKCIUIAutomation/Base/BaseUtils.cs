@@ -247,6 +247,74 @@ namespace RKCIUIAutomation.Base
             }
         }
 
+        public enum ValidationType
+        {
+            Value,
+            Selection
+        }
+
+
+        //TODO: Generic Result Calculator and Logger
+        public void GetResults<T>(Enum element, ValidationType validationType, T expected, T actual)
+        {
+            PageHelper pgHelper = new PageHelper();
+            string expectedHeader = string.Empty;
+            string actualHeader = string.Empty;
+
+
+            switch (validationType)
+            {
+                case ValidationType.Value:
+                    expectedHeader = "Expected Value";
+                    actualHeader = "Actual Value";
+                    break;
+                case ValidationType.Selection:
+                    expectedHeader = "(Expected) Should Be Selected";
+                    actualHeader = "(Actual) Is Selected";
+                    break;
+            }
+
+            bool isResultExpected = actual.Equals(expected) ? true : false;
+
+            string[] resultLogMsg = isResultExpected
+                ? new string[]
+                {
+                    "meets",
+                    " and"
+                }
+                : new string[]
+                {
+                    "does not meet",
+                    ", but"
+                };
+
+            var argType = expected.GetType();
+            string Should = string.Empty;
+            string Is = string.Empty;
+
+            if (argType == typeof(string))
+            {
+                pgHelper.ConvertToType<string>(expected);
+                pgHelper.ConvertToType<string>(actual);
+
+                Should = isResultExpected ? "" : "";
+            }
+            else if (argType == typeof(int))
+            {
+                pgHelper.ConvertToType<int>(expected);
+                pgHelper.ConvertToType<int>(actual);
+            }
+            else if (argType == typeof(bool))
+            {
+                Should = pgHelper.ConvertToType<bool>(expected) ? "Should be selected" : "Should Not be selected";
+                Is = pgHelper.ConvertToType<bool>(actual) ? "Is selected" : "Is Not selected";
+                
+            }
+
+            string logMsg = $" [Result {resultLogMsg[0]} expectations] {Should}{resultLogMsg[1]} {Is}";
+            LogInfo($"{expectedHeader}: {expected}<br>{actualHeader}: {actual}<br>{element.ToString()} {logMsg} ", isResultExpected);
+        }
+
         private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue) => MarkupHelper.CreateLabel(details, extentColor);
 
         private static IMarkup CreateReportMarkupCodeBlock(Exception e) => MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");

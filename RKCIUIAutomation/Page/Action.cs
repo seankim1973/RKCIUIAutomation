@@ -235,7 +235,7 @@ namespace RKCIUIAutomation.Page
                 ScrollToElement(elementByLocator);
                 text = GetElement(elementByLocator)?.Text;
                 bool textNotEmpty = !string.IsNullOrEmpty(text);
-                string logMsg = textNotEmpty ? $"Retrieved '{text}'" :"Unable to retrieve text";
+                string logMsg = textNotEmpty ? $"Retrieved '{text}'" : "Unable to retrieve text";
                 LogInfo($"{logMsg} from element - {elementByLocator}", textNotEmpty);
             }
             catch (Exception e)
@@ -246,24 +246,8 @@ namespace RKCIUIAutomation.Page
             return text;
         }
 
-        public string GetTextFromDDL(Enum ddListID)
-        {
-            string text = string.Empty;
-            try
-            {
-                ScrollToElement(pgHelper.GetDDListByLocator(ddListID));
-                text = GetText(pgHelper.GetDDListCurrentSelectionByLocator(ddListID));
-                bool textNotEmpty = !string.IsNullOrEmpty(text);
-                string logMsg = textNotEmpty ? $"Retrieved '{text}'" : $"Unable to retrieve text";
-                LogInfo($"{logMsg} from {ddListID.GetString()} drop-down list", textNotEmpty);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-
-            return text;
-        }
+        public string GetTextFromDDL(Enum ddListID) 
+            => GetText(pgHelper.GetDDListCurrentSelectionByLocator(ddListID));
 
         public void ExpandDDL<E>(E ddListID)
         {
