@@ -1,10 +1,12 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
+using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 {
     #region DIR/IDR/DWR Generic Class
+
     public class QADIRs : QADIRs_Impl
     {
         public QADIRs()
@@ -12,9 +14,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public QADIRs(IWebDriver driver) => this.Driver = driver;
+
         public enum InputFields
         {
         }
+
         public enum TableTab
         {
             [StringValue("Creating")] Creating,
@@ -28,17 +32,47 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Create Packages")] Create_Packages,
             [StringValue("Packages")] Packages
         }
+
+        public enum ColumnName
+        {
+            [StringValue("DIR №")] DIR_No,
+            [StringValue("Revision")] Revision,
+            [StringValue("Created By")] Created_By,
+            [StringValue("Sent By")] Sent_By,
+            [StringValue("Sent Date")] Sent_Date,
+            [StringValue("Locked By")] Locked_By,
+            [StringValue("Lock Date")] Locked_Date,
+            [StringValue("Report")] Report,
+            [StringValue("Action")] Action,
+        }
+
+        public enum SubmitButtons
+        {
+            [StringValue("Create New")] Create_New,
+            [StringValue("Create Revision")] Create_Revision,
+            [StringValue("Refresh")] Refresh,
+            [StringValue("Cancel")] Cancel,
+            [StringValue("Send To Attachment")] Send_To_Attachment,
+            [StringValue("Save")] Save,
+            [StringValue("Save & Forward")] Save_Forward,
+            [StringValue("Add")] Add,
+            [StringValue("Delete")] Delete,
+        }
+
+        public enum LabelFields
+        {
+            [StringValue("Report")] Report_Number
+        }
     }
-    #endregion DIR Generic class
+
+    #endregion DIR/IDR/DWR Generic Class
+
     public interface IQADIRs
     {
         bool IsLoaded();
-    }
 
-    //public class QADIRs : QADIRs_Impl
-    //{
-    //    public QADIRs(IWebDriver driver) => this.Driver = driver;
-    //}
+        void FilterDirNumber(string DirNumber);
+    }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
     {
@@ -89,7 +123,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return instance;
         }
 
+        private By GetSubmitBtnLocator(SubmitButtons buttonName)
+        {
+            string buttonValue = buttonName.GetString();
+            By locator = By.XPath($"//input[@value='{buttonValue}']");
+            return locator;
+        }
+
         public virtual bool IsLoaded() => Driver.Title.Equals("DIR List - ELVIS PMC");
+
+        public virtual void FilterDirNumber(string DirNumber)
+            => FilterTableColumnByValue(ColumnName.DIR_No, DirNumber);
     }
 
     public class QADIRs_Garnet : QADIRs

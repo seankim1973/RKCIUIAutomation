@@ -1,7 +1,6 @@
 ﻿using MiniGuids;
 using NUnit.Framework;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
@@ -354,7 +353,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-                
+
         private IGeneralNCR SetPageClassBasedOnTenant(IWebDriver driver)
         {
             IGeneralNCR instance = new GeneralNCR(driver);
@@ -362,7 +361,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             if (tenantName == TenantName.SGWay)
             {
                 log.Info($"###### using GeneralNCR_SGWay instance ###### ");
-                instance = new GeneralNCR_SGWay(driver);             
+                instance = new GeneralNCR_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
@@ -394,7 +393,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 log.Info($"###### using GeneralNCR_LAX instance ###### ");
                 instance = new GeneralNCR_LAX(driver);
             }
-            
+
             return instance;
         }
 
@@ -489,15 +488,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 case Reviewer.EngineerOfRecord:
                     break;
+
                 case Reviewer.Owner:
                     signBtn = InputFields.Owner_SignBtn;
                     reviewerField = InputFields.Owner_Review;
                     approvalField = Approve ? RadioBtnsAndCheckboxes.Owner_Approval_Yes : RadioBtnsAndCheckboxes.Owner_Approval_No;
                     break;
+
                 case Reviewer.IQF_Manager:
                     signBtn = InputFields.IQFManager_SignBtn;
                     reviewerField = InputFields.IQF_Manager;
                     break;
+
                 case Reviewer.QC_Manager:
                     signBtn = InputFields.QCManager_SignBtn;
                     reviewerField = InputFields.QC_Manager;
@@ -677,7 +679,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterIQFManagerApprovedDate()
             => EnterText(GetTextInputFieldByLocator(InputFields.IQFManagerDate), GetShortDate());
 
-        public virtual void EnterQCManager(string qcMgrText = "") 
+        public virtual void EnterQCManager(string qcMgrText = "")
             => EnterText(GetTextInputFieldByLocator(InputFields.QC_Manager),
                 qcMgrText = (string.IsNullOrEmpty(qcMgrText) ? "RKCIUIAutomation QCMgr" : qcMgrText));
 
@@ -851,7 +853,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 string expected = shouldBeSelected ? " " : " Not ";
                 string actual = isSelected ? " " : " Not ";
                 string[] resultLogMsg = isResultExpected
-                    ? new string[] 
+                    ? new string[]
                     {
                         "meets",
                         " and"
@@ -908,12 +910,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 {
                     case Reviewer.EngineerOfRecord:
                         break;
+
                     case Reviewer.Owner:
                         reviewerId = InputFields.Owner_Review;
                         break;
+
                     case Reviewer.IQF_Manager:
                         reviewerId = InputFields.IQF_Manager;
                         break;
+
                     case Reviewer.QC_Manager:
                         reviewerId = InputFields.QC_Manager;
                         break;
@@ -949,7 +954,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
                 string logMsg = isFieldEmpty ? "Empty Field: Unable to retrieve text" : $"Retrieved '{text}'";
-            
+
                 isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty);
                 LogInfo($"{logMsg} from field - {inputField.ToString()}", isResultExpected);
             }
@@ -996,7 +1001,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void PopulateRequiredFieldsAndSaveForward()
         {
             PopulateRequiredFields();
-            UploadFile("test.xlsx");            
+            UploadFile("test.xlsx");
             ClickBtn_SaveForward();
         }
 
@@ -1029,7 +1034,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual bool VerifyNCRDocIsClosed(string description = "")
             => CheckNCRisClosed(description, TableTab.All_NCRs);
-
 
         internal bool CheckNCRisClosed(string description, TableTab closedTab)
         {
@@ -1066,11 +1070,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ClickBtn_Revise();
 
             Assert.True(VerifyNCRDocIsDisplayed(TableTab.Creating_Revise, ncrDescription));
-        }        
+        }
     }
 
     #endregion Common Workflow Implementation class
-
 
     /// <summary>
     /// Tenant specific implementation of DesignDocument Comment Review
@@ -1214,7 +1217,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterDescription();
         }
 
-        public override bool VerifyNCRDocIsClosed(string description = "") 
+        public override bool VerifyNCRDocIsClosed(string description = "")
             => CheckNCRisClosed(description, TableTab.Closed_NCR);
 
         public override string EnterDescription(string description = "")
@@ -1224,7 +1227,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => EnterNewDesc(description, InputFields.Description_of_NCR);
     }
 
-    #endregion Implementation specific to SH249
+    #endregion Implementation specific to SH249 - SimpleWF
 
     #region Implementation specific to SGWay - SimpleWF
 
@@ -1270,6 +1273,5 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => EnterNewDesc(description, InputFields.Description_of_NCR);
     }
 
-    #endregion Implementation specific to SGWay
-
+    #endregion Implementation specific to SGWay - SimpleWF
 }
