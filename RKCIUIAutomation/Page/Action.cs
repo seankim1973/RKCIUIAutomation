@@ -179,6 +179,19 @@ namespace RKCIUIAutomation.Page
 
         public string GetAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetAttribute(attributeName);
 
+        public IList<string> GetAttributes(By elementByLocator, string attributeName)
+        {
+            IList<IWebElement> elements = GetElements(elementByLocator);
+            IList<string> attributes = new List<string>();
+
+            foreach (IWebElement elem in elements)
+            {
+                attributes.Add(elem.GetAttribute(attributeName));
+            }
+
+            return attributes;
+        }
+
         public void EnterComment(CommentType commentType, int commentTabNumber = 1)
         {
             By commentTypeLocator = By.Id($"{commentType.GetString()}{commentTabNumber - 1}_");
@@ -246,6 +259,20 @@ namespace RKCIUIAutomation.Page
             return text;
         }
 
+        public IList<string> GetTextForElements(By elementByLocator)
+        {
+            IList<IWebElement> elements = GetElements(elementByLocator);
+
+            IList<string> elementTextList = new List<string>();
+
+            foreach (IWebElement elem in elements)
+            {
+                elementTextList.Add(elem.Text);
+            }
+
+            return elementTextList;
+        }
+
         public string GetTextFromDDL(Enum ddListID) 
             => GetText(pgHelper.GetDDListCurrentSelectionByLocator(ddListID));
 
@@ -270,6 +297,34 @@ namespace RKCIUIAutomation.Page
             var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
             ExpandDDL(_ddListID);
             ClickElement(pgHelper.GetDDListItemsByLocator(_ddListID, itemIndexOrName));
+        }
+
+        public void SelectRadioBtnOrChkbox(Enum radioBtn, bool toggleChkBoxIfAlreadySelected = true)
+        {
+            string rdoBtn = radioBtn.GetString();
+            By locator = By.Id(rdoBtn);
+            ScrollToElement(locator);
+            if (toggleChkBoxIfAlreadySelected)
+            {
+                ScrollToElement(locator);
+                JsClickElement(locator);
+                LogInfo($"Selected: {rdoBtn}");
+            }
+            else
+            {
+                LogInfo("Specified not to toggle checkbox, if already selected");
+
+                if (!GetElement(locator).Selected)
+                {
+                    ScrollToElement(locator);
+                    JsClickElement(locator);
+                    LogInfo($"Selected: {rdoBtn}");
+                }
+                else
+                {
+                    LogInfo($"Did not select element, because it is already selected: {rdoBtn}");
+                }
+            }
         }
 
         public void UploadFile(string fileName)

@@ -103,6 +103,57 @@ namespace RKCIUIAutomation.Page
             [StringValue("last")] Last
         }
 
+        public enum TimeBlock
+        {
+            AM_12_30,
+            AM_01_00,
+            AM_01_30,
+            AM_02_00,
+            AM_02_30,
+            AM_03_00,
+            AM_03_30,
+            AM_04_00,
+            AM_04_30,
+            AM_05_00,
+            AM_05_30,
+            AM_06_00,
+            AM_06_30,
+            AM_07_00,
+            AM_07_30,
+            AM_08_00,
+            AM_08_30,
+            AM_09_00,
+            AM_09_30,
+            AM_10_00,
+            AM_10_30,
+            AM_11_00,
+            AM_11_30,
+            PM_12_00,
+            PM_12_30,
+            PM_01_00,
+            PM_01_30,
+            PM_02_00,
+            PM_02_30,
+            PM_03_00,
+            PM_03_30,
+            PM_04_00,
+            PM_04_30,
+            PM_05_00,
+            PM_05_30,
+            PM_06_00,
+            PM_06_30,
+            PM_07_00,
+            PM_07_30,
+            PM_08_00,
+            PM_08_30,
+            PM_09_00,
+            PM_09_30,
+            PM_10_00,
+            PM_10_30,
+            PM_11_00,
+            PM_11_30
+        }
+
         private string DetermineTblRowBtnXPathExt(TableButton tblBtn)
         {
             string xPathExt = string.Empty;

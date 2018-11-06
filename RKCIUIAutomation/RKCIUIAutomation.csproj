@@ -368,6 +368,7 @@
     <Compile Include="Page\TableHelper.cs" />
     <Compile Include="Page\Workflows\QaRcrdCtrl_GeneralCDR_WF.cs" />
     <Compile Include="Page\Workflows\QaRcrdCtrl_GeneralNCR_WF.cs" />
+    <Compile Include="Page\Workflows\QaRcrdCtrl_QaDIR_WF.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

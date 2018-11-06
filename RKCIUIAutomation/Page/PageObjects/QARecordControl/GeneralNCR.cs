@@ -554,33 +554,33 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SortTable_ToDefault() => SortColumnToDefault(ColumnName.Action);
 
-        private void SelectRadioBtnOrChkbox(Enum radioBtn, bool toggleChkBoxIfAlreadySelected = true)
-        {
-            string rdoBtn = radioBtn.GetString();
-            By locator = By.Id(rdoBtn);
-            ScrollToElement(locator);
-            if (toggleChkBoxIfAlreadySelected)
-            {
-                ScrollToElement(locator);
-                JsClickElement(locator);
-                LogInfo($"Selected: {rdoBtn}");
-            }
-            else
-            {
-                LogInfo("Specified not to toggle checkbox, if already selected");
+        //private void SelectRadioBtnOrChkbox(Enum radioBtn, bool toggleChkBoxIfAlreadySelected = true)
+        //{
+        //    string rdoBtn = radioBtn.GetString();
+        //    By locator = By.Id(rdoBtn);
+        //    ScrollToElement(locator);
+        //    if (toggleChkBoxIfAlreadySelected)
+        //    {
+        //        ScrollToElement(locator);
+        //        JsClickElement(locator);
+        //        LogInfo($"Selected: {rdoBtn}");
+        //    }
+        //    else
+        //    {
+        //        LogInfo("Specified not to toggle checkbox, if already selected");
 
-                if (!GetElement(locator).Selected)
-                {
-                    ScrollToElement(locator);
-                    JsClickElement(locator);
-                    LogInfo($"Selected: {rdoBtn}");
-                }
-                else
-                {
-                    LogInfo($"Did not select element, because it is already selected: {rdoBtn}");
-                }
-            }
-        }
+        //        if (!GetElement(locator).Selected)
+        //        {
+        //            ScrollToElement(locator);
+        //            JsClickElement(locator);
+        //            LogInfo($"Selected: {rdoBtn}");
+        //        }
+        //        else
+        //        {
+        //            LogInfo($"Did not select element, because it is already selected: {rdoBtn}");
+        //        }
+        //    }
+        //}
 
         public virtual void SelectRdoBtn_TypeOfNCR_Level1() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level1);
 
@@ -760,30 +760,24 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
-        internal string CreateNcrDescription()
+        internal void CreateNcrDescription()
         {
             guid = MiniGuid.NewGuid();
-
             ncrDescKey = $"{tenantName}{GetTestName()}_NcrDescription";
             CreateVar(ncrDescKey, guid);
             ncrDescription = GetVar(ncrDescKey);
             log.Debug($"#####Created a NCR Description - KEY: {ncrDescKey} || VALUE: {ncrDescription}");
-
-            return ncrDescKey;
         }
 
         public virtual string GetNCRDocDescription() => GetVar(ncrDescKey);
 
-        internal string CreateNewNcrDescription()
+        internal void CreateNewNcrDescription()
         {
             guid = MiniGuid.NewGuid();
-
             ncrNewDescKey = $"{tenantName}{GetTestName()}_NcrNewDescription";
             CreateVar(ncrNewDescKey, guid);
             ncrNewDescription = GetVar(ncrNewDescKey);
             log.Debug($"#####Created a new NCR Description:\nKEY: {ncrNewDescKey}\nVALUE: {ncrNewDescription}");
-
-            return ncrNewDescKey;
         }
 
         public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);

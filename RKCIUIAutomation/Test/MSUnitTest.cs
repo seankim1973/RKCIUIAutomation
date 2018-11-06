@@ -1,12 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MiniGuids;
 using NUnit.Framework.Interfaces;
+using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Test;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
@@ -538,6 +540,56 @@ namespace RKCIUIAutomation.Sandbox
                 expected = shouldBeSelected ? "should be selected" : "should not be selected";
                 actual = isSelected ? "is selected" : "is not selected";
             }
+        }
+
+        [TestMethod]
+        public void SplitNamesInList()
+        {
+            IList<string> namesList = new List<string>()
+            {
+                "DIR: 1st Shift TimeBegin1 Required",
+                "DIR: 1st Shift TimeEnd1 Required",
+                "Entry Number 1: Area Required",
+                "Entry Number 1: Average Temperature Required",
+                "Entry Number 1: Section Required",
+                "Entry Number 1: Section Description Required",
+                "Entry Number 1: Feature Required",
+                "Entry Number 1: Crew Foreman Required",
+                "Entry Number 1: Contractor Required",
+                "Entry Number 1: Inspection Type Required",
+                "Entry Number 1: Inspection Result Required"
+            };
+
+            IList<string> idList = new List<string>();
+
+            foreach (string error in namesList)
+            {
+                string[] splitType = new string[2];
+
+                if (error.Contains("DIR:"))
+                {
+                    splitType = Regex.Split(error, "Shift ");
+                }
+                else if (error.Contains("Entry Number"))
+                {
+                    splitType = Regex.Split(error, "1: ");
+                }
+
+                string[] splitReq = Regex.Split(splitType[1], " Required");
+                string fieldName = splitReq[0];
+                idList.Add(fieldName);
+            }
+
+            string id = "CrewForeman";
+            id = id.SplitCamelCase();
+
+            foreach (string item in idList)
+            {
+                Console.WriteLine(item);
+            }
+
+            Console.WriteLine($"ID: {id}");
+            Assert.IsTrue(idList.Contains(id));
         }
     }
 }
