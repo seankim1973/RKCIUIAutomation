@@ -23,7 +23,7 @@ namespace RKCIUIAutomation.Test.DIR
         [Description("To validate create and save a DIR (Daily Inspection Report) document.")]
         public void DIR_SimpleWF_End_To_End()
         {
-            string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR(UserType.DIRTech);
+            string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR(UserType.Bhoomi);
             LogoutToLoginPage();
             WF_QaRcrdCtrl_QaDIR.Review_and_Return_DIR_ForRevise(UserType.DIRMgr, dirNumber);
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber));

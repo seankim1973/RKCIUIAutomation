@@ -186,7 +186,8 @@ namespace RKCIUIAutomation.Page
 
             foreach (IWebElement elem in elements)
             {
-                attributes.Add(elem.GetAttribute(attributeName));
+                string attrib = elem.GetAttribute(attributeName);
+                attributes.Add(attrib);
             }
 
             return attributes;
@@ -267,7 +268,8 @@ namespace RKCIUIAutomation.Page
 
             foreach (IWebElement elem in elements)
             {
-                elementTextList.Add(elem.Text);
+                string elemText = elem.Text;
+                elementTextList.Add(elemText);
             }
 
             return elementTextList;

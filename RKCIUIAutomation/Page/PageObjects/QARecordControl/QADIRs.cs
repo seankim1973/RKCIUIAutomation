@@ -540,15 +540,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return reqFieldsMatch;
         }
 
+        private void CloseReqFieldErrorSummaryPopup() 
+            => JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
+
         public virtual bool VerifyReqFieldErrorsForNewDir()
         {
-            IList<string> actualReqFieldIds = GetAttributes(By.XPath("//span[text()='*']"), "id");
-            IList<string> trimmedActualIds = TrimInputFieldIDs(actualReqFieldIds, "0_");
+            IList<string> errorSummaryIDs = GetErrorSummaryIDs();
+            CloseReqFieldErrorSummaryPopup();
+
+            //IList<string> actualReqFieldIds = GetAttributes(By.XPath("//span[text()='*']"), "id");
+            IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath("//span[text()='*']"), "id"), "0_");
 
             bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds);
-
-            IList<string> errorSummaryIDs = GetErrorSummaryIDs();
-
             int actualIdCount = trimmedActualIds.Count;
             int errorSummaryIdCount = errorSummaryIDs.Count;
 
@@ -574,8 +577,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             foreach (string error in errorElements)
             {
-                string[] splitType = new string[2];
-                
+                string[] splitType = new string[2];            
 
                 if (error.Contains("DIR:"))
                 {
