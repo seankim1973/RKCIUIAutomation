@@ -363,12 +363,11 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QA Test - All")] QA_Test_All,
                 [StringValue("QA Test Correction Report")] QA_Test_Correction_Report,
                 [StringValue("QA DIRs")] QA_DIRs,
-                [StringValue("QA DIRs")] QA_IDRs,
+                [StringValue("QA IDRs")] QA_IDRs,
                 [StringValue("General NCR")] General_NCR,
                 [StringValue("General CDR")] General_CDR,
                 [StringValue("General Deficiency Notice")] General_Deficiency_Notice,
                 [StringValue("QA Deficiency Notice")] QA_Deficiency_Notice,
-                [StringValue("QC Deficiency Notice")] QC_Deficiency_Notice,
                 [StringValue("Retaining Wall BackFill Quantity Tracker")] Retaining_Wall_BackFill_Quantity_Tracker,
                 [StringValue("Concrete Paving Quantity Tracker")] Concrete_Paving_Quantity_Tracker,
                 [StringValue("MPL Tracker")] MPL_Tracker,
@@ -560,8 +559,10 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QC Test - All")] QC_Test_All,
                 [StringValue("QC Test Correction Report")] QC_Test_Correction_Report,
                 [StringValue("QC DIRs")] QC_DIRs,
+                [StringValue("QC IDRs")] QC_IDRs,
                 [StringValue("QC NCR")] QC_NCR,
-                [StringValue("QC CDR")] QC_CDR
+                [StringValue("QC CDR")] QC_CDR,
+                [StringValue("QC Deficiency Notice")] QC_Deficiency_Notice
             }
         }
 

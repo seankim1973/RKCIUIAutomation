@@ -33,6 +33,9 @@ namespace RKCIUIAutomation.Test
 
         public IGeneralCDR QaRcrdCtrl_GeneralCDR => new GeneralCDR().SetClass<IGeneralCDR>(Driver);
 
+        public IQADIRs QaRcrdCtrl_QaDIR => new QADIRs().SetClass<IQADIRs>(Driver);
+
+
         #region Workflow SetClass method calls
 
         public ILinkCoverageWF WF_LinkCoverage => new LinkCoverageWF().SetClass<ILinkCoverageWF>(Driver);
@@ -42,6 +45,8 @@ namespace RKCIUIAutomation.Test
         public IQaRcrdCtrl_GeneralNCR_WF WF_QaRcrdCtrl_GeneralNCR => new QaRcrdCtrl_GeneralNCR_WF().SetClass<IQaRcrdCtrl_GeneralNCR_WF>(Driver);
 
         public IQaRcrdCtrl_GeneralCDR_WF WF_QaRcrdCtrl_GeneralCDR => new QaRcrdCtrl_GeneralCDR_WF().SetClass<IQaRcrdCtrl_GeneralCDR_WF>(Driver);
+
+        public IQaRcrdCtrl_QaDIR_WF WF_QaRcrdCtrl_QaDIR => new QaRcrdCtrl_QaDIR_WF().SetClass<IQaRcrdCtrl_QaDIR_WF>(Driver);
 
         #endregion End of Workflow SetClass method calls
     }

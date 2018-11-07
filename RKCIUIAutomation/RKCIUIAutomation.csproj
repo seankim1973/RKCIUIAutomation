@@ -368,6 +368,7 @@
     <Compile Include="Page\TableHelper.cs" />
     <Compile Include="Page\Workflows\QaRcrdCtrl_GeneralCDR_WF.cs" />
     <Compile Include="Page\Workflows\QaRcrdCtrl_GeneralNCR_WF.cs" />
+    <Compile Include="Page\Workflows\QaRcrdCtrl_QaDIR_WF.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -383,6 +384,7 @@
     <Compile Include="Test\LinkCoverageTest.cs" />
     <Compile Include="Test\MSUnitTest.cs" />
     <Compile Include="Test\QaRcrdCtrl_GeneralCDR_Test.cs" />
+    <Compile Include="Test\QaRcrdCtrl_QaDIR_Test.cs" />
     <Compile Include="Test\Smoke.cs" />
     <Compile Include="Test\TestBase.cs" />
     <Compile Include="Test\TestUtils.cs" />
