@@ -178,6 +178,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void ClickTab_Authorization();
 
+        void ClickTab_Creating();
+
         void ClickTab_Attachments();
 
         void ClickTab_Revise();
@@ -296,6 +298,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickTab_QC_Review() => ClickTab(TableTab.QC_Review);
 
         public virtual void ClickTab_Authorization() => ClickTab(TableTab.Authorization);
+
+        public virtual void ClickTab_Creating() => ClickTab(TableTab.Creating);
 
         public virtual void ClickTab_Attachments() => ClickTab(TableTab.Attachments);
 

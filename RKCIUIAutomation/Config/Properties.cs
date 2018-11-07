@@ -52,7 +52,11 @@
         CDRMgr,
         NCRMgr,
         DIRMgr,
-        DIRTech
+        DIRMgrQA,
+        DIRMgrQC,
+        DIRTech,
+        DIRTechQA,
+        DIRTechQC
     }
 
     public enum Reporter

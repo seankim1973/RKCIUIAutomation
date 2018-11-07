@@ -84,19 +84,20 @@ namespace RKCIUIAutomation.Page
         {
             internal const string LastOrOnlyInRow = "LastOrOnlyInRow";
             internal const string MultiDupsInRow = "MultiDupsInRow";
-            internal const string DblInCell = "DblInCell";
+            internal const string ActionColumnBtn = "ActionColumnBtn";
         }
 
         private enum TableButton
         {
             [StringValue("/input", BtnCategory.LastOrOnlyInRow)] CheckBox,
             [StringValue("/a", BtnCategory.LastOrOnlyInRow)] QMS_Attachments_View,
-            [StringValue("/a", BtnCategory.LastOrOnlyInRow)] Action_Edit,
             [StringValue("-1", BtnCategory.MultiDupsInRow)] Report_View,
             [StringValue("-2", BtnCategory.MultiDupsInRow)] WebForm_View,
             [StringValue("-3", BtnCategory.MultiDupsInRow)] Attachments_View,
-            [StringValue("Revise", BtnCategory.DblInCell)] Action_Revise,
-            [StringValue("Enter", BtnCategory.DblInCell)] Action_Enter,
+            [StringValue("Revise", BtnCategory.ActionColumnBtn)] Action_Revise,
+            [StringValue("Enter", BtnCategory.ActionColumnBtn)] Action_Enter,
+            [StringValue("Delete", BtnCategory.ActionColumnBtn)] Action_Delete,
+            [StringValue("Edit", BtnCategory.ActionColumnBtn)] Action_Edit,
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
@@ -172,8 +173,8 @@ namespace RKCIUIAutomation.Page
                     xPathExt = $"{xPathLast(xPathExtValue)}/a";
                     break;
 
-                case BtnCategory.DblInCell:
-                    xPathExt = $"{xPathLast()}/a[text()='{xPathExtValue}']";
+                case BtnCategory.ActionColumnBtn:
+                    xPathExt = $"{xPathLast()}/a[contains(text(),'{xPathExtValue}')]";
                     break;
 
                 default:
@@ -188,9 +189,10 @@ namespace RKCIUIAutomation.Page
         private string TableByTextInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
 
         private string TableColumnIndex(string columnName) => $"//th[@data-title='{columnName}']";
-        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn = null) => (string.IsNullOrEmpty(textInRowForAnyColumn)) ? "//tr[1]/td" : $"{TableByTextInRow(textInRowForAnyColumn)}";
 
-        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn = null) => By.XPath($"{ActiveTableDiv}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
+        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn) => textInRowForAnyColumn.Equals("") ? "//tr[1]/td" : $"{TableByTextInRow(textInRowForAnyColumn)}";
+
+        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn) => By.XPath($"{ActiveTableDiv}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
 
         public By GetTableRowLocator(string textInRowForAnyColumn) => By.XPath($"{ActiveTableDiv}{TableByTextInRow(textInRowForAnyColumn)}");
 
@@ -214,89 +216,80 @@ namespace RKCIUIAutomation.Page
             return text;
         }
 
+
+
+        private void ClickButtonForRow(TableButton tableButton, string textInRowForAnyColumn = "")
+        {
+            string[] logBtnType = tableButton.Equals(TableButton.CheckBox)
+                ? new string[] { "Toggled", "checkbox" } : new string[] { "Clicked", "button" };
+            JsClickElement(GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumn));
+            LogInfo($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumn}");
+            WaitForPageReady();
+        }
+
         //<<-- Table Row Button Public Methods -->>
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ToggleCheckBoxForRow(string textInRowForAnyColumn = null)
-        {
-            By locator = GetTblRowBtn_ByLocator(TableButton.CheckBox, textInRowForAnyColumn);
-            ScrollToElement(locator);
-            JsClickElement(locator);
-            LogInfo($"Toggled Checkbox for row {textInRowForAnyColumn}");
-        }
+        public void ToggleCheckBoxForRow(string textInRowForAnyColumn = "")
+            => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumn);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickEditBtnForRow(string textInRowForAnyColumn = null)
-        {
-            JsClickElement(GetTblRowBtn_ByLocator(TableButton.Action_Edit, textInRowForAnyColumn));
-            LogInfo($"Clicked Edit button for row {textInRowForAnyColumn}");
-            WaitForPageReady();
-        }
+        public void ClickDeleteBtnForRow(string textInRowForAnyColumn = "")
+            => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickReviseBtnForRow(string textInRowForAnyColumn = null)
-        {
-            JsClickElement(GetTblRowBtn_ByLocator(TableButton.Action_Revise, textInRowForAnyColumn));
-            LogInfo($"Clicked Revise button for row {textInRowForAnyColumn}");
-        }
+        public void ClickEditBtnForRow(string textInRowForAnyColumn = "")
+            => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickEnterBtnForRow(string textInRowForAnyColumn = null)
-        {
-            JsClickElement(GetTblRowBtn_ByLocator(TableButton.Action_Enter, textInRowForAnyColumn));
-            LogInfo($"Clicked Enter button for row {textInRowForAnyColumn}");
-        }
+        public void ClickReviseBtnForRow(string textInRowForAnyColumn = "")
+            => ClickButtonForRow(TableButton.Action_Revise, textInRowForAnyColumn);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickQMSViewAttachmentsForRow(string textInRowForAnyColumn = null)
-        {
-            JsClickElement(GetTblRowBtn_ByLocator(TableButton.QMS_Attachments_View, textInRowForAnyColumn));
-            LogInfo($"Clicked QMS View Attachments button for row {textInRowForAnyColumn}");
-        }
+        public void ClickEnterBtnForRow(string textInRowForAnyColumn = "")
+            => ClickButtonForRow(TableButton.Action_Enter, textInRowForAnyColumn);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickViewAttachmentsForRow(string textInRowForAnyColumn = null)
-        {
-            JsClickElement(GetTblRowBtn_ByLocator(TableButton.Attachments_View, textInRowForAnyColumn));
-            LogInfo($"Clicked View Attachments button for row {textInRowForAnyColumn}");
-        }
+        public void ClickQMSViewAttachmentsForRow(string textInRowForAnyColumn = "")
+            => ClickButtonForRow(TableButton.QMS_Attachments_View, textInRowForAnyColumn);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickViewWebFormForRow(string textInRowForAnyColumn = null)
-        {
-            JsClickElement(GetTblRowBtn_ByLocator(TableButton.WebForm_View, textInRowForAnyColumn));
-            LogInfo($"Clicked View WebForm button for row {textInRowForAnyColumn}");
-        }
+        public void ClickViewAttachmentsForRow(string textInRowForAnyColumn = "")
+            => ClickButtonForRow(TableButton.Attachments_View, textInRowForAnyColumn);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickViewReportForRow(string textInRowForAnyColumn = null)
-        {
-            JsClickElement(GetTblRowBtn_ByLocator(TableButton.Report_View, textInRowForAnyColumn));
-            LogInfo($"Clicked View Report button for row {textInRowForAnyColumn}");
-        }
+        public void ClickViewWebFormForRow(string textInRowForAnyColumn = "")
+            => ClickButtonForRow(TableButton.WebForm_View, textInRowForAnyColumn);
+
+        /// <summary>
+        /// If no argument is provided, the button on the first row will be clicked.
+        /// </summary>
+        /// <param name="textInRowForAnyColumn"></param>
+        public void ClickViewReportForRow(string textInRowForAnyColumn = "")
+            => ClickButtonForRow(TableButton.Report_View, textInRowForAnyColumn);
 
         #endregion Table Row Button Methods
 

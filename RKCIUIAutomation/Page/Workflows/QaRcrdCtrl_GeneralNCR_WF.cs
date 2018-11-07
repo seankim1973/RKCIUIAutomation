@@ -168,8 +168,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
-            QaRcrdCtrl_GeneralNCR.ClickTab_CQM_Review();
-            QaRcrdCtrl_GeneralNCR.FilterDescription(ncrDescription);
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_DisapproveClose();
         }
