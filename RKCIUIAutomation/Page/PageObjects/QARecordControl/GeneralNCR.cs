@@ -330,13 +330,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyReqFieldErrorLabelForTypeOfNCR();
 
-        bool VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes rdoBtnOrChkBox, bool shouldBeSelected = true);
+        //bool VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes rdoBtnOrChkBox, bool shouldBeSelected = true);
 
-        bool VerifyDDListSelectedValue(InputFields ddListId, string expectedValue);
+        //bool VerifyDDListSelectedValue(InputFields ddListId, string expectedValue);
 
         bool VerifySignatureField(Reviewer reviewer, bool shouldBeEmpty = false);
 
-        bool VerifyInputField(InputFields inputField, bool shouldBeEmpty = false);
+        //bool VerifyInputField(InputFields inputField, bool shouldBeEmpty = false);
 
         string GetNCRDocDescription();
 
@@ -421,16 +421,16 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             FilterTableColumnByValue(ColumnName.Description, ncrDescription);
         }
 
-        private By GetSubmitBtnLocator(SubmitButtons buttonName)
-        {
-            string buttonValue = buttonName.GetString();
-            By locator = By.XPath($"//input[@value='{buttonValue}']");
-            return locator;
-        }
+        //private By GetSubmitButtonByLocator(SubmitButtons buttonName)
+        //{
+        //    string buttonValue = buttonName.GetString();
+        //    By locator = By.XPath($"//input[@value='{buttonValue}']");
+        //    return locator;
+        //}
 
-        public virtual void ClickBtn_Cancel() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Cancel));
+        public virtual void ClickBtn_Cancel() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
 
-        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Revise));
+        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise));
 
         public virtual void ClickBtn_Approve() => ActionConfirmation(SubmitButtons.Approve);
 
@@ -440,7 +440,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             try
             {
-                JsClickElement(GetSubmitBtnLocator(submitButton));
+                JsClickElement(GetSubmitButtonByLocator(submitButton));
             }
             catch (UnhandledAlertException e)
             {
@@ -450,13 +450,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             LogInfo(ConfirmActionDialog());
         }
 
-        public virtual void ClickBtn_KickBack() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.KickBack));
+        public virtual void ClickBtn_KickBack() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.KickBack));
 
-        public virtual void ClickBtn_Close() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Close));
+        public virtual void ClickBtn_Close() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Close));
 
-        public virtual void ClickBtn_SaveOnly() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveOnly));
+        public virtual void ClickBtn_SaveOnly() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.SaveOnly));
 
-        public virtual void ClickBtn_SaveForward() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveForward));
+        public virtual void ClickBtn_SaveForward() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.SaveForward));
 
         public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
 
@@ -553,34 +553,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void SortTable_Ascending() => SortColumnAscending(ColumnName.Action);
 
         public virtual void SortTable_ToDefault() => SortColumnToDefault(ColumnName.Action);
-
-        //private void SelectRadioBtnOrChkbox(Enum radioBtn, bool toggleChkBoxIfAlreadySelected = true)
-        //{
-        //    string rdoBtn = radioBtn.GetString();
-        //    By locator = By.Id(rdoBtn);
-        //    ScrollToElement(locator);
-        //    if (toggleChkBoxIfAlreadySelected)
-        //    {
-        //        ScrollToElement(locator);
-        //        JsClickElement(locator);
-        //        LogInfo($"Selected: {rdoBtn}");
-        //    }
-        //    else
-        //    {
-        //        LogInfo("Specified not to toggle checkbox, if already selected");
-
-        //        if (!GetElement(locator).Selected)
-        //        {
-        //            ScrollToElement(locator);
-        //            JsClickElement(locator);
-        //            LogInfo($"Selected: {rdoBtn}");
-        //        }
-        //        else
-        //        {
-        //            LogInfo($"Did not select element, because it is already selected: {rdoBtn}");
-        //        }
-        //    }
-        //}
 
         public virtual void SelectRdoBtn_TypeOfNCR_Level1() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level1);
 
@@ -832,66 +804,66 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        public virtual bool VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes rdoBtnOrChkBox, bool shouldBeSelected = true)
-        {
-            try
-            {
-                //string selectionId = rdoBtnOrChkBox.GetString();
-                By locator = By.Id(rdoBtnOrChkBox.GetString());
-                ScrollToElement(locator);
-                //IWebElement rdoBtnOrChkBoxElement = GetElement(locator);
+        //public virtual bool VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes rdoBtnOrChkBox, bool shouldBeSelected = true)
+        //{
+        //    try
+        //    {
+        //        //string selectionId = rdoBtnOrChkBox.GetString();
+        //        By locator = By.Id(rdoBtnOrChkBox.GetString());
+        //        ScrollToElement(locator);
+        //        //IWebElement rdoBtnOrChkBoxElement = GetElement(locator);
 
-                bool isSelected = GetElement(locator).Selected ? true : false;
-                bool isResultExpected = isSelected.Equals(shouldBeSelected) ? true : false;
+        //        bool isSelected = GetElement(locator).Selected ? true : false;
+        //        bool isResultExpected = isSelected.Equals(shouldBeSelected) ? true : false;
 
-                string expected = shouldBeSelected ? " " : " Not ";
-                string actual = isSelected ? " " : " Not ";
-                string[] resultLogMsg = isResultExpected
-                    ? new string[]
-                    {
-                        "meets",
-                        " and"
-                    }
-                    : new string[]
-                    {
-                        "does not meet",
-                        ", but"
-                    };
+        //        string expected = shouldBeSelected ? " " : " Not ";
+        //        string actual = isSelected ? " " : " Not ";
+        //        string[] resultLogMsg = isResultExpected
+        //            ? new string[]
+        //            {
+        //                "meets",
+        //                " and"
+        //            }
+        //            : new string[]
+        //            {
+        //                "does not meet",
+        //                ", but"
+        //            };
 
-                string logMsg = $"- Result {resultLogMsg[0]} expectations: Should{expected}be selected{resultLogMsg[1]} Is{actual}selected";
+        //        string logMsg = $"- Result {resultLogMsg[0]} expectations: Should{expected}be selected{resultLogMsg[1]} Is{actual}selected";
 
-                //logMsg = selectionMeetsExpectation ? $"field meets expectation: should{expected}be selected and is{actual}selected" : $"field does not meet expectation: should{expected}be selected, but is{actual}selected";
+        //        //logMsg = selectionMeetsExpectation ? $"field meets expectation: should{expected}be selected and is{actual}selected" : $"field does not meet expectation: should{expected}be selected, but is{actual}selected";
 
-                LogInfo($"IsSelected: {isSelected}<br>ShouldBeSelected: {shouldBeSelected}<br>{rdoBtnOrChkBox.ToString()} {logMsg} ", isResultExpected);
+        //        LogInfo($"IsSelected: {isSelected}<br>ShouldBeSelected: {shouldBeSelected}<br>{rdoBtnOrChkBox.ToString()} {logMsg} ", isResultExpected);
 
-                return isResultExpected;
-            }
-            catch (Exception e)
-            {
-                LogError(e.StackTrace);
-                return false;
-            }
-        }
+        //        return isResultExpected;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        LogError(e.StackTrace);
+        //        return false;
+        //    }
+        //}
 
-        public virtual bool VerifyDDListSelectedValue(InputFields ddListId, string expectedDDListValue)
-        {
-            bool meetsExpectation = false;
+        //public virtual bool VerifyDDListSelectedValue(InputFields ddListId, string expectedDDListValue)
+        //{
+        //    bool meetsExpectation = false;
 
-            try
-            {
-                string currentDDListValue = GetTextFromDDL(ddListId);
-                meetsExpectation = currentDDListValue.Equals(expectedDDListValue) ? true : false;
+        //    try
+        //    {
+        //        string currentDDListValue = GetTextFromDDL(ddListId);
+        //        meetsExpectation = currentDDListValue.Equals(expectedDDListValue) ? true : false;
 
-                LogInfo($"Expected drop-down field value: {expectedDDListValue}" +
-                    $"<br>Actual drop-down field value: {currentDDListValue}", meetsExpectation);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
+        //        LogInfo($"Expected drop-down field value: {expectedDDListValue}" +
+        //            $"<br>Actual drop-down field value: {currentDDListValue}", meetsExpectation);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        log.Error(e.StackTrace);
+        //    }
 
-            return meetsExpectation;
-        }
+        //    return meetsExpectation;
+        //}
 
         public virtual bool VerifySignatureField(Reviewer reviewer, bool shouldFieldBeEmpty = false)
         {
@@ -938,27 +910,27 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        public virtual bool VerifyInputField(InputFields inputField, bool shouldFieldBeEmpty = false)
-        {
-            string text = string.Empty;
-            bool isResultExpected = false;
-            try
-            {
-                text = GetAttribute(By.XPath($"//input[@id='{inputField.GetString()}']"), "value");
+        //public virtual bool VerifyInputField(InputFields inputField, bool shouldFieldBeEmpty = false)
+        //{
+        //    string text = string.Empty;
+        //    bool isResultExpected = false;
+        //    try
+        //    {
+        //        text = GetAttribute(By.XPath($"//input[@id='{inputField.GetString()}']"), "value");
 
-                bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
-                string logMsg = isFieldEmpty ? "Empty Field: Unable to retrieve text" : $"Retrieved '{text}'";
+        //        bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
+        //        string logMsg = isFieldEmpty ? "Empty Field: Unable to retrieve text" : $"Retrieved '{text}'";
 
-                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty);
-                LogInfo($"{logMsg} from field - {inputField.ToString()}", isResultExpected);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
+        //        isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty);
+        //        LogInfo($"{logMsg} from field - {inputField.ToString()}", isResultExpected);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        log.Error(e.StackTrace);
+        //    }
 
-            return isResultExpected;
-        }
+        //    return isResultExpected;
+        //}
 
         public virtual bool VerifyReqFieldErrorLabelForConcessionRequest()
         {

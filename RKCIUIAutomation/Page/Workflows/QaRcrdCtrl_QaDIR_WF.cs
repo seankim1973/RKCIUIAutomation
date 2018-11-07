@@ -1,12 +1,15 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
+
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -22,6 +25,14 @@ namespace RKCIUIAutomation.Page.Workflows
     public interface IQaRcrdCtrl_QaDIR_WF
     {
         void NavigateToDirPage();
+
+        string Create_and_SaveForward_DIR(UserType userType);
+
+        void Review_and_Return_DIR_ForRevise(UserType userType, string dirNumber);
+
+        void Modify_Cancel_Verify_inCreateReview(string dirNumber);
+
+        void Modify_Save_Verify_and_SaveForward_inCreateReview(string dirNumber);
     }
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
@@ -75,23 +86,64 @@ namespace RKCIUIAutomation.Page.Workflows
             if (!Driver.Title.Contains("DIR List"))
             {
                 NavigateToPage.QARecordControl_QA_DIRs();
-                Assert.True(VerifyPageTitle("List of Inspector's Daily Report"));
+                Assert.True(VerifyPageTitle($"List of Inspector's Daily Report"));
             }
         }
 
-        /* Create New - Required Fields
-        DIR: 1st Shift TimeBegin1 Required
-        DIR: 1st Shift TimeEnd1 Required
-        Entry Number 1: Area Required
-        Entry Number 1: Average Temperature Required
-        Entry Number 1: Section Required
-        Entry Number 1: Section Description Required
-        Entry Number 1: Feature Required
-        Entry Number 1: Crew Foreman Required
-        Entry Number 1: Contractor Required
-        Entry Number 1: Inspection Type Required
-        Entry Number 1: Inspection Result Required
-         */
+        public virtual string Create_and_SaveForward_DIR(UserType userType)
+        {
+            LogDebug("------------------ Create_and_SaveForward_DIR ------------------");
+
+            LoginAs(userType);
+            WF_QaRcrdCtrl_QaDIR.NavigateToDirPage();
+            QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir());
+            QaRcrdCtrl_QaDIR.PopulateRequiredFields();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            return QaRcrdCtrl_QaDIR.GetDirNumber();
+        }
+
+        public virtual void Review_and_Return_DIR_ForRevise(UserType userType, string dirNumber)
+        {
+            LogDebug("------------------ Review_and_Return_DIR_ForRevise ------------------");
+
+            LoginAs(userType);
+            WF_QaRcrdCtrl_QaDIR.NavigateToDirPage();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber));
+            ClickEditBtnForRow();
+            QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
+            QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
+            QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
+        }
+
+        public virtual void Modify_Cancel_Verify_inCreateReview(string dirNumber)
+        {
+            LogDebug("------------------ Modify_DeficiencyDescription_Cancel_and_Verify ------------------");
+
+            QaRcrdCtrl_QaDIR.SelectRdoBtn_AnyDeficiencies_Yes();
+            QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
+            QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber));
+            ClickEditBtnForRow();
+            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.AnyDeficiencies_No));
+            AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description, true));
+        }
+
+        public virtual void Modify_Save_Verify_and_SaveForward_inCreateReview(string dirNumber)
+        {
+            LogDebug("------------------ Modify_DeficiencyDescription_Save_and_Verify ------------------");
+
+            QaRcrdCtrl_QaDIR.SelectRdoBtn_AnyDeficiencies_Yes();
+            QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber));
+            ClickEditBtnForRow();
+            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.AnyDeficiencies_Yes));
+            AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description));
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+        }
+
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_GLX : QaRcrdCtrl_QaDIR_WF

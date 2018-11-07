@@ -88,6 +88,8 @@ namespace RKCIUIAutomation.Page
 
         private string SetInputButtonXpath(string buttonName) => $"//input[@value='{buttonName}']";
 
+        public By GetSubmitButtonByLocator(Enum buttonValue) => By.XPath($"//input[@value='{buttonValue.GetString()}']");
+
         public By GetMainNavMenuByLocator(Enum navEnum) => By.XPath(SetMainNavMenuXpath(navEnum));
 
         public By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null) => By.XPath(SetNavMenuXpath(navEnum, parentNavEnum));

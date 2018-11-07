@@ -4,6 +4,7 @@ using NUnit.Framework.Interfaces;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
+using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using RKCIUIAutomation.Test;
 using RKCIUIAutomation.Tools;
 using System;
@@ -545,7 +546,43 @@ namespace RKCIUIAutomation.Sandbox
         [TestMethod]
         public void SplitNamesInList()
         {
-            IList<string> namesList = new List<string>()
+            QADIRs qaDirs = new QADIRs();
+
+            IList<string> expectedList = qaDirs.GetRequiredFieldIDs();
+            IList<string> trimmedExpectedIDs = qaDirs.TrimInputFieldIDs(expectedList, "0__");
+
+            Console.WriteLine("Trimmed Expected Field IDs List");
+            foreach (string id in trimmedExpectedIDs)
+            {
+                Console.WriteLine($"Expected Field ID: {id}");
+            }
+
+            IList<string> errorIDs = new List<string>()
+            {
+                "span_0_TimeBegin1",
+                "span_0_TimeEnd1",
+                "span_0_AverageTemperature",
+                "span_0_AreaID",
+                "span_0_SectionId",
+                "span_0_FeatureID",
+                "span_0_ContractorId",
+                "span_0_CrewForemanID",
+                "span_0_SectionDescription",
+                "span_0_InspectionType",
+                "span_0_InspectionPassFail"
+            };
+            
+            IList<string> trimmedIDs = qaDirs.TrimInputFieldIDs(errorIDs, "0_");
+
+            Console.WriteLine("##################### \nTrimmed Error Field IDs List");
+            foreach (string id in trimmedIDs)
+            {
+                Console.WriteLine($"Error Field ID: {id}");
+                Console.WriteLine($"Actual Error Field ID: {id} contained in Expected List: {trimmedExpectedIDs.Contains(id)}");
+            }
+
+
+            IList<string> summaryList = new List<string>()
             {
                 "DIR: 1st Shift TimeBegin1 Required",
                 "DIR: 1st Shift TimeEnd1 Required",
@@ -561,8 +598,8 @@ namespace RKCIUIAutomation.Sandbox
             };
 
             IList<string> idList = new List<string>();
-
-            foreach (string error in namesList)
+            Console.WriteLine("###############################\nSummary List");
+            foreach (string error in summaryList)
             {
                 string[] splitType = new string[2];
 
@@ -578,18 +615,8 @@ namespace RKCIUIAutomation.Sandbox
                 string[] splitReq = Regex.Split(splitType[1], " Required");
                 string fieldName = splitReq[0];
                 idList.Add(fieldName);
+                Console.WriteLine($"List contains field name - {fieldName}: {trimmedIDs.Contains(fieldName)}");
             }
-
-            string id = "CrewForeman";
-            id = id.SplitCamelCase();
-
-            foreach (string item in idList)
-            {
-                Console.WriteLine(item);
-            }
-
-            Console.WriteLine($"ID: {id}");
-            Assert.IsTrue(idList.Contains(id));
         }
     }
 }

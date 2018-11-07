@@ -249,7 +249,7 @@ namespace RKCIUIAutomation.Page
                 text = GetElement(elementByLocator)?.Text;
                 bool textNotEmpty = !string.IsNullOrEmpty(text);
                 string logMsg = textNotEmpty ? $"Retrieved '{text}'" : "Unable to retrieve text";
-                LogInfo($"{logMsg} from element - {elementByLocator}", textNotEmpty);
+                LogInfo($"{logMsg} from element - {elementByLocator}");
             }
             catch (Exception e)
             {
@@ -299,30 +299,30 @@ namespace RKCIUIAutomation.Page
             ClickElement(pgHelper.GetDDListItemsByLocator(_ddListID, itemIndexOrName));
         }
 
-        public void SelectRadioBtnOrChkbox(Enum radioBtn, bool toggleChkBoxIfAlreadySelected = true)
+        public void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadySelected = true)
         {
-            string rdoBtn = radioBtn.GetString();
-            By locator = By.Id(rdoBtn);
+            string chkbxOrRdoBtn = chkbxOrRadioBtn.GetString();
+            By locator = By.Id(chkbxOrRdoBtn);
             ScrollToElement(locator);
             if (toggleChkBoxIfAlreadySelected)
             {
                 ScrollToElement(locator);
                 JsClickElement(locator);
-                LogInfo($"Selected: {rdoBtn}");
+                LogInfo($"Selected: {chkbxOrRdoBtn}");
             }
             else
             {
-                LogInfo("Specified not to toggle checkbox, if already selected");
+                log.Info("Specified not to toggle checkbox, if already selected");
 
                 if (!GetElement(locator).Selected)
                 {
                     ScrollToElement(locator);
                     JsClickElement(locator);
-                    LogInfo($"Selected: {rdoBtn}");
+                    LogInfo($"Selected: {chkbxOrRdoBtn}");
                 }
                 else
                 {
-                    LogInfo($"Did not select element, because it is already selected: {rdoBtn}");
+                    LogInfo($"Did not select element, because it is already selected: {chkbxOrRdoBtn}");
                 }
             }
         }
@@ -462,15 +462,15 @@ namespace RKCIUIAutomation.Page
             bool isDisplayed = false;
             By headingElement = null;
 
-            headingElement = By.XPath($"//h3[contains(text(),'{expectedPageTitle}')]");
+            headingElement = By.XPath($"//h3[contains(text(),\"{expectedPageTitle}\")]");
             isDisplayed = IsHeadingDisplayed(headingElement);
             if (!isDisplayed)
             {
-                headingElement = By.XPath($"//h2[contains(text(),'{expectedPageTitle}')]");
+                headingElement = By.XPath($"//h2[contains(text(),\"{expectedPageTitle}\")]");
                 isDisplayed = IsHeadingDisplayed(headingElement);
                 if (!isDisplayed)
                 {
-                    LogDebug($"Page Title element with h2 or h3 tag containing text '{expectedPageTitle}' was not found.");
+                    LogDebug($"Page Title element with h2 or h3 tag containing text \"{expectedPageTitle}\" was not found.");
 
                     headingElement = By.XPath("//h3");
                     isDisplayed = IsHeadingDisplayed(headingElement);
@@ -553,6 +553,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
+                WaitForPageReady();
                 pageTitle = Driver.Title;
                 isLoaded = (pageTitle.Contains(expectedPageTitle)) ? true : FoundKnownPageErrors();
                 logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : pageErrLogMsg;
@@ -589,6 +590,96 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.Message);
                 throw;
             }
+        }
+
+        public bool VerifyChkBoxRdoBtnSelection(Enum rdoBtnOrChkBox, bool shouldBeSelected = true)
+        {
+            try
+            {
+                //string selectionId = rdoBtnOrChkBox.GetString();
+                By locator = By.Id(rdoBtnOrChkBox.GetString());
+                ScrollToElement(locator);
+                //IWebElement rdoBtnOrChkBoxElement = GetElement(locator);
+
+                bool isSelected = GetElement(locator).Selected ? true : false;
+                bool isResultExpected = isSelected.Equals(shouldBeSelected) ? true : false;
+
+                string expected = shouldBeSelected ? " " : " Not ";
+                string actual = isSelected ? " " : " Not ";
+                
+                LogInfo($"{rdoBtnOrChkBox.ToString()} :<br>Selection Expected: {shouldBeSelected}<br>Selection Actual: {isSelected}", isResultExpected);
+
+                return isResultExpected;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                return false;
+            }
+        }
+
+        public bool VerifyDDListSelectedValue(Enum ddListId, string expectedDDListValue)
+        {
+            bool meetsExpectation = false;
+
+            try
+            {
+                string currentDDListValue = GetTextFromDDL(ddListId);
+                meetsExpectation = currentDDListValue.Equals(expectedDDListValue) ? true : false;
+
+                LogInfo($"Expected drop-down field value: {expectedDDListValue}" +
+                    $"<br>Actual drop-down field value: {currentDDListValue}", meetsExpectation);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return meetsExpectation;
+        }
+
+        public bool VerifyInputField(Enum inputField, bool shouldFieldBeEmpty = false)
+        {
+            string text = string.Empty;
+            bool isResultExpected = false;
+            try
+            {
+                text = GetAttribute(By.XPath($"//input[@id='{inputField.GetString()}']"), "value");
+
+                bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
+                string logMsg = isFieldEmpty ? "Empty Field: Unable to retrieve text" : $"Retrieved '{text}'";
+
+                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty);
+                LogInfo($"{logMsg} from field - {inputField.ToString()}", isResultExpected);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return isResultExpected;
+        }
+
+        public bool VerifyTextAreaField(Enum textAreaField, bool shouldFieldBeEmpty = false)
+        {
+            string text = string.Empty;
+            bool isResultExpected = false;
+            try
+            {
+                text = GetText(GetTextAreaFieldByLocator(textAreaField));
+
+                bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
+                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty);
+                string expected = shouldFieldBeEmpty ? "empty field" : $"retrieved text: {text}";
+                string logMsg = isResultExpected ? "" : "not ";
+                LogInfo($"Result {logMsg}as expected:<br>{expected}", isResultExpected);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return isResultExpected;
         }
 
         private static string ActiveModalXpath => "//div[contains(@style,'opacity: 1')]";
