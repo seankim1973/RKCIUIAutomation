@@ -90,10 +90,32 @@ namespace RKCIUIAutomation.Page.Workflows
             }
         }
 
+        internal UserType DetermineUserType(UserGroup userGroup)
+        {
+            UserType user = UserType.DIRMgrQA;
+
+            switch (userGroup)
+            {
+                case UserGroup.TechQA:
+                    user = UserType.DIRTechQA;
+                    break;
+                case UserGroup.TechQC:
+                    user = UserType.DIRTechQC;
+                    break;
+                case UserGroup.MgrQA:
+                    user = UserType.DIRMgrQA;
+                    break;
+                case UserGroup.MgrQC:
+                    user = UserType.DIRMgrQC;
+                    break;
+            }
+
+            return user;
+        }
+
         public virtual string Create_and_SaveForward_DIR(UserType userType)
         {
             LogDebug("------------------ Create_and_SaveForward_DIR ------------------");
-
             LoginAs(userType);
             WF_QaRcrdCtrl_QaDIR.NavigateToDirPage();
             QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
@@ -107,7 +129,6 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void Review_and_Return_DIR_ForRevise(UserType userType, string dirNumber)
         {
             LogDebug("------------------ Review_and_Return_DIR_ForRevise ------------------");
-
             LoginAs(userType);
             WF_QaRcrdCtrl_QaDIR.NavigateToDirPage();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber));

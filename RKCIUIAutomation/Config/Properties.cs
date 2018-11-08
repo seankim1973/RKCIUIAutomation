@@ -51,12 +51,18 @@
         CDRTech,
         CDRMgr,
         NCRMgr,
-        DIRMgr,
         DIRMgrQA,
         DIRMgrQC,
-        DIRTech,
         DIRTechQA,
         DIRTechQC
+    }
+
+    public enum UserGroup
+    {
+        TechQA,
+        MgrQA,
+        TechQC,
+        MgrQC
     }
 
     public enum Reporter
