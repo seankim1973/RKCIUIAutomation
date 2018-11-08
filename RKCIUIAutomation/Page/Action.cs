@@ -15,7 +15,7 @@ namespace RKCIUIAutomation.Page
 {
     public class Action : PageHelper
     {
-        PageHelper pgHelper = new PageHelper();
+        private PageHelper pgHelper = new PageHelper();
 
         public Action()
         {
@@ -51,7 +51,6 @@ namespace RKCIUIAutomation.Page
         }
 
         public void JsClickElement(By elementByLocator) => ExecuteJsAction(JSAction.Click, elementByLocator);
-
 
         public void JsHover(By elementByLocator)
         {
@@ -97,7 +96,7 @@ namespace RKCIUIAutomation.Page
                 wait.Until(wd => javaScriptExecutor.ExecuteScript("return document.readyState").ToString() == "complete");
             }
 
-            log.Debug($"##### Waited for page to be in Ready state #####");
+            log.Info($"...Waited for page to be in Ready state #####");
         }
 
         internal IWebElement GetElement(By elementByLocator)
@@ -275,7 +274,7 @@ namespace RKCIUIAutomation.Page
             return elementTextList;
         }
 
-        public string GetTextFromDDL(Enum ddListID) 
+        public string GetTextFromDDL(Enum ddListID)
             => GetText(pgHelper.GetDDListCurrentSelectionByLocator(ddListID));
 
         public void ExpandDDL<E>(E ddListID)
@@ -352,7 +351,7 @@ namespace RKCIUIAutomation.Page
             string alertText = string.Empty;
 
             try
-            {                
+            {
                 alert = new WebDriverWait(Driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
                 alert = Driver.SwitchTo().Alert();
                 alertText = alert.Text;
@@ -504,45 +503,66 @@ namespace RKCIUIAutomation.Page
             return isMatchingTitle;
         }
 
-        private string pageErrLogMsg = string.Empty;
-
-        private bool FoundKnownPageErrors()
+        public bool IsPageLoadedSuccessfully()
         {
             By serverErrorH1Tag = By.XPath("//h1[contains(text(),'Server Error')]");
             By resourceNotFoundH2Tag = By.XPath("//h2/i[text()='The resource cannot be found.']");
             By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
 
-            IWebElement pageErrElement = Driver.FindElement(serverErrorH1Tag) ?? Driver.FindElement(stackTraceTagByLocator) ?? Driver.FindElement(resourceNotFoundH2Tag);
-            bool foundKnownError = pageErrElement.Displayed ? true : false;
-            string pageUrl = $"<br>&nbsp;&nbsp;@URL: {Driver.Url}";
-            pageErrLogMsg = foundKnownError ? $"!!! Page Error - {pageErrElement.Text}{pageUrl}" : $"!!! Page did not load as expected.{pageUrl}";
-            return false;
+            IWebElement pageErrElement = null;
+            pageErrElement = GetElement(serverErrorH1Tag) ?? GetElement(stackTraceTagByLocator) ?? GetElement(resourceNotFoundH2Tag);
+
+            bool isPageLoaded = pageErrElement != null ? false : true;
+            string pageUrl = Driver.Url;
+
+            string logMsg = isPageLoaded ? $"!!! Page Error - {pageErrElement.Text}{pageUrl}" : $"!!! Error at {pageUrl}";
+
+            PgBaseHelper.CreateVar($"{testEnv}{tenantName}{GetTestName()}", logMsg);
+
+            return isPageLoaded;
+        }
+
+        public string GetPageErrorLogMsg(string logMsgKey)
+        {
+            string logMsg = PgBaseHelper.GetVar(logMsgKey);
+            return logMsg;
         }
 
         public bool VerifyUrlIsLoaded(string pageUrl)
         {
             bool isLoaded = false;
-            string pageTitle = string.Empty;
+            string logMsg = string.Empty;
+            string logMsgKey = $"{testEnv}{tenantName}{GetTestName()}";
 
             try
             {
                 Driver.Navigate().GoToUrl(pageUrl);
-                pageTitle = Driver.Title;
+                WaitForPageReady();
 
-                isLoaded = (pageTitle.Contains("ELVIS PMC")) ? true : FoundKnownPageErrors();
-            }
-            finally
-            {
-                string pageTitleMsg = $"{pageUrl} - Page Title: {pageTitle}<br>&nbsp;&nbsp;";
-                string logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : pageErrLogMsg;
+                string pageTitle = Driver.Title;
 
-                LogInfo($"{logMsg}<br>&nbsp;&nbsp;{pageTitleMsg}", isLoaded);
-                if (!isLoaded)
+                if (pageTitle.Contains("ELVIS PMC"))
                 {
-                    LogDebug($"Page Error seen at URL: {Driver.Url}");
+                    isLoaded = true;
+                    logMsg = ">>> Page Loaded Successfully <<<";
                 }
+                else
+                {
+                    IsPageLoadedSuccessfully();
+                    isLoaded = false;
+                    logMsg = GetPageErrorLogMsg(logMsgKey);
+                }
+
+                string pageTitleMsg = $"{pageUrl}<br>  >> Page Title: {pageTitle}";
+                LogInfo($"{logMsg}<br>  {pageTitleMsg}", isLoaded);
+
                 WriteToFile(pageTitleMsg, "_PageTitle.txt");
             }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
             return isLoaded;
         }
 
@@ -552,12 +572,13 @@ namespace RKCIUIAutomation.Page
             string expectedPageTitle = (checkingLoginPage == false) ? "ELVIS PMC" : "Log in";
             string logMsg = string.Empty;
             bool isLoaded = false;
+            string pageErrLogMsg = GetPageErrorLogMsg(Driver.Url);
 
             try
             {
                 WaitForPageReady();
                 pageTitle = Driver.Title;
-                isLoaded = (pageTitle.Contains(expectedPageTitle)) ? true : FoundKnownPageErrors();
+                isLoaded = (pageTitle.Contains(expectedPageTitle)) ? true : IsPageLoadedSuccessfully();
                 logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : pageErrLogMsg;
                 LogInfo(logMsg, isLoaded);
 
@@ -568,7 +589,7 @@ namespace RKCIUIAutomation.Page
                         LogInfo(">>> Attempting to navigate back to previous page to continue testing <<<");
                         Driver.Navigate().Back();
                         pageTitle = Driver.Title;
-                        isLoaded = pageTitle.Contains("ELVIS PMC") ? true : FoundKnownPageErrors();
+                        isLoaded = pageTitle.Contains("ELVIS PMC") ? true : IsPageLoadedSuccessfully();
                         if (isLoaded)
                         {
                             LogInfo(">>> Navigated to previous page successfully <<<");
@@ -608,7 +629,7 @@ namespace RKCIUIAutomation.Page
 
                 string expected = shouldBeSelected ? " " : " Not ";
                 string actual = isSelected ? " " : " Not ";
-                
+
                 LogInfo($"{rdoBtnOrChkBox.ToString()} :<br>Selection Expected: {shouldBeSelected}<br>Selection Actual: {isSelected}", isResultExpected);
 
                 return isResultExpected;
