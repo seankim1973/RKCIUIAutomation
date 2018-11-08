@@ -13,7 +13,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.BaseClass;
-using Action = RKCIUIAutomation.Page.Action;
 
 namespace RKCIUIAutomation.Base
 {
@@ -124,12 +123,13 @@ namespace RKCIUIAutomation.Base
         {
             if (takeScreenshot)
             {
-                LogErrorWithScreenshot();
+                LogErrorWithScreenshot(details);
             }
             else
             {
                 testInstance.Error(CreateReportMarkupLabel(details, ExtentColor.Red));
             }
+
             log.Error(details);
 
             if (e != null)
@@ -156,11 +156,11 @@ namespace RKCIUIAutomation.Base
                 log.Debug(details);
         }
 
-        public void LogErrorWithScreenshot()
+        public void LogErrorWithScreenshot(string details = "")
         {
             string screenshotName = CaptureScreenshot(GetTestName());
             var screenshotRemotePath = $"http://10.1.1.207/errorscreenshots/{screenshotName}";
-            var detailsWithScreenshot = $"Error Screenshot:<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">";
+            var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">";
             testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, ExtentColor.Red));
         }
 
@@ -242,8 +242,7 @@ namespace RKCIUIAutomation.Base
                     log.Debug(e.StackTrace);
                 }
 
-                testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
-                LogErrorWithScreenshot();
+                LogErrorWithScreenshot(details);
             }
         }
 
@@ -253,7 +252,6 @@ namespace RKCIUIAutomation.Base
             Selection
         }
 
-
         //TODO: Generic Result Calculator and Logger
         public void GetResults<T>(Enum element, ValidationType validationType, T expected, T actual)
         {
@@ -261,13 +259,13 @@ namespace RKCIUIAutomation.Base
             string expectedHeader = string.Empty;
             string actualHeader = string.Empty;
 
-
             switch (validationType)
             {
                 case ValidationType.Value:
                     expectedHeader = "Expected Value";
                     actualHeader = "Actual Value";
                     break;
+
                 case ValidationType.Selection:
                     expectedHeader = "(Expected) Should Be Selected";
                     actualHeader = "(Actual) Is Selected";
@@ -308,7 +306,6 @@ namespace RKCIUIAutomation.Base
             {
                 Should = pgHelper.ConvertToType<bool>(expected) ? "Should be selected" : "Should Not be selected";
                 Is = pgHelper.ConvertToType<bool>(actual) ? "Is selected" : "Is Not selected";
-                
             }
 
             string logMsg = $" [Result {resultLogMsg[0]} expectations] {Should}{resultLogMsg[1]} {Is}";
@@ -420,9 +417,9 @@ namespace RKCIUIAutomation.Base
                 StreamWriter streamWriter = File.Exists(path) ? File.AppendText(path) : File.CreateText(path);
                 using (StreamWriter sw = streamWriter)
                 {
-                    if (msg.Contains("<br>"))
+                    if (!string.IsNullOrEmpty(msg) && msg.Contains("<br>"))
                     {
-                        string[] message = Regex.Split(msg, "<br>&nbsp;&nbsp;");
+                        string[] message = Regex.Split(msg, "<br>");
                         sw.WriteLine(message[0]);
                         sw.WriteLine(message[1]);
                     }
@@ -435,7 +432,6 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                throw;
             }
         }
     }

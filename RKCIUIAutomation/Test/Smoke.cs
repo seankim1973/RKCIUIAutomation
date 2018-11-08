@@ -2,7 +2,6 @@
 using NUnit.Framework.Internal;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
-using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using RKCIUIAutomation.Page.Workflows;
 using System.Collections.Generic;
 using System.Threading;
@@ -23,12 +22,16 @@ namespace RKCIUIAutomation.Test.Smoke
 
             List<string> pageUrls = new List<string>();
             pageUrls = GetNavMenuUrlList();
+            LogInfo($"URL Count: {pageUrls.Count}");
+
+            int loopCount = 0;
 
             foreach (var url in pageUrls)
             {
+                loopCount++;
                 AddAssertionToList(VerifyUrlIsLoaded(url));
             }
-
+            LogInfo($"Assertion Loop Count: {loopCount}");
             AssertAll();
         }
     }
@@ -61,11 +64,10 @@ namespace RKCIUIAutomation.Test.Smoke
         }
     }
 
-
     [TestFixture]//Garnet GLX
     public class Test_CommentReviewRegularComment : DesignDocumentWF
     {
-//        [Test]
+        //        [Test]
         [Category(Component.Other)]
         [Property(TestCaseNumber, 2238579)]
         [Property(Priority, "Priority 1")]
@@ -131,7 +133,7 @@ namespace RKCIUIAutomation.Test.Smoke
 
             LogInfo("--------------------------6. DEV Admin enters Resolution='Disagree workflow'----------------------");
             //EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
-            
+
             DesignDocCommentReview.Workflow_EnterResolutionCommentAndResolutionCodeforDisagreeResponse(); //Moved to DesignDocumentWF class
 
             LogInfo("--------------------------7. DEV Admin forwards Resolution='Disagree workflow'----------------------");
@@ -148,7 +150,7 @@ namespace RKCIUIAutomation.Test.Smoke
     [TestFixture]//Garnet GLX
     public class Test_CommentReviewNoComment : DesignDocumentWF
     {
-//        [Test]
+        //        [Test]
         [Category(Component.Other)]
         [Property(TestCaseNumber, "111")]
         [Property(Priority, "Priority 1")]
@@ -195,7 +197,7 @@ namespace RKCIUIAutomation.Test.Smoke
     [TestFixture]//SG
     public class Test_CommentReviewRegularComment_ForSG : DesignDocumentWF
     {
-//        [Test]
+        //        [Test]
         [Category(Component.Other)]
         [Property(TestCaseNumber, 2238580)]
         [Property(Priority, "Priority 1")]
@@ -249,7 +251,7 @@ namespace RKCIUIAutomation.Test.Smoke
 
             LogInfo("--------------------------5. Log in as IQF Admin, forwards Comments----------------------");
             ForwardComment(UserType.IQFAdmin);
-            
+
             //LoginAs(UserType.IQFAdmin);
             //NavigateToPage.RMCenter_Design_Documents();
             //DesignDocCommentReview.FilterTableByValue();
@@ -302,7 +304,7 @@ namespace RKCIUIAutomation.Test.Smoke
 
             LogInfo("--------------------------9. Log in as IQF Admin, forwards Resolution----------------------");
             ForwardResolutionCommentAndCodeForDisagreeResponse();
-            
+
             //DesignDocCommentReview.ClickTab_Requires_Resolution();
             ////TableHelper.ClickTab(DesignDocument.TableTab.Requires_Resolution);
             //DesignDocCommentReview.FilterTableByValue();
@@ -330,7 +332,7 @@ namespace RKCIUIAutomation.Test.Smoke
     [TestFixture]//SG
     public class Test_CommentReviewNoComment_ForSG : DesignDocumentWF
     {
-//        [Test]
+        //        [Test]
         [Category(Component.Other)]
         [Property(TestCaseNumber, "222")]
         [Property(Priority, "Priority 1")]
@@ -398,7 +400,7 @@ namespace RKCIUIAutomation.Test.Smoke
 
             LogInfo("--------------------------6. Log in as DEV User, enters Response and Agree Response Code----------------------");
             EnterResponseAndAgreeResponseCode(UserType.DEVUser);
-            
+
             //LoginAs(UserType.DEVUser);
             //NavigateToPage.RMCenter_Design_Documents();
             //TableHelper.ClickTab(DesignDocument.TableTab.Requires_Response);
@@ -410,7 +412,7 @@ namespace RKCIUIAutomation.Test.Smoke
 
             LogInfo("--------------------------7. Log in as DEV Admin, forwards Response Comments----------------------");
             ForwardResponseComment(UserType.DEVAdmin);
-            
+
             //LoginAs(UserType.DEVAdmin);
             //NavigateToPage.RMCenter_Design_Documents();
             //DesignDocCommentReview.ClickTab_Requires_Response();
@@ -443,7 +445,7 @@ namespace RKCIUIAutomation.Test.Smoke
     [TestFixture]//SH249
     public class Test_CommentReviewRegularComment_ForSH249 : DesignDocumentWF
     {
-//        [Test]
+        //        [Test]
         [Category(Component.Other)]
         [Property(TestCaseNumber, 2238577)]
         [Property(Priority, "Priority 1")]
@@ -504,7 +506,7 @@ namespace RKCIUIAutomation.Test.Smoke
     [TestFixture]//SH249
     public class Test_CommentReviewNoComment_ForSH249 : DesignDocumentWF
     {
-//        [Test]
+        //        [Test]
         [Category(Component.Other)]
         [Property(TestCaseNumber, "333")]
         [Property(Priority, "Priority 1")]

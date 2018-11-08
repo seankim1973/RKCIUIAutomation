@@ -78,7 +78,7 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
@@ -114,8 +114,11 @@ namespace RKCIUIAutomation.Base
                 hipTestInstance.SyncTestRun(hipTestRunId);
             }
 
-            Driver?.Close();
-            Driver?.Quit();
+            if (Driver != null)
+            {
+                Driver?.Close();
+                Driver?.Quit();
+            }
         }
 
         [SetUp]
@@ -290,7 +293,10 @@ namespace RKCIUIAutomation.Base
                         Driver.Manage().Cookies.AddCookie(cookie);
                     }
 
-                    Driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+                    if (Driver.Title.Contains("ELVIS PMC"))
+                    {
+                        Driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+                    }
                 }
             }
             catch (Exception e)

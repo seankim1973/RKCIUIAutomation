@@ -148,11 +148,11 @@ namespace RKCIUIAutomation.Test
         {
             if (assertionList == null)
             {
-                log.Info("Created new assertion list");
+                log.Info("...Created new assertion list");
                 assertionList = new List<bool>();
             }
 
-            log.Info("Added an assertion to the list");
+            log.Info("...added an assertion to the list");
             assertionList.Add(assertion);
         }
 
@@ -167,14 +167,20 @@ namespace RKCIUIAutomation.Test
                     foreach (bool assertion in assertionList)
                     {
                         Assertions++;
-                        Assert.True(assertion);
+                        try
+                        {
+                            Assert.That(assertion, Is.True);
+                        }
+                        catch (Exception e)
+                        {
+                            LogError(e.StackTrace);
+                        }
                     }
 
-                    LogInfo($"Total Number of Assertions in Test Case: {Assertions}");
+                    log.Debug($"Total Number of Assertions in Test Case: {Assertions}");
                 }
                 else
-                    LogInfo($"Did not find any assertions in the list to verify");
-                
+                    log.Debug($"Did not find any assertions in the list to verify");
             });
         }
     }

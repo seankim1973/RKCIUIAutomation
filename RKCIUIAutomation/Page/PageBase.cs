@@ -13,7 +13,6 @@ namespace RKCIUIAutomation.Page
         public PageBase(IWebDriver driver) => this.Driver = driver;
 
         public PageHelper PageHelper => new PageHelper();
-        public PageBaseHelper HashMap => new PageBaseHelper();
     }
 
     public class PageBaseHelper : TableHelper
@@ -25,9 +24,9 @@ namespace RKCIUIAutomation.Page
         public PageBaseHelper(IWebDriver driver) => this.Driver = driver;
 
         [ThreadStatic]
-        private static Hashtable Hashtable;
+        internal static Hashtable Hashtable;
 
-        private Hashtable GetHashTable() => Hashtable ?? new Hashtable();
+        internal Hashtable GetHashTable() => Hashtable ?? new Hashtable();
 
         public void CreateVar<T>(string key, T value)
         {
@@ -64,7 +63,7 @@ namespace RKCIUIAutomation.Page
 
         public string GetVar(string key)
         {
-            //Hashtable = GetHashTable();
+            Hashtable = GetHashTable();
             var varValue = string.Empty;
 
             if (Hashtable.ContainsKey(key))
