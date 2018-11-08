@@ -12,6 +12,26 @@ using System.Threading;
 namespace RKCIUIAutomation.UnitTest
 {
     [TestFixture]
+    public class Verify_UnitTest_LinkCoverage_Level1 : TestBase
+    {
+        [Test]
+        [Category(Component.Link_Coverage)]
+        [Property(TestCaseNumber, 2188206)]
+        [Property(Priority, "Priority 1")]
+        [Description("Verify Site Pages Load Successfully")]
+        public void UnitTest_LinkCoverage_Level1()
+        {
+            LoginAs(UserType.Bhoomi);
+
+            string url = "http://stage.laxapm.elvispmc.com/Project/Random";
+
+            AddAssertionToList(VerifyUrlIsLoaded(url));
+
+            AssertAll();
+        }
+    }
+
+    [TestFixture]
     public class BaseTest : TestBase
     {
         [Test]

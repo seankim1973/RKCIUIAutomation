@@ -242,8 +242,7 @@ namespace RKCIUIAutomation.Base
                     log.Debug(e.StackTrace);
                 }
 
-                testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
-                LogErrorWithScreenshot();
+                LogErrorWithScreenshot(details);
             }
         }
 
@@ -420,7 +419,7 @@ namespace RKCIUIAutomation.Base
                 {
                     if (!string.IsNullOrEmpty(msg) && msg.Contains("<br>"))
                     {
-                        string[] message = Regex.Split(msg, "<br>&nbsp;&nbsp;");
+                        string[] message = Regex.Split(msg, "<br>");
                         sw.WriteLine(message[0]);
                         sw.WriteLine(message[1]);
                     }

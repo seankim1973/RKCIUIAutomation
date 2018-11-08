@@ -24,7 +24,7 @@ namespace RKCIUIAutomation.Page
         public PageBaseHelper(IWebDriver driver) => this.Driver = driver;
 
         [ThreadStatic]
-        internal Hashtable Hashtable;
+        internal static Hashtable Hashtable;
 
         internal Hashtable GetHashTable() => Hashtable ?? new Hashtable();
 

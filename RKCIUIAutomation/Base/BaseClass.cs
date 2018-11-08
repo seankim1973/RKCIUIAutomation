@@ -114,8 +114,11 @@ namespace RKCIUIAutomation.Base
                 hipTestInstance.SyncTestRun(hipTestRunId);
             }
 
-            Driver?.Close();
-            Driver?.Quit();
+            if (Driver != null)
+            {
+                Driver?.Close();
+                Driver?.Quit();
+            }
         }
 
         [SetUp]
