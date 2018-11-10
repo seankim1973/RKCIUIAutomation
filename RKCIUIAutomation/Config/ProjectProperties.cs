@@ -18,7 +18,8 @@ namespace RKCIUIAutomation.Config
             public const string CVL_List = "CVL_List";
             public const string DesignDoc_CommentReview = "DesignDoc_CommentReview";
             public const string DIR = "DIR";
-            public const string DIR_WF_Simple = "DIR_WF_Simple";
+            public const string DIR_WF_Simple_QA = "DIR_WF_Simple_QA";
+            public const string DIR_WF_Simple_QC = "DIR_WF_Simple_QC";
             public const string DIR_WF_Complex = "DIR_WF_Complex";
             public const string Document_Repository = "Document_Repository";
             public const string Environmental = "Environmental";
@@ -128,7 +129,8 @@ namespace RKCIUIAutomation.Config
             Component.NCR,
             Component.NCR_WF_Complex,
             Component.DIR,
-            Component.DIR_WF_Simple
+            Component.DIR_WF_Simple_QA,
+            Component.DIR_WF_Simple_QC
         };
 
         private readonly List<string> Components_I15Southbound = new List<string>
@@ -139,7 +141,7 @@ namespace RKCIUIAutomation.Config
             Component.NCR,
             Component.NCR_WF_Complex,
             Component.DIR,
-            Component.DIR_WF_Simple
+            Component.DIR_WF_Simple_QA
         };
 
         private readonly List<string> Components_I15TechCorridor = new List<string>
@@ -150,7 +152,7 @@ namespace RKCIUIAutomation.Config
             Component.NCR,
             Component.NCR_WF_Complex,
             Component.DIR,
-            Component.DIR_WF_Simple
+            Component.DIR_WF_Simple_QA
         };
 
         private readonly List<string> Components_SH249Ext = new List<string>
@@ -181,7 +183,8 @@ namespace RKCIUIAutomation.Config
             Component.NCR,
             Component.NCR_WF_Complex,
             Component.DIR,
-            Component.DIR_WF_Simple
+            Component.DIR_WF_Simple_QA,
+            Component.DIR_WF_Simple_QC
         };
 
         private readonly List<string> CommonComponents = new List<string>

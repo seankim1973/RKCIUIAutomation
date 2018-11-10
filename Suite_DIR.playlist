@@ -1,0 +1,4 @@
+<Playlist Version="1.0">
+<Add Test="RKCIUIAutomation.Test.DIR.Verify_DIR_SimpleWF_End_To_End(DirQA).DIR_SimpleWF_End_To_End" />
+<Add Test="RKCIUIAutomation.Test.DIR.Verify_DIR_SimpleWF_End_To_End(DirQC).DIR_SimpleWF_End_To_End" />
+</Playlist>

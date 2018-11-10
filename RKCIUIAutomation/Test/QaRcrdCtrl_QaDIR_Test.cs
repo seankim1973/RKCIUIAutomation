@@ -1,28 +1,34 @@
 ﻿using NUnit.Framework;
+using OpenQA.Selenium;
+using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
+using System;
 using System.Collections;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Test.DIR
 {
-    [TestFixture(UserType.DIRTechQA, UserType.DIRMgrQA)]
     //[TestFixtureSource(typeof(UserGroups), "BothUserGroups")]
-    [TestFixture(UserType.DIRTechQC, UserType.DIRMgrQC)]
+    
+    [TestFixture(UserGroup.DirQA), Category(Component.DIR), Property(Component2, Component.DIR_WF_Simple_QA)]
+    [TestFixture(UserGroup.DirQC), Category(Component.DIR), Property(Component2, Component.DIR_WF_Simple_QC)]
     //For Tenants: GLX, I15SB, I15Tech, LAX
     public class Verify_DIR_SimpleWF_End_To_End : TestBase
     {
         private UserType technician;
         private UserType manager;
 
-        public Verify_DIR_SimpleWF_End_To_End(UserType tech, UserType mgr)
+        public Verify_DIR_SimpleWF_End_To_End(UserGroup userGroup)
         {
-            technician = tech;
-            manager = mgr;
+            ConfigTestUsers.AssignUsersByGroup(userGroup);
+            technician = ConfigTestUsers.technicianUser;
+            manager = ConfigTestUsers.managerUser;
         }
+
 
         [Test]
         [Category(Component.DIR)]
-        [Property(Component2, Component.DIR_WF_Simple)]
+        [Property(Component2, Component.DIR_WF_Simple_QA)]
         [Property(TestCaseNumber, 2187591)]
         [Property(Priority, "High")]
         [Description("To validate create and save a DIR (Daily Inspection Report) document.")]

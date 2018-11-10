@@ -1,4 +1,7 @@
-﻿namespace RKCIUIAutomation.Config
+﻿using RKCIUIAutomation.Test;
+using System;
+
+namespace RKCIUIAutomation.Config
 {
     public enum TestEnv
     {
@@ -59,15 +62,37 @@
 
     public enum UserGroup
     {
-        TechQA,
-        MgrQA,
-        TechQC,
-        MgrQC
+        DirQA,
+        DirQC
     }
 
     public enum Reporter
     {
         Html,
         Klov
+    }
+
+    public class ConfigTestUsers
+    {
+        [ThreadStatic]
+        public static UserType technicianUser;
+
+        [ThreadStatic]
+        public static UserType managerUser;
+
+        public static void AssignUsersByGroup(UserGroup userGroup)
+        {
+            switch (userGroup)
+            {
+                case UserGroup.DirQA:
+                    technicianUser = UserType.DIRTechQA;
+                    managerUser = UserType.DIRMgrQA;
+                    break;
+                case UserGroup.DirQC:
+                    technicianUser = UserType.DIRTechQC;
+                    managerUser = UserType.DIRMgrQC;
+                    break;
+            }
+        }
     }
 }

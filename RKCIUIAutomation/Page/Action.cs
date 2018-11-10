@@ -166,7 +166,7 @@ namespace RKCIUIAutomation.Page
                 elem?.Click();
                 bool elemNotNull = elem != null ? true : false;
                 string logMsg = elemNotNull ? "Clicked" : "Null element";
-                LogInfo($"{logMsg} element: - {elementByLocator}", elemNotNull);
+                LogInfo($"{logMsg} element: - {elementByLocator}");
             }
             catch (Exception e)
             {

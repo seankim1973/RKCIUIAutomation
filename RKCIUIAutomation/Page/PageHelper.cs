@@ -88,20 +88,19 @@ namespace RKCIUIAutomation.Page
 
         private string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
 
-        private string SetDDListItemsXpath<E, T>(E ddListID, T itemIndexOrName)
+        private string SetDDListItemsXpath<T, I>(T ddListID, I itemIndexOrName)
         {
-            string _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
+            string _ddListID = ddListID.GetType() == typeof(string) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
 
             string locatorXpath = string.Empty;
-            string inputValue = ConvertToType<string>(itemIndexOrName);
 
-            if (itemIndexOrName.Equals(typeof(string)))
+            if (itemIndexOrName.GetType().Equals(typeof(string)))
             {
-                locatorXpath = $"text()='{inputValue}'";
+                locatorXpath = $"text()='{ConvertToType<string>(itemIndexOrName)}'";
             }
-            else if (itemIndexOrName.Equals(typeof(int)))
+            else if (itemIndexOrName.GetType().Equals(typeof(int)))
             {
-                locatorXpath = inputValue;
+                locatorXpath = ConvertToType<int>(itemIndexOrName).ToString();
             }
             return $"//div[@id='{_ddListID}-list']//li[{locatorXpath}]";
         }
@@ -134,7 +133,7 @@ namespace RKCIUIAutomation.Page
 
         //public By GetExpandDDListButtonByLocator(string ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
 
-        public By GetDDListItemsByLocator<I, T>(I ddListID, T itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
+        public By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
 
         //public By GetDDListItemsByLocator<T>(Enum ddListID, T itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
 
