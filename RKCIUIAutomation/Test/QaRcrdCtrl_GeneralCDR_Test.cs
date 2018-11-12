@@ -27,6 +27,7 @@ namespace RKCIUIAutomation.Test.CDR
     {
         [Test]
         [Category(Component.CDR)]
+        [Property(Component2, Component.CDR_WF_Complex)]
         [Property(TestCaseNumber, 2187610)]
         [Property(Priority, "High")]
         [Description("To validate the QC review part of an CDR (Construction Deficiency Report).GLX and I15s only")]
@@ -85,6 +86,7 @@ namespace RKCIUIAutomation.Test.CDR
     {
         [Test]
         [Category(Component.CDR)]
+        [Property(Component2, Component.CDR_WF_Complex)]
         [Property(TestCaseNumber, 2187784)]
         [Property(Priority, "High")]
         [Description("To successfully Disposition an CDR (Construction Deficiency Report) document. GLX only")]
@@ -121,6 +123,7 @@ namespace RKCIUIAutomation.Test.CDR
     {
         [Test]
         [Category(Component.CDR)]
+        [Property(Component2, Component.CDR_WF_Complex)]
         [Property(TestCaseNumber, 2187784)]
         [Property(Priority, "High")]
         [Description("To successfully close an CDR (Construction Deficiency Report) document.")]
