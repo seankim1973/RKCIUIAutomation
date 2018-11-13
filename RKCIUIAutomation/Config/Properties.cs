@@ -75,12 +75,31 @@ namespace RKCIUIAutomation.Config
     public class ConfigTestUsers
     {
         [ThreadStatic]
-        public static UserType technicianUser;
+        internal UserType technicianUser;
 
         [ThreadStatic]
-        public static UserType managerUser;
+        internal UserType managerUser;
 
-        public static void AssignUsersByGroup(UserGroup userGroup)
+        public ConfigTestUsers()
+        {
+        }
+
+        //public ConfigTestUsers(UserGroup userGroup)
+        //{
+        //    switch (userGroup)
+        //    {
+        //        case UserGroup.DirQA:
+        //            technicianUser = UserType.DIRTechQA;
+        //            managerUser = UserType.DIRMgrQA;
+        //            break;
+        //        case UserGroup.DirQC:
+        //            technicianUser = UserType.DIRTechQC;
+        //            managerUser = UserType.DIRMgrQC;
+        //            break;
+        //    }
+        //}
+
+        public void AssignUsersByGroup(UserGroup userGroup)
         {
             switch (userGroup)
             {

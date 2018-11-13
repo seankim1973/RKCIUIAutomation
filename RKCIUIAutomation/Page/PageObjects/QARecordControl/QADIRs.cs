@@ -582,7 +582,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 int expectedIdCount = actualIdCount;
                 int errorSummaryIdCount = errorSummaryIDs.Count;
                 bool countsMatch = actualIdCount.Equals(errorSummaryIdCount);
-                LogInfo($"Expected ID Count: {expectedIdCount}<br>Actual ID Count: {actualIdCount}<br>Error Summary ID Count: {errorSummaryIdCount}", countsMatch);
+                LogInfo($"Expected ID Count: {expectedIdCount}<br>Actual ID Count: {actualIdCount}<br>Required Field Error Summary ID Count: {errorSummaryIdCount}", countsMatch);
 
                 if (countsMatch)
                 {

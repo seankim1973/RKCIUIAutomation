@@ -335,13 +335,13 @@ namespace RKCIUIAutomation.Page
 
         public void ExpandDDL<E>(E ddListID)
         {
-            var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
-            By locator = pgHelper.GetExpandDDListButtonByLocator(_ddListID);
+            //var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
+            By locator = pgHelper.GetExpandDDListButtonByLocator(ddListID);
             try
             {
                 ClickElement(locator);
-                Thread.Sleep(2000);
-                log.Info($"Expanded DDList - {_ddListID}");
+                Thread.Sleep(1000);
+                log.Info($"Expanded DDList - {ddListID.ToString()}");
             }
             catch (Exception e)
             {
@@ -351,9 +351,9 @@ namespace RKCIUIAutomation.Page
 
         public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName)
         {
-            var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
-            ExpandDDL(_ddListID);
-            ClickElement(pgHelper.GetDDListItemsByLocator(_ddListID, itemIndexOrName));
+            //var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
+            ExpandDDL(ddListID);
+            ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName));
         }
 
         public void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadySelected = true)
