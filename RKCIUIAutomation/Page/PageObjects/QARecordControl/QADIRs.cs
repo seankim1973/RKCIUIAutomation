@@ -1,10 +1,8 @@
-﻿using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
@@ -197,7 +195,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         IList<string> GetRequiredFieldIDs();
 
         bool VerifyReqFieldErrorsForNewDir();
-
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -312,7 +309,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickTab_Create_Packages() => ClickTab(TableTab.Create_Packages);
 
         public virtual void ClickTab_Packages() => ClickTab(TableTab.Packages);
-        
+
         public virtual void FilterDirNumber(string DirNumber)
             => FilterTableColumnByValue(ColumnName.DIR_No, DirNumber);
 
@@ -425,7 +422,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             By msgBodyLocator = By.Id("dirLockedPopup");
             By msgTitleLocator = By.Id("dirLockedPopup_wnd_title");
 
-            string expectedMsg = "Since you created this inspection report, you are not allowed to do QC Review or DIR Approval!";            
+            string expectedMsg = "Since you created this inspection report, you are not allowed to do QC Review or DIR Approval!";
             string actualMsg = GetText(msgBodyLocator);
 
             bool msgMatch = actualMsg.Equals(expectedMsg);
@@ -442,7 +439,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             LogInfo($"Expected Msg: {expectedMsg}<br>Actual Msg: {actualMsg}", msgMatch);
             return msgMatch;
         }
-        
+
         internal IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern)
         {
             IList<string> trimmedList = new List<string>();
@@ -484,7 +481,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 {
                     id = fieldId;
                 }
-                                
+
                 trimmedList.Add(id);
             }
 
@@ -513,21 +510,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         internal bool VerifyExpectedRequiredFields(IList<string> actualReqFieldIDs, IList<string> expectedReqFieldIDs = null)
         {
-            IList<string> expectedIDs = expectedReqFieldIDs ?? QaRcrdCtrl_QaDIR.GetRequiredFieldIDs();
+            IList<string> trimmedExpectedIDs = expectedReqFieldIDs ?? TrimInputFieldIDs(QaRcrdCtrl_QaDIR.GetRequiredFieldIDs(), "0__");
 
-            int expectedCount = expectedIDs.Count;
+            int expectedCount = trimmedExpectedIDs.Count;
             int actualCount = actualReqFieldIDs.Count;
             bool countsMatch = expectedCount.Equals(actualCount);
-
-            LogInfo($"Expected ID Count: {expectedCount}<br>Actual ID Count: {actualCount}", countsMatch);
-
             bool reqFieldsMatch = false;
 
             if (countsMatch)
             {
                 foreach (string id in actualReqFieldIDs)
                 {
-                    reqFieldsMatch = expectedIDs.Contains(id);
+                    reqFieldsMatch = trimmedExpectedIDs.Contains(id);
                     string logMsg = reqFieldsMatch ? "" : " not";
                     LogInfo($"Required field ID: {id} is{logMsg} an expected required field.", reqFieldsMatch);
                     if (!reqFieldsMatch)
@@ -540,32 +534,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return reqFieldsMatch;
         }
 
-        public virtual bool VerifyReqFieldErrorsForNewDir()
-        {
-            IList<string> actualReqFieldIds = GetAttributes(By.XPath("//span[text()='*']"), "id");
-            IList<string> trimmedActualIds = TrimInputFieldIDs(actualReqFieldIds, "0_");
-
-            bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds);
-
-            IList<string> errorSummaryIDs = GetErrorSummaryIDs();
-
-            int actualIdCount = trimmedActualIds.Count;
-            int errorSummaryIdCount = errorSummaryIDs.Count;
-
-            bool countsMatch = actualIdCount.Equals(errorSummaryIdCount);
-
-            LogInfo($"Error Summary ID Count: {errorSummaryIdCount}<br>Actual ID Count: {actualIdCount}", countsMatch);
-            if (countsMatch)
-            {
-                foreach (string id in trimmedActualIds)
-                {
-                    AddAssertionToList(errorSummaryIDs.Contains(id));
-                }
-            }
-
-            return actualIdCount.Equals(errorSummaryIdCount);
-        }
-
         private IList<string> GetErrorSummaryIDs()
         {
             IList<string> errorElements = GetTextForElements(By.XPath("//div[contains(@class,'validation-summary-errors')]/ul/li"));
@@ -575,7 +543,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             foreach (string error in errorElements)
             {
                 string[] splitType = new string[2];
-                
 
                 if (error.Contains("DIR:"))
                 {
@@ -594,6 +561,39 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return extractedFieldNames;
         }
 
+        private void CloseReqFieldErrorSummaryPopup()
+            => JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
+
+        public virtual bool VerifyReqFieldErrorsForNewDir()
+        {
+            IList<string> errorSummaryIDs = GetErrorSummaryIDs();
+            CloseReqFieldErrorSummaryPopup();
+
+            //IList<string> actualReqFieldIds = GetAttributes(By.XPath("//span[text()='*']"), "id");
+            IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath("//span[text()='*']"), "id"), "0_");
+
+            bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds);
+
+            bool requiredFieldsMatch = false;
+
+            if (actualMatchesExpected)
+            {
+                int actualIdCount = trimmedActualIds.Count;
+                int expectedIdCount = actualIdCount;
+                int errorSummaryIdCount = errorSummaryIDs.Count;
+                bool countsMatch = actualIdCount.Equals(errorSummaryIdCount);
+                LogInfo($"Expected ID Count: {expectedIdCount}<br>Actual ID Count: {actualIdCount}<br>Error Summary ID Count: {errorSummaryIdCount}", countsMatch);
+
+                if (countsMatch)
+                {
+                    foreach (string id in trimmedActualIds)
+                    {
+                        AddAssertionToList(errorSummaryIDs.Contains(id));
+                    }
+                }
+            }
+            return requiredFieldsMatch;
+        }
     }
 
     public class QADIRs_Garnet : QADIRs

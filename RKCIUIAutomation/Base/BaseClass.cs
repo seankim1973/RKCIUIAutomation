@@ -8,6 +8,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using static NUnit.Framework.TestContext;
 
@@ -17,7 +18,7 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class BaseClass : BaseUtils
     {
-        //ExtentReports
+        #region ExtentReports Details
         [ThreadStatic]
         public static ExtentReports reportInstance;
 
@@ -29,8 +30,9 @@ namespace RKCIUIAutomation.Base
 
         [ThreadStatic]
         public static TestStatus testStatus;
+        #endregion
 
-        //HipTest
+        #region HipTest Details
         [ThreadStatic]
         public HipTestApi hipTestInstance;
 
@@ -48,28 +50,60 @@ namespace RKCIUIAutomation.Base
 
         [ThreadStatic]
         public List<KeyValuePair<int, KeyValuePair<TestStatus, string>>> hipTestResults;
+        #endregion
 
-        //Test Environment
+        #region Test Environment Details
+        [ThreadStatic]
         public static TestPlatform testPlatform;
 
+        [ThreadStatic]
         public static BrowserType browserType;
+
+        [ThreadStatic]
         public static TestEnv testEnv;
+
+        [ThreadStatic]
         public static TenantName tenantName;
+
+        [ThreadStatic]
         public static Reporter reporter;
+
+        [ThreadStatic]
         public static string siteUrl;
+
+        [ThreadStatic]
         public static bool hiptest;
+        #endregion
 
-        //TestCase Details
-        private string testName;
+        #region TestCase Details
+        [ThreadStatic]
+        private static string testName;
 
-        private string testSuite;
-        private string testPriority;
-        private string testCaseNumber;
+        [ThreadStatic]
+        private static string testSuite;
+
+        [ThreadStatic]
+        private static string testPriority;
+
+        [ThreadStatic]
+        private static string testCaseNumber;
+
+        [ThreadStatic]
         private string testComponent1;
+
+        [ThreadStatic]
         private string testComponent2;
-        private string testDescription;
-        private string[] testRunDetails;
+
+        [ThreadStatic]
+        private static string testDescription;
+
+        [ThreadStatic]
+        private static string[] testRunDetails;
+
+        [ThreadStatic]
         private Cookie cookie = null;
+        #endregion
+
         private ConfigUtils Configs = new ConfigUtils();
 
         [OneTimeSetUp]
@@ -114,12 +148,14 @@ namespace RKCIUIAutomation.Base
                 hipTestInstance.SyncTestRun(hipTestRunId);
             }
 
-            Driver?.Close();
-            Driver?.Quit();
+            if (Driver != null)
+            {
+                Driver?.Close();
+                Driver?.Quit();
+            }
         }
 
-        [SetUp]
-        public void BeforeTest()
+        private void GenerateTestRunDetails()
         {
             var _suite = Regex.Split(GetType().Namespace, "\\.");
 
@@ -141,20 +177,19 @@ namespace RKCIUIAutomation.Base
                 testEnv.ToString(),
                 tenantName.ToString()
             };
+        }
 
-            int currentTestCaseNumber = int.Parse(testCaseNumber);
-
-            if (hiptest)
-            {
-                hipTestRunTestCaseIDs.Add(currentTestCaseNumber);
-            }
-
+        private void InitExtentTestInstance()
+        {
             reportInstance = ExtentManager.Instance;
             parentTest = (reporter == Reporter.Html) ?
                 reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv) : null;
             testInstance = (reporter == Reporter.Html) ?
                 parentTest.CreateNode(testDescription) : testInstance = reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv);
+        }
 
+        private IWebDriver InitWebDriverInstance()
+        {
             List<string> tenantComponents = new List<string>();
             ProjectProperties props = new ProjectProperties();
             tenantComponents = props.GetComponentsForProject(tenantName);
@@ -181,12 +216,33 @@ namespace RKCIUIAutomation.Base
             {
                 SkipTest(testComponent1, testRunDetails);
             }
+
+            return Driver;
         }
 
-        private void SkipTest(string testComponent, string[] reportCategories)
+        [SetUp]
+        public void BeforeTest()
         {
-            string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
+            GenerateTestRunDetails();
+
+            if (hiptest)
+            {
+                hipTestRunTestCaseIDs.Add(int.Parse(testCaseNumber));
+            }
+
+            InitExtentTestInstance();
+
+            Driver = InitWebDriverInstance();
+        }
+
+        internal void SkipTest(string testComponent = "", string[] reportCategories = null)
+        {
+            //string component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
+            reportCategories = reportCategories ?? testRunDetails;
+            var component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
+            testComponent = testComponent.Equals("") ? component : testComponent;
             testInstance.AssignReportCategories(reportCategories);
+            string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
             LogAssertIgnore(msg);
             BaseHelper.InjectTestStatus(TestStatus.Skipped, msg);
             Assert.Ignore(msg);
@@ -290,7 +346,10 @@ namespace RKCIUIAutomation.Base
                         Driver.Manage().Cookies.AddCookie(cookie);
                     }
 
-                    Driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+                    if (Driver.Title.Contains("ELVIS PMC"))
+                    {
+                        Driver.FindElement(By.XPath("//a[text()=' Log out']"))?.Click();
+                    }
                 }
             }
             catch (Exception e)

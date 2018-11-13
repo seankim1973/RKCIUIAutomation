@@ -13,7 +13,6 @@ namespace RKCIUIAutomation.Page
         public PageBase(IWebDriver driver) => this.Driver = driver;
 
         public PageHelper PageHelper => new PageHelper();
-        public PageBaseHelper HashMap => new PageBaseHelper();
     }
 
     public class PageBaseHelper : TableHelper
@@ -25,17 +24,29 @@ namespace RKCIUIAutomation.Page
         public PageBaseHelper(IWebDriver driver) => this.Driver = driver;
 
         [ThreadStatic]
-        private static Hashtable Hashtable;
+        internal static Hashtable Hashtable;
 
-        private Hashtable GetHashTable() => Hashtable ?? new Hashtable();
+        internal Hashtable GetHashTable() => Hashtable ?? new Hashtable();
 
         public void CreateVar<T>(string key, T value)
         {
+            string logMsg;
+
             try
             {
                 Hashtable = GetHashTable();
-                Hashtable.Add(key, value);
-                log.Debug($"Added to HashTable: Key: {key.ToString()} : Value: {value.ToString()}");
+                if (!HashKeyExists(key))
+                {
+                    Hashtable.Add(key, value);
+                    logMsg = "Added to";
+                }
+                else
+                {
+                    Hashtable[key] = value;
+                    logMsg = "Updated value for existing key in";
+                }
+
+                log.Debug($"{logMsg} HashTable - Key: {key.ToString()} : Value: {value.ToString()}");
             }
             catch (Exception e)
             {
@@ -44,27 +55,9 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void UpdateVar<T>(string key, T newValue)
-        {
-            Hashtable = GetHashTable();
-            string logMsg = string.Empty;
-
-            if (Hashtable.ContainsKey(key))
-            {
-                Hashtable[key] = newValue;
-                logMsg = $"Added to Hashtable key: {key} : new value: {newValue}";
-            }
-            else
-            {
-                logMsg = $"Key: {key} does not exist in hashtable";
-            }
-
-            log.Debug(logMsg);
-        }
-
         public string GetVar(string key)
         {
-            //Hashtable = GetHashTable();
+            Hashtable = GetHashTable();
             var varValue = string.Empty;
 
             if (Hashtable.ContainsKey(key))

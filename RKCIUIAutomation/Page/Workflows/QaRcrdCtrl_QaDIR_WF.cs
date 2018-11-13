@@ -24,8 +24,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public interface IQaRcrdCtrl_QaDIR_WF
     {
-        void NavigateToDirPage();
-
         string Create_and_SaveForward_DIR(UserType userType);
 
         void Review_and_Return_DIR_ForRevise(UserType userType, string dirNumber);
@@ -81,11 +79,21 @@ namespace RKCIUIAutomation.Page.Workflows
             return instance;
         }
 
-        public virtual void NavigateToDirPage()
+        private void LoginAndNavigateToDirPage(UserType userType)
         {
+            LoginAs(userType);
+
             if (!Driver.Title.Contains("DIR List"))
             {
-                NavigateToPage.QARecordControl_QA_DIRs();
+                if (userType == UserType.DIRTechQA || userType == UserType.DIRMgrQA)
+                {
+                    NavigateToPage.QARecordControl_QA_DIRs();
+                }
+                else
+                {
+                    NavigateToPage.QCRecordControl_QC_DIRs();
+                }
+                
                 Assert.True(VerifyPageTitle($"List of Inspector's Daily Report"));
             }
         }
@@ -93,9 +101,8 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual string Create_and_SaveForward_DIR(UserType userType)
         {
             LogDebug("------------------ Create_and_SaveForward_DIR ------------------");
-
-            LoginAs(userType);
-            WF_QaRcrdCtrl_QaDIR.NavigateToDirPage();
+            
+            LoginAndNavigateToDirPage(userType);
             QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir());
@@ -108,8 +115,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogDebug("------------------ Review_and_Return_DIR_ForRevise ------------------");
 
-            LoginAs(userType);
-            WF_QaRcrdCtrl_QaDIR.NavigateToDirPage();
+            LoginAndNavigateToDirPage(userType);
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber));
             ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
@@ -150,15 +156,6 @@ namespace RKCIUIAutomation.Page.Workflows
     {
         public QaRcrdCtrl_QaDIR_WF_GLX(IWebDriver driver) : base(driver)
         {
-        }
-
-        public override void NavigateToDirPage()
-        {
-            if (!Driver.Title.Contains("DIR List"))
-            {
-                NavigateToPage.QCRecordControl_QC_DIRs(); //? Verify correct menu selection
-                Assert.True(VerifyPageTitle("List of Inspector's Daily Report"));
-            }
         }
     }
 
