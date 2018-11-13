@@ -30,7 +30,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("AreaId")] Area,
             [StringValue("SegmentId")] Segment,
             [StringValue("RoadwayId")] Roadway,
-            [StringValue("ResponsibleManager")] Manager,
+            [StringValue("ResponsibleManager")] ResponsibleManager,
             [StringValue("NonConformance")] Description_of_Nonconformance, //Description input field for Complex workflow
             [StringValue("NcrDescription")] Description_of_NCR, //Description input field for Simple workflow
             [StringValue("FeatureId")] Feature,
@@ -249,6 +249,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectDDL_Originator(int selectionIndexOrName = 1);
 
+        void SelectDDL_ResponsibleManager(int selectionIndexOrName = 1);
+
         void SelectDDL_Foreman(int selectionIndex = 1);
 
         void SelectDDL_Specification(int selectionIndex = 1);
@@ -277,9 +279,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void EnterResponsibleManager(string mgrName);
 
-        string EnterDescription(string description = "");
-
-        string EnterNewDescription(string description = "");
+        string EnterDescription(string description = "", bool tempDescription = false);
 
         void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "");
 
@@ -330,15 +330,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyReqFieldErrorLabelForTypeOfNCR();
 
-        //bool VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes rdoBtnOrChkBox, bool shouldBeSelected = true);
-
-        //bool VerifyDDListSelectedValue(InputFields ddListId, string expectedValue);
-
         bool VerifySignatureField(Reviewer reviewer, bool shouldBeEmpty = false);
 
-        //bool VerifyInputField(InputFields inputField, bool shouldBeEmpty = false);
-
-        string GetNCRDocDescription();
+        string GetNCRDocDescription(bool tempDescription = false);
 
         IList<string> GetRequiredFieldIDs();
     }
@@ -420,13 +414,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : description;
             FilterTableColumnByValue(ColumnName.Description, ncrDescription);
         }
-
-        //private By GetSubmitButtonByLocator(SubmitButtons buttonName)
-        //{
-        //    string buttonValue = buttonName.GetString();
-        //    By locator = By.XPath($"//input[@value='{buttonValue}']");
-        //    return locator;
-        //}
 
         public virtual void ClickBtn_Cancel() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
 
@@ -584,6 +571,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectDDL_Originator(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
 
+        public virtual void SelectDDL_ResponsibleManager(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.ResponsibleManager, selectionIndex);
+        
         public virtual void SelectDDL_Foreman(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Foreman, selectionIndex);
 
         public virtual void SelectDDL_Specification(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Specification, selectionIndex);
@@ -628,7 +617,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => EnterText(GetTextInputFieldByLocator(InputFields.ManagerNotificationDate), dateTime);
 
         public virtual void EnterResponsibleManager(string mgrName)
-            => EnterText(GetTextInputFieldByLocator(InputFields.Manager), mgrName);
+            => EnterText(GetTextInputFieldByLocator(InputFields.ResponsibleManager), mgrName);
 
         public virtual void EnterEngineerOfRecord(string engOfRecordText = "")
             => EnterText(GetTextInputFieldByLocator(InputFields.Engineer_of_Record),
@@ -670,30 +659,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterCQAMDate()
             => EnterText(GetTextInputFieldByLocator(InputFields.CQAMDate), GetShortDate());
 
-        public virtual string EnterDescription(string description = "")
+        public virtual string EnterDescription(string description = "", bool tempDescription = false)
             => EnterDesc(description, InputFields.Description_of_Nonconformance);
 
-        public virtual string EnterNewDescription(string description = "")
-            => EnterNewDesc(description, InputFields.Description_of_Nonconformance);
-
-        internal string EnterDesc(string desc, InputFields descField)
+        internal string EnterDesc(string desc, InputFields descField, bool tempDescription = false)
         {
-            CreateNcrDescription();
-            ncrDescription = string.IsNullOrEmpty(desc) ? GetNCRDocDescription() : desc;
             By descLocator = GetTextAreaFieldByLocator(descField);
+            CreateNcrDescription(tempDescription);         
+            desc = desc.Equals("") || string.IsNullOrEmpty(desc) ? GetNCRDocDescription(tempDescription) : desc;
             ScrollToElement(descLocator);
-            EnterText(descLocator, ncrDescription);
-            return ncrDescription;
-        }
-
-        internal string EnterNewDesc(string desc, InputFields descField)
-        {
-            CreateNewNcrDescription();
-            ncrNewDescription = string.IsNullOrEmpty(desc) ? GetNewNCRDocDescription() : desc;
-            By descLocator = GetTextAreaFieldByLocator(descField);
-            ScrollToElement(descLocator);
-            EnterText(descLocator, ncrNewDescription);
-            return ncrNewDescription;
+            EnterText(descLocator, desc);
+            return desc;
         }
 
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
@@ -721,7 +697,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.Originator.GetString(),
                 InputFields.Foreman.GetString(),
                 InputFields.ForemanNotificationDate.GetString(),
-                InputFields.Manager.GetString(),
+                InputFields.ResponsibleManager.GetString(),
                 InputFields.ManagerNotificationDate.GetString(),
                 $"{InputFields.Specification.GetString()}Id",
                 InputFields.Area.GetString(),
@@ -732,27 +708,39 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
-        internal void CreateNcrDescription()
-        {
-            guid = MiniGuid.NewGuid();
-            ncrDescKey = $"{tenantName}{GetTestName()}_NcrDescription";
-            CreateVar(ncrDescKey, guid);
-            ncrDescription = GetVar(ncrDescKey);
-            log.Debug($"#####Created a NCR Description - KEY: {ncrDescKey} || VALUE: {ncrDescription}");
-        }
-
-        public virtual string GetNCRDocDescription() => GetVar(ncrDescKey);
-
-        internal void CreateNewNcrDescription()
-        {
-            guid = MiniGuid.NewGuid();
-            ncrNewDescKey = $"{tenantName}{GetTestName()}_NcrNewDescription";
-            CreateVar(ncrNewDescKey, guid);
-            ncrNewDescription = GetVar(ncrNewDescKey);
-            log.Debug($"#####Created a new NCR Description:\nKEY: {ncrNewDescKey}\nVALUE: {ncrNewDescription}");
-        }
+        public virtual string GetNCRDocDescription(bool tempDescription = false) 
+            => GetVar(tempDescription ? ncrNewDescKey : ncrDescKey);
 
         public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);
+
+        internal void CreateNcrDescription(bool tempDescription = false)
+        {
+            guid = MiniGuid.NewGuid();
+            string descKey = $"{tenantName}{GetTestName()}";
+            string logMsg = string.Empty;
+            string descValue = string.Empty;
+
+            if (tempDescription)
+            {
+                ncrNewDescKey = $"{descKey}_NcrNewDescription";
+                CreateVar(ncrNewDescKey, guid);
+                ncrNewDescription = GetVar(ncrNewDescKey);
+                descKey = ncrNewDescKey;
+                descValue = ncrNewDescription;
+                logMsg = "new ";
+            }
+            else
+            {
+                ncrDescKey = $"{descKey}_NcrDescription";
+                CreateVar(ncrDescKey, guid);
+                ncrDescription = GetVar(ncrDescKey);
+                descKey = ncrDescKey;
+                descValue = ncrDescription;
+                logMsg = "";
+            }
+            
+            log.Debug($"#####Created a {logMsg}NCR Description:\nKEY: {descKey}\nVALUE: {descValue}");
+        }
 
         public virtual bool VerifyReqFieldErrorLabelsForNewDoc()
         {
@@ -804,67 +792,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        //public virtual bool VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes rdoBtnOrChkBox, bool shouldBeSelected = true)
-        //{
-        //    try
-        //    {
-        //        //string selectionId = rdoBtnOrChkBox.GetString();
-        //        By locator = By.Id(rdoBtnOrChkBox.GetString());
-        //        ScrollToElement(locator);
-        //        //IWebElement rdoBtnOrChkBoxElement = GetElement(locator);
-
-        //        bool isSelected = GetElement(locator).Selected ? true : false;
-        //        bool isResultExpected = isSelected.Equals(shouldBeSelected) ? true : false;
-
-        //        string expected = shouldBeSelected ? " " : " Not ";
-        //        string actual = isSelected ? " " : " Not ";
-        //        string[] resultLogMsg = isResultExpected
-        //            ? new string[]
-        //            {
-        //                "meets",
-        //                " and"
-        //            }
-        //            : new string[]
-        //            {
-        //                "does not meet",
-        //                ", but"
-        //            };
-
-        //        string logMsg = $"- Result {resultLogMsg[0]} expectations: Should{expected}be selected{resultLogMsg[1]} Is{actual}selected";
-
-        //        //logMsg = selectionMeetsExpectation ? $"field meets expectation: should{expected}be selected and is{actual}selected" : $"field does not meet expectation: should{expected}be selected, but is{actual}selected";
-
-        //        LogInfo($"IsSelected: {isSelected}<br>ShouldBeSelected: {shouldBeSelected}<br>{rdoBtnOrChkBox.ToString()} {logMsg} ", isResultExpected);
-
-        //        return isResultExpected;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        LogError(e.StackTrace);
-        //        return false;
-        //    }
-        //}
-
-        //public virtual bool VerifyDDListSelectedValue(InputFields ddListId, string expectedDDListValue)
-        //{
-        //    bool meetsExpectation = false;
-
-        //    try
-        //    {
-        //        string currentDDListValue = GetTextFromDDL(ddListId);
-        //        meetsExpectation = currentDDListValue.Equals(expectedDDListValue) ? true : false;
-
-        //        LogInfo($"Expected drop-down field value: {expectedDDListValue}" +
-        //            $"<br>Actual drop-down field value: {currentDDListValue}", meetsExpectation);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        log.Error(e.StackTrace);
-        //    }
-
-        //    return meetsExpectation;
-        //}
-
         public virtual bool VerifySignatureField(Reviewer reviewer, bool shouldFieldBeEmpty = false)
         {
             InputFields reviewerId = InputFields.Engineer_of_Record;
@@ -909,29 +836,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 return false;
             }
         }
-
-        //public virtual bool VerifyInputField(InputFields inputField, bool shouldFieldBeEmpty = false)
-        //{
-        //    string text = string.Empty;
-        //    bool isResultExpected = false;
-        //    try
-        //    {
-        //        text = GetAttribute(By.XPath($"//input[@id='{inputField.GetString()}']"), "value");
-
-        //        bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
-        //        string logMsg = isFieldEmpty ? "Empty Field: Unable to retrieve text" : $"Retrieved '{text}'";
-
-        //        isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty);
-        //        LogInfo($"{logMsg} from field - {inputField.ToString()}", isResultExpected);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        log.Error(e.StackTrace);
-        //    }
-
-        //    return isResultExpected;
-        //}
-
+    
         public virtual bool VerifyReqFieldErrorLabelForConcessionRequest()
         {
             try
@@ -1099,7 +1004,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.Originator.GetString(),
                 InputFields.Foreman.GetString(),
                 InputFields.ForemanNotificationDate.GetString(),
-                InputFields.Manager.GetString(),
+                InputFields.ResponsibleManager.GetString(),
                 InputFields.ManagerNotificationDate.GetString(),
                 $"{InputFields.Specification.GetString()}Id",
                 InputFields.Segment.GetString(),
@@ -1163,6 +1068,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 InputFields.IssuedDate.GetString(),
                 InputFields.Originator.GetString(),
+                InputFields.ResponsibleManager.GetString(),
                 InputFields.CQCM.GetString(),
                 InputFields.CQCMDate.GetString(),
                 InputFields.CQAM.GetString(),
@@ -1176,21 +1082,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             EnterIssuedDate();
             SelectDDL_Originator();
+            SelectDDL_ResponsibleManager();
+            EnterDescription();
             EnterCQCM();
             EnterCQCMDate();
             EnterCQAM();
             EnterCQAMDate();
-            EnterDescription();
         }
 
         public override bool VerifyNCRDocIsClosed(string description = "")
             => CheckNCRisClosed(description, TableTab.Closed_NCR);
 
-        public override string EnterDescription(string description = "")
+        public override string EnterDescription(string description = "", bool tempDescription = false)
             => EnterDesc(description, InputFields.Description_of_NCR);
-
-        public override string EnterNewDescription(string description = "")
-            => EnterNewDesc(description, InputFields.Description_of_NCR);
     }
 
     #endregion Implementation specific to SH249 - SimpleWF
@@ -1222,21 +1126,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             EnterIssuedDate();
             SelectDDL_Originator();
+            EnterDescription();
             EnterCQCM();
             EnterCQCMDate();
             EnterCQAM();
             EnterCQAMDate();
-            EnterDescription();
         }
 
         public override bool VerifyNCRDocIsClosed(string description = "")
             => CheckNCRisClosed(description, TableTab.Closed_NCR);
 
-        public override string EnterDescription(string description = "")
+        public override string EnterDescription(string description = "", bool tempDescription = false)
             => EnterDesc(description, InputFields.Description_of_NCR);
-
-        public override string EnterNewDescription(string description = "")
-            => EnterNewDesc(description, InputFields.Description_of_NCR);
     }
 
     #endregion Implementation specific to SGWay - SimpleWF

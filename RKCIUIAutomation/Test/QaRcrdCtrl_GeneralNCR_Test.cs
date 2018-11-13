@@ -229,11 +229,11 @@ namespace RKCIUIAutomation.Test.NCR
             ClickEditBtnForRow();
 
             LogInfo("------------cancel, edit/saveonly in Revise------------");
-            QaRcrdCtrl_GeneralNCR.EnterNewDescription("New NCR Description");
+            QaRcrdCtrl_GeneralNCR.EnterDescription("New NCR Description", true);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
             ClickEditBtnForRow();
-            ncrDescription = QaRcrdCtrl_GeneralNCR.EnterNewDescription("");
+            ncrDescription = QaRcrdCtrl_GeneralNCR.EnterDescription();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription));
             ClickEditBtnForRow();
@@ -451,7 +451,7 @@ namespace RKCIUIAutomation.Test.NCR
             NavigateToPage.QARecordControl_General_NCR();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Creating_Revise, ncrDescription));
             ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.EnterNewDescription();
+            QaRcrdCtrl_GeneralNCR.EnterDescription("Temp Description", true);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
             LogInfo("------  edit in revise tab then click saveFwd -------");

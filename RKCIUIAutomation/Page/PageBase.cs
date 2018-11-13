@@ -30,35 +30,29 @@ namespace RKCIUIAutomation.Page
 
         public void CreateVar<T>(string key, T value)
         {
+            string logMsg;
+
             try
             {
                 Hashtable = GetHashTable();
-                Hashtable.Add(key, value);
-                log.Debug($"Added to HashTable: Key: {key.ToString()} : Value: {value.ToString()}");
+                if (!HashKeyExists(key))
+                {
+                    Hashtable.Add(key, value);
+                    logMsg = "Added to";
+                }
+                else
+                {
+                    Hashtable[key] = value;
+                    logMsg = "Updated value for existing key in";
+                }
+
+                log.Debug($"{logMsg} HashTable - Key: {key.ToString()} : Value: {value.ToString()}");
             }
             catch (Exception e)
             {
                 log.Error($"Error occured while adding to HashTable \n{e.Message}");
                 throw;
             }
-        }
-
-        public void UpdateVar<T>(string key, T newValue)
-        {
-            Hashtable = GetHashTable();
-            string logMsg = string.Empty;
-
-            if (Hashtable.ContainsKey(key))
-            {
-                Hashtable[key] = newValue;
-                logMsg = $"Added to Hashtable key: {key} : new value: {newValue}";
-            }
-            else
-            {
-                logMsg = $"Key: {key} does not exist in hashtable";
-            }
-
-            log.Debug(logMsg);
         }
 
         public string GetVar(string key)
