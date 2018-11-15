@@ -44,6 +44,8 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Modify_Cancel_Verify_inCreateReview(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Save_Verify_and_SaveForward_inCreateReview(dirNumber);
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review));
+            ClickEditBtnForRow();
+
         }
 
         [Test]
@@ -65,6 +67,7 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
+    /*
     public class UserGroups
     {
         public static IEnumerable BothUserGroups
@@ -84,4 +87,5 @@ namespace RKCIUIAutomation.Test.DIR
             }
         }
     }
+    */
 }

@@ -104,7 +104,7 @@ namespace RKCIUIAutomation.Page
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
                 };
-                Func<IWebDriver, bool> readyCondition = webDriver => (bool)javaScriptExecutor.ExecuteScript("return (document.readyState == 'complete' && jQuery.active == 0)");
+                bool readyCondition(IWebDriver webDriver) => (bool)javaScriptExecutor.ExecuteScript("return (document.readyState == 'complete' && jQuery.active == 0)");
                 wait.Until(readyCondition);
             }
             catch (InvalidOperationException)
