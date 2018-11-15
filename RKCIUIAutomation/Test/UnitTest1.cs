@@ -3,6 +3,7 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
+using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
@@ -598,6 +599,43 @@ namespace RKCIUIAutomation.UnitTest
                 string elem = elements[i].Text;
                 Console.WriteLine(elem);
             }
+        }
+    }
+
+    
+    [TestFixture]
+    public class FilterDirNumberColumn : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property(TestCaseNumber, 2222)]
+        [Property(Priority, "Priority 1")]
+        [Description("Get DIR Tab Names")]
+        public void Filter_Dir_Number_Column()
+        {
+            LoginAs(UserType.DIRMgrQC);
+            NavigateToPage.QCRecordControl_QC_DIRs();
+            string dirNumber = "RKLIZ1181017";
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(QADIRs.TableTab.Create_Revise, dirNumber));
+        }
+    }
+
+    [TestFixture]
+    public class FilterNcrNumberColumn : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property(TestCaseNumber, 2222)]
+        [Property(Priority, "Priority 1")]
+        [Description("Get DIR Tab Names")]
+        public void Filter_Ncr_Number_Column()
+        {
+            LoginAs(UserType.NCRMgr);
+            NavigateToPage.QARecordControl_General_NCR();
+            string ncrDesc = "DlEamxKSEhxuBTbyRKGQtuoiDO";
+
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(GeneralNCR.TableTab.CQM_Review, ncrDesc));
         }
     }
 }

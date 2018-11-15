@@ -75,9 +75,9 @@ namespace RKCIUIAutomation.Page
                 for (int i = 0; i < elements.Count; i++)
                 {
                     string spanText = elements[i].Text;
-                    bool match = (spanText == matchValue) ? true : false;
+                    bool match = spanText.Equals(matchValue) ? true : false;
 
-                    if (match == true)
+                    if (match)
                     {
                         index = i;
                         break;
@@ -86,9 +86,14 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError("Error occured while getting element index", true, e);
-                throw;
+                log.Error(e.StackTrace);
             }
+
+            if (index == -1)
+            {
+                log.Error($"Unable to get index for: {matchValue}");
+            }
+
             return index;
         }
 
@@ -236,7 +241,7 @@ namespace RKCIUIAutomation.Page
         private string GetGridReference()
         {
             By singleGridDivLocator = By.XPath("//div[@data-role='grid']");
-            By multiActiveGridDivLocator = By.XPath("//div[@class='k-content k-state-active']/div");
+            By multiActiveGridDivLocator = By.XPath("//div[@class='k-content k-state-active']//div[@data-role='grid']");
             IWebElement gridElem = null;
             string gridId = string.Empty;
             try

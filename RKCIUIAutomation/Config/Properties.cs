@@ -1,4 +1,7 @@
-﻿namespace RKCIUIAutomation.Config
+﻿using RKCIUIAutomation.Test;
+using System;
+
+namespace RKCIUIAutomation.Config
 {
     public enum TestEnv
     {
@@ -51,17 +54,64 @@
         CDRTech,
         CDRMgr,
         NCRMgr,
-        DIRMgr,
         DIRMgrQA,
         DIRMgrQC,
-        DIRTech,
         DIRTechQA,
         DIRTechQC
+    }
+
+    public enum UserGroup
+    {
+        DirQA,
+        DirQC
     }
 
     public enum Reporter
     {
         Html,
         Klov
+    }
+
+    public class ConfigTestUsers
+    {
+        [ThreadStatic]
+        internal UserType technicianUser;
+
+        [ThreadStatic]
+        internal UserType managerUser;
+
+        public ConfigTestUsers()
+        {
+        }
+
+        //public ConfigTestUsers(UserGroup userGroup)
+        //{
+        //    switch (userGroup)
+        //    {
+        //        case UserGroup.DirQA:
+        //            technicianUser = UserType.DIRTechQA;
+        //            managerUser = UserType.DIRMgrQA;
+        //            break;
+        //        case UserGroup.DirQC:
+        //            technicianUser = UserType.DIRTechQC;
+        //            managerUser = UserType.DIRMgrQC;
+        //            break;
+        //    }
+        //}
+
+        public void AssignUsersByGroup(UserGroup userGroup)
+        {
+            switch (userGroup)
+            {
+                case UserGroup.DirQA:
+                    technicianUser = UserType.DIRTechQA;
+                    managerUser = UserType.DIRMgrQA;
+                    break;
+                case UserGroup.DirQC:
+                    technicianUser = UserType.DIRTechQC;
+                    managerUser = UserType.DIRMgrQC;
+                    break;
+            }
+        }
     }
 }

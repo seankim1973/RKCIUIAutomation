@@ -11,6 +11,7 @@ namespace RKCIUIAutomation.Config
         {
             public const string Breaksheet_Module = "Breaksheet_Module";
             public const string CDR = "CDR";
+            public const string CDR_WF_Complex = "CDR_WF_Complex";
             public const string Control_Point = "Control_Point";
             public const string Correspondence_Log = "Correspondence_Log";
             public const string CVL_List_Items = "CVL_List_Items";
@@ -18,7 +19,8 @@ namespace RKCIUIAutomation.Config
             public const string CVL_List = "CVL_List";
             public const string DesignDoc_CommentReview = "DesignDoc_CommentReview";
             public const string DIR = "DIR";
-            public const string DIR_WF_Simple = "DIR_WF_Simple";
+            public const string DIR_WF_Simple_QA = "DIR_WF_Simple_QA";
+            public const string DIR_WF_Simple_QC = "DIR_WF_Simple_QC";
             public const string DIR_WF_Complex = "DIR_WF_Complex";
             public const string Document_Repository = "Document_Repository";
             public const string Environmental = "Environmental";
@@ -123,39 +125,47 @@ namespace RKCIUIAutomation.Config
         private readonly List<string> Components_GreenLineExt = new List<string>
         {
             Component.GLX,
+            Component.CDR,
+            Component.CDR_WF_Complex,
             Component.DesignDoc_CommentReview,
             Component.RFI,
             Component.NCR,
             Component.NCR_WF_Complex,
             Component.DIR,
-            Component.DIR_WF_Simple
+            Component.DIR_WF_Simple_QA,
+            Component.DIR_WF_Simple_QC
         };
 
         private readonly List<string> Components_I15Southbound = new List<string>
         {
             Component.I15South,
+            Component.CDR,
+            Component.CDR_WF_Complex,
             Component.OV_Test,
             Component.QAField,
             Component.NCR,
             Component.NCR_WF_Complex,
             Component.DIR,
-            Component.DIR_WF_Simple
+            Component.DIR_WF_Simple_QA
         };
 
         private readonly List<string> Components_I15TechCorridor = new List<string>
         {
             Component.I15Tech,
+            Component.CDR,
+            Component.CDR_WF_Complex,
             Component.OV_Test,
             Component.QAField,
             Component.NCR,
             Component.NCR_WF_Complex,
             Component.DIR,
-            Component.DIR_WF_Simple
+            Component.DIR_WF_Simple_QA
         };
 
         private readonly List<string> Components_SH249Ext = new List<string>
         {
             Component.SH249,
+            Component.CDR,
             Component.DesignDoc_CommentReview,
             Component.QAField,
             Component.NCR,
@@ -167,6 +177,7 @@ namespace RKCIUIAutomation.Config
         private readonly List<string> Components_SouthernGateway = new List<string>
         {
             Component.SGWay,
+            Component.CDR,
             Component.DesignDoc_CommentReview,
             Component.QAField,
             Component.NCR,
@@ -178,17 +189,18 @@ namespace RKCIUIAutomation.Config
         private readonly List<string> Components_LAX = new List<string>
         {
             Component.LAX,
+            Component.CDR,
             Component.NCR,
             Component.NCR_WF_Complex,
             Component.DIR,
-            Component.DIR_WF_Simple
+            Component.DIR_WF_Simple_QA,
+            Component.DIR_WF_Simple_QC
         };
 
         private readonly List<string> CommonComponents = new List<string>
         {
             Component.Link_Coverage,
             Component.Breaksheet_Module,
-            Component.CDR,
             Component.CVL_List,
             Component.CVL_Lists,
             Component.CVL_List_Items,
