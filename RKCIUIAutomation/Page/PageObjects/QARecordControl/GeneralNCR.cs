@@ -909,6 +909,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         internal bool CheckNCRisClosed(string description, TableTab closedTab)
         {
             bool ncrIsClosed = false;
+            string logMsg = "not found.";
 
             try
             {
@@ -919,12 +920,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 {
                     string docStatus = GetColumnValueForRow(_ncrDesc, "Workflow location");
                     ncrIsClosed = docStatus.Equals("Closed") ? true : false;
-                    LogInfo($"Found NCR Workflow location, displayed as: {docStatus}");
+                    logMsg = $"Workflow Location displayed as: {docStatus}";
                 }
-                else
-                {
-                    LogError($"Unable to locate NCR with description value: {_ncrDesc}");
-                }
+
+                LogInfo($"NCR with description ({_ncrDesc}), {logMsg}", ncrIsClosed);
             }
             catch (Exception e)
             {

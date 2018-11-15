@@ -76,6 +76,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Send To Attachment")] Send_To_Attachment,
             [StringValue("Save")] Save,
             [StringValue("Save & Forward")] Save_Forward,
+            [StringValue("Approve")] Approve,
             [StringValue("Add")] Add,
             [StringValue("Delete")] Delete,
             [StringValue("Submit Revise")] Submit_Revise,
@@ -119,6 +120,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Save();
 
         void ClickBtn_Save_Forward();
+
+        void ClickBtn_Approve();
 
         void ClickBtn_Add();
 
@@ -212,7 +215,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     public abstract class QADIRs_Impl : TestBase, IQADIRs
     {
         /// <summary>
-        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
+        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
         /// </summary>
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
 
@@ -297,6 +300,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickBtn_Save() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save));
 
         public virtual void ClickBtn_Save_Forward() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Forward));
+
+        public virtual void ClickBtn_Approve() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Approve));
 
         public virtual void ClickBtn_Add() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Add));
 

@@ -4,6 +4,7 @@ using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects;
 using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
 using RKCIUIAutomation.Page.PageObjects.QARecordControl;
+using RKCIUIAutomation.Page.PageObjects.QASearch;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using RKCIUIAutomation.Page.Workflows;
 
@@ -35,6 +36,7 @@ namespace RKCIUIAutomation.Test
 
         public IQADIRs QaRcrdCtrl_QaDIR => new QADIRs().SetClass<IQADIRs>(Driver);
 
+        public IDailyInspectionReport QaSearch_DIR => new DailyInspectionReport().SetClass<IDailyInspectionReport>(Driver);
 
         #region Workflow SetClass method calls
 
