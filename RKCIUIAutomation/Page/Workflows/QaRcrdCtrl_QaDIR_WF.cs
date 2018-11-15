@@ -127,11 +127,13 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogDebug("------------------ Modify_DeficiencyDescription_Cancel_and_Verify ------------------");
 
+            QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_AnyDeficiencies_Yes();
             QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
             QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber));
             ClickEditBtnForRow();
+            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Inspection_Result_P));
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.AnyDeficiencies_No));
             AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description, true));
         }
@@ -140,11 +142,13 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogDebug("------------------ Modify_DeficiencyDescription_Save_and_Verify ------------------");
 
+            QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_AnyDeficiencies_Yes();
             QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber));
             ClickEditBtnForRow();
+            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Inspection_Result_F));
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.AnyDeficiencies_Yes));
             AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description));
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();

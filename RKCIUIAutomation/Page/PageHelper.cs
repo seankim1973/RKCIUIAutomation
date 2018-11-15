@@ -22,6 +22,8 @@ namespace RKCIUIAutomation.Page
 
         public static string GetShortTime() => DateTime.Now.ToShortTimeString();
 
+        public static string GetShortDateTime() => $"{GetShortDate()} {GetShortTime()}";
+
         public OutType ConvertToType<OutType>(object objToConvert)
         {
             try
@@ -42,7 +44,7 @@ namespace RKCIUIAutomation.Page
                 ? ConvertToType<string>(ddListID)
                 : ConvertToType<Enum>(ddListID).GetString();
 
-            string _ddFieldXpath = ddListID.Equals(typeof(TimeBlock))
+            string _ddFieldXpath = _ddListID.Contains("Time")
                 ? $"//span[@aria-controls='{_ddListID}_timeview']"
                 : $"//span[@aria-owns='{_ddListID}_listbox']";
 
@@ -59,7 +61,7 @@ namespace RKCIUIAutomation.Page
                 ? ConvertToType<string>(ddListID)
                 : ConvertToType<Enum>(ddListID).GetString();
 
-            string _ddArrowXpath = ddListID.Equals(typeof(TimeBlock))
+            string _ddArrowXpath = _ddListID.Contains("Time")
                 ? $"{SetDDListFieldXpath(_ddListID)}/parent::span/span/span"
                 : $"{SetDDListFieldXpath(_ddListID)}//span[@class='k-select']/span";
 
@@ -90,19 +92,28 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListItemsXpath<T, I>(T ddListID, I itemIndexOrName)
         {
-            string _ddListID = ddListID.GetType() == typeof(string) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
+            string _ddListID = ddListID.GetType() == typeof(string) 
+                ? ConvertToType<string>(ddListID) 
+                : ConvertToType<Enum>(ddListID).GetString();
 
-            string locatorXpath = string.Empty;
+            string ddListXPath = _ddListID.Contains("Time")
+                ? $"//ul[@id='{_ddListID}_timeview']"
+                : $"//div[@id='{_ddListID}-list']";
+
+            string itemValueXPath = string.Empty;
 
             if (itemIndexOrName.GetType().Equals(typeof(string)))
             {
-                locatorXpath = $"text()='{ConvertToType<string>(itemIndexOrName)}'";
+                itemValueXPath = $"text()='{ConvertToType<string>(itemIndexOrName)}'";
             }
             else if (itemIndexOrName.GetType().Equals(typeof(int)))
             {
-                locatorXpath = ConvertToType<int>(itemIndexOrName).ToString();
+                int itemIndex = ConvertToType<int>(itemIndexOrName);
+                itemIndex = _ddListID.Contains("Time") ? itemIndex + 1 : itemIndex;
+                itemValueXPath = itemIndex.ToString();
             }
-            return $"//div[@id='{_ddListID}-list']//li[{locatorXpath}]";
+
+            return $"{ddListXPath}//li[{itemValueXPath}]";
         }
 
         private string SetDDListItemsXpath(Enum ddListID, int itemIndex) => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";

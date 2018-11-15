@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.BaseClass;
 
@@ -196,6 +197,16 @@ namespace RKCIUIAutomation.Base
             }
         }
 
+        public void LogInfo(string[][] detailsList, bool assertion)
+        {
+            StringBuilder builder = new StringBuilder();
+
+            IMarkup codeBlock = MarkupHelper.CreateCodeBlock(builder.ToString());
+            IMarkup markupTable = MarkupHelper.CreateTable(detailsList);
+
+            testInstance = assertion ? testInstance.Pass(markupTable) : testInstance.Fail(markupTable);
+        }
+
         public void LogInfo(string details, bool assertion, Exception e = null)
         {
             bool hasPgBreak = false;
@@ -314,7 +325,7 @@ namespace RKCIUIAutomation.Base
 
         private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue) => MarkupHelper.CreateLabel(details, extentColor);
 
-        private static IMarkup CreateReportMarkupCodeBlock(Exception e) => MarkupHelper.CreateCodeBlock($"Exception: {e.Message}");
+        private static IMarkup CreateReportMarkupCodeBlock(Exception e) => MarkupHelper.CreateCodeBlock($"Exception: {e.StackTrace}");
 
         //Helper methods to gather Test Context Details
         public static string GetTestName() => GetTestContextProperty(TestContextProperty.TestName);

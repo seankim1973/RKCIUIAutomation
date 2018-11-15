@@ -165,7 +165,7 @@ namespace RKCIUIAutomation.Page
                 elem = GetElement(elementByLocator);
                 elem?.Click();
                 bool elemNotNull = elem != null ? true : false;
-                string logMsg = elemNotNull ? "Clicked" : "Null element";
+                string logMsg = elemNotNull ? "Clicked" : "Null";
                 LogInfo($"{logMsg} element: - {elementByLocator}");
             }
             catch (Exception e)
@@ -241,13 +241,19 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void EnterText(By elementByLocator, string text)
+        public void EnterText(By elementByLocator, string text, bool clearField = true)
         {
             try
             {
                 IWebElement textField = GetElement(elementByLocator);
-                textField.Clear();
+
+                if (clearField)
+                {
+                    textField.Clear();
+                }
+
                 textField.SendKeys(text);
+
                 LogInfo($"Entered '{text}' in field - {elementByLocator}");
             }
             catch (Exception e)

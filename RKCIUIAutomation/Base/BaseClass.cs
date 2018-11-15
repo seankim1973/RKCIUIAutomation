@@ -150,8 +150,8 @@ namespace RKCIUIAutomation.Base
 
             if (Driver != null)
             {
-                Driver?.Close();
-                Driver?.Quit();
+                Driver.Close();
+                Driver.Quit();
             }
         }
 

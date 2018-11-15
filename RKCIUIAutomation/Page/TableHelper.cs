@@ -106,6 +106,7 @@ namespace RKCIUIAutomation.Page
 
         public enum TimeBlock
         {
+            AM_12_00,
             AM_12_30,
             AM_01_00,
             AM_01_30,
@@ -224,7 +225,6 @@ namespace RKCIUIAutomation.Page
                 ? new string[] { "Toggled", "checkbox" } : new string[] { "Clicked", "button" };
             JsClickElement(GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumn));
             LogInfo($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumn}");
-            WaitForPageReady();
         }
 
         //<<-- Table Row Button Public Methods -->>
@@ -295,8 +295,18 @@ namespace RKCIUIAutomation.Page
 
         public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber)
         {
-            WaitForPageReady();
-            FilterColumn(columnName, recordNameOrNumber);
+            try
+            {
+                WaitForPageReady();
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            finally
+            {
+                FilterColumn(columnName, recordNameOrNumber);
+            }
         }
 
         public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber)
