@@ -47,6 +47,33 @@ namespace RKCIUIAutomation.UnitTest
             NavigateToPage.Qms_Document();
             Assert.True(VerifyPageTitle("QMS Documents"));
         }
+
+        [Test]
+        [Category(Component.Other)]
+        [Property(TestCaseNumber, 2222)]
+        [Property(Priority, "Priority 1")]
+        [Description("Get SubMenu Names")]
+        public void GetSubMenuNames()
+        {
+            LoginAs(UserType.Bhoomi);
+            try
+            {
+                JsHover(By.XPath("//a[text()='Quality Search']"));
+                IList<IWebElement> elements = Driver.FindElements(By.XPath("//a[text()='Quality Search']/following-sibling::ul/li/a"));
+
+                foreach (IWebElement elem in elements)
+                {
+                    string subMenu = elem.Text;
+                    Console.WriteLine(subMenu);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                throw;
+            }
+
+        }
     }
 
     [TestFixture]

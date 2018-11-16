@@ -334,7 +334,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         string GetNCRDocDescription(bool tempDescription = false);
 
-        IList<string> GetRequiredFieldIDs();
+        IList<string> GetExpectedRequiredFieldIDs();
     }
 
     #endregion workflow interface class
@@ -689,7 +689,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         //GLX, I15Tech, LAX
-        public virtual IList<string> GetRequiredFieldIDs()
+        public virtual IList<string> GetExpectedRequiredFieldIDs()
         {
             IList<string> RequiredFieldIDs = new List<string>
             {
@@ -727,7 +727,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 ncrNewDescription = GetVar(ncrNewDescKey);
                 descKey = ncrNewDescKey;
                 descValue = ncrNewDescription;
-                logMsg = "new ";
+                logMsg = "new temp ";
             }
             else
             {
@@ -739,40 +739,79 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 logMsg = "";
             }
             
-            log.Debug($"#####Created a {logMsg}NCR Description:\nKEY: {descKey}\nVALUE: {descValue}");
+            log.Debug($"#####Created a {logMsg}NCR Description: KEY: {descKey} VALUE: {descValue}");
         }
 
         public virtual bool VerifyReqFieldErrorLabelsForNewDoc()
         {
-            bool errorLabelsDisplayed = false;
+            int expectedCount = 0;
+            int actualCount = 0;
+            bool countsMatch = false;
+            bool reqFieldsMatch = false;
 
             try
             {
                 IList<IWebElement> ReqFieldErrorLabelElements = GetElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')]"));
-
-                IList<string> RequiredFieldIDs = GetRequiredFieldIDs();
-
-                IList<bool> results = new List<bool>();
+                IList<IWebElement> ActualReqFieldErrorLabelElements = new List<IWebElement>();
 
                 foreach (IWebElement elem in ReqFieldErrorLabelElements)
                 {
                     if (elem.Displayed && elem.Enabled)
                     {
-                        var id = elem.GetAttribute("data-valmsg-for");
-                        Console.WriteLine(id);
-                        results.Add(RequiredFieldIDs.Contains(id));
+                        ActualReqFieldErrorLabelElements.Add(elem);
                     }
                 }
 
-                Console.WriteLine($"REQUIRED FIELD COUNT: {results.Count}");
-                errorLabelsDisplayed = results.Contains(false) ? false : true;
+                IList<string> ExpectedRequiredFieldIDs = GetExpectedRequiredFieldIDs();
+                IList<bool> results = new List<bool>();
+
+                actualCount = ActualReqFieldErrorLabelElements.Count;
+                expectedCount = ExpectedRequiredFieldIDs.Count;
+                countsMatch = expectedCount.Equals(actualCount);
+
+                int tblRowIndex = 0;
+                string[][] reqFieldTable = new string[expectedCount + 1][];
+                reqFieldTable[tblRowIndex] = new string[2] {"Expected Required Field | ", " | Found Matching Field"};
+
+                if (countsMatch)
+                {
+                    for (int i = 0; i < expectedCount; i++)
+                    {
+                        IWebElement actualElem = ActualReqFieldErrorLabelElements[i];
+                        tblRowIndex++;
+                        string actualId = actualElem.GetAttribute("data-valmsg-for");
+                        reqFieldsMatch = ExpectedRequiredFieldIDs.Contains(actualId);
+                        results.Add(reqFieldsMatch);
+                        reqFieldTable[tblRowIndex] = new string[2] { actualId, reqFieldsMatch.ToString() };
+                    }
+                }
+                else
+                {
+                    LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
+                        $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
+                }
+
+                //foreach (IWebElement elem in ReqFieldErrorLabelElements)
+                //{
+                //    if (elem.Displayed && elem.Enabled)
+                //    {
+                        
+                //        var id = elem.GetAttribute("data-valmsg-for");
+                //        reqFieldTable[tblRowIndex] = new string[1] {id};
+                //        results.Add(ExpectedRequiredFieldIDs.Contains(id));
+                //    }
+                //}
+
+                reqFieldsMatch = results.Contains(false) ? false : true;
+                reqFieldTable[tblRowIndex] = new string[2] {"Total Required Fields:", results.Count.ToString()};
+                LogInfo(reqFieldTable, reqFieldsMatch);
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                log.Error(e.Message);
             }
 
-            return errorLabelsDisplayed;
+            return reqFieldsMatch;
         }
 
         public virtual bool VerifyReqFieldErrorLabelForTypeOfNCR()
@@ -995,7 +1034,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
 
-        public override IList<string> GetRequiredFieldIDs()
+        public override IList<string> GetExpectedRequiredFieldIDs()
         {
             List<string> RequiredFieldIDs = new List<string>
             {
@@ -1061,7 +1100,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
 
-        public override IList<string> GetRequiredFieldIDs()
+        public override IList<string> GetExpectedRequiredFieldIDs()
         {
             IList<string> RequiredFieldIDs = new List<string>
             {
@@ -1106,7 +1145,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
 
-        public override IList<string> GetRequiredFieldIDs()
+        public override IList<string> GetExpectedRequiredFieldIDs()
         {
             IList<string> RequiredFieldIDs = new List<string>
             {

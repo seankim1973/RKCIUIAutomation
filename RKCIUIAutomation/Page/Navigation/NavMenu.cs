@@ -82,6 +82,10 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     mainNavEnum = MainNav.Menu.QA_Search;
                 }
+                else if (reflectedPageType.Equals(typeof(QualitySearch)))
+                {
+                    mainNavEnum = MainNav.Menu.Quality_Search;
+                }
                 else if (reflectedPageType.Equals(typeof(QAField)))
                 {
                     mainNavEnum = MainNav.Menu.QA_Field;
@@ -211,6 +215,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QA Engineer")] QA_Engineer,
                 [StringValue("Reports & Notices")] Reports_Notices,
                 [StringValue("QA Search")] QA_Search,
+                [StringValue("Quality Search")] Quality_Search,
                 [StringValue("QA Field")] QA_Field,
                 [StringValue("Owner")] Owner,
                 [StringValue("Material/Mix Codes")] Material_Mix_Codes,
@@ -418,6 +423,27 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Environmental Document Search")] Environmental_Document_Search,
                 [StringValue("QA/QO Test - Proctor Curve Report")] QAQO_Test_Proctor_Curve_Report,
                 [StringValue("QA/QO Test - Proctor Curve Summary")] QAQO_Test_Proctor_Curve_Summary
+            }
+        }
+
+        //Quality Search Menu Navigation Enums
+        public class QualitySearch
+        {
+            public enum Menu
+            {
+                [StringValue("Test Summary")] Test_Summary,
+                [StringValue("Tests")] Tests,
+                [StringValue("Guide Schedule Summary Report")] Guide_Schedule_Summary_Report,
+                [StringValue("Inspection Deficiency Log Report")] Inspection_Deficiency_Log_Report,
+                [StringValue("Inspector Daily Report")] Inspector_Daily_Report,
+                [StringValue("IDR Summary Report")] IDR_Summary_Report,
+                [StringValue("Mix Design Summary - HMA")] Mix_Design_Summary_HMA,
+                [StringValue("Mix Design Report - HMA")] Mix_Design_Report_HMA,
+                [StringValue("Material Traceability Matrix")] Material_Traceability_Matrix,
+                [StringValue("NCR Log View")] NCR_Log_View,
+                [StringValue("CDR Log View")] CDR_Log_View,
+                [StringValue("QA/QO: Test - Proctor Curve Summary")] QA_QO_Test_Proctor_Curve_Summary,
+                [StringValue("QA/QO: Test - Proctor Curve Report")] QA_QO_Test_Proctor_Curve_Report
             }
         }
 

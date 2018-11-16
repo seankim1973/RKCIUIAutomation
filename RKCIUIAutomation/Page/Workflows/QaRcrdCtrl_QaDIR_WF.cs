@@ -35,6 +35,8 @@ namespace RKCIUIAutomation.Page.Workflows
         void Modify_Save_Verify_and_SaveForward_inCreateRevise(string dirNumber);
 
         void Verify_DIR_then_Approve_inReview(string dirNumber);
+
+        void Verify_DIR_then_Approve_inAuthorization(string dirNumber);
     }
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
@@ -122,6 +124,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber));
             ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifySectionDescription());
             QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
@@ -167,6 +170,16 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber));
             ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Approve();
+        }
+
+        public virtual void Verify_DIR_then_Approve_inAuthorization(string dirNumber)
+        {
+            LogDebug("------------------ Verify_DIR_then_Approve_inAuthorization ------------------");
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Authorization, dirNumber));
+            ClickEditBtnForRow();
+            QaRcrdCtrl_QaDIR.ClickBtn_Approve();
+            AddAssertionToList(QaSearch_DIR.VerifyDirIsClosedByTblFilter(dirNumber));
         }
 
     }

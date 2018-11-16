@@ -58,14 +58,14 @@ namespace RKCIUIAutomation.Page
         /// <param name="filterLogic"></param>
         /// <param name="additionalFilterValue"></param>
         /// <param name="additionalFilterOperator"></param>
-        public void FilterColumn(
+        public bool FilterColumn(
             Enum columnName,
             string filterValue,
             FilterOperator filterOperator = FilterOperator.EqualTo,
             FilterLogic filterLogic = FilterLogic.And,
             string additionalFilterValue = null,
             FilterOperator additionalFilterOperator = FilterOperator.EqualTo
-            ) => Kendo.Filter(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator);
+            ) => Kendo.FilterAndGetGridType(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator);
 
         public void ClearTableFilters() => Kendo.RemoveFilters();
 
@@ -185,7 +185,10 @@ namespace RKCIUIAutomation.Page
             return xPathExt;
         }
 
-        private readonly string ActiveTableDiv = "//div[@class='k-content k-state-active']";
+        private string GetGridTypeXPath(bool isMultiTabGrid)
+            => isMultiTabGrid ? "//div[@class='k-content k-state-active']" : "//div[@data-role='grid']";
+
+        //private readonly string ActiveTableDiv = "//div[@class='k-content k-state-active']";
 
         private string TableByTextInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
 
@@ -193,17 +196,19 @@ namespace RKCIUIAutomation.Page
 
         private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn) => textInRowForAnyColumn.Equals("") ? "//tr[1]/td" : $"{TableByTextInRow(textInRowForAnyColumn)}";
 
-        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn) => By.XPath($"{ActiveTableDiv}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
+        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn, bool isMultiTabGrid = true)
+            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
 
-        public By GetTableRowLocator(string textInRowForAnyColumn) => By.XPath($"{ActiveTableDiv}{TableByTextInRow(textInRowForAnyColumn)}");
-
-        public string GetColumnValueForRow(string textInRowForAnyColumn, string columnName)
+        public By GetTableRowLocator(string textInRowForAnyColumn, bool isMultiTabGrid)
+            =>By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableByTextInRow(textInRowForAnyColumn)}");
+        
+        public string GetColumnValueForRow(string textInRowForAnyColumn, string columnName, bool isMultiTabGrid = true)
         {
             string rowXPath = string.Empty;
 
             try
             {
-                By headerLocator = By.XPath($"{ActiveTableDiv}{TableColumnIndex(columnName)}");
+                By headerLocator = By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableColumnIndex(columnName)}");
                 string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
                 int xPathIndex = int.Parse(dataIndexAttribute) + 1;
                 rowXPath = $"{TableByTextInRow(textInRowForAnyColumn)}[{xPathIndex.ToString()}]";
@@ -293,8 +298,10 @@ namespace RKCIUIAutomation.Page
 
         #endregion Table Row Button Methods
 
-        public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber)
+        public bool FilterTableColumnByValue(Enum columnName, string recordNameOrNumber)
         {
+            bool isMultiTabGrid = true;
+
             try
             {
                 WaitForPageReady();
@@ -305,15 +312,18 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                FilterColumn(columnName, recordNameOrNumber);
+                isMultiTabGrid = FilterColumn(columnName, recordNameOrNumber);
             }
+
+            return isMultiTabGrid;
         }
 
         public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber)
         {
-            FilterTableColumnByValue(columnName, recordNameOrNumber);
+            bool isMultiTabGrid = false;
+            isMultiTabGrid = FilterTableColumnByValue(columnName, recordNameOrNumber);
             LogDebug($"Searching for record: {recordNameOrNumber}");
-            return ElementIsDisplayed(GetTableRowLocator(recordNameOrNumber));
+            return ElementIsDisplayed(GetTableRowLocator(recordNameOrNumber, isMultiTabGrid));
         }
 
 

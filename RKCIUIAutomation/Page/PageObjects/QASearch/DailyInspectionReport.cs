@@ -34,7 +34,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
     {
         bool VerifyDirIsDisplayed(string dirNumber);
 
-        bool VerifyDirIsClosed(string dirNumber);
+        bool VerifyDirIsClosedByTblFilter(string dirNumber);
     }
 
     public abstract class DailyInspectionReport_Impl : TestBase, IDailyInspectionReport
@@ -86,13 +86,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
             return instance;
         }
 
+
+
         public virtual bool VerifyDirIsDisplayed(string dirNumber)
         {
             bool isDisplayed = false;
             ColumnName dirNumberCol = ColumnName.DIR_No;
             try
             {
-                FilterColumn(dirNumberCol, dirNumber);
                 isDisplayed = VerifyRecordIsDisplayed(dirNumberCol, dirNumber);
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
                 LogInfo($"{logMsg} DIR record number {dirNumber}.", isDisplayed);
@@ -105,20 +106,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
             return isDisplayed;
         }
 
-        public virtual bool VerifyDirIsClosed(string dirNumber)
+        public virtual bool VerifyDirIsClosedByTblFilter(string dirNumber)
         {
+            NavigateToPage.QASearch_Daily_Inspection_Report();
+
             bool dirIsClosed = false;
             string logMsg = "not found.";
 
             try
             {
                 string _dirNumber = dirNumber.Equals("") ? QaRcrdCtrl_QaDIR.GetDirNumber() : dirNumber;
-                NavigateToPage.QASearch_Daily_Inspection_Report();
+                
                 bool isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(_dirNumber);
 
                 if (isDisplayed)
                 {
-                    string docStatus = GetColumnValueForRow(_dirNumber, "Workflow Location");
+                    string docStatus = GetColumnValueForRow(_dirNumber, "Workflow Location", false);
                     dirIsClosed = docStatus.Equals("Closed") ? true : false;
                     logMsg = $"Workflow Location displayed as: {docStatus}";
                 }
