@@ -76,6 +76,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Send To Attachment")] Send_To_Attachment,
             [StringValue("Save")] Save,
             [StringValue("Save & Forward")] Save_Forward,
+            [StringValue("Approve")] Approve,
             [StringValue("Add")] Add,
             [StringValue("Delete")] Delete,
             [StringValue("Submit Revise")] Submit_Revise,
@@ -119,6 +120,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Save();
 
         void ClickBtn_Save_Forward();
+
+        void ClickBtn_Approve();
 
         void ClickBtn_Add();
 
@@ -212,7 +215,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     public abstract class QADIRs_Impl : TestBase, IQADIRs
     {
         /// <summary>
-        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
+        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
         /// </summary>
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
 
@@ -298,6 +301,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_Save_Forward() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Forward));
 
+        public virtual void ClickBtn_Approve() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Approve));
+
         public virtual void ClickBtn_Add() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Add));
 
         public virtual void ClickBtn_Delete() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Delete));
@@ -336,7 +341,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Feature();
             SelectDDL_Contractor(1);
             SelectDDL_CrewForeman();
-            AddAssertionToList(VerifySectionDescription());
             SelectChkbox_InspectionType_I();
             SelectChkbox_InspectionResult_P();
             StoreDirNumber();
@@ -563,35 +567,48 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         internal bool VerifyExpectedRequiredFields(IList<string> actualReqFieldIDs, IList<string> expectedReqFieldIDs = null)
         {
-            IList<string> trimmedExpectedIDs = expectedReqFieldIDs ?? TrimInputFieldIDs(QaRcrdCtrl_QaDIR.GetRequiredFieldIDs(), "0__");
-
-            int expectedCount = trimmedExpectedIDs.Count;
-            int actualCount = actualReqFieldIDs.Count;
-            bool countsMatch = expectedCount.Equals(actualCount);
+            int expectedCount = 0;
+            int actualCount = 0;
+            bool countsMatch = false;
             bool reqFieldsMatch = false;
 
-            int rowIndex = 0;
-            string[][] idTable = new string[expectedCount + 1][];
-            idTable[rowIndex] = new string[2] {"Expected ID ", " Found Matching Actual ID"};
-
-            if (countsMatch)
+            try
             {
-                for (int i = 0;  i < expectedCount; i++)
-                {
-                    rowIndex = i + 1;
-                    string expectedID = trimmedExpectedIDs[i];
-                    string actualID = actualReqFieldIDs[i];
+                IList<string> trimmedExpectedIDs = expectedReqFieldIDs ?? TrimInputFieldIDs(QaRcrdCtrl_QaDIR.GetRequiredFieldIDs(), "0__");
+                IList<bool> results = new List<bool>();
 
-                    reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
-                    idTable[rowIndex] = new string[2] {actualID, reqFieldsMatch.ToString()};
+                expectedCount = trimmedExpectedIDs.Count;
+                actualCount = actualReqFieldIDs.Count;
+                countsMatch = expectedCount.Equals(actualCount);
+
+                int tblRowIndex = 0;
+                string[][] idTable = new string[expectedCount + 1][];
+                idTable[tblRowIndex] = new string[2] { "Expected ID | ", " | Found Matching Actual ID" };
+
+                if (countsMatch)
+                {
+                    for (int i = 0; i < expectedCount; i++)
+                    {
+                        tblRowIndex++;
+                        string actualID = actualReqFieldIDs[i];
+                        reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
+                        results.Add(reqFieldsMatch);
+                        idTable[tblRowIndex] = new string[2] {actualID, reqFieldsMatch.ToString()};
+                    }
+                }
+                else
+                {
+                    LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
+                        $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
                 }
 
+                reqFieldsMatch = results.Contains(false) ? false : true;
+                idTable[tblRowIndex] = new string[2] {"Total Required Fields:", results.Count.ToString()};
                 LogInfo(idTable, reqFieldsMatch);
             }
-            else
+            catch (Exception e)
             {
-                LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
-                    $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
+                log.Error(e.Message);
             }
 
             return reqFieldsMatch;
@@ -717,7 +734,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Feature();
             SelectDDL_Contractor("LINXS");
             SelectDDL_CrewForeman();
-            EnterText_SectionDescription("AASHTO");
+            EnterText_SectionDescription(GetTextFromDDL(QADIRs.InputFields.Spec_Section));
             SelectChkbox_InspectionType_I();
             SelectChkbox_InspectionResult_P();
             Enter_ReadyDate();

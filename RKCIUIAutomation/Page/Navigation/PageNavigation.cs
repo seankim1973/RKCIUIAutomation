@@ -636,6 +636,9 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public override void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_IDRs);
 
+        public override void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QualitySearch.Menu.Inspector_Daily_Report);
+
+
     }
 
     #endregion Implementation specific to GLX

@@ -24,13 +24,19 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public interface IQaRcrdCtrl_QaDIR_WF
     {
-        string Create_and_SaveForward_DIR(UserType userType);
+        void LoginAndNavigateToDirPage(UserType userType);
 
-        void Review_and_Return_DIR_ForRevise(UserType userType, string dirNumber);
+        string Create_and_SaveForward_DIR();
 
-        void Modify_Cancel_Verify_inCreateReview(string dirNumber);
+        void KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber);
 
-        void Modify_Save_Verify_and_SaveForward_inCreateReview(string dirNumber);
+        void Modify_Cancel_Verify_inCreateRevise(string dirNumber);
+
+        void Modify_Save_Verify_and_SaveForward_inCreateRevise(string dirNumber);
+
+        void Verify_DIR_then_Approve_inReview(string dirNumber);
+
+        void Verify_DIR_then_Approve_inAuthorization(string dirNumber);
     }
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
@@ -79,8 +85,10 @@ namespace RKCIUIAutomation.Page.Workflows
             return instance;
         }
 
-        private void LoginAndNavigateToDirPage(UserType userType)
+        public virtual void LoginAndNavigateToDirPage(UserType userType)
         {
+            LogDebug("------------------ LoginAndNavigateToDirPage ------------------");
+
             LoginAs(userType);
 
             if (!Driver.Title.Contains("DIR List"))
@@ -98,11 +106,10 @@ namespace RKCIUIAutomation.Page.Workflows
             }
         }
 
-        public virtual string Create_and_SaveForward_DIR(UserType userType)
+        public virtual string Create_and_SaveForward_DIR()
         {
             LogDebug("------------------ Create_and_SaveForward_DIR ------------------");
             
-            LoginAndNavigateToDirPage(userType);
             QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir());
@@ -111,19 +118,21 @@ namespace RKCIUIAutomation.Page.Workflows
             return QaRcrdCtrl_QaDIR.GetDirNumber();
         }
 
-        public virtual void Review_and_Return_DIR_ForRevise(UserType userType, string dirNumber)
+        public virtual void KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)
         {
-            LogDebug("------------------ Review_and_Return_DIR_ForRevise ------------------");
+            LogDebug("------------------ KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateReview ------------------");
 
-            LoginAndNavigateToDirPage(userType);
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber));
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber));
             ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifySectionDescription());
             QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber));
+            ClickEditBtnForRow();
         }
 
-        public virtual void Modify_Cancel_Verify_inCreateReview(string dirNumber)
+        public virtual void Modify_Cancel_Verify_inCreateRevise(string dirNumber)
         {
             LogDebug("------------------ Modify_DeficiencyDescription_Cancel_and_Verify ------------------");
 
@@ -138,7 +147,7 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description, true));
         }
 
-        public virtual void Modify_Save_Verify_and_SaveForward_inCreateReview(string dirNumber)
+        public virtual void Modify_Save_Verify_and_SaveForward_inCreateRevise(string dirNumber)
         {
             LogDebug("------------------ Modify_DeficiencyDescription_Save_and_Verify ------------------");
 
@@ -154,6 +163,25 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
         }
 
+        public virtual void Verify_DIR_then_Approve_inReview(string dirNumber)
+        {
+            LogDebug("------------------ Verify_DIR_then_Approve_inReview ------------------");
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber));
+            ClickEditBtnForRow();
+            QaRcrdCtrl_QaDIR.ClickBtn_Approve();
+        }
+
+        public virtual void Verify_DIR_then_Approve_inAuthorization(string dirNumber)
+        {
+            LogDebug("------------------ Verify_DIR_then_Approve_inAuthorization ------------------");
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Authorization, dirNumber));
+            ClickEditBtnForRow();
+            QaRcrdCtrl_QaDIR.ClickBtn_Approve();
+            AddAssertionToList(QaSearch_DIR.VerifyDirIsClosedByTblFilter(dirNumber));
+        }
+
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_GLX : QaRcrdCtrl_QaDIR_WF
@@ -161,6 +189,8 @@ namespace RKCIUIAutomation.Page.Workflows
         public QaRcrdCtrl_QaDIR_WF_GLX(IWebDriver driver) : base(driver)
         {
         }
+
+
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_Garnet : QaRcrdCtrl_QaDIR_WF

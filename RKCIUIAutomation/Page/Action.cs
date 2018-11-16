@@ -87,7 +87,7 @@ namespace RKCIUIAutomation.Page
                 }
                 catch (Exception e)
                 {
-                    log.Error($"WaitForElement timeout occurred for element: - {elementByLocator}", e);
+                    log.Error($"WaitForElement timeout occurred for element: - {elementByLocator}\n{e.Message}");
                 }
             }
         }
@@ -493,7 +493,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                isDisplayed = GetElement(elementByLocator).Displayed ? true : false;
+                isDisplayed = GetElement(elementByLocator)?.Displayed == true ? true : false;
             }
             catch (Exception e)
             {
