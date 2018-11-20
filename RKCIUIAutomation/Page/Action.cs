@@ -52,8 +52,19 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void JsClickElement(By elementByLocator) => ExecuteJsAction(JSAction.Click, elementByLocator);
-
+        public void JsClickElement(By elementByLocator)
+        {
+            try
+            {
+                ScrollToElement(elementByLocator);
+                ExecuteJsAction(JSAction.Click, elementByLocator);                
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            
+        }
         public void JsHover(By elementByLocator)
         {
             ExecuteJsAction(JSAction.Hover, elementByLocator);
@@ -159,10 +170,10 @@ namespace RKCIUIAutomation.Page
 
         public void ClickElement(By elementByLocator)
         {
-            IWebElement elem = null;
             try
             {
-                elem = GetElement(elementByLocator);
+                //IWebElement elem = GetElement(elementByLocator);
+                IWebElement elem = ScrollToElement(elementByLocator);
                 elem?.Click();
                 bool elemNotNull = elem != null ? true : false;
                 string logMsg = elemNotNull ? "Clicked" : "Null";
@@ -178,13 +189,11 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                string buttonTxt = string.Empty;
                 if (webElement != null)
                 {
-                    buttonTxt = webElement.Text;
                     webElement.Click();
+                    LogInfo($"Clicked {webElement.Text}");
                 }
-                LogInfo($"Clicked {buttonTxt}");
             }
             catch (Exception e)
             {
@@ -247,14 +256,27 @@ namespace RKCIUIAutomation.Page
             {
                 IWebElement textField = GetElement(elementByLocator);
 
-                if (clearField)
+                if (textField.Enabled)
                 {
-                    textField.Clear();
+                    if (!textField.Displayed)
+                    {
+                        ScrollToElement(elementByLocator);
+                    }
+
+                    if (clearField)
+                    {
+                        textField.Clear();
+                    }
+
+                    ClickElement(elementByLocator);
+                    textField.SendKeys(text);
+
+                    LogInfo($"Entered '{text}' in field - {elementByLocator}");
                 }
-
-                textField.SendKeys(text);
-
-                LogInfo($"Entered '{text}' in field - {elementByLocator}");
+                else
+                {
+                    LogError($"Text field {elementByLocator.ToString()}, is disabled");
+                }
             }
             catch (Exception e)
             {
@@ -362,31 +384,45 @@ namespace RKCIUIAutomation.Page
             ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName));
         }
 
-        public void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadySelected = true)
+        public void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxRegardless = true)
         {
             string chkbxOrRdoBtn = chkbxOrRadioBtn.GetString();
             By locator = By.Id(chkbxOrRdoBtn);
-            ScrollToElement(locator);
-            if (toggleChkBoxIfAlreadySelected)
-            {
-                ScrollToElement(locator);
-                JsClickElement(locator);
-                LogInfo($"Selected: {chkbxOrRdoBtn}");
-            }
-            else
-            {
-                log.Info("Specified not to toggle checkbox, if already selected");
 
-                if (!GetElement(locator).Selected)
+            IWebElement element = GetElement(locator);
+            bool isElementEnabled = element.Enabled;
+            try
+            {
+                if (isElementEnabled)
                 {
-                    ScrollToElement(locator);
-                    JsClickElement(locator);
-                    LogInfo($"Selected: {chkbxOrRdoBtn}");
+                    if (toggleChkBoxRegardless)
+                    {
+                        JsClickElement(locator);
+                        LogInfo($"Selected: {chkbxOrRdoBtn}");
+                    }
+                    else
+                    {
+                        log.Info("Specified not to toggle checkbox, if already selected");
+
+                        if (!element.Selected)
+                        {
+                            JsClickElement(locator);
+                            LogInfo($"Selected: {chkbxOrRdoBtn}");
+                        }
+                        else
+                        {
+                            LogInfo($"Did not select element, because it is already selected: {chkbxOrRdoBtn}");
+                        }
+                    }
                 }
                 else
                 {
-                    LogInfo($"Did not select element, because it is already selected: {chkbxOrRdoBtn}");
+                    LogError($"Element {chkbxOrRadioBtn.ToString()}, is selectable", true);
                 }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
             }
         }
 
@@ -562,6 +598,7 @@ namespace RKCIUIAutomation.Page
                     BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                 }
             }
+
             return isMatchingTitle;
         }
 
@@ -827,13 +864,15 @@ namespace RKCIUIAutomation.Page
             ClickElement(newBtn);
         }
 
-        public void ScrollToElement(By elementByLocator)
+        public IWebElement ScrollToElement(By elementByLocator)
         {
+            IWebElement elem = null;
+
             try
             {
-                IWebElement elem = GetElement(elementByLocator);
+                elem = GetElement(elementByLocator);
 
-                if (elem != null)
+                if (elem.Enabled && !elem.Displayed)
                 {
                     Actions actions = new Actions(Driver);
                     actions.MoveToElement(elem);
@@ -843,8 +882,10 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError("Exception occured in ScrollToElement method", true, e);
+                log.Error(e.StackTrace);
             }
+
+            return elem;
         }
 
         public void LogoutToLoginPage()

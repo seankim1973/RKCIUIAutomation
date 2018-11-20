@@ -667,7 +667,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             By descLocator = GetTextAreaFieldByLocator(descField);
             CreateNcrDescription(tempDescription);         
             desc = desc.Equals("") || string.IsNullOrEmpty(desc) ? GetNCRDocDescription(tempDescription) : desc;
-            ScrollToElement(descLocator);
             EnterText(descLocator, desc);
             return desc;
         }

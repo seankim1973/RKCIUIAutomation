@@ -29,6 +29,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("DIREntries_0__AreaID")] Area,
             [StringValue("DIREntries_0__SectionId")] Spec_Section,
             [StringValue("DIREntries_0__FeatureID")] Feature, //requires selection of Area DDL
+            [StringValue("DIREntries_0__HoldPointNo")] Control_Point_Number,
+            [StringValue("DIREntries_0__HoldPointTypeID")] Control_Point_Type,
             [StringValue("DIREntries_0__SubFeatureId")] SubFeature,//not required
             [StringValue("DIREntries_0__ContractorId")] Contractor,
             [StringValue("DIREntries_0__CrewForemanID")] Crew_Foreman, //requires selection of Contractor DDL
@@ -149,6 +151,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectDDL_Feature(int ddListSelection = 1);
 
+        void SelectDDL_ControlPointNumber(int ddListSelection = 1);
+
+        void SelectDDL_Contractor(int ddListSelection = 1);
+
         void SelectDDL_Contractor<T>(T ddListSelection);
 
         void SelectDDL_CrewForeman(int ddListSelection = 1);
@@ -209,7 +215,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         IList<string> GetRequiredFieldIDs();
 
-        bool VerifyReqFieldErrorsForNewDir();
+        bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, bool verifyControPointReqFields = false);
+
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -330,43 +337,50 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void FilterDirNumber(string DirNumber)
             => FilterTableColumnByValue(ColumnName.DIR_No, DirNumber);
 
-        //GLX
+        //All SimpleWF Tenants have different required fields
         public virtual void PopulateRequiredFields()
         {
-            SelectDDL_TimeBegin(TimeBlock.AM_06_00);
-            SelectDDL_TimeEnd(TimeBlock.PM_04_00);
-            Enter_AverageTemp(80);
-            SelectDDL_Area();
-            SelectDDL_SpecSection();
-            SelectDDL_Feature();
-            SelectDDL_Contractor(1);
-            SelectDDL_CrewForeman();
-            SelectChkbox_InspectionType_I();
-            SelectChkbox_InspectionResult_P();
-            StoreDirNumber();
+            //SelectDDL_TimeBegin(TimeBlock.AM_06_00);
+            //SelectDDL_TimeEnd(TimeBlock.PM_04_00);
+            //Enter_AverageTemp(80);
+            //SelectDDL_Area();
+            //SelectDDL_SpecSection();
+            //SelectDDL_Feature();
+            //SelectDDL_Contractor();
+            //SelectDDL_CrewForeman();
+            //EnterText_SectionDescription(GetTextFromDDL(QADIRs.InputFields.Spec_Section));
+            //SelectChkbox_InspectionType_I();
+            //SelectChkbox_InspectionResult_P();
+            //Enter_ReadyDate();
+            //Enter_CompletedDate();
+            //Enter_TotalInspectionTime();
+            //StoreDirNumber();
         }
 
-        //GLX
+        //All SimpleWF Tenants have different required fields
         public virtual IList<string> GetRequiredFieldIDs()
         {
             IList<string> RequiredFieldIDs = new List<string>()
             {
-                InputFields.Time_Begin.GetString(),
-                InputFields.Time_End.GetString(),
-                InputFields.Average_Temperature.GetString(),
-                InputFields.Area.GetString(),
-                InputFields.Spec_Section.GetString(),
-                InputFields.Feature.GetString(),
-                InputFields.Contractor.GetString(),
-                InputFields.Crew_Foreman.GetString(),
-                InputFields.Section_Description.GetString(),
-                "InspectionType",
-                "InspectionPassFail"
+                //InputFields.Time_Begin.GetString(),
+                //InputFields.Time_End.GetString(),
+                //InputFields.Area.GetString(),
+                //InputFields.Average_Temperature.GetString(),
+                //InputFields.Spec_Section.GetString(),
+                //InputFields.Section_Description.GetString(),
+                //InputFields.Feature.GetString(),
+                //InputFields.Crew_Foreman.GetString(),
+                //InputFields.Contractor.GetString(),
+                //"InspectionType",
+                //"InspectionPassFail",
+                //InputFields.Date_Ready.GetString(),
+                //InputFields.Date_Completed.GetString(),
+                //InputFields.Total_Inspection_Time.GetString()
             };
 
             return RequiredFieldIDs;
         }
-
+        
         public virtual void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00)
             => ExpandAndSelectFromDDList(InputFields.Time_Begin, (int)shiftStartTime);
 
@@ -375,8 +389,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void Enter_AverageTemp(int avgTemp = 80)
         {
-            By clickLocator = By.XPath($"//input[@id='{InputFields.Average_Temperature.GetString()}']/preceding-sibling::input");
-            By locator = By.XPath($"//input[@id='{InputFields.Average_Temperature.GetString()}']");
+            string avgTempFieldId = InputFields.Average_Temperature.GetString();
+            By clickLocator = By.XPath($"//input[@id='{avgTempFieldId}']/preceding-sibling::input");
+            By locator = By.XPath($"//input[@id='{avgTempFieldId}']");
             ClickElement(clickLocator);
             EnterText(locator, avgTemp.ToString(), false);
         }
@@ -389,6 +404,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectDDL_Feature(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Feature, ddListSelection);
+
+        public virtual void SelectDDL_ControlPointNumber(int ddListSelection = 1)
+            => ExpandAndSelectFromDDList(InputFields.Control_Point_Number, ddListSelection);
+
+        public virtual void SelectDDL_Contractor(int ddListSelection =1)
+            => ExpandAndSelectFromDDList(InputFields.Contractor, ddListSelection);
 
         public virtual void SelectDDL_Contractor<T>(T ddListSelection)
             => ExpandAndSelectFromDDList(InputFields.Contractor, ddListSelection);
@@ -487,9 +508,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         //LAX
         public virtual void Enter_TotalInspectionTime()
         {
-            By clickLocator = By.XPath($"//input[@id='{InputFields.Total_Inspection_Time.GetString()}']/preceding-sibling::input");
-            By locator = By.XPath($"//input[@id='{InputFields.Total_Inspection_Time.GetString()}']");
-            //GetTextInputFieldByLocator(InputFields.Total_Inspection_Time);
+            string inspectTimeFieldId = InputFields.Total_Inspection_Time.GetString();
+            By clickLocator = By.XPath($"//input[@id='{inspectTimeFieldId}']/preceding-sibling::input");
+            By locator = By.XPath($"//input[@id='{inspectTimeFieldId}']");
             ClickElement(clickLocator);
             EnterText(locator, "24", false);
         }
@@ -565,7 +586,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return trimmedList;
         }
 
-        internal bool VerifyExpectedRequiredFields(IList<string> actualReqFieldIDs, IList<string> expectedReqFieldIDs = null)
+        internal bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs = null)
         {
             int expectedCount = 0;
             int actualCount = 0;
@@ -574,11 +595,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-                IList<string> trimmedExpectedIDs = expectedReqFieldIDs ?? TrimInputFieldIDs(QaRcrdCtrl_QaDIR.GetRequiredFieldIDs(), "0__");
+                IList<string> trimmedExpectedIDs = expectedRequiredFieldIDs ?? TrimInputFieldIDs(QaRcrdCtrl_QaDIR.GetRequiredFieldIDs(), "0__");
                 IList<bool> results = new List<bool>();
 
                 expectedCount = trimmedExpectedIDs.Count;
-                actualCount = actualReqFieldIDs.Count;
+                actualCount = actualRequiredFieldIDs.Count;
                 countsMatch = expectedCount.Equals(actualCount);
 
                 int tblRowIndex = 0;
@@ -590,7 +611,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     for (int i = 0; i < expectedCount; i++)
                     {
                         tblRowIndex++;
-                        string actualID = actualReqFieldIDs[i];
+                        string actualID = actualRequiredFieldIDs[i];
                         reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
                         results.Add(reqFieldsMatch);
                         idTable[tblRowIndex] = new string[2] {actualID, reqFieldsMatch.ToString()};
@@ -645,22 +666,45 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         private void CloseReqFieldErrorSummaryPopup()
             => JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
 
-        public virtual bool VerifyReqFieldErrorsForNewDir()
+        public virtual bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, bool verifyControPointReqFields = false)
         {
             IList<string> errorSummaryIDs = GetErrorSummaryIDs();
             CloseReqFieldErrorSummaryPopup();
 
             IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath("//span[text()='*']"), "id"), "0_");
 
-            bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds);
+            IList<string> expectedReqFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetRequiredFieldIDs();
+
+            bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedReqFieldIDs);
 
             bool requiredFieldsMatch = false;
 
             if (actualMatchesExpected)
             {
                 int actualIdCount = trimmedActualIds.Count;
-                int expectedIdCount = actualIdCount;
+                int expectedIdCount = expectedReqFieldIDs.Count;
                 int errorSummaryIdCount = errorSummaryIDs.Count;
+
+                if (verifyControPointReqFields)
+                {
+                    IList<IWebElement> elements = GetElements(By.XPath("//span[contains(@aria-owns,'HoldPoint')]"));
+                    foreach (IWebElement element in elements)
+                    {
+                        if (element.GetCssValue("border-color") == "red")
+                        {
+                            var id = element.FindElement(By.XPath("./input")).GetAttribute("id");
+                            trimmedActualIds.Add(id);
+                        }
+                    }
+
+                    actualIdCount = trimmedActualIds.Count;
+                    trimmedActualIds = new List<string>()
+                    {
+                        "ControlPoint No.",
+                        "ControlPoint Type"
+                    };
+                }
+
                 bool countsMatch = actualIdCount.Equals(errorSummaryIdCount);
                 LogInfo($"Expected ID Count: {expectedIdCount}<br>Actual ID Count: {actualIdCount}<br>Required Field Error Summary ID Count: {errorSummaryIdCount}", countsMatch);
 
@@ -674,7 +718,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             return requiredFieldsMatch;
         }
+
+        internal IList<string> ControlPointReqFieldIDs = new List<string>()
+        {
+            InputFields.Control_Point_Number.GetString(),
+            InputFields.Control_Point_Type.GetString()
+        };
+
+        internal bool VerifyControlPointReqFieldErrors() => VerifyReqFieldErrorsForNewDir(ControlPointReqFieldIDs, true);
     }
+
+
+    //Tenant Specific Classes
 
     public class QADIRs_Garnet : QADIRs
     {
@@ -688,6 +743,47 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public QADIRs_GLX(IWebDriver driver) : base(driver)
         {
         }
+
+        //GLX
+        public override void PopulateRequiredFields()
+        {
+            SelectDDL_TimeBegin(TimeBlock.AM_06_00);
+            SelectDDL_TimeEnd(TimeBlock.PM_04_00);
+            Enter_AverageTemp(80);
+            SelectDDL_Area();
+            SelectDDL_SpecSection();
+            SelectDDL_Feature();
+            SelectDDL_Contractor();
+            SelectDDL_CrewForeman();
+            SelectChkbox_InspectionType_C();
+            SelectChkbox_InspectionResult_P();
+            ClickBtn_Save_Forward();
+            AddAssertionToList(VerifyControlPointReqFieldErrors());
+            SelectDDL_ControlPointNumber();
+            StoreDirNumber();
+        }
+
+        //GLX
+        public override IList<string> GetRequiredFieldIDs()
+        {
+            IList<string> RequiredFieldIDs = new List<string>()
+            {
+                InputFields.Time_Begin.GetString(),
+                InputFields.Time_End.GetString(),
+                InputFields.Average_Temperature.GetString(),
+                InputFields.Area.GetString(),
+                InputFields.Spec_Section.GetString(),
+                InputFields.Feature.GetString(),
+                InputFields.Contractor.GetString(),
+                InputFields.Crew_Foreman.GetString(),
+                InputFields.Section_Description.GetString(),
+                "InspectionType",
+                "InspectionPassFail"
+            };
+
+            return RequiredFieldIDs;
+        }
+
     }
 
     public class QADIRs_SH249 : QADIRs
@@ -709,6 +805,46 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public QADIRs_I15South(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void PopulateRequiredFields()
+        {
+            SelectDDL_TimeBegin(TimeBlock.AM_06_00);
+            SelectDDL_TimeEnd(TimeBlock.PM_04_00);
+            SelectDDL_SpecSection();
+            SelectDDL_Feature();
+            SelectDDL_Contractor(1);
+            SelectDDL_CrewForeman();
+            SelectChkbox_InspectionType_C();
+            SelectChkbox_InspectionResult_P();
+            Enter_ReadyDate();
+            Enter_CompletedDate();
+            Enter_TotalInspectionTime();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            AddAssertionToList(VerifyControlPointReqFieldErrors());
+            SelectDDL_ControlPointNumber();
+            StoreDirNumber();
+        }
+
+        public override IList<string> GetRequiredFieldIDs()
+        {
+            IList<string> RequiredFieldIDs = new List<string>()
+            {
+                InputFields.Time_Begin.GetString(),
+                InputFields.Time_End.GetString(),
+                InputFields.Spec_Section.GetString(),
+                InputFields.Section_Description.GetString(),
+                InputFields.Feature.GetString(),
+                InputFields.Contractor.GetString(),
+                InputFields.Crew_Foreman.GetString(),
+                "InspectionType",
+                "InspectionPassFail",
+                InputFields.Date_Ready.GetString(),
+                InputFields.Date_Completed.GetString(),
+                InputFields.Total_Inspection_Time.GetString()
+            };
+
+            return RequiredFieldIDs;
+        }
     }
 
     public class QADIRs_I15Tech : QADIRs
@@ -716,6 +852,49 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public QADIRs_I15Tech(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void PopulateRequiredFields()
+        {
+            SelectDDL_TimeBegin(TimeBlock.AM_06_00);
+            SelectDDL_TimeEnd(TimeBlock.PM_04_00);
+            SelectDDL_Area();
+            SelectDDL_SpecSection();
+            SelectDDL_Feature();
+            SelectDDL_Contractor();
+            SelectDDL_CrewForeman();
+            SelectChkbox_InspectionType_C();
+            SelectChkbox_InspectionResult_P();
+            Enter_ReadyDate();
+            Enter_CompletedDate();
+            Enter_TotalInspectionTime();
+            ClickBtn_Save_Forward();
+            AddAssertionToList(VerifyControlPointReqFieldErrors());
+            SelectDDL_ControlPointNumber();
+            StoreDirNumber();
+        }
+
+        public override IList<string> GetRequiredFieldIDs()
+        {
+            IList<string> RequiredFieldIDs = new List<string>()
+            {
+                InputFields.Time_Begin.GetString(),
+                InputFields.Time_End.GetString(),
+                InputFields.Area.GetString(),
+                InputFields.Spec_Section.GetString(),
+                InputFields.Section_Description.GetString(),
+                InputFields.Feature.GetString(),
+                InputFields.Contractor.GetString(),
+                InputFields.Crew_Foreman.GetString(),            
+                "InspectionType",
+                "InspectionPassFail",
+                InputFields.Date_Ready.GetString(),
+                InputFields.Date_Completed.GetString(),
+                InputFields.Total_Inspection_Time.GetString()
+            };
+
+            return RequiredFieldIDs;
+        }
+
     }
 
     public class QADIRs_LAX : QADIRs
@@ -735,11 +914,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Contractor("LINXS");
             SelectDDL_CrewForeman();
             EnterText_SectionDescription(GetTextFromDDL(QADIRs.InputFields.Spec_Section));
-            SelectChkbox_InspectionType_I();
+            SelectChkbox_InspectionType_C();
             SelectChkbox_InspectionResult_P();
             Enter_ReadyDate();
             Enter_CompletedDate();
             Enter_TotalInspectionTime();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            AddAssertionToList(VerifyControlPointReqFieldErrors());
+            SelectDDL_ControlPointNumber();
             StoreDirNumber();
         }
 
@@ -753,7 +935,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.Average_Temperature.GetString(),
                 InputFields.Spec_Section.GetString(),
                 InputFields.Section_Description.GetString(),
-                InputFields.Feature.GetString(),               
+                InputFields.Feature.GetString(),
                 InputFields.Crew_Foreman.GetString(),
                 InputFields.Contractor.GetString(),
                 "InspectionType",
