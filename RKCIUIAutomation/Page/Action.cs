@@ -385,21 +385,22 @@ namespace RKCIUIAutomation.Page
             ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName));
         }
 
-        public void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxRegardless = true)
+        public void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true)
         {
             string chkbxOrRdoBtn = chkbxOrRadioBtn.GetString();
+            string chkbxOrRdoBtnNameAndId = $"{chkbxOrRadioBtn.ToString()} (ID: {chkbxOrRdoBtn})";
             By locator = By.Id(chkbxOrRdoBtn);
 
-            IWebElement element = GetElement(locator);
-            bool isElementEnabled = element.Enabled;
             try
             {
-                if (isElementEnabled)
+                IWebElement element = GetElement(locator);
+
+                if (element.Enabled)
                 {
-                    if (toggleChkBoxRegardless)
+                    if (toggleChkBoxIfAlreadyChecked)
                     {
                         JsClickElement(locator);
-                        LogInfo($"Selected: {chkbxOrRdoBtn}");
+                        LogInfo($"Selected: {chkbxOrRdoBtnNameAndId}");
                     }
                     else
                     {
@@ -408,17 +409,17 @@ namespace RKCIUIAutomation.Page
                         if (!element.Selected)
                         {
                             JsClickElement(locator);
-                            LogInfo($"Selected: {chkbxOrRdoBtn}");
+                            LogInfo($"Selected: {chkbxOrRdoBtnNameAndId}");
                         }
                         else
                         {
-                            LogInfo($"Did not select element, because it is already selected: {chkbxOrRdoBtn}");
+                            LogInfo($"Did not select element, because it is already selected: {chkbxOrRdoBtnNameAndId}");
                         }
                     }
                 }
                 else
                 {
-                    LogError($"Element {chkbxOrRadioBtn.ToString()}, is selectable", true);
+                    LogError($"Element {chkbxOrRadioBtn.ToString()}, is not selectable", true);
                 }
             }
             catch (Exception e)
@@ -472,6 +473,24 @@ namespace RKCIUIAutomation.Page
             }
 
             return $"{logMsg} Confirmation Dialog: {alertText}";
+        }
+
+        public string GetAlertMessage()
+        {
+            string alertMsg = string.Empty;
+
+            try
+            {
+                IAlert alert = Driver.SwitchTo().Alert();
+                alertMsg = alert.Text;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            return alertMsg;
         }
 
         public void AcceptAlertMessage()

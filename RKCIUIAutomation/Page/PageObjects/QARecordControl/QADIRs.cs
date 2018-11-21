@@ -94,8 +94,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("InspectionPassFail_NA_0")] Inspection_Result_NA, //GLX
             [StringValue("sendNotification1")] SendEmailNotification_Yes,
             [StringValue("sendNotification2")] SendEmailNotification_No,
-            [StringValue("DIREntries_0__Deficiency_6")] AnyDeficiencies_Yes,
-            [StringValue("DIREntries_0__Deficiency_0")] AnyDeficiencies_No
+            [StringValue("DIREntries_0__Deficiency_6")] Deficiencies_Yes,
+            [StringValue("DIREntries_0__Deficiency_0")] Deficiencies_No,
+            [StringValue("DIREntries_0__Deficiency_1")] Deficiencies_CIF,
+            [StringValue("DIREntries_0__Deficiency_3")] Deficiencies_CDR,
+            [StringValue("DIREntries_0__Deficiency_2")] Deficiencies_NCR
         }
     }
 
@@ -135,9 +138,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         string GetDirNumber(string DirNumberKey = "");
 
-        bool VerifyAndCloseDirLockedMessage();
 
-        bool VerifyDirExistsErrorMessage();
 
         void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00);
 
@@ -159,10 +160,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectDDL_CrewForeman(int ddListSelection = 1);
 
-        bool VerifySectionDescription();
-
-        bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "");
-
         void SelectChkbox_InspectionType_I(bool toggleChkboxIfAlreadySelected = true);
 
         void SelectChkbox_InspectionType_C(bool toggleChkboxIfAlreadySelected = true);
@@ -179,9 +176,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectRdoBtn_SendEmailForRevise_No();
 
-        void SelectRdoBtn_AnyDeficiencies_Yes();
+        void SelectRdoBtn_Deficiencies_Yes();
 
-        void SelectRdoBtn_AnyDeficiencies_No();
+        void SelectRdoBtn_Deficiencies_No();
 
         void ClickTab_Create_Revise();
 
@@ -213,7 +210,21 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void Enter_TotalInspectionTime();
 
-        IList<string> GetRequiredFieldIDs();
+        IList<string> GetExpectedRequiredFieldIDsList();
+
+        bool VerifyAndCloseDirLockedMessage();
+
+        bool VerifyDirExistsErrorMessage();
+
+        bool VerifySectionDescription();
+
+        IList<Enum> GetResultCheckBoxIDsList();
+
+        IList<Enum> GetDeficienciesRdoBtnIDsList();
+
+        bool VerifyDeficiencySelectionPopupMessages();
+
+        bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "");
 
         bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, bool verifyControPointReqFields = false);
 
@@ -360,7 +371,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         //All SimpleWF Tenants have different required fields
-        public virtual IList<string> GetRequiredFieldIDs()
+        public virtual IList<string> GetExpectedRequiredFieldIDsList()
         {
             IList<string> RequiredFieldIDs = new List<string>()
             {
@@ -461,6 +472,108 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return isDisplayed;
         }
 
+        public virtual IList<Enum> GetResultCheckBoxIDsList()
+        {
+            IList<Enum> resultChkBoxIDs = new List<Enum>()
+            {
+                RadioBtnsAndCheckboxes.Inspection_Result_P,
+                RadioBtnsAndCheckboxes.Inspection_Result_E,
+            };
+
+            return resultChkBoxIDs;
+        }
+
+        //I15SB, I15Tech
+        public virtual IList<Enum> GetDeficienciesRdoBtnIDsList()
+        {
+            IList<Enum> deficienciesRdoBtnIDs = new List<Enum>()
+            {
+                RadioBtnsAndCheckboxes.Deficiencies_Yes,
+                RadioBtnsAndCheckboxes.Deficiencies_CIF,
+                RadioBtnsAndCheckboxes.Deficiencies_CDR,
+                RadioBtnsAndCheckboxes.Deficiencies_NCR
+            };
+
+            return deficienciesRdoBtnIDs;
+        }
+
+        public virtual bool VerifyDeficiencySelectionPopupMessages()
+        {
+            IList<Enum> resultChkBoxIDs = QaRcrdCtrl_QaDIR.GetResultCheckBoxIDsList();
+
+            IList<Enum> deficienciesRdoBtnIDs = QaRcrdCtrl_QaDIR.GetDeficienciesRdoBtnIDsList();
+
+            string resultTypeMsg = string.Empty;
+            string expectedAlertMsg = string.Empty;
+            string alertMsg = string.Empty;
+            bool alertMsgMatch = false;
+            bool alertMsgExpected = false;
+            IList<bool> assertList = new List<bool>();
+
+            //Select Pass Result chkBx first, then Deficiency RdoBtn - "Since Pass checked, not allow to check any deficiency";
+            //Select Deficiency RdoBtn, then select Pass Result chkBx - "There is a deficiency checked in this entry, not allow to pass!"
+
+            //Select E Result chkBx first, then Deficiency RdoBtn - "Since Engineer Decision checked, not allow to check any deficiency"
+            //Select Deficiency RdoBtn, then select E Result chkBx - "There is a deficiency checked in this entry, not allow to make engineer decision!"
+
+            try
+            {
+                SelectRdoBtn_Deficiencies_No();
+                SelectChkbox_InspectionResult_P(false);
+
+                foreach (Enum resultChkBox in resultChkBoxIDs)
+                {
+                    SelectRadioBtnOrChkbox(resultChkBox, false);
+
+                    foreach (Enum deficiencyRdoBtn in deficienciesRdoBtnIDs)
+                    {
+                        SelectRadioBtnOrChkbox(deficiencyRdoBtn);
+                        resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "Pass" : "Engineer Decision";
+                        expectedAlertMsg = $"Since {resultTypeMsg} checked, not allow to check any deficiency";
+                        alertMsg = GetAlertMessage();
+                        alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
+                        assertList.Add(alertMsgMatch);
+                        LogInfo($"<br>Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        AcceptAlertMessage();
+                    }
+                }
+
+                SelectChkbox_InspectionResult_P(false); //Ensures Pass Result checkbox is selected
+                SelectRdoBtn_Deficiencies_No();
+                SelectChkbox_InspectionResult_P(); //Unchecks Pass Result checkbox
+
+                foreach (Enum deficiencyRdoBtn in deficienciesRdoBtnIDs)
+                {
+                    SelectRadioBtnOrChkbox(deficiencyRdoBtn);
+
+                    foreach (Enum resultChkBox in resultChkBoxIDs)
+                    {
+                        SelectRadioBtnOrChkbox(resultChkBox, false);
+                        resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "pass" : "make engineer decision";
+                        expectedAlertMsg = $"There is a deficiency checked in this entry, not allow to {resultTypeMsg}!";
+                        alertMsg = GetAlertMessage();
+                        alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
+                        assertList.Add(alertMsgMatch);
+                        LogInfo($"<br>Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        AcceptAlertMessage();
+                    }
+                }
+
+                alertMsgExpected = assertList.Contains(false) ? false : true;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            finally
+            {
+                SelectRdoBtn_Deficiencies_No();
+                SelectChkbox_InspectionResult_P();
+            }
+            
+            return alertMsgExpected;
+        }
+
         public virtual void SelectChkbox_InspectionType_I(bool toggleChkboxIfAlreadySelected = true)
             => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_I, toggleChkboxIfAlreadySelected);
 
@@ -485,11 +598,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void SelectRdoBtn_SendEmailForRevise_No()
             => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.SendEmailNotification_No);
 
-        public virtual void SelectRdoBtn_AnyDeficiencies_Yes()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.AnyDeficiencies_Yes);
+        public virtual void SelectRdoBtn_Deficiencies_Yes()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Deficiencies_Yes);
 
-        public virtual void SelectRdoBtn_AnyDeficiencies_No()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.AnyDeficiencies_No);
+        public virtual void SelectRdoBtn_Deficiencies_No()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Deficiencies_No);
 
         public virtual void EnterText_DeficiencyDescription(string desc = "")
             => EnterText(GetTextAreaFieldByLocator(InputFields.Deficiency_Description),
@@ -703,7 +816,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     string[] splitReq = Regex.Split(splitType[1], " Required");
                     string fieldName = splitReq[0];
                     extractedFieldNames.Add(fieldName);
-                    log.Debug($"Added Required Field Error Summary ID: {fieldName}");
+                    log.Debug($"Adding Required Field Error Summary ID to Actuals list: {fieldName}");
                 }
             }
             catch (Exception e)
@@ -742,7 +855,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
 
-                expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetRequiredFieldIDs();
+                expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedRequiredFieldIDsList();
 
                 bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
 
@@ -791,54 +904,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
     }
 
-    public class QADIRs_GLX : QADIRs
-    {
-        public QADIRs_GLX(IWebDriver driver) : base(driver)
-        {
-        }
-
-        //GLX
-        public override void PopulateRequiredFields()
-        {
-            SelectDDL_TimeBegin(TimeBlock.AM_06_00);
-            SelectDDL_TimeEnd(TimeBlock.PM_04_00);
-            Enter_AverageTemp(80);
-            SelectDDL_Area();
-            SelectDDL_SpecSection();
-            SelectDDL_Feature();
-            SelectDDL_Contractor();
-            SelectDDL_CrewForeman();
-            SelectChkbox_InspectionType_C();
-            SelectChkbox_InspectionResult_P();
-            ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
-            SelectDDL_ControlPointNumber();
-            StoreDirNumber();
-        }
-
-        //GLX
-        public override IList<string> GetRequiredFieldIDs()
-        {
-            IList<string> RequiredFieldIDs = new List<string>()
-            {
-                InputFields.Time_Begin.GetString(),
-                InputFields.Time_End.GetString(),
-                InputFields.Average_Temperature.GetString(),
-                InputFields.Area.GetString(),
-                InputFields.Spec_Section.GetString(),
-                InputFields.Feature.GetString(),
-                InputFields.Contractor.GetString(),
-                InputFields.Crew_Foreman.GetString(),
-                InputFields.Section_Description.GetString(),
-                "Inspection Type",
-                "Inspection Result"
-            };
-
-            return RequiredFieldIDs;
-        }
-
-    }
-
     public class QADIRs_SH249 : QADIRs
     {
         public QADIRs_SH249(IWebDriver driver) : base(driver)
@@ -878,7 +943,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             StoreDirNumber();
         }
 
-        public override IList<string> GetRequiredFieldIDs()
+        public override IList<string> GetExpectedRequiredFieldIDsList()
         {
             IList<string> RequiredFieldIDs = new List<string>()
             {
@@ -926,7 +991,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             StoreDirNumber();
         }
 
-        public override IList<string> GetRequiredFieldIDs()
+        public override IList<string> GetExpectedRequiredFieldIDsList()
         {
             IList<string> RequiredFieldIDs = new List<string>()
             {
@@ -949,6 +1014,62 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
     }
+
+    public class QADIRs_GLX : QADIRs
+    {
+        public QADIRs_GLX(IWebDriver driver) : base(driver)
+        {
+        }
+
+        public override void PopulateRequiredFields()
+        {
+            SelectDDL_TimeBegin(TimeBlock.AM_06_00);
+            SelectDDL_TimeEnd(TimeBlock.PM_04_00);
+            Enter_AverageTemp(80);
+            SelectDDL_Area();
+            SelectDDL_SpecSection();
+            SelectDDL_Feature();
+            SelectDDL_Contractor();
+            SelectDDL_CrewForeman();
+            SelectChkbox_InspectionType_C();
+            SelectChkbox_InspectionResult_P();
+            ClickBtn_Save_Forward();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
+            SelectDDL_ControlPointNumber();
+            StoreDirNumber();
+        }
+
+        public override IList<string> GetExpectedRequiredFieldIDsList()
+        {
+            IList<string> RequiredFieldIDs = new List<string>()
+            {
+                InputFields.Time_Begin.GetString(),
+                InputFields.Time_End.GetString(),
+                InputFields.Average_Temperature.GetString(),
+                InputFields.Area.GetString(),
+                InputFields.Spec_Section.GetString(),
+                InputFields.Feature.GetString(),
+                InputFields.Contractor.GetString(),
+                InputFields.Crew_Foreman.GetString(),
+                InputFields.Section_Description.GetString(),
+                "Inspection Type",
+                "Inspection Result"
+            };
+
+            return RequiredFieldIDs;
+        }
+
+        public override IList<Enum> GetDeficienciesRdoBtnIDsList()
+        {
+            IList<Enum> deficienciesRdoBtnIDs = new List<Enum>()
+            {
+                RadioBtnsAndCheckboxes.Deficiencies_Yes
+            };
+
+            return deficienciesRdoBtnIDs;
+        }
+    }
+
 
     public class QADIRs_LAX : QADIRs
     {
@@ -974,11 +1095,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_TotalInspectionTime();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
-            SelectDDL_ControlPointNumber();
+            //SelectDDL_ControlPointNumber(); //Currently does not have values to choose in the drop down list
+            SelectChkbox_InspectionType_I();
             StoreDirNumber();
         }
 
-        public override IList<string> GetRequiredFieldIDs()
+        public override IList<string> GetExpectedRequiredFieldIDsList()
         {
             IList<string> RequiredFieldIDs = new List<string>()
             {
@@ -1001,5 +1123,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
+        public override IList<Enum> GetDeficienciesRdoBtnIDsList()
+        {
+            IList<Enum> deficienciesRdoBtnIDs = new List<Enum>()
+            {
+                RadioBtnsAndCheckboxes.Deficiencies_Yes
+            };
+
+            return deficienciesRdoBtnIDs;
+        }
     }
 }

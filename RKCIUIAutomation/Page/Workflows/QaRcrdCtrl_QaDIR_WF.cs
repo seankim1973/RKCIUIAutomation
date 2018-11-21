@@ -137,13 +137,13 @@ namespace RKCIUIAutomation.Page.Workflows
             LogDebug($">>> Modify_DeficiencyDescription_Cancel_and_Verify <<<");
 
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
-            QaRcrdCtrl_QaDIR.SelectRdoBtn_AnyDeficiencies_Yes();
+            QaRcrdCtrl_QaDIR.SelectRdoBtn_Deficiencies_Yes();
             QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
             QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber), "VerifyDirIsDisplayed");
             ClickEditBtnForRow();
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Inspection_Result_P), "VerifyChkBoxRdoBtnSelection Inspection_Result_P");
-            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.AnyDeficiencies_No), "VerifyChkBoxRdoBtnSelection AnyDeficiencies_No");
+            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Deficiencies_No), "VerifyChkBoxRdoBtnSelection AnyDeficiencies_No");
             AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description, true), "VerifyTextAreaField Deficiency_Description - Should Be Empty");
         }
 
@@ -151,15 +151,16 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogDebug($">>> Modify_DeficiencyDescription_Save_and_Verify <<<");
 
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDeficiencySelectionPopupMessages(), "VerifyDeficiencySelectionPopupMessages");
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
-            QaRcrdCtrl_QaDIR.SelectRdoBtn_AnyDeficiencies_Yes();
+            QaRcrdCtrl_QaDIR.SelectRdoBtn_Deficiencies_Yes();
             QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber));
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
             ClickEditBtnForRow();
-            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Inspection_Result_F));
-            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.AnyDeficiencies_Yes));
-            AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description));
+            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Inspection_Result_F), "VerifyChkBoxRdoBtnSelection(Inspection_Result_F)");
+            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Deficiencies_Yes), "VerifyChkBoxRdoBtnSelection(Deficiencies_Yes)");
+            AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description), "VerifyTextAreaField(Deficiency_Description)");
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
         }
 
@@ -167,7 +168,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogDebug($">>> Verify_DIR_then_Approve_inReview <<<");
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber));
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed(TableTab.QC_Review)");
             ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Approve();
         }
@@ -176,10 +177,10 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogDebug($">>> Verify_DIR_then_Approve_inAuthorization <<<");
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Authorization, dirNumber));
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Authorization, dirNumber), "VerifyDirIsDisplayed(TableTab.Authorization)");
             ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Approve();
-            AddAssertionToList(QaSearch_DIR.VerifyDirIsClosedByTblFilter(dirNumber));
+            AddAssertionToList(QaSearch_DIR.VerifyDirIsClosedByTblFilter(dirNumber), "VerifyDirIsClosedByTblFilter");
         }
 
     }
@@ -194,13 +195,13 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogDebug($">>> KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateReview <<<");
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber));
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber), "VerifyDirIsDisplayed(kickBackfromTableTab)");
             ClickEditBtnForRow();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifySectionDescription());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifySectionDescription(), "VerifySectionDescription");
             QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber));
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
             ClickEditBtnForRow();
         }
     }
