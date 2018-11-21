@@ -142,18 +142,20 @@ namespace RKCIUIAutomation.Test
         }
 
         [ThreadStatic]
-        private static IList<bool> assertionList;
+        private static IList<KeyValuePair<string, bool>> assertionList;
 
-        public void AddAssertionToList(bool assertion)
+        public void AddAssertionToList(bool assertion, string details = "")
         {
+            KeyValuePair<string, bool> assertionKVPair = new KeyValuePair<string, bool>(details, assertion);
+
             if (assertionList == null)
             {
                 log.Info("...Created new assertion list");
-                assertionList = new List<bool>();
+                assertionList = new List<KeyValuePair<string, bool>>();
             }
 
             log.Info("...added an assertion to the list");
-            assertionList.Add(assertion);
+            assertionList.Add(assertionKVPair);
         }
 
         public void AssertAll()
@@ -164,12 +166,13 @@ namespace RKCIUIAutomation.Test
 
                 if (assertionList != null)
                 {
-                    foreach (bool assertion in assertionList)
+                    foreach (KeyValuePair<string, bool> assertion in assertionList)
                     {
                         Assertions++;
                         try
                         {
-                            Assert.That(assertion, Is.True);
+                            log.Debug($"{assertion.Key} : {assertion.Value}");
+                            Assert.That(assertion.Value, Is.True);
                         }
                         catch (Exception e)
                         {

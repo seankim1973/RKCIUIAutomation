@@ -113,7 +113,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
             QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(), "VerifyReqFieldErrorsForNewDir");
             QaRcrdCtrl_QaDIR.PopulateRequiredFields();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             return QaRcrdCtrl_QaDIR.GetDirNumber();
@@ -123,12 +123,12 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogDebug($">>> KickBack_DIR_ForRevise_From{kickBackfromTableTab.ToString()}Tab_then_Edit_inCreateReview <<<");
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber));
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber), "VerifyDirIsDisplayed");
             ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber));
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber), "VerifyDirIsDisplayed");
             ClickEditBtnForRow();
         }
 
@@ -140,11 +140,11 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_QaDIR.SelectRdoBtn_AnyDeficiencies_Yes();
             QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
             QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber));
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber), "VerifyDirIsDisplayed");
             ClickEditBtnForRow();
-            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Inspection_Result_P));
-            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.AnyDeficiencies_No));
-            AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description, true));
+            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Inspection_Result_P), "VerifyChkBoxRdoBtnSelection Inspection_Result_P");
+            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.AnyDeficiencies_No), "VerifyChkBoxRdoBtnSelection AnyDeficiencies_No");
+            AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description, true), "VerifyTextAreaField Deficiency_Description - Should Be Empty");
         }
 
         public virtual void Modify_Save_Verify_and_SaveForward_inCreateRevise(string dirNumber)

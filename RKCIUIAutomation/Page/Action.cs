@@ -32,7 +32,8 @@ namespace RKCIUIAutomation.Page
             [StringValue("var evObj = document.createEvent('MouseEvents');" +
                     "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
                     "arguments[0].dispatchEvent(evObj);")]
-            Hover
+            Hover,
+            [StringValue("")] GetCssValue
         }
 
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)

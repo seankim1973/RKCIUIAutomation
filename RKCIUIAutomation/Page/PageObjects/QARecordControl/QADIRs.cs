@@ -217,6 +217,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, bool verifyControPointReqFields = false);
 
+        bool VerifyControlPointReqFieldErrors();
+
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -540,53 +542,93 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         internal IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern)
         {
-            IList<string> trimmedList = new List<string>();
+            IList<string> trimmedList = null;
 
-            foreach (string fieldId in fieldIdList)
+            try
             {
-                string[] split = new string[2];
-                string id = string.Empty;
+                trimmedList = new List<string>();
 
-                if (fieldId.Contains(splitPattern))
+                foreach (string fieldId in fieldIdList)
                 {
-                    split = Regex.Split(fieldId, splitPattern);
-                    id = split[1];
+                    string[] split = new string[2];
+                    string id = string.Empty;
 
-                    string[] newId = new string[2];
-                    if (id.Contains("Id"))
+                    if (fieldId.Contains(splitPattern))
                     {
-                        newId = Regex.Split(id, "Id");
-                        id = newId[0];
+                        split = Regex.Split(fieldId, splitPattern);
+                        id = split[1];
+
+                        string[] newId = new string[2];
+                        if (id.Contains("Id"))
+                        {
+                            newId = Regex.Split(id, "Id");
+                            id = newId[0];
+                        }
+                        else if (id.Contains("HoldPoint"))
+                        {
+                            if (id.Equals("HoldPointTypeID"))
+                            {
+                                id = "ControlPoint No.";
+                            }
+                            else
+                                id = "ControlPoint Type";
+                        }
+                        else if (id.Contains("ID") && !id.Contains("HoldPoint"))
+                        {
+                            newId = Regex.Split(id, "ID");
+                            id = newId[0];
+                        }
+                        else if (id.Contains("PassFail"))
+                        {
+                            id = Regex.Replace(id, "PassFail", "Result");
+                        }
+                        else if (id.Equals("DateReady") || id.Equals("DateCompleted") || id.Equals("InspectionHours"))
+                        {
+                            if (id.Equals("DateReady"))
+                            {
+                                id = "Ready";
+                            }
+                            else if (id.Equals("DateCompleted"))
+                            {
+                                id = "Completed Date";
+                            }
+                            else if (id.Equals("InspectionHours"))
+                            {
+                                id = "Total Inspection Time";
+                            }
+                        }
+
+                        if (!fieldId.Contains("Time"))
+                        {
+                            if (!id.Contains(" "))
+                            {
+                                id = id.SplitCamelCase();
+                            }
+                        }
                     }
-                    else if (id.Contains("ID"))
+                    else if (fieldId.Equals("InspectionPassFail") || fieldId.Equals("InspectionType"))
                     {
-                        newId = Regex.Split(id, "ID");
-                        id = newId[0];
+
+                        id = fieldId.Equals("InspectionPassFail") ? Regex.Replace(fieldId, "PassFail", "Result") : fieldId;
+                        id = id.SplitCamelCase();
                     }
-                    else if (id.Contains("PassFail"))
+                    else
                     {
-                        id = Regex.Replace(id, "PassFail", "Result");
+                        id = fieldId;
                     }
 
-                    id = !fieldId.Contains("Time") ? id.SplitCamelCase() : id;
+                    trimmedList.Add(id);
                 }
-                else if (fieldId.Contains("Inspection"))
-                {
-                    id = Regex.Replace(fieldId, "PassFail", "Result");
-                    id = id.SplitCamelCase();
-                }
-                else
-                {
-                    id = fieldId;
-                }
-
-                trimmedList.Add(id);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
             }
 
             return trimmedList;
         }
 
-        internal bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs = null)
+        internal bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs)
         {
             int expectedCount = 0;
             int actualCount = 0;
@@ -595,7 +637,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-                IList<string> trimmedExpectedIDs = expectedRequiredFieldIDs ?? TrimInputFieldIDs(QaRcrdCtrl_QaDIR.GetRequiredFieldIDs(), "0__");
+                IList<string> trimmedExpectedIDs = TrimInputFieldIDs(expectedRequiredFieldIDs, "0__");
                 IList<bool> results = new List<bool>();
 
                 expectedCount = trimmedExpectedIDs.Count;
@@ -603,8 +645,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 countsMatch = expectedCount.Equals(actualCount);
 
                 int tblRowIndex = 0;
-                string[][] idTable = new string[expectedCount + 1][];
-                idTable[tblRowIndex] = new string[2] { "Expected ID | ", " | Found Matching Actual ID" };
+                string[][] idTable = new string[expectedCount + 2][];
+                idTable[tblRowIndex] = new string[2] { $"|  Expected ID  | ", $" |  Found Matching Actual ID  | " };
 
                 if (countsMatch)
                 {
@@ -614,7 +656,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         string actualID = actualRequiredFieldIDs[i];
                         reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
                         results.Add(reqFieldsMatch);
-                        idTable[tblRowIndex] = new string[2] {actualID, reqFieldsMatch.ToString()};
+                        idTable[tblRowIndex] = new string[2] { $" |  {actualID} : ", $" {reqFieldsMatch.ToString()}" };
                     }
                 }
                 else
@@ -624,12 +666,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 }
 
                 reqFieldsMatch = results.Contains(false) ? false : true;
-                idTable[tblRowIndex] = new string[2] {"Total Required Fields:", results.Count.ToString()};
+                idTable[tblRowIndex +1] = new string[2] {"Total Required Fields:", (results.Count).ToString()};
                 LogInfo(idTable, reqFieldsMatch);
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error(e.StackTrace);
             }
 
             return reqFieldsMatch;
@@ -637,95 +679,106 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         private IList<string> GetErrorSummaryIDs()
         {
-            IList<string> errorElements = GetTextForElements(By.XPath("//div[contains(@class,'validation-summary-errors')]/ul/li"));
+            IList<string> errorElements = null;
+            IList<string> extractedFieldNames = null;
 
-            IList<string> extractedFieldNames = new List<string>();
-
-            foreach (string error in errorElements)
+            try
             {
-                string[] splitType = new string[2];
+                errorElements = GetTextForElements(By.XPath("//div[contains(@class,'validation-summary-errors')]/ul/li"));
+                extractedFieldNames = new List<string>();
 
-                if (error.Contains("DIR:"))
+                foreach (string error in errorElements)
                 {
-                    splitType = Regex.Split(error, "Shift ");
-                }
-                else if (error.Contains("Entry Number"))
-                {
-                    splitType = Regex.Split(error, "1: ");
-                }
+                    string[] splitType = new string[2];
 
-                string[] splitReq = Regex.Split(splitType[1], " Required");
-                string fieldName = splitReq[0];
-                extractedFieldNames.Add(fieldName);
-                log.Debug($"Added Required Field Error Summary ID: {fieldName}");
+                    if (error.Contains("DIR:"))
+                    {
+                        splitType = Regex.Split(error, "Shift ");
+                    }
+                    else if (error.Contains("Entry Number"))
+                    {
+                        splitType = Regex.Split(error, "1: ");
+                    }
+
+                    string[] splitReq = Regex.Split(splitType[1], " Required");
+                    string fieldName = splitReq[0];
+                    extractedFieldNames.Add(fieldName);
+                    log.Debug($"Added Required Field Error Summary ID: {fieldName}");
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            finally
+            {
+                JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
             }
 
             return extractedFieldNames;
         }
-
-        private void CloseReqFieldErrorSummaryPopup()
-            => JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
-
-        public virtual bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, bool verifyControPointReqFields = false)
-        {
-            IList<string> errorSummaryIDs = GetErrorSummaryIDs();
-            CloseReqFieldErrorSummaryPopup();
-
-            IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath("//span[text()='*']"), "id"), "0_");
-
-            IList<string> expectedReqFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetRequiredFieldIDs();
-
-            bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedReqFieldIDs);
-
-            bool requiredFieldsMatch = false;
-
-            if (actualMatchesExpected)
-            {
-                int actualIdCount = trimmedActualIds.Count;
-                int expectedIdCount = expectedReqFieldIDs.Count;
-                int errorSummaryIdCount = errorSummaryIDs.Count;
-
-                if (verifyControPointReqFields)
-                {
-                    IList<IWebElement> elements = GetElements(By.XPath("//span[contains(@aria-owns,'HoldPoint')]"));
-                    foreach (IWebElement element in elements)
-                    {
-                        if (element.GetCssValue("border-color") == "red")
-                        {
-                            var id = element.FindElement(By.XPath("./input")).GetAttribute("id");
-                            trimmedActualIds.Add(id);
-                        }
-                    }
-
-                    actualIdCount = trimmedActualIds.Count;
-                    trimmedActualIds = new List<string>()
-                    {
-                        "ControlPoint No.",
-                        "ControlPoint Type"
-                    };
-                }
-
-                bool countsMatch = actualIdCount.Equals(errorSummaryIdCount);
-                LogInfo($"Expected ID Count: {expectedIdCount}<br>Actual ID Count: {actualIdCount}<br>Required Field Error Summary ID Count: {errorSummaryIdCount}", countsMatch);
-
-                if (countsMatch)
-                {
-                    foreach (string id in trimmedActualIds)
-                    {
-                        AddAssertionToList(errorSummaryIDs.Contains(id));
-                    }
-                }
-            }
-            return requiredFieldsMatch;
-        }
-
+        
         internal IList<string> ControlPointReqFieldIDs = new List<string>()
         {
             InputFields.Control_Point_Number.GetString(),
             InputFields.Control_Point_Type.GetString()
         };
 
-        internal bool VerifyControlPointReqFieldErrors() => VerifyReqFieldErrorsForNewDir(ControlPointReqFieldIDs, true);
+        public virtual bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, bool verifyControPointReqFields = false)
+        {
+            IList<bool> reqFieldAssertList = null;
+
+            bool requiredFieldsMatch = false;
+
+            try
+            {
+                IList<string> errorSummaryIDs = GetErrorSummaryIDs();
+
+                string controlPointBaseXpath = "//span[contains(@aria-owns,'HoldPoint')]";
+
+                string reqFieldIdXPath = verifyControPointReqFields ? $"{controlPointBaseXpath}/input" : "//span[text()='*']";
+
+                string splitPattern = verifyControPointReqFields ? "0__" : "0_";
+
+                IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
+
+                expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetRequiredFieldIDs();
+
+                bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
+
+                if (actualMatchesExpected)
+                {
+                    reqFieldAssertList = new List<bool>();
+                    int actualIdCount = trimmedActualIds.Count;
+                    int expectedIdCount = expectedRequiredFieldIDs.Count;
+                    int errorSummaryIdCount = errorSummaryIDs.Count;
+                    bool countsMatch = actualIdCount.Equals(errorSummaryIdCount);
+                    LogInfo($"Expected ID Count: {expectedIdCount}<br>Actual ID Count: {actualIdCount}<br>Required Field Error Summary ID Count: {errorSummaryIdCount}", countsMatch);
+
+                    if (countsMatch)
+                    {
+                        bool summaryIDsContainID = false;
+
+                        foreach (string id in trimmedActualIds)
+                        {
+                            summaryIDsContainID = errorSummaryIDs.Contains(id);
+                            AddAssertionToList(summaryIDsContainID, $"{id} contained in Error Summary list");
+                            reqFieldAssertList.Add(summaryIDsContainID);
+                        }
+                    }
+                }
+
+                requiredFieldsMatch = reqFieldAssertList.Contains(false) ? false : true;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return requiredFieldsMatch;
+        }
+
+        public virtual bool VerifyControlPointReqFieldErrors() => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(ControlPointReqFieldIDs, true);
     }
 
 
@@ -758,7 +811,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectChkbox_InspectionType_C();
             SelectChkbox_InspectionResult_P();
             ClickBtn_Save_Forward();
-            AddAssertionToList(VerifyControlPointReqFieldErrors());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
             SelectDDL_ControlPointNumber();
             StoreDirNumber();
         }
@@ -777,8 +830,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.Contractor.GetString(),
                 InputFields.Crew_Foreman.GetString(),
                 InputFields.Section_Description.GetString(),
-                "InspectionType",
-                "InspectionPassFail"
+                "Inspection Type",
+                "Inspection Result"
             };
 
             return RequiredFieldIDs;
@@ -820,7 +873,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_CompletedDate();
             Enter_TotalInspectionTime();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            AddAssertionToList(VerifyControlPointReqFieldErrors());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             StoreDirNumber();
         }
@@ -836,8 +889,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.Feature.GetString(),
                 InputFields.Contractor.GetString(),
                 InputFields.Crew_Foreman.GetString(),
-                "InspectionType",
-                "InspectionPassFail",
+                "Inspection Type",
+                "Inspection Result",
                 InputFields.Date_Ready.GetString(),
                 InputFields.Date_Completed.GetString(),
                 InputFields.Total_Inspection_Time.GetString()
@@ -868,7 +921,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_CompletedDate();
             Enter_TotalInspectionTime();
             ClickBtn_Save_Forward();
-            AddAssertionToList(VerifyControlPointReqFieldErrors());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
             SelectDDL_ControlPointNumber();
             StoreDirNumber();
         }
@@ -884,9 +937,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.Section_Description.GetString(),
                 InputFields.Feature.GetString(),
                 InputFields.Contractor.GetString(),
-                InputFields.Crew_Foreman.GetString(),            
-                "InspectionType",
-                "InspectionPassFail",
+                InputFields.Crew_Foreman.GetString(),
+                "Inspection Type",
+                "Inspection Result",
                 InputFields.Date_Ready.GetString(),
                 InputFields.Date_Completed.GetString(),
                 InputFields.Total_Inspection_Time.GetString()
@@ -920,7 +973,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_CompletedDate();
             Enter_TotalInspectionTime();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            AddAssertionToList(VerifyControlPointReqFieldErrors());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
             SelectDDL_ControlPointNumber();
             StoreDirNumber();
         }
@@ -938,8 +991,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.Feature.GetString(),
                 InputFields.Crew_Foreman.GetString(),
                 InputFields.Contractor.GetString(),
-                "InspectionType",
-                "InspectionPassFail",
+                "Inspection Type",
+                "Inspection Result",
                 InputFields.Date_Ready.GetString(),
                 InputFields.Date_Completed.GetString(),
                 InputFields.Total_Inspection_Time.GetString()
