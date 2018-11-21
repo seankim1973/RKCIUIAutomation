@@ -474,6 +474,30 @@ namespace RKCIUIAutomation.Sandbox
         }
 
         [TestMethod]
+        public void NestForEach()
+        {
+            IList<string> ABCs = new List<string>()
+            {
+                "A", "B", "C", "D"
+            };
+
+            IList<int> NUMs = new List<int>()
+            {
+                1, 2, 3, 4, 5
+            };
+
+            foreach (string abc in ABCs)
+            {
+                string letter = abc;
+
+                foreach (int number in NUMs)
+                {
+                    Console.WriteLine($"{letter}{number.ToString()}");
+                }
+            }
+        }
+
+        [TestMethod]
         public void GetNamespace()
         {
             string[] name = Regex.Split(GetType().Namespace, "\\.");
@@ -548,7 +572,7 @@ namespace RKCIUIAutomation.Sandbox
         {
             QADIRs qaDirs = new QADIRs();
 
-            IList<string> expectedList = qaDirs.GetRequiredFieldIDs();
+            IList<string> expectedList = qaDirs.GetExpectedRequiredFieldIDsList();
             IList<string> trimmedExpectedIDs = qaDirs.TrimInputFieldIDs(expectedList, "0__");
 
             Console.WriteLine("Trimmed Expected Field IDs List");

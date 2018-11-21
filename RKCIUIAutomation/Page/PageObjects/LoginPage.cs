@@ -3,6 +3,7 @@ using OpenQA.Selenium.Support.UI;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace RKCIUIAutomation.Page.PageObjects
 {
@@ -103,6 +104,26 @@ namespace RKCIUIAutomation.Page.PageObjects
 
                 LogInfo($"Using account : {userAcct[0]}");
                 ClickElement(btn_Login);
+
+                WaitForPageReady();
+                if (Driver.Title.Contains("Log in"))
+                {
+                    IWebElement invalidLoginError = Driver.FindElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+
+                    if (invalidLoginError.Displayed)
+                    {
+                        try
+                        {
+                            string logMsg = invalidLoginError.Text;
+                            LogError(logMsg, true);
+                            throw new System.Exception(logMsg);
+                        }
+                        catch (Exception)
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
         }
 

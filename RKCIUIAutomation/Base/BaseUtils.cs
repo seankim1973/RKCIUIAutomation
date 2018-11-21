@@ -199,11 +199,7 @@ namespace RKCIUIAutomation.Base
 
         public void LogInfo(string[][] detailsList, bool assertion)
         {
-            StringBuilder builder = new StringBuilder();
-
-            IMarkup codeBlock = MarkupHelper.CreateCodeBlock(builder.ToString());
             IMarkup markupTable = MarkupHelper.CreateTable(detailsList);
-
             testInstance = assertion ? testInstance.Pass(markupTable) : testInstance.Fail(markupTable);
         }
 
