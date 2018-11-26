@@ -515,6 +515,17 @@ namespace RKCIUIAutomation.Sandbox
         }
 
         [TestMethod]
+        public void FormatTimeBlock()
+        {
+            var timeBlock = "AM_12_00";
+            string[] block = Regex.Split(timeBlock.ToString(), "_");
+            string meridiem = block[0];
+            string time = $"{block[1]}:{block[2]} {meridiem}";
+
+            Console.WriteLine(time);
+        }
+
+        [TestMethod]
         public void StringContains()
         {
             string userAcct = "Test IQF Comment Review";

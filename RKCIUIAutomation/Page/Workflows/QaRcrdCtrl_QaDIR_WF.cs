@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page.Navigation;
 using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using RKCIUIAutomation.Test;
 using System;
@@ -24,7 +25,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public interface IQaRcrdCtrl_QaDIR_WF
     {
-        void LoginAndNavigateToDirPage(UserType userType);
+        void LoginToQaFieldDirPage(UserType userType);
+
+        void LoginToRcrdCtrlDirPage(UserType userType);
 
         string Create_and_SaveForward_DIR();
 
@@ -85,9 +88,11 @@ namespace RKCIUIAutomation.Page.Workflows
             return instance;
         }
 
-        public virtual void LoginAndNavigateToDirPage(UserType userType)
+        internal void LoginToDirPage(UserType userType, bool QaFieldDIR = false)
         {
-            LogDebug($">>> LoginAndNavigateToDirPage <<<");
+            string expectedPageTitle = string.Empty;
+            string logMsg = QaFieldDIR ? "LoginToQaFieldDirPage" : "LoginToRcrdCtrlDirPage";
+            LogDebug($"---> {logMsg} <---");
 
             LoginAs(userType);
 
@@ -95,16 +100,38 @@ namespace RKCIUIAutomation.Page.Workflows
             {
                 if (userType == UserType.DIRTechQA || userType == UserType.DIRMgrQA)
                 {
-                    NavigateToPage.QARecordControl_QA_DIRs();
+                    string tenant = tenantName.ToString();
+                    if (tenant.Equals("SGWay") || tenant.Equals("SH249") || tenant.Equals("Garnet"))
+                    {
+                        if (QaFieldDIR)
+                        {
+                            expectedPageTitle = "IQF Field > List of Daily Inspection Reports";
+                            NavigateToPage.QAField_QA_DIRs();
+                        }
+                        else
+                        {
+                            expectedPageTitle = "IQF Record Control > List of Daily Inspection Reports";
+                            NavigateToPage.QARecordControl_QA_DIRs();
+                        }
+                    }
+                    else
+                    {
+                        expectedPageTitle = "List of Inspector's Daily Report";
+                        NavigateToPage.QARecordControl_QA_DIRs();
+                    }
                 }
-                else
+                else if (userType == UserType.DIRTechQC || userType == UserType.DIRMgrQC)
                 {
                     NavigateToPage.QCRecordControl_QC_DIRs();
                 }
-                
-                Assert.True(VerifyPageTitle($"List of Inspector's Daily Report"));
+
+                Assert.True(VerifyPageTitle(expectedPageTitle));
             }
         }
+
+        public virtual void LoginToQaFieldDirPage(UserType userType) => LoginToDirPage(userType, true);
+
+        public virtual void LoginToRcrdCtrlDirPage(UserType userType) => LoginToDirPage(userType);
 
         //GLX, 
         public virtual string Create_and_SaveForward_DIR()
@@ -236,6 +263,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public QaRcrdCtrl_QaDIR_WF_SGWay(IWebDriver driver) : base(driver)
         {
         }
+
     }
     internal class QaRcrdCtrl_QaDIR_WF_LAX : QaRcrdCtrl_QaDIR_WF
     {

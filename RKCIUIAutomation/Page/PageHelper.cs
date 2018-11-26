@@ -2,6 +2,7 @@
 using RKCIUIAutomation.Base;
 using System;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page
@@ -22,7 +23,20 @@ namespace RKCIUIAutomation.Page
 
         public static string GetShortTime() => DateTime.Now.ToShortTimeString();
 
-        public static string GetShortDateTime() => $"{GetShortDate()} {GetShortTime()}";
+        private static string FormatTimeBlock(TimeBlock timeBlock)
+        {
+            string[] block = Regex.Split(timeBlock.ToString(), "_");
+            string meridiem = block[0];
+            string time = $"{block[1]}:{block[2]}";
+            return $"{time} {meridiem}";
+        }
+
+        public static string GetShortDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
+        {
+            string date = shortDate.Equals("") ? GetShortDate() : shortDate;
+            string time = shortTime.Equals(TimeBlock.AM_12_00) ? GetShortTime() : FormatTimeBlock(shortTime);
+            return $"{date} {time}";
+        }
 
         public OutType ConvertToType<OutType>(object objToConvert)
         {

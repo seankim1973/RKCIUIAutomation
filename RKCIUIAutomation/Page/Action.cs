@@ -559,7 +559,8 @@ namespace RKCIUIAutomation.Page
             return isDisplayed;
         }
 
-        private string PageTitle = string.Empty;
+        [ThreadStatic]
+        private string PageTitle;
 
         private bool IsHeadingDisplayed(By elementByLocator)
         {
@@ -581,21 +582,21 @@ namespace RKCIUIAutomation.Page
             bool isDisplayed = false;
             By headingElement = null;
 
-            headingElement = By.XPath($"//h3[contains(text(),\"{expectedPageTitle}\")]");
-            isDisplayed = IsHeadingDisplayed(headingElement);
-            if (!isDisplayed)
-            {
-                headingElement = By.XPath($"//h2[contains(text(),\"{expectedPageTitle}\")]");
-                isDisplayed = IsHeadingDisplayed(headingElement);
-                if (!isDisplayed)
-                {
-                    LogDebug($"Page Title element with h2 or h3 tag containing text \"{expectedPageTitle}\" was not found.");
+            //headingElement = By.XPath($"//h3[contains(text(),\"{expectedPageTitle}\")]");
+            //isDisplayed = IsHeadingDisplayed(headingElement);
+            //if (!isDisplayed)
+            //{
+            //    headingElement = By.XPath($"//h2[contains(text(),\"{expectedPageTitle}\")]");
+            //    isDisplayed = IsHeadingDisplayed(headingElement);
+            //    if (!isDisplayed)
+            //    {
+            //        LogDebug($"Page Title element with h2 or h3 tag containing text \"{expectedPageTitle}\" was not found.");
 
-                    headingElement = By.XPath("//h3");
+                    headingElement = By.TagName("h3");
                     isDisplayed = IsHeadingDisplayed(headingElement);
                     if (!isDisplayed)
                     {
-                        headingElement = By.XPath("//h2");
+                        headingElement = By.TagName("h2");
                         isDisplayed = IsHeadingDisplayed(headingElement);
                         if (!isDisplayed)
                         {
@@ -603,8 +604,8 @@ namespace RKCIUIAutomation.Page
                             BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                         }
                     }
-                }
-            }
+            //    }
+            //}
 
             isMatchingTitle = PageTitle.Equals(expectedPageTitle);
 

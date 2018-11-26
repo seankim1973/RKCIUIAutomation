@@ -33,13 +33,13 @@ namespace RKCIUIAutomation.Test.DIR
         [Property(Component2, Component.DIR_WF_Simple_QA)]
         [Property(TestCaseNumber, 2187591)]
         [Property(Priority, "High")]
-        [Description("To validate create and save a DIR (Daily Inspection Report) document.")]
+        [Description("To validate creating and saving a DIR (Daily Inspection Report) document in Simple Workflow.")]
         public void DIR_SimpleWF_End_To_End_UserGroup_QA()
         {
-            WF_QaRcrdCtrl_QaDIR.LoginAndNavigateToDirPage(UserType.DIRTechQA);
+            WF_QaRcrdCtrl_QaDIR.LoginToRcrdCtrlDirPage(UserType.DIRTechQA);
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
             LogoutToLoginPage();
-            WF_QaRcrdCtrl_QaDIR.LoginAndNavigateToDirPage(UserType.DIRMgrQA);
+            WF_QaRcrdCtrl_QaDIR.LoginToRcrdCtrlDirPage(UserType.DIRMgrQA);
             WF_QaRcrdCtrl_QaDIR.KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.QC_Review, dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Cancel_Verify_inCreateRevise(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Save_Verify_and_SaveForward_inCreateRevise(dirNumber);
@@ -57,13 +57,13 @@ namespace RKCIUIAutomation.Test.DIR
         [Property(Component2, Component.DIR_WF_Simple_QC)]
         [Property(TestCaseNumber, 2187591)]
         [Property(Priority, "High")]
-        [Description("To validate create and save a DIR (Daily Inspection Report) document.")]
+        [Description("To validate creating and saving a DIR (Daily Inspection Report) document in Simple Workflow.")]
         public void DIR_SimpleWF_End_To_End_UserGroup_QC()
         {
-            WF_QaRcrdCtrl_QaDIR.LoginAndNavigateToDirPage(UserType.DIRTechQC);
+            WF_QaRcrdCtrl_QaDIR.LoginToRcrdCtrlDirPage(UserType.DIRTechQC);
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
             LogoutToLoginPage();
-            WF_QaRcrdCtrl_QaDIR.LoginAndNavigateToDirPage(UserType.DIRMgrQC);
+            WF_QaRcrdCtrl_QaDIR.LoginToRcrdCtrlDirPage(UserType.DIRMgrQC);
             WF_QaRcrdCtrl_QaDIR.KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.QC_Review, dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Cancel_Verify_inCreateRevise(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Save_Verify_and_SaveForward_inCreateRevise(dirNumber);
@@ -74,6 +74,23 @@ namespace RKCIUIAutomation.Test.DIR
             //WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
 
             AssertAll();
+        }
+
+        //Garnet, SG, SH249
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Complex)]
+        [Property(TestCaseNumber, 2488411)]
+        [Property(Priority, "High")]
+        [Description("To validate creating and saving a DIR (Daily Inspection Report) document in Complex Workflow.")]
+        public void DIR_ComplexWF_End_to_End()
+        {
+            WF_QaRcrdCtrl_QaDIR.LoginToQaFieldDirPage(UserType.DIRTechQA);
+            string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToQaFieldDirPage(UserType.DIRMgrQA);
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber));
+
         }
     }
 
