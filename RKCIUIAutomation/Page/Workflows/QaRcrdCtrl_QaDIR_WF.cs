@@ -164,13 +164,14 @@ namespace RKCIUIAutomation.Page.Workflows
             return QaRcrdCtrl_QaDIR.GetDirNumber();
         }
 
+        
         public virtual void KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)
         {
             LogDebug($"---> KickBack_DIR_ForRevise_From{kickBackfromTableTab.ToString()}Tab_then_Edit_inCreateReview <---");
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber), "VerifyDirIsDisplayed");
             ClickEditBtnForRow();
-            QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
+            QaRcrdCtrl_QaDIR.ClickBtn_KickBack(); //TODO - Use 'Revise' button instead of 'Kick Back' for SG & SH249
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed");
