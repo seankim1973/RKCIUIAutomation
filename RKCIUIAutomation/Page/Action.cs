@@ -891,10 +891,9 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                elem = GetElement(elementByLocator);
-
                 if (elem.Enabled && !elem.Displayed)
                 {
+                    elem = GetElement(elementByLocator);
                     Actions actions = new Actions(Driver);
                     actions.MoveToElement(elem);
                     actions.Perform();
@@ -903,7 +902,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                LogError(e.StackTrace);
             }
 
             return elem;
@@ -915,15 +914,9 @@ namespace RKCIUIAutomation.Page
             ClickLoginLink();
         }
 
-        public void ClickLoginLink()
-        {
-            GetElement(By.XPath("//a[contains(text(),'Login')]")).Click();
-        }
+        public void ClickLoginLink() => GetElement(By.XPath("//a[contains(text(),'Login')]")).Click();
 
-        public void ClickLogoutLink()
-        {
-            GetElement(By.XPath("//a[contains(text(),'Log out')]")).Click();
-        }
+        public void ClickLogoutLink() => GetElement(By.XPath("//a[contains(text(),'Log out')]")).Click();
 
         public string GetCurrentUser()
         {

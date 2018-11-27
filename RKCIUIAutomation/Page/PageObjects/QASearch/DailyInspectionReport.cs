@@ -3,6 +3,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System;
 using static RKCIUIAutomation.Page.PageObjects.QASearch.DailyInspectionReport;
+using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.QASearch
 {
@@ -34,7 +35,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
     {
         bool VerifyDirIsDisplayed(string dirNumber);
 
-        bool VerifyDirIsClosedByTblFilter(string dirNumber);
+        bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed);
     }
 
     public abstract class DailyInspectionReport_Impl : TestBase, IDailyInspectionReport
@@ -106,7 +107,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
             return isDisplayed;
         }
 
-        public virtual bool VerifyDirIsClosedByTblFilter(string dirNumber)
+        public virtual bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed)
         {
             NavigateToPage.QASearch_Daily_Inspection_Report();
 
@@ -115,18 +116,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
             try
             {
-                string _dirNumber = dirNumber.Equals("") ? QaRcrdCtrl_QaDIR.GetDirNumber() : dirNumber;
+                dirNumber = dirNumber.Equals("") ? QaRcrdCtrl_QaDIR.GetDirNumber() : dirNumber;
                 
-                bool isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(_dirNumber);
+                bool isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(dirNumber);
 
                 if (isDisplayed)
                 {
-                    string docStatus = GetColumnValueForRow(_dirNumber, "Workflow Location", false);
-                    dirIsClosed = docStatus.Equals("Closed") ? true : false;
-                    logMsg = $"Workflow Location displayed as: {docStatus}";
+                    string workflowLocation = GetColumnValueForRow(dirNumber, "Workflow Location", false);
+                    dirIsClosed = workflowLocation.Equals(expectedWorkflow.GetString()) ? true : false;
+                    logMsg = $"Workflow Location displayed as: {workflowLocation}";
                 }
 
-                LogInfo($"DIR Number {_dirNumber}, {logMsg}", dirIsClosed);
+                LogInfo($"DIR Number {dirNumber}, {logMsg}", dirIsClosed);
 
             }
             catch (Exception e)

@@ -30,31 +30,29 @@ namespace RKCIUIAutomation.Test.DIR
 
         [Test]
         [Category(Component.DIR)]
-        [Property(Component2, Component.DIR_WF_Simple_QA)]
+        //[Property(Component2, Component.DIR_WF_Simple_QA)]
         [Property(TestCaseNumber, 2187591)]
         [Property(Priority, "High")]
         [Description("To validate creating and saving a DIR (Daily Inspection Report) document in Simple Workflow.")]
         public void DIR_SimpleWF_End_To_End_UserGroup_QA()
         {
-            WF_QaRcrdCtrl_QaDIR.LoginToRcrdCtrlDirPage(UserType.DIRTechQA);
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
             LogoutToLoginPage();
-            WF_QaRcrdCtrl_QaDIR.LoginToRcrdCtrlDirPage(UserType.DIRMgrQA);
-            WF_QaRcrdCtrl_QaDIR.KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.QC_Review, dirNumber);
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA, true);
+            WF_QaRcrdCtrl_QaDIR.KickBack_DIR_ForRevise_FromQcReview_then_Edit_SaveForward(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Cancel_Verify_inCreateRevise(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Save_Verify_and_SaveForward_inCreateRevise(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
-            WF_QaRcrdCtrl_QaDIR.KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.Authorization, dirNumber);
-            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
-            //WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
-
+            WF_QaRcrdCtrl_QaDIR.KickBack_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
+            //AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
             AssertAll();
         }
 
         [Test]
         [Category(Component.DIR)]
-        [Property(Component2, Component.DIR_WF_Simple_QC)]
+        //[Property(Component2, Component.DIR_WF_Simple_QC)]
         [Property(TestCaseNumber, 2187591)]
         [Property(Priority, "High")]
         [Description("To validate creating and saving a DIR (Daily Inspection Report) document in Simple Workflow.")]
@@ -64,15 +62,13 @@ namespace RKCIUIAutomation.Test.DIR
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
             LogoutToLoginPage();
             WF_QaRcrdCtrl_QaDIR.LoginToRcrdCtrlDirPage(UserType.DIRMgrQC);
-            WF_QaRcrdCtrl_QaDIR.KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.QC_Review, dirNumber);
+            WF_QaRcrdCtrl_QaDIR.KickBack_DIR_ForRevise_FromQcReview_then_Edit_SaveForward(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Cancel_Verify_inCreateRevise(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Save_Verify_and_SaveForward_inCreateRevise(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
-            WF_QaRcrdCtrl_QaDIR.KickBack_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.Authorization, dirNumber);
-            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.KickBack_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(dirNumber);
             //WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
-
+            //AddAssertionToList(QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber), "VerifyDirIsClosedByTblFilter");
             AssertAll();
         }
 
@@ -90,6 +86,8 @@ namespace RKCIUIAutomation.Test.DIR
             LogoutToLoginPage();
             WF_QaRcrdCtrl_QaDIR.LoginToQaFieldDirPage(UserType.DIRMgrQA);
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber));
+            ClickEditBtnForRow();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
 
         }
     }

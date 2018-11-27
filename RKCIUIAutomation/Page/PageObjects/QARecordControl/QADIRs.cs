@@ -89,6 +89,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Add")] Add,
             [StringValue("Delete")] Delete,
             [StringValue("Submit Revise")] Submit_Revise,
+            [StringValue("No Error")] No_Error,
+            [StringValue("Back To QC Review")] Back_To_QC_Review
         }
 
         public enum RadioBtnsAndCheckboxes
@@ -144,6 +146,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Add();
 
         void ClickBtn_Delete();
+
+        void ClickBtn_NoError();
+
+        void ClickBtn_Back_To_QC_Review();
 
         void FilterDirNumber(string DirNumber);
 
@@ -353,6 +359,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickBtn_Add() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Add));
 
         public virtual void ClickBtn_Delete() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Delete));
+
+        public virtual void ClickBtn_NoError() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.No_Error));
+
+        public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review));
 
         public virtual void ClickTab_Create_Revise() => ClickTab(TableTab.Create_Revise);
 
@@ -1179,7 +1189,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_CompletedDateTime();
             Enter_TotalInspectionTime();
             ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             StoreDirNumber();
         }
@@ -1227,7 +1237,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectChkbox_InspectionType_C();
             SelectChkbox_InspectionResult_P();
             ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             StoreDirNumber();
         }
@@ -1287,7 +1297,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_CompletedDateTime();
             Enter_TotalInspectionTime();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             //SelectDDL_ControlPointNumber(); //Currently does not have values to choose in the drop down list
             SelectChkbox_InspectionType_I();
             StoreDirNumber();
