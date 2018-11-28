@@ -65,10 +65,6 @@ namespace RKCIUIAutomation.Page
             return _ddFieldXpath;
         }
 
-        //private string SetDDListFieldXpath(Enum ddListID) => $"//span[@aria-owns='{ddListID.GetString()}_listbox']";
-
-        //private string SetDDListFieldXpath(string ddListID) => $"//span[@aria-owns='{ddListID}_listbox']";
-
         private string SetDDListFieldExpandArrowXpath<T>(T ddListID)
         {
             string _ddListID = (ddListID.GetType() == typeof(string))
@@ -76,15 +72,11 @@ namespace RKCIUIAutomation.Page
                 : ConvertToType<Enum>(ddListID).GetString();
 
             string _ddArrowXpath = _ddListID.Contains("Time")
-                ? $"{SetDDListFieldXpath(_ddListID)}/parent::span/span/span"
+                ? $"{SetDDListFieldXpath(_ddListID)}/parent::span/span"
                 : $"{SetDDListFieldXpath(_ddListID)}//span[@class='k-select']/span";
 
             return _ddArrowXpath;
         }
-
-        //private string SetDDListFieldExpandArrowXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']/span";
-
-        //private string SetDDListFieldExpandArrowXpath(string ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-select']/span";
 
         private string SetDDListCurrentSelectionXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-input']";
 
@@ -154,15 +146,7 @@ namespace RKCIUIAutomation.Page
 
         public By GetExpandDDListButtonByLocator<T>(T ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
 
-        //public By GetExpandDDListButtonByLocator(Enum ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
-
-        //public By GetExpandDDListButtonByLocator(string ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
-
         public By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
-
-        //public By GetDDListItemsByLocator<T>(Enum ddListID, T itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
-
-        //public By GetDDListItemsByLocator<T>(string ddListID, T itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
 
         public By GetTextInputFieldByLocator(Enum inputEnum) => By.XPath(SetTextInputFieldByLocator(inputEnum));
 

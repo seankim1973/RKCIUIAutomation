@@ -173,8 +173,8 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                //IWebElement elem = GetElement(elementByLocator);
-                IWebElement elem = ScrollToElement(elementByLocator);
+                IWebElement elem = GetElement(elementByLocator);
+                ScrollToElement(elementByLocator);
                 elem?.Click();
                 bool elemNotNull = elem != null ? true : false;
                 string logMsg = elemNotNull ? "Clicked" : "Null";
@@ -182,7 +182,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                LogError(e.StackTrace);
             }
         }
 
@@ -253,26 +253,23 @@ namespace RKCIUIAutomation.Page
 
         public void EnterText(By elementByLocator, string text, bool clearField = true)
         {
+            IWebElement textField = null;
+
             try
             {
-                IWebElement textField = GetElement(elementByLocator);
+                textField = GetElement(elementByLocator);
 
                 if (textField.Enabled)
                 {
                     if (!textField.Displayed)
                     {
-                        ScrollToElement(elementByLocator);
+                        ScrollToElement(textField);
                     }
 
                     if (clearField)
                     {
                         textField.Clear();
                     }
-
-                    ClickElement(elementByLocator);
-                    textField.SendKeys(text);
-
-                    LogInfo($"Entered '{text}' in field - {elementByLocator}");
                 }
                 else
                 {
@@ -282,6 +279,32 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+            }
+            finally
+            {
+                try
+                {
+                    string logMsg = string.Empty;
+                    bool validField = textField != null;
+
+                    if (validField)
+                    {
+                        textField.Click();
+                        textField.SendKeys(text);
+
+                        logMsg = $"Entered '{text}' in field - {elementByLocator}";
+                    }
+                    else
+                    {
+                        logMsg = $"Element: {elementByLocator} is null";
+                    }
+
+                    LogInfo(logMsg, validField);
+                }
+                catch (Exception e)
+                {
+                    LogError(e.Message);
+                }
             }
         }
 
@@ -891,21 +914,46 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                if (elem.Enabled && !elem.Displayed)
+                elem = GetElement(elementByLocator);
+
+                if (elem.Enabled)
                 {
-                    elem = GetElement(elementByLocator);
-                    Actions actions = new Actions(Driver);
-                    actions.MoveToElement(elem);
-                    actions.Perform();
-                    log.Info($"Scrolled to element - {elementByLocator}");
+                    if (!elem.Displayed)
+                    {
+                        Actions actions = new Actions(Driver);
+                        actions.MoveToElement(elem);
+                        actions.Perform();
+                        log.Info($"Scrolled to element - {elementByLocator}");
+                    }
                 }
             }
             catch (Exception e)
             {
-                LogError(e.StackTrace);
+                log.Error(e.StackTrace);
             }
 
             return elem;
+        }
+
+        public void ScrollToElement(IWebElement element)
+        {
+            try
+            {
+                if (element.Enabled)
+                {
+                    if (!element.Displayed)
+                    {
+                        Actions actions = new Actions(Driver);
+                        actions.MoveToElement(element);
+                        actions.Perform();
+                        log.Info($"Scrolled to WebElement");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
         }
 
         public void LogoutToLoginPage()

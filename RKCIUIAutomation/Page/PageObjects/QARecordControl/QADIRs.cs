@@ -90,7 +90,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Delete")] Delete,
             [StringValue("Submit Revise")] Submit_Revise,
             [StringValue("No Error")] No_Error,
-            [StringValue("Back To QC Review")] Back_To_QC_Review
+            [StringValue("Back To QC Review")] Back_To_QC_Review,
+            [StringValue("Revise")] Revise
         }
 
         public enum RadioBtnsAndCheckboxes
@@ -148,6 +149,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Delete();
 
         void ClickBtn_NoError();
+
+        void ClickBtn_Revise();
 
         void ClickBtn_Back_To_QC_Review();
 
@@ -363,6 +366,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickBtn_NoError() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.No_Error));
 
         public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review));
+
+        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise));
 
         public virtual void ClickTab_Create_Revise() => ClickTab(TableTab.Create_Revise);
 
