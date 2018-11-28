@@ -350,14 +350,20 @@ namespace RKCIUIAutomation.Page
 
         public string GetText(By elementByLocator)
         {
+            IWebElement element = null;
             string text = string.Empty;
+
             try
             {
-                ScrollToElement(elementByLocator);
-                text = GetElement(elementByLocator)?.Text;
-                bool textNotEmpty = !string.IsNullOrEmpty(text);
-                string logMsg = textNotEmpty ? $"Retrieved '{text}'" : "Unable to retrieve text";
-                LogInfo($"{logMsg} from element - {elementByLocator}");
+                element = GetElement(elementByLocator);
+                if (element != null)
+                {
+                    ScrollToElement(element);
+                    text = element.Text;
+                    bool validText = !string.IsNullOrEmpty(text);
+                    string logMsg = validText ? $"Retrieved '{text}'" : $"Unable to retrieve text {text}";
+                    LogDebug($"{logMsg} from element - {elementByLocator}");
+                }
             }
             catch (Exception e)
             {
@@ -918,13 +924,13 @@ namespace RKCIUIAutomation.Page
 
                 if (elem.Enabled)
                 {
-                    if (!elem.Displayed)
-                    {
+                    //if (!elem.Displayed)
+                    //{
                         Actions actions = new Actions(Driver);
                         actions.MoveToElement(elem);
                         actions.Perform();
                         log.Info($"Scrolled to element - {elementByLocator}");
-                    }
+                    //}
                 }
             }
             catch (Exception e)
@@ -939,8 +945,8 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                if (element.Enabled)
-                {
+                //if (element.Enabled)
+                //{
                     if (!element.Displayed)
                     {
                         Actions actions = new Actions(Driver);
@@ -948,7 +954,7 @@ namespace RKCIUIAutomation.Page
                         actions.Perform();
                         log.Info($"Scrolled to WebElement");
                     }
-                }
+                //}
             }
             catch (Exception e)
             {

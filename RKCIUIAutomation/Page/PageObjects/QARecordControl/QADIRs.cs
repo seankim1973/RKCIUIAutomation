@@ -587,7 +587,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         alertMsg = GetAlertMessage();
                         alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
                         assertList.Add(alertMsgMatch);
-                        LogInfo($"<br>Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        LogInfo($"Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
                         AcceptAlertMessage();
                     }
                 }
@@ -608,7 +608,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         alertMsg = GetAlertMessage();
                         alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
                         assertList.Add(alertMsgMatch);
-                        LogInfo($"<br>Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        
+                        LogInfo($"Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
                         AcceptAlertMessage();
                     }
                 }
@@ -763,7 +764,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         {
                             if (id.Equals("HoldPointTypeID"))
                             {
-                                id = "ControlPoint No.";
+                                bool complexWfTenant = tenantName == TenantName.SGWay || tenantName == TenantName.SH249 ? true : false;
+                                id = complexWfTenant ? "HoldPoint Type" : "ControlPoint No.";
                             }
                             else
                                 id = "ControlPoint Type";
@@ -779,25 +781,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         }
                         else if (id.Equals("DateReady") || id.Equals("DateCompleted") || id.Equals("InspectionHours"))
                         {
-                            //if (id.Equals("DateReady"))
-                            //{
-                            //    id = "Ready";
-                            //}
-                            //else if (id.Equals("DateCompleted"))
-                            //{
-                            //    id = "Completed Date";
-                            //}
-                            //else if (id.Equals("InspectionHours"))
-                            //{
-                            //    id = "Total Inspection Time";
-                            //}
-
                             id = FormatInspectionTimesIDs(id);
                         }
                         else if (id.Contains("Only"))
                         {
                             id = Regex.Replace(id, "Only", "");
                             id = FormatInspectionTimesIDs(id);
+
+                            if (!id.Contains(" "))
+                            {
+                                id = id.SplitCamelCase();
+                            }
                         }
 
                         if (!fieldId.Contains("Time"))
@@ -848,7 +842,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 int tblRowIndex = 0;
                 string[][] idTable = new string[expectedCount + 2][];
-                idTable[tblRowIndex] = new string[2] { $"|  Expected ID  | ", $" |  Found Matching Actual ID  | " };
+                idTable[tblRowIndex] = new string[2] { $"| - Expected ID - | ", $" | - Found Matching Actual ID - | " };
 
                 if (countsMatch)
                 {
@@ -858,7 +852,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         string actualID = actualRequiredFieldIDs[i];
                         reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
                         results.Add(reqFieldsMatch);
-                        idTable[tblRowIndex] = new string[2] { $" |  {actualID} : ", $" {reqFieldsMatch.ToString()}" };
+                        string tblRowNumber = tblRowIndex.ToString();
+                        tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}":tblRowNumber;
+
+                        idTable[tblRowIndex] = new string[2] { $"%nbsp%nbsp{tblRowNumber}:{actualID} : ", $"%nbsp%nbsp{reqFieldsMatch.ToString()}" };
                     }
                 }
                 else
@@ -1015,6 +1012,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Crew();
             SelectDDL_CrewForeman();
             SelectChkbox_InspectionType_I();
+            SelectChkbox_InspectionResult_P();
             Enter_ReadyDateTime();
             Enter_CompletedDateTime("", TimeBlock.PM_12_00);
             Enter_TotalInspectionTime();
@@ -1033,6 +1031,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.Crew.GetString(),
                 InputFields.Crew_Foreman.GetString(),
                 "Inspection Type",
+                "Inspection Result",
                 InputFields.Date_Ready.GetString(),
                 InputFields.Date_Completed.GetString(),
                 InputFields.Total_Inspection_Time.GetString()

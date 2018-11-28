@@ -326,15 +326,13 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(string dirNumber)
         {
             WF_QaRcrdCtrl_QaDIR.Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.Authorization, dirNumber);
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Authorization, dirNumber), "VerifyDirIsDisplayed");
             ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Back_To_QC_Review();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed");
-            ClickEditBtnForRow();
-            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            Verify_DIR_then_Approve_inReview(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
         }
 
         public override bool VerifyWorkflowLocationAfterSimpleWF(string dirNumber)
