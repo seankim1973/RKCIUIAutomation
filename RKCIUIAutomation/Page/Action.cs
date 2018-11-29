@@ -457,8 +457,9 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void UploadFile(string fileName)
+        public void UploadFile(string fileName = "")
         {
+            fileName = fileName.Equals("") ? "test.xlsx" : fileName;
             string filePath = (testPlatform == TestPlatform.Local) ? $"{GetCodeBasePath()}\\UploadFiles\\{fileName}" : $"/home/seluser/UploadFiles/{fileName}";
 
             try
@@ -471,6 +472,97 @@ namespace RKCIUIAutomation.Page
             {
                 log.Error(e.StackTrace);
             }
+        }
+
+        /// <summary>
+        /// Provide string or IList<string> of expected file names to verify is seen in the Attachments section of the Details Page
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="expectedFileName"></param>
+        /// <returns></returns>
+        public bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSave = false)
+        {
+            bool fileNamesMatch = false;
+
+            IList<IWebElement> actualFileNameList = null;
+
+            IList<string> expectedNamesList = null;
+
+            IList<bool> assertList = new List<bool>();
+
+            Type argType = expectedFileName.GetType();
+
+            string expectedName = string.Empty;
+
+            try
+            {
+                string xpath = beforeSave 
+                    ? "//ul[@class='k-upload-files k-reset']/li/div/span[@class='k-file-name']" 
+                    : "//div[contains(@class,'fileList')]";
+
+                By actualUploadedFileNameLocator = By.XPath(xpath);
+
+                actualFileNameList = GetElements(actualUploadedFileNameLocator);
+
+                if (actualFileNameList != null)
+                {
+                    int actualCount = actualFileNameList.Count;
+
+                    for (int i = 0; i < actualCount; i++)
+                    {
+                        IWebElement actual = actualFileNameList[i];
+                        string name = string.Empty;
+                        int afterSaveIndex = i + 1;
+
+                        if (beforeSave)
+                        {
+                            name = actual.Text;
+                        }
+                        else
+                        {
+                            actual = actual.FindElement(By.XPath($"{xpath}[{afterSaveIndex}]/descendant::span[1]"));
+                            name = actual.Text;
+                            string[] splitName = Regex.Split(name, " \\(");
+                            name = splitName[0];
+                        }
+                        
+                        bool match = false;
+
+                        if (argType == typeof(string))
+                        {
+                            expectedName = ConvertToType<string>(expectedFileName);
+                            match = actual.Equals(expectedName);
+                            assertList.Add(match);
+                        }
+                        else if (argType == typeof(IList<string>))
+                        {
+                            expectedNamesList = new List<string>();
+                            expectedNamesList = ConvertToType<IList<string>>(expectedFileName);
+                            match = expectedNamesList.Contains(name);
+                            assertList.Add(match);
+                        }
+                    }
+                }
+                else
+                {
+                    LogError($"No upload file names are seen on the page<br>{actualUploadedFileNameLocator}");
+                }
+
+                if (argType != typeof(string) && argType != typeof(IList<string>))
+                {
+                    LogError($"Arg type should be string or IList<string> - Unexpected expectedFileName type: {argType}");
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            finally
+            {
+                fileNamesMatch = assertList.Contains(false) || assertList.Count == 0 ? false : true;
+            }
+
+            return fileNamesMatch;
         }
 
         public string ConfirmActionDialog(bool confirmYes = true)
