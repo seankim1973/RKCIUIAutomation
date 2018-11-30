@@ -173,8 +173,8 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                //IWebElement elem = GetElement(elementByLocator);
-                IWebElement elem = ScrollToElement(elementByLocator);
+                IWebElement elem = GetElement(elementByLocator);
+                ScrollToElement(elementByLocator);
                 elem?.Click();
                 bool elemNotNull = elem != null ? true : false;
                 string logMsg = elemNotNull ? "Clicked" : "Null";
@@ -182,7 +182,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                LogError(e.StackTrace);
             }
         }
 
@@ -253,26 +253,23 @@ namespace RKCIUIAutomation.Page
 
         public void EnterText(By elementByLocator, string text, bool clearField = true)
         {
+            IWebElement textField = null;
+
             try
             {
-                IWebElement textField = GetElement(elementByLocator);
+                textField = GetElement(elementByLocator);
 
                 if (textField.Enabled)
                 {
                     if (!textField.Displayed)
                     {
-                        ScrollToElement(elementByLocator);
+                        ScrollToElement(textField);
                     }
 
                     if (clearField)
                     {
                         textField.Clear();
                     }
-
-                    ClickElement(elementByLocator);
-                    textField.SendKeys(text);
-
-                    LogInfo($"Entered '{text}' in field - {elementByLocator}");
                 }
                 else
                 {
@@ -282,6 +279,32 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+            }
+            finally
+            {
+                try
+                {
+                    string logMsg = string.Empty;
+                    bool validField = textField != null;
+
+                    if (validField)
+                    {
+                        textField.Click();
+                        textField.SendKeys(text);
+
+                        logMsg = $"Entered '{text}' in field - {elementByLocator}";
+                    }
+                    else
+                    {
+                        logMsg = $"Element: {elementByLocator} is null";
+                    }
+
+                    LogInfo(logMsg, validField);
+                }
+                catch (Exception e)
+                {
+                    LogError(e.Message);
+                }
             }
         }
 
@@ -327,14 +350,20 @@ namespace RKCIUIAutomation.Page
 
         public string GetText(By elementByLocator)
         {
+            IWebElement element = null;
             string text = string.Empty;
+
             try
             {
-                ScrollToElement(elementByLocator);
-                text = GetElement(elementByLocator)?.Text;
-                bool textNotEmpty = !string.IsNullOrEmpty(text);
-                string logMsg = textNotEmpty ? $"Retrieved '{text}'" : "Unable to retrieve text";
-                LogInfo($"{logMsg} from element - {elementByLocator}");
+                element = GetElement(elementByLocator);
+                if (element != null)
+                {
+                    ScrollToElement(element);
+                    text = element.Text;
+                    bool validText = !string.IsNullOrEmpty(text);
+                    string logMsg = validText ? $"Retrieved '{text}'" : $"Unable to retrieve text {text}";
+                    LogDebug($"{logMsg} from element - {elementByLocator}");
+                }
             }
             catch (Exception e)
             {
@@ -428,8 +457,9 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void UploadFile(string fileName)
+        public void UploadFile(string fileName = "")
         {
+            fileName = fileName.Equals("") ? "test.xlsx" : fileName;
             string filePath = (testPlatform == TestPlatform.Local) ? $"{GetCodeBasePath()}\\UploadFiles\\{fileName}" : $"/home/seluser/UploadFiles/{fileName}";
 
             try
@@ -442,6 +472,97 @@ namespace RKCIUIAutomation.Page
             {
                 log.Error(e.StackTrace);
             }
+        }
+
+        /// <summary>
+        /// Provide string or IList<string> of expected file names to verify is seen in the Attachments section of the Details Page
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="expectedFileName"></param>
+        /// <returns></returns>
+        public bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSave = false)
+        {
+            bool fileNamesMatch = false;
+
+            IList<IWebElement> actualFileNameList = null;
+
+            IList<string> expectedNamesList = null;
+
+            IList<bool> assertList = new List<bool>();
+
+            Type argType = expectedFileName.GetType();
+
+            string expectedName = string.Empty;
+
+            try
+            {
+                string xpath = beforeSave 
+                    ? "//ul[@class='k-upload-files k-reset']/li/div/span[@class='k-file-name']" 
+                    : "//div[contains(@class,'fileList')]";
+
+                By actualUploadedFileNameLocator = By.XPath(xpath);
+
+                actualFileNameList = GetElements(actualUploadedFileNameLocator);
+
+                if (actualFileNameList != null)
+                {
+                    int actualCount = actualFileNameList.Count;
+
+                    for (int i = 0; i < actualCount; i++)
+                    {
+                        IWebElement actual = actualFileNameList[i];
+                        string name = string.Empty;
+                        int afterSaveIndex = i + 1;
+
+                        if (beforeSave)
+                        {
+                            name = actual.Text;
+                        }
+                        else
+                        {
+                            actual = actual.FindElement(By.XPath($"{xpath}[{afterSaveIndex}]/descendant::span[1]"));
+                            name = actual.Text;
+                            string[] splitName = Regex.Split(name, " \\(");
+                            name = splitName[0];
+                        }
+                        
+                        bool match = false;
+
+                        if (argType == typeof(string))
+                        {
+                            expectedName = ConvertToType<string>(expectedFileName);
+                            match = actual.Equals(expectedName);
+                            assertList.Add(match);
+                        }
+                        else if (argType == typeof(IList<string>))
+                        {
+                            expectedNamesList = new List<string>();
+                            expectedNamesList = ConvertToType<IList<string>>(expectedFileName);
+                            match = expectedNamesList.Contains(name);
+                            assertList.Add(match);
+                        }
+                    }
+                }
+                else
+                {
+                    LogError($"No upload file names are seen on the page<br>{actualUploadedFileNameLocator}");
+                }
+
+                if (argType != typeof(string) && argType != typeof(IList<string>))
+                {
+                    LogError($"Arg type should be string or IList<string> - Unexpected expectedFileName type: {argType}");
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            finally
+            {
+                fileNamesMatch = assertList.Contains(false) || assertList.Count == 0 ? false : true;
+            }
+
+            return fileNamesMatch;
         }
 
         public string ConfirmActionDialog(bool confirmYes = true)
@@ -559,7 +680,8 @@ namespace RKCIUIAutomation.Page
             return isDisplayed;
         }
 
-        private string PageTitle = string.Empty;
+        [ThreadStatic]
+        private string PageTitle;
 
         private bool IsHeadingDisplayed(By elementByLocator)
         {
@@ -581,21 +703,21 @@ namespace RKCIUIAutomation.Page
             bool isDisplayed = false;
             By headingElement = null;
 
-            headingElement = By.XPath($"//h3[contains(text(),\"{expectedPageTitle}\")]");
-            isDisplayed = IsHeadingDisplayed(headingElement);
-            if (!isDisplayed)
-            {
-                headingElement = By.XPath($"//h2[contains(text(),\"{expectedPageTitle}\")]");
-                isDisplayed = IsHeadingDisplayed(headingElement);
-                if (!isDisplayed)
-                {
-                    LogDebug($"Page Title element with h2 or h3 tag containing text \"{expectedPageTitle}\" was not found.");
+            //headingElement = By.XPath($"//h3[contains(text(),\"{expectedPageTitle}\")]");
+            //isDisplayed = IsHeadingDisplayed(headingElement);
+            //if (!isDisplayed)
+            //{
+            //    headingElement = By.XPath($"//h2[contains(text(),\"{expectedPageTitle}\")]");
+            //    isDisplayed = IsHeadingDisplayed(headingElement);
+            //    if (!isDisplayed)
+            //    {
+            //        LogDebug($"Page Title element with h2 or h3 tag containing text \"{expectedPageTitle}\" was not found.");
 
-                    headingElement = By.XPath("//h3");
+                    headingElement = By.TagName("h3");
                     isDisplayed = IsHeadingDisplayed(headingElement);
                     if (!isDisplayed)
                     {
-                        headingElement = By.XPath("//h2");
+                        headingElement = By.TagName("h2");
                         isDisplayed = IsHeadingDisplayed(headingElement);
                         if (!isDisplayed)
                         {
@@ -603,8 +725,8 @@ namespace RKCIUIAutomation.Page
                             BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                         }
                     }
-                }
-            }
+            //    }
+            //}
 
             isMatchingTitle = PageTitle.Equals(expectedPageTitle);
 
@@ -892,12 +1014,15 @@ namespace RKCIUIAutomation.Page
             {
                 elem = GetElement(elementByLocator);
 
-                if (elem.Enabled && !elem.Displayed)
+                if (elem.Enabled)
                 {
-                    Actions actions = new Actions(Driver);
-                    actions.MoveToElement(elem);
-                    actions.Perform();
-                    log.Info($"Scrolled to element - {elementByLocator}");
+                    //if (!elem.Displayed)
+                    //{
+                        Actions actions = new Actions(Driver);
+                        actions.MoveToElement(elem);
+                        actions.Perform();
+                        log.Info($"Scrolled to element - {elementByLocator}");
+                    //}
                 }
             }
             catch (Exception e)
@@ -908,21 +1033,36 @@ namespace RKCIUIAutomation.Page
             return elem;
         }
 
+        public void ScrollToElement(IWebElement element)
+        {
+            try
+            {
+                //if (element.Enabled)
+                //{
+                    if (!element.Displayed)
+                    {
+                        Actions actions = new Actions(Driver);
+                        actions.MoveToElement(element);
+                        actions.Perform();
+                        log.Info($"Scrolled to WebElement");
+                    }
+                //}
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+        }
+
         public void LogoutToLoginPage()
         {
             ClickLogoutLink();
             ClickLoginLink();
         }
 
-        public void ClickLoginLink()
-        {
-            GetElement(By.XPath("//a[contains(text(),'Login')]")).Click();
-        }
+        public void ClickLoginLink() => GetElement(By.XPath("//a[contains(text(),'Login')]")).Click();
 
-        public void ClickLogoutLink()
-        {
-            GetElement(By.XPath("//a[contains(text(),'Log out')]")).Click();
-        }
+        public void ClickLogoutLink() => GetElement(By.XPath("//a[contains(text(),'Log out')]")).Click();
 
         public string GetCurrentUser()
         {
