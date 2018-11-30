@@ -457,21 +457,24 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void UploadFile(string fileName = "")
+        public string UploadFile(string fileName = "")
         {
             fileName = fileName.Equals("") ? "test.xlsx" : fileName;
             string filePath = (testPlatform == TestPlatform.Local) ? $"{GetCodeBasePath()}\\UploadFiles\\{fileName}" : $"/home/seluser/UploadFiles/{fileName}";
 
             try
             {
-                By uploadInput_ByLocator = By.Id("UploadFiles_0_");
-                EnterText(uploadInput_ByLocator, filePath);
+                By uploadInput_ByLocator = By.XPath("//input[@id='UploadFiles_0_']");
+                //EnterText(uploadInput_ByLocator, filePath, false);
+                Driver.FindElement(uploadInput_ByLocator).SendKeys(filePath);
                 log.Info($"Entered {filePath}' for file upload");
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
+
+            return fileName;
         }
 
         /// <summary>
@@ -480,11 +483,15 @@ namespace RKCIUIAutomation.Page
         /// <typeparam name="T"></typeparam>
         /// <param name="expectedFileName"></param>
         /// <returns></returns>
-        public bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSave = false)
+        public bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false)
         {
+            ScrollToElement(By.Id("FileManagerDiv_0"));
+
             bool fileNamesMatch = false;
 
             IList<IWebElement> actualFileNameList = null;
+
+            string expectedName = string.Empty;
 
             IList<string> expectedNamesList = null;
 
@@ -492,11 +499,9 @@ namespace RKCIUIAutomation.Page
 
             Type argType = expectedFileName.GetType();
 
-            string expectedName = string.Empty;
-
             try
             {
-                string xpath = beforeSave 
+                string xpath = beforeSubmitBtnAction
                     ? "//ul[@class='k-upload-files k-reset']/li/div/span[@class='k-file-name']" 
                     : "//div[contains(@class,'fileList')]";
 
@@ -504,48 +509,50 @@ namespace RKCIUIAutomation.Page
 
                 actualFileNameList = GetElements(actualUploadedFileNameLocator);
 
+                bool fileNameIsExpected = false;
+
                 if (actualFileNameList != null)
                 {
                     int actualCount = actualFileNameList.Count;
 
                     for (int i = 0; i < actualCount; i++)
                     {
-                        IWebElement actual = actualFileNameList[i];
-                        string name = string.Empty;
+                        IWebElement actualElem = actualFileNameList[i];
+                        string actualName = string.Empty;
                         int afterSaveIndex = i + 1;
 
-                        if (beforeSave)
+                        if (beforeSubmitBtnAction)
                         {
-                            name = actual.Text;
+                            actualName = actualElem.Text;
                         }
                         else
                         {
-                            actual = actual.FindElement(By.XPath($"{xpath}[{afterSaveIndex}]/descendant::span[1]"));
-                            name = actual.Text;
-                            string[] splitName = Regex.Split(name, " \\(");
-                            name = splitName[0];
+                            actualElem = actualElem.FindElement(By.XPath($"{xpath}[{afterSaveIndex}]/descendant::span[1]"));
+                            actualName = actualElem.Text;
+                            string[] splitName = Regex.Split(actualName, " \\(");
+                            actualName = splitName[0];
                         }
-                        
-                        bool match = false;
 
                         if (argType == typeof(string))
                         {
                             expectedName = ConvertToType<string>(expectedFileName);
-                            match = actual.Equals(expectedName);
-                            assertList.Add(match);
+                            fileNameIsExpected = actualName.Equals(expectedName);
+                            assertList.Add(fileNameIsExpected);
                         }
                         else if (argType == typeof(IList<string>))
                         {
                             expectedNamesList = new List<string>();
                             expectedNamesList = ConvertToType<IList<string>>(expectedFileName);
-                            match = expectedNamesList.Contains(name);
-                            assertList.Add(match);
+                            fileNameIsExpected = expectedNamesList.Contains(actualName);
+                            assertList.Add(fileNameIsExpected);
                         }
                     }
                 }
                 else
                 {
-                    LogError($"No upload file names are seen on the page<br>{actualUploadedFileNameLocator}");
+                    fileNameIsExpected = ConvertToType<string>(expectedFileName).Equals("") ? true : false;
+                    assertList.Add(fileNameIsExpected);
+                    LogDebug($"No upload file names are seen on the page<br>{actualUploadedFileNameLocator}");
                 }
 
                 if (argType != typeof(string) && argType != typeof(IList<string>))
@@ -559,7 +566,7 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                fileNamesMatch = assertList.Contains(false) || assertList.Count == 0 ? false : true;
+                fileNamesMatch = assertList.Contains(false) ? false : true;
             }
 
             return fileNamesMatch;
