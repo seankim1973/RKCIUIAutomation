@@ -231,23 +231,33 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
         }
 
-        public virtual void Verify_DIR_then_Approve_inReview(string dirNumber)
+        private void Verify_DIR_then_Approve(TableTab tableTab, string dirNumber)
         {
-            LogDebug($"---> Verify_DIR_then_Approve_inReview <---");
+            string tableTabName = tableTab.ToString();
+            LogDebug($"---> Verify_DIR_then_Approve_in{tableTabName} <---");
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed(TableTab.QC_Review)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"VerifyDirIsDisplayed(TableTab.{tableTabName})");
             ClickEditBtnForRow();
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
         }
 
-        public virtual void Verify_DIR_then_Approve_inAuthorization(string dirNumber)
-        {
-            LogDebug($"---> Verify_DIR_then_Approve_inAuthorization <---");
+        public virtual void Verify_DIR_then_Approve_inReview(string dirNumber) => Verify_DIR_then_Approve(TableTab.QC_Review, dirNumber);
+        //{
+        //    LogDebug($"---> Verify_DIR_then_Approve_inReview <---");
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Authorization, dirNumber), "VerifyDirIsDisplayed(TableTab.Authorization)");
-            ClickEditBtnForRow();
-            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
-        }
+        //    AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed(TableTab.QC_Review)");
+        //    ClickEditBtnForRow();
+        //    WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+        //}
+
+        public virtual void Verify_DIR_then_Approve_inAuthorization(string dirNumber) => Verify_DIR_then_Approve(TableTab.Authorization, dirNumber);
+        //{
+        //    LogDebug($"---> Verify_DIR_then_Approve_inAuthorization <---");
+
+        //    AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Authorization, dirNumber), "VerifyDirIsDisplayed(TableTab.Authorization)");
+        //    ClickEditBtnForRow();
+        //    WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+        //}
 
         public virtual bool VerifyWorkflowLocationAfterSimpleWF(string dirNumber)
             => QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber, WorkflowLocation.Closed);
