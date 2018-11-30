@@ -98,6 +98,7 @@ namespace RKCIUIAutomation.Page
             [StringValue("Enter", BtnCategory.ActionColumnBtn)] Action_Enter,
             [StringValue("Delete", BtnCategory.ActionColumnBtn)] Action_Delete,
             [StringValue("Edit", BtnCategory.ActionColumnBtn)] Action_Edit,
+            [StringValue("Close DIR", BtnCategory.ActionColumnBtn)] Action_Close_DIR,
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
@@ -193,19 +194,24 @@ namespace RKCIUIAutomation.Page
             return text;
         }
 
-
-
         private void ClickButtonForRow(TableButton tableButton, string textInRowForAnyColumn = "")
         {
-            string[] logBtnType = tableButton.Equals(TableButton.CheckBox)
-                ? new string[] { "Toggled", "checkbox" } : new string[] { "Clicked", "button" };
-            JsClickElement(GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumn));
-            LogInfo($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumn}");
+            try
+            {
+                string[] logBtnType = tableButton.Equals(TableButton.CheckBox)
+                    ? new string[] { "Toggled", "checkbox" } : new string[] { "Clicked", "button" };
+                JsClickElement(GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumn));
+                LogInfo($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumn}");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
         }
 
         //<<-- Table Row Button Public Methods -->>
         /// <summary>
-        /// If no argument is provided, the button on the first row will be clicked.
+        /// If no argument is provided, the checkbox for the first row will be selected.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
         public void ToggleCheckBoxForRow(string textInRowForAnyColumn = "")

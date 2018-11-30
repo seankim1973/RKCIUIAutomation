@@ -91,6 +91,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Submit Revise")] Submit_Revise,
             [StringValue("No Error")] No_Error,
             [StringValue("Back To QC Review")] Back_To_QC_Review,
+            [StringValue("Back To Field")] Back_To_Field,
             [StringValue("Revise")] Revise
         }
 
@@ -153,6 +154,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Revise();
 
         void ClickBtn_Back_To_QC_Review();
+
+        void ClickBtn_Back_To_Field();
+
+        void ClickBtn_Close_Selected();
+
+        void ClickBtn_View_Selected();
 
         void FilterDirNumber(string DirNumber);
 
@@ -367,7 +374,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review));
 
+        public virtual void ClickBtn_Back_To_Field() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_Field));
+
         public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise));
+
+        public virtual void ClickBtn_Close_Selected() => JsClickElement(By.XPath("//button[text()='Close Selected']"));
+
+        public virtual void ClickBtn_View_Selected() => JsClickElement(By.XPath("//button[text()='View Selected']"));
 
         public virtual void ClickTab_Create_Revise() => ClickTab(TableTab.Create_Revise);
 
