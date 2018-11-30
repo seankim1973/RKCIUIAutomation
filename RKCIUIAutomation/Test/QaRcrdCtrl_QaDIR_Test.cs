@@ -5,6 +5,8 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Test.DIR
@@ -81,6 +83,7 @@ namespace RKCIUIAutomation.Test.DIR
         [Description("To validate creating and saving a DIR (Daily Inspection Report) document in Complex Workflow.")]
         public void DIR_ComplexWF_End_to_End()
         {
+            //SimpleWF portion of ComplexWF (QaField menu)
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
             LogoutToLoginPage();
@@ -92,9 +95,20 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+
+            //ComplexWF
             NavigateToPage.QARecordControl_QA_DIRs();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
+            WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Revise, dirNumber), "VerifyDirIsDisplayed in (QaRecordControl) Revise Tab");
+
+
+
+
+
+
             AssertAll();
+
 
         }
     }

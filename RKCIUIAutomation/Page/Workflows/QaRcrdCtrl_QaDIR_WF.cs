@@ -190,9 +190,18 @@ namespace RKCIUIAutomation.Page.Workflows
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
         }
 
+        private void Modify_Cancel_Verify_inAttachments(string dirNumber)
+        {
+            LogDebug($"---> Modify_Cancel_Verify_inAttachments <---");
+
+            UploadFile();
+            
+        }
+
+
         public virtual void Modify_Cancel_Verify_inCreateRevise(string dirNumber)
         {
-            LogDebug($"---> Modify_DeficiencyDescription_Cancel_and_Verify <---");
+            LogDebug($"---> Modify_Cancel_Verify_inCreateRevise <---");
 
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_Deficiencies_Yes();
@@ -207,7 +216,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void Modify_Save_Verify_and_SaveForward_inCreateRevise(string dirNumber)
         {
-            LogDebug($"---> Modify_DeficiencyDescription_Save_and_Verify <---");
+            LogDebug($"---> Modify_Save_Verify_and_SaveForward_inCreateRevise <---");
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDeficiencySelectionPopupMessages(), "VerifyDeficiencySelectionPopupMessages");
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
