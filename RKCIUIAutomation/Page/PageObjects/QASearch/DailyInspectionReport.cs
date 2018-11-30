@@ -3,6 +3,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System;
 using static RKCIUIAutomation.Page.PageObjects.QASearch.DailyInspectionReport;
+using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.QASearch
 {
@@ -16,17 +17,63 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
         public enum ColumnName
         {
-            [StringValue ("DIRNO")] DIR_No,            
-            [StringValue ("Revision")] Revision,
-            [StringValue ("InspectDate")] Inspection_Date,
-            [StringValue ("InspectBy")] Inspection_By,
-            [StringValue ("Comments")] Workflow_Location,
-            [StringValue ("LabField")] Belong_To,
-            [StringValue ("Area")] Area,
-            [StringValue ("SpecSection")] Spec_Section,
-            [StringValue ("Reviewby")] Reviewed_By,
-            [StringValue ("ApproveBy")] Approved_By,
-            [StringValue ("ApproveDate")] Approve_Date
+            [StringValue("DIRNO")] DIR_No,            
+            [StringValue("Revision")] Revision,
+            [StringValue("InspectDate")] Inspection_Date,
+            [StringValue("InspectBy")] Inspection_By,
+            [StringValue("Comments")] Workflow_Location,
+            [StringValue("LabField")] Belong_To,
+            [StringValue("Area")] Area,
+            [StringValue("SpecSection")] Spec_Section,
+            [StringValue("Reviewby")] Reviewed_By,
+            [StringValue("ApproveBy")] Approved_By,
+            [StringValue("ApproveDate")] Approve_Date
+        }
+
+        public enum SearchCriteria
+        {
+            //text fields
+            [StringValue("FromDate")] SamplePeriod_FromDate,
+            [StringValue("ToDate")] SamplePeriod_ToDate,
+            [StringValue("InspectBy")] Inspection_By,
+            [StringValue("LIN")] TINs,
+            [StringValue("DirNo")] DIR_No,
+            [StringValue("ConversationLog")] Conversation_Log,
+            [StringValue("AssociateReports")] List_of_previous_FDC_CDR_NCR,
+
+            //DDList
+            [StringValue("FID")] FID,
+            [StringValue("SegmentId")] Segment,
+            [StringValue("DivisionId")] Division,
+            [StringValue("BidCodeItemId")] Bid_Item_Code, //dependant on Division DDList selection
+            [StringValue("RoadWayId")] Roadway,
+            [StringValue("StructureId")] Location,
+            [StringValue("FeatureTypeId")] Feature,
+            [StringValue("TypeId")] Type,
+            [StringValue("ResultId")] Result,
+            [StringValue("PreviousIssuesResolved")] Resolved,
+            [StringValue("Deficiency")] Any_Deficiencies,
+            [StringValue("ReviewById")] Review_By,
+            [StringValue("StatusFlowId")] Workflow_Location,
+            [StringValue("Source")] Belong_To,
+
+            //Add Query portion
+            [StringValue("Name")] AddQuery_Name, //input[@name='Name']
+            [StringValue("Description")] AddQuery_Description, //input[@name='Description']
+            [StringValue("AllowAccessToAllUsers")] AddQuery_AccessLevel
+        }
+
+        public enum Buttons
+        {
+            [StringValue("ViewSelectedDIR_")] View_Selected_DIR,
+            [StringValue("SearchForTests")] Search,
+            [StringValue("ClearButton")] Clear,
+            [StringValue("")] Add_Query, //TODO - anchor tag - create method
+            [StringValue("")] My_Queries, //TODO - button @data-target='#testing-queries-modal'
+
+            //Add Query portion
+            [StringValue("AddQueryButton")] AddQuery_Save,
+            [StringValue("CancelButton")] AddQuery_Cancel,
         }
     }
 
@@ -34,7 +81,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
     {
         bool VerifyDirIsDisplayed(string dirNumber);
 
-        bool VerifyDirIsClosedByTblFilter(string dirNumber);
+        bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed);
+
+        bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed);
+
+        void ClickBtn_Search();
+
+        void ClickBtn_Clear();
+
+        void EnterText_DIR_Number(string dirNumber);
     }
 
     public abstract class DailyInspectionReport_Impl : TestBase, IDailyInspectionReport
@@ -86,7 +141,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
             return instance;
         }
 
+        public virtual void ClickBtn_Search() => JsClickElement(By.Id(Buttons.Search.GetString()));
 
+        public virtual void ClickBtn_Clear() => JsClickElement(By.Id(Buttons.Clear.GetString()));
+
+        public virtual void EnterText_DIR_Number(string dirNumber) => EnterText(By.Id(SearchCriteria.DIR_No.GetString()), dirNumber);
 
         public virtual bool VerifyDirIsDisplayed(string dirNumber)
         {
@@ -106,36 +165,45 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
             return isDisplayed;
         }
 
-        public virtual bool VerifyDirIsClosedByTblFilter(string dirNumber)
+        private bool CheckIfWorkflowLocationsMatch(string dirNumber, WorkflowLocation expectedWorkflow, bool usingSearch = false)
         {
             NavigateToPage.QASearch_Daily_Inspection_Report();
-
-            bool dirIsClosed = false;
-            string logMsg = "not found.";
+            string actualWorkflow = string.Empty;
+            bool wfLocationsMatch = false;
 
             try
             {
-                string _dirNumber = dirNumber.Equals("") ? QaRcrdCtrl_QaDIR.GetDirNumber() : dirNumber;
-                
-                bool isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(_dirNumber);
+                dirNumber = dirNumber.Equals("") ? QaRcrdCtrl_QaDIR.GetDirNumber() : dirNumber;
+
+                if (usingSearch)
+                {
+                    QaSearch_DIR.EnterText_DIR_Number(dirNumber);
+                    QaSearch_DIR.ClickBtn_Search();
+                }
+
+                bool isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(dirNumber);
 
                 if (isDisplayed)
                 {
-                    string docStatus = GetColumnValueForRow(_dirNumber, "Workflow Location", false);
-                    dirIsClosed = docStatus.Equals("Closed") ? true : false;
-                    logMsg = $"Workflow Location displayed as: {docStatus}";
+                    actualWorkflow = GetColumnValueForRow(dirNumber, "Workflow Location", false);
+                    string logMsg = string.IsNullOrEmpty(actualWorkflow) ? "not found." : $"Workflow Location displayed as: {actualWorkflow}";
+                    wfLocationsMatch = actualWorkflow.Equals(expectedWorkflow.GetString()) ? true : false;
+                    LogInfo($"DIR Number {dirNumber}, {logMsg}", wfLocationsMatch);
                 }
-
-                LogInfo($"DIR Number {_dirNumber}, {logMsg}", dirIsClosed);
-
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
 
-            return dirIsClosed;
+            return wfLocationsMatch;
         }
+
+        public virtual bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed)
+            => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow, true);
+
+        public virtual bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed)
+            => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow);
     }
 
     public class DailyInspectionReport_Garnet : DailyInspectionReport

@@ -30,7 +30,7 @@ namespace RKCIUIAutomation.Page
             {
                 string currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
 
-                if (tblTabName != currentTabName)
+                if (!tblTabName.Equals(currentTabName))
                 {
                     string jsToBeExecuted = GetTabStripReference();
 

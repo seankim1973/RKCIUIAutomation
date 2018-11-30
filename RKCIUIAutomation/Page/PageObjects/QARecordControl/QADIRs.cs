@@ -27,17 +27,24 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("TimeEnd1")] Time_End,
             [StringValue("DIREntries_0__AverageTemperature")] Average_Temperature,
             [StringValue("DIREntries_0__AreaID")] Area,
+            [StringValue("DIREntries_0__DivisionID")] Division, //SH249
+            [StringValue("DIREntries_0__BidItemCodeID")] Bid_Item_Code, //SH249
             [StringValue("DIREntries_0__SectionId")] Spec_Section,
             [StringValue("DIREntries_0__FeatureID")] Feature, //requires selection of Area DDL
             [StringValue("DIREntries_0__HoldPointNo")] Control_Point_Number,
             [StringValue("DIREntries_0__HoldPointTypeID")] Control_Point_Type,
             [StringValue("DIREntries_0__SubFeatureId")] SubFeature,//not required
             [StringValue("DIREntries_0__ContractorId")] Contractor,
+            [StringValue("DIREntries_0__CrewID")] Crew, //SH249
             [StringValue("DIREntries_0__CrewForemanID")] Crew_Foreman, //requires selection of Contractor DDL
             [StringValue("DIREntries_0__SectionDescription")] Section_Description, //matches Spec Section selection
             [StringValue("DIREntries_0__DeficiencyDescription")] Deficiency_Description, //not required
             [StringValue("DIREntries_0__DateReady")] Date_Ready, //LAX 
             [StringValue("DIREntries_0__DateCompleted")] Date_Completed, //LAX
+            [StringValue("DIREntries_0__DateOnlyReady")] DateOnly_Ready, //SG
+            [StringValue("DIREntries_0__TimeOnlyReady")] TimeOnly_Ready, //SG
+            [StringValue("DIREntries_0__DateOnlyCompleted")] DateOnly_Completed, //SG
+            [StringValue("DIREntries_0__TimeOnlyCompleted")] TimeOnly_Completed, //SG
             [StringValue("DIREntries_0__InspectionHours")] Total_Inspection_Time //LAX
         }
 
@@ -82,12 +89,21 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Add")] Add,
             [StringValue("Delete")] Delete,
             [StringValue("Submit Revise")] Submit_Revise,
+            [StringValue("No Error")] No_Error,
+            [StringValue("Back To QC Review")] Back_To_QC_Review,
+            [StringValue("Revise")] Revise
         }
 
         public enum RadioBtnsAndCheckboxes
         {
             [StringValue("InspectionType_I_0")] Inspection_Type_I,
             [StringValue("InspectionType_C_0")] Inspection_Type_C,
+            [StringValue("InspectionType_P_0")] Inspection_Type_P,
+            [StringValue("InspectionType_H_0")] Inspection_Type_H,
+            [StringValue("InspectionType_R_0")] Inspection_Type_R,
+            [StringValue("DIREntries_0__InspectionTypeI")] Inspection_Type_I_forSG,
+            [StringValue("DIREntries_0__InspectionTypeP")] Inspection_Type_P_forSG,
+            [StringValue("DIREntries_0__InspectionTypeR")] Inspection_Type_R_forSG,
             [StringValue("InspectionPassFail_P_0")] Inspection_Result_P,
             [StringValue("InspectionPassFail_E_0")] Inspection_Result_E,
             [StringValue("InspectionPassFail_F_0")] Inspection_Result_F,
@@ -132,13 +148,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void ClickBtn_Delete();
 
+        void ClickBtn_NoError();
+
+        void ClickBtn_Revise();
+
+        void ClickBtn_Back_To_QC_Review();
+
         void FilterDirNumber(string DirNumber);
 
         void PopulateRequiredFields();
 
         string GetDirNumber(string DirNumberKey = "");
-
-
 
         void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00);
 
@@ -150,19 +170,33 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectDDL_SpecSection(int ddListSelection = 1);
 
+        void SelectDDL_Division(int ddListSelection = 1);
+
+        void SelectDDL_BidItemCode(int ddListSelection = 1);
+
         void SelectDDL_Feature(int ddListSelection = 1);
 
         void SelectDDL_ControlPointNumber(int ddListSelection = 1);
 
+        void SelectDDL_HoldPointType(int ddListSelection = 1);
+
         void SelectDDL_Contractor(int ddListSelection = 1);
 
         void SelectDDL_Contractor<T>(T ddListSelection);
+
+        void SelectDDL_Crew(int ddListSelection = 1);
 
         void SelectDDL_CrewForeman(int ddListSelection = 1);
 
         void SelectChkbox_InspectionType_I(bool toggleChkboxIfAlreadySelected = true);
 
         void SelectChkbox_InspectionType_C(bool toggleChkboxIfAlreadySelected = true);
+
+        void SelectChkbox_InspectionType_P(bool toggleChkboxIfAlreadySelected = true);
+
+        void SelectChkbox_InspectionType_H(bool toggleChkboxIfAlreadySelected = true);
+
+        void SelectChkbox_InspectionType_R(bool toggleChkboxIfAlreadySelected = true);
 
         void SelectChkbox_InspectionResult_P(bool toggleChkboxIfAlreadySelected = true);
 
@@ -204,9 +238,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void EnterText_SectionDescription(string desc = "");
 
-        void Enter_ReadyDate();
+        void Enter_ReadyDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00);
 
-        void Enter_CompletedDate();
+        void Enter_CompletedDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00);
 
         void Enter_TotalInspectionTime();
 
@@ -225,6 +259,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         bool VerifyDeficiencySelectionPopupMessages();
 
         bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "");
+
+        IList<string> GetHoldPointReqFieldList();
 
         bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, bool verifyControPointReqFields = false);
 
@@ -327,6 +363,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_Delete() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Delete));
 
+        public virtual void ClickBtn_NoError() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.No_Error));
+
+        public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review));
+
+        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise));
+
         public virtual void ClickTab_Create_Revise() => ClickTab(TableTab.Create_Revise);
 
         public virtual void ClickTab_QC_Review() => ClickTab(TableTab.QC_Review);
@@ -415,17 +457,29 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void SelectDDL_SpecSection(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Spec_Section, ddListSelection);
 
+        public virtual void SelectDDL_Division(int ddListSelection = 1)
+            => ExpandAndSelectFromDDList(InputFields.Division, ddListSelection);
+
+        public virtual void SelectDDL_BidItemCode(int ddListSelection = 1)
+            => ExpandAndSelectFromDDList(InputFields.Bid_Item_Code, ddListSelection);
+
         public virtual void SelectDDL_Feature(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Feature, ddListSelection);
 
         public virtual void SelectDDL_ControlPointNumber(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Control_Point_Number, ddListSelection);
 
+        public virtual void SelectDDL_HoldPointType(int ddListSelection = 1)
+            => ExpandAndSelectFromDDList(InputFields.Control_Point_Type, ddListSelection);
+
         public virtual void SelectDDL_Contractor(int ddListSelection =1)
             => ExpandAndSelectFromDDList(InputFields.Contractor, ddListSelection);
 
         public virtual void SelectDDL_Contractor<T>(T ddListSelection)
             => ExpandAndSelectFromDDList(InputFields.Contractor, ddListSelection);
+
+        public virtual void SelectDDL_Crew(int ddListSelection = 1)
+            => ExpandAndSelectFromDDList(InputFields.Crew, ddListSelection);
 
         public virtual void SelectDDL_CrewForeman(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Crew_Foreman, ddListSelection);
@@ -533,7 +587,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         alertMsg = GetAlertMessage();
                         alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
                         assertList.Add(alertMsgMatch);
-                        LogInfo($"<br>Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        LogInfo($"Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
                         AcceptAlertMessage();
                     }
                 }
@@ -554,7 +608,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         alertMsg = GetAlertMessage();
                         alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
                         assertList.Add(alertMsgMatch);
-                        LogInfo($"<br>Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        
+                        LogInfo($"Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
                         AcceptAlertMessage();
                     }
                 }
@@ -579,6 +634,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectChkbox_InspectionType_C(bool toggleChkboxIfAlreadySelected = true)
             => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_C, toggleChkboxIfAlreadySelected);
+
+        public virtual void SelectChkbox_InspectionType_P(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_P, toggleChkboxIfAlreadySelected);
+
+        public virtual void SelectChkbox_InspectionType_H(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_H, toggleChkboxIfAlreadySelected);
+
+        public virtual void SelectChkbox_InspectionType_R(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_R, toggleChkboxIfAlreadySelected);
 
         public virtual void SelectChkbox_InspectionResult_P(bool toggleChkboxIfAlreadySelected = true)
             => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Result_P, toggleChkboxIfAlreadySelected);
@@ -612,15 +676,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => EnterText(GetTextAreaFieldByLocator(InputFields.Section_Description),
                 desc = desc.Equals("") ? "RKCI Automation Section Description" : desc);
 
-        //LAX
-        public virtual void Enter_ReadyDate() 
-            => EnterText(GetTextInputFieldByLocator(InputFields.Date_Ready), GetShortDateTime() );
+        public virtual void Enter_ReadyDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
+            => EnterText(GetTextInputFieldByLocator(InputFields.Date_Ready), GetShortDateTime(shortDate, shortTime));
         
-        //LAX
-        public virtual void Enter_CompletedDate() 
-            => EnterText(GetTextInputFieldByLocator(InputFields.Date_Completed), GetShortDateTime());
+        public virtual void Enter_CompletedDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00) 
+            =>EnterText(GetTextInputFieldByLocator(InputFields.Date_Completed), GetShortDateTime(shortDate, shortTime));
 
-        //LAX
         public virtual void Enter_TotalInspectionTime()
         {
             string inspectTimeFieldId = InputFields.Total_Inspection_Time.GetString();
@@ -653,6 +714,28 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return msgMatch;
         }
 
+        private string FormatInspectionTimesIDs(string id)
+        {
+            if (id.Equals("DateReady"))
+            {
+                id = "Ready";
+            }
+            else if (id.Equals("DateCompleted"))
+            {
+                id = "Completed Date";
+            }
+            else if (id.Equals("InspectionHours"))
+            {
+                id = "Total Inspection Time";
+            }
+            else if (id.Contains("Time"))
+            {
+                id = Regex.Replace(id, "Only", "");
+            }
+
+            return id;
+        }
+
         internal IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern)
         {
             IList<string> trimmedList = null;
@@ -681,7 +764,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         {
                             if (id.Equals("HoldPointTypeID"))
                             {
-                                id = "ControlPoint No.";
+                                bool complexWfTenant = tenantName == TenantName.SGWay || tenantName == TenantName.SH249 ? true : false;
+                                id = complexWfTenant ? "HoldPoint Type" : "ControlPoint No.";
                             }
                             else
                                 id = "ControlPoint Type";
@@ -697,17 +781,16 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         }
                         else if (id.Equals("DateReady") || id.Equals("DateCompleted") || id.Equals("InspectionHours"))
                         {
-                            if (id.Equals("DateReady"))
+                            id = FormatInspectionTimesIDs(id);
+                        }
+                        else if (id.Contains("Only"))
+                        {
+                            id = Regex.Replace(id, "Only", "");
+                            id = FormatInspectionTimesIDs(id);
+
+                            if (!id.Contains(" "))
                             {
-                                id = "Ready";
-                            }
-                            else if (id.Equals("DateCompleted"))
-                            {
-                                id = "Completed Date";
-                            }
-                            else if (id.Equals("InspectionHours"))
-                            {
-                                id = "Total Inspection Time";
+                                id = id.SplitCamelCase();
                             }
                         }
 
@@ -759,7 +842,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 int tblRowIndex = 0;
                 string[][] idTable = new string[expectedCount + 2][];
-                idTable[tblRowIndex] = new string[2] { $"|  Expected ID  | ", $" |  Found Matching Actual ID  | " };
+                idTable[tblRowIndex] = new string[2] { $"| - Expected ID - | ", $" | - Found Matching Actual ID - | " };
 
                 if (countsMatch)
                 {
@@ -769,7 +852,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         string actualID = actualRequiredFieldIDs[i];
                         reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
                         results.Add(reqFieldsMatch);
-                        idTable[tblRowIndex] = new string[2] { $" |  {actualID} : ", $" {reqFieldsMatch.ToString()}" };
+                        string tblRowNumber = tblRowIndex.ToString();
+                        tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}":tblRowNumber;
+
+                        idTable[tblRowIndex] = new string[2] { $"%nbsp%nbsp{tblRowNumber}:{actualID} : ", $"%nbsp%nbsp{reqFieldsMatch.ToString()}" };
                     }
                 }
                 else
@@ -830,12 +916,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return extractedFieldNames;
         }
-        
-        internal IList<string> ControlPointReqFieldIDs = new List<string>()
+
+        public virtual IList<string> GetHoldPointReqFieldList()
         {
-            InputFields.Control_Point_Number.GetString(),
-            InputFields.Control_Point_Type.GetString()
-        };
+            IList<string> ControlPointReqFieldIDs = new List<string>()
+            {
+                InputFields.Control_Point_Number.GetString(),
+                InputFields.Control_Point_Type.GetString()
+            };
+
+            return ControlPointReqFieldIDs;
+        }
 
         public virtual bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, bool verifyControPointReqFields = false)
         {
@@ -891,7 +982,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return requiredFieldsMatch;
         }
 
-        public virtual bool VerifyControlPointReqFieldErrors() => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(ControlPointReqFieldIDs, true);
+        public virtual bool VerifyControlPointReqFieldErrors()
+            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetHoldPointReqFieldList(), true);
     }
 
 
@@ -909,12 +1001,127 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public QADIRs_SH249(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void PopulateRequiredFields()
+        {
+            SelectDDL_TimeBegin(TimeBlock.AM_06_00);
+            SelectDDL_TimeEnd(TimeBlock.PM_04_00);
+            SelectDDL_Division();
+            SelectDDL_BidItemCode();
+            SelectDDL_Feature();
+            SelectDDL_Crew();
+            SelectDDL_CrewForeman();
+            SelectChkbox_InspectionType_I();
+            SelectChkbox_InspectionResult_P();
+            Enter_ReadyDateTime();
+            Enter_CompletedDateTime("", TimeBlock.PM_12_00);
+            Enter_TotalInspectionTime();
+            StoreDirNumber();
+        }
+
+        public override IList<string> GetExpectedRequiredFieldIDsList()
+        {
+            IList<string> RequiredFieldIDs = new List<string>()
+            {
+                InputFields.Time_Begin.GetString(),
+                InputFields.Time_End.GetString(),
+                InputFields.Division.GetString(),
+                InputFields.Bid_Item_Code.GetString(),
+                InputFields.Feature.GetString(),
+                InputFields.Crew.GetString(),
+                InputFields.Crew_Foreman.GetString(),
+                "Inspection Type",
+                "Inspection Result",
+                InputFields.Date_Ready.GetString(),
+                InputFields.Date_Completed.GetString(),
+                InputFields.Total_Inspection_Time.GetString()
+            };
+
+            return RequiredFieldIDs;
+        }
     }
 
     public class QADIRs_SGWay : QADIRs
     {
         public QADIRs_SGWay(IWebDriver driver) : base(driver)
         {
+        }
+
+        public override void Enter_ReadyDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
+        {
+            shortDate = shortDate.Equals("") ? GetShortDate() : shortDate;
+            EnterText(GetTextInputFieldByLocator(InputFields.DateOnly_Ready), shortDate);
+            ExpandAndSelectFromDDList(InputFields.TimeOnly_Ready, (int)shortTime);
+        }
+
+        public override void Enter_CompletedDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
+        {
+            shortDate = shortDate.Equals("") ? GetShortDate() : shortDate;
+            EnterText(GetTextInputFieldByLocator(InputFields.DateOnly_Completed), shortDate);
+            ExpandAndSelectFromDDList(InputFields.TimeOnly_Completed, (int)shortTime);
+        }
+
+        public override void SelectChkbox_InspectionType_I(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_I_forSG, toggleChkboxIfAlreadySelected);
+
+        public override void SelectChkbox_InspectionType_P(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_P_forSG, toggleChkboxIfAlreadySelected);
+
+        public override void SelectChkbox_InspectionType_R(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_R_forSG, toggleChkboxIfAlreadySelected);
+
+        public override void PopulateRequiredFields()
+        {
+            SelectDDL_Division();
+            SelectDDL_BidItemCode();
+            SelectDDL_Feature();
+            SelectDDL_Crew();
+            SelectDDL_CrewForeman();
+            SelectChkbox_InspectionType_I();
+            SelectChkbox_InspectionType_P();
+            SelectChkbox_InspectionType_H();
+            SelectChkbox_InspectionType_R();
+            SelectChkbox_InspectionResult_P();
+            Enter_ReadyDateTime();
+            Enter_CompletedDateTime("", TimeBlock.PM_12_00);
+            Enter_TotalInspectionTime();
+
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
+            SelectDDL_HoldPointType();
+
+            StoreDirNumber();
+        }
+
+        public override IList<string> GetExpectedRequiredFieldIDsList()
+        {
+            IList<string> RequiredFieldIDs = new List<string>()
+            {
+                InputFields.Division.GetString(),
+                InputFields.Bid_Item_Code.GetString(),
+                InputFields.Feature.GetString(),
+                InputFields.Crew.GetString(),
+                InputFields.Crew_Foreman.GetString(),
+                "Inspection Type",
+                "Inspection Result",
+                InputFields.DateOnly_Ready.GetString(),
+                InputFields.TimeOnly_Ready.GetString(),
+                InputFields.DateOnly_Completed.GetString(),
+                InputFields.TimeOnly_Completed.GetString(),
+                InputFields.Total_Inspection_Time.GetString()
+            };
+
+            return RequiredFieldIDs;
+        }
+
+        public override IList<string> GetHoldPointReqFieldList()
+        {
+            IList<string> ControlPointReqFieldIDs = new List<string>()
+            {
+                InputFields.Control_Point_Type.GetString()
+            };
+
+            return ControlPointReqFieldIDs;
         }
     }
 
@@ -934,8 +1141,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_CrewForeman();
             SelectChkbox_InspectionType_C();
             SelectChkbox_InspectionResult_P();
-            Enter_ReadyDate();
-            Enter_CompletedDate();
+            Enter_ReadyDateTime();
+            Enter_CompletedDateTime();
             Enter_TotalInspectionTime();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
@@ -982,11 +1189,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_CrewForeman();
             SelectChkbox_InspectionType_C();
             SelectChkbox_InspectionResult_P();
-            Enter_ReadyDate();
-            Enter_CompletedDate();
+            Enter_ReadyDateTime();
+            Enter_CompletedDateTime();
             Enter_TotalInspectionTime();
             ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             StoreDirNumber();
         }
@@ -1034,7 +1241,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectChkbox_InspectionType_C();
             SelectChkbox_InspectionResult_P();
             ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             StoreDirNumber();
         }
@@ -1090,11 +1297,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterText_SectionDescription(GetTextFromDDL(QADIRs.InputFields.Spec_Section));
             SelectChkbox_InspectionType_C();
             SelectChkbox_InspectionResult_P();
-            Enter_ReadyDate();
-            Enter_CompletedDate();
+            Enter_ReadyDateTime();
+            Enter_CompletedDateTime();
             Enter_TotalInspectionTime();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             //SelectDDL_ControlPointNumber(); //Currently does not have values to choose in the drop down list
             SelectChkbox_InspectionType_I();
             StoreDirNumber();
