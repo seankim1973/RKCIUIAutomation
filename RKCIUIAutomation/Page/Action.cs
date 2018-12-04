@@ -11,7 +11,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 
-
 namespace RKCIUIAutomation.Page
 {
     public class Action : PageHelper
@@ -33,15 +32,18 @@ namespace RKCIUIAutomation.Page
                     "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
                     "arguments[0].dispatchEvent(evObj);")]
             Hover,
+
             [StringValue("")] GetCssValue
         }
 
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
         {
+            IWebElement element = null;
+
             try
             {
                 string javaScript = jsAction.GetString();
-                IWebElement element = GetElement(elementByLocator);
+                element = GetElement(elementByLocator);
                 IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
                 executor.ExecuteScript(javaScript, element);
                 log.Info($"{jsAction.ToString()}ed on javascript element: - {elementByLocator}");
@@ -58,14 +60,14 @@ namespace RKCIUIAutomation.Page
             try
             {
                 ScrollToElement(elementByLocator);
-                ExecuteJsAction(JSAction.Click, elementByLocator);                
+                ExecuteJsAction(JSAction.Click, elementByLocator);
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
-            
         }
+
         public void JsHover(By elementByLocator)
         {
             ExecuteJsAction(JSAction.Hover, elementByLocator);
@@ -127,7 +129,20 @@ namespace RKCIUIAutomation.Page
             log.Info($"...Waiting for page to be in Ready state #####");
         }
 
-        internal IWebElement GetElement(By elementByLocator)
+        public void RefreshWebPage()
+        {
+            try
+            {
+                Driver.Navigate().Refresh();
+                log.Info("Refreshed Web Page");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+        }
+
+        public IWebElement GetElement(By elementByLocator)
         {
             IWebElement elem = null;
             WaitForElement(elementByLocator);
@@ -346,7 +361,7 @@ namespace RKCIUIAutomation.Page
             }
 
             return pageUrl;
-        } 
+        }
 
         public string GetText(By elementByLocator)
         {
@@ -485,36 +500,38 @@ namespace RKCIUIAutomation.Page
         /// <returns></returns>
         public bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false)
         {
-            ScrollToElement(By.Id("FileManagerDiv_0"));
+            By testListDIV = By.XPath("//h5/b[contains(text(),'Test List')]");
+            ScrollToElement(testListDIV);
 
             bool fileNamesMatch = false;
 
             IList<IWebElement> actualFileNameList = null;
 
-            string expectedName = string.Empty;
-
             IList<string> expectedNamesList = null;
 
             IList<bool> assertList = new List<bool>();
+
+            string expectedName = string.Empty;
+
+            int actualCount = 0;
 
             Type argType = expectedFileName.GetType();
 
             try
             {
                 string xpath = beforeSubmitBtnAction
-                    ? "//ul[@class='k-upload-files k-reset']/li/div/span[@class='k-file-name']" 
+                    ? "//ul[@class='k-upload-files k-reset']/li/div/span[@class='k-file-name']"
                     : "//div[contains(@class,'fileList')]";
 
                 By actualUploadedFileNameLocator = By.XPath(xpath);
 
+                actualFileNameList = new List<IWebElement>();
                 actualFileNameList = GetElements(actualUploadedFileNameLocator);
-
+                actualCount = actualFileNameList.Count;
                 bool fileNameIsExpected = false;
 
-                if (actualFileNameList != null)
+                if (actualCount != 0)
                 {
-                    int actualCount = actualFileNameList.Count;
-
                     for (int i = 0; i < actualCount; i++)
                     {
                         IWebElement actualElem = actualFileNameList[i];
@@ -566,6 +583,12 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
+                if (expectedNamesList != null)
+                {
+                    bool countsMatch = expectedNamesList.Count == actualCount ? true : false;
+                    assertList.Add(countsMatch);
+                }
+
                 fileNamesMatch = assertList.Contains(false) ? false : true;
             }
 
@@ -720,18 +743,18 @@ namespace RKCIUIAutomation.Page
             //    {
             //        LogDebug($"Page Title element with h2 or h3 tag containing text \"{expectedPageTitle}\" was not found.");
 
-                    headingElement = By.TagName("h3");
-                    isDisplayed = IsHeadingDisplayed(headingElement);
-                    if (!isDisplayed)
-                    {
-                        headingElement = By.TagName("h2");
-                        isDisplayed = IsHeadingDisplayed(headingElement);
-                        if (!isDisplayed)
-                        {
-                            string logMsg = $"Could not find any Page element with h2 or h3 tag";
-                            BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
-                        }
-                    }
+            headingElement = By.TagName("h3");
+            isDisplayed = IsHeadingDisplayed(headingElement);
+            if (!isDisplayed)
+            {
+                headingElement = By.TagName("h2");
+                isDisplayed = IsHeadingDisplayed(headingElement);
+                if (!isDisplayed)
+                {
+                    string logMsg = $"Could not find any Page element with h2 or h3 tag";
+                    BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
+                }
+            }
             //    }
             //}
 
@@ -776,7 +799,7 @@ namespace RKCIUIAutomation.Page
                 //Console.WriteLine($"##### IsPageLoadedSuccessfully - LogMsg: {logMsg}");
 
                 logMsgKey = $"{testEnv}{tenantName}{GetTestName()}";
-                PgBaseHelper.CreateVar(logMsgKey, logMsg);                
+                PgBaseHelper.CreateVar(logMsgKey, logMsg);
             }
             catch (Exception e)
             {
@@ -787,7 +810,7 @@ namespace RKCIUIAutomation.Page
         }
 
         private string GetPageErrorLogMsg() => PgBaseHelper.GetVar(logMsgKey);
-        
+
         public bool VerifyUrlIsLoaded(string pageUrl)
         {
             bool isLoaded = false;
@@ -804,7 +827,7 @@ namespace RKCIUIAutomation.Page
                 logMsg = isLoaded ? $">>> Page Loaded Successfully <<<<br>{pageUrl}" : GetPageErrorLogMsg();
 
                 LogInfo(logMsg, isLoaded);
-                
+
                 WriteToFile(logMsg, "_PageTitle.txt");
             }
             catch (Exception e)
@@ -812,7 +835,6 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
             }
 
-            
             return isLoaded;
         }
 
@@ -1025,10 +1047,10 @@ namespace RKCIUIAutomation.Page
                 {
                     //if (!elem.Displayed)
                     //{
-                        Actions actions = new Actions(Driver);
-                        actions.MoveToElement(elem);
-                        actions.Perform();
-                        log.Info($"Scrolled to element - {elementByLocator}");
+                    Actions actions = new Actions(Driver);
+                    actions.MoveToElement(elem);
+                    actions.Perform();
+                    log.Info($"Scrolled to element - {elementByLocator}");
                     //}
                 }
             }
@@ -1046,13 +1068,13 @@ namespace RKCIUIAutomation.Page
             {
                 //if (element.Enabled)
                 //{
-                    if (!element.Displayed)
-                    {
-                        Actions actions = new Actions(Driver);
-                        actions.MoveToElement(element);
-                        actions.Perform();
-                        log.Info($"Scrolled to WebElement");
-                    }
+                if (!element.Displayed)
+                {
+                    Actions actions = new Actions(Driver);
+                    actions.MoveToElement(element);
+                    actions.Perform();
+                    log.Info($"Scrolled to WebElement");
+                }
                 //}
             }
             catch (Exception e)

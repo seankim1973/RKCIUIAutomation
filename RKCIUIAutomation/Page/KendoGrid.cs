@@ -21,14 +21,17 @@ namespace RKCIUIAutomation.Page
             string tabSelect = $"tab.select('{commentTabIndex.ToString()}');";
             jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
             ExecuteJsScript(jsToBeExecuted);
-            LogInfo($"Clicked Comment {commentTabIndex} tab");
+            LogInfo($"Clicked Comment {commentNumber} tab : {tabSelect}");
         }
+
+        public string GetCurrentTableTabName()
+            => GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
 
         public void ClickTableTab(string tblTabName)
         {
             try
             {
-                string currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
+                string currentTabName = GetCurrentTableTabName();
 
                 if (!tblTabName.Equals(currentTabName))
                 {
@@ -161,10 +164,24 @@ namespace RKCIUIAutomation.Page
             return items;
         }
 
-        public bool FilterAndGetGridType(string columnName, string filterValue, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
-        {
-            return Filter(new GridFilter(columnName, filterOperator, filterValue, filterLogic, additionalFilterValue, additionalFilterOperator));
-        }
+        public bool FilterAndGetGridType(
+            string columnName,
+            string filterValue,
+            FilterOperator filterOperator = FilterOperator.EqualTo,
+            FilterLogic filterLogic = FilterLogic.And,
+            string additionalFilterValue = null,
+            FilterOperator additionalFilterOperator = FilterOperator.EqualTo
+            )
+            => Filter(
+                new GridFilter(
+                    columnName,
+                    filterOperator,
+                    filterValue,
+                    filterLogic,
+                    additionalFilterValue,
+                    additionalFilterOperator
+                    )
+                );
 
         private bool Filter(params GridFilter[] gridFilters)
         {
