@@ -483,6 +483,9 @@ namespace RKCIUIAutomation.Page
                 //EnterText(uploadInput_ByLocator, filePath, false);
                 Driver.FindElement(uploadInput_ByLocator).SendKeys(filePath);
                 log.Info($"Entered {filePath}' for file upload");
+
+                By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
+                WaitForElement(uploadStatusLabel);
             }
             catch (Exception e)
             {
@@ -509,9 +512,11 @@ namespace RKCIUIAutomation.Page
 
             IList<string> expectedNamesList = null;
 
-            IList<bool> assertList = new List<bool>();
+            IList<bool> assertList = null;
 
             string expectedName = string.Empty;
+
+            string logMsg = string.Empty;
 
             int actualCount = 0;
 
@@ -519,62 +524,75 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                string xpath = beforeSubmitBtnAction
-                    ? "//ul[@class='k-upload-files k-reset']/li/div/span[@class='k-file-name']"
-                    : "//div[contains(@class,'fileList')]";
-
-                By actualUploadedFileNameLocator = By.XPath(xpath);
-
-                actualFileNameList = new List<IWebElement>();
-                actualFileNameList = GetElements(actualUploadedFileNameLocator);
-                actualCount = actualFileNameList.Count;
-                bool fileNameIsExpected = false;
-
-                if (actualCount != 0)
-                {
-                    for (int i = 0; i < actualCount; i++)
-                    {
-                        IWebElement actualElem = actualFileNameList[i];
-                        string actualName = string.Empty;
-                        int afterSaveIndex = i + 1;
-
-                        if (beforeSubmitBtnAction)
-                        {
-                            actualName = actualElem.Text;
-                        }
-                        else
-                        {
-                            actualElem = actualElem.FindElement(By.XPath($"{xpath}[{afterSaveIndex}]/descendant::span[1]"));
-                            actualName = actualElem.Text;
-                            string[] splitName = Regex.Split(actualName, " \\(");
-                            actualName = splitName[0];
-                        }
-
-                        if (argType == typeof(string))
-                        {
-                            expectedName = ConvertToType<string>(expectedFileName);
-                            fileNameIsExpected = actualName.Equals(expectedName);
-                            assertList.Add(fileNameIsExpected);
-                        }
-                        else if (argType == typeof(IList<string>))
-                        {
-                            expectedNamesList = new List<string>();
-                            expectedNamesList = ConvertToType<IList<string>>(expectedFileName);
-                            fileNameIsExpected = expectedNamesList.Contains(actualName);
-                            assertList.Add(fileNameIsExpected);
-                        }
-                    }
-                }
-                else
-                {
-                    fileNameIsExpected = ConvertToType<string>(expectedFileName).Equals("") ? true : false;
-                    assertList.Add(fileNameIsExpected);
-                    LogDebug($"No upload file names are seen on the page<br>{actualUploadedFileNameLocator}");
-                }
-
                 if (argType != typeof(string) && argType != typeof(IList<string>))
                 {
                     LogError($"Arg type should be string or IList<string> - Unexpected expectedFileName type: {argType}");
+                }
+                else
+                {
+                    string xpath = beforeSubmitBtnAction
+                        ? "//ul[@class='k-upload-files k-reset']/li/div/span[@class='k-file-name']"
+                        : "//div[contains(@class,'fileList')]";
+
+                    By actualFileNameLocator = By.XPath(xpath);
+
+                    actualFileNameList = new List<IWebElement>();
+                    actualFileNameList = GetElements(actualFileNameLocator);
+                    actualCount = actualFileNameList.Count;
+                    assertList = new List<bool>();
+                    bool fileNameIsExpected = false;
+
+                    if (argType == typeof(string))
+                    {
+                        expectedName = ConvertToType<string>(expectedFileName);
+                    }
+                    else if (argType == typeof(IList<string>))
+                    {
+                        expectedNamesList = new List<string>();
+                        expectedNamesList = ConvertToType<IList<string>>(expectedFileName);
+                    }
+
+                    if (actualCount > 0)
+                    {
+                        for (int i = 0; i < actualCount; i++)
+                        {
+                            IWebElement actualElem = actualFileNameList[i];
+                            string actualName = string.Empty;
+                            int afterSaveIndex = i + 1;
+
+                            if (beforeSubmitBtnAction)
+                            {
+                                actualName = actualElem.Text;
+                            }
+                            else
+                            {
+                                actualElem = actualElem.FindElement(By.XPath($"{xpath}[{afterSaveIndex}]/descendant::span[1]"));
+                                actualName = actualElem.Text;
+                                string[] splitName = Regex.Split(actualName, " \\(");
+                                actualName = splitName[0];
+                            }
+
+                            if (argType == typeof(string))
+                            {
+                                fileNameIsExpected = actualName.Equals(expectedName);
+                                logMsg = $"Expected and Uploaded File Names Matched: {actualName} - {fileNameIsExpected}";
+                            }
+                            else if (argType == typeof(IList<string>))
+                            {
+                                fileNameIsExpected = expectedNamesList.Contains(actualName);
+                                logMsg = $"Uploaded File Name: {actualName} in Expected File Names List - {fileNameIsExpected}";
+                            }
+
+                            assertList.Add(fileNameIsExpected);
+                            LogInfo($"{logMsg}", fileNameIsExpected);
+                        }
+                    }
+                    else
+                    {
+                        fileNameIsExpected = expectedFileName.Equals("") ? true : false;
+                        assertList.Add(fileNameIsExpected);
+                        LogInfo($"No uploaded file names are seen on the page<br>{actualFileNameLocator}", fileNameIsExpected);
+                    }
                 }
             }
             catch (Exception e)

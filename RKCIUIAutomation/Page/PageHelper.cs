@@ -134,14 +134,9 @@ namespace RKCIUIAutomation.Page
 
         public By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true)
         {
-            string submitTypeXPath = string.Empty;
-
-            if (submitType)
-            {
-                submitTypeXPath = "[@type='submit']";
-            }
-
-            return By.XPath($"//input{submitTypeXPath}[@value='{buttonValue.GetString()}']");
+            string submitTypeXPath = submitType ? "[@type='submit']" : "";
+            By locator = By.XPath($"//input{submitTypeXPath}[@value='{buttonValue.GetString()}']");
+            return locator;
         }
 
         public By GetMainNavMenuByLocator(Enum navEnum) => By.XPath(SetMainNavMenuXpath(navEnum));
