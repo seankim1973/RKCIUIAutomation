@@ -164,7 +164,7 @@ namespace RKCIUIAutomation.Page
             return items;
         }
 
-        public bool FilterAndGetGridType(
+        public void FilterTableGrid(
             string columnName,
             string filterValue,
             FilterOperator filterOperator = FilterOperator.EqualTo,
@@ -183,7 +183,7 @@ namespace RKCIUIAutomation.Page
                     )
                 );
 
-        private bool Filter(params GridFilter[] gridFilters)
+        private void Filter(params GridFilter[] gridFilters)
         {
             string columnName = null;
             string filterValue = null;
@@ -218,15 +218,12 @@ namespace RKCIUIAutomation.Page
             StringBuilder sb = new StringBuilder();
 
             string gridRef = GetGridReference();
-            bool isMultiTabGrid = gridRef.Contains("Active") ? true : false;
 
             sb.Append($"{gridRef}{filterScript}] }});");
             ExecuteJsScript(sb.ToString());
 
             string addnlFilter = (addnlFilterValue != null) ? $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}" : string.Empty;
             LogInfo($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilter}");
-
-            return isMultiTabGrid;
         }
 
         public int GetCurrentPageNumber()
@@ -262,17 +259,12 @@ namespace RKCIUIAutomation.Page
 
         private string GetGridReference()
         {
-            By singleGridDivLocator = By.XPath("//div[@class='k-widget k-grid k-display-block'][@data-role='grid']");
-            By multiActiveGridDivLocator = By.XPath("//div[@class='k-content k-state-active']//div[@data-role='grid']");
-            IWebElement gridElem = null;
             string gridId = string.Empty;
             string logMsg = string.Empty;
 
             try
             {
-                gridElem = GetElement(multiActiveGridDivLocator);
-                gridElem = gridElem == null ? GetElement(singleGridDivLocator) : gridElem;
-                gridId = gridElem.GetAttribute("id");
+                gridId = GetGridID();
                 logMsg = !string.IsNullOrEmpty(gridId) ? $"Found Kendo Grid ID: {gridId}" : $"NULL Kendo Grid ID";
                 log.Debug(logMsg);
             }
@@ -283,6 +275,27 @@ namespace RKCIUIAutomation.Page
             }
 
             return $"var grid = $('#{gridId}').data('kendoGrid');";
+        }
+
+        public string GetGridID()
+        {
+            By singleGridDivLocator = By.XPath("//div[@class='k-widget k-grid k-display-block'][@data-role='grid']");
+            By multiActiveGridDivLocator = By.XPath("//div[@class='k-content k-state-active']//div[@data-role='grid']");
+            IWebElement gridElem = null;
+            string gridId = string.Empty;
+
+            try
+            {
+                gridElem = GetElement(multiActiveGridDivLocator) ?? GetElement(singleGridDivLocator);
+                //gridElem = gridElem == null ? GetElement(singleGridDivLocator) : gridElem;
+                gridId = gridElem.GetAttribute("id");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return gridId;
         }
     }
 

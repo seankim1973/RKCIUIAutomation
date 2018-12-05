@@ -266,6 +266,22 @@ namespace RKCIUIAutomation.Page
             }
         }
 
+        public void ClearText(By elementByLocator)
+        {
+            IWebElement textField = null;
+
+            try
+            {
+                textField = GetElement(elementByLocator);
+                textField.Clear();
+                log.Debug($"Cleared text : {elementByLocator}");
+            }
+            catch (Exception e)
+            {
+                LogError(e.StackTrace);
+            }
+        }
+
         public void EnterText(By elementByLocator, string text, bool clearField = true)
         {
             IWebElement textField = null;
@@ -668,6 +684,20 @@ namespace RKCIUIAutomation.Page
             {
                 Driver.SwitchTo().Alert().Accept();
                 LogInfo("Accepted browser alert message");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+        }
+
+        public void DismissAlertMessage()
+        {
+            try
+            {
+                Driver.SwitchTo().Alert().Dismiss();
+                LogInfo("Dismissed browser alert message");
             }
             catch (Exception e)
             {

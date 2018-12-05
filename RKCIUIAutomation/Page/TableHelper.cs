@@ -57,20 +57,16 @@ namespace RKCIUIAutomation.Page
         /// <param name="filterLogic"></param>
         /// <param name="additionalFilterValue"></param>
         /// <param name="additionalFilterOperator"></param>
-        public bool FilterColumn(Enum columnName, string filterValue, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
+        public void FilterColumn(Enum columnName, string filterValue, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
         {
-            bool isMultiTabGrid = false;
-
             try
             {
-                isMultiTabGrid = Kendo.FilterAndGetGridType(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator);
+                Kendo.FilterTableGrid(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator);
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
-
-            return isMultiTabGrid;
         }
 
         public void ClearTableFilters() => Kendo.RemoveFilters();
@@ -233,7 +229,7 @@ namespace RKCIUIAutomation.Page
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
         public void ClickDeleteBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
-            => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn, isMultiTabGrid);
+            => ClickButtonForRow(TableButton.Action_Delete, textInRowForAnyColumn, isMultiTabGrid);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
@@ -292,10 +288,8 @@ namespace RKCIUIAutomation.Page
 
         #endregion Table Row Button Methods
 
-        public bool FilterTableColumnByValue(Enum columnName, string recordNameOrNumber)
+        public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber)
         {
-            bool isMultiTabGrid = true;
-
             try
             {
                 WaitForPageReady();
@@ -306,13 +300,11 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                isMultiTabGrid = FilterColumn(columnName, recordNameOrNumber);
+                FilterColumn(columnName, recordNameOrNumber);
             }
-
-            return isMultiTabGrid;
         }
 
-        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber)
+        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, bool noRecordsExpected = false)
         {
             IList<IWebElement> tblRowElems = new List<IWebElement>();
             bool isMultiTabGrid = false;
@@ -320,16 +312,21 @@ namespace RKCIUIAutomation.Page
             bool noRecordsMsgDisplayed = false;
             int tblRowCount = 0;
             string currentTabName = string.Empty;
-            string activeTblTab = "";
 
             try
             {
-                isMultiTabGrid = FilterTableColumnByValue(columnName, recordNameOrNumber);
+                FilterTableColumnByValue(columnName, recordNameOrNumber);
+
+                string gridId = kendo.GetGridID();
+                By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
+                string gridType = GetAttribute(gridParentDivLocator, "class");
+                isMultiTabGrid = gridType.Contains("active") ? true : false;
+
+                string activeTblTab = isMultiTabGrid ? "//div[@class='k-content k-state-active']" : "";
 
                 if (isMultiTabGrid)
                 {
                     currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
-                    activeTblTab = "//div[@class='k-content k-state-active']";
                 }
 
                 By trLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
@@ -376,7 +373,15 @@ namespace RKCIUIAutomation.Page
                     }
                     else
                     {
-                        log.Debug("No Records Located message displayed");
+                        if (noRecordsExpected)
+                        {
+                            isDisplayed = noRecordsMsgDisplayed;
+                            LogInfo("No Records Located message is displayed", isDisplayed);
+                        }
+                        else
+                        {
+                            log.Debug("No Records Located message displayed");
+                        }
                     }
                 }
             }
