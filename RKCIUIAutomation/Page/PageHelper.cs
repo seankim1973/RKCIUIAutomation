@@ -98,8 +98,8 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListItemsXpath<T, I>(T ddListID, I itemIndexOrName)
         {
-            string _ddListID = ddListID.GetType() == typeof(string) 
-                ? ConvertToType<string>(ddListID) 
+            string _ddListID = ddListID.GetType() == typeof(string)
+                ? ConvertToType<string>(ddListID)
                 : ConvertToType<Enum>(ddListID).GetString();
 
             string ddListXPath = _ddListID.Contains("Time")
@@ -132,7 +132,12 @@ namespace RKCIUIAutomation.Page
 
         private string SetInputButtonXpath(string buttonName) => $"//input[@value='{buttonName}']";
 
-        public By GetSubmitButtonByLocator(Enum buttonValue) => By.XPath($"//input[@value='{buttonValue.GetString()}']");
+        public By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true)
+        {
+            string submitTypeXPath = submitType ? "[@type='submit']" : "";
+            By locator = By.XPath($"//input{submitTypeXPath}[@value='{buttonValue.GetString()}']");
+            return locator;
+        }
 
         public By GetMainNavMenuByLocator(Enum navEnum) => By.XPath(SetMainNavMenuXpath(navEnum));
 

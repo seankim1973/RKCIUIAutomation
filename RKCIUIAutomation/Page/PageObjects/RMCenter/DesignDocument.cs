@@ -255,21 +255,21 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void ClickBtn_SaveOnly()
         {
-            ScrollToElement(SaveOnlyBtn_ByLocator);
+            //ScrollToElement(SaveOnlyBtn_ByLocator);
             ClickElement(SaveOnlyBtn_ByLocator);
         }
 
         public virtual void ClickBtn_SaveForward()
         {
-            ScrollToElement(SaveForwardBtn_ByLocator);
+            //ScrollToElement(SaveForwardBtn_ByLocator);
             ClickElement(SaveForwardBtn_ByLocator);
         }
 
         public virtual void ClickBtnJs_SaveForward()
         {
-            ScrollToElement(SaveForwardBtn_ByLocator);
+            //ScrollToElement(SaveForwardBtn_ByLocator);
             JsClickElement(SaveForwardBtn_ByLocator);
-            WaitForPageReady();
+            //WaitForPageReady();
         }
 
         public virtual void CreateDocument()
@@ -278,7 +278,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterDesignDocTitleAndNumber();
             UploadFile("test.xlsx");
             ClickElement(SaveForwardBtnUploadPage_ByLocator);
-            WaitForPageReady();
+            //WaitForPageReady();
         }
 
         internal string SetCommentStamp(DesignDocDetails_InputFields inputFieldEnum, int commentTabIndex) => $"{inputFieldEnum.GetString()}{(commentTabIndex - 1).ToString()}_";
@@ -375,7 +375,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickTab_Requires_Resolution();
             SortTable_Descending();
             ClickEnterBtnForRow();
-            WaitForPageReady();
+            //WaitForPageReady();
             Thread.Sleep(2000);
 
             // Login as user to make resolution comment (All tenants - DevAdmin)
@@ -388,7 +388,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             Thread.Sleep(2000);
             ClickBtn_BackToList();
-            WaitForPageReady();
+            //WaitForPageReady();
         }
 
         public virtual void Workflow_ForwardResolutionCommentAndCodeForDisagreeResponse()
@@ -396,13 +396,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickTab_Requires_Resolution();
             SortTable_Descending();
             ClickEnterBtnForRow();
-            WaitForPageReady();
+            //WaitForPageReady();
             ClickBtn_SaveForward();
         }
 
         public virtual void EnterClosingCommentAndCode()
         {
-            WaitForPageReady();
+            //WaitForPageReady();
             EnterComment(CommentType.CommentClosingInput);
             SelectDDL_ClosingStamp();
             ClickBtn_SaveOnly();
@@ -435,7 +435,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void SelectTab(TableTab tableTab)
         {
-            WaitForPageReady();
+            //WaitForPageReady();
             string currentUser = GetCurrentUser();
             string tabName = string.Empty;
             string tabPrefix = "";
@@ -520,7 +520,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickTab_Pending_Resolution();
             SortTable_Descending();
             ClickEnterBtnForRow();
-            WaitForPageReady();
+            //WaitForPageReady();
 
             Thread.Sleep(2000);
             EnterComment(CommentType.CommentResolutionInput);
@@ -529,7 +529,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             Thread.Sleep(2000);
             ClickBtn_BackToList();
-            WaitForPageReady();
+            //WaitForPageReady();
         }
 
         public override void Workflow_ForwardResolutionCommentAndCodeForDisagreeResponse()
@@ -537,7 +537,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickTab_Pending_Resolution();
             SortTable_Descending();
             ClickEnterBtnForRow();
-            WaitForPageReady();
+            //WaitForPageReady();
             ClickBtn_SaveForward();
         }
     }
@@ -583,11 +583,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickTab_Requires_Closing();
             FilterDocNumber();
             ClickEnterBtnForRow();
-            WaitForPageReady();
+            //WaitForPageReady();
             EnterComment(CommentType.CommentClosingInput);
             SelectDDL_ClosingStamp();
             ClickBtn_SaveOnly();
-            // WaitForPageReady();
+            // //WaitForPageReady();
             ClickBtn_SaveForward();
         }
     }
@@ -655,7 +655,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void EnterClosingCommentAndCode()
         {
-            WaitForPageReady();
+            //WaitForPageReady();
             EnterComment(CommentType.CommentClosingInput);
             SelectDDL_ClosingStamp();
             ClickBtn_SaveOnly();
