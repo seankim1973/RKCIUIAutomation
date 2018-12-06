@@ -100,7 +100,7 @@ namespace RKCIUIAutomation.Test.DIR
             //string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
             //LogoutToLoginPage();
 
-            string dirNumber = "3421181011";
+            string dirNumber = "3333181205";
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA, true);
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(TableTab.QC_Review, dirNumber, false), "Verify DIR is Displayed after dismissing delete dialog");
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(TableTab.QC_Review, dirNumber, true), "Verify DIR is Displayed after accepting delete dialog");

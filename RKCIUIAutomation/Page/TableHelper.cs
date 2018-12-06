@@ -206,9 +206,10 @@ namespace RKCIUIAutomation.Page
             try
             {
                 string[] logBtnType = tableButton.Equals(TableButton.CheckBox)
-                    ? new string[] { "Toggled", "checkbox" } : new string[] { "Clicked", "button" };
+                    ? new string[] { "Toggled", "checkbox" }
+                    : new string[] { "Clicked", "button" };
                 JsClickElement(GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox));
-                LogInfo($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumn}");
+                log.Debug($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumn}");
             }
             catch (Exception e)
             {
@@ -347,7 +348,7 @@ namespace RKCIUIAutomation.Page
                         noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
                         if (!noRecordsMsgDisplayed)
                         {
-                            RefreshWebPage();
+                            Driver = RefreshWebPage(Driver);
 
                             if (isMultiTabGrid)
                             {
@@ -362,27 +363,25 @@ namespace RKCIUIAutomation.Page
                 }
                 else
                 {
-                    noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
-                    if (!noRecordsMsgDisplayed)
+                    if (noRecordsExpected)
                     {
-                        RefreshWebPage();
-                        if (isMultiTabGrid)
-                        {
-                            ClickTab(currentTabName);
-                        }
+                        noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
+                        isDisplayed = noRecordsMsgDisplayed;
+                        LogInfo("No Records Located message is displayed", isDisplayed);
                     }
                     else
                     {
-                        if (noRecordsExpected)
+                        if (!noRecordsMsgDisplayed)
                         {
-                            isDisplayed = noRecordsMsgDisplayed;
-                            LogInfo("No Records Located message is displayed", isDisplayed);
+                            Driver = RefreshWebPage(Driver);
+                            if (isMultiTabGrid)
+                            {
+                                ClickTab(currentTabName);
+                            }
                         }
-                        else
-                        {
-                            log.Debug("No Records Located message displayed");
-                        }
+                        log.Debug("No Records Located message displayed");
                     }
+
                 }
             }
             catch (Exception e)

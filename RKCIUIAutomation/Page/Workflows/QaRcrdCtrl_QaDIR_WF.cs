@@ -243,7 +243,7 @@ namespace RKCIUIAutomation.Page.Workflows
         private void Verify_DIR_then_Approve(TableTab tableTab, string dirNumber)
         {
             string tableTabName = tableTab.ToString();
-            LogDebug($"---> Verify_DIR_then_Approve_in{tableTabName} <---");
+            LogDebug($"---> Verify_DIR_then_Approve_in {tableTabName} <---");
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"VerifyDirIsDisplayed(TableTab.{tableTabName})");
             ClickEditBtnForRow();
@@ -267,18 +267,20 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual bool Verify_DIR_Delete(TableTab tableTab, string dirNumber, bool acceptAlert = true)
         {
+            LogDebug($"---> Verify_DIR_Delete in {tableTab.ToString()} - Accept Alert: {acceptAlert} <---");
+
             bool isDisplayed = false;
             string actionPerformed = string.Empty;
+            bool result = false;
+
             try
             {
                 isDisplayed = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
-                AddAssertionToList(isDisplayed, $"VerifyDirIsDisplayed in {tableTab.ToString()}");
-                ClickDeleteBtnForRow();
+                AddAssertionToList(isDisplayed, $"VerifyDirIsDisplayed in {tableTab.ToString()}, before interacting with delete dialog");
 
                 if (isDisplayed)
                 {
-                    QaRcrdCtrl_QaDIR.ClickBtn_Delete();
-
+                    ClickDeleteBtnForRow();
                     if (acceptAlert)
                     {
                         try
@@ -286,12 +288,13 @@ namespace RKCIUIAutomation.Page.Workflows
                             AcceptAlertMessage();
                             AcceptAlertMessage();
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
+                            log.Debug(e.Message);
                         }
                         finally
                         {
-                            actionPerformed = "accepting";
+                            actionPerformed = "Accepted";
                         }
                     }
                     else
@@ -301,25 +304,31 @@ namespace RKCIUIAutomation.Page.Workflows
                             DismissAlertMessage();
                             DismissAlertMessage();
                         }
-                        catch (Exception)
+                        catch (Exception e)
                         {
+                            log.Debug(e.Message);
                         }
                         finally
                         {
-                            actionPerformed = "dismissing";
+                            actionPerformed = "Dismissed";
                         }
                     }
+
+                    isDisplayed = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, acceptAlert);
+                    result = isDisplayed != acceptAlert;
+
+                    AddAssertionToList(result, $"VerifyDirIsDisplayed in {tableTab.ToString()}, after {actionPerformed} delete dialog");
+                    LogInfo($"Performed Action: {actionPerformed} delete dialog<br>Displayed, after Action: {isDisplayed}", result);
+                }
+                else
+                {
+                    LogError($"Unable to find DIR No. {dirNumber}");
                 }
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
-
-            isDisplayed = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, acceptAlert);
-            AddAssertionToList(isDisplayed, $"VerifyDirIsDisplayed in {tableTab.ToString()} after {actionPerformed} delete dialog");
-            bool result = isDisplayed != acceptAlert;
-            LogInfo($"Performed Action: {actionPerformed} delete dialog<br>Displayed After Action: {isDisplayed}", result);
 
             return result;
         }
@@ -339,7 +348,6 @@ namespace RKCIUIAutomation.Page.Workflows
             ClickEditBtnForRow();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifySectionDescription(), "VerifySectionDescription");
             WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();
-            //QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
