@@ -16,6 +16,7 @@ namespace RKCIUIAutomation.Page
 
         public void ClickCommentTab(int commentNumber)
         {
+            WaitForPageReady();
             string jsToBeExecuted = GetTabStripReference();
             int commentTabIndex = commentNumber - 1;
             string tabSelect = $"tab.select('{commentTabIndex.ToString()}');";

@@ -129,17 +129,20 @@ namespace RKCIUIAutomation.Page
             log.Info($"...Waiting for page to be in Ready state #####");
         }
 
-        public void RefreshWebPage()
+        public IWebDriver RefreshWebPage(IWebDriver driver)
         {
+            this.Driver = driver;
             try
             {
-                Driver.Navigate().Refresh();
+                driver.Navigate().Refresh();
                 log.Info("Refreshed Web Page");
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
+
+            return driver;
         }
 
         public IWebElement GetElement(By elementByLocator)
@@ -241,7 +244,8 @@ namespace RKCIUIAutomation.Page
             try
             {
                 string text = "Comment 123";
-                GetElement(commentTypeLocator).SendKeys(text);
+                IWebElement element = GetElement(commentTypeLocator);
+                element.SendKeys(text);
                 LogInfo($"Entered '{text}' in field - {commentTypeLocator}");
             }
             catch (Exception e)
