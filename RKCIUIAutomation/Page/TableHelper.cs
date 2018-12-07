@@ -309,11 +309,13 @@ namespace RKCIUIAutomation.Page
         {
             IList<IWebElement> tblRowElems = new List<IWebElement>();
             bool isMultiTabGrid = false;
-            bool isDisplayed = false;
+            bool isDisplayedAsExpected = false;
             bool noRecordsMsgDisplayed = false;
-            int tblRowCount = 0;
             string currentTabName = string.Empty;
-
+            string logMsg = string.Empty;
+            string activeTblTab = "";
+            int tblRowCount = 0;
+            
             try
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber);
@@ -322,66 +324,72 @@ namespace RKCIUIAutomation.Page
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = GetAttribute(gridParentDivLocator, "class");
                 isMultiTabGrid = gridType.Contains("active") ? true : false;
-
-                string activeTblTab = isMultiTabGrid ? "//div[@class='k-content k-state-active']" : "";
+                By recordRowLocator = GetTableRowLocator(recordNameOrNumber, isMultiTabGrid);
+                
 
                 if (isMultiTabGrid)
                 {
                     currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
+                    activeTblTab = "//div[@class='k-content k-state-active']";
                 }
 
-                By trLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
-                By noRecordsMsgLocator = By.XPath("//div[@class='k-grid-norecords']");
+                By noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
 
-                tblRowElems = GetElements(trLocator);
-                tblRowCount = tblRowElems.Count;
-
-                if (tblRowCount > 0)
+                if (noRecordsExpected)
                 {
-                    By locator = GetTableRowLocator(recordNameOrNumber, isMultiTabGrid);
+                    noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
 
-                    LogDebug($"Searching for record: {recordNameOrNumber}");
-                    isDisplayed = ElementIsDisplayed(locator);
-
-                    if (!isDisplayed)
+                    if (noRecordsMsgDisplayed)
                     {
-                        noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
-                        if (!noRecordsMsgDisplayed)
-                        {
-                            Driver = RefreshWebPage(Driver);
+                        isDisplayedAsExpected = false;
+                        logMsg = "'No Records Located' message is displayed as expected";
+                    }
+                    else
+                    {
+                        tblRowElems = GetElements(By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr"));
+                        tblRowCount = (int)tblRowElems?.Count;
 
-                            if (isMultiTabGrid)
+                        if (tblRowCount > 0)
+                        {
+                            var recordRowDisplayed = ElementIsDisplayed(recordRowLocator);
+                            if (recordRowDisplayed)
                             {
-                                ClickTab(currentTabName);
+                                logMsg = $"No Records are Expected, but found {tblRowCount} record";
                             }
                         }
                         else
                         {
-                            log.Debug("No Records Located message displayed");
+                            logMsg = "No Records are Expected, No Row are found in the table, and 'No Records Located' message is not displayed";
                         }
                     }
                 }
                 else
                 {
-                    if (noRecordsExpected)
+                    tblRowElems = GetElements(By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr"));
+                    tblRowCount = (int)tblRowElems?.Count;
+
+                    if (tblRowCount > 0)
                     {
-                        noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
-                        isDisplayed = noRecordsMsgDisplayed;
-                        LogInfo("No Records Located message is displayed", isDisplayed);
+                        LogDebug($"Searching for record: {recordNameOrNumber}");
+                        isDisplayedAsExpected = ElementIsDisplayed(recordRowLocator);
+
+                        if (isDisplayedAsExpected)
+                        {
+                            logMsg = $"Found Record {recordNameOrNumber} as Expected";
+                        }
+                        else
+                        {
+                            logMsg = $"Expected Record, but Unable to find Record {recordNameOrNumber}";
+                        }
                     }
                     else
                     {
-                        if (!noRecordsMsgDisplayed)
+                        noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
+                        if (noRecordsMsgDisplayed)
                         {
-                            Driver = RefreshWebPage(Driver);
-                            if (isMultiTabGrid)
-                            {
-                                ClickTab(currentTabName);
-                            }
+                            logMsg = "Expected Record, but 'No Record Located' message is displayed";
                         }
-                        log.Debug("No Records Located message displayed");
                     }
-
                 }
             }
             catch (Exception e)
@@ -389,7 +397,8 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
             }
 
-            return isDisplayed;
+            LogInfo(logMsg, noRecordsExpected?!isDisplayedAsExpected:isDisplayedAsExpected);
+            return isDisplayedAsExpected;
         }
 
         //TODO: Horizontal scroll in table (i.e. QA Search>ProctorCurveSummary)

@@ -541,7 +541,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 string _dirNum = dirNumber.Equals("") ? GetDirNumber() : dirNumber;
                 isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, noRecordsExpected);
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
-                LogInfo($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", isDisplayed);
+                LogInfo($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", noRecordsExpected ? !isDisplayed : isDisplayed);
             }
             catch (Exception e)
             {
