@@ -19,26 +19,34 @@ namespace RKCIUIAutomation.Base
 
         static ExtentManager()
         {
-            Directory.CreateDirectory(extentReportPath);
-            htmlReporter = new ExtentHtmlReporter(reportFilePath);
-            htmlReporter = GetHtmlReporter();
-
-            _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
-
-            if (reporter == Reporter.Klov)
+            try
             {
-                GetKlovReporter();
-                klov.InitMongoDbConnection(GridVmIP, 27017);
-                Instance.AttachReporter(htmlReporter, klov);
-            }
-            else
-            {
-                Instance.AttachReporter(htmlReporter);
-            }
+                Directory.CreateDirectory(extentReportPath);
+                htmlReporter = new ExtentHtmlReporter(reportFilePath);
+                htmlReporter = GetHtmlReporter();
 
-            Instance.AddSystemInfo("Tenant", tenantName.ToString());
-            Instance.AddSystemInfo("Environment", testEnv.ToString());
-            Instance.AddSystemInfo("URL", siteUrl);
+                _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
+
+                if (reporter == Reporter.Klov)
+                {
+                    GetKlovReporter();
+                    klov.InitMongoDbConnection(GridVmIP, 27017);
+                    Instance.AttachReporter(htmlReporter, klov);
+                }
+                else
+                {
+                    Instance.AttachReporter(htmlReporter);
+                }
+
+                Instance.AddSystemInfo("Tenant", tenantName.ToString());
+                Instance.AddSystemInfo("Environment", testEnv.ToString());
+                Instance.AddSystemInfo("URL", siteUrl);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
         }
 
         private static ExtentHtmlReporter GetHtmlReporter()

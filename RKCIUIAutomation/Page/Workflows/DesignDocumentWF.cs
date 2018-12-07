@@ -193,7 +193,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.SelectDisagreeResponseCode(); //agree then different workflow
             DesignDocCommentReview.ClickBtn_SaveOnly();
         }
-        
+
         public virtual void EnterResponseAndAgreeResponseCode(UserType user)
         {
         }
@@ -281,7 +281,7 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         public override void EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
-        {            
+        {
             DesignDocCommentReview.ClickTab_Pending_Resolution();
             DesignDocCommentReview.FilterDocNumber();
             WaitForPageReady();

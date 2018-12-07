@@ -5,7 +5,6 @@ using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 using static RKCIUIAutomation.Page.TableHelper;
 
@@ -39,13 +38,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("DIREntries_0__CrewForemanID")] Crew_Foreman, //requires selection of Contractor DDL
             [StringValue("DIREntries_0__SectionDescription")] Section_Description, //matches Spec Section selection
             [StringValue("DIREntries_0__DeficiencyDescription")] Deficiency_Description, //not required
-            [StringValue("DIREntries_0__DateReady")] Date_Ready, //LAX 
+            [StringValue("DIREntries_0__DateReady")] Date_Ready, //LAX
             [StringValue("DIREntries_0__DateCompleted")] Date_Completed, //LAX
             [StringValue("DIREntries_0__DateOnlyReady")] DateOnly_Ready, //SG
             [StringValue("DIREntries_0__TimeOnlyReady")] TimeOnly_Ready, //SG
             [StringValue("DIREntries_0__DateOnlyCompleted")] DateOnly_Completed, //SG
             [StringValue("DIREntries_0__TimeOnlyCompleted")] TimeOnly_Completed, //SG
-            [StringValue("DIREntries_0__InspectionHours")] Total_Inspection_Time //LAX
+            [StringValue("DIREntries_0__InspectionHours")] Total_Inspection_Time, //LAX
+            [StringValue("DIREntries_0__EngineerComment")] Engineer_Comments
         }
 
         public enum TableTab
@@ -116,6 +116,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("DIREntries_0__Deficiency_1")] Deficiencies_CIF,
             [StringValue("DIREntries_0__Deficiency_3")] Deficiencies_CDR,
             [StringValue("DIREntries_0__Deficiency_2")] Deficiencies_NCR
+        }
+
+        public enum RequiredFieldType
+        {
+            Default,
+            ControlPoint,
+            EngineerComments
         }
     }
 
@@ -245,6 +252,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void EnterText_SectionDescription(string desc = "");
 
+        void EnterText_EngineerComments(string comment = "");
+
         void Enter_ReadyDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00);
 
         void Enter_CompletedDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00);
@@ -265,14 +274,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyDeficiencySelectionPopupMessages();
 
-        bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "");
+        bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false);
 
-        IList<string> GetHoldPointReqFieldList();
+        IList<string> GetExpectedHoldPointReqFieldIDsList();
 
-        bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, bool verifyControPointReqFields = false);
+        IList<string> GetExpectedEngineerCommentsReqFieldIDsList();
+
+        bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, RequiredFieldType requiredFieldType = RequiredFieldType.Default);
 
         bool VerifyControlPointReqFieldErrors();
 
+        bool VerifyEngineerCommentsReqFieldErrors();
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -356,7 +368,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_KickBack() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Kick_Back));
 
-        public virtual void ClickBtn_SubmitRevise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Submit_Revise));
+        public virtual void ClickBtn_SubmitRevise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Submit_Revise, false));
 
         public virtual void ClickBtn_Send_To_Attachment() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Send_To_Attachment));
 
@@ -374,9 +386,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review));
 
-        public virtual void ClickBtn_Back_To_Field() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_Field));
+        public virtual void ClickBtn_Back_To_Field() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_Field, false));
 
-        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise));
+        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise, false));
 
         public virtual void ClickBtn_Close_Selected() => JsClickElement(By.XPath("//button[text()='Close Selected']"));
 
@@ -448,7 +460,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return RequiredFieldIDs;
         }
-        
+
         public virtual void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00)
             => ExpandAndSelectFromDDList(InputFields.Time_Begin, (int)shiftStartTime);
 
@@ -485,7 +497,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void SelectDDL_HoldPointType(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Control_Point_Type, ddListSelection);
 
-        public virtual void SelectDDL_Contractor(int ddListSelection =1)
+        public virtual void SelectDDL_Contractor(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Contractor, ddListSelection);
 
         public virtual void SelectDDL_Contractor<T>(T ddListSelection)
@@ -505,8 +517,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 string sectionDesc = GetText(GetTextAreaFieldByLocator(InputFields.Section_Description));
                 string specSectionDDListValue = GetTextFromDDL(InputFields.Spec_Section);
-                specSectionDDListValue = specSectionDDListValue.Contains("-") 
-                    ? Regex.Replace(specSectionDDListValue, "-", " - ") 
+                specSectionDDListValue = specSectionDDListValue.Contains("-")
+                    ? Regex.Replace(specSectionDDListValue, "-", " - ")
                     : specSectionDDListValue;
 
                 textMatch = sectionDesc.Equals(specSectionDDListValue);
@@ -519,7 +531,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return textMatch;
         }
 
-        public virtual bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "")
+        public virtual bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false)
         {
             bool isDisplayed = false;
 
@@ -527,9 +539,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 ClickTab(tableTab);
                 string _dirNum = dirNumber.Equals("") ? GetDirNumber() : dirNumber;
-                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum);
+                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, noRecordsExpected);
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
-                LogInfo($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", isDisplayed);
+                LogInfo($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", noRecordsExpected ? !isDisplayed : isDisplayed);
             }
             catch (Exception e)
             {
@@ -621,7 +633,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         alertMsg = GetAlertMessage();
                         alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
                         assertList.Add(alertMsgMatch);
-                        
+
                         LogInfo($"Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
                         AcceptAlertMessage();
                     }
@@ -638,7 +650,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 SelectRdoBtn_Deficiencies_No();
                 SelectChkbox_InspectionResult_P();
             }
-            
+
             return alertMsgExpected;
         }
 
@@ -689,11 +701,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => EnterText(GetTextAreaFieldByLocator(InputFields.Section_Description),
                 desc = desc.Equals("") ? "RKCI Automation Section Description" : desc);
 
+        public virtual void EnterText_EngineerComments(string comment = "")
+            => EnterText(GetTextAreaFieldByLocator(InputFields.Engineer_Comments),
+                comment = comment.Equals("") ? "RKCI Automation Engineer Comment" : comment);
+
         public virtual void Enter_ReadyDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
             => EnterText(GetTextInputFieldByLocator(InputFields.Date_Ready), GetShortDateTime(shortDate, shortTime));
-        
-        public virtual void Enter_CompletedDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00) 
-            =>EnterText(GetTextInputFieldByLocator(InputFields.Date_Completed), GetShortDateTime(shortDate, shortTime));
+
+        public virtual void Enter_CompletedDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
+            => EnterText(GetTextInputFieldByLocator(InputFields.Date_Completed), GetShortDateTime(shortDate, shortTime));
 
         public virtual void Enter_TotalInspectionTime()
         {
@@ -783,6 +799,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             else
                                 id = "ControlPoint Type";
                         }
+                        else if (id.Equals("EngineerComment"))
+                        {
+                            id = $"{id}s";
+                        }
                         else if (id.Contains("ID") && !id.Contains("HoldPoint"))
                         {
                             newId = Regex.Split(id, "ID");
@@ -817,7 +837,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     }
                     else if (fieldId.Equals("InspectionPassFail") || fieldId.Equals("InspectionType"))
                     {
-
                         id = fieldId.Equals("InspectionPassFail") ? Regex.Replace(fieldId, "PassFail", "Result") : fieldId;
                         id = id.SplitCamelCase();
                     }
@@ -855,7 +874,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 int tblRowIndex = 0;
                 string[][] idTable = new string[expectedCount + 2][];
-                idTable[tblRowIndex] = new string[2] { $"| - Expected ID - | ", $" | - Found Matching Actual ID - | " };
+                idTable[tblRowIndex] = new string[2] { $"|  Expected ID  | ", $" |  Found Matching Actual ID  | " };
 
                 if (countsMatch)
                 {
@@ -866,9 +885,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
                         results.Add(reqFieldsMatch);
                         string tblRowNumber = tblRowIndex.ToString();
-                        tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}":tblRowNumber;
+                        tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}" : tblRowNumber;
 
-                        idTable[tblRowIndex] = new string[2] { $"%nbsp%nbsp{tblRowNumber}:{actualID} : ", $"%nbsp%nbsp{reqFieldsMatch.ToString()}" };
+                        idTable[tblRowIndex] = new string[2] { $"{tblRowNumber}:{actualID} : ", $"{reqFieldsMatch.ToString()}" };
                     }
                 }
                 else
@@ -878,7 +897,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 }
 
                 reqFieldsMatch = results.Contains(false) ? false : true;
-                idTable[tblRowIndex +1] = new string[2] {"Total Required Fields:", (results.Count).ToString()};
+                idTable[tblRowIndex + 1] = new string[2] { "Total Required Fields:", (results.Count).ToString() };
                 LogInfo(idTable, reqFieldsMatch);
             }
             catch (Exception e)
@@ -930,7 +949,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return extractedFieldNames;
         }
 
-        public virtual IList<string> GetHoldPointReqFieldList()
+        public virtual IList<string> GetExpectedHoldPointReqFieldIDsList()
         {
             IList<string> ControlPointReqFieldIDs = new List<string>()
             {
@@ -941,25 +960,60 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return ControlPointReqFieldIDs;
         }
 
-        public virtual bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, bool verifyControPointReqFields = false)
+        public virtual IList<string> GetExpectedEngineerCommentsReqFieldIDsList()
+        {
+            IList<string> EngineerCommentsReqFieldID = new List<string>()
+            {
+                InputFields.Engineer_Comments.GetString()
+            };
+
+            return EngineerCommentsReqFieldID;
+        }
+
+        public virtual bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, RequiredFieldType RequiredFieldType = RequiredFieldType.Default)
         {
             IList<bool> reqFieldAssertList = null;
-
+            IList<string> errorSummaryIDs = null;
             bool requiredFieldsMatch = false;
 
             try
             {
-                IList<string> errorSummaryIDs = GetErrorSummaryIDs();
+                errorSummaryIDs = new List<string>();
+                errorSummaryIDs = GetErrorSummaryIDs();
 
-                string controlPointBaseXpath = "//span[contains(@aria-owns,'HoldPoint')]";
+                //string controlPointBaseXpath = "//span[contains(@aria-owns,'HoldPoint')]";
 
-                string reqFieldIdXPath = verifyControPointReqFields ? $"{controlPointBaseXpath}/input" : "//span[text()='*']";
+                //string reqFieldIdXPath = verifyControPointReqFields ? $"{controlPointBaseXpath}/input" : "//span[text()='*']";
 
-                string splitPattern = verifyControPointReqFields ? "0__" : "0_";
+                //string splitPattern = verifyControPointReqFields ? "0__" : "0_";
+
+                string reqFieldIdXPath = string.Empty;
+                string splitPattern = string.Empty;
+
+                switch (RequiredFieldType)
+                {
+                    case RequiredFieldType.ControlPoint:
+                        reqFieldIdXPath = "//span[contains(@aria-owns,'HoldPoint')]/input";
+                        splitPattern = "0__";
+                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedHoldPointReqFieldIDsList();
+                        break;
+
+                    case RequiredFieldType.EngineerComments:
+                        reqFieldIdXPath = $"//textarea[@id='{InputFields.Engineer_Comments.GetString()}']";
+                        splitPattern = "0__";
+                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList();
+                        break;
+
+                    default:
+                        reqFieldIdXPath = "//span[text()='*']";
+                        splitPattern = "0_";
+                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedRequiredFieldIDsList();
+                        break;
+                }
 
                 IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
 
-                expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedRequiredFieldIDsList();
+                //expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedRequiredFieldIDsList();
 
                 bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
 
@@ -996,9 +1050,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public virtual bool VerifyControlPointReqFieldErrors()
-            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetHoldPointReqFieldList(), true);
-    }
+            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedHoldPointReqFieldIDsList(), RequiredFieldType.ControlPoint);
 
+        public virtual bool VerifyEngineerCommentsReqFieldErrors()
+            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList(), RequiredFieldType.EngineerComments);
+    }
 
     //Tenant Specific Classes
 
@@ -1127,7 +1183,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
-        public override IList<string> GetHoldPointReqFieldList()
+        public override IList<string> GetExpectedHoldPointReqFieldIDsList()
         {
             IList<string> ControlPointReqFieldIDs = new List<string>()
             {
@@ -1232,7 +1288,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return RequiredFieldIDs;
         }
-
     }
 
     public class QADIRs_GLX : QADIRs
@@ -1289,7 +1344,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return deficienciesRdoBtnIDs;
         }
     }
-
 
     public class QADIRs_LAX : QADIRs
     {

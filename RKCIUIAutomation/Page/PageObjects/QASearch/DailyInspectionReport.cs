@@ -17,7 +17,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
         public enum ColumnName
         {
-            [StringValue("DIRNO")] DIR_No,            
+            [StringValue("DIRNO")] DIR_No,
             [StringValue("Revision")] Revision,
             [StringValue("InspectDate")] Inspection_Date,
             [StringValue("InspectBy")] Inspection_By,
@@ -34,6 +34,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
         {
             //text fields
             [StringValue("FromDate")] SamplePeriod_FromDate,
+
             [StringValue("ToDate")] SamplePeriod_ToDate,
             [StringValue("InspectBy")] Inspection_By,
             [StringValue("LIN")] TINs,
@@ -43,6 +44,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
             //DDList
             [StringValue("FID")] FID,
+
             [StringValue("SegmentId")] Segment,
             [StringValue("DivisionId")] Division,
             [StringValue("BidCodeItemId")] Bid_Item_Code, //dependant on Division DDList selection
@@ -59,6 +61,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
             //Add Query portion
             [StringValue("Name")] AddQuery_Name, //input[@name='Name']
+
             [StringValue("Description")] AddQuery_Description, //input[@name='Description']
             [StringValue("AllowAccessToAllUsers")] AddQuery_AccessLevel
         }
@@ -73,6 +76,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
             //Add Query portion
             [StringValue("AddQueryButton")] AddQuery_Save,
+
             [StringValue("CancelButton")] AddQuery_Cancel,
         }
     }
@@ -150,10 +154,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
         public virtual bool VerifyDirIsDisplayed(string dirNumber)
         {
             bool isDisplayed = false;
-            ColumnName dirNumberCol = ColumnName.DIR_No;
+
             try
             {
-                isDisplayed = VerifyRecordIsDisplayed(dirNumberCol, dirNumber);
+                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, dirNumber);
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
                 LogInfo($"{logMsg} DIR record number {dirNumber}.", isDisplayed);
             }

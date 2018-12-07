@@ -1,12 +1,5 @@
 ﻿using NUnit.Framework;
-using OpenQA.Selenium;
-using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Test.DIR
@@ -16,7 +9,7 @@ namespace RKCIUIAutomation.Test.DIR
     //[TestFixture(UserGroup.DirQA)]
     //[TestFixture(UserGroup.DirQC)]
 
-    //For Tenants: GLX, I15SB, I15Tech, LAX
+    [TestFixture]
     public class Verify_DIR_SimpleWF_End_To_End : TestBase
     {
         //private UserType technician;
@@ -30,6 +23,7 @@ namespace RKCIUIAutomation.Test.DIR
         //    manager = configUsers.managerUser;
         //}
 
+        //For Tenants: GLX, I15SB, I15Tech, LAX
         [Test]
         [Category(Component.DIR)]
         //[Property(Component2, Component.DIR_WF_Simple_QA)]
@@ -51,7 +45,11 @@ namespace RKCIUIAutomation.Test.DIR
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
             AssertAll();
         }
+    }
 
+    [TestFixture]
+    public class Verify_DIR_SimpleWF_End_To_End_UserGroup_QC : TestBase
+    {
         [Test]
         [Category(Component.DIR)]
         //[Property(Component2, Component.DIR_WF_Simple_QC)]
@@ -73,7 +71,54 @@ namespace RKCIUIAutomation.Test.DIR
             //AddAssertionToList(QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber), "VerifyDirIsClosedByTblFilter");
             AssertAll();
         }
+    }
 
+    [TestFixture]
+    public class Verify_QC_Review_by_Project_Manager : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(TestCaseNumber, 2187592)]
+        [Property(Priority, "High")]
+        [Description("To validate QC Review by Project Manager.")]
+        public void QC_Review_by_Project_Manager()
+        {
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA, true);
+            WF_QaRcrdCtrl_QaDIR.Return_DIR_ForRevise_FromQcReview_then_Edit_SaveForward(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.LogoutLoginAsQaTech_Edit_Result_SaveForward_then_LogoutLoginAsQaMgr(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Enter_EngineerComments_and_Approve_inQcReview(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            AssertAll();
+        }
+    }
+
+    [TestFixture]
+    public class Verify_Delete_a_DIR : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(TestCaseNumber, 2491626)]
+        [Property(Priority, "High")]
+        [Description("To validate Deletion of a DIR.")]
+        public void Delete_a_DIR()
+        {
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA, true);
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(TableTab.QC_Review, dirNumber, false), "Verify DIR is Displayed after dismissing delete dialog");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(TableTab.QC_Review, dirNumber, true), "Verify DIR is Displayed after accepting delete dialog");
+            AssertAll();
+        }
+    }
+    
+    [TestFixture]
+    public class Verify_DIR_ComplexWF_End_To_End : TestBase
+    {
         //Garnet, SG, SH249
         [Test]
         [Category(Component.DIR)]
@@ -81,8 +126,8 @@ namespace RKCIUIAutomation.Test.DIR
         [Property(TestCaseNumber, 2488411)]
         [Property(Priority, "High")]
         [Description("To validate creating and saving a DIR (Daily Inspection Report) document in Complex Workflow.")]
-        public void DIR_ComplexWF_End_to_End()
-        {/*
+        public void DIR_ComplexWF_End_To_End()
+        {
             //SimpleWF portion of ComplexWF (QaField menu)
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
@@ -107,10 +152,7 @@ namespace RKCIUIAutomation.Test.DIR
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
-            */
 
-            string dirNumber = "3333181130";
-            LoginAs(UserType.DIRMgrQA);
             //Modify_Upload_and_VerifyCancel_VerifySave_inAttachments
             NavigateToPage.QARecordControl_QA_DIRs();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
@@ -122,13 +164,11 @@ namespace RKCIUIAutomation.Test.DIR
             ClickEditBtnForRow();
             AddAssertionToList(VerifyUploadedFileNames(""), "VerifyUploadedFileNames After 'Edit DIR, Cancel' - (Expected) No files are seen: ");
             UploadFile();
-            AddAssertionToList(VerifyUploadedFileNames(fileName, true), "VerifyUploadedFileNames Before 'Edit DIR, Save' - (Expected) File 'test.xlsx' should be seen: ");
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
             ClickEditBtnForRow();
             AddAssertionToList(VerifyUploadedFileNames(fileName), "VerifyUploadedFileNames After 'Edit DIR, Save' - (Expected) File 'test.xlsx' should be seen: ");
 
-            //Return_DIR_ForRevise_FromAttachments_then_          
             WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();//1
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Revise, dirNumber), "VerifyDirIsDisplayed in (QaRecordControl) Revise Tab after (clicked 'Revise' from Attachments)");
             ClickEditBtnForRow();
@@ -152,7 +192,7 @@ namespace RKCIUIAutomation.Test.DIR
 
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();//6
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review)");
-            ClickEditBtnForRow();
+            ClickEditBtnForRow(dirNumber, true, true);
 
             WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();//7
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Revise, dirNumber), "VerifyDirIsDisplayed in (QaRecordControl) Revise Tab after (clicked 'Revise' from To Be Closed)");
@@ -165,14 +205,12 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();//9
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review - 2ndRound)");
             ToggleCheckBoxForRow(dirNumber);
+            //QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected(); //<--uncomment to Close DIR
 
-            //QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected();
-
-            AddAssertionToList(QaSearch_DIR.VerifyDirWorkflowLocationBySearch(dirNumber, WorkflowLocation.Closing));
+            //Update WorkflowLocation to .Closed when Closing DIR by uncommenting step above
+            AddAssertionToList(QaSearch_DIR.VerifyDirWorkflowLocationBySearch(dirNumber, WorkflowLocation.Closing), "QaSearch_DIR.VerifyDirWorkflowLocationBySearch");
 
             AssertAll();
-
-
         }
     }
 

@@ -1,16 +1,9 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.Navigation;
-using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using RKCIUIAutomation.Test;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
-using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -20,7 +13,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
         }
 
-        public QaRcrdCtrl_QaDIR_WF(IWebDriver driver) => this.Driver = driver; 
+        public QaRcrdCtrl_QaDIR_WF(IWebDriver driver) => this.Driver = driver;
     }
 
     public interface IQaRcrdCtrl_QaDIR_WF
@@ -43,6 +36,10 @@ namespace RKCIUIAutomation.Page.Workflows
 
         void Modify_Save_Verify_and_SaveForward_inCreateRevise(string dirNumber);
 
+        void LogoutLoginAsQaTech_Edit_Result_SaveForward_then_LogoutLoginAsQaMgr(string dirNumber);
+
+        void Enter_EngineerComments_and_Approve_inQcReview(string dirNumber);
+
         void Verify_DIR_then_Approve_inReview(string dirNumber);
 
         void Verify_DIR_then_Approve_inAuthorization(string dirNumber);
@@ -50,6 +47,8 @@ namespace RKCIUIAutomation.Page.Workflows
         bool VerifyDirIsDisplayedInRevise(string dirNumber);
 
         bool VerifyWorkflowLocationAfterSimpleWF(string dirNumber);
+
+        bool Verify_DIR_Delete(TableTab tableTab, string dirNumber, bool acceptAlert = true);
 
         void ClickBtn_ApproveOrNoError();
 
@@ -153,7 +152,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual bool VerifyDirIsDisplayedInRevise(string dirNumber)
             => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber);
 
-        //GLX, 
+        //GLX,
         public virtual string Create_and_SaveForward_DIR()
         {
             LogDebug($"---> Create_and_SaveForward_DIR <---");
@@ -165,7 +164,7 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             return QaRcrdCtrl_QaDIR.GetDirNumber();
         }
-                
+
         public virtual void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)
         {
             LogDebug($"---> KickBack_DIR_ForRevise_From{kickBackfromTableTab.ToString()}Tab_then_Edit_inCreateReview <---");
@@ -173,11 +172,8 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber), "VerifyDirIsDisplayed");
             ClickEditBtnForRow();
             WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();
-            //QaRcrdCtrl_QaDIR.ClickBtn_KickBack(); //TODO - Use 'Revise' button instead of 'Kick Back' for SG & SH249
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed");
-            ClickEditBtnForRow();
         }
 
         public virtual void Return_DIR_ForRevise_FromQcReview_then_Edit_SaveForward(string dirNumber)
@@ -190,14 +186,12 @@ namespace RKCIUIAutomation.Page.Workflows
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
         }
 
-        private void Modify_Cancel_Verify_inAttachments(string dirNumber)
+        private void Upload_Cancel_Verify_inAttachments(string dirNumber)
         {
-            LogDebug($"---> Modify_Cancel_Verify_inAttachments <---");
+            LogDebug($"---> Upload_Cancel_Verify_inAttachments <---");
 
             UploadFile();
-            
         }
-
 
         public virtual void Modify_Cancel_Verify_inCreateRevise(string dirNumber)
         {
@@ -231,40 +225,134 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
         }
 
+        public virtual void LogoutLoginAsQaTech_Edit_Result_SaveForward_then_LogoutLoginAsQaMgr(string dirNumber)
+        {
+            LogDebug($"---> LogoutLoginAsQaTech_Edit_Result_SaveForward_then_LogoutLoginAsQaMgr <---");
+
+            LogoutToLoginPage();
+            LoginAs(UserType.DIRTechQA);
+            NavigateToPage.QAField_QA_DIRs();
+
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_E(false); //Edit 'Results' checkbox in Revise
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+
+            LogoutToLoginPage();
+            LoginAs(UserType.DIRMgrQA);
+            NavigateToPage.QAField_QA_DIRs();
+        }
+
+        //GLX, I15SB, I15Tech, LAX
+        public virtual void Enter_EngineerComments_and_Approve_inQcReview(string dirNumber)
+        {
+            LogDebug($"---> Verify_EngineerComments_and_Approve_inQcReview <---");
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review");
+            ClickEditBtnForRow();
+            ClearText(GetTextAreaFieldByLocator(InputFields.Engineer_Comments));
+            //WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+            //AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyEngineerCommentsReqFieldErrors(), "VerifyEngineerCommentsReqFieldErrors");
+            QaRcrdCtrl_QaDIR.EnterText_EngineerComments();
+            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+        }
+
         private void Verify_DIR_then_Approve(TableTab tableTab, string dirNumber)
         {
             string tableTabName = tableTab.ToString();
-            LogDebug($"---> Verify_DIR_then_Approve_in{tableTabName} <---");
+            LogDebug($"---> Verify_DIR_then_Approve_in {tableTabName} <---");
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"VerifyDirIsDisplayed(TableTab.{tableTabName})");
             ClickEditBtnForRow();
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
         }
 
-        public virtual void Verify_DIR_then_Approve_inReview(string dirNumber) => Verify_DIR_then_Approve(TableTab.QC_Review, dirNumber);
-        //{
-        //    LogDebug($"---> Verify_DIR_then_Approve_inReview <---");
+        public virtual void Verify_DIR_then_Approve_inReview(string dirNumber)
+            => Verify_DIR_then_Approve(TableTab.QC_Review, dirNumber);
 
-        //    AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed(TableTab.QC_Review)");
-        //    ClickEditBtnForRow();
-        //    WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
-        //}
-
-        public virtual void Verify_DIR_then_Approve_inAuthorization(string dirNumber) => Verify_DIR_then_Approve(TableTab.Authorization, dirNumber);
-        //{
-        //    LogDebug($"---> Verify_DIR_then_Approve_inAuthorization <---");
-
-        //    AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Authorization, dirNumber), "VerifyDirIsDisplayed(TableTab.Authorization)");
-        //    ClickEditBtnForRow();
-        //    WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
-        //}
+        public virtual void Verify_DIR_then_Approve_inAuthorization(string dirNumber)
+            => Verify_DIR_then_Approve(TableTab.Authorization, dirNumber);
 
         public virtual bool VerifyWorkflowLocationAfterSimpleWF(string dirNumber)
             => QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber, WorkflowLocation.Closed);
 
-        public virtual void ClickBtn_ApproveOrNoError() => QaRcrdCtrl_QaDIR.ClickBtn_Approve();
+        public virtual void ClickBtn_ApproveOrNoError()
+            => QaRcrdCtrl_QaDIR.ClickBtn_Approve();
 
-        public virtual void ClickBtn_KickBackOrRevise() => QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
+        public virtual void ClickBtn_KickBackOrRevise()
+            => QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
+
+        public virtual bool Verify_DIR_Delete(TableTab tableTab, string dirNumber, bool acceptAlert = true)
+        {
+            LogDebug($"---> Verify_DIR_Delete in {tableTab.ToString()} - Accept Alert: {acceptAlert} <---");
+
+            bool isDisplayed = false;
+            string actionPerformed = string.Empty;
+            string resultAfterAction = string.Empty;
+            bool result = false;
+
+            try
+            {
+                isDisplayed = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
+                AddAssertionToList(isDisplayed, $"VerifyDirIsDisplayed in {tableTab.ToString()}, before interacting with delete dialog");
+
+                if (isDisplayed)
+                {
+                    ClickDeleteBtnForRow();
+                    if (acceptAlert)
+                    {
+                        try
+                        {
+                            AcceptAlertMessage();
+                            AcceptAlertMessage();
+                        }
+                        catch (Exception e)
+                        {
+                            log.Debug(e.Message);
+                        }
+                        finally
+                        {
+                            actionPerformed = "Accepted";
+                            resultAfterAction = "Displayed After Accepting Delete Dialog: ";
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            DismissAlertMessage();
+                            DismissAlertMessage();
+                        }
+                        catch (Exception e)
+                        {
+                            log.Debug(e.Message);
+                        }
+                        finally
+                        {
+                            actionPerformed = "Dismissed";
+                            resultAfterAction = "Displayed After Dismissing Delete Dialog: ";
+                        }
+                    }
+
+                    var verifyResult = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, acceptAlert);
+
+                    result = acceptAlert ? !verifyResult : verifyResult;
+
+                    AddAssertionToList(result, $"VerifyDirIsDisplayed in {tableTab.ToString()}, after {actionPerformed} delete dialog");
+                    LogInfo($"Performed Action: {actionPerformed} delete dialog<br>{resultAfterAction}{isDisplayed}", result);
+                }
+                else
+                {
+                    LogError($"Unable to find DIR No. {dirNumber}");
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return result;
+        }
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_GLX : QaRcrdCtrl_QaDIR_WF
@@ -281,7 +369,6 @@ namespace RKCIUIAutomation.Page.Workflows
             ClickEditBtnForRow();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifySectionDescription(), "VerifySectionDescription");
             WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();
-            //QaRcrdCtrl_QaDIR.ClickBtn_KickBack();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
@@ -332,7 +419,20 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void ClickBtn_KickBackOrRevise() => QaRcrdCtrl_QaDIR.ClickBtn_Revise();
 
+        public override void Enter_EngineerComments_and_Approve_inQcReview(string dirNumber)
+        {
+            LogDebug($"---> Verify_EngineerComments_and_Approve_inQcReview <---");
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review");
+            ClickEditBtnForRow();
+            ClearText(GetTextAreaFieldByLocator(InputFields.Engineer_Comments));
+            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyEngineerCommentsReqFieldErrors(), "VerifyEngineerCommentsReqFieldErrors");
+            QaRcrdCtrl_QaDIR.EnterText_EngineerComments();
+            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+        }
     }
+
     internal class QaRcrdCtrl_QaDIR_WF_SGWay : QaRcrdCtrl_QaDIR_WF
     {
         public QaRcrdCtrl_QaDIR_WF_SGWay(IWebDriver driver) : base(driver)
@@ -361,7 +461,20 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void ClickBtn_KickBackOrRevise() => QaRcrdCtrl_QaDIR.ClickBtn_Revise();
 
+        public override void Enter_EngineerComments_and_Approve_inQcReview(string dirNumber)
+        {
+            LogDebug($"---> Verify_EngineerComments_and_Approve_inQcReview <---");
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review");
+            ClickEditBtnForRow();
+            ClearText(GetTextAreaFieldByLocator(InputFields.Engineer_Comments));
+            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyEngineerCommentsReqFieldErrors(), "VerifyEngineerCommentsReqFieldErrors");
+            QaRcrdCtrl_QaDIR.EnterText_EngineerComments();
+            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+        }
     }
+
     internal class QaRcrdCtrl_QaDIR_WF_LAX : QaRcrdCtrl_QaDIR_WF
     {
         public QaRcrdCtrl_QaDIR_WF_LAX(IWebDriver driver) : base(driver)
