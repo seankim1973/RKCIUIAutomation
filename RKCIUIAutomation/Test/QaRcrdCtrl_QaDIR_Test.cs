@@ -214,25 +214,65 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
-    /*
-    public class UserGroups
+    //GLX, I15SB, I15Tech, LAX
+    [TestFixture]
+    public class Verify_Creating_A_Revisioin_Of_A_Closed_DIR : TestBase
     {
-        public static IEnumerable BothUserGroups
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Simple_QA)]
+        [Property(TestCaseNumber, 2187594)]
+        [Property(Priority, "High")]
+        [Description("To validate creating a revision of a closed DIR (Daily Inspection Report) document in Simple Workflow.")]
+        public void Create_A_Revisioin_Of_A_Closed_DIR()
         {
-            get
-            {
-                yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
-                yield return new TestFixtureData(UserType.DIRTechQC, UserType.DIRMgrQC);
-            }
-        }
+            //Create and Close DIR in Simple WF
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            LogoutToLoginPage();
 
-        public static IEnumerable QaUserGroup
-        {
-            get
-            {
-                yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
-            }
+            //Create Revision of Closed DIR
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirNumberExistsInDbError(), "VerifyDirNumberExistsInDbError");
+            QaRcrdCtrl_QaDIR.ClickBtn_CreateRevision();
+            QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
+            bool dirNotDisplayed = !WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber);
+            AddAssertionToList(dirNotDisplayed, "Verify DIR Is Not Displayed after CreateRevision>Cancel");
+
+
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirRevisionInDetailsPage("B"), "VerifyDirRevisionInDetailsPage");
+            QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
+            QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
+
+            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
         }
     }
-    */
-}
+        /*
+        public class UserGroups
+        {
+            public static IEnumerable BothUserGroups
+            {
+                get
+                {
+                    yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
+                    yield return new TestFixtureData(UserType.DIRTechQC, UserType.DIRMgrQC);
+                }
+            }
+
+            public static IEnumerable QaUserGroup
+            {
+                get
+                {
+                    yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
+                }
+            }
+        }
+        */
+    }

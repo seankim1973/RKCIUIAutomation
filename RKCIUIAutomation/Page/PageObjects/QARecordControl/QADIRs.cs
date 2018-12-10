@@ -264,8 +264,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyAndCloseDirLockedMessage();
 
-        bool VerifyDirExistsErrorMessage();
-
         bool VerifySectionDescription();
 
         IList<Enum> GetResultCheckBoxIDsList();
@@ -285,6 +283,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         bool VerifyControlPointReqFieldErrors();
 
         bool VerifyEngineerCommentsReqFieldErrors();
+
+        bool VerifyDirNumberExistsInDbError();
+
+        bool VerifyDirRevisionInDetailsPage(string expectedDirRev);
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -734,15 +736,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return msgMatch;
         }
 
-        public virtual bool VerifyDirExistsErrorMessage()
-        {
-            string expectedMsg = "This DIR No. exists in the database.";
-            string actualMsg = GetText(By.Id("error"));
-            bool msgMatch = actualMsg.Equals(expectedMsg);
-            LogInfo($"Expected Msg: {expectedMsg}<br>Actual Msg: {actualMsg}", msgMatch);
-            return msgMatch;
-        }
-
         private string FormatInspectionTimesIDs(string id)
         {
             if (id.Equals("DateReady"))
@@ -1054,6 +1047,74 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual bool VerifyEngineerCommentsReqFieldErrors()
             => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList(), RequiredFieldType.EngineerComments);
+
+        public virtual bool VerifyDirNumberExistsInDbError()
+        {
+            By errorLocator = By.Id("error");
+            IWebElement errorElem = null;
+            bool isDisplayed = false;
+            string logMsg = string.Empty;
+
+            try
+            {
+                errorElem = GetElement(errorLocator);
+                isDisplayed = (bool)errorElem?.Displayed ? true : false;
+                logMsg = isDisplayed ? "" : " not";
+
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            LogInfo($"'This DIR No. exists in the database' error message is{logMsg} displayed", isDisplayed);
+            return isDisplayed;
+        }
+
+        public virtual bool VerifyDirRevisionInDetailsPage(string expectedDirRev)
+        {
+            By revLocator = By.XPath("//label[contains(text(),'Revision')]/following-sibling::br");
+            bool revAsExpected = false;
+            string actualDirRev = string.Empty;
+            string logMsg = string.Empty;
+
+            try
+            {
+                actualDirRev = GetText(revLocator);
+                revAsExpected = actualDirRev.Equals(expectedDirRev);
+                var ifFalseLog = revAsExpected ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
+                logMsg = $"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual DIR Rev Matches Expected: {revAsExpected}";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            LogInfo($"{logMsg} ", revAsExpected);
+            return revAsExpected;
+        }
+
+        public virtual bool VerifyDirRevisionInTableRow(TableTab tableTab, string dirNumber, string expectedDirRev)
+        {
+            bool dirRevMatches = false;
+            string ifFalseLog = string.Empty;
+
+            try
+            {
+                bool isDisplayed = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
+                string actualDirRev = isDisplayed ? GetColumnValueForRow(dirNumber, "Revision") : "DIR Not Found";
+                dirRevMatches = actualDirRev.Equals(expectedDirRev);
+                ifFalseLog = dirRevMatches ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+
+            LogInfo($"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual Matches Expected Rev? : {dirRevMatches}", dirRevMatches);
+            return dirRevMatches;
+        }
+
     }
 
     //Tenant Specific Classes
