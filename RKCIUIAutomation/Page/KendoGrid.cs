@@ -3,6 +3,7 @@ using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page
 {
@@ -101,64 +102,64 @@ namespace RKCIUIAutomation.Page
             return index;
         }
 
-        public void RemoveFilters()
+        public void RemoveFilters(TableType tableType = TableType.Unknown)
         {
-            string jsToBeExecuted = this.GetGridReference();
+            string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.filter([]);";
             ExecuteJsScript(jsToBeExecuted);
         }
 
-        public int TotalNumberRows()
+        public int TotalNumberRows(TableType tableType = TableType.Unknown)
         {
-            string jsToBeExecuted = this.GetGridReference();
+            string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.total();";
             var jsResult = ExecuteJsScriptGet(jsToBeExecuted);
             return int.Parse(jsResult.ToString());
         }
 
-        public void Reload()
+        public void Reload(TableType tableType = TableType.Unknown)
         {
-            string jsToBeExecuted = this.GetGridReference();
+            string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.read();";
             ExecuteJsScript(jsToBeExecuted);
         }
 
-        public int GetPageSize()
+        public int GetPageSize(TableType tableType = TableType.Unknown)
         {
-            string jsToBeExecuted = this.GetGridReference();
+            string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} return grid.dataSource.pageSize();";
             var currentResponse = ExecuteJsScriptGet(jsToBeExecuted);
             int pageSize = int.Parse(currentResponse.ToString());
             return pageSize;
         }
 
-        public void ChangePageSize(int newSize)
+        public void ChangePageSize(int newSize, TableType tableType = TableType.Unknown)
         {
-            string jsToBeExecuted = this.GetGridReference();
+            string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.pageSize({newSize});";
             ExecuteJsScript(jsToBeExecuted);
         }
 
-        public void GoToTablePage(int pageNumber)
+        public void GoToTablePage(int pageNumber, TableType tableType = TableType.Unknown)
         {
             ScrollToElement(By.XPath("//div[@data-role='pager']"));
-            string jsToBeExecuted = this.GetGridReference();
+            string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.page({pageNumber});";
             ExecuteJsScript(jsToBeExecuted);
             LogInfo($"Navigated to table page {pageNumber}");
         }
 
-        public void Sort(string columnName, SortType sortType)
+        public void Sort(string columnName, SortType sortType, TableType tableType = TableType.Unknown)
         {
-            string jsToBeExecuted = this.GetGridReference();
+            string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.sort({{field: '{columnName}', dir: '{sortType.GetString()}'}});";
             ExecuteJsScript(jsToBeExecuted);
             LogInfo($"Sorted {columnName} column to {sortType.ToString()} order");
         }
 
-        public List<T> GetItems<T>() where T : class
+        public List<T> GetItems<T>(TableType tableType = TableType.Unknown) where T : class
         {
-            string jsToBeExecuted = this.GetGridReference();
+            string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} return JSON.stringify(grid.dataSource.data());";
             var jsResults = ExecuteJsScriptGet(jsToBeExecuted);
             var items = JsonConvert.DeserializeObject<List<T>>(jsResults.ToString());
@@ -171,9 +172,9 @@ namespace RKCIUIAutomation.Page
             FilterOperator filterOperator = FilterOperator.EqualTo,
             FilterLogic filterLogic = FilterLogic.And,
             string additionalFilterValue = null,
-            FilterOperator additionalFilterOperator = FilterOperator.EqualTo
-            )
-            => Filter(
+            FilterOperator additionalFilterOperator = FilterOperator.EqualTo,
+            TableType tableType = TableType.Unknown
+            ) => Filter( tableType,
                 new GridFilter(
                     columnName,
                     filterOperator,
@@ -184,7 +185,7 @@ namespace RKCIUIAutomation.Page
                     )
                 );
 
-        private void Filter(params GridFilter[] gridFilters)
+        private void Filter(TableType tableType, params GridFilter[] gridFilters)
         {
             string columnName = null;
             string filterValue = null;
@@ -218,7 +219,7 @@ namespace RKCIUIAutomation.Page
 
             StringBuilder sb = new StringBuilder();
 
-            string gridRef = GetGridReference();
+            string gridRef = GetGridReference(tableType);
 
             sb.Append($"{gridRef}{filterScript}] }});");
             ExecuteJsScript(sb.ToString());
@@ -227,9 +228,9 @@ namespace RKCIUIAutomation.Page
             LogInfo($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilter}");
         }
 
-        public int GetCurrentPageNumber()
+        public int GetCurrentPageNumber(TableType tableType = TableType.Unknown)
         {
-            string jsToBeExecuted = this.GetGridReference();
+            string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} return grid.dataSource.page();";
             IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
             var result = executor.ExecuteScript(jsToBeExecuted);
@@ -258,14 +259,14 @@ namespace RKCIUIAutomation.Page
             return $"var tab = $('#{tabStripId}').data('kendoTabStrip');";
         }
 
-        private string GetGridReference()
+        private string GetGridReference(TableType tableType = TableType.Unknown)
         {
             string gridId = string.Empty;
             string logMsg = string.Empty;
 
             try
             {
-                gridId = GetGridID();
+                gridId = GetGridID(tableType);
                 logMsg = !string.IsNullOrEmpty(gridId) ? $"Found Kendo Grid ID: {gridId}" : $"NULL Kendo Grid ID";
                 log.Debug(logMsg);
             }
@@ -278,7 +279,7 @@ namespace RKCIUIAutomation.Page
             return $"var grid = $('#{gridId}').data('kendoGrid');";
         }
 
-        public string GetGridID()
+        public string GetGridID(TableType tableType = TableType.Unknown)
         {
             By singleGridDivLocator = By.XPath("//div[@class='k-widget k-grid k-display-block'][@data-role='grid']");
             By multiActiveGridDivLocator = By.XPath("//div[@class='k-content k-state-active']//div[@data-role='grid']");
@@ -287,8 +288,20 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                gridElem = GetElement(multiActiveGridDivLocator) ?? GetElement(singleGridDivLocator);
-                //gridElem = gridElem == null ? GetElement(singleGridDivLocator) : gridElem;
+                switch (tableType)
+                {
+                    case TableType.Single:
+                        gridElem = GetElement(singleGridDivLocator);
+                        break;
+                    case TableType.MultiTab:
+                        GetElement(multiActiveGridDivLocator);
+                        break;
+                    case TableType.Unknown:
+                        gridElem = GetElement(multiActiveGridDivLocator) ?? GetElement(singleGridDivLocator);
+                        break;
+                }
+
+                //gridElem = GetElement(multiActiveGridDivLocator) ?? GetElement(singleGridDivLocator);
                 gridId = gridElem.GetAttribute("id");
             }
             catch (Exception e)

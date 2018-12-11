@@ -76,12 +76,15 @@ namespace RKCIUIAutomation.Base
 
         public string CaptureScreenshot(string fileName)
         {
-            Directory.CreateDirectory(screenshotSavePath);
-            string uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
-            string fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
+            string uniqueFileName = string.Empty;
+            string fullFilePath = string.Empty;
 
             try
             {
+                Directory.CreateDirectory(screenshotSavePath);
+                uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
+                fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
+
                 if (reporter == Reporter.Klov)
                 {
                     ImpersonateUser impersonateUser = new ImpersonateUser(Driver);

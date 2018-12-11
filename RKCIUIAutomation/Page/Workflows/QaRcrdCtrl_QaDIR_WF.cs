@@ -367,6 +367,8 @@ namespace RKCIUIAutomation.Page.Workflows
 
         private bool Verify_DirRevision_inTblRow_then_Approve(TableTab tableTab, string dirNumber, string expectedDirRev)
         {
+            LogDebug($"---> Verify_DirRevision_inTblRow_then_Approve in {tableTab.ToString()} - Expected DIR Rev: {expectedDirRev} <---");
+
             bool dirRevMatches = false;
             string ifFalseLog = string.Empty;
             bool isDisplayed = false;
@@ -375,7 +377,7 @@ namespace RKCIUIAutomation.Page.Workflows
             {
                 isDisplayed = (tableTab == TableTab.Creating || tableTab == TableTab.Create_Revise)
                     ? WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber)
-                    : QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
+                    : QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, false, TableType.MultiTab);
 
                 string actualDirRev = isDisplayed ? GetColumnValueForRow(dirNumber, "Revision") : "DIR Not Found";
                 dirRevMatches = actualDirRev.Equals(expectedDirRev);

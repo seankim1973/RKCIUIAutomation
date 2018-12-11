@@ -57,7 +57,7 @@ namespace RKCIUIAutomation.Page
         /// <param name="filterLogic"></param>
         /// <param name="additionalFilterValue"></param>
         /// <param name="additionalFilterOperator"></param>
-        public void FilterColumn(Enum columnName, string filterValue, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
+        public void FilterColumn(Enum columnName, string filterValue, TableType tableType = TableType.Unknown, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
         {
             try
             {
@@ -296,7 +296,7 @@ namespace RKCIUIAutomation.Page
 
         #endregion Table Row Button Methods
 
-        public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber)
+        public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown)
         {
             try
             {
@@ -308,7 +308,7 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                FilterColumn(columnName, recordNameOrNumber);
+                FilterColumn(columnName, recordNameOrNumber, tableType);
             }
         }
 
@@ -325,9 +325,9 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                FilterTableColumnByValue(columnName, recordNameOrNumber);
+                FilterTableColumnByValue(columnName, recordNameOrNumber, tableType);
 
-                string gridId = kendo.GetGridID();
+                string gridId = kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = GetAttribute(gridParentDivLocator, "class");
 

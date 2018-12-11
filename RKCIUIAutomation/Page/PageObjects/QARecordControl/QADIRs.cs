@@ -1072,7 +1072,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual bool VerifyDirRevisionInDetailsPage(string expectedDirRev)
         {
-            By revLocator = By.XPath("//label[contains(text(),'Revision')]/following-sibling::br");
+            By revLocator = By.XPath("//label[contains(text(),'Revision')]/parent::div");
             bool revAsExpected = false;
             string actualDirRev = string.Empty;
             string logMsg = string.Empty;
@@ -1080,6 +1080,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 actualDirRev = GetText(revLocator);
+                string[] splitActual = new string[2];
+                splitActual = Regex.Split(actualDirRev, "Revision\r\n");
+                actualDirRev = splitActual[1];
                 revAsExpected = actualDirRev.Equals(expectedDirRev);
                 var ifFalseLog = revAsExpected ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
                 logMsg = $"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual DIR Rev Matches Expected: {revAsExpected}";

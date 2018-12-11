@@ -226,6 +226,8 @@ namespace RKCIUIAutomation.Test.DIR
         [Description("To validate creating a revision of a closed DIR (Daily Inspection Report) document in Simple Workflow.")]
         public void Create_A_Revision_Of_A_Closed_DIR()
         {
+            string expectedRevision = "B";
+
             //Create and Close DIR in Simple WF
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
@@ -241,37 +243,55 @@ namespace RKCIUIAutomation.Test.DIR
             QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirNumberExistsInDbError(), "VerifyDirNumberExistsInDbError");
             QaRcrdCtrl_QaDIR.ClickBtn_CreateRevision();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirRevisionInDetailsPage("B"), "VerifyDirRevisionInDetailsPage");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirRevisionInDetailsPage(expectedRevision), $"VerifyDirRevisionInDetailsPage - Expected Revision {expectedRevision}");
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DirRevision_inTblRow_then_SaveForward_inCreateRevise(dirNumber, "B"), "Verify_DirRevision_inTblRow_then_SaveForward_inCreateRevise - Expected Revision (B)");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DirRevision_inTblRow_then_SaveForward_inCreateRevise(dirNumber, expectedRevision), $"Verify_DirRevision_inTblRow_then_SaveForward_inCreateRevise - Expected Revision {expectedRevision}");
             LogoutToLoginPage();
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DirRevision_inTblRow_then_Approve_inQcReview(dirNumber, "B"), "Verify_DirRevision_inTblRow_then_Approve_inQcReview - Expected Revision (B)");
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DirRevision_inTblRow_then_Approve_inAuthorization(dirNumber, "B"), "Verify_DirRevision_inTblRow_then_Approve_inAuthorization - Expected Revision (B)");
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF_forDirRevision(dirNumber, "B"), "VerifyWorkflowLocationAfterSimpleWF_forDirRevision - Expected Revision (B)");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DirRevision_inTblRow_then_Approve_inQcReview(dirNumber, expectedRevision), $"Verify_DirRevision_inTblRow_then_Approve_inQcReview - Expected Revision {expectedRevision}");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DirRevision_inTblRow_then_Approve_inAuthorization(dirNumber, expectedRevision), $"Verify_DirRevision_inTblRow_then_Approve_inAuthorization - Expected Revision {expectedRevision}");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF_forDirRevision(dirNumber, expectedRevision), $"VerifyWorkflowLocationAfterSimpleWF_forDirRevision - Expected Revision {expectedRevision}");
             AssertAll();
         }
     }
 
-    /*
-    public class UserGroups
+
+    [TestFixture]
+    public class Verify_IDLR_Create_A_QA_DIR_With_Deficiencies : TestBase
     {
-        public static IEnumerable BothUserGroups
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Simple_QA)]
+        [Property(TestCaseNumber, 2187594)]
+        [Property(Priority, "High")]
+        [Description("To validate creating a revision of a closed DIR (Daily Inspection Report) document in Simple Workflow.")]
+        public void IDLR_Create_A_QA_DIR_With_Deficiencies()
         {
-            get
-            {
-                yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
-                yield return new TestFixtureData(UserType.DIRTechQC, UserType.DIRMgrQC);
-            }
+
         }
 
-        public static IEnumerable QaUserGroup
+    }
+
+
+        /*
+        public class UserGroups
         {
-            get
+            public static IEnumerable BothUserGroups
             {
-                yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
+                get
+                {
+                    yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
+                    yield return new TestFixtureData(UserType.DIRTechQC, UserType.DIRMgrQC);
+                }
+            }
+
+            public static IEnumerable QaUserGroup
+            {
+                get
+                {
+                    yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
+                }
             }
         }
+        */
     }
-    */
-}
