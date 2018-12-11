@@ -272,7 +272,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyDeficiencySelectionPopupMessages();
 
-        bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false);
+        bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false, TableType tableType = TableType.Unknown);
 
         IList<string> GetExpectedHoldPointReqFieldIDsList();
 
@@ -533,7 +533,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return textMatch;
         }
 
-        public virtual bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false)
+        public virtual bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false, TableType tableType = TableType.MultiTab)
         {
             bool isDisplayed = false;
 
@@ -541,7 +541,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 ClickTab(tableTab);
                 string _dirNum = dirNumber.Equals("") ? GetDirNumber() : dirNumber;
-                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, noRecordsExpected);
+                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, tableType, noRecordsExpected);
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
                 LogInfo($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", noRecordsExpected ? !isDisplayed : isDisplayed);
             }
@@ -1060,7 +1060,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 errorElem = GetElement(errorLocator);
                 isDisplayed = (bool)errorElem?.Displayed ? true : false;
                 logMsg = isDisplayed ? "" : " not";
-
             }
             catch (Exception e)
             {
@@ -1093,28 +1092,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             LogInfo($"{logMsg} ", revAsExpected);
             return revAsExpected;
         }
-
-        public virtual bool VerifyDirRevisionInTableRow(TableTab tableTab, string dirNumber, string expectedDirRev)
-        {
-            bool dirRevMatches = false;
-            string ifFalseLog = string.Empty;
-
-            try
-            {
-                bool isDisplayed = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
-                string actualDirRev = isDisplayed ? GetColumnValueForRow(dirNumber, "Revision") : "DIR Not Found";
-                dirRevMatches = actualDirRev.Equals(expectedDirRev);
-                ifFalseLog = dirRevMatches ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-            }
-
-            LogInfo($"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual Matches Expected Rev? : {dirRevMatches}", dirRevMatches);
-            return dirRevMatches;
-        }
-
     }
 
     //Tenant Specific Classes

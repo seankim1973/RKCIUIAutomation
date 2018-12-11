@@ -85,9 +85,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
     {
         bool VerifyDirIsDisplayed(string dirNumber);
 
-        bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed);
+        bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B");
 
-        bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed);
+        bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B");
 
         void ClickBtn_Search();
 
@@ -157,7 +157,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
             try
             {
-                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, dirNumber);
+                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, dirNumber, TableType.Single);
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
                 LogInfo($"{logMsg} DIR record number {dirNumber}.", isDisplayed);
             }
@@ -169,7 +169,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
             return isDisplayed;
         }
 
-        private bool CheckIfWorkflowLocationsMatch(string dirNumber, WorkflowLocation expectedWorkflow, bool usingSearch = false)
+        private bool CheckIfWorkflowLocationsMatch(string dirNumber, WorkflowLocation expectedWorkflow, bool usingSearch = false, bool dirRevision = false, string expectedRevision = "B")
         {
             NavigateToPage.QASearch_Daily_Inspection_Report();
             string actualWorkflow = string.Empty;
@@ -187,6 +187,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
                 bool isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(dirNumber);
 
+                if (isDisplayed && dirRevision)
+                {
+                    isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(expectedRevision);
+                }
+
                 if (isDisplayed)
                 {
                     actualWorkflow = GetColumnValueForRow(dirNumber, "Workflow Location", false);
@@ -203,11 +208,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
             return wfLocationsMatch;
         }
 
-        public virtual bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed)
-            => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow, true);
+        public virtual bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B")
+            => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow, true, dirRevision, expectedRevision);
 
-        public virtual bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed)
-            => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow);
+        public virtual bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B")
+            => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow, dirRevision, false, expectedRevision);
     }
 
     public class DailyInspectionReport_Garnet : DailyInspectionReport

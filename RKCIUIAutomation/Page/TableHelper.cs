@@ -131,6 +131,13 @@ namespace RKCIUIAutomation.Page
             [StringValue("Revise")] Revise
         }
 
+        public enum TableType
+        {
+            Unknown,
+            MultiTab,
+            Single
+        }
+
         private string DetermineTblRowBtnXPathExt(TableButton tblBtn, bool rowEndsWithChkbx = false)
         {
             string xPathExt = string.Empty;
@@ -305,17 +312,17 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, bool noRecordsExpected = false)
+        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown, bool noRecordsExpected = false)
         {
             IList<IWebElement> tblRowElems = new List<IWebElement>();
-            bool isMultiTabGrid = false;
             bool isDisplayedAsExpected = false;
             bool noRecordsMsgDisplayed = false;
+            bool isMultiTabGrid = false;
             string currentTabName = string.Empty;
             string logMsg = string.Empty;
             string activeTblTab = "";
             int tblRowCount = 0;
-            
+
             try
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber);
@@ -323,9 +330,23 @@ namespace RKCIUIAutomation.Page
                 string gridId = kendo.GetGridID();
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = GetAttribute(gridParentDivLocator, "class");
-                isMultiTabGrid = gridType.Contains("active") ? true : false;
+
+                switch (tableType)
+                {
+                    case TableType.Single:
+                        isMultiTabGrid = false;
+                        break;
+
+                    case TableType.MultiTab:
+                        isMultiTabGrid = true;
+                        break;
+
+                    case TableType.Unknown:
+                        isMultiTabGrid = gridType.Contains("active") ? true : false;
+                        break;
+                }
+
                 By recordRowLocator = GetTableRowLocator(recordNameOrNumber, isMultiTabGrid);
-                
 
                 if (isMultiTabGrid)
                 {
@@ -397,7 +418,7 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
             }
 
-            LogInfo(logMsg, noRecordsExpected?!isDisplayedAsExpected:isDisplayedAsExpected);
+            LogInfo(logMsg, noRecordsExpected ? !isDisplayedAsExpected : isDisplayedAsExpected);
             return isDisplayedAsExpected;
         }
 
