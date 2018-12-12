@@ -287,6 +287,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         bool VerifyDirNumberExistsInDbError();
 
         bool VerifyDirRevisionInDetailsPage(string expectedDirRev);
+
+        string CreatePreviousFailingReport();
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -437,6 +439,57 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //Enter_CompletedDate();
             //Enter_TotalInspectionTime();
             //StoreDirNumber();
+        }
+
+        public virtual string CreatePreviousFailingReport()
+        {
+            string logMsg = string.Empty;
+            string nonFixedFailedDirNumber = string.Empty;
+            bool modalIsDisplayed = false;
+
+            try
+            {
+                ClickElement(By.Id("lnkPreviousFailingReports"));
+                string modalXPath = "//div[@class='k-widget k-window'][contains(@style, 'opacity: 1')]";
+                IWebElement modal = GetElement(By.XPath(modalXPath));
+                modalIsDisplayed = (bool)modal?.Displayed;
+
+                if (modalIsDisplayed)
+                {
+                    string firstNonFixedFailedDirXpath = $"{modalXPath}//div[@class='col-md-3'][1]//div[@class='checkbox-inline']/span";
+                    string nonfixedFailedDirVal = GetText(By.XPath(firstNonFixedFailedDirXpath));
+                    string[] splitVal = new string[2];
+                    splitVal = Regex.Split(nonfixedFailedDirVal, "-");
+                    nonFixedFailedDirNumber = splitVal[0];
+                    string nonFixedFailedDirEntry = splitVal[1];
+
+                    string newBtnXPath = $"{modalXPath}//a[contains(@class,'k-grid-add')]";
+                    string previousDirNoFieldXPath = $"{modalXPath}//input[@id='DirNO']";
+                    string previousDirEntryFieldXPath = $"{modalXPath}//input[@id='EntryNo']";
+                    string updateBtnXPath = $"{modalXPath}//a[contains(text(),'Update')]";
+                    string modalCloseXPath = $"{modalXPath}//a[@aria-label='Close']";
+
+                    ClickElement(By.XPath(newBtnXPath));
+                    EnterText(By.XPath(previousDirNoFieldXPath), nonFixedFailedDirNumber);
+                    EnterText(By.XPath(previousDirEntryFieldXPath), nonFixedFailedDirEntry);
+                    ClickElement(By.XPath(updateBtnXPath));
+                    ClickElement(By.XPath(modalCloseXPath));
+
+                    logMsg = $"Entered Non-Fixed Failed DIR No. {nonFixedFailedDirNumber} and DIR Entry {nonFixedFailedDirEntry}";
+                }
+                else
+                {
+                    logMsg = "Previous Failing Report popup window is not displayed";
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            LogInfo(logMsg, modalIsDisplayed);
+            return nonFixedFailedDirNumber;
         }
 
         //All SimpleWF Tenants have different required fields
@@ -974,12 +1027,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 errorSummaryIDs = new List<string>();
                 errorSummaryIDs = GetErrorSummaryIDs();
 
-                //string controlPointBaseXpath = "//span[contains(@aria-owns,'HoldPoint')]";
-
-                //string reqFieldIdXPath = verifyControPointReqFields ? $"{controlPointBaseXpath}/input" : "//span[text()='*']";
-
-                //string splitPattern = verifyControPointReqFields ? "0__" : "0_";
-
                 string reqFieldIdXPath = string.Empty;
                 string splitPattern = string.Empty;
 
@@ -1005,8 +1052,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 }
 
                 IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
-
-                //expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedRequiredFieldIDsList();
 
                 bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
 

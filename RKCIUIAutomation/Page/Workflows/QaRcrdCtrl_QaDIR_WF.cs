@@ -26,6 +26,11 @@ namespace RKCIUIAutomation.Page.Workflows
 
         string Create_and_SaveForward_DIR();
 
+        /// <summary>
+        /// Returns string[] array: [0] dirNumber of newly created DIR, [1] dirNumber of Previous Failing Report
+        /// </summary>
+        string[] Create_and_SaveForward_DIR_with_Failed_Inspection_and_PreviousFailingReports();
+
         void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber);
 
         void Return_DIR_ForRevise_FromQcReview_then_Edit_SaveForward(string dirNumber);
@@ -171,6 +176,31 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_QaDIR.PopulateRequiredFields();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             return QaRcrdCtrl_QaDIR.GetDirNumber();
+        }
+
+        public virtual string[] Create_and_SaveForward_DIR_with_Failed_Inspection_and_PreviousFailingReports()
+        {
+            LogDebug($"---> Create_and_SaveForward_Failed_Inspection_DIR_with_PreviousFailingReports <---");
+
+            QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(), "VerifyReqFieldErrorsForNewDir");
+            QaRcrdCtrl_QaDIR.PopulateRequiredFields();
+            QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
+            QaRcrdCtrl_QaDIR.SelectRdoBtn_Deficiencies_Yes();
+            QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
+            string previousFailedDirNumber = QaRcrdCtrl_QaDIR.CreatePreviousFailingReport();
+            string newDirNumber = QaRcrdCtrl_QaDIR.GetDirNumber();
+
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+
+            string[] dirNumbers = new string[2]
+            {
+                newDirNumber,
+                previousFailedDirNumber
+            };
+
+            return dirNumbers;
         }
 
         public virtual void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)

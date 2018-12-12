@@ -255,9 +255,8 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
-
     [TestFixture]
-    public class Verify_IDLR_Create_A_QA_DIR_With_Deficiencies : TestBase
+    public class Verify_Inspection_Deficiency_Log_Report_Create_A_QA_DIR_With_Deficiencies : TestBase
     {
         [Test]
         [Category(Component.DIR)]
@@ -265,33 +264,38 @@ namespace RKCIUIAutomation.Test.DIR
         [Property(TestCaseNumber, 2187594)]
         [Property(Priority, "High")]
         [Description("To validate creating a revision of a closed DIR (Daily Inspection Report) document in Simple Workflow.")]
-        public void IDLR_Create_A_QA_DIR_With_Deficiencies()
+        public void Inspection_Deficiency_Log_Report_Create_A_QA_DIR_With_Deficiencies()
         {
-
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            string[] dirNumbers = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR_with_Failed_Inspection_and_PreviousFailingReports();
+            string dirNumber = dirNumbers[0];
+            string failedDirNumber = dirNumbers[1];
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
         }
-
     }
 
-
-        /*
-        public class UserGroups
+    /*
+    public class UserGroups
+    {
+        public static IEnumerable BothUserGroups
         {
-            public static IEnumerable BothUserGroups
+            get
             {
-                get
-                {
-                    yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
-                    yield return new TestFixtureData(UserType.DIRTechQC, UserType.DIRMgrQC);
-                }
-            }
-
-            public static IEnumerable QaUserGroup
-            {
-                get
-                {
-                    yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
-                }
+                yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
+                yield return new TestFixtureData(UserType.DIRTechQC, UserType.DIRMgrQC);
             }
         }
-        */
+
+        public static IEnumerable QaUserGroup
+        {
+            get
+            {
+                yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
+            }
+        }
     }
+    */
+}
