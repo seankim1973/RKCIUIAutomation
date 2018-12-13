@@ -272,7 +272,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyDeficiencySelectionPopupMessages();
 
-        bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false, TableType tableType = TableType.Unknown);
+        bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false);
 
         IList<string> GetExpectedHoldPointReqFieldIDsList();
 
@@ -450,7 +450,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 ClickElement(By.Id("lnkPreviousFailingReports"));
-                string modalXPath = "//div[@class='k-widget k-window'][contains(@style, 'opacity: 1')]";
+                string modalXPath = "//[contains(@style, 'opacity: 1')]";
                 IWebElement modal = GetElement(By.XPath(modalXPath));
                 modalIsDisplayed = (bool)modal?.Displayed;
 
@@ -469,11 +469,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     string updateBtnXPath = $"{modalXPath}//a[contains(text(),'Update')]";
                     string modalCloseXPath = $"{modalXPath}//a[@aria-label='Close']";
 
-                    ClickElement(By.XPath(newBtnXPath));
+                    JsClickElement(By.XPath(newBtnXPath));
                     EnterText(By.XPath(previousDirNoFieldXPath), nonFixedFailedDirNumber);
                     EnterText(By.XPath(previousDirEntryFieldXPath), nonFixedFailedDirEntry);
-                    ClickElement(By.XPath(updateBtnXPath));
-                    ClickElement(By.XPath(modalCloseXPath));
+                    JsClickElement(By.XPath(updateBtnXPath));
+                    JsClickElement(By.XPath(modalCloseXPath));
 
                     logMsg = $"Entered Non-Fixed Failed DIR No. {nonFixedFailedDirNumber} and DIR Entry {nonFixedFailedDirEntry}";
                 }
@@ -586,7 +586,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return textMatch;
         }
 
-        public virtual bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false, TableType tableType = TableType.MultiTab)
+        public virtual bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false)
         {
             bool isDisplayed = false;
 
@@ -594,7 +594,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 ClickTab(tableTab);
                 string _dirNum = dirNumber.Equals("") ? GetDirNumber() : dirNumber;
-                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, tableType, noRecordsExpected);
+                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, TableType.MultiTab, noRecordsExpected);
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
                 LogInfo($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", noRecordsExpected ? !isDisplayed : isDisplayed);
             }

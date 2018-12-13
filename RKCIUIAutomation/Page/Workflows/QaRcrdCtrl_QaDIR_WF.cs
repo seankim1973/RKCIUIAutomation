@@ -407,7 +407,7 @@ namespace RKCIUIAutomation.Page.Workflows
             {
                 isDisplayed = (tableTab == TableTab.Creating || tableTab == TableTab.Create_Revise)
                     ? WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber)
-                    : QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, false, TableType.MultiTab);
+                    : QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, false);
 
                 string actualDirRev = isDisplayed ? GetColumnValueForRow(dirNumber, "Revision") : "DIR Not Found";
                 dirRevMatches = actualDirRev.Equals(expectedDirRev);

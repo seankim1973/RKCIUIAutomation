@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
+using RKCIUIAutomation.Page.PageObjects.QASearch;
 
 namespace RKCIUIAutomation.Test.DIR
 {
@@ -255,6 +256,7 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
+    //GLX, LAX, I15SB, I15Tech - DIR SimpleWF Tenants
     [TestFixture]
     public class Verify_Inspection_Deficiency_Log_Report_Create_A_QA_DIR_With_Deficiencies : TestBase
     {
@@ -274,6 +276,9 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
+            NavigateToPage.QASearch_Inspection_Deficiency_Log_Report();
+            AddAssertionToList(QaSearch_InspctDefncyLogRprt.VerifyDirIsDisplayed(InspectionDeficiencyLogReport.ColumnName.DIR_No, dirNumber), $"InspctDefncyLogRprt.VerifyDirIsDisplayed DIR No: {dirNumber}");
+            AssertAll();
         }
     }
 

@@ -296,7 +296,7 @@ namespace RKCIUIAutomation.Page
 
         #endregion Table Row Button Methods
 
-        public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown)
+        public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown, FilterOperator filterOperator = FilterOperator.EqualTo)
         {
             try
             {
@@ -308,11 +308,11 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                FilterColumn(columnName, recordNameOrNumber, tableType);
+                FilterColumn(columnName, recordNameOrNumber, tableType, filterOperator);
             }
         }
 
-        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown, bool noRecordsExpected = false)
+        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown, bool noRecordsExpected = false, FilterOperator filterOperator = FilterOperator.EqualTo)
         {
             IList<IWebElement> tblRowElems = new List<IWebElement>();
             bool isDisplayedAsExpected = false;
@@ -325,7 +325,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                FilterTableColumnByValue(columnName, recordNameOrNumber, tableType);
+                FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
 
                 string gridId = kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
