@@ -641,6 +641,14 @@ namespace RKCIUIAutomation.Page
 
             try
             {
+                WaitForPageReady();
+            }
+            catch (Exception e)
+            {
+                log.Error($"ConfirmActionDialog - {e.Message}");
+            }
+            finally
+            {
                 alert = new WebDriverWait(Driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
                 alert = Driver.SwitchTo().Alert();
                 alertText = alert.Text;
@@ -656,10 +664,6 @@ namespace RKCIUIAutomation.Page
                     logMsg = "Dismissed";
                 }
             }
-            catch (Exception e)
-            {
-                log.Error($"ConfirmActionDialog - {e.Message}");
-            }
 
             return $"{logMsg} Confirmation Dialog: {alertText}";
         }
@@ -670,12 +674,16 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IAlert alert = Driver.SwitchTo().Alert();
-                alertMsg = alert.Text;
+                WaitForPageReady();
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+            }
+            finally
+            {
+                IAlert alert = Driver.SwitchTo().Alert();
+                alertMsg = alert.Text;
             }
 
             return alertMsg;
@@ -685,13 +693,21 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                IAlert alert = Driver.SwitchTo().Alert();
-                alert.Accept();
-                LogInfo("Accepted browser alert message");
+                WaitForPageReady();
             }
-            catch (Exception e)
+            catch (UnhandledAlertException f)
             {
-                log.Error(e.StackTrace);
+                log.Debug(f.Message);
+                try
+                {
+                    IAlert alert = Driver.SwitchTo().Alert();
+                    alert.Accept();
+                    LogInfo("Accepted browser alert message");
+                }
+                catch (NoAlertPresentException e)
+                {
+                    log.Debug(e.StackTrace);
+                }
             }
         }
 
@@ -699,13 +715,17 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                IAlert alert = Driver.SwitchTo().Alert();
-                alert.Dismiss();
-                LogInfo("Dismissed browser alert message");
+                WaitForPageReady();
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+            }
+            finally
+            {
+                IAlert alert = Driver.SwitchTo().Alert();
+                alert.Dismiss();
+                LogInfo("Dismissed browser alert message");
             }
         }
 

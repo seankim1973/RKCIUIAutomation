@@ -1222,25 +1222,34 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             try
             {
+                string[] splitNewDIRs = null;
                 string[] pkgData = GetPackageDataForRow(indexOfRow);
                 string wkStart = pkgData[0];
                 string wkEnd = pkgData[1];
                 string newDirCount = pkgData[2];
                 string newDIRs = pkgData[3];
 
-                ClickCreateBtnForRow(newDIRs);
+                if (newDIRs.Contains(","))
+                {
+                    splitNewDIRs = new string[] { };
+                    splitNewDIRs = Regex.Split(newDIRs, ", ");
+                    newDIRs = splitNewDIRs[0];
+                }
 
-                try
-                {
-                    ConfirmActionDialog();
-                }
-                catch (Exception e)
-                {
-                    log.Debug(e.Message);
-                }
+                AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.Week_Start, wkStart, TableType.MultiTab, false), $"Verify Filter of 'Week Start' column for 'Create Packages' table Equals {wkStart}");
+                ClearTableFilters();
+                AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.Week_End, wkEnd, TableType.MultiTab, false), $"Verify Filter of 'Week End' column for 'Create Packages' table Equals {wkEnd}");
+                ClearTableFilters();
+                AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.New_DIR_Count, newDirCount, TableType.MultiTab, false), $"Verify Filter of 'New DIR Count' column for 'Create Packages' table Equals {newDirCount}");
+                ClearTableFilters();
+                AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.New_DIRs, newDIRs, TableType.MultiTab, false, FilterOperator.Contains), $"Verify Filter of 'New DIRs' column for 'Create Packages' table Contains {newDIRs}");
+                ClearTableFilters();
+
+                ClickCreateBtnForRow(indexOfRow.ToString());
+                AcceptAlertMessage();
 
                 QaRcrdCtrl_QaDIR.ClickTab_Packages();
-                AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.DIRs, newDIRs), "Verify Package with DIRs List is Displayed");
+                AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.DIRs, newDIRs, TableType.MultiTab, false, FilterOperator.Contains), "Verify Package with DIRs List is Displayed");
             }
             catch (Exception e)
             {

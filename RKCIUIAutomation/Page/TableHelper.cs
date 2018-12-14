@@ -189,8 +189,10 @@ namespace RKCIUIAutomation.Page
 
         //private readonly string ActiveTableDiv = "//div[@class='k-content k-state-active']";
 
-        private string TableByTextInRow(string textInRowForAnyColumn)
-            => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
+        private string TableByTextInRow(string textInRowForAnyColumn, bool useContainsOperator = false)
+            => useContainsOperator 
+            ? $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td" 
+            : $"//td[contains(text(),'{textInRowForAnyColumn}')]/parent::tr/td";
 
         private string TableColumnIndex(string columnName)
             => $"//th[@data-title='{columnName}']";
@@ -201,7 +203,7 @@ namespace RKCIUIAutomation.Page
         private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
 
-        public By GetTableRowLocator(string textInRowForAnyColumn, bool isMultiTabGrid)
+        public By GetTableRowLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableByTextInRow(textInRowForAnyColumn)}");
 
         public string GetColumnValueForRow(string textInRowForAnyColumn, string columnName, bool isMultiTabGrid = true)
@@ -365,7 +367,7 @@ namespace RKCIUIAutomation.Page
                         break;
                 }
 
-                By recordRowLocator = GetTableRowLocator(recordNameOrNumber, isMultiTabGrid);
+                By recordRowLocator = GetTableRowLocator(recordNameOrNumber, isMultiTabGrid, filterOperator == FilterOperator.Contains ? true : false);
 
                 if (isMultiTabGrid)
                 {
@@ -413,14 +415,10 @@ namespace RKCIUIAutomation.Page
                         LogDebug($"Searching for record: {recordNameOrNumber}");
                         isDisplayedAsExpected = ElementIsDisplayed(recordRowLocator);
 
-                        if (isDisplayedAsExpected)
-                        {
-                            logMsg = $"Found Record {recordNameOrNumber} as Expected";
-                        }
-                        else
-                        {
-                            logMsg = $"Expected Record, but Unable to find Record {recordNameOrNumber}";
-                        }
+                        string contains = filterOperator == FilterOperator.Contains ? "Containing Value: " : "";
+                        logMsg = isDisplayedAsExpected
+                            ? $"Found Record {contains}{recordNameOrNumber}, as Expected"
+                            : $"Expected Record, but Unable to find Record {contains}{recordNameOrNumber}";
                     }
                     else
                     {
