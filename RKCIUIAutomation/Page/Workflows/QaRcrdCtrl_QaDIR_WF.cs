@@ -49,6 +49,8 @@ namespace RKCIUIAutomation.Page.Workflows
 
         void Verify_DIR_then_Approve_inAuthorization(string dirNumber);
 
+        bool VerifyDirIsDisplayedInCreate(string dirNumber);
+
         bool VerifyDirIsDisplayedInRevise(string dirNumber);
 
         bool VerifyWorkflowLocationAfterSimpleWF(string dirNumber);
@@ -162,6 +164,10 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void LoginToRcrdCtrlDirPage(UserType userType) => LoginToDirPage(userType);
 
+        //GLX, LAX, I15SB, I15Tech
+        public virtual bool VerifyDirIsDisplayedInCreate(string dirNumber)
+            => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber);
+
         public virtual bool VerifyDirIsDisplayedInRevise(string dirNumber)
             => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber);
 
@@ -190,16 +196,17 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_QaDIR.SelectRdoBtn_Deficiencies_Yes();
             QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
             string previousFailedDirNumber = QaRcrdCtrl_QaDIR.CreatePreviousFailingReport();
-            string newDirNumber = QaRcrdCtrl_QaDIR.GetDirNumber();
-
+            string dirNumber = QaRcrdCtrl_QaDIR.GetDirNumber();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save();
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInCreate(dirNumber), $"VerifyDirIsDisplayedInCreate DirNo. {dirNumber}");
+            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyPreviousFailingDirEntry(previousFailedDirNumber), $"VerifyPreviousFailingDirEntry in Create: {previousFailedDirNumber}");
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-
             string[] dirNumbers = new string[2]
-            {
-                newDirNumber,
-                previousFailedDirNumber
-            };
-
+                {
+                    dirNumber,
+                    previousFailedDirNumber
+                };
             return dirNumbers;
         }
 
@@ -497,6 +504,9 @@ namespace RKCIUIAutomation.Page.Workflows
         public override bool VerifyDirIsDisplayedInRevise(string dirNumber)
             => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Revise, dirNumber);
 
+        public override bool VerifyDirIsDisplayedInCreate(string dirNumber)
+            => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Creating, dirNumber);
+
         public override void Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(string dirNumber)
             => LogInfo("---> KickBack_DIR_ForRevise_FromAuthorization_then_Edit <---<br>Step skipped for Tenant SH249");
 
@@ -541,6 +551,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override bool VerifyDirIsDisplayedInRevise(string dirNumber)
             => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Revise, dirNumber);
+
+        public override bool VerifyDirIsDisplayedInCreate(string dirNumber)
+            => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Creating, dirNumber);
 
         public override void Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(string dirNumber)
         {

@@ -122,13 +122,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
             try
             {
-                columnValue = columnName == ColumnName.DIR_No || columnName == ColumnName.Closed_Dir
+                columnValue = (columnName == ColumnName.DIR_No) || (columnName == ColumnName.Closed_Dir)
                     ? $"{columnValue}-1"
                     : columnValue;
 
                 isDisplayed = VerifyRecordIsDisplayed(columnName, columnValue, TableType.Single, false, FilterOperator.Contains);
-                string logMsg = isDisplayed ? "Found" : "Unable to find";
-                LogInfo($"{logMsg} record with {columnName.ToString()}: {columnValue}.", isDisplayed);
             }
             catch (Exception e)
             {

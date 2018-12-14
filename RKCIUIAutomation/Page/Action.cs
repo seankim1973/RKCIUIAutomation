@@ -752,11 +752,14 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                isDisplayed = GetElement(elementByLocator)?.Displayed == true ? true : false;
+                //IWebElement element = null;
+                //element = GetElement(elementByLocator);
+                isDisplayed = ScrollToElement(elementByLocator)?.Displayed == true ? true : false;
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw;
             }
 
             return isDisplayed;
@@ -1109,6 +1112,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw;
             }
 
             return elem;

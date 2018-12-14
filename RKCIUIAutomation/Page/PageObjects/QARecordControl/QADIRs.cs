@@ -289,6 +289,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         bool VerifyDirRevisionInDetailsPage(string expectedDirRev);
 
         string CreatePreviousFailingReport();
+
+        bool VerifyPreviousFailingDirEntry(string previousDirNumber);
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -440,6 +442,30 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //Enter_TotalInspectionTime();
             //StoreDirNumber();
         }
+        
+        //All SimpleWF Tenants have different required fields
+        public virtual IList<string> GetExpectedRequiredFieldIDsList()
+        {
+            IList<string> RequiredFieldIDs = new List<string>()
+            {
+                //InputFields.Time_Begin.GetString(),
+                //InputFields.Time_End.GetString(),
+                //InputFields.Area.GetString(),
+                //InputFields.Average_Temperature.GetString(),
+                //InputFields.Spec_Section.GetString(),
+                //InputFields.Section_Description.GetString(),
+                //InputFields.Feature.GetString(),
+                //InputFields.Crew_Foreman.GetString(),
+                //InputFields.Contractor.GetString(),
+                //"InspectionType",
+                //"InspectionPassFail",
+                //InputFields.Date_Ready.GetString(),
+                //InputFields.Date_Completed.GetString(),
+                //InputFields.Total_Inspection_Time.GetString()
+            };
+
+            return RequiredFieldIDs;
+        }
 
         public virtual string CreatePreviousFailingReport()
         {
@@ -450,7 +476,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 ClickElement(By.Id("lnkPreviousFailingReports"));
-                string modalXPath = "//[contains(@style, 'opacity: 1')]";
+                string modalXPath = "//div[contains(@style, 'opacity: 1')]";
                 IWebElement modal = GetElement(By.XPath(modalXPath));
                 modalIsDisplayed = (bool)modal?.Displayed;
 
@@ -492,28 +518,27 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return nonFixedFailedDirNumber;
         }
 
-        //All SimpleWF Tenants have different required fields
-        public virtual IList<string> GetExpectedRequiredFieldIDsList()
+        public virtual bool VerifyPreviousFailingDirEntry(string previousDirNumber)
         {
-            IList<string> RequiredFieldIDs = new List<string>()
-            {
-                //InputFields.Time_Begin.GetString(),
-                //InputFields.Time_End.GetString(),
-                //InputFields.Area.GetString(),
-                //InputFields.Average_Temperature.GetString(),
-                //InputFields.Spec_Section.GetString(),
-                //InputFields.Section_Description.GetString(),
-                //InputFields.Feature.GetString(),
-                //InputFields.Crew_Foreman.GetString(),
-                //InputFields.Contractor.GetString(),
-                //"InspectionType",
-                //"InspectionPassFail",
-                //InputFields.Date_Ready.GetString(),
-                //InputFields.Date_Completed.GetString(),
-                //InputFields.Total_Inspection_Time.GetString()
-            };
+            bool isDisplayed = false;
+            string logMsg = string.Empty;
 
-            return RequiredFieldIDs;
+            try
+            {
+                string previousFailedDirTblXPath = $"//div[@id='PreviousFailedReportListGrid0']";
+                By previousDirTblDataLocator = By.XPath($"{previousFailedDirTblXPath}//tbody/tr/td[text()='{previousDirNumber}']");
+                ScrollToElement(By.XPath($"{previousFailedDirTblXPath}/ancestor::div[@id='border']/following-sibling::div[1]"));
+                isDisplayed = ElementIsDisplayed(previousDirTblDataLocator);
+                logMsg = isDisplayed ? "displayed" : "did not display";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            LogInfo($"Previous Failing DIR table {logMsg} DIR Number {previousDirNumber}", isDisplayed);
+            return isDisplayed;
         }
 
         public virtual void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00)

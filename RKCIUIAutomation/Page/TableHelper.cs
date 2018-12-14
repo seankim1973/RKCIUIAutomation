@@ -47,9 +47,9 @@ namespace RKCIUIAutomation.Page
         public void SetViewItemsPerPageSize(int newSize) => Kendo.ChangePageSize(newSize);
 
         /// <summary>
-        /// ColumnName enumerator and FilterValue is required. FilterOperator has a default value of 'Equal To'.
-        /// The default value for FilerLogic is 'AND' and Additional FilterOperator 'Equal To'.
-        /// When filtering the column using an additional filter value, the FilterLogic must be specified ('AND' or 'OR'), but the Additional FilterOperator is optional.
+        /// ColumnName enumerator and FilterValue is required.
+        /// <para>Default Values: FilterOperator is 'Equal To', FilerLogic is 'AND' and Additional FilterOperator is 'Equal To'.</para>
+        /// <para>When filtering the column using an additional filter value, the FilterLogic must be specified ('AND' or 'OR'), but the Additional FilterOperator is optional.</para>
         /// </summary>
         /// <param name="columnName"></param>
         /// <param name="filterValue"></param>
@@ -57,25 +57,35 @@ namespace RKCIUIAutomation.Page
         /// <param name="filterLogic"></param>
         /// <param name="additionalFilterValue"></param>
         /// <param name="additionalFilterOperator"></param>
-        public void FilterColumn(Enum columnName, string filterValue, TableType tableType = TableType.Unknown, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
-        {
-            try
-            {
-                Kendo.FilterTableGrid(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-        }
+        public void FilterColumn(
+            Enum columnName,
+            string filterValue,
+            TableType tableType = TableType.Unknown,
+            FilterOperator filterOperator = FilterOperator.EqualTo,
+            FilterLogic filterLogic = FilterLogic.And,
+            string additionalFilterValue = null,
+            FilterOperator additionalFilterOperator = FilterOperator.EqualTo
+            ) => Kendo.FilterTableGrid(
+                columnName.GetString(),
+                filterValue,
+                filterOperator,
+                filterLogic,
+                additionalFilterValue,
+                additionalFilterOperator,
+                tableType
+                );
 
-        public void ClearTableFilters() => Kendo.RemoveFilters();
+        public void ClearTableFilters(TableType tableType = TableType.Unknown)
+            => Kendo.RemoveFilters(tableType);
 
-        public void SortColumnAscending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Ascending);
+        public void SortColumnAscending(Enum columnName, TableType tableType = TableType.Unknown)
+            => Kendo.Sort(columnName.GetString(), SortType.Ascending, tableType);
 
-        public void SortColumnDescending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Descending);
+        public void SortColumnDescending(Enum columnName, TableType tableType = TableType.Unknown)
+            => Kendo.Sort(columnName.GetString(), SortType.Descending, tableType);
 
-        public void SortColumnToDefault(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Default);
+        public void SortColumnToDefault(Enum columnName, TableType tableType = TableType.Unknown)
+            => Kendo.Sort(columnName.GetString(), SortType.Default, tableType);
 
         #endregion Kendo Grid Public Methods
 

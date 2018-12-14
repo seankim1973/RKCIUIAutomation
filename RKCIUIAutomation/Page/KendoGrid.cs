@@ -107,6 +107,7 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.filter([]);";
             ExecuteJsScript(jsToBeExecuted);
+            LogInfo("Cleared all table filter(s)");
         }
 
         public int TotalNumberRows(TableType tableType = TableType.Unknown)
@@ -193,39 +194,46 @@ namespace RKCIUIAutomation.Page
             string filterLogic = null;
             string addnlFilterOperator = null;
             string addnlFilterValue = null;
-
             string filterScript = null;
 
-            foreach (var currentFilter in gridFilters)
+            try
             {
-                filterLogic = currentFilter.FilterLogic.GetString();
-                string jsFilterBase = $"grid.dataSource.filter({{ logic: '{filterLogic}', filters: [";
+                foreach (var currentFilter in gridFilters)
+                {
+                    filterLogic = currentFilter.FilterLogic.GetString();
+                    string jsFilterBase = $"grid.dataSource.filter({{ logic: '{filterLogic}', filters: [";
 
-                DateTime filterDateTime;
-                filterValue = currentFilter.FilterValue;
-                bool isFilterDateTime = DateTime.TryParse(filterValue, out filterDateTime);
-                string filterValueToBeApplied =
-                    isFilterDateTime ? $"new Date({filterDateTime.Year}, {filterDateTime.Month - 1}, {filterDateTime.Day})" : $"{filterValue}";
+                    DateTime filterDateTime;
+                    filterValue = currentFilter.FilterValue;
+                    bool isFilterDateTime = DateTime.TryParse(filterValue, out filterDateTime);
+                    string filterValueToBeApplied =
+                        isFilterDateTime ? $"new Date({filterDateTime.Year}, {filterDateTime.Month - 1}, {filterDateTime.Day})" : $"{filterValue}";
 
-                columnName = currentFilter.ColumnName;
-                filterOperator = currentFilter.FilterOperator.GetString();
-                filterScript = $"{jsFilterBase}{{ field: '{columnName}', operator: '{filterOperator}', value: '{filterValueToBeApplied}' }}";
+                    columnName = currentFilter.ColumnName;
+                    filterOperator = currentFilter.FilterOperator.GetString();
+                    filterScript = $"{jsFilterBase}{{ field: '{columnName}', operator: '{filterOperator}', value: '{filterValueToBeApplied}' }}";
 
-                addnlFilterValue = currentFilter.AdditionalFilterValue;
-                addnlFilterOperator = currentFilter.AdditionalFilterOperator.GetString();
-                filterScript = (addnlFilterValue == null) ? filterScript :
-                    $"{filterScript},{{ field: '{columnName}', operator: '{addnlFilterOperator}', value: '{addnlFilterValue}' }}";
+                    addnlFilterValue = currentFilter.AdditionalFilterValue;
+                    addnlFilterOperator = currentFilter.AdditionalFilterOperator.GetString();
+                    filterScript = (addnlFilterValue == null) ? filterScript :
+                        $"{filterScript},{{ field: '{columnName}', operator: '{addnlFilterOperator}', value: '{addnlFilterValue}' }}";
+                }
+
+                StringBuilder sb = new StringBuilder();
+
+                string gridRef = GetGridReference(tableType);
+
+                sb.Append($"{gridRef}{filterScript}] }});");
+                ExecuteJsScript(sb.ToString());
+
+                string addnlFilter = (addnlFilterValue != null) ? $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}" : string.Empty;
+                LogInfo($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilter}");
             }
-
-            StringBuilder sb = new StringBuilder();
-
-            string gridRef = GetGridReference(tableType);
-
-            sb.Append($"{gridRef}{filterScript}] }});");
-            ExecuteJsScript(sb.ToString());
-
-            string addnlFilter = (addnlFilterValue != null) ? $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}" : string.Empty;
-            LogInfo($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilter}");
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
         }
 
         public int GetCurrentPageNumber(TableType tableType = TableType.Unknown)
@@ -259,7 +267,7 @@ namespace RKCIUIAutomation.Page
             return $"var tab = $('#{tabStripId}').data('kendoTabStrip');";
         }
 
-        private string GetGridReference(TableType tableType = TableType.Unknown)
+        private string GetGridReference(TableType tableType)
         {
             string gridId = string.Empty;
             string logMsg = string.Empty;
@@ -279,7 +287,7 @@ namespace RKCIUIAutomation.Page
             return $"var grid = $('#{gridId}').data('kendoGrid');";
         }
 
-        public string GetGridID(TableType tableType = TableType.Unknown)
+        public string GetGridID(TableType tableType)
         {
             By singleGridDivLocator = By.XPath("//div[@class='k-widget k-grid k-display-block'][@data-role='grid']");
             By multiActiveGridDivLocator = By.XPath("//div[@class='k-content k-state-active']//div[@data-role='grid']");
@@ -294,7 +302,7 @@ namespace RKCIUIAutomation.Page
                         gridElem = GetElement(singleGridDivLocator);
                         break;
                     case TableType.MultiTab:
-                        GetElement(multiActiveGridDivLocator);
+                        gridElem = GetElement(multiActiveGridDivLocator);
                         break;
                     case TableType.Unknown:
                         gridElem = GetElement(multiActiveGridDivLocator) ?? GetElement(singleGridDivLocator);
