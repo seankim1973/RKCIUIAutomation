@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
+using RKCIUIAutomation.Page.PageObjects.QASearch;
 
 namespace RKCIUIAutomation.Test.DIR
 {
@@ -115,7 +116,7 @@ namespace RKCIUIAutomation.Test.DIR
             AssertAll();
         }
     }
-    
+
     [TestFixture]
     public class Verify_DIR_ComplexWF_End_To_End : TestBase
     {
@@ -210,6 +211,121 @@ namespace RKCIUIAutomation.Test.DIR
             //Update WorkflowLocation to .Closed when Closing DIR by uncommenting step above
             AddAssertionToList(QaSearch_DIR.VerifyDirWorkflowLocationBySearch(dirNumber, WorkflowLocation.Closing), "QaSearch_DIR.VerifyDirWorkflowLocationBySearch");
 
+            AssertAll();
+        }
+    }
+
+    //GLX, I15SB, I15Tech, LAX
+    [TestFixture]
+    public class Verify_Creating_A_Revision_Of_A_Closed_DIR : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Simple_QA)]
+        [Property(TestCaseNumber, 2187594)]
+        [Property(Priority, "High")]
+        [Description("To validate creating a revision of a closed DIR (Daily Inspection Report) document in Simple Workflow.")]
+        public void Create_A_Revision_Of_A_Closed_DIR()
+        {
+            string expectedRevision = "B";
+
+            //Create and Close DIR in Simple WF
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            LogoutToLoginPage();
+
+            //Create Revision of Closed DIR
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirNumberExistsInDbError(), "VerifyDirNumberExistsInDbError");
+            QaRcrdCtrl_QaDIR.ClickBtn_CreateRevision();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirRevisionInDetailsPage(expectedRevision), $"VerifyDirRevisionInDetailsPage - Expected Revision {expectedRevision}");
+            QaRcrdCtrl_QaDIR.ClickBtn_Save();
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DirRevision_inTblRow_then_SaveForward_inCreateRevise(dirNumber, expectedRevision), $"Verify_DirRevision_inTblRow_then_SaveForward_inCreateRevise - Expected Revision {expectedRevision}");
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DirRevision_inTblRow_then_Approve_inQcReview(dirNumber, expectedRevision), $"Verify_DirRevision_inTblRow_then_Approve_inQcReview - Expected Revision {expectedRevision}");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DirRevision_inTblRow_then_Approve_inAuthorization(dirNumber, expectedRevision), $"Verify_DirRevision_inTblRow_then_Approve_inAuthorization - Expected Revision {expectedRevision}");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF_forDirRevision(dirNumber, expectedRevision), $"VerifyWorkflowLocationAfterSimpleWF_forDirRevision - Expected Revision {expectedRevision}");
+            AssertAll();
+        }
+    }
+
+    //GLX, LAX, I15SB, I15Tech - DIR SimpleWF Tenants
+    [TestFixture]
+    public class Verify_IDLReport_for_QaDIR_With_Deficiencies_SimpleWF : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Simple_QA)]
+        [Property(TestCaseNumber, 2187594)]
+        [Property(Priority, "High")]
+        [Description("To validate lookup of a DIR with Deficiency in an Inspection Deficiency Log Report in Simple Workflow.")]
+        public void Inspection_Deficiency_Log_Report_for_QaDIR_With_Deficiencies()
+        {
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            string[] dirNumbers = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR_with_Failed_Inspection_and_PreviousFailingReports();
+            string dirNumber = dirNumbers[0];
+            string failedDirNumber = dirNumbers[1];
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
+
+            NavigateToPage.QASearch_Inspection_Deficiency_Log_Report();
+            AddAssertionToList(QaSearch_InspctDefncyLogRprt.VerifyDirIsDisplayed(InspectionDeficiencyLogReport.ColumnName.DIR_No, dirNumber), $"InspctDefncyLogRprt.VerifyDirIsDisplayed DIR No: {dirNumber}");
+            ClearTableFilters();
+            AddAssertionToList(QaSearch_InspctDefncyLogRprt.VerifyDirIsDisplayed(InspectionDeficiencyLogReport.ColumnName.Closed_Dir, failedDirNumber), $"InspctDefncyLogRprt.VerifyDirIsDisplayed Previously Failed DIR No: {failedDirNumber}");
+            AssertAll();
+        }
+    }
+
+    //SG & SH249 - DIR ComplexWF Tenatns
+    [TestFixture]
+    public class Verify_IDLReport_for_QaDIR_With_Deficiencies_ComplexWF : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Complex)]
+        [Property(TestCaseNumber, 2187594)]
+        [Property(Priority, "High")]
+        [Description("To validate lookup of a DIR with Deficiency in an Inspection Deficiency Log Report in Complex Workflow.")]
+        public void Inspection_Deficiency_Log_Report_for_QaDIR_With_Deficiencies()
+        {
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA, true);
+            string[] dirNumbers = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR_with_Failed_Inspection_and_PreviousFailingReports();
+            string dirNumber = dirNumbers[0];
+            string previousFailedDirNumber = dirNumbers[1];
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
+
+            NavigateToPage.QARecordControl_QA_DIRs();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
+            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyPreviousFailingDirEntry(previousFailedDirNumber), $"VerifyPreviousFailingDirEntry in Attachments: {previousFailedDirNumber}");
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review Tab after (clicked 'Save Forward' from Attachments)");
+            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyPreviousFailingDirEntry(previousFailedDirNumber), $"VerifyPreviousFailingDirEntry in QaRcrdCtrl_QcReview: {previousFailedDirNumber}");
+            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review)");
+            ClickEditBtnForRow(dirNumber, true, true);
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyPreviousFailingDirEntry(previousFailedDirNumber), $"VerifyPreviousFailingDirEntry in ToBeClosed: {previousFailedDirNumber}");
+            QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
+
+            NavigateToPage.QASearch_Inspection_Deficiency_Log_Report();
+            AddAssertionToList(QaSearch_InspctDefncyLogRprt.VerifyDirIsDisplayed(InspectionDeficiencyLogReport.ColumnName.DIR_No, dirNumber), $"InspctDefncyLogRprt.VerifyDirIsDisplayed DIR No: {dirNumber}");
+            ClearTableFilters();
+            AddAssertionToList(QaSearch_InspctDefncyLogRprt.VerifyDirIsDisplayed(InspectionDeficiencyLogReport.ColumnName.Closed_Dir, previousFailedDirNumber), $"InspctDefncyLogRprt.VerifyDirIsDisplayed Previously Failed DIR No: {previousFailedDirNumber}");
             AssertAll();
         }
     }

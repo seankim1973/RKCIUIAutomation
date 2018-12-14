@@ -398,6 +398,7 @@
     <Compile Include="Test\QaRcrdCtrl_GeneralNCR_Test.cs" />
     <Compile Include="Test\UnitTests\QARcrdCtrl_GeneralCDR_UnitTest.cs" />
     <Compile Include="Test\UnitTests\QaRcrdCtrl_GeneralNCR_UnitTest.cs" />
+    <Compile Include="Test\UnitTests\QARcrdCtrl_QaDIR_UnitTest.cs" />
     <Compile Include="Tools\GridUtility.cs" />
     <Compile Include="Tools\HipTestApi.cs" />
     <Compile Include="Tools\HipTestData.cs" />

@@ -2,6 +2,7 @@
 using RKCIUIAutomation.Config;
 using System;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Base
@@ -20,7 +21,7 @@ namespace RKCIUIAutomation.Base
             try
             {
                 string tenantEnv = $" - Tenant : {tenantName.ToString()}({testEnv.ToString()})";
-                string name = $"{testCaseNumber} : {testName.SplitCamelCase()} {tenantEnv}";
+                string name = $"{testCaseNumber} : {Regex.Replace(testName, "_", " ")} {tenantEnv}";
 
                 _test = reportInstance.CreateTest(name);
             }

@@ -264,8 +264,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyAndCloseDirLockedMessage();
 
-        bool VerifyDirExistsErrorMessage();
-
         bool VerifySectionDescription();
 
         IList<Enum> GetResultCheckBoxIDsList();
@@ -285,6 +283,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         bool VerifyControlPointReqFieldErrors();
 
         bool VerifyEngineerCommentsReqFieldErrors();
+
+        bool VerifyDirNumberExistsInDbError();
+
+        bool VerifyDirRevisionInDetailsPage(string expectedDirRev);
+
+        string CreatePreviousFailingReport();
+
+        bool VerifyPreviousFailingDirEntry(string previousDirNumber);
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -436,7 +442,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //Enter_TotalInspectionTime();
             //StoreDirNumber();
         }
-
+        
         //All SimpleWF Tenants have different required fields
         public virtual IList<string> GetExpectedRequiredFieldIDsList()
         {
@@ -459,6 +465,80 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             };
 
             return RequiredFieldIDs;
+        }
+
+        public virtual string CreatePreviousFailingReport()
+        {
+            string logMsg = string.Empty;
+            string nonFixedFailedDirNumber = string.Empty;
+            bool modalIsDisplayed = false;
+
+            try
+            {
+                ClickElement(By.Id("lnkPreviousFailingReports"));
+                string modalXPath = "//div[contains(@style, 'opacity: 1')]";
+                IWebElement modal = GetElement(By.XPath(modalXPath));
+                modalIsDisplayed = (bool)modal?.Displayed;
+
+                if (modalIsDisplayed)
+                {
+                    string firstNonFixedFailedDirXpath = $"{modalXPath}//div[@class='col-md-3'][1]//div[@class='checkbox-inline']/span";
+                    string nonfixedFailedDirVal = GetText(By.XPath(firstNonFixedFailedDirXpath));
+                    string[] splitVal = new string[2];
+                    splitVal = Regex.Split(nonfixedFailedDirVal, "-");
+                    nonFixedFailedDirNumber = splitVal[0];
+                    string nonFixedFailedDirEntry = splitVal[1];
+
+                    string newBtnXPath = $"{modalXPath}//a[contains(@class,'k-grid-add')]";
+                    string previousDirNoFieldXPath = $"{modalXPath}//input[@id='DirNO']";
+                    string previousDirEntryFieldXPath = $"{modalXPath}//input[@id='EntryNo']";
+                    string updateBtnXPath = $"{modalXPath}//a[contains(text(),'Update')]";
+                    string modalCloseXPath = $"{modalXPath}//a[@aria-label='Close']";
+
+                    JsClickElement(By.XPath(newBtnXPath));
+                    EnterText(By.XPath(previousDirNoFieldXPath), nonFixedFailedDirNumber);
+                    EnterText(By.XPath(previousDirEntryFieldXPath), nonFixedFailedDirEntry);
+                    JsClickElement(By.XPath(updateBtnXPath));
+                    JsClickElement(By.XPath(modalCloseXPath));
+
+                    logMsg = $"Entered Non-Fixed Failed DIR No. {nonFixedFailedDirNumber} and DIR Entry {nonFixedFailedDirEntry}";
+                }
+                else
+                {
+                    logMsg = "Previous Failing Report popup window is not displayed";
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            LogInfo(logMsg, modalIsDisplayed);
+            return nonFixedFailedDirNumber;
+        }
+
+        public virtual bool VerifyPreviousFailingDirEntry(string previousDirNumber)
+        {
+            bool isDisplayed = false;
+            string logMsg = string.Empty;
+
+            try
+            {
+                string previousFailedDirTblXPath = $"//div[@id='PreviousFailedReportListGrid0']";
+                By previousDirTblDataLocator = By.XPath($"{previousFailedDirTblXPath}//tbody/tr/td[text()='{previousDirNumber}']");
+                ScrollToElement(By.XPath($"{previousFailedDirTblXPath}/ancestor::div[@id='border']/following-sibling::div[1]"));
+                isDisplayed = ElementIsDisplayed(previousDirTblDataLocator);
+                logMsg = isDisplayed ? "displayed" : "did not display";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            LogInfo($"Previous Failing DIR table {logMsg} DIR Number {previousDirNumber}", isDisplayed);
+            return isDisplayed;
         }
 
         public virtual void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00)
@@ -539,7 +619,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 ClickTab(tableTab);
                 string _dirNum = dirNumber.Equals("") ? GetDirNumber() : dirNumber;
-                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, noRecordsExpected);
+                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, TableType.MultiTab, noRecordsExpected);
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
                 LogInfo($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", noRecordsExpected ? !isDisplayed : isDisplayed);
             }
@@ -731,15 +811,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             bool msgMatch = actualMsg.Equals(expectedMsg);
             LogInfo($"Expected Msg: {expectedMsg}<br>Actual Msg: {actualMsg}", msgMatch);
             ClickElement(By.XPath("//span[@id='dirLockedPopup_wnd_title']/following-sibling::div/a"));
-            return msgMatch;
-        }
-
-        public virtual bool VerifyDirExistsErrorMessage()
-        {
-            string expectedMsg = "This DIR No. exists in the database.";
-            string actualMsg = GetText(By.Id("error"));
-            bool msgMatch = actualMsg.Equals(expectedMsg);
-            LogInfo($"Expected Msg: {expectedMsg}<br>Actual Msg: {actualMsg}", msgMatch);
             return msgMatch;
         }
 
@@ -981,12 +1052,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 errorSummaryIDs = new List<string>();
                 errorSummaryIDs = GetErrorSummaryIDs();
 
-                //string controlPointBaseXpath = "//span[contains(@aria-owns,'HoldPoint')]";
-
-                //string reqFieldIdXPath = verifyControPointReqFields ? $"{controlPointBaseXpath}/input" : "//span[text()='*']";
-
-                //string splitPattern = verifyControPointReqFields ? "0__" : "0_";
-
                 string reqFieldIdXPath = string.Empty;
                 string splitPattern = string.Empty;
 
@@ -1012,8 +1077,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 }
 
                 IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
-
-                //expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedRequiredFieldIDsList();
 
                 bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
 
@@ -1054,6 +1117,54 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual bool VerifyEngineerCommentsReqFieldErrors()
             => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList(), RequiredFieldType.EngineerComments);
+
+        public virtual bool VerifyDirNumberExistsInDbError()
+        {
+            By errorLocator = By.Id("error");
+            IWebElement errorElem = null;
+            bool isDisplayed = false;
+            string logMsg = string.Empty;
+
+            try
+            {
+                errorElem = GetElement(errorLocator);
+                isDisplayed = (bool)errorElem?.Displayed ? true : false;
+                logMsg = isDisplayed ? "" : " not";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            LogInfo($"'This DIR No. exists in the database' error message is{logMsg} displayed", isDisplayed);
+            return isDisplayed;
+        }
+
+        public virtual bool VerifyDirRevisionInDetailsPage(string expectedDirRev)
+        {
+            By revLocator = By.XPath("//label[contains(text(),'Revision')]/parent::div");
+            bool revAsExpected = false;
+            string actualDirRev = string.Empty;
+            string logMsg = string.Empty;
+
+            try
+            {
+                actualDirRev = GetText(revLocator);
+                string[] splitActual = new string[2];
+                splitActual = Regex.Split(actualDirRev, "Revision\r\n");
+                actualDirRev = splitActual[1];
+                revAsExpected = actualDirRev.Equals(expectedDirRev);
+                var ifFalseLog = revAsExpected ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
+                logMsg = $"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual DIR Rev Matches Expected: {revAsExpected}";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            LogInfo($"{logMsg} ", revAsExpected);
+            return revAsExpected;
+        }
     }
 
     //Tenant Specific Classes

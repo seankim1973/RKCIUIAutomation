@@ -47,9 +47,9 @@ namespace RKCIUIAutomation.Page
         public void SetViewItemsPerPageSize(int newSize) => Kendo.ChangePageSize(newSize);
 
         /// <summary>
-        /// ColumnName enumerator and FilterValue is required. FilterOperator has a default value of 'Equal To'.
-        /// The default value for FilerLogic is 'AND' and Additional FilterOperator 'Equal To'.
-        /// When filtering the column using an additional filter value, the FilterLogic must be specified ('AND' or 'OR'), but the Additional FilterOperator is optional.
+        /// ColumnName enumerator and FilterValue is required.
+        /// <para>Default Values: FilterOperator is 'Equal To', FilerLogic is 'AND' and Additional FilterOperator is 'Equal To'.</para>
+        /// <para>When filtering the column using an additional filter value, the FilterLogic must be specified ('AND' or 'OR'), but the Additional FilterOperator is optional.</para>
         /// </summary>
         /// <param name="columnName"></param>
         /// <param name="filterValue"></param>
@@ -57,25 +57,35 @@ namespace RKCIUIAutomation.Page
         /// <param name="filterLogic"></param>
         /// <param name="additionalFilterValue"></param>
         /// <param name="additionalFilterOperator"></param>
-        public void FilterColumn(Enum columnName, string filterValue, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
-        {
-            try
-            {
-                Kendo.FilterTableGrid(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-        }
+        public void FilterColumn(
+            Enum columnName,
+            string filterValue,
+            TableType tableType = TableType.Unknown,
+            FilterOperator filterOperator = FilterOperator.EqualTo,
+            FilterLogic filterLogic = FilterLogic.And,
+            string additionalFilterValue = null,
+            FilterOperator additionalFilterOperator = FilterOperator.EqualTo
+            ) => Kendo.FilterTableGrid(
+                columnName.GetString(),
+                filterValue,
+                filterOperator,
+                filterLogic,
+                additionalFilterValue,
+                additionalFilterOperator,
+                tableType
+                );
 
-        public void ClearTableFilters() => Kendo.RemoveFilters();
+        public void ClearTableFilters(TableType tableType = TableType.Unknown)
+            => Kendo.RemoveFilters(tableType);
 
-        public void SortColumnAscending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Ascending);
+        public void SortColumnAscending(Enum columnName, TableType tableType = TableType.Unknown)
+            => Kendo.Sort(columnName.GetString(), SortType.Ascending, tableType);
 
-        public void SortColumnDescending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Descending);
+        public void SortColumnDescending(Enum columnName, TableType tableType = TableType.Unknown)
+            => Kendo.Sort(columnName.GetString(), SortType.Descending, tableType);
 
-        public void SortColumnToDefault(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Default);
+        public void SortColumnToDefault(Enum columnName, TableType tableType = TableType.Unknown)
+            => Kendo.Sort(columnName.GetString(), SortType.Default, tableType);
 
         #endregion Kendo Grid Public Methods
 
@@ -129,6 +139,13 @@ namespace RKCIUIAutomation.Page
             [StringValue("Packaged")] Packaged,
             [StringValue("QcReview")] QcReview,
             [StringValue("Revise")] Revise
+        }
+
+        public enum TableType
+        {
+            Unknown,
+            MultiTab,
+            Single
         }
 
         private string DetermineTblRowBtnXPathExt(TableButton tblBtn, bool rowEndsWithChkbx = false)
@@ -289,7 +306,7 @@ namespace RKCIUIAutomation.Page
 
         #endregion Table Row Button Methods
 
-        public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber)
+        public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown, FilterOperator filterOperator = FilterOperator.EqualTo)
         {
             try
             {
@@ -301,31 +318,45 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                FilterColumn(columnName, recordNameOrNumber);
+                FilterColumn(columnName, recordNameOrNumber, tableType, filterOperator);
             }
         }
 
-        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, bool noRecordsExpected = false)
+        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown, bool noRecordsExpected = false, FilterOperator filterOperator = FilterOperator.EqualTo)
         {
             IList<IWebElement> tblRowElems = new List<IWebElement>();
-            bool isMultiTabGrid = false;
             bool isDisplayedAsExpected = false;
             bool noRecordsMsgDisplayed = false;
+            bool isMultiTabGrid = false;
             string currentTabName = string.Empty;
             string logMsg = string.Empty;
             string activeTblTab = "";
             int tblRowCount = 0;
-            
+
             try
             {
-                FilterTableColumnByValue(columnName, recordNameOrNumber);
+                FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
 
-                string gridId = kendo.GetGridID();
+                string gridId = kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = GetAttribute(gridParentDivLocator, "class");
-                isMultiTabGrid = gridType.Contains("active") ? true : false;
+
+                switch (tableType)
+                {
+                    case TableType.Single:
+                        isMultiTabGrid = false;
+                        break;
+
+                    case TableType.MultiTab:
+                        isMultiTabGrid = true;
+                        break;
+
+                    case TableType.Unknown:
+                        isMultiTabGrid = gridType.Contains("active") ? true : false;
+                        break;
+                }
+
                 By recordRowLocator = GetTableRowLocator(recordNameOrNumber, isMultiTabGrid);
-                
 
                 if (isMultiTabGrid)
                 {
@@ -397,7 +428,7 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
             }
 
-            LogInfo(logMsg, noRecordsExpected?!isDisplayedAsExpected:isDisplayedAsExpected);
+            LogInfo(logMsg, noRecordsExpected ? !isDisplayedAsExpected : isDisplayedAsExpected);
             return isDisplayedAsExpected;
         }
 
