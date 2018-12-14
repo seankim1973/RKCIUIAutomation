@@ -375,9 +375,9 @@ namespace RKCIUIAutomation.UnitTest
             TableHelper.SortColumnAscending(DesignDocument.ColumnName.Action);
             TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
             TableHelper.SortColumnToDefault(DesignDocument.ColumnName.Action);
-            TableHelper.FilterColumn(DesignDocument.ColumnName.Number, "AJhZSDRCBLSKvmwANBPbkiVSWn");
+            TableHelper.FilterColumn(DesignDocument.ColumnName.Number, "AJhZSDRCBLSKvmwANBPbkiVSWn", TableType.MultiTab);
             TableHelper.ClearTableFilters();
-            TableHelper.FilterColumn(DesignDocument.ColumnName.Title, "GarnetCommentReviewRegularComment_DsgnDocTtl", FilterOperator.EqualTo, FilterLogic.Or, "ATM-PLC-T-00011_UTL-ATM_HDPE-RPLMNT");
+            TableHelper.FilterColumn(DesignDocument.ColumnName.Title, "GarnetCommentReviewRegularComment_DsgnDocTtl", TableType.MultiTab, FilterOperator.EqualTo, FilterLogic.Or, "ATM-PLC-T-00011_UTL-ATM_HDPE-RPLMNT");
             TableHelper.ClickEnterBtnForRow();
             //TableHelper.ClickCommentTabNumber(2);
             //DesignDocCommentReview.ClickBtn_BackToList();
