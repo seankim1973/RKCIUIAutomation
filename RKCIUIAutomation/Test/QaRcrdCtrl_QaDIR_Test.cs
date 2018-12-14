@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
-using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 using RKCIUIAutomation.Page.PageObjects.QASearch;
+using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Test.DIR
 {
@@ -263,7 +263,7 @@ namespace RKCIUIAutomation.Test.DIR
         [Test]
         [Category(Component.DIR)]
         [Property(Component2, Component.DIR_WF_Simple_QA)]
-        [Property(TestCaseNumber, 2187594)]
+        [Property(TestCaseNumber, 2187596)]
         [Property(Priority, "High")]
         [Description("To validate lookup of a DIR with Deficiency in an Inspection Deficiency Log Report in Simple Workflow.")]
         public void Inspection_Deficiency_Log_Report_for_QaDIR_With_Deficiencies()
@@ -292,7 +292,7 @@ namespace RKCIUIAutomation.Test.DIR
         [Test]
         [Category(Component.DIR)]
         [Property(Component2, Component.DIR_WF_Complex)]
-        [Property(TestCaseNumber, 2187594)]
+        [Property(TestCaseNumber, 2571204)]
         [Property(Priority, "High")]
         [Description("To validate lookup of a DIR with Deficiency in an Inspection Deficiency Log Report in Complex Workflow.")]
         public void Inspection_Deficiency_Log_Report_for_QaDIR_With_Deficiencies()
@@ -327,6 +327,24 @@ namespace RKCIUIAutomation.Test.DIR
             ClearTableFilters();
             AddAssertionToList(QaSearch_InspctDefncyLogRprt.VerifyDirIsDisplayed(InspectionDeficiencyLogReport.ColumnName.Closed_Dir, previousFailedDirNumber), $"InspctDefncyLogRprt.VerifyDirIsDisplayed Previously Failed DIR No: {previousFailedDirNumber}");
             AssertAll();
+        }
+    }
+
+    //SG & SH249 - DIR Complex Tenants
+    [TestFixture]
+    public class Verify_Create_Packages : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Complex)]
+        [Property(TestCaseNumber, 2518643)]
+        [Property(Priority, "High")]
+        [Description("To validate creation of DIR packages in Complex Workflow.")]
+        public void Create_Packages()
+        {
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
+            QaRcrdCtrl_QaDIR.VerifyPackage_After_Click_CreateBtn_forRow();
         }
     }
 

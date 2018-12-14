@@ -98,6 +98,7 @@ namespace RKCIUIAutomation.Page
             internal const string MultiDupsInRow = "MultiDupsInRow";
             internal const string ActionColumnBtn = "ActionColumnBtn";
             internal const string RowEndsWithChkbx = "RowEndsWithChkbx";
+            internal const string ActionCreatePkg = "ActionCreatePkg";
         }
 
         private enum TableButton
@@ -112,6 +113,7 @@ namespace RKCIUIAutomation.Page
             [StringValue("Delete", BtnCategory.ActionColumnBtn)] Action_Delete,
             [StringValue("Edit", BtnCategory.ActionColumnBtn)] Action_Edit,
             [StringValue("Close DIR", BtnCategory.ActionColumnBtn)] Action_Close_DIR,
+            [StringValue("Create", BtnCategory.ActionCreatePkg)] Action_Create_Package,
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
@@ -169,6 +171,10 @@ namespace RKCIUIAutomation.Page
                 case BtnCategory.ActionColumnBtn:
                     string xPathExtRowType = rowEndsWithChkbx ? "" : $"{xPathLast()}";
                     xPathExt = $"{xPathExtRowType}/a[contains(text(),'{xPathExtValue}')]";
+                    break;
+
+                case BtnCategory.ActionCreatePkg:
+                    xPathExt = $"/a[text()='{xPathExtValue}']";
                     break;
 
                 default:
@@ -255,6 +261,9 @@ namespace RKCIUIAutomation.Page
         /// <param name="textInRowForAnyColumn"></param>
         public void ClickEditBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
             => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
+
+        public void ClickCreateBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = true)
+            => ClickButtonForRow(TableButton.Action_Create_Package, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.

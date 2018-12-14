@@ -676,7 +676,6 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw;
             }
 
             return alertMsg;
@@ -686,13 +685,13 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                Driver.SwitchTo().Alert().Accept();
+                IAlert alert = Driver.SwitchTo().Alert();
+                alert.Accept();
                 LogInfo("Accepted browser alert message");
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw;
             }
         }
 
@@ -700,13 +699,13 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                Driver.SwitchTo().Alert().Dismiss();
+                IAlert alert = Driver.SwitchTo().Alert();
+                alert.Dismiss();
                 LogInfo("Dismissed browser alert message");
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw;
             }
         }
 

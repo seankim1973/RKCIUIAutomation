@@ -75,6 +75,16 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Action")] Action,
         }
 
+        public enum PackagesColumnName
+        {
+            [StringValue("WeekStart")] Week_Start,
+            [StringValue("WeekEnd")] Week_End,
+            [StringValue("PackageNumber")] Package_Number,
+            [StringValue("DIRsToString")] DIRs,
+            [StringValue("DirsCount")] New_DIR_Count,
+            [StringValue("DIRsToString")] New_DIRs
+        }
+
         public enum SubmitButtons
         {
             [StringValue("Create New")] Create_New,
@@ -167,6 +177,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Close_Selected();
 
         void ClickBtn_View_Selected();
+
+        void VerifyPackage_After_Click_CreateBtn_forRow(int indexOfRow = 1);
+
+        void FilterTable_CreatePackageTab(int indexOfRow = 1);
+
+        void FilterTable_PackageTab(int indexOfRow = 1);
 
         void FilterDirNumber(string DirNumber);
 
@@ -442,7 +458,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //Enter_TotalInspectionTime();
             //StoreDirNumber();
         }
-        
+
         //All SimpleWF Tenants have different required fields
         public virtual IList<string> GetExpectedRequiredFieldIDsList()
         {
@@ -1164,6 +1180,92 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             LogInfo($"{logMsg} ", revAsExpected);
             return revAsExpected;
+        }
+
+        private string[] GetPackageDataForRow(int indexOfRow = 1, bool CreatePkgTab = true)
+        {
+            string rowXPath = $"//div[contains(@class,'k-state-active')]//tbody/tr[{indexOfRow}]/td";
+
+            string weekStart = null;
+            string weekEnd = null;
+            string newDirCountOrPkgNum = null;
+            string newDIRsOrDIRsToString = null;
+            string[] pkgData = null;
+
+            By locator(int indexOfCol) => By.XPath($"{rowXPath}[{indexOfCol.ToString()}]");
+
+            try
+            {
+                weekStart = GetText(locator(1));
+                weekEnd = GetText(locator(2));
+                newDirCountOrPkgNum = GetText(locator(3));
+                newDIRsOrDIRsToString = CreatePkgTab ? GetText(locator(5)) : GetText(locator(4));
+
+                pkgData = new string[4]
+                {
+                    weekStart,
+                    weekEnd,
+                    newDirCountOrPkgNum,
+                    newDIRsOrDIRsToString
+                };
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            return pkgData;
+        }
+
+        public virtual void VerifyPackage_After_Click_CreateBtn_forRow(int indexOfRow = 1)
+        {
+            try
+            {
+                string[] pkgData = GetPackageDataForRow(indexOfRow);
+                string wkStart = pkgData[0];
+                string wkEnd = pkgData[1];
+                string newDirCount = pkgData[2];
+                string newDIRs = pkgData[3];
+
+                ClickCreateBtnForRow(newDIRs);
+
+                try
+                {
+                    ConfirmActionDialog();
+                }
+                catch (Exception e)
+                {
+                    log.Debug(e.Message);
+                }
+
+                QaRcrdCtrl_QaDIR.ClickTab_Packages();
+                AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.DIRs, newDIRs), "Verify Package with DIRs List is Displayed");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+        }
+
+        public virtual void FilterTable_CreatePackageTab(int indexOfRow = 1)
+        {
+            string[] pkgData = GetPackageDataForRow(indexOfRow);
+
+            string wkStart = pkgData[0];
+            string wkEnd = pkgData[1];
+            string newDirCount = pkgData[2];
+            string newDIRs = pkgData[3];
+        }
+
+        public virtual void FilterTable_PackageTab(int indexOfRow = 1)
+        {
+            string[] pkgData = GetPackageDataForRow(indexOfRow, false);
+
+            string wkStart = pkgData[0];
+            string wkEnd = pkgData[1];
+            string pkgNumber = pkgData[2];
+            string DIRs = pkgData[3];
         }
     }
 
