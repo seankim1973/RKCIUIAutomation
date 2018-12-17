@@ -115,6 +115,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void FilterDescription(string description = "");
 
+        string EnterDescription(string description = "", bool tempDescription = false);
+
+        bool VerifyCDRDocIsClosed(string description = "");
+
         void SortTable_Descending();
 
         void SortTable_Ascending();
@@ -129,7 +133,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRDescription = "");
 
-        string GetCDRDocDescription();
+        string GetCDRDocDescription(bool tempDescription = false);
+        
+      
 
         IList<string> GetRequiredFieldIDs();
     }
@@ -192,7 +198,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         private static string cdrDescription;
 
         [ThreadStatic]
+        internal static string cdrNewDescription;
+
+        [ThreadStatic]
         private static string cdrDescKey;
+
+        [ThreadStatic]
+        internal static string cdrNewDescKey;
 
         private MiniGuid guid;
 
@@ -247,26 +259,97 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterIssuedDate(string shortDate = "1/1/9999")
            => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
 
-        private void CreateCdrDescription()
+        private void CreateCdrDescription(bool tempDescription = false)
         {
             guid = MiniGuid.NewGuid();
-
             string descKey = $"{tenantName}{GetTestName()}";
-            cdrDescKey = $"{descKey}_CdrDescription";
-            CreateVar(cdrDescKey, guid);
-            cdrDescription = GetVar(cdrDescKey);
-            Console.WriteLine($"#####NCR Description: {cdrDescription}");
+            string logMsg = string.Empty;
+            string descValue = string.Empty;
+
+            if (tempDescription)
+            {
+                cdrNewDescKey = $"{descKey}_CdrNewDescription";
+                CreateVar(cdrNewDescKey, guid);
+                cdrNewDescription = GetVar(cdrNewDescKey);
+                descKey = cdrNewDescKey;
+                descValue = cdrNewDescription;
+                logMsg = "new temp ";
+            }
+            else
+            {
+                cdrDescKey = $"{descKey}_CdrDescription";
+                CreateVar(cdrDescKey, guid);
+                cdrDescription = GetVar(cdrDescKey);
+                descKey = cdrDescKey;
+                descValue = cdrDescription;
+                logMsg = "";
+            }
+
+            log.Debug($"#####Created a {logMsg}CDR Description: KEY: {descKey} VALUE: {descValue}");
+
+
+            //guid = MiniGuid.NewGuid();
+
+            //string descKey = $"{tenantName}{GetTestName()}";
+            //cdrDescKey = $"{descKey}_CdrDescription";
+            //CreateVar(cdrDescKey, guid);
+            //cdrDescription = GetVar(cdrDescKey);
+            //Console.WriteLine($"#####NCR Description: {cdrDescription}");
         }
 
-        public virtual string GetCDRDocDescription() => GetVar(cdrDescKey);
+        public virtual string GetCDRDocDescription(bool tempDescription = false)
+                   => GetVar(tempDescription ? cdrNewDescKey : cdrDescKey);
 
-        public virtual void EnterDescription(string description = "")
+        public virtual string EnterDescription(string description = "", bool tempDescription = false)
+            => EnterDesc(description, InputFields.DeficiencyDescription);
+
+        internal string EnterDesc(string desc, InputFields descField, bool tempDescription = false)
         {
-            CreateCdrDescription();
-            description = cdrDescription;
-            ScrollToElement(By.Id($"{InputFields.DeficiencyDescription.GetString()}"));
-            EnterText(GetTextAreaFieldByLocator(InputFields.DeficiencyDescription), description);
+            By descLocator = GetTextAreaFieldByLocator(descField);
+            CreateCdrDescription(tempDescription);
+            desc = desc.Equals("") || string.IsNullOrEmpty(desc) ? GetCDRDocDescription(tempDescription) : desc;
+            EnterText(descLocator, desc);
+            return desc;
         }
+
+        public virtual bool VerifyCDRDocIsClosed(string description = "")
+           => CheckCDRisClosed(description, TableTab.Closed_DN);
+
+        internal bool CheckCDRisClosed(string description, TableTab closedTab)
+        {
+            bool cdrIsClosed = false;
+            string logMsg = "not found.";
+
+            try
+            {
+                string _cdrDesc = description.Equals("") ? GetCDRDocDescription() : description;
+                bool isDisplayed = VerifyCDRDocIsDisplayed(closedTab, _cdrDesc);
+
+                if (isDisplayed)
+                {
+                    string docStatus = GetColumnValueForRow(_cdrDesc, "Workflow location");
+                    cdrIsClosed = docStatus.Equals("Closed") ? true : false;
+                    logMsg = $"Workflow Location displayed as: {docStatus}";
+                }
+
+                LogInfo($"CDR with description ({_cdrDesc}), {logMsg}", cdrIsClosed);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return cdrIsClosed;
+        }
+
+
+        //public virtual void EnterDescription(string description = "")
+        //{
+        //    CreateCdrDescription();
+        //    description = cdrDescription;
+        //    ScrollToElement(By.Id($"{InputFields.DeficiencyDescription.GetString()}"));
+        //    EnterText(GetTextAreaFieldByLocator(InputFields.DeficiencyDescription), description);
+        //}
 
         private bool VerifyReqFieldsErrorLabelsForNewDoc()
         {
