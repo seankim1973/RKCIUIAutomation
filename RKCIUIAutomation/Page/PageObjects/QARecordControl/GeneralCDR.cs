@@ -388,7 +388,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public void PopulateRequiredFieldsAndSaveForward()
         {
-            ClickBtn_SaveForward();
+            ClickBtn_SaveForward(); 
             Assert.True(VerifyReqFieldsErrorLabelsForNewDoc());
             EnterIssuedDate();
             SelectDDL_Originator();
