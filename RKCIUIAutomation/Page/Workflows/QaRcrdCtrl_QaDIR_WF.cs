@@ -27,6 +27,8 @@ namespace RKCIUIAutomation.Page.Workflows
 
         string Create_and_SaveForward_DIR();
 
+        string Create_and_SaveOnly_DIR();
+
         /// <summary>
         /// Returns string[] array: [0] dirNumber of newly created DIR, [1] dirNumber of Previous Failing Report
         /// </summary>
@@ -69,6 +71,22 @@ namespace RKCIUIAutomation.Page.Workflows
         bool Verify_DirRevision_inTblRow_then_Approve_inQcReview(string dirNumber, string expectedDirRev);
 
         bool Verify_DirRevision_inTblRow_then_Approve_inAuthorization(string dirNumber, string expectedDirRev);
+
+        void RefreshAutoSaveTimer();
+
+        void IterateColumnsByFilter(TableTab tableTab, UserType currentUser, string dirNumber, string sentBy, string lockedBy, string dirRev, bool useQaFieldMenu = false);
+
+        void IterateColumnsByFilterInRevise(UserType currentUser, string dirNumber, string sentBy, string lockedBy, string dirRev, bool useQaFieldMenu = false);
+
+        void VerifyColumnFilterInTab(TableTab tableTab, UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
+
+        void Verify_Column_Filter_In_Create(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
+
+        void Verify_Column_Filter_In_Revise(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
+
+        void Verify_Column_Filter_In_QcReview(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
+
+        void Verify_Column_Filter_In_Authorization(UserType currentUser, string dirNumber, bool useQaFieldMenu = false);
     }
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
@@ -126,8 +144,8 @@ namespace RKCIUIAutomation.Page.Workflows
 
             LoginAs(userType);
 
-            if (!Driver.Title.Contains("DIR List"))
-            {
+            //if (!Driver.Title.Contains("DIR List"))
+            //{
                 if (userType == UserType.DIRTechQA || userType == UserType.DIRMgrQA)
                 {
                     string tenant = tenantName.ToString();
@@ -158,7 +176,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 }
 
                 Assert.True(VerifyPageTitle(expectedPageTitle));
-            }
+            //}
         }
 
         public virtual void LoginToQaFieldDirPage(UserType userType) => LoginToDirPage(userType, true);
@@ -172,16 +190,39 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual bool VerifyDirIsDisplayedInRevise(string dirNumber)
             => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber);
 
-        //GLX,
-        public virtual string Create_and_SaveForward_DIR()
+        private void CreateNew_and_PopulateRequiredFields()
         {
-            LogDebug($"---> Create_and_SaveForward_DIR <---");
+            LogDebug($"-->---> CreateNew_and_PopulateRequiredFields <---<--");
 
             QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(), "VerifyReqFieldErrorsForNewDir");
             QaRcrdCtrl_QaDIR.PopulateRequiredFields();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save();
+            WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInCreate("");
+            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyAutoSaveTimerRefresh(), "VerifyAutoSaveTimerRefresh");
+        }
+
+        //GLX,
+        public virtual string Create_and_SaveForward_DIR()
+        {
+            LogDebug($"---> Create_and_SaveForward_DIR <---");
+
+            //QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
+            //QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            //AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(), "VerifyReqFieldErrorsForNewDir");
+            //QaRcrdCtrl_QaDIR.PopulateRequiredFields();
+            CreateNew_and_PopulateRequiredFields();
+
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            return QaRcrdCtrl_QaDIR.GetDirNumber();
+        }
+
+        public virtual string Create_and_SaveOnly_DIR()
+        {
+            CreateNew_and_PopulateRequiredFields();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save();
             return QaRcrdCtrl_QaDIR.GetDirNumber();
         }
 
@@ -189,10 +230,12 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogDebug($"---> Create_and_SaveForward_Failed_Inspection_DIR_with_PreviousFailingReports <---");
 
-            QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
-            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(), "VerifyReqFieldErrorsForNewDir");
-            QaRcrdCtrl_QaDIR.PopulateRequiredFields();
+            //QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
+            //QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            //AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(), "VerifyReqFieldErrorsForNewDir");
+            //QaRcrdCtrl_QaDIR.PopulateRequiredFields();
+            CreateNew_and_PopulateRequiredFields();
+
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_Deficiencies_Yes();
             QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
@@ -459,6 +502,97 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual bool Verify_DirRevision_inTblRow_then_Approve_inAuthorization(string dirNumber, string expectedDirRev)
             => Verify_DirRevision_inTblRow_then_Approve(TableTab.Authorization, dirNumber, expectedDirRev);
+
+        public virtual void RefreshAutoSaveTimer() => QaRcrdCtrl_QaDIR.ClickBtn_Refresh();
+
+        public virtual void IterateColumnsByFilter(TableTab tableTab, UserType currentUser, string dirNumber, string sentBy, string lockedBy, string dirRev, bool useQaFieldMenu = false)
+        {
+            LogDebug($"---> IterateColumnsByFilter <---<br>TableTab {tableTab.ToString()}<br>DIR# {dirNumber}<br>SentBy {sentBy}<br>LockedBy {lockedBy}<br>DIR Rev {dirRev}");
+
+            string dirTechEmail = "testDirTech@rkci.com";
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"IterateColumnsByFilter VerifyDirIsDisplayed {tableTab.ToString()}, before DIR Locked");
+            ClickEditBtnForRow();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, useQaFieldMenu);
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"IterateColumnsByFilter VerifyDirIsDisplayed {tableTab.ToString()}, after DIR Locked");
+            ClearTableFilters();
+            AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Revision, dirRev), $"IterateColumnsByFilter Column Revision");
+            AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Created_By, dirTechEmail), $"IterateColumnsByFilter Column Created_By");
+            AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_By, sentBy), $"IterateColumnsByFilter Column Sent_By");
+            AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.Contains), $"IterateColumnsByFilter Column Sent_Date");
+            AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_By, lockedBy), $"IterateColumnsByFilter Column Locked_By");
+            AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.Contains), $"IterateColumnsByFilter Column Locked Date");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.GetDirNumberForRow(dirTechEmail).Equals(dirNumber), $"IterateColumnsByFilter DIR# for Filtered Row Matches Expected: ");
+        }
+
+        //GLX, LAX, I15SB, I15Tech
+        public virtual void IterateColumnsByFilterInRevise(UserType currentUser, string dirNumber, string sentBy, string lockedBy, string dirRev, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.IterateColumnsByFilter(TableTab.Create_Revise, currentUser, dirNumber, sentBy, lockedBy, dirRev);
+
+        public virtual void VerifyColumnFilterInTab(TableTab tableTab, UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
+        {
+            string dirTechEmail = "testDirTech@rkci.com";
+            string dirMgrEmail = "testDirMgr@rkci.com";
+
+            string sentBy = string.Empty;
+            string lockedBy = string.Empty;
+
+            switch (tableTab)
+            {
+                case TableTab.Creating:
+                    sentBy = dirTechEmail;
+                    lockedBy = dirTechEmail;
+                    break;
+                case TableTab.Create_Revise:
+                    sentBy = kickedBack ? dirMgrEmail : dirTechEmail;
+                    lockedBy = kickedBack ? dirMgrEmail : dirTechEmail;
+                    break;
+                case TableTab.QC_Review:
+                    sentBy = kickedBack ? dirMgrEmail : dirTechEmail;
+                    lockedBy = dirMgrEmail;
+                    break;
+                default:
+                    sentBy = dirMgrEmail;
+                    lockedBy = dirMgrEmail;
+                    break;
+            }
+
+            WF_QaRcrdCtrl_QaDIR.IterateColumnsByFilter(tableTab, currentUser, dirNumber, sentBy, lockedBy, dirRev, useQaFieldMenu);
+            ClickEditBtnForRow();
+
+            if (tableTab == TableTab.Creating || tableTab == TableTab.Create_Revise)
+            {
+                QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            }
+            else if (tableTab == TableTab.QC_Review)
+            {
+                WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+            }
+            else if (tableTab == TableTab.Authorization)
+            {
+                WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();
+                QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
+                QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
+
+                WF_QaRcrdCtrl_QaDIR.IterateColumnsByFilterInRevise(currentUser, dirNumber, dirMgrEmail, dirMgrEmail, dirRev);
+                ClickEditBtnForRow();
+                QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            }
+        }
+
+        //GLX, LAX, I15SB, I15Tech
+        public virtual void Verify_Column_Filter_In_Create(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Create_Revise, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
+        
+        //GLX, LAX, I15SB, I15Tech
+        public virtual void Verify_Column_Filter_In_Revise(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Create_Revise, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
+    
+        public virtual void Verify_Column_Filter_In_QcReview(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.QC_Review, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
+
+        public virtual void Verify_Column_Filter_In_Authorization(UserType currentUser, string dirNumber, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Authorization, currentUser, dirNumber);
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_GLX : QaRcrdCtrl_QaDIR_WF
@@ -515,6 +649,18 @@ namespace RKCIUIAutomation.Page.Workflows
         public override bool VerifyDirIsDisplayedInCreate(string dirNumber)
             => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Creating, dirNumber);
 
+        public override void Verify_Column_Filter_In_Revise(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Revise, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
+
+        public override void Verify_Column_Filter_In_Create(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Creating, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
+
+        public override void IterateColumnsByFilterInRevise(UserType currentUser, string dirNumber, string sentBy, string lockedBy, string dirRev, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.IterateColumnsByFilter(TableTab.Revise, currentUser, dirNumber, sentBy, lockedBy, dirRev);
+
+        public override void Verify_Column_Filter_In_Authorization(UserType currentUser, string dirNumber, bool useQaFieldMenu = false)
+            => LogInfo("---> Verify_Column_Filter_In_Authorization <---<br>Step skipped for Tenant SH249");
+
         public override void Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(string dirNumber)
             => LogInfo("---> KickBack_DIR_ForRevise_FromAuthorization_then_Edit <---<br>Step skipped for Tenant SH249");
 
@@ -562,6 +708,15 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override bool VerifyDirIsDisplayedInCreate(string dirNumber)
             => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Creating, dirNumber);
+
+        public override void Verify_Column_Filter_In_Revise(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Revise, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
+
+        public override void Verify_Column_Filter_In_Create(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Creating, currentUser, dirNumber);
+
+        public override void IterateColumnsByFilterInRevise(UserType currentUser, string dirNumber, string sentBy, string lockedBy, string dirRev, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.IterateColumnsByFilter(TableTab.Revise, currentUser, dirNumber, sentBy, lockedBy, dirRev, useQaFieldMenu);
 
         public override void Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(string dirNumber)
         {

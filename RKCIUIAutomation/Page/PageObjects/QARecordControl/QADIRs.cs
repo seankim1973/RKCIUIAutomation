@@ -1,10 +1,12 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 using static RKCIUIAutomation.Page.TableHelper;
 
@@ -95,6 +97,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Send To Attachment")] Send_To_Attachment,
             [StringValue("Save")] Save,
             [StringValue("Save & Forward")] Save_Forward,
+            [StringValue("Save & Edit")] Save_Edit,
             [StringValue("Approve")] Approve,
             [StringValue("Add")] Add,
             [StringValue("Delete")] Delete,
@@ -159,6 +162,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Save();
 
         void ClickBtn_Save_Forward();
+
+        void ClickBtn_Save_Edit();
 
         void ClickBtn_Approve();
 
@@ -307,6 +312,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         string CreatePreviousFailingReport();
 
         bool VerifyPreviousFailingDirEntry(string previousDirNumber);
+
+        string GetDirNumberForRow(string textInRowForAnyColumn);
+
+        bool VerifyAutoSaveTimerRefresh();
+
+        void RefreshAutoSaveTimer();
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -384,7 +395,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_CreateRevision() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_Revision));
 
-        public virtual void ClickBtn_Refresh() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Refresh));
+        public virtual void ClickBtn_Refresh() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Refresh, false));
 
         public virtual void ClickBtn_Cancel() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
 
@@ -398,6 +409,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_Save_Forward() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Forward));
 
+        public virtual void ClickBtn_Save_Edit() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Edit));
+        
         public virtual void ClickBtn_Approve() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Approve));
 
         public virtual void ClickBtn_Add() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Add));
@@ -1276,6 +1289,41 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             string pkgNumber = pkgData[2];
             string DIRs = pkgData[3];
         }
+
+        public virtual string GetDirNumberForRow(string textInRowForAnyColumn)
+            => GetColumnValueForRow(textInRowForAnyColumn, "DIR №");
+
+        //GLX, SH249, SG
+        //NO REFRESH btn, use Save & Edit btn - LAX, I15SB, I15Tech
+        public virtual bool VerifyAutoSaveTimerRefresh()
+        {
+            bool refreshIsGreater = false;
+
+            try
+            {
+                By clockAutoSaveLocator = By.XPath("//span[@id='clockAutoSave']");
+
+                Thread.Sleep(5000);
+                var currentTime = GetText(clockAutoSaveLocator);
+                
+                var refreshTime = GetText(clockAutoSaveLocator);
+                QaRcrdCtrl_QaDIR.RefreshAutoSaveTimer();
+                currentTime = Regex.Replace(currentTime, ":", "");
+                refreshTime = Regex.Replace(refreshTime, ":", "");
+
+                refreshIsGreater = int.Parse(refreshTime) > int.Parse(currentTime);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            return refreshIsGreater;
+        }
+
+        //GLX, SH249, SG
+        public virtual void RefreshAutoSaveTimer() => ClickBtn_Refresh();
     }
 
     //Tenant Specific Classes
@@ -1461,6 +1509,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return RequiredFieldIDs;
         }
+
+        public override void RefreshAutoSaveTimer() => ClickBtn_Save_Edit();
     }
 
     public class QADIRs_I15Tech : QADIRs
@@ -1510,6 +1560,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return RequiredFieldIDs;
         }
+
+        public override void RefreshAutoSaveTimer() => ClickBtn_Save_Edit();
     }
 
     public class QADIRs_GLX : QADIRs
@@ -1628,5 +1680,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return deficienciesRdoBtnIDs;
         }
+
+        public override void RefreshAutoSaveTimer() => ClickBtn_Save_Edit();
     }
 }

@@ -118,6 +118,35 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     [TestFixture]
+    public class Verify_Filter_of_DIR_Table : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(TestCaseNumber, 2187601)]
+        [Property(Priority, "High")]
+        [Description("To validate Filtering of a DIR table.")]
+        public void Filter_of_DIR_Table()
+        {
+            var currentUser = UserType.DIRTechQA;
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser);
+            string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveOnly_DIR();
+
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Create(currentUser, dirNumber,  "A", false, true);
+
+            LogoutToLoginPage();
+            currentUser = UserType.DIRMgrQA;
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, true);
+
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, "A", false, true);
+
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber);
+
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(TableTab.QC_Review, dirNumber, true), "Verify DIR is Displayed after accepting delete dialog");
+            AssertAll();
+        }
+    }
+
+    [TestFixture]
     public class Verify_DIR_ComplexWF_End_To_End : TestBase
     {
         //Garnet, SG, SH249
