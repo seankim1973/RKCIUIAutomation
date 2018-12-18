@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using RKCIUIAutomation.Test;
 using System;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
@@ -412,6 +413,13 @@ namespace RKCIUIAutomation.Page.Workflows
 
             try
             {
+                if (string.IsNullOrEmpty(expectedDirRev))
+                {
+                    bool dirRevFound = VerifyRecordIsDisplayed(QADIRs.ColumnName.Revision, expectedDirRev);
+                    AddAssertionToList(dirRevFound, $"VerifyRecordIsDisplayed - DIR Revision: {expectedDirRev}");
+                    LogInfo($"Successfully filtered table by expected DIR Revision: {expectedDirRev}", dirRevFound);
+                }
+
                 isDisplayed = (tableTab == TableTab.Creating || tableTab == TableTab.Create_Revise)
                     ? WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber)
                     : QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, false);
