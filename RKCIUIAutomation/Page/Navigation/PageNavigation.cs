@@ -440,6 +440,16 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public virtual void QARecordControl_Environmental_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.Environmental_Document);
 
+        // Record Control Menu - LAX
+        public virtual void RecordControl_QA_QaDIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
+
+        public virtual void RecordControl_QA_QaNCR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_NCR);
+
+        public virtual void RecordControl_QC() => Navigate.Menu(NavMenu.RecordControl.Menu.QC);
+
+        public virtual void RecordControl_DIR_Count() => Navigate.Menu(NavMenu.RecordControl.Menu.DIR_Count);
+
+
         // QA Search
         public virtual void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QASearch.Menu.Daily_Inspection_Report);
 
@@ -673,8 +683,11 @@ namespace RKCIUIAutomation.Page.Navigation
         { }
 
         public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Deficiency_Notice);
+
         public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_Deficiency_Notice);
-    
+
+        public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
+
     }
 }
 

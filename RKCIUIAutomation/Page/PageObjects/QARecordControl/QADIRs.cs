@@ -718,11 +718,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         SelectRadioBtnOrChkbox(deficiencyRdoBtn);
                         resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "Pass" : "Engineer Decision";
                         expectedAlertMsg = $"Since {resultTypeMsg} checked, not allow to check any deficiency";
-                        alertMsg = GetAlertMessage();
+                        alertMsg = AcceptAlertMessage(); //GetAlertMessage();
                         alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
                         assertList.Add(alertMsgMatch);
                         LogInfo($"Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
-                        AcceptAlertMessage();
                     }
                 }
 
@@ -739,12 +738,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         SelectRadioBtnOrChkbox(resultChkBox, false);
                         resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "pass" : "make engineer decision";
                         expectedAlertMsg = $"There is a deficiency checked in this entry, not allow to {resultTypeMsg}!";
-                        alertMsg = GetAlertMessage();
+                        alertMsg = AcceptAlertMessage(); //GetAlertMessage();
                         alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
                         assertList.Add(alertMsgMatch);
-
                         LogInfo($"Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
-                        AcceptAlertMessage();
                     }
                 }
 
@@ -1297,21 +1294,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         //NO REFRESH btn, use Save & Edit btn - LAX, I15SB, I15Tech
         public virtual bool VerifyAutoSaveTimerRefresh()
         {
-            bool refreshIsGreater = false;
+            LogDebug("---> VerifyAutoSaveTimerRefresh <---");
+
+            bool timerRefreshedAsExpected = false;
+            string preRefreshTime = string.Empty;
+            string postRefreshTime = string.Empty;
 
             try
             {
                 By clockAutoSaveLocator = By.XPath("//span[@id='clockAutoSave']");
 
-                Thread.Sleep(5000);
-                var currentTime = GetText(clockAutoSaveLocator);
-                
-                var refreshTime = GetText(clockAutoSaveLocator);
+                Thread.Sleep(10000);
+                preRefreshTime = GetText(clockAutoSaveLocator);
                 QaRcrdCtrl_QaDIR.RefreshAutoSaveTimer();
-                currentTime = Regex.Replace(currentTime, ":", "");
-                refreshTime = Regex.Replace(refreshTime, ":", "");
+                postRefreshTime = GetText(clockAutoSaveLocator);
 
-                refreshIsGreater = int.Parse(refreshTime) > int.Parse(currentTime);
+                timerRefreshedAsExpected = int.Parse(Regex.Replace(postRefreshTime, ":", "")) > int.Parse(Regex.Replace(preRefreshTime, ":", ""));
             }
             catch (Exception e)
             {
@@ -1319,7 +1317,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 throw;
             }
 
-            return refreshIsGreater;
+            LogInfo($"PreRefresh Timer Value {preRefreshTime}<br>PostRefresh Timer Value {postRefreshTime}<br>AutoSave Timer Refreshed Successfully: {timerRefreshedAsExpected}", timerRefreshedAsExpected);
+            return timerRefreshedAsExpected;
         }
 
         //GLX, SH249, SG

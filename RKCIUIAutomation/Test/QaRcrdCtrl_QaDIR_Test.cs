@@ -118,30 +118,55 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     [TestFixture]
-    public class Verify_Filter_of_DIR_Table : TestBase
+    public class Verify_Filter_of_DIR_Table_ComplexWF : TestBase
     {
         [Test]
         [Category(Component.DIR)]
         [Property(TestCaseNumber, 2187601)]
+        [Property(Component2, Component.DIR_WF_Complex)]
         [Property(Priority, "High")]
-        [Description("To validate Filtering of a DIR table.")]
-        public void Filter_of_DIR_Table()
+        [Description("To validate Filtering of a DIR table for ComplexWF tenants.")]
+        public void Filter_of_DIR_Table_ComplexWF()
         {
+            string dirRev = "A";
             var currentUser = UserType.DIRTechQA;
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser);
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveOnly_DIR();
-
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Create(currentUser, dirNumber,  "A", false, true);
-
+            WF_QaRcrdCtrl_QaDIR.Edit_DIR_inCreate_and_Verify_AutoSaveTimerRefresh_then_Save(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Create(currentUser, dirNumber, dirRev, false, true);
             LogoutToLoginPage();
             currentUser = UserType.DIRMgrQA;
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev, false, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev, false, false);
+            WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Attachments, currentUser, dirNumber, dirRev, false, false);
+            
+            AssertAll();
+        }
+    }
 
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, "A", false, true);
-
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber);
-
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(TableTab.QC_Review, dirNumber, true), "Verify DIR is Displayed after accepting delete dialog");
+    [TestFixture]
+    public class Verify_Filter_of_DIR_Table_SimpleWF : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Simple_QA)]
+        [Property(TestCaseNumber, 2187601)]
+        [Property(Priority, "High")]
+        [Description("To validate Filtering of a DIR table for SimpleWF tenants.")]
+        public void Filter_of_DIR_Table_SimpleWF()
+        {
+            string dirRev = "A";
+            var currentUser = UserType.DIRTechQA;
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, false);
+            string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveOnly_DIR();
+            WF_QaRcrdCtrl_QaDIR.Edit_DIR_inCreate_and_Verify_AutoSaveTimerRefresh_then_Save(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Create(currentUser, dirNumber, dirRev, false, true);
+            LogoutToLoginPage();
+            currentUser = UserType.DIRMgrQA;
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev, false, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev, false, true);
             AssertAll();
         }
     }

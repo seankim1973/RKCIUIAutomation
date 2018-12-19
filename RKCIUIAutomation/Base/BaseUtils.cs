@@ -149,6 +149,10 @@ namespace RKCIUIAutomation.Base
             {
                 testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
             }
+            else if (details.Contains("--->"))
+            {
+                testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Blue));
+            }
             else
                 testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
 
