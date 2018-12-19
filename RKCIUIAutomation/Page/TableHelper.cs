@@ -25,10 +25,12 @@ namespace RKCIUIAutomation.Page
 
         public void RefreshTable() => Kendo.Reload();
 
-        public int GetTableRowCount() => Kendo.TotalNumberRows();
+        public int GetTableRowCount(bool isMultiTabGrid = true)
+            => GetElementsCount(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}//tbody/tr"));
 
         //<<-- Table Page Navigation Helpers -->>
-        private By GetGoToTblPgBtn_ByLocator(TableButton tblPageNavBtn) => By.XPath($"//a[contains(@aria-label,'{tblPageNavBtn.GetString()}')]");
+        private By GetGoToTblPgBtn_ByLocator(TableButton tblPageNavBtn)
+            => By.XPath($"//a[contains(@aria-label,'{tblPageNavBtn.GetString()}')]");
 
         public void GoToFirstPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.First));
 

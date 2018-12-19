@@ -138,9 +138,13 @@ namespace RKCIUIAutomation.Test.DIR
             currentUser = UserType.DIRMgrQA;
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, true);
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev, false, true);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev, false, false);
-            WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Attachments, currentUser, dirNumber, dirRev, false, false);
-            
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev, false, true);
+
+            //2nd half of ComplexWF
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Attachments(currentUser, dirNumber, dirRev, false, false);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev, true, false);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, false, false);
+
             AssertAll();
         }
     }
@@ -158,15 +162,16 @@ namespace RKCIUIAutomation.Test.DIR
         {
             string dirRev = "A";
             var currentUser = UserType.DIRTechQA;
-            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, false);
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser);
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveOnly_DIR();
             WF_QaRcrdCtrl_QaDIR.Edit_DIR_inCreate_and_Verify_AutoSaveTimerRefresh_then_Save(dirNumber);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Create(currentUser, dirNumber, dirRev, false, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Create(currentUser, dirNumber, dirRev);
             LogoutToLoginPage();
             currentUser = UserType.DIRMgrQA;
-            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, true);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev, false, true);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev, false, true);
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, true);
             AssertAll();
         }
     }
