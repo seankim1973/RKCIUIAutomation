@@ -122,7 +122,7 @@ namespace RKCIUIAutomation.Test.DIR
     {
         [Test]
         [Category(Component.DIR)]
-        [Property(TestCaseNumber, 2187601)]
+        [Property(TestCaseNumber, 2584485)]
         [Property(Component2, Component.DIR_WF_Complex)]
         [Property(Priority, "High")]
         [Description("To validate Filtering of a DIR table for ComplexWF tenants.")]
@@ -165,7 +165,7 @@ namespace RKCIUIAutomation.Test.DIR
         [Test]
         [Category(Component.DIR)]
         [Property(Component2, Component.DIR_WF_Simple_QA)]
-        [Property(TestCaseNumber, 2187601)]
+        [Property(TestCaseNumber, 2584474)]
         [Property(Priority, "High")]
         [Description("To validate Filtering of a DIR table for SimpleWF tenants.")]
         public void Filter_of_DIR_Table_SimpleWF()
