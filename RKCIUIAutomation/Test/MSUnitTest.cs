@@ -9,6 +9,7 @@ using RKCIUIAutomation.Test;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -665,6 +666,23 @@ namespace RKCIUIAutomation.Sandbox
 
             bool compare = refresh > current;
             Console.WriteLine($"Current Int: {current}\nRefresh Int: {refresh}\nRefresh is Greater: {compare}");
+
+        }
+
+        [TestMethod]
+        public void HttpRequest()
+        {
+            string fileUrl = "http://stage.glx.elvispmc.com/Dir/ViewDirPDF?DirId=0000";
+            HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(fileUrl);
+            httpRequest.Method = WebRequestMethods.Http.Get;
+
+            HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+            Stream httpResponseStream = httpResponse.GetResponseStream();
+            string responseCode = httpResponse.StatusCode.ToString();
+
+            Console.WriteLine($"responseCode: {responseCode}");
+            Console.WriteLine($"httpResponse: {httpResponse.ResponseUri}");
+            Console.WriteLine($"httpResponseStream: {httpResponseStream}");
 
         }
 
