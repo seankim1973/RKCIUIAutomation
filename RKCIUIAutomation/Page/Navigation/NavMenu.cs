@@ -12,12 +12,13 @@ namespace RKCIUIAutomation.Page.Navigation
         public void Menu<T>(T navEnum)
         {
             Enum mainNavEnum = null;
-            Enum adminEnum = null;
-            Enum userMgmtEnum = null;
-            Enum sysConfigEnum = null;
-            Enum adminToolsEnum = null;
-            Enum sysConfigEquipEnum = null;
-            Enum sysConfigGradeMgmtEnum = null;
+            Enum projAdminEnum = null;
+            Enum projUserMgmtEnum = null;
+            Enum projSysConfigEnum = null;
+            Enum projAdminToolsEnum = null;
+            Enum projSysConfigEquipEnum = null;
+            Enum projSysConfigGradeMgmtEnum = null;
+            Enum recordCtrlQaEnum = null;
 
             Actions builder;
             IWebElement element;
@@ -31,28 +32,28 @@ namespace RKCIUIAutomation.Page.Navigation
 
                 if (reflectedPageType.Equals(typeof(Project.Administration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration)))
                 {
-                    adminEnum = Project.SubMenu_Project.Administration;
+                    projAdminEnum = Project.SubMenu_Project.Administration;
 
                     if (reflectedPageType.Equals(typeof(Project.Administration.UserManagement)))
                     {
-                        userMgmtEnum = Project.Administration.SubMenu_Administration.User_Management;
+                        projUserMgmtEnum = Project.Administration.SubMenu_Administration.User_Management;
                     }
                     else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration.SystemConfiguration)))
                     {
-                        sysConfigEnum = Project.Administration.SubMenu_Administration.System_Configuration;
+                        projSysConfigEnum = Project.Administration.SubMenu_Administration.System_Configuration;
 
                         if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.Equipment)))
                         {
-                            sysConfigEquipEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Equipment;
+                            projSysConfigEquipEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Equipment;
                         }
                         else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.GradeManagement)))
                         {
-                            sysConfigGradeMgmtEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Grade_Management;
+                            projSysConfigGradeMgmtEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Grade_Management;
                         }
                     }
                     else if (reflectedPageType.Equals(typeof(Project.Administration.AdminTools)))
                     {
-                        adminToolsEnum = Project.Administration.SubMenu_Administration.Admin_Tools;
+                        projAdminToolsEnum = Project.Administration.SubMenu_Administration.Admin_Tools;
                     }
                 }
             }
@@ -130,6 +131,15 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     mainNavEnum = MainNav.Menu.QC_Lab;
                 }
+                else if (reflectedPageType.Equals(typeof(RecordControl)))
+                {
+                    mainNavEnum = MainNav.Menu.Record_Control;
+
+                    if (reflectedPageType.Equals(typeof(RecordControl.QA)))
+                    {
+                        recordCtrlQaEnum = RecordControl.SubMenu_RecordControl.QA;
+                    }
+                }
                 else if (reflectedPageType.Equals(typeof(QCRecordControl)))
                 {
                     mainNavEnum = MainNav.Menu.QC_Record_Control;
@@ -152,40 +162,46 @@ namespace RKCIUIAutomation.Page.Navigation
             {
                 VerifyPageIsLoaded();
                 JsHover(GetMainNavMenuByLocator(mainNavEnum));
+                builder = new Actions(Driver);
 
-                if (adminEnum != null)
-                {
-                    builder = new Actions(Driver);
-                    element = Driver.FindElement(GetNavMenuByLocator(adminEnum));
+                if (projAdminEnum != null)
+                {    
+                    element = Driver.FindElement(GetNavMenuByLocator(projAdminEnum));
                     builder.MoveToElement(element).Perform();
                     clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum));
 
-                    if (userMgmtEnum != null)
+                    if (projUserMgmtEnum != null)
                     {
-                        element = Driver.FindElement(GetNavMenuByLocator(userMgmtEnum));
+                        element = Driver.FindElement(GetNavMenuByLocator(projUserMgmtEnum));
                         builder.MoveToElement(element).Perform();
                     }
-                    else if (sysConfigEnum != null)
+                    else if (projSysConfigEnum != null)
                     {
-                        element = Driver.FindElement(GetNavMenuByLocator(sysConfigEnum));
+                        element = Driver.FindElement(GetNavMenuByLocator(projSysConfigEnum));
                         builder.MoveToElement(element).Perform();
 
-                        if (sysConfigEquipEnum != null)
+                        if (projSysConfigEquipEnum != null)
                         {
-                            element = Driver.FindElement(GetNavMenuByLocator(sysConfigEquipEnum));
+                            element = Driver.FindElement(GetNavMenuByLocator(projSysConfigEquipEnum));
                             builder.MoveToElement(element).Perform();
                         }
-                        else if (sysConfigGradeMgmtEnum != null)
+                        else if (projSysConfigGradeMgmtEnum != null)
                         {
-                            element = Driver.FindElement(GetNavMenuByLocator(sysConfigGradeMgmtEnum));
+                            element = Driver.FindElement(GetNavMenuByLocator(projSysConfigGradeMgmtEnum));
                             builder.MoveToElement(element).Perform();
                         }
                     }
-                    else if (adminToolsEnum != null)
+                    else if (projAdminToolsEnum != null)
                     {
-                        element = Driver.FindElement(GetNavMenuByLocator(adminToolsEnum));
+                        element = Driver.FindElement(GetNavMenuByLocator(projAdminToolsEnum));
                         builder.MoveToElement(element).Perform();
                     }
+                }
+                else if (recordCtrlQaEnum != null)
+                {
+                    element = Driver.FindElement(GetNavMenuByLocator(recordCtrlQaEnum, ConvertToType<Enum>(mainNavEnum)));
+                    builder.MoveToElement(element).Perform();
+                    clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum));
                 }
                 else
                 {
@@ -198,7 +214,7 @@ namespace RKCIUIAutomation.Page.Navigation
             }
             finally
             {
-                ClickElement(clickLocator);
+                JsClickElement(clickLocator);
                 Thread.Sleep(2000);
             }
         }
@@ -227,6 +243,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Dev Inbox")] Dev_Inbox,
                 [StringValue("RFI")] RFI,
                 [StringValue("QC Lab")] QC_Lab,
+                [StringValue("Record Control")] Record_Control,
                 [StringValue("QC Record Control")] QC_Record_Control,
                 [StringValue("QC Engineer")] QC_Engineer,
                 [StringValue("QC Search")] QC_Search,
@@ -494,6 +511,30 @@ namespace RKCIUIAutomation.Page.Navigation
             {
                 [StringValue("Control Point Scheduler")] Control_Point_Scheduler,
                 [StringValue("Control Point Log")] Control_Point_Log
+            }
+        }
+
+        //Record Control Menu Navigation Enums
+        public class RecordControl
+        {
+            internal enum SubMenu_RecordControl
+            {
+                [StringValue("QA")] QA
+            }
+
+            public enum Menu
+            {
+                [StringValue("QC")] QC,
+                [StringValue("DIR Count")] DIR_Count,
+            }
+
+            public class QA : RecordControl
+            {
+                public new enum Menu
+                {
+                    [StringValue("QA DIRs")] QA_DIRs,
+                    [StringValue("QA NCR")] QA_NCR
+                }
             }
         }
 
