@@ -127,7 +127,7 @@ namespace RKCIUIAutomation.Test.DIR
         [Property(Priority, "High")]
         [Description("To validate Filtering of a DIR table for ComplexWF tenants.")]
         public void Filter_of_DIR_Table_ComplexWF()
-        {
+        {            
             string dirRev = "A";
             var currentUser = UserType.DIRTechQA;
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser);
@@ -139,11 +139,21 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, true);
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev, false, true);
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev, false, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, true, true);
 
+
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inQcReview(dirNumber, false);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inAuthorization(dirNumber, false, true);
             //2nd half of ComplexWF
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Attachments(currentUser, dirNumber, dirRev, false, false);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, true, false);
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev, true, false);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, false, false);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_ToBeClosed(currentUser, dirNumber, dirRev, true, false);
+            
+            ToggleCheckBoxForRow(dirNumber);
+            //QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected(); //<-- uncomment to close DIR
+            //Update WorkflowLocation to .Closed when Closing DIR by uncommenting step above
+            AddAssertionToList(QaSearch_DIR.VerifyDirWorkflowLocationBySearch(dirNumber, WorkflowLocation.Closing), "QaSearch_DIR.VerifyDirWorkflowLocationBySearch");
 
             AssertAll();
         }
@@ -171,7 +181,10 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser);
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev);
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, true, false);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inQcReview(dirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inAuthorization(dirNumber, false, false);
+
             AssertAll();
         }
     }
@@ -265,7 +278,7 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();//9
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review - 2ndRound)");
             ToggleCheckBoxForRow(dirNumber);
-            //QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected(); //<--uncomment to Close DIR
+            QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected(); //<--uncomment to Close DIR
 
             //Update WorkflowLocation to .Closed when Closing DIR by uncommenting step above
             AddAssertionToList(QaSearch_DIR.VerifyDirWorkflowLocationBySearch(dirNumber, WorkflowLocation.Closing), "QaSearch_DIR.VerifyDirWorkflowLocationBySearch");

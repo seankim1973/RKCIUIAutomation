@@ -68,12 +68,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             [StringValue("DIRNO")] DIR_No,
             [StringValue("Revision")] Revision,
-            [StringValue("Created By")] Created_By,
-            [StringValue("Sent By")] Sent_By,
-            [StringValue("Sent Date")] Sent_Date,
-            [StringValue("Locked By")] Locked_By,
-            [StringValue("Lock Date")] Locked_Date,
-            [StringValue("Report №")] Report,
+            [StringValue("CreatedBy")] Created_By,
+            [StringValue("RevisedBy")] Sent_By,
+            [StringValue("RevisedDate")] Sent_Date,
+            [StringValue("LockedBy")] Locked_By,
+            [StringValue("LockDate")] Locked_Date,
+            [StringValue("Report")] Report,
             [StringValue("Action")] Action,
         }
 
@@ -399,7 +399,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_Cancel() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
 
-        public virtual void ClickBtn_KickBack() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Kick_Back));
+        public virtual void ClickBtn_KickBack() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Kick_Back, false));
 
         public virtual void ClickBtn_SubmitRevise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Submit_Revise, false));
 
@@ -655,6 +655,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw;
             }
 
             return isDisplayed;
@@ -1575,15 +1576,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_TimeEnd(TimeBlock.PM_04_00);
             Enter_AverageTemp(80);
             SelectDDL_Area();
+            Thread.Sleep(1000); //workaround for page refresh after Area selection
             SelectDDL_SpecSection();
             SelectDDL_Feature();
             SelectDDL_Contractor();
             SelectDDL_CrewForeman();
+            //EnterText_SectionDescription();  //auto-populates field with selection of SpecSection DDList
             SelectChkbox_InspectionType_C();
             SelectChkbox_InspectionResult_P();
             ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
-            SelectDDL_ControlPointNumber();
+            SelectDDL_ControlPointNumber(4);
             StoreDirNumber();
         }
 
@@ -1616,6 +1619,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return deficienciesRdoBtnIDs;
         }
+
+        public override void RefreshAutoSaveTimer() => ClickBtn_Save_Edit();
+
     }
 
     public class QADIRs_LAX : QADIRs

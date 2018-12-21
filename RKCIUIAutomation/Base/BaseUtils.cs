@@ -151,10 +151,16 @@ namespace RKCIUIAutomation.Base
             }
             else if (details.Contains("--->"))
             {
-                testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Blue));
+                testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Indigo));
             }
             else
                 testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
+
+
+            if (details.Contains("<br>"))
+            {
+                details = Regex.Replace(details, "<br>", "\n");
+            }
 
             if (exception != null)
             {

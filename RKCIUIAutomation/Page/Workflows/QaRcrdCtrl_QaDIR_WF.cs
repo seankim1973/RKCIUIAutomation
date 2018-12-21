@@ -62,11 +62,11 @@ namespace RKCIUIAutomation.Page.Workflows
 
         bool Verify_DIR_Delete(TableTab tableTab, string dirNumber, bool acceptAlert = true);
 
-        bool DIR_DeleteOrApproveNoError(TableTab tableTab, string dirNumber, bool delete = false);
+        bool DIR_DeleteOrApproveNoError(TableTab tableTab, string dirNumber, bool delete = false, bool approveDIR = true);
 
         bool Verify_DIR_Delete_or_ApproveNoError_inQcReview(string dirNumber, bool delete = false);
 
-        bool Verify_DIR_Delete_or_ApproveNoError_inAuthorization(string dirNumber, bool delete = false);
+        bool Verify_DIR_Delete_or_ApproveNoError_inAuthorization(string dirNumber, bool delete = false, bool approveDIR = true);
 
         void ClickBtn_ApproveOrNoError();
 
@@ -97,6 +97,8 @@ namespace RKCIUIAutomation.Page.Workflows
         void Verify_Column_Filter_In_Authorization(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
 
         void Verify_Column_Filter_In_Attachments(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
+
+        void Verify_Column_Filter_In_ToBeClosed(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
     }
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
@@ -387,14 +389,15 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual bool VerifyWorkflowLocationAfterSimpleWF_forDirRevision(string dirNumber, string expectedRevision)
             => QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber, WorkflowLocation.Closed, true, expectedRevision);
 
-        public virtual bool DIR_DeleteOrApproveNoError(TableTab tableTab, string dirNumber, bool delete = false)
+        public virtual bool DIR_DeleteOrApproveNoError(TableTab tableTab, string dirNumber, bool delete = false, bool approveDIR = true)
         {
             string assertMsg = string.Empty;
             bool isDisplayed = false;
 
             if (delete)
             {
-                QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
+                //ClickEditBtnForRow();
+                //QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
                 isDisplayed = WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(tableTab, dirNumber, delete);
                 assertMsg = $"Set to Delete DIR: {delete}";
             }
@@ -405,21 +408,33 @@ namespace RKCIUIAutomation.Page.Workflows
                 if (isDisplayed)
                 {
                     ClickEditBtnForRow();
-                    WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+
+                    if (approveDIR)
+                    {
+                        WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+                    }
+                    else
+                    {
+                        By latestWfStatusLocator = By.XPath("//div[@class='CommentsDiv']//table//tbody/tr[1]/td[4]");
+                        string latestStatus = GetText(latestWfStatusLocator);
+
+                        LogInfo($"Activity Log Latest Workflow Status from Authorization : {latestStatus}", isDisplayed);
+                    }
                 }
 
                 assertMsg = $"Verify DIR isDisplayed";
             }
-
+                        
             AddAssertionToList(isDisplayed, $"DIR_DeleteOrApproveNoError - {tableTab.ToString()}\n{assertMsg}\nPassed: ");
             return isDisplayed;
         }
 
         public virtual bool Verify_DIR_Delete_or_ApproveNoError_inQcReview(string dirNumber, bool delete = false)
-            => WF_QaRcrdCtrl_QaDIR.DIR_DeleteOrApproveNoError(TableTab.QC_Review, dirNumber, delete);
+            => WF_QaRcrdCtrl_QaDIR.DIR_DeleteOrApproveNoError(TableTab.QC_Review, dirNumber, delete, true);
 
-        public virtual bool Verify_DIR_Delete_or_ApproveNoError_inAuthorization(string dirNumber, bool delete = true)
-            => WF_QaRcrdCtrl_QaDIR.DIR_DeleteOrApproveNoError(TableTab.Authorization, dirNumber, delete);
+        //SimpleWF tenants
+        public virtual bool Verify_DIR_Delete_or_ApproveNoError_inAuthorization(string dirNumber, bool delete = false, bool approveDIR = false)
+            => WF_QaRcrdCtrl_QaDIR.DIR_DeleteOrApproveNoError(TableTab.Authorization, dirNumber, delete, approveDIR);
 
         public virtual void ClickBtn_ApproveOrNoError()
             => QaRcrdCtrl_QaDIR.ClickBtn_Approve();
@@ -575,20 +590,37 @@ namespace RKCIUIAutomation.Page.Workflows
             string dirTechEmail = "testDirTech@rkci.com";
             try
             {
-                AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"IterateColumnsByFilter VerifyDirIsDisplayed {tableTab.ToString()}, before DIR Locked");
-                ClickEditBtnForRow();
+                AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"\nIterateColumnsByFilter VerifyDirIsDisplayed {tableTab.ToString()}, before DIR Locked");
+
+                if (tableTab == TableTab.To_Be_Closed)
+                {
+                    ClickEditBtnForRow(dirNumber, true, true);
+                }
+                else
+                {
+                    ClickEditBtnForRow();
+                }
+
                 WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, useQaFieldMenu); //locks DIR
                 AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"IterateColumnsByFilter VerifyDirIsDisplayed {tableTab.ToString()}, after DIR Locked");
                 ClearTableFilters();
-                AddAssertionToList(true, $"#### IterateColumnsByFilter ####\nTableTab : {tableTab.ToString()}\nUse QAField Menu : {useQaFieldMenu}\nDIR# : {dirNumber}\nSentBy : {sentBy}\nLockedBy : {lockedBy}\nDIR Rev : {dirRev}");
-                AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_By, lockedBy), $"IterateColumnsByFilter Column Locked_By");
-                AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.Contains), $"IterateColumnsByFilter Column Locked Date");
+                AddAssertionToList(true, $"#### IterateColumnsByFilter ####\nTableTab : {tableTab.ToString()}, Use QAField Menu : {useQaFieldMenu}, DIR# : {dirNumber}, SentBy : {sentBy}, LockedBy : {lockedBy}, DIR Rev : {dirRev}");
                 AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Revision, dirRev), $"IterateColumnsByFilter Column Revision");
                 AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Created_By, dirTechEmail), $"IterateColumnsByFilter Column Created_By");
                 AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_By, sentBy), $"IterateColumnsByFilter Column Sent_By");
                 AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.Contains), $"IterateColumnsByFilter Column Sent_Date");
+                AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_By, lockedBy), $"IterateColumnsByFilter Column Locked_By");
+                AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.Contains), $"IterateColumnsByFilter Column Locked Date");
                 AddAssertionToList(QaRcrdCtrl_QaDIR.GetDirNumberForRow(dirTechEmail).Equals(dirNumber), $"IterateColumnsByFilter DIR# for Filtered Row Matches Expected: ");
-                AddAssertionToList(GetTableRowCount().Equals(1), $"IterateColumnsByFilter - Total Number of Rows after Filter Equals 1");
+
+                int totalRows = GetTableRowCount();
+                bool filteredToOneRow = totalRows.Equals(1);
+                string logMsg = filteredToOneRow 
+                    ? "Filtered table down to single row as expected"
+                    : $"Expected To Filter Table to 1 Row, but found {totalRows.ToString()} rows";
+                AddAssertionToList(filteredToOneRow, $"IterateColumnsByFilter - Total Number of Rows after Filter Equals 1");
+
+                LogInfo(logMsg, filteredToOneRow);
             }
             catch (Exception e)
             {
@@ -624,14 +656,7 @@ namespace RKCIUIAutomation.Page.Workflows
                         break;
                 }
 
-                if (
-                    tableTab == TableTab.Attachments || 
-                    tableTab == TableTab.To_Be_Closed ||
-                    tableTab == TableTab.Closed ||
-                    tableTab == TableTab.Revise && useQaFieldMenu == false ||
-                    tableTab == TableTab.Creating && useQaFieldMenu == false ||
-                    tableTab == TableTab.QC_Review && useQaFieldMenu == false
-                    )
+                if (tableTab == TableTab.Attachments)
                 {
                     WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser);
                 }
@@ -645,20 +670,13 @@ namespace RKCIUIAutomation.Page.Workflows
                 }
                 else if (tableTab == TableTab.QC_Review)
                 {
-                    WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inQcReview(dirNumber);
+                    WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
                 }
                 else if (tableTab == TableTab.Authorization)
                 {
                     WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();
                     QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
                     QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
-
-                    WF_QaRcrdCtrl_QaDIR.IterateColumnsByFilterInRevise(currentUser, dirNumber, dirMgrEmail, dirMgrEmail, dirRev, useQaFieldMenu);
-                    ClickEditBtnForRow();
-                    QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-
-
-                    WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inQcReview(dirNumber);
                 }
                 else if (tableTab == TableTab.Attachments)
                 {
@@ -666,16 +684,14 @@ namespace RKCIUIAutomation.Page.Workflows
                     WF_QaRcrdCtrl_QaDIR.IterateColumnsByFilter(TableTab.QC_Review, currentUser, dirNumber, dirMgrEmail, dirMgrEmail, dirRev, useQaFieldMenu);
                     ClickEditBtnForRow();
                     WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();
-                    QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
-                    QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
                 }
                 else if (tableTab == TableTab.Revise)
                 {
                     QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-                    AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), $"VerifyColumnFilterInTab - Verify DIR isDisplayed in Table Tab: {tableTab}");
-                    ClickEditBtnForRow();
-                    WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
-                    WF_QaRcrdCtrl_QaDIR.IterateColumnsByFilter(TableTab.To_Be_Closed, currentUser, dirNumber, sentBy, lockedBy, dirRev, false);
+                }
+                else if (tableTab == TableTab.To_Be_Closed)
+                {
+                    QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
                 }
             }
             catch (Exception e)
@@ -699,13 +715,15 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void Verify_Column_Filter_In_Authorization(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
             => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Authorization, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
 
-        //SG & SH249
         public virtual void Verify_Column_Filter_In_Revise(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
-            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Revise, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
+            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Create_Revise, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
         
         //SG & SH249
         public virtual void Verify_Column_Filter_In_Attachments(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
             => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.Attachments, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
+
+        public virtual void Verify_Column_Filter_In_ToBeClosed(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
+            => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.To_Be_Closed, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
 
 
     }
@@ -795,9 +813,9 @@ namespace RKCIUIAutomation.Page.Workflows
             => QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber, WorkflowLocation.Attachment, true, expectedRevision);
 
         public override bool Verify_DIR_Delete_or_ApproveNoError_inQcReview(string dirNumber, bool delete = false)
-            => WF_QaRcrdCtrl_QaDIR.DIR_DeleteOrApproveNoError(TableTab.QC_Review, dirNumber, delete);
+            => WF_QaRcrdCtrl_QaDIR.DIR_DeleteOrApproveNoError(TableTab.QC_Review, dirNumber, delete, true);
 
-        public override bool Verify_DIR_Delete_or_ApproveNoError_inAuthorization(string dirNumber, bool delete = false)
+        public override bool Verify_DIR_Delete_or_ApproveNoError_inAuthorization(string dirNumber, bool delete = false, bool approveDIR = true)
         {
             LogDebug($"---> Skipped Test Step for Tenant SH249<br>Verify_DIR_Delete_or_ApproveNoError_inAuthorization<---");
             return true;
@@ -861,10 +879,10 @@ namespace RKCIUIAutomation.Page.Workflows
             => QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber, WorkflowLocation.Attachment, true, expectedRevision);
 
         public override bool Verify_DIR_Delete_or_ApproveNoError_inQcReview(string dirNumber, bool delete = false)
-            => WF_QaRcrdCtrl_QaDIR.DIR_DeleteOrApproveNoError(TableTab.QC_Review, dirNumber, delete);
+            => WF_QaRcrdCtrl_QaDIR.DIR_DeleteOrApproveNoError(TableTab.QC_Review, dirNumber, delete, true);
 
-        public override bool Verify_DIR_Delete_or_ApproveNoError_inAuthorization(string dirNumber, bool delete = false)
-            => WF_QaRcrdCtrl_QaDIR.DIR_DeleteOrApproveNoError(TableTab.Authorization, dirNumber, delete);
+        public override bool Verify_DIR_Delete_or_ApproveNoError_inAuthorization(string dirNumber, bool delete = false, bool approveDIR = true)
+            => WF_QaRcrdCtrl_QaDIR.DIR_DeleteOrApproveNoError(TableTab.Authorization, dirNumber, delete, approveDIR);
 
         public override void ClickBtn_ApproveOrNoError() => QaRcrdCtrl_QaDIR.ClickBtn_NoError();
 
