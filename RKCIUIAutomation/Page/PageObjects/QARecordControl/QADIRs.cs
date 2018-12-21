@@ -1,10 +1,12 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 using static RKCIUIAutomation.Page.TableHelper;
 
@@ -66,12 +68,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             [StringValue("DIRNO")] DIR_No,
             [StringValue("Revision")] Revision,
-            [StringValue("Created By")] Created_By,
-            [StringValue("Sent By")] Sent_By,
-            [StringValue("Sent Date")] Sent_Date,
-            [StringValue("Locked By")] Locked_By,
-            [StringValue("Lock Date")] Locked_Date,
-            [StringValue("Report №")] Report,
+            [StringValue("CreatedBy")] Created_By,
+            [StringValue("RevisedBy")] Sent_By,
+            [StringValue("RevisedDate")] Sent_Date,
+            [StringValue("LockedBy")] Locked_By,
+            [StringValue("LockDate")] Locked_Date,
+            [StringValue("Report")] Report,
             [StringValue("Action")] Action,
         }
 
@@ -95,6 +97,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Send To Attachment")] Send_To_Attachment,
             [StringValue("Save")] Save,
             [StringValue("Save & Forward")] Save_Forward,
+            [StringValue("Save & Edit")] Save_Edit,
             [StringValue("Approve")] Approve,
             [StringValue("Add")] Add,
             [StringValue("Delete")] Delete,
@@ -159,6 +162,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Save();
 
         void ClickBtn_Save_Forward();
+
+        void ClickBtn_Save_Edit();
 
         void ClickBtn_Approve();
 
@@ -307,6 +312,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         string CreatePreviousFailingReport();
 
         bool VerifyPreviousFailingDirEntry(string previousDirNumber);
+
+        string GetDirNumberForRow(string textInRowForAnyColumn);
+
+        bool VerifyAutoSaveTimerRefresh();
+
+        void RefreshAutoSaveTimer();
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -384,11 +395,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_CreateRevision() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_Revision));
 
-        public virtual void ClickBtn_Refresh() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Refresh));
+        public virtual void ClickBtn_Refresh() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Refresh, false));
 
         public virtual void ClickBtn_Cancel() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
 
-        public virtual void ClickBtn_KickBack() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Kick_Back));
+        public virtual void ClickBtn_KickBack() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Kick_Back, false));
 
         public virtual void ClickBtn_SubmitRevise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Submit_Revise, false));
 
@@ -398,6 +409,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_Save_Forward() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Forward));
 
+        public virtual void ClickBtn_Save_Edit() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Edit));
+        
         public virtual void ClickBtn_Approve() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Approve));
 
         public virtual void ClickBtn_Add() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Add));
@@ -642,6 +655,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw;
             }
 
             return isDisplayed;
@@ -705,11 +719,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         SelectRadioBtnOrChkbox(deficiencyRdoBtn);
                         resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "Pass" : "Engineer Decision";
                         expectedAlertMsg = $"Since {resultTypeMsg} checked, not allow to check any deficiency";
-                        alertMsg = GetAlertMessage();
+                        alertMsg = AcceptAlertMessage(); //GetAlertMessage();
                         alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
                         assertList.Add(alertMsgMatch);
                         LogInfo($"Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
-                        AcceptAlertMessage();
                     }
                 }
 
@@ -726,12 +739,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         SelectRadioBtnOrChkbox(resultChkBox, false);
                         resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "pass" : "make engineer decision";
                         expectedAlertMsg = $"There is a deficiency checked in this entry, not allow to {resultTypeMsg}!";
-                        alertMsg = GetAlertMessage();
+                        alertMsg = AcceptAlertMessage(); //GetAlertMessage();
                         alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
                         assertList.Add(alertMsgMatch);
-
                         LogInfo($"Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
-                        AcceptAlertMessage();
                     }
                 }
 
@@ -1276,6 +1287,43 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             string pkgNumber = pkgData[2];
             string DIRs = pkgData[3];
         }
+
+        public virtual string GetDirNumberForRow(string textInRowForAnyColumn)
+            => GetColumnValueForRow(textInRowForAnyColumn, "DIR №");
+
+        //GLX, SH249, SG
+        //NO REFRESH btn, use Save & Edit btn - LAX, I15SB, I15Tech
+        public virtual bool VerifyAutoSaveTimerRefresh()
+        {
+            LogDebug("---> VerifyAutoSaveTimerRefresh <---");
+
+            bool timerRefreshedAsExpected = false;
+            string preRefreshTime = string.Empty;
+            string postRefreshTime = string.Empty;
+
+            try
+            {
+                By clockAutoSaveLocator = By.XPath("//span[@id='clockAutoSave']");
+
+                Thread.Sleep(10000);
+                preRefreshTime = GetText(clockAutoSaveLocator);
+                QaRcrdCtrl_QaDIR.RefreshAutoSaveTimer();
+                postRefreshTime = GetText(clockAutoSaveLocator);
+
+                timerRefreshedAsExpected = int.Parse(Regex.Replace(postRefreshTime, ":", "")) > int.Parse(Regex.Replace(preRefreshTime, ":", ""));
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            LogInfo($"PreRefresh Timer Value {preRefreshTime}<br>PostRefresh Timer Value {postRefreshTime}<br>AutoSave Timer Refreshed Successfully: {timerRefreshedAsExpected}", timerRefreshedAsExpected);
+            return timerRefreshedAsExpected;
+        }
+
+        //GLX, SH249, SG
+        public virtual void RefreshAutoSaveTimer() => ClickBtn_Refresh();
     }
 
     //Tenant Specific Classes
@@ -1461,6 +1509,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return RequiredFieldIDs;
         }
+
+        public override void RefreshAutoSaveTimer() => ClickBtn_Save_Edit();
     }
 
     public class QADIRs_I15Tech : QADIRs
@@ -1510,6 +1560,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return RequiredFieldIDs;
         }
+
+        public override void RefreshAutoSaveTimer() => ClickBtn_Save_Edit();
     }
 
     public class QADIRs_GLX : QADIRs
@@ -1524,15 +1576,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_TimeEnd(TimeBlock.PM_04_00);
             Enter_AverageTemp(80);
             SelectDDL_Area();
+            Thread.Sleep(1000); //workaround for page refresh after Area selection
             SelectDDL_SpecSection();
             SelectDDL_Feature();
             SelectDDL_Contractor();
             SelectDDL_CrewForeman();
+            //EnterText_SectionDescription();  //auto-populates field with selection of SpecSection DDList
             SelectChkbox_InspectionType_C();
             SelectChkbox_InspectionResult_P();
             ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
-            SelectDDL_ControlPointNumber();
+            SelectDDL_ControlPointNumber(4);
             StoreDirNumber();
         }
 
@@ -1565,6 +1619,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return deficienciesRdoBtnIDs;
         }
+
+        public override void RefreshAutoSaveTimer() => ClickBtn_Save_Edit();
+
     }
 
     public class QADIRs_LAX : QADIRs
@@ -1628,5 +1685,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return deficienciesRdoBtnIDs;
         }
+
+        public override void RefreshAutoSaveTimer() => ClickBtn_Save_Edit();
     }
 }

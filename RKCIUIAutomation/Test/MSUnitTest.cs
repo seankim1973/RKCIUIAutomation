@@ -653,5 +653,20 @@ namespace RKCIUIAutomation.Sandbox
                 Console.WriteLine($"List contains field name - {fieldName}: {trimmedIDs.Contains(fieldName)}");
             }
         }
+
+        [TestMethod]
+        public void TimeCompare()
+        {
+            var currentTime = Regex.Replace("19:55", ":", "");
+            var refreshTime = Regex.Replace("19:59", ":", "");
+
+            int current = int.Parse(currentTime);
+            int refresh = int.Parse(refreshTime);
+
+            bool compare = refresh > current;
+            Console.WriteLine($"Current Int: {current}\nRefresh Int: {refresh}\nRefresh is Greater: {compare}");
+
+        }
+
     }
 }

@@ -689,26 +689,31 @@ namespace RKCIUIAutomation.Page
             return alertMsg;
         }
 
-        public void AcceptAlertMessage()
+        public string AcceptAlertMessage()
         {
+            string alertMsg = string.Empty;
+
             try
             {
                 WaitForPageReady();
             }
             catch (UnhandledAlertException f)
             {
-                log.Debug(f.Message);
+                log.Debug($"UnhandledAlertException Msg: {f.Message}");
                 try
                 {
                     IAlert alert = Driver.SwitchTo().Alert();
+                    alertMsg = alert.Text;
                     alert.Accept();
-                    LogInfo("Accepted browser alert message");
+                    LogInfo($"Accepted browser alert message: '{alertMsg}'");
                 }
                 catch (NoAlertPresentException e)
                 {
-                    log.Debug(e.StackTrace);
+                    log.Debug($"NoAlertPresentException Msg: {e.Message}");
                 }
             }
+
+            return alertMsg;
         }
 
         public void DismissAlertMessage()
@@ -778,7 +783,6 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw;
             }
 
             return isDisplayed;
@@ -1119,19 +1123,15 @@ namespace RKCIUIAutomation.Page
 
                 if (elem.Enabled)
                 {
-                    //if (!elem.Displayed)
-                    //{
                     Actions actions = new Actions(Driver);
                     actions.MoveToElement(elem);
                     actions.Perform();
                     log.Info($"Scrolled to element - {elementByLocator}");
-                    //}
                 }
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw;
             }
 
             return elem;
@@ -1141,8 +1141,6 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                //if (element.Enabled)
-                //{
                 if (!element.Displayed)
                 {
                     Actions actions = new Actions(Driver);
@@ -1150,7 +1148,6 @@ namespace RKCIUIAutomation.Page
                     actions.Perform();
                     log.Info($"Scrolled to WebElement");
                 }
-                //}
             }
             catch (Exception e)
             {
