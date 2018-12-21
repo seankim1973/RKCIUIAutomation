@@ -144,6 +144,15 @@ namespace RKCIUIAutomation.Page.Navigation
 
         void ReportsNotices_General_DN();
 
+        // Record Control Menu - LAX
+        void RecordControl_QA_QaDIRs();
+
+        void RecordControl_QA_QaNCR();
+
+        void RecordControl_QC();
+
+        void RecordControl_DIR_Count();
+
         // QA Search
         void QASearch_QA_Tests();
 
@@ -279,6 +288,51 @@ namespace RKCIUIAutomation.Page.Navigation
     public abstract class PageNavigation_Impl : PageBase, IPageNavigation
     {
         internal NavMenu Navigate => new NavMenu(Driver);
+
+        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
+
+        private IPageNavigation SetPageClassBasedOnTenant(IWebDriver driver)
+        {
+            IPageNavigation instance = new PageNavigation(driver);
+
+            if (tenantName == TenantName.SGWay)
+            {
+                log.Info($"###### using Navigation_SGWay instance ###### ");
+                instance = new PageNavigation_SGWay(driver);
+            }
+            else if (tenantName == TenantName.SH249)
+            {
+                log.Info($"###### using Navigation_SH249 instance ###### ");
+                instance = new PageNavigation_SH249(driver);
+            }
+            else if (tenantName == TenantName.Garnet)
+            {
+                log.Info($"###### using Navigation_Garnet instance ###### ");
+                instance = new PageNavigation_Garnet(driver);
+            }
+            else if (tenantName == TenantName.GLX)
+            {
+                log.Info($"###### using Navigation_GLX instance ###### ");
+                instance = new PageNavigation_GLX(driver);
+            }
+            else if (tenantName == TenantName.I15South)
+            {
+                log.Info($"###### using Navigation_I15South instance ###### ");
+                instance = new PageNavigation_I15South(driver);
+            }
+            else if (tenantName == TenantName.I15Tech)
+            {
+                log.Info($"###### using Navigation_I15Tech instance ###### ");
+                instance = new PageNavigation_I15Tech(driver);
+            }
+            else if (tenantName == TenantName.LAX)
+            {
+                log.Info($"###### using Navigation_LAX instance ###### ");
+                instance = new PageNavigation_LAX(driver);
+            }
+
+            return instance;
+        }
 
         // QMS_Document / QMS_Document_Search
         /// <summary>
@@ -440,6 +494,16 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public virtual void QARecordControl_Environmental_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.Environmental_Document);
 
+        // Record Control Menu - LAX
+        public virtual void RecordControl_QA_QaDIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
+
+        public virtual void RecordControl_QA_QaNCR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_NCR);
+
+        public virtual void RecordControl_QC() => Navigate.Menu(NavMenu.RecordControl.Menu.QC);
+
+        public virtual void RecordControl_DIR_Count() => Navigate.Menu(NavMenu.RecordControl.Menu.DIR_Count);
+
+
         // QA Search
         public virtual void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QASearch.Menu.Daily_Inspection_Report);
 
@@ -532,50 +596,6 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public virtual void QCSearch_DIR_Summary_Report() => Navigate.Menu(NavMenu.QCSearch.Menu.DIR_Summary_Report);
 
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private IPageNavigation SetPageClassBasedOnTenant(IWebDriver driver)
-        {
-            IPageNavigation instance = new PageNavigation(driver);
-
-            if (tenantName == TenantName.SGWay)
-            {
-                log.Info($"###### using Navigation_SGWay instance ###### ");
-                instance = new PageNavigation_SGWay(driver);
-            }
-            else if (tenantName == TenantName.SH249)
-            {
-                log.Info($"###### using Navigation_SH249 instance ###### ");
-                instance = new PageNavigation_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                log.Info($"###### using Navigation_Garnet instance ###### ");
-                instance = new PageNavigation_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                log.Info($"###### using Navigation_GLX instance ###### ");
-                instance = new PageNavigation_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                log.Info($"###### using Navigation_I15South instance ###### ");
-                instance = new PageNavigation_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                log.Info($"###### using Navigation_I15Tech instance ###### ");
-                instance = new PageNavigation_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                log.Info($"###### using Navigation_LAX instance ###### ");
-                instance = new PageNavigation_LAX(driver);
-            }
-
-            return instance;
-        }
     }
 
     #endregion PageNavigation Common Implementation class
@@ -673,8 +693,11 @@ namespace RKCIUIAutomation.Page.Navigation
         { }
 
         public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Deficiency_Notice);
+
         public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_Deficiency_Notice);
-    
+
+        public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
+
     }
 }
 
