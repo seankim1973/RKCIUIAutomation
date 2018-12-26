@@ -1,6 +1,9 @@
 ﻿using NUnit.Framework;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.QASearch;
+using System;
+using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Test.DIR
@@ -436,6 +439,35 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Packages();
             //QaRcrdCtrl_QaDIR.VerifyPackage_After_Click_CreateBtn_forRow();
+            AssertAll();
+        }
+    }
+
+    [TestFixture]
+    public class Verify_PDF_Report_View : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(TestCaseNumber, 2478991)]
+        [Property(Priority, "High")]
+        [Description("To validate function of Report View feature for DIR.")]
+        public void PDF_Report_View()
+        {
+            //Simple WF
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveOnly_DIR();
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewReport_forDIR_inRevise(dirNumber));
+            ClickEditBtnForRow();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewReport_forDIR_inQcReview(dirNumber));
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewReport_forDIR_inAuthorization(dirNumber));
+            //AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            LogoutToLoginPage();
+
             AssertAll();
         }
     }
