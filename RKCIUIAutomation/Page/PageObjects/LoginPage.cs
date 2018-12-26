@@ -64,6 +64,8 @@ namespace RKCIUIAutomation.Page.PageObjects
 
         public virtual void LoginUser(UserType userType)
         {
+            WaitForPageReady();
+
             if (Driver.Title.Contains("Log in"))
             {
                 VerifyPageIsLoaded(true, false);
