@@ -165,7 +165,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 builder = new Actions(Driver);
 
                 if (projAdminEnum != null)
-                {    
+                {
                     element = Driver.FindElement(GetNavMenuByLocator(projAdminEnum));
                     builder.MoveToElement(element).Perform();
                     clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum));
@@ -519,21 +519,42 @@ namespace RKCIUIAutomation.Page.Navigation
         {
             internal enum SubMenu_RecordControl
             {
-                [StringValue("QA")] QA
+                [StringValue("QA")] QA,
+                [StringValue("QC")] QC
             }
 
             public enum Menu
             {
-                [StringValue("QC")] QC,
+                [StringValue("Test Count")] Test_Count,
                 [StringValue("DIR Count")] DIR_Count,
+                [StringValue("Retaining Wall Backfill Quantity Tracker")] Retaining_Wall_Backfill_Quantity_Tracker,
+                [StringValue("Concrete Paving Quantity Tracker")] Concrete_Paving_Quantity_Tracker,
+                [StringValue("MPL Tracker")] MPL_Tracker,
+                [StringValue("Girder Tracker")] Girder_Tracker,
+                [StringValue("Weekly Environmental Monitoring")] Weekly_Environmental_Monitoring,
+                [StringValue("Daily Environmental Inspection")] Daily_Environmental_Inspection,
+                [StringValue("Weekly Environmental Inspection")] Weekly_Environmental_Inspection,
             }
 
             public class QA : RecordControl
             {
                 public new enum Menu
                 {
+                    [StringValue("QA Test - All")] QA_Test_All,
                     [StringValue("QA DIRs")] QA_DIRs,
-                    [StringValue("QA NCR")] QA_NCR
+                    [StringValue("QA NCR")] QA_NCR,
+                    [StringValue("QA Deficiency Notice")] QA_Deficiency_Notice,
+                }
+            }
+
+            public class QC : RecordControl
+            {
+                public new enum Menu
+                {
+                    [StringValue("QC Test - All")] QC_Test_All,
+                    [StringValue("QC DIRs")] QC_DIRs,
+                    [StringValue("QC NCR")] QC_NCR,
+                    [StringValue("QC Deficiency Notice")] QC_Deficiency_Notice,
                 }
             }
         }

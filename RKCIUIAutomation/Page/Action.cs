@@ -788,66 +788,50 @@ namespace RKCIUIAutomation.Page
             return isDisplayed;
         }
 
-        [ThreadStatic]
-        private string PageTitle;
-
-        private bool IsHeadingDisplayed(By elementByLocator)
-        {
-            IWebElement element = GetElement(elementByLocator);
-            bool isDisplayed = false;
-
-            if (element != null)
-            {
-                PageTitle = element.Text;
-                isDisplayed = true;
-            }
-
-            return isDisplayed;
-        }
-
         public bool VerifyPageTitle(string expectedPageTitle)
         {
             bool isMatchingTitle = false;
             bool isDisplayed = false;
-            By headingElement = null;
+            string actualHeading = string.Empty;
+            string logMsg = string.Empty;
+            IWebElement headingElem = null;
 
-            //headingElement = By.XPath($"//h3[contains(text(),\"{expectedPageTitle}\")]");
-            //isDisplayed = IsHeadingDisplayed(headingElement);
-            //if (!isDisplayed)
-            //{
-            //    headingElement = By.XPath($"//h2[contains(text(),\"{expectedPageTitle}\")]");
-            //    isDisplayed = IsHeadingDisplayed(headingElement);
-            //    if (!isDisplayed)
-            //    {
-            //        LogDebug($"Page Title element with h2 or h3 tag containing text \"{expectedPageTitle}\" was not found.");
-
-            headingElement = By.TagName("h3");
-            isDisplayed = IsHeadingDisplayed(headingElement);
-            if (!isDisplayed)
+            try
             {
-                headingElement = By.TagName("h2");
-                isDisplayed = IsHeadingDisplayed(headingElement);
-                if (!isDisplayed)
+                WaitForPageReady();
+
+                headingElem = Driver.FindElement(By.XPath("//h3"))
+                    ?? Driver.FindElement(By.XPath("//h2"))
+                    ?? Driver.FindElement(By.XPath("//h4"));
+
+                isDisplayed = headingElem?.Displayed == true;
+
+                if (isDisplayed)
                 {
-                    string logMsg = $"Could not find any Page element with h2 or h3 tag";
+                    actualHeading = headingElem.Text;
+                    isMatchingTitle = actualHeading.Equals(expectedPageTitle);
+
+                    logMsg = isMatchingTitle
+                        ? $"## Page Title is as expected: {actualHeading}"
+                        : $"Page titles did not match: Expected: {expectedPageTitle}, Actual: {actualHeading}";
+
+                    if (!isMatchingTitle)
+                    {
+                        BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
+                    }
+                }
+                else
+                {
+                    logMsg = $"Could not find page title with h2, h3 or h4 tag";
                     BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                 }
             }
-            //    }
-            //}
-
-            isMatchingTitle = PageTitle.Equals(expectedPageTitle);
-
-            if (isDisplayed)
+            catch (Exception e)
             {
-                LogInfo($"## Expect Page Title: {expectedPageTitle}<br>## Actual Page Title: {PageTitle}", isMatchingTitle);
-
-                if (!isMatchingTitle)
-                {
-                    string logMsg = $"Page titles did not match: Expected: {expectedPageTitle}, Actual: {PageTitle}";
-                    BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
-                }
+                log.Debug(e.StackTrace);
             }
+
+            LogInfo(logMsg, isMatchingTitle);
 
             return isMatchingTitle;
         }
@@ -860,7 +844,6 @@ namespace RKCIUIAutomation.Page
             bool isPageLoaded = true;
             string pageUrl = GetPageUrl();
             //Console.WriteLine($"##### IsPageLoadedSuccessfully - Page URL: {pageUrl}");
-
             try
             {
                 By serverErrorH1Tag = By.XPath("//h1[contains(text(),'Server Error')]");

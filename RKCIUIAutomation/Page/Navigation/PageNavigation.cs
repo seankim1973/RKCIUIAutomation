@@ -145,13 +145,39 @@ namespace RKCIUIAutomation.Page.Navigation
         void ReportsNotices_General_DN();
 
         // Record Control Menu - LAX
+        void RecordControl_QA_QaTest_All();
+
         void RecordControl_QA_QaDIRs();
 
         void RecordControl_QA_QaNCR();
 
-        void RecordControl_QC();
+        void RecordControl_QA_QaDeficiency_Notice();
+
+        void RecordControl_QC_QcTest_All();
+
+        void RecordControl_QC_QcDIRs();
+
+        void RecordControl_QC_QcNCR();
+
+        void RecordControl_QC_QcDeficiency_Notice();
+
+        void RecordControl_Test_Count();
 
         void RecordControl_DIR_Count();
+
+        void RecordControl_Retaining_Wall_Backfill_Quantity_Tracker();
+
+        void RecordControl_Concrete_Paving_Quantity_Tracker();
+
+        void RecordControl_MPL_Tracker();
+
+        void RecordControl_Girder_Tracker();
+
+        void RecordControl_Weekly_Environmental_Monitoring();
+
+        void RecordControlDaily_Environmental_Inspection();
+
+        void RecordControl_Weekly_Environmental_Inspection();
 
         // QA Search
         void QASearch_QA_Tests();
@@ -495,14 +521,40 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QARecordControl_Environmental_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.Environmental_Document);
 
         // Record Control Menu - LAX
+
+        public virtual void RecordControl_QA_QaTest_All() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Test_All);
+
         public virtual void RecordControl_QA_QaDIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
 
         public virtual void RecordControl_QA_QaNCR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_NCR);
 
-        public virtual void RecordControl_QC() => Navigate.Menu(NavMenu.RecordControl.Menu.QC);
+        public virtual void RecordControl_QA_QaDeficiency_Notice() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Deficiency_Notice);
+
+        public virtual void RecordControl_QC_QcTest_All() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Test_All);
+
+        public virtual void RecordControl_QC_QcDIRs() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_DIRs);
+
+        public virtual void RecordControl_QC_QcNCR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_NCR);
+
+        public virtual void RecordControl_QC_QcDeficiency_Notice() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Deficiency_Notice);
+
+        public virtual void RecordControl_Test_Count() => Navigate.Menu(NavMenu.RecordControl.Menu.Test_Count);
 
         public virtual void RecordControl_DIR_Count() => Navigate.Menu(NavMenu.RecordControl.Menu.DIR_Count);
 
+        public virtual void RecordControl_Retaining_Wall_Backfill_Quantity_Tracker() => Navigate.Menu(NavMenu.RecordControl.Menu.Retaining_Wall_Backfill_Quantity_Tracker);
+
+        public virtual void RecordControl_Concrete_Paving_Quantity_Tracker() => Navigate.Menu(NavMenu.RecordControl.Menu.Concrete_Paving_Quantity_Tracker);
+
+        public virtual void RecordControl_MPL_Tracker() => Navigate.Menu(NavMenu.RecordControl.Menu.MPL_Tracker);
+
+        public virtual void RecordControl_Girder_Tracker() => Navigate.Menu(NavMenu.RecordControl.Menu.Girder_Tracker);
+
+        public virtual void RecordControl_Weekly_Environmental_Monitoring() => Navigate.Menu(NavMenu.RecordControl.Menu.Weekly_Environmental_Monitoring);
+
+        public virtual void RecordControlDaily_Environmental_Inspection() => Navigate.Menu(NavMenu.RecordControl.Menu.Daily_Environmental_Inspection);
+
+        public virtual void RecordControl_Weekly_Environmental_Inspection() => Navigate.Menu(NavMenu.RecordControl.Menu.Weekly_Environmental_Inspection);
 
         // QA Search
         public virtual void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QASearch.Menu.Daily_Inspection_Report);
@@ -692,9 +744,9 @@ namespace RKCIUIAutomation.Page.Navigation
         public PageNavigation_LAX(IWebDriver driver) : base(driver)
         { }
 
-        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Deficiency_Notice);
+        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Deficiency_Notice);
 
-        public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_Deficiency_Notice);
+        public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Deficiency_Notice);
 
         public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
 
