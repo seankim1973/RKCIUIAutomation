@@ -119,7 +119,7 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToGeneralNcrPage();
             QaRcrdCtrl_GeneralNCR.ClickBtn_New();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc());
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc(), "VerifyReqFieldErrorLabelsForNewDoc");
             QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward();
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
