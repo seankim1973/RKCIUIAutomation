@@ -57,7 +57,7 @@ namespace RKCIUIAutomation.Test.Smoke
         [Category(Component.DesignDoc_CommentReview)]
         [Property(TestCaseNumber, 123456)]
         [Property(Priority, "Priority 1")]
-        [Description("Verify Comment Review Regular Comment")]
+        [Description("Verify Comment Review No Comment")]
         public void CommentReviewNoComment()
         {
             WF_DesignDocCommentReview.TCWF_CommentReviewNoComment();
