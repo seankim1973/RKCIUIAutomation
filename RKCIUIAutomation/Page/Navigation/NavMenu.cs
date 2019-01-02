@@ -15,157 +15,166 @@ namespace RKCIUIAutomation.Page.Navigation
             Enum childOfSubMenuEnum = null;
             Enum subOfChildMenuEnum = null;
 
-            Actions builder;
-            IWebElement element;
-
-            var reflectedPageType = navEnum.GetType().ReflectedType;
+            Type reflectedPageType = null;
             By clickLocator = null;
-
-            if (reflectedPageType.Equals(typeof(Project)) || reflectedPageType.IsSubclassOf(typeof(Project)))
-            {
-                mainNavEnum = MainNav.Menu.Project;
-
-                if (reflectedPageType.Equals(typeof(Project.Administration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration)))
-                {
-                    subOfMainNavEnum = Project.SubMenu_Project.Administration;
-
-                    if (reflectedPageType.Equals(typeof(Project.Administration.UserManagement)))
-                    {
-                        childOfSubMenuEnum = Project.Administration.SubMenu_Administration.User_Management;
-                    }
-                    else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration.SystemConfiguration)))
-                    {
-                        childOfSubMenuEnum = Project.Administration.SubMenu_Administration.System_Configuration;
-
-                        if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.Equipment)))
-                        {
-                            subOfChildMenuEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Equipment;
-                        }
-                        else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.GradeManagement)))
-                        {
-                            subOfChildMenuEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Grade_Management;
-                        }
-                    }
-                    else if (reflectedPageType.Equals(typeof(Project.Administration.AdminTools)))
-                    {
-                        childOfSubMenuEnum = Project.Administration.SubMenu_Administration.Admin_Tools;
-                    }
-                }
-            }
-            else if (reflectedPageType.Equals(typeof(QALab)))
-            {
-                mainNavEnum = MainNav.Menu.QA_Lab;
-            }
-            else if (reflectedPageType.Equals(typeof(OV)))
-            {
-                mainNavEnum = MainNav.Menu.OV;
-            }
-            else if (reflectedPageType.Equals(typeof(QARecordControl)))
-            {
-                mainNavEnum = MainNav.Menu.QA_Record_Control;
-            }
-            else if (reflectedPageType.Equals(typeof(QAEngineer)))
-            {
-                mainNavEnum = MainNav.Menu.QA_Engineer;
-            }
-            else if (reflectedPageType.Equals(typeof(ReportsNotices)))
-            {
-                mainNavEnum = MainNav.Menu.Reports_Notices;
-            }
-            else if (reflectedPageType.Equals(typeof(QASearch)))
-            {
-                mainNavEnum = MainNav.Menu.QA_Search;
-            }
-            else if (reflectedPageType.Equals(typeof(QualitySearch)) || reflectedPageType.IsSubclassOf(typeof(QualitySearch)))
-            {
-                mainNavEnum = MainNav.Menu.Quality_Search;
-
-                if (reflectedPageType.Equals(typeof(QualitySearch.QA)))
-                {
-                    subOfMainNavEnum = QualitySearch.SubMenu_QualitySearch.QA;
-                }
-                else if (reflectedPageType.Equals(typeof(QualitySearch.QC)))
-                {
-                    subOfMainNavEnum = QualitySearch.SubMenu_QualitySearch.QC;
-                }
-            }
-            else if (reflectedPageType.Equals(typeof(QAField)))
-            {
-                mainNavEnum = MainNav.Menu.QA_Field;
-            }
-            else if (reflectedPageType.Equals(typeof(Owner)))
-            {
-                mainNavEnum = MainNav.Menu.Owner;
-            }
-            else if (reflectedPageType.Equals(typeof(MaterialMixCodes)))
-            {
-                mainNavEnum = MainNav.Menu.Material_Mix_Codes;
-            }
-            else if (reflectedPageType.Equals(typeof(ControlPoint)))
-            {
-                mainNavEnum = MainNav.Menu.Control_Point;
-            }
-            else if (reflectedPageType.Equals(typeof(RMCenter)))
-            {
-                mainNavEnum = MainNav.Menu.RM_Center;
-            }
-            else if (reflectedPageType.Equals(typeof(QAInbox)))
-            {
-                mainNavEnum = MainNav.Menu.QA_Inbox;
-            }
-            else if (reflectedPageType.Equals(typeof(DOTInbox)))
-            {
-                mainNavEnum = MainNav.Menu.DOT_Inbox;
-            }
-            else if (reflectedPageType.Equals(typeof(OwnerInbox)))
-            {
-                mainNavEnum = MainNav.Menu.Owner_Inbox;
-            }
-            else if (reflectedPageType.Equals(typeof(DevInbox)))
-            {
-                mainNavEnum = MainNav.Menu.Dev_Inbox;
-            }
-            else if (reflectedPageType.Equals(typeof(RFI)))
-            {
-                mainNavEnum = MainNav.Menu.RFI;
-            }
-            else if (reflectedPageType.Equals(typeof(QCLab)))
-            {
-                mainNavEnum = MainNav.Menu.QC_Lab;
-            }
-            else if (reflectedPageType.Equals(typeof(RecordControl)) || reflectedPageType.IsSubclassOf(typeof(RecordControl)))
-            {
-                mainNavEnum = MainNav.Menu.Record_Control;
-
-                if (reflectedPageType.Equals(typeof(RecordControl.QA)))
-                {
-                    subOfMainNavEnum = RecordControl.SubMenu_RecordControl.QA;
-                }
-                else if (reflectedPageType.Equals(typeof(RecordControl.QC)))
-                {
-                    subOfMainNavEnum = RecordControl.SubMenu_RecordControl.QC;
-                }
-            }
-            else if (reflectedPageType.Equals(typeof(QCRecordControl)))
-            {
-                mainNavEnum = MainNav.Menu.QC_Record_Control;
-            }
-            else if (reflectedPageType.Equals(typeof(QCEngineer)))
-            {
-                mainNavEnum = MainNav.Menu.QC_Engineer;
-            }
-            else if (reflectedPageType.Equals(typeof(QCSearch)))
-            {
-                mainNavEnum = MainNav.Menu.QC_Search;
-            }
-            else if (reflectedPageType.Equals(typeof(ELVIS)))
-            {
-                mainNavEnum = MainNav.Menu.ELVIS;
-            }
+            IWebElement element;
+            Actions builder;
 
             try
             {
-                VerifyPageIsLoaded();
+                try
+                {
+                    WaitForPageReady();
+                }
+                catch (Exception)
+                {
+                }
+
+                reflectedPageType = navEnum.GetType().ReflectedType;
+                
+                if (reflectedPageType.Equals(typeof(Project)) || reflectedPageType.IsSubclassOf(typeof(Project)))
+                {
+                    mainNavEnum = MainNav.Menu.Project;
+
+                    if (reflectedPageType.Equals(typeof(Project.Administration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration)))
+                    {
+                        subOfMainNavEnum = Project.SubMenu_Project.Administration;
+
+                        if (reflectedPageType.Equals(typeof(Project.Administration.UserManagement)))
+                        {
+                            childOfSubMenuEnum = Project.Administration.SubMenu_Administration.User_Management;
+                        }
+                        else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration.SystemConfiguration)))
+                        {
+                            childOfSubMenuEnum = Project.Administration.SubMenu_Administration.System_Configuration;
+
+                            if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.Equipment)))
+                            {
+                                subOfChildMenuEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Equipment;
+                            }
+                            else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.GradeManagement)))
+                            {
+                                subOfChildMenuEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Grade_Management;
+                            }
+                        }
+                        else if (reflectedPageType.Equals(typeof(Project.Administration.AdminTools)))
+                        {
+                            childOfSubMenuEnum = Project.Administration.SubMenu_Administration.Admin_Tools;
+                        }
+                    }
+                }
+                else if (reflectedPageType.Equals(typeof(QALab)))
+                {
+                    mainNavEnum = MainNav.Menu.QA_Lab;
+                }
+                else if (reflectedPageType.Equals(typeof(OV)))
+                {
+                    mainNavEnum = MainNav.Menu.OV;
+                }
+                else if (reflectedPageType.Equals(typeof(QARecordControl)))
+                {
+                    mainNavEnum = MainNav.Menu.QA_Record_Control;
+                }
+                else if (reflectedPageType.Equals(typeof(QAEngineer)))
+                {
+                    mainNavEnum = MainNav.Menu.QA_Engineer;
+                }
+                else if (reflectedPageType.Equals(typeof(ReportsNotices)))
+                {
+                    mainNavEnum = MainNav.Menu.Reports_Notices;
+                }
+                else if (reflectedPageType.Equals(typeof(QASearch)))
+                {
+                    mainNavEnum = MainNav.Menu.QA_Search;
+                }
+                else if (reflectedPageType.Equals(typeof(QualitySearch)) || reflectedPageType.IsSubclassOf(typeof(QualitySearch)))
+                {
+                    mainNavEnum = MainNav.Menu.Quality_Search;
+
+                    if (reflectedPageType.Equals(typeof(QualitySearch.QA)))
+                    {
+                        subOfMainNavEnum = QualitySearch.SubMenu_QualitySearch.QA;
+                    }
+                    else if (reflectedPageType.Equals(typeof(QualitySearch.QC)))
+                    {
+                        subOfMainNavEnum = QualitySearch.SubMenu_QualitySearch.QC;
+                    }
+                }
+                else if (reflectedPageType.Equals(typeof(QAField)))
+                {
+                    mainNavEnum = MainNav.Menu.QA_Field;
+                }
+                else if (reflectedPageType.Equals(typeof(Owner)))
+                {
+                    mainNavEnum = MainNav.Menu.Owner;
+                }
+                else if (reflectedPageType.Equals(typeof(MaterialMixCodes)))
+                {
+                    mainNavEnum = MainNav.Menu.Material_Mix_Codes;
+                }
+                else if (reflectedPageType.Equals(typeof(ControlPoint)))
+                {
+                    mainNavEnum = MainNav.Menu.Control_Point;
+                }
+                else if (reflectedPageType.Equals(typeof(RMCenter)))
+                {
+                    mainNavEnum = MainNav.Menu.RM_Center;
+                }
+                else if (reflectedPageType.Equals(typeof(QAInbox)))
+                {
+                    mainNavEnum = MainNav.Menu.QA_Inbox;
+                }
+                else if (reflectedPageType.Equals(typeof(DOTInbox)))
+                {
+                    mainNavEnum = MainNav.Menu.DOT_Inbox;
+                }
+                else if (reflectedPageType.Equals(typeof(OwnerInbox)))
+                {
+                    mainNavEnum = MainNav.Menu.Owner_Inbox;
+                }
+                else if (reflectedPageType.Equals(typeof(DevInbox)))
+                {
+                    mainNavEnum = MainNav.Menu.Dev_Inbox;
+                }
+                else if (reflectedPageType.Equals(typeof(RFI)))
+                {
+                    mainNavEnum = MainNav.Menu.RFI;
+                }
+                else if (reflectedPageType.Equals(typeof(QCLab)))
+                {
+                    mainNavEnum = MainNav.Menu.QC_Lab;
+                }
+                else if (reflectedPageType.Equals(typeof(RecordControl)) || reflectedPageType.IsSubclassOf(typeof(RecordControl)))
+                {
+                    mainNavEnum = MainNav.Menu.Record_Control;
+
+                    if (reflectedPageType.Equals(typeof(RecordControl.QA)))
+                    {
+                        subOfMainNavEnum = RecordControl.SubMenu_RecordControl.QA;
+                    }
+                    else if (reflectedPageType.Equals(typeof(RecordControl.QC)))
+                    {
+                        subOfMainNavEnum = RecordControl.SubMenu_RecordControl.QC;
+                    }
+                }
+                else if (reflectedPageType.Equals(typeof(QCRecordControl)))
+                {
+                    mainNavEnum = MainNav.Menu.QC_Record_Control;
+                }
+                else if (reflectedPageType.Equals(typeof(QCEngineer)))
+                {
+                    mainNavEnum = MainNav.Menu.QC_Engineer;
+                }
+                else if (reflectedPageType.Equals(typeof(QCSearch)))
+                {
+                    mainNavEnum = MainNav.Menu.QC_Search;
+                }
+                else if (reflectedPageType.Equals(typeof(ELVIS)))
+                {
+                    mainNavEnum = MainNav.Menu.ELVIS;
+                }
+
+                //VerifyPageIsLoaded();
                 JsHover(GetMainNavMenuByLocator(mainNavEnum));
                 builder = new Actions(Driver);
 

@@ -824,6 +824,44 @@ namespace RKCIUIAutomation.Page.Workflows
         public LinkCoverageWF_LAX(IWebDriver driver) : base(driver)
         {
         }
+
+        /// <summary>
+        /// Common workflow method for Tenants:
+        /// </summary>
+        public override void _NavigateToVerifyQARecordControlMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.QARecordControl_QA_DIRs();
+            AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Inspector's Daily Report"));
+            ClickNew();
+            ClickCancel();
+            NavigateToPage.QARecordControl_General_NCR();
+            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            ClickNew();
+            ClickCancel();
+            NavigateToPage.QARecordControl_General_CDR();
+            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
+            ClickNew();
+            ClickCancel();
+            NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
+            AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
+            ClickNew();
+            ClickCancel();
+            NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
+            AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
+            ClickNew();
+            ClickCancel();
+            NavigateToPage.QARecordControl_MPL_Tracker();
+            AddAssertionToList(VerifyPageTitle("MPL Tracker"));
+            ClickNew();
+            ClickCancel();
+            NavigateToPage.QARecordControl_Girder_Tracker();
+            AddAssertionToList(VerifyPageTitle("Girder Tracker"));
+            ClickNew();
+            ClickCancel();
+            AssertAll();
+        }
+
     }
 
     #endregion Implementation specific to LAX

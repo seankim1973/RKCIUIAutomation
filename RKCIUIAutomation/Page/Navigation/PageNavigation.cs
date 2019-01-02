@@ -779,9 +779,17 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Deficiency_Notice);
 
-        public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Deficiency_Notice);
+        public override void QARecordControl_General_NCR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_NCR);
 
         public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
+
+
+        public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Deficiency_Notice);
+
+        public override void QCRecordControl_QC_NCR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_NCR);
+
+        public override void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_DIRs);
+
 
         public override void QALab_Technician_Random() => Navigate.Menu(NavMenu.Lab.Menu.Technician_Random);
 

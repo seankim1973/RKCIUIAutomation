@@ -30,7 +30,7 @@ namespace RKCIUIAutomation.Test.DIR
         //For Tenants: GLX, I15SB, I15Tech, LAX
         [Test]
         [Category(Component.DIR)]
-        //[Property(Component2, Component.DIR_WF_Simple_QA)]
+        [Property(Component2, Component.DIR_WF_Simple_QA)]
         [Property(TestCaseNumber, 2187591)]
         [Property(Priority, "High")]
         [Description("To validate creating and saving a DIR (Daily Inspection Report) document in Simple Workflow.")]

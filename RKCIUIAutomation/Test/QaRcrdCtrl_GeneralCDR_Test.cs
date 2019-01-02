@@ -12,7 +12,8 @@ namespace RKCIUIAutomation.Test.CDR
     {
         [Test]
         [Category(Component.CDR)]
-        [Property(TestCaseNumber, 2187609)]
+        [Property(Component2,Component.CDR_WF_Simple)]
+        [Property(TestCaseNumber, 2584703)]
         [Property(Priority, "High")]
         [Description("To validate simple workflow for CDR module end-to-end.")]
         public void CDR_SimpleWF_End_To_End()
@@ -71,7 +72,7 @@ namespace RKCIUIAutomation.Test.CDR
         [Test]
         [Category(Component.CDR)]
         [Property(Component2, Component.CDR_WF_Complex)]
-        [Property(TestCaseNumber, 2187609)]
+        [Property(TestCaseNumber, 2584942)]
         [Property(Priority, "High")]
         [Description("To validate complex workflow for CDR module end-to-end.")]
         public void CDR_ComplexWF_End_To_End()

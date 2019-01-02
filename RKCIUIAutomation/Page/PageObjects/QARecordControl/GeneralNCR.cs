@@ -512,9 +512,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     break;
             }
 
+            EnterText(GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer}");
+
             ClickBtn_Sign(signBtn);
             ClickBtn_SignaturePanel_OK();
-            EnterText(GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer}");
 
             if (reviewer == Reviewer.EngineerOfRecord || reviewer == Reviewer.Owner)
             {
