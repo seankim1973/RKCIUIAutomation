@@ -125,68 +125,68 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.My_Details();
-            AddAssertionToList(VerifyPageTitle("Account Details"));
+            AddAssertionToList(VerifyPageTitle("Account Details"), "Verify Page Title : My_Details");
             //Qms Document - based on Tenant
             NavigateToPage.Qms_Document();
-            AddAssertionToList(VerifyPageTitle("QMS Documents"));
+            AddAssertionToList(VerifyPageTitle("QMS Documents"), "Verify Page Title : Qms_Document");
 
             //Project>Administration
             NavigateToPage.Admin_Project_Details();
-            AddAssertionToList(VerifyPageTitle("Project"));
+            AddAssertionToList(VerifyPageTitle("Project"), "Verify Page Title : Admin_Project_Details");
             NavigateToPage.Admin_Companies();
-            AddAssertionToList(VerifyPageTitle("Companies"));
+            AddAssertionToList(VerifyPageTitle("Companies"), "Verify Page Title : Admin_Companies");
             NavigateToPage.Admin_Contracts();
-            AddAssertionToList(VerifyPageTitle("Contracts"));
+            AddAssertionToList(VerifyPageTitle("Contracts"), "Verify Page Title : Admin_Contracts");
             NavigateToPage.Admin_Menu_Editor();
-            AddAssertionToList(VerifyPageTitle("Menu Editor"));
+            AddAssertionToList(VerifyPageTitle("Menu Editor"), "Verify Page Title : Admin_Menu_Editor");
             NavigateToPage.Admin_Suport();
-            AddAssertionToList(VerifyPageTitle("Cache Management"));
+            AddAssertionToList(VerifyPageTitle("Cache Management"), "Verify Page Title : Admin_Suport");
 
             //Project>Administration>User Management
             NavigateToPage.UserMgmt_Roles();
-            AddAssertionToList(VerifyPageTitle("Roles"));
+            AddAssertionToList(VerifyPageTitle("Roles"), "Verify Page Title : UserMgmt_Roles");
             NavigateToPage.UserMgmt_Users();
-            AddAssertionToList(VerifyPageTitle("Users"));
+            AddAssertionToList(VerifyPageTitle("Users"), "Verify Page Title : UserMgmt_Users");
             NavigateToPage.UserMgmt_Access_Rights();
-            AddAssertionToList(VerifyPageTitle("Access Rights"));
+            AddAssertionToList(VerifyPageTitle("Access Rights"), "Verify Page Title : UserMgmt_Access_Rights");
 
             //Project>Administration>System Configuration
             NavigateToPage.SysConfig_Disciplines();
-            AddAssertionToList(VerifyPageTitle("Disciplines"));
+            AddAssertionToList(VerifyPageTitle("Disciplines"), "Verify Page Title : SysConfig_Disciplines");
             NavigateToPage.SysConfig_Submittal_Actions();
-            AddAssertionToList(VerifyPageTitle("SubmittalActions"));
+            AddAssertionToList(VerifyPageTitle("SubmittalActions"), "Verify Page Title : SysConfig_Submittal_Actions");
             NavigateToPage.SysConfig_Submittal_Requirements();
-            AddAssertionToList(VerifyPageTitle("Submittal Requirments"));
+            AddAssertionToList(VerifyPageTitle("Submittal Requirments"), "Verify Page Title : SysConfig_Submittal_Requirements");
             NavigateToPage.SysConfig_Submittal_Types();
-            AddAssertionToList(VerifyPageTitle("SubmittalTypes"));
+            AddAssertionToList(VerifyPageTitle("SubmittalTypes"), "Verify Page Title : SysConfig_Submittal_Types");
             NavigateToPage.SysConfig_CVL_Lists();
-            AddAssertionToList(VerifyPageTitle("CVL List"));
+            AddAssertionToList(VerifyPageTitle("CVL List"), "Verify Page Title : SysConfig_CVL_Lists");
             NavigateToPage.SysConfig_CVL_List_Items();
-            AddAssertionToList(VerifyPageTitle("CVL List Items"));
+            AddAssertionToList(VerifyPageTitle("CVL List Items"), "Verify Page Title : SysConfig_CVL_List_Items");
             NavigateToPage.SysConfig_Notifications();
-            AddAssertionToList(VerifyPageTitle("Notifications"));
+            AddAssertionToList(VerifyPageTitle("Notifications"), "Verify Page Title : SysConfig_Notifications");
             NavigateToPage.SysConfig_Sieves();
-            AddAssertionToList(VerifyPageTitle("Sieves"));
+            AddAssertionToList(VerifyPageTitle("Sieves"), "Verify Page Title : SysConfig_Sieves");
             NavigateToPage.SysConfig_Gradations();
-            AddAssertionToList(VerifyPageTitle("Gradations"));
+            AddAssertionToList(VerifyPageTitle("Gradations"), "Verify Page Title : SysConfig_Gradations");
 
             //Project>Administration>System Configuration>Equipment
             NavigateToPage.SysConfig_Equipment_Makes();
-            AddAssertionToList(VerifyPageTitle("Makes"));
+            AddAssertionToList(VerifyPageTitle("Makes"), "Verify Page Title : SysConfig_Equipment_Makes");
             NavigateToPage.SysConfig_Equipment_Models();
-            AddAssertionToList(VerifyPageTitle("EquipmentModels"));
+            AddAssertionToList(VerifyPageTitle("EquipmentModels"), "Verify Page Title : SysConfig_Equipment_Models");
             NavigateToPage.SysConfig_Equipment_Types();
-            AddAssertionToList(VerifyPageTitle("Equipment Types"));
+            AddAssertionToList(VerifyPageTitle("Equipment Types"), "Verify Page Title : SysConfig_Equipment_Types");
 
             //Project>Administration>System Configuration>Grade Management
             NavigateToPage.SysConfig_Grade_Types();
-            AddAssertionToList(VerifyPageTitle("Grade Type"));
+            AddAssertionToList(VerifyPageTitle("Grade Type"), "Verify Page Title : SysConfig_Grade_Types");
             NavigateToPage.SysConfig_Grades();
-            AddAssertionToList(VerifyPageTitle("Grades"));
+            AddAssertionToList(VerifyPageTitle("Grades"), "Verify Page Title : SysConfig_Grades");
 
             //Project>Administration>Admin Tools
             NavigateToPage.AdminTools_Locked_Records();
-            AddAssertionToList(VerifyPageTitle("Locked Records"));
+            AddAssertionToList(VerifyPageTitle("Locked Records"), "Verify Page Title : AdminTools_Locked_Records");
             AssertAll();
         }
 

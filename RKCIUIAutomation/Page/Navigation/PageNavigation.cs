@@ -647,7 +647,6 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QCSearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QCSearch.Menu.Daily_Inspection_Report);
 
         public virtual void QCSearch_DIR_Summary_Report() => Navigate.Menu(NavMenu.QCSearch.Menu.DIR_Summary_Report);
-
     }
 
     #endregion PageNavigation Common Implementation class
@@ -709,8 +708,6 @@ namespace RKCIUIAutomation.Page.Navigation
         public override void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_IDRs);
 
         public override void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QualitySearch.Menu.Inspector_Daily_Report);
-
-
     }
 
     #endregion Implementation specific to GLX
@@ -749,8 +746,7 @@ namespace RKCIUIAutomation.Page.Navigation
         public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Deficiency_Notice);
 
         public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
-
     }
 }
 
-    #endregion Implementation specific to LAX
+#endregion Implementation specific to LAX

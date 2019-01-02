@@ -120,7 +120,7 @@ namespace RKCIUIAutomation.Base
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
             string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
-            string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
+            string _reporter = Parameters.Get("Reporter", $"{Reporter.Html}");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
             testPlatform = Configs.GetTestRunEnv<TestPlatform>(_testPlatform);
@@ -131,7 +131,10 @@ namespace RKCIUIAutomation.Base
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
-            testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local) ? TestPlatform.Windows : testPlatform;
+            testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local)
+                ? TestPlatform.Windows
+                : testPlatform;
+
             DetermineReportFilePath();
 
             if (hiptest)

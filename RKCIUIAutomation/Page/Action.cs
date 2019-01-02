@@ -803,8 +803,13 @@ namespace RKCIUIAutomation.Page
                 headingElem = Driver.FindElement(By.XPath("//h3"))
                     ?? Driver.FindElement(By.XPath("//h2"))
                     ?? Driver.FindElement(By.XPath("//h4"));
-
-                isDisplayed = headingElem?.Displayed == true;
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                isDisplayed = headingElem?.Displayed == true ? true : false;
 
                 if (isDisplayed)
                 {
@@ -825,10 +830,6 @@ namespace RKCIUIAutomation.Page
                     logMsg = $"Could not find page title with h2, h3 or h4 tag";
                     BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                 }
-            }
-            catch (Exception e)
-            {
-                log.Debug(e.StackTrace);
             }
 
             LogInfo(logMsg, isMatchingTitle);
