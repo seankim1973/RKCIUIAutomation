@@ -76,9 +76,18 @@ namespace RKCIUIAutomation.Page.Navigation
             {
                 mainNavEnum = MainNav.Menu.QA_Search;
             }
-            else if (reflectedPageType.Equals(typeof(QualitySearch)))
+            else if (reflectedPageType.Equals(typeof(QualitySearch)) || reflectedPageType.IsSubclassOf(typeof(QualitySearch)))
             {
                 mainNavEnum = MainNav.Menu.Quality_Search;
+
+                if (reflectedPageType.Equals(typeof(QualitySearch.QA)))
+                {
+                    subOfMainNavEnum = QualitySearch.SubMenu_QualitySearch.QA;
+                }
+                else if (reflectedPageType.Equals(typeof(QualitySearch.QC)))
+                {
+                    subOfMainNavEnum = QualitySearch.SubMenu_QualitySearch.QC;
+                }
             }
             else if (reflectedPageType.Equals(typeof(QAField)))
             {
@@ -177,27 +186,6 @@ namespace RKCIUIAutomation.Page.Navigation
                             builder.MoveToElement(element).Perform();
                         }
                     }
-                    //else if (projSysConfigEnum != null)
-                    //{
-                    //    element = Driver.FindElement(GetNavMenuByLocator(projSysConfigEnum));
-                    //    builder.MoveToElement(element).Perform();
-
-                    //    if (projSysConfigEquipEnum != null)
-                    //    {
-                    //        element = Driver.FindElement(GetNavMenuByLocator(projSysConfigEquipEnum));
-                    //        builder.MoveToElement(element).Perform();
-                    //    }
-                    //    else if (projSysConfigGradeMgmtEnum != null)
-                    //    {
-                    //        element = Driver.FindElement(GetNavMenuByLocator(projSysConfigGradeMgmtEnum));
-                    //        builder.MoveToElement(element).Perform();
-                    //    }
-                    //}
-                    //else if (projAdminToolsEnum != null)
-                    //{
-                    //    element = Driver.FindElement(GetNavMenuByLocator(projAdminToolsEnum));
-                    //    builder.MoveToElement(element).Perform();
-                    //}
                 }
                 else
                 {
@@ -211,7 +199,7 @@ namespace RKCIUIAutomation.Page.Navigation
             finally
             {
                 JsClickElement(clickLocator);
-                //Thread.Sleep(2000);
+
                 try
                 {
                     WaitForPageReady();
@@ -236,6 +224,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Reports & Notices")] Reports_Notices,
                 [StringValue("QA Search")] QA_Search,
                 [StringValue("Quality Search")] Quality_Search,
+                [StringValue("Lab")] Lab,
                 [StringValue("QA Field")] QA_Field,
                 [StringValue("Owner")] Owner,
                 [StringValue("Material/Mix Codes")] Material_Mix_Codes,
@@ -380,7 +369,20 @@ namespace RKCIUIAutomation.Page.Navigation
             }
         }
 
-        //QA Record Control Menu Navigation Enums
+        //Lab Menu Navigation Enums
+        public class Lab
+        {
+            public enum Menu
+            {
+                [StringValue("Technician Random")] Technician_Random,
+                [StringValue("BreakSheet Creation")] BreakSheet_Creation,
+                [StringValue("BreakSheet Legacy")] BreakSheet_Legacy,
+                [StringValue("Equipment Management")] Equipment_Management,
+                [StringValue("BreakSheet Forecast")] BreakSheet_Forecast
+            }
+        }
+
+        //Record Control Menu Navigation Enums
         public class QARecordControl
         {
             public enum Menu
@@ -436,10 +438,15 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QA Test Summary Search")] QA_Test_Summary_Search,
                 [StringValue("QA Guide Schedule Summary Report")] QA_Guide_Schedule_Summary_Report,
                 [StringValue("Inspection Deficiency Log Report")] Inspection_Deficiency_Log_Report,
+                [StringValue("PCC Mix Design Report")] PCC_Mix_Design_Report,
+                [StringValue("Hma Mix Design Summary")] Hma_Mix_Design_Summary,
                 [StringValue("Daily Inspection Report")] Daily_Inspection_Report,
+                [StringValue("Hma Mix Design Report")] Hma_Mix_Design_Report,
                 [StringValue("DIR Summary Report")] DIR_Summary_Report,
                 [StringValue("DIR Checklist Search")] DIR_Checklist_Search,
-                [StringValue("Ncr Log View")] Ncr_Log_View,
+                [StringValue("Material Traceability Matrix Search")] Material_Traceability_Matrix_Search,
+                [StringValue("NCR Log View")] NCR_Log_View,
+                [StringValue("CDR Log View")] CDR_Log_View,
                 [StringValue("QMS Document Search")] QMS_Document_Search,
                 [StringValue("Environmental Document Search")] Environmental_Document_Search,
                 [StringValue("QA/QO Test - Proctor Curve Report")] QAQO_Test_Proctor_Curve_Report,
@@ -450,6 +457,12 @@ namespace RKCIUIAutomation.Page.Navigation
         //Quality Search Menu Navigation Enums
         public class QualitySearch
         {
+            internal enum SubMenu_QualitySearch
+            {
+                [StringValue("QA")] QA,
+                [StringValue("QC")] QC
+            }
+
             public enum Menu
             {
                 [StringValue("Test Summary")] Test_Summary,
@@ -460,11 +473,40 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("IDR Summary Report")] IDR_Summary_Report,
                 [StringValue("Mix Design Summary - HMA")] Mix_Design_Summary_HMA,
                 [StringValue("Mix Design Report - HMA")] Mix_Design_Report_HMA,
-                [StringValue("Material Traceability Matrix")] Material_Traceability_Matrix,
                 [StringValue("NCR Log View")] NCR_Log_View,
                 [StringValue("CDR Log View")] CDR_Log_View,
-                [StringValue("QA/QO: Test - Proctor Curve Summary")] QA_QO_Test_Proctor_Curve_Summary,
-                [StringValue("QA/QO: Test - Proctor Curve Report")] QA_QO_Test_Proctor_Curve_Report
+                [StringValue("QA/QO: Test - Proctor Curve Summary")] QA_QO_Test_Proctor_Curve_Summary, //GLX
+                [StringValue("QA/QO: Test - Proctor Curve Report")] QA_QO_Test_Proctor_Curve_Report, //GLX
+                [StringValue("Deficiency Log View")] Deficiency_Log_View,
+                [StringValue("HMA Mix Design Summary")] HMA_Mix_Design_Summary,
+                [StringValue("HMA Mix Design Report")] HMA_Mix_Design_Report,
+                [StringValue("PCC Mix Design Summary")] PCC_Mix_Design_Summary,
+                [StringValue("Material Traceability Matrix")] Material_Traceability_Matrix, //LAX
+                [StringValue("Material Traceability Matrix Search")] Material_Traceability_Matrix_Search, //GLX
+                [StringValue("Test - Proctor Curve Summary")] Test_Proctor_Curve_Summary,
+                [StringValue("Test - Proctor Curve Report")] Test_Proctor_Curve_Report
+            }
+
+            public class QA : QualitySearch
+            {
+                public new enum Menu
+                {
+                    [StringValue("QA Test Search")] QA_Test_Search,
+                    [StringValue("QA Test Summary Search")] QA_Test_Summary_Search,
+                    [StringValue("QA Daily Inspection Report")] QA_Daily_Inspection_Report,
+                    [StringValue("QA DIR Summary Report")] QA_DIR_Summary_Report
+                }
+            }
+
+            public class QC : QualitySearch
+            {
+                public new enum Menu
+                {
+                    [StringValue("QC Test Search")] QC_Test_Search,
+                    [StringValue("QC Test Summary Search")] QC_Test_Summary_Search,
+                    [StringValue("QC Daily Inspection Report")] QC_Daily_Inspection_Report,
+                    [StringValue("QC DIR Summary Report")] QC_DIR_Summary_Report
+                }
             }
         }
 
