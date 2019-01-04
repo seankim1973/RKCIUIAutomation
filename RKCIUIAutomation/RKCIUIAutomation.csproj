@@ -443,7 +443,7 @@
     <Content Include="Lib\nunit3-junit.xslt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Test\Suite\LinkCoverage_Level1.txt" />
+    <Content Include="Test\Suite\Suite_LinkCoverage_Level1.txt" />
     <Content Include="Test\Suite\Suite_CDR.txt" />
     <Content Include="Test\Suite\Suite_Comment_Review.txt" />
     <Content Include="Test\Suite\Suite_DIR.txt" />
