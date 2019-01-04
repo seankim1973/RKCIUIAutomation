@@ -29,7 +29,7 @@ namespace RKCIUIAutomation.Base
 
                 if (reporter == Reporter.Klov)
                 {
-                    GetKlovReporter();
+                    klov = GetKlovReporter();
                     klov.InitMongoDbConnection(GridVmIP, 27017);
                     Instance.AttachReporter(htmlReporter, klov);
                 }
