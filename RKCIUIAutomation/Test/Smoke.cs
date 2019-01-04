@@ -29,7 +29,7 @@ namespace RKCIUIAutomation.Test.Smoke
             foreach (var url in pageUrls)
             {
                 loopCount++;
-                AddAssertionToList(VerifyUrlIsLoaded(url));
+                AddAssertionToList(VerifyUrlIsLoaded(url), $"Verify URL is Loaded - {url}");
             }
             LogInfo($"Assertion Loop Count: {loopCount}");
             AssertAll();
