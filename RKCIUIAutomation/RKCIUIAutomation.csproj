@@ -443,9 +443,13 @@
     <Content Include="Lib\nunit3-junit.xslt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Test\Suite_GeneralNCR.txt" />
-    <Content Include="Test\SampleTests.txt" />
-    <Content Include="Test\Smoke.txt" />
+    <Content Include="Test\Suite\LinkCoverage_Level1.txt" />
+    <Content Include="Test\Suite\Suite_CDR.txt" />
+    <Content Include="Test\Suite\Suite_Comment_Review.txt" />
+    <Content Include="Test\Suite\Suite_DIR.txt" />
+    <Content Include="Test\Suite\Suite_NCR.txt" />
+    <Content Include="Test\Suite\Suite_Regression.txt" />
+    <Content Include="Test\Suite\Suite_Smoke.txt" />
     <None Include="Jenkinsfile">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
