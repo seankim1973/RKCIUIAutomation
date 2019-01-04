@@ -12,6 +12,7 @@ namespace RKCIUIAutomation.Config
             public const string Breaksheet_Module = "Breaksheet_Module";
             public const string CDR = "CDR";
             public const string CDR_WF_Complex = "CDR_WF_Complex";
+            public const string CDR_WF_Simple = "CDR_WF_Simple";
             public const string Control_Point = "Control_Point";
             public const string Correspondence_Log = "Correspondence_Log";
             public const string CVL_List_Items = "CVL_List_Items";
@@ -117,6 +118,8 @@ namespace RKCIUIAutomation.Config
         private readonly List<string> Components_Garnet = new List<string>
         {
             Component.Garnet,
+            Component.CDR,
+            Component.CDR_WF_Simple,
             Component.DesignDoc_CommentReview,
             Component.RFI,
             Component.QAField,
@@ -166,6 +169,7 @@ namespace RKCIUIAutomation.Config
         {
             Component.SH249,
             Component.CDR,
+            Component.CDR_WF_Simple,
             Component.DesignDoc_CommentReview,
             Component.QAField,
             Component.NCR,
@@ -178,6 +182,7 @@ namespace RKCIUIAutomation.Config
         {
             Component.SGWay,
             Component.CDR,
+            Component.CDR_WF_Simple,
             Component.DesignDoc_CommentReview,
             Component.QAField,
             Component.NCR,
@@ -190,6 +195,7 @@ namespace RKCIUIAutomation.Config
         {
             Component.LAX,
             Component.CDR,
+            Component.CDR_WF_Complex,
             Component.NCR,
             Component.NCR_WF_Complex,
             Component.DIR,

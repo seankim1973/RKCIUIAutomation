@@ -982,10 +982,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         string actualID = actualRequiredFieldIDs[i];
                         reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
                         results.Add(reqFieldsMatch);
+
                         string tblRowNumber = tblRowIndex.ToString();
                         tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}" : tblRowNumber;
-
-                        idTable[tblRowIndex] = new string[2] { $"{tblRowNumber}:{actualID} : ", $"{reqFieldsMatch.ToString()}" };
+                        idTable[tblRowIndex] = new string[2] { $"{tblRowNumber}: {actualID} : ", $"{reqFieldsMatch.ToString()}" };
                     }
                 }
                 else
@@ -995,7 +995,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 }
 
                 reqFieldsMatch = results.Contains(false) ? false : true;
-                idTable[tblRowIndex + 1] = new string[2] { "Total Required Fields:", (results.Count).ToString() };
+                idTable[tblRowIndex + 1] = new string[2] {"Total Required Fields:", (results.Count).ToString()};
                 LogInfo(idTable, reqFieldsMatch);
             }
             catch (Exception e)

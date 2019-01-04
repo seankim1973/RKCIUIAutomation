@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
@@ -119,7 +120,7 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToGeneralNcrPage();
             QaRcrdCtrl_GeneralNCR.ClickBtn_New();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc());
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc(), "VerifyReqFieldErrorLabelsForNewDoc");
             QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward();
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
@@ -266,6 +267,7 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+            Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
         }

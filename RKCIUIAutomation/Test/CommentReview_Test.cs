@@ -6,36 +6,8 @@ using RKCIUIAutomation.Page.Workflows;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace RKCIUIAutomation.Test.Smoke
+namespace RKCIUIAutomation.Test.CommentReview
 {
-    [TestFixture]
-    public class Verify_LinkCoverage_Level1 : TestBase
-    {
-        [Test]
-        [Category(Component.Link_Coverage)]
-        [Property(TestCaseNumber, 2188206)]
-        [Property(Priority, "Priority 1")]
-        [Description("Verify Site Pages Load Successfully")]
-        public void LinkCoverage_Level1()
-        {
-            LoginAs(UserType.Bhoomi);
-
-            List<string> pageUrls = new List<string>();
-            pageUrls = GetNavMenuUrlList();
-            LogInfo($"URL Count: {pageUrls.Count}");
-
-            int loopCount = 0;
-
-            foreach (var url in pageUrls)
-            {
-                loopCount++;
-                AddAssertionToList(VerifyUrlIsLoaded(url), $"Verify URL is Loaded - {url}");
-            }
-            LogInfo($"Assertion Loop Count: {loopCount}");
-            AssertAll();
-        }
-    }
-
     [TestFixture]
     public class Verify_CommentReviewRegularComment : DesignDocumentWF
     {
@@ -64,6 +36,7 @@ namespace RKCIUIAutomation.Test.Smoke
         }
     }
 
+    /*
     [TestFixture]//Garnet GLX
     public class Test_CommentReviewRegularComment : DesignDocumentWF
     {
@@ -564,4 +537,5 @@ namespace RKCIUIAutomation.Test.Smoke
             Thread.Sleep(5000);
         }
     }
+    */
 }
