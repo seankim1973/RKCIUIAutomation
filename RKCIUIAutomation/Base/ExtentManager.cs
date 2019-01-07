@@ -29,8 +29,12 @@ namespace RKCIUIAutomation.Base
 
                 if (reporter == Reporter.Klov)
                 {
-                    klov = GetKlovReporter();
-                    klov.InitMongoDbConnection(GridVmIP, 27017);
+                    var gridHub = testPlatform == TestPlatform.GridLocal
+                        ? GridVmIP
+                        : "localhost";
+
+                    klov = GetKlovReporter(gridHub);
+                    klov.InitMongoDbConnection(gridHub, 27017);
                     Instance.AttachReporter(htmlReporter, klov);
                 }
                 else
@@ -63,7 +67,7 @@ namespace RKCIUIAutomation.Base
             return htmlReporter;
         }
 
-        private static KlovReporter GetKlovReporter()
+        private static KlovReporter GetKlovReporter(string gridHub)
         {
             try
             {
@@ -73,7 +77,7 @@ namespace RKCIUIAutomation.Base
                 {
                     ProjectName = "RKCIUIAutomation",
                     ReportName = reportName,
-                    KlovUrl = $"http://{GridVmIP}:8888"
+                    KlovUrl = $"http://{gridHub}:8888"
                 };
             }
             catch (Exception e)
