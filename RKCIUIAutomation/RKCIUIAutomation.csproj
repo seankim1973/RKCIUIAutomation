@@ -413,6 +413,7 @@
     <None Include="app.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Jenkinsfile" />
     <None Include="license" />
     <None Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -451,9 +452,6 @@
     <Content Include="Test\Suite\Suite_NCR.txt" />
     <Content Include="Test\Suite\Suite_Regression.txt" />
     <Content Include="Test\Suite\Suite_Smoke.txt" />
-    <None Include="Jenkinsfile">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Content Include="nunit3-junit.xslt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
