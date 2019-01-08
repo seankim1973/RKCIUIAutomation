@@ -1,3 +1,2 @@
-﻿#!\bin\groovy
-@Library('jenkins-shared-libs') _
+﻿@Library('jenkins-shared-libs') _
 nunitPipeline()
