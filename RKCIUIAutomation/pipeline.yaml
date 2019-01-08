@@ -1,0 +1,3 @@
+﻿type: nunit
+runTests: true
+testCommand: nunit3-console.exe
