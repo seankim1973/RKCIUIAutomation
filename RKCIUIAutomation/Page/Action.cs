@@ -349,8 +349,8 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                Thread.Sleep(1000);
-                WaitForPageReady();
+                Thread.Sleep(3000);
+                //WaitForPageReady();
             }
             catch (Exception)
             {
@@ -369,8 +369,8 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                Thread.Sleep(1000);
-                WaitForPageReady();
+                Thread.Sleep(3000);
+                //WaitForPageReady();
             }
             catch (Exception)
             {
