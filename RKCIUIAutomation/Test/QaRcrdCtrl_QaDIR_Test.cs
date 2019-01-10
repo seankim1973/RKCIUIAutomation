@@ -8,11 +8,6 @@ using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Test.DIR
 {
-    //[TestFixtureSource(typeof(UserGroups), "BothUserGroups")]
-
-    //[TestFixture(UserGroup.DirQA)]
-    //[TestFixture(UserGroup.DirQC)]
-
     [TestFixture]
     public class Verify_DIR_SimpleWF_End_To_End : TestBase
     {
@@ -426,6 +421,37 @@ namespace RKCIUIAutomation.Test.DIR
 
     //SG & SH249 - DIR Complex Tenants
     [TestFixture]
+    public class Verify_Packages_Table_Columns_Filter : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Complex)]
+        [Property(TestCaseNumber, 2556979)]
+        [Property(Priority, "High")]
+        [Description("To validate filtering of DIR table columns under Packages Tab.")]
+        public void Packages_Table_Columns_Filter()
+        {
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            QaRcrdCtrl_QaDIR.ClickTab_Packages();
+            //read data from first row
+            //filter weekStart column, verify row is seen, clear filter
+            //filter weekEnd column, verify row is seen, clear filter
+            //filter PackageNumber column (eql, contains), verify row is seen, clear filter
+            //filter DIRs column (eql, contains), verify row is seen, clear filter
+
+            QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
+            //read data from first row
+            //filter weekStart column, verify row is seen, clear filter
+            //filter weekEnd column, verify row is seen, clear filter
+            //filter NewDIRCount column (eql), verify row is seen, clear filter
+            //filter NewDIRs column (eql, contains), verify row is seen, clear filter
+
+            AssertAll();
+        }
+    }
+
+    //SG & SH249 - DIR Complex Tenants
+    [TestFixture]
     public class Verify_Packages_Download_and_Recreate : TestBase
     {
         [Test]
@@ -472,25 +498,37 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
-    /*
-    public class UserGroups
+    [TestFixture]
+    public class Verify_PDF_Report_MultiView : TestBase
     {
-        public static IEnumerable BothUserGroups
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Complex)]
+        [Property(TestCaseNumber, 2491562)]
+        [Property(Priority, "High")]
+        [Description("To validate function of Report MultiView feature for DIR.")]
+        public void PDF_Report_MultiView()
         {
-            get
-            {
-                yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
-                yield return new TestFixtureData(UserType.DIRTechQC, UserType.DIRMgrQC);
-            }
-        }
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            QaRcrdCtrl_QaDIR.ClickTab_To_Be_Closed();
 
-        public static IEnumerable QaUserGroup
-        {
-            get
-            {
-                yield return new TestFixtureData(UserType.DIRTechQA, UserType.DIRMgrQA);
-            }
+            //select no checkbox and click ViewSelected btn
+            QaRcrdCtrl_QaDIR.ClickBtn_View_Selected();
+            //expected behavior = no action - verify another tab did not open??
+
+            //select single checkbox and click ViewSelected btn
+            //get DIR IDs
+            SelectCheckboxForRow(1);
+            QaRcrdCtrl_QaDIR.ClickBtn_View_Selected();
+            //switch browser tab and verify DIR IDs are in URL and look for error
+
+            //select single checkbox and click ViewSelected btn
+            //get DIR IDs
+            SelectCheckboxForRow(1);
+            SelectCheckboxForRow(2);
+            SelectCheckboxForRow(3);
+            QaRcrdCtrl_QaDIR.ClickBtn_View_Selected();
+            //switch browser tab and verify DIR IDs are in URL and look for error
         }
     }
-    */
 }

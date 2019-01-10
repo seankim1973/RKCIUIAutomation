@@ -201,11 +201,28 @@ namespace RKCIUIAutomation.Page
         private string TableColumnIndex(string columnName)
             => $"//th[@data-title='{columnName}']";
 
-        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn)
-            => textInRowForAnyColumn.Equals("") ? "//tr[1]/td" : $"{TableByTextInRow(textInRowForAnyColumn)}";
+        private string SetXPath_TableRowBaseByTextInRow<T>(T textInRowForAnyColumnOrRowIndex)
+        {
+            string xpath = string.Empty;
+            string textInRow;
+            int rowIndex;
 
-        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
-            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
+            Type argType = textInRowForAnyColumnOrRowIndex.GetType();
+            if (argType == typeof(string))
+            {
+                textInRow = ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
+                xpath = textInRow.Equals("") ? "//tr[1]/td" : $"{TableByTextInRow(textInRow)}";
+            }
+            else if (argType == typeof(int))
+            {
+                rowIndex = ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
+                xpath = $"tr[{rowIndex}]/td";
+            }
+
+            return xpath;
+        }
+        private By GetTblRowBtn_ByLocator<T>(TableButton tblRowBtn, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
+            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumnOrRowIndex)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
 
         public By GetTableRowLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableByTextInRow(textInRowForAnyColumn)}");
@@ -230,16 +247,16 @@ namespace RKCIUIAutomation.Page
             return text;
         }
 
-        private void ClickButtonForRow(TableButton tableButton, string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
+        private void ClickButtonForRow<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
         {
             try
             {
                 string[] logBtnType = tableButton.Equals(TableButton.CheckBox)
                     ? new string[] { "Toggled", "checkbox" }
                     : new string[] { "Clicked", "button" };
-                By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
+                By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
                 JsClickElement(locator);
-                log.Debug($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumn}");
+                log.Debug($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
             }
             catch (Exception e)
             {
@@ -325,6 +342,9 @@ namespace RKCIUIAutomation.Page
 
             return hrefPDF;
         }
+
+        public void SelectCheckboxForRow<T>(T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumnOrRowIndex, isMultiTabGrid);
         
 
         #endregion Table Row Button Methods
