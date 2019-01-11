@@ -119,7 +119,7 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.I15Tech}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
@@ -131,7 +131,10 @@ namespace RKCIUIAutomation.Base
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
-            testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local) ? TestPlatform.Windows : testPlatform;
+            testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local)
+                ? TestPlatform.Windows
+                : testPlatform;
+
             DetermineReportFilePath();
 
             if (hiptest)
@@ -207,7 +210,7 @@ namespace RKCIUIAutomation.Base
                 {
                     string testDetails = $"({testEnv}){tenantName} - {testName}";
                     Driver = GetWebDriver(testPlatform, browserType, testDetails);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
+                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(45);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 

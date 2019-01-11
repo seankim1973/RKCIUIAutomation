@@ -3,7 +3,9 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 
 namespace RKCIUIAutomation.Test
 {
@@ -185,6 +187,17 @@ namespace RKCIUIAutomation.Test
                 else
                     log.Debug($"Did not find any assertions in the list to verify");
             });
+        }
+
+        public void HttpResponse()
+        {
+            string fileUrl = "";
+            HttpWebRequest httpRequest = (HttpWebRequest)WebRequest.Create(fileUrl);
+            httpRequest.Method = WebRequestMethods.Http.Get;
+
+            HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
+            Stream httpResponseStream = httpResponse.GetResponseStream();
+
         }
     }
 }

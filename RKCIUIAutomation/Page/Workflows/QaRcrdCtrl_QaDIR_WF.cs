@@ -15,6 +15,16 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         public QaRcrdCtrl_QaDIR_WF(IWebDriver driver) => this.Driver = driver;
+
+        internal bool Verify_ViewReport_forDIR(TableTab tableTab, string dirNumber, bool rowEndsWithChkbx = false)
+        {
+            bool reportOpened = false;
+
+            QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
+            reportOpened = VerifyViewPdfReport(dirNumber, true, rowEndsWithChkbx);
+
+            return reportOpened;
+        }
     }
 
     public interface IQaRcrdCtrl_QaDIR_WF
@@ -99,6 +109,12 @@ namespace RKCIUIAutomation.Page.Workflows
         void Verify_Column_Filter_In_Attachments(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
 
         void Verify_Column_Filter_In_ToBeClosed(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
+
+        bool Verify_ViewReport_forDIR_inRevise(string dirNumber);
+
+        bool Verify_ViewReport_forDIR_inQcReview(string dirNumber);
+
+        bool Verify_ViewReport_forDIR_inAuthorization(string dirNumber);
     }
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
@@ -146,6 +162,8 @@ namespace RKCIUIAutomation.Page.Workflows
             }
             return instance;
         }
+
+        internal QaRcrdCtrl_QaDIR_WF QaDIR_WF => new QaRcrdCtrl_QaDIR_WF();
 
         public virtual void LoginToDirPage(UserType userType, bool useQaFieldMenu = false)
         {
@@ -607,10 +625,10 @@ namespace RKCIUIAutomation.Page.Workflows
                 AddAssertionToList(true, $"#### IterateColumnsByFilter ####\nTableTab : {tableTab.ToString()}, Use QAField Menu : {useQaFieldMenu}, DIR# : {dirNumber}, SentBy : {sentBy}, LockedBy : {lockedBy}, DIR Rev : {dirRev}");
                 AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Revision, dirRev), $"IterateColumnsByFilter Column Revision");
                 AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Created_By, dirTechEmail), $"IterateColumnsByFilter Column Created_By");
-                AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_By, sentBy), $"IterateColumnsByFilter Column Sent_By");
-                AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.Contains), $"IterateColumnsByFilter Column Sent_Date");
+                AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_By, sentBy, TableType.MultiTab, false, FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Sent_By");
+                AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Sent_Date");
                 AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_By, lockedBy), $"IterateColumnsByFilter Column Locked_By");
-                AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.Contains), $"IterateColumnsByFilter Column Locked Date");
+                AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Locked Date");
                 AddAssertionToList(QaRcrdCtrl_QaDIR.GetDirNumberForRow(dirTechEmail).Equals(dirNumber), $"IterateColumnsByFilter DIR# for Filtered Row Matches Expected: ");
 
                 int totalRows = GetTableRowCount();
@@ -725,7 +743,15 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void Verify_Column_Filter_In_ToBeClosed(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
             => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.To_Be_Closed, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
 
+        //GLX, LAX, I15SB, I15Tech
+        public virtual bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
+            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Create_Revise, dirNumber, false);
+        
+        public virtual bool Verify_ViewReport_forDIR_inQcReview(string dirNumber)
+            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.QC_Review, dirNumber, false);
 
+        public virtual bool Verify_ViewReport_forDIR_inAuthorization(string dirNumber)
+            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Authorization, dirNumber, false);
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_GLX : QaRcrdCtrl_QaDIR_WF
@@ -821,6 +847,12 @@ namespace RKCIUIAutomation.Page.Workflows
             return true;
         }
 
+        public override bool Verify_ViewReport_forDIR_inAuthorization(string dirNumber)
+        {
+            LogDebug($"---> Skipped Test Step for Tenant SH249<br>Verify_ViewReport_forDIR_inAuthorization<---");
+            return true;
+        }
+
         public override void ClickBtn_ApproveOrNoError() => QaRcrdCtrl_QaDIR.ClickBtn_NoError();
 
         public override void ClickBtn_KickBackOrRevise() => QaRcrdCtrl_QaDIR.ClickBtn_Revise();
@@ -837,6 +869,9 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_QaDIR.EnterText_EngineerComments();
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
         }
+
+        public override bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
+            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Creating, dirNumber, false);
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_SGWay : QaRcrdCtrl_QaDIR_WF
@@ -900,6 +935,9 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_QaDIR.EnterText_EngineerComments();
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
         }
+
+        public override bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
+            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Creating, dirNumber, false);
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_LAX : QaRcrdCtrl_QaDIR_WF

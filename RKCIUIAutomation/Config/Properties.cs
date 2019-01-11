@@ -24,6 +24,7 @@ namespace RKCIUIAutomation.Config
     public enum TestPlatform
     {
         Grid,
+        GridLocal,
         Windows,
         Mac,
         Android,

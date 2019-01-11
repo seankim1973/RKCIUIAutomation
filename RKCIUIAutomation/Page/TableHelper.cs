@@ -1,6 +1,8 @@
 ﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace RKCIUIAutomation.Page
 {
@@ -199,11 +201,28 @@ namespace RKCIUIAutomation.Page
         private string TableColumnIndex(string columnName)
             => $"//th[@data-title='{columnName}']";
 
-        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn)
-            => textInRowForAnyColumn.Equals("") ? "//tr[1]/td" : $"{TableByTextInRow(textInRowForAnyColumn)}";
+        private string SetXPath_TableRowBaseByTextInRow<T>(T textInRowForAnyColumnOrRowIndex)
+        {
+            string xpath = string.Empty;
+            string textInRow;
+            int rowIndex;
 
-        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
-            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
+            Type argType = textInRowForAnyColumnOrRowIndex.GetType();
+            if (argType == typeof(string))
+            {
+                textInRow = ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
+                xpath = textInRow.Equals("") ? "//tr[1]/td" : $"{TableByTextInRow(textInRow)}";
+            }
+            else if (argType == typeof(int))
+            {
+                rowIndex = ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
+                xpath = $"tr[{rowIndex}]/td";
+            }
+
+            return xpath;
+        }
+        private By GetTblRowBtn_ByLocator<T>(TableButton tblRowBtn, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
+            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumnOrRowIndex)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
 
         public By GetTableRowLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableByTextInRow(textInRowForAnyColumn)}");
@@ -228,15 +247,16 @@ namespace RKCIUIAutomation.Page
             return text;
         }
 
-        private void ClickButtonForRow(TableButton tableButton, string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
+        private void ClickButtonForRow<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
         {
             try
             {
                 string[] logBtnType = tableButton.Equals(TableButton.CheckBox)
                     ? new string[] { "Toggled", "checkbox" }
                     : new string[] { "Clicked", "button" };
-                JsClickElement(GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox));
-                log.Debug($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumn}");
+                By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
+                JsClickElement(locator);
+                log.Debug($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
             }
             catch (Exception e)
             {
@@ -314,8 +334,18 @@ namespace RKCIUIAutomation.Page
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickViewReportForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
-            => ClickButtonForRow(TableButton.Report_View, textInRowForAnyColumn, isMultiTabGrid);
+        public string ClickViewReportForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
+        {
+            By viewBtnLocator = By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}");
+            string hrefPDF = GetAttribute(viewBtnLocator, "href");
+            ClickButtonForRow(TableButton.Report_View, textInRowForAnyColumn, isMultiTabGrid);
+
+            return hrefPDF;
+        }
+
+        public void SelectCheckboxForRow<T>(T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumnOrRowIndex, isMultiTabGrid);
+        
 
         #endregion Table Row Button Methods
 
@@ -439,6 +469,72 @@ namespace RKCIUIAutomation.Page
 
             LogInfo(logMsg, noRecordsExpected ? !isDisplayedAsExpected : isDisplayedAsExpected);
             return isDisplayedAsExpected;
+        }
+
+        public bool VerifyViewPdfReport(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
+        {
+            bool result = false;
+            bool pdfTabUrlExpected = false;
+            string logMsg = string.Empty;
+            string reportUrlLogMsg = string.Empty;
+            string mainTab = string.Empty;
+            string viewPdfTab = string.Empty;
+            string expectedReportUrl = string.Empty;
+            string pageErrorHeadingText = string.Empty;
+
+            try
+            {
+                expectedReportUrl = ClickViewReportForRow(textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbx);
+
+                mainTab = Driver.WindowHandles[0];
+                viewPdfTab = Driver.WindowHandles[1];
+
+                Thread.Sleep(3000);
+                Driver.SwitchTo().Window(viewPdfTab);
+                string actualReportUrl = Driver.Url;
+                pdfTabUrlExpected = expectedReportUrl.Equals(actualReportUrl);
+                reportUrlLogMsg = pdfTabUrlExpected
+                    ? $"PDF Report URL is as expected"
+                    : $"Unexpected PDF Report URL";
+
+                LogInfo($"{reportUrlLogMsg}<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}>", pdfTabUrlExpected);
+
+                try
+                {
+                    IWebElement headingElem = null;
+                    headingElem = Driver.FindElement(By.XPath("//h1"))?.FindElement(By.XPath("//h2"));
+
+                    if (headingElem != null)
+                    {
+                        pageErrorHeadingText = headingElem?.Text;
+                        logMsg = $"View PDF page shows an error : {pageErrorHeadingText}";
+                        result = false;
+                    }
+                }
+                catch (Exception)
+                {
+                    logMsg = "Searched for Error page headings, but did not find any";
+                    result = true;
+                }
+
+                TestUtils testUtils = new TestUtils();
+
+                testUtils.AddAssertionToList(pdfTabUrlExpected, reportUrlLogMsg);
+                testUtils.AddAssertionToList(result, logMsg);
+
+                LogInfo(logMsg, result);
+            }
+            catch (NoSuchWindowException e)
+            {
+                log.Error(e.Message);
+            }
+            finally
+            {
+                Driver.SwitchTo().Window(viewPdfTab).Close();
+                Driver.SwitchTo().Window(mainTab);
+            }
+
+            return result;
         }
 
         //TODO: Horizontal scroll in table (i.e. QA Search>ProctorCurveSummary)
