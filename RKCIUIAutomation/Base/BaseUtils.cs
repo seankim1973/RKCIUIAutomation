@@ -76,12 +76,15 @@ namespace RKCIUIAutomation.Base
 
         public string CaptureScreenshot(string fileName)
         {
-            Directory.CreateDirectory(screenshotSavePath);
-            string uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
-            string fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
+            string uniqueFileName = string.Empty;
+            string fullFilePath = string.Empty;
 
             try
             {
+                Directory.CreateDirectory(screenshotSavePath);
+                uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
+                fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
+
                 if (reporter == Reporter.Klov)
                 {
                     ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
@@ -146,8 +149,18 @@ namespace RKCIUIAutomation.Base
             {
                 testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
             }
+            else if (details.Contains("--->"))
+            {
+                testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Indigo));
+            }
             else
                 testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
+
+
+            if (details.Contains("<br>"))
+            {
+                details = Regex.Replace(details, "<br>", "\n");
+            }
 
             if (exception != null)
             {

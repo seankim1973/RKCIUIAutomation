@@ -587,7 +587,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterComment(CommentType.CommentClosingInput);
             SelectDDL_ClosingStamp();
             ClickBtn_SaveOnly();
-            // WaitForPageReady();
+            //WaitForPageReady();
             ClickBtn_SaveForward();
         }
     }

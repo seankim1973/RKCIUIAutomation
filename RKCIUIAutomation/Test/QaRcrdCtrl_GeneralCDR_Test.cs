@@ -6,6 +6,135 @@ using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralCDR;
 namespace RKCIUIAutomation.Test.CDR
 {
 
+
+    [TestFixture]//complete, updated hiptest
+    public class Verify_CDR_SimpleWF_End_To_End : TestBase
+    {
+        [Test]
+        [Category(Component.CDR)]
+        [Property(TestCaseNumber, 2187609)]
+        [Property(Priority, "High")]
+        [Description("To validate simple workflow for CDR module end-to-end.")]
+        public void CDR_SimpleWF_End_To_End()
+        {
+            string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));
+            ClickEditBtnForRow();
+            LogInfo("------------send to revise from Review------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Revise();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------cancel, edit/saveonly in Revise------------");
+            QaRcrdCtrl_GeneralCDR.EnterDescription("New CDR Description", true);
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Cancel();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription));
+            ClickEditBtnForRow();
+            cdrDescription = QaRcrdCtrl_GeneralCDR.EnterDescription();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveOnly();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in Review------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in ToBeClosed------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------send Back to QC Review from ToBeClosed------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_QC_Review();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd from QC Review to ToBeClosed------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------verify closed in Closed tab------------");
+            //QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+            //AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
+            //ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_CloseCDR();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Closed_DN, cdrDescription));
+            AssertAll();
+        }
+    }
+
+    [TestFixture]//complete, updated hiptest
+    public class Verify_CDR_ComplexWF_End_To_End : TestBase
+    {
+        [Test]
+        [Category(Component.CDR)]
+        [Property(Component2, Component.CDR_WF_Complex)]
+        [Property(TestCaseNumber, 2187609)]
+        [Property(Priority, "High")]
+        [Description("To validate complex workflow for CDR module end-to-end.")]
+        public void CDR_ComplexWF_End_To_End()
+        {
+            string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));
+            ClickEditBtnForRow();
+            LogInfo("------------send to revise from Review------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Revise();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------cancel, edit/saveonly in Revise------------");
+            QaRcrdCtrl_GeneralCDR.EnterDescription("New CDR Description", true);
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Cancel();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription));
+            ClickEditBtnForRow();
+            cdrDescription = QaRcrdCtrl_GeneralCDR.EnterDescription();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveOnly();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in Review------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in Disposition------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription));
+            ClickEditBtnForRow();
+
+
+            LogInfo("------------save&fwd in ToBeClosed------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------send Back to Disposition from ToBeClosed------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_Disposition();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------send back to QC review from Disposition------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_QC_Review();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------save&fwd in Disposition------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription));
+            ClickEditBtnForRow();
+
+            LogInfo("------------verify closed in Closed tab------------");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_CloseCDR();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Closed_DN, cdrDescription));
+            AssertAll();
+        }
+    }
+
     [TestFixture]
     public class Verify_Create_And_Save_CDR_Document : TestBase
     {

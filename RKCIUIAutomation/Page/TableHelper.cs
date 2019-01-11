@@ -1,7 +1,6 @@
-﻿using NUnit.Framework.Interfaces;
-using OpenQA.Selenium;
-using RKCIUIAutomation.Base;
+﻿using OpenQA.Selenium;
 using System;
+using System.Collections.Generic;
 
 namespace RKCIUIAutomation.Page
 {
@@ -26,11 +25,13 @@ namespace RKCIUIAutomation.Page
 
         public void RefreshTable() => Kendo.Reload();
 
-        public int GetTableRowCount() => Kendo.TotalNumberRows();
+        public int GetTableRowCount(bool isMultiTabGrid = true)
+            => GetElementsCount(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}//tbody/tr"));
 
         //<<-- Table Page Navigation Helpers -->>
-        private By GetGoToTblPgBtn_ByLocator(TableButton tblPageNavBtn) => By.XPath($"//a[contains(@aria-label,'{tblPageNavBtn.GetString()}')]");
-               
+        private By GetGoToTblPgBtn_ByLocator(TableButton tblPageNavBtn)
+            => By.XPath($"//a[contains(@aria-label,'{tblPageNavBtn.GetString()}')]");
+
         public void GoToFirstPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.First));
 
         public void GoToPreviousPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Previous));
@@ -48,9 +49,9 @@ namespace RKCIUIAutomation.Page
         public void SetViewItemsPerPageSize(int newSize) => Kendo.ChangePageSize(newSize);
 
         /// <summary>
-        /// ColumnName enumerator and FilterValue is required. FilterOperator has a default value of 'Equal To'.
-        /// The default value for FilerLogic is 'AND' and Additional FilterOperator 'Equal To'.
-        /// When filtering the column using an additional filter value, the FilterLogic must be specified ('AND' or 'OR'), but the Additional FilterOperator is optional.
+        /// ColumnName enumerator and FilterValue is required.
+        /// <para>Default Values: FilterOperator is 'Equal To', FilerLogic is 'AND' and Additional FilterOperator is 'Equal To'.</para>
+        /// <para>When filtering the column using an additional filter value, the FilterLogic must be specified ('AND' or 'OR'), but the Additional FilterOperator is optional.</para>
         /// </summary>
         /// <param name="columnName"></param>
         /// <param name="filterValue"></param>
@@ -58,22 +59,35 @@ namespace RKCIUIAutomation.Page
         /// <param name="filterLogic"></param>
         /// <param name="additionalFilterValue"></param>
         /// <param name="additionalFilterOperator"></param>
-        public bool FilterColumn(
+        public void FilterColumn(
             Enum columnName,
             string filterValue,
+            TableType tableType = TableType.Unknown,
             FilterOperator filterOperator = FilterOperator.EqualTo,
             FilterLogic filterLogic = FilterLogic.And,
             string additionalFilterValue = null,
             FilterOperator additionalFilterOperator = FilterOperator.EqualTo
-            ) => Kendo.FilterAndGetGridType(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator);
+            ) => Kendo.FilterTableGrid(
+                columnName.GetString(),
+                filterValue,
+                filterOperator,
+                filterLogic,
+                additionalFilterValue,
+                additionalFilterOperator,
+                tableType
+                );
 
-        public void ClearTableFilters() => Kendo.RemoveFilters();
+        public void ClearTableFilters(TableType tableType = TableType.Unknown)
+            => Kendo.RemoveFilters(tableType);
 
-        public void SortColumnAscending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Ascending);
+        public void SortColumnAscending(Enum columnName, TableType tableType = TableType.Unknown)
+            => Kendo.Sort(columnName.GetString(), SortType.Ascending, tableType);
 
-        public void SortColumnDescending(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Descending);
+        public void SortColumnDescending(Enum columnName, TableType tableType = TableType.Unknown)
+            => Kendo.Sort(columnName.GetString(), SortType.Descending, tableType);
 
-        public void SortColumnToDefault(Enum columnName) => Kendo.Sort(columnName.GetString(), SortType.Default);
+        public void SortColumnToDefault(Enum columnName, TableType tableType = TableType.Unknown)
+            => Kendo.Sort(columnName.GetString(), SortType.Default, tableType);
 
         #endregion Kendo Grid Public Methods
 
@@ -85,6 +99,8 @@ namespace RKCIUIAutomation.Page
             internal const string LastOrOnlyInRow = "LastOrOnlyInRow";
             internal const string MultiDupsInRow = "MultiDupsInRow";
             internal const string ActionColumnBtn = "ActionColumnBtn";
+            internal const string RowEndsWithChkbx = "RowEndsWithChkbx";
+            internal const string ActionCreatePkg = "ActionCreatePkg";
         }
 
         private enum TableButton
@@ -99,6 +115,7 @@ namespace RKCIUIAutomation.Page
             [StringValue("Delete", BtnCategory.ActionColumnBtn)] Action_Delete,
             [StringValue("Edit", BtnCategory.ActionColumnBtn)] Action_Edit,
             [StringValue("Close DIR", BtnCategory.ActionColumnBtn)] Action_Close_DIR,
+            [StringValue("Create", BtnCategory.ActionCreatePkg)] Action_Create_Package,
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
@@ -128,7 +145,14 @@ namespace RKCIUIAutomation.Page
             [StringValue("Revise")] Revise
         }
 
-        private string DetermineTblRowBtnXPathExt(TableButton tblBtn)
+        public enum TableType
+        {
+            Unknown,
+            MultiTab,
+            Single
+        }
+
+        private string DetermineTblRowBtnXPathExt(TableButton tblBtn, bool rowEndsWithChkbx = false)
         {
             string xPathExt = string.Empty;
             string xPathLast(string value = "") => $"[last(){value}]";
@@ -147,7 +171,12 @@ namespace RKCIUIAutomation.Page
                     break;
 
                 case BtnCategory.ActionColumnBtn:
-                    xPathExt = $"{xPathLast()}/a[contains(text(),'{xPathExtValue}')]";
+                    string xPathExtRowType = rowEndsWithChkbx ? "" : $"{xPathLast()}";
+                    xPathExt = $"{xPathExtRowType}/a[contains(text(),'{xPathExtValue}')]";
+                    break;
+
+                case BtnCategory.ActionCreatePkg:
+                    xPathExt = $"/a[text()='{xPathExtValue}']";
                     break;
 
                 default:
@@ -162,25 +191,30 @@ namespace RKCIUIAutomation.Page
 
         //private readonly string ActiveTableDiv = "//div[@class='k-content k-state-active']";
 
-        private string TableByTextInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
+        private string TableByTextInRow(string textInRowForAnyColumn, bool useContainsOperator = false)
+            => useContainsOperator 
+            ? $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td" 
+            : $"//td[contains(text(),'{textInRowForAnyColumn}')]/parent::tr/td";
 
-        private string TableColumnIndex(string columnName) => $"//th[@data-title='{columnName}']";
+        private string TableColumnIndex(string columnName)
+            => $"//th[@data-title='{columnName}']";
 
-        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn) => textInRowForAnyColumn.Equals("") ? "//tr[1]/td" : $"{TableByTextInRow(textInRowForAnyColumn)}";
+        private string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn)
+            => textInRowForAnyColumn.Equals("") ? "//tr[1]/td" : $"{TableByTextInRow(textInRowForAnyColumn)}";
 
-        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn, bool isMultiTabGrid = true)
-            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn)}");
+        private By GetTblRowBtn_ByLocator(TableButton tblRowBtn, string textInRowForAnyColumn, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
+            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
 
-        public By GetTableRowLocator(string textInRowForAnyColumn, bool isMultiTabGrid)
-            =>By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableByTextInRow(textInRowForAnyColumn)}");
-        
-        public string GetColumnValueForRow(string textInRowForAnyColumn, string columnName, bool isMultiTabGrid = true)
+        public By GetTableRowLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
+            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableByTextInRow(textInRowForAnyColumn)}");
+
+        public string GetColumnValueForRow(string textInRowForAnyColumn, string getValueFromColumnName, bool isMultiTabGrid = true)
         {
             string rowXPath = string.Empty;
 
             try
             {
-                By headerLocator = By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableColumnIndex(columnName)}");
+                By headerLocator = By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableColumnIndex(getValueFromColumnName)}");
                 string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
                 int xPathIndex = int.Parse(dataIndexAttribute) + 1;
                 rowXPath = $"{TableByTextInRow(textInRowForAnyColumn)}[{xPathIndex.ToString()}]";
@@ -194,14 +228,15 @@ namespace RKCIUIAutomation.Page
             return text;
         }
 
-        private void ClickButtonForRow(TableButton tableButton, string textInRowForAnyColumn = "")
+        private void ClickButtonForRow(TableButton tableButton, string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
         {
             try
             {
                 string[] logBtnType = tableButton.Equals(TableButton.CheckBox)
-                    ? new string[] { "Toggled", "checkbox" } : new string[] { "Clicked", "button" };
-                JsClickElement(GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumn));
-                LogInfo($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumn}");
+                    ? new string[] { "Toggled", "checkbox" }
+                    : new string[] { "Clicked", "button" };
+                JsClickElement(GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox));
+                log.Debug($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumn}");
             }
             catch (Exception e)
             {
@@ -214,71 +249,78 @@ namespace RKCIUIAutomation.Page
         /// If no argument is provided, the checkbox for the first row will be selected.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ToggleCheckBoxForRow(string textInRowForAnyColumn = "")
-            => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumn);
+        public void ToggleCheckBoxForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumn, isMultiTabGrid);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickDeleteBtnForRow(string textInRowForAnyColumn = "")
-            => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn);
+        public void ClickDeleteBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.Action_Delete, textInRowForAnyColumn, isMultiTabGrid);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickEditBtnForRow(string textInRowForAnyColumn = "")
-            => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn);
+        public void ClickEditBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
+            => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
+
+        public void ClickCreateBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = true)
+            => ClickButtonForRow(TableButton.Action_Create_Package, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
+
+        /// <summary>
+        /// If no argument is provided, the button on the first row will be clicked.
+        /// </summary>
+        public void ClickCloseDirBtnForRow(string dirNumber = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = true)
+            => ClickButtonForRow(TableButton.Action_Close_DIR, dirNumber, isMultiTabGrid, rowEndsWithChkbox);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickReviseBtnForRow(string textInRowForAnyColumn = "")
-            => ClickButtonForRow(TableButton.Action_Revise, textInRowForAnyColumn);
+        public void ClickReviseBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.Action_Revise, textInRowForAnyColumn, isMultiTabGrid);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickEnterBtnForRow(string textInRowForAnyColumn = "")
-            => ClickButtonForRow(TableButton.Action_Enter, textInRowForAnyColumn);
+        public void ClickEnterBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.Action_Enter, textInRowForAnyColumn, isMultiTabGrid);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickQMSViewAttachmentsForRow(string textInRowForAnyColumn = "")
-            => ClickButtonForRow(TableButton.QMS_Attachments_View, textInRowForAnyColumn);
+        public void ClickQMSViewAttachmentsForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.QMS_Attachments_View, textInRowForAnyColumn, isMultiTabGrid);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickViewAttachmentsForRow(string textInRowForAnyColumn = "")
-            => ClickButtonForRow(TableButton.Attachments_View, textInRowForAnyColumn);
+        public void ClickViewAttachmentsForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.Attachments_View, textInRowForAnyColumn, isMultiTabGrid);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickViewWebFormForRow(string textInRowForAnyColumn = "")
-            => ClickButtonForRow(TableButton.WebForm_View, textInRowForAnyColumn);
+        public void ClickViewWebFormForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.WebForm_View, textInRowForAnyColumn, isMultiTabGrid);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public void ClickViewReportForRow(string textInRowForAnyColumn = "")
-            => ClickButtonForRow(TableButton.Report_View, textInRowForAnyColumn);
+        public void ClickViewReportForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.Report_View, textInRowForAnyColumn, isMultiTabGrid);
 
         #endregion Table Row Button Methods
 
-        public bool FilterTableColumnByValue(Enum columnName, string recordNameOrNumber)
+        public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown, FilterOperator filterOperator = FilterOperator.EqualTo)
         {
-            bool isMultiTabGrid = true;
-
             try
             {
                 WaitForPageReady();
@@ -289,20 +331,115 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                isMultiTabGrid = FilterColumn(columnName, recordNameOrNumber);
+                FilterColumn(columnName, recordNameOrNumber, tableType, filterOperator);
+            }
+        }
+
+        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown, bool noRecordsExpected = false, FilterOperator filterOperator = FilterOperator.EqualTo)
+        {
+            IList<IWebElement> tblRowElems = new List<IWebElement>();
+            bool isDisplayedAsExpected = false;
+            bool noRecordsMsgDisplayed = false;
+            bool isMultiTabGrid = false;
+            string currentTabName = string.Empty;
+            string logMsg = string.Empty;
+            string activeTblTab = "";
+            int tblRowCount = 0;
+
+            try
+            {
+                FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
+
+                string gridId = kendo.GetGridID(tableType);
+                By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
+                string gridType = GetAttribute(gridParentDivLocator, "class");
+
+                switch (tableType)
+                {
+                    case TableType.Single:
+                        isMultiTabGrid = false;
+                        break;
+
+                    case TableType.MultiTab:
+                        isMultiTabGrid = true;
+                        break;
+
+                    case TableType.Unknown:
+                        isMultiTabGrid = gridType.Contains("active") ? true : false;
+                        break;
+                }
+
+                By recordRowLocator = GetTableRowLocator(recordNameOrNumber, isMultiTabGrid, filterOperator == FilterOperator.Contains ? true : false);
+
+                if (isMultiTabGrid)
+                {
+                    currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
+                    activeTblTab = "//div[@class='k-content k-state-active']";
+                }
+
+                By noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
+
+                if (noRecordsExpected)
+                {
+                    noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
+
+                    if (noRecordsMsgDisplayed)
+                    {
+                        isDisplayedAsExpected = false;
+                        logMsg = "'No Records Located' message is displayed as expected";
+                    }
+                    else
+                    {
+                        tblRowElems = GetElements(By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr"));
+                        tblRowCount = (int)tblRowElems?.Count;
+
+                        if (tblRowCount > 0)
+                        {
+                            var recordRowDisplayed = ElementIsDisplayed(recordRowLocator);
+                            if (recordRowDisplayed)
+                            {
+                                logMsg = $"No Records are Expected, but found {tblRowCount} record";
+                            }
+                        }
+                        else
+                        {
+                            logMsg = "No Records are Expected, No Row are found in the table, and 'No Records Located' message is not displayed";
+                        }
+                    }
+                }
+                else
+                {
+                    tblRowElems = GetElements(By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr"));
+                    tblRowCount = (int)tblRowElems?.Count;
+
+                    if (tblRowCount > 0)
+                    {
+                        LogDebug($"Searching for record: {recordNameOrNumber}");
+                        isDisplayedAsExpected = ElementIsDisplayed(recordRowLocator);
+
+                        string contains = filterOperator == FilterOperator.Contains ? "Containing Value: " : "";
+                        logMsg = isDisplayedAsExpected
+                            ? $"Found Record {contains}{recordNameOrNumber}, as Expected"
+                            : $"Expected Record, but Unable to find Record {contains}{recordNameOrNumber}";
+                    }
+                    else
+                    {
+                        noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
+                        if (noRecordsMsgDisplayed)
+                        {
+                            logMsg = "Expected Record, but 'No Record Located' message is displayed";
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
             }
 
-            return isMultiTabGrid;
+            LogInfo(logMsg, noRecordsExpected ? !isDisplayedAsExpected : isDisplayedAsExpected);
+            return isDisplayedAsExpected;
         }
-
-        public bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber)
-        {
-            bool isMultiTabGrid = false;
-            isMultiTabGrid = FilterTableColumnByValue(columnName, recordNameOrNumber);
-            LogDebug($"Searching for record: {recordNameOrNumber}");
-            return ElementIsDisplayed(GetTableRowLocator(recordNameOrNumber, isMultiTabGrid));
-        }
-
 
         //TODO: Horizontal scroll in table (i.e. QA Search>ProctorCurveSummary)
     }

@@ -8,7 +8,6 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using static NUnit.Framework.TestContext;
 
@@ -19,6 +18,7 @@ namespace RKCIUIAutomation.Base
     public class BaseClass : BaseUtils
     {
         #region ExtentReports Details
+
         [ThreadStatic]
         public static ExtentReports reportInstance;
 
@@ -30,9 +30,11 @@ namespace RKCIUIAutomation.Base
 
         [ThreadStatic]
         public static TestStatus testStatus;
-        #endregion
+
+        #endregion ExtentReports Details
 
         #region HipTest Details
+
         [ThreadStatic]
         public HipTestApi hipTestInstance;
 
@@ -50,9 +52,11 @@ namespace RKCIUIAutomation.Base
 
         [ThreadStatic]
         public List<KeyValuePair<int, KeyValuePair<TestStatus, string>>> hipTestResults;
-        #endregion
+
+        #endregion HipTest Details
 
         #region Test Environment Details
+
         [ThreadStatic]
         public static TestPlatform testPlatform;
 
@@ -73,9 +77,11 @@ namespace RKCIUIAutomation.Base
 
         [ThreadStatic]
         public static bool hiptest;
-        #endregion
+
+        #endregion Test Environment Details
 
         #region TestCase Details
+
         [ThreadStatic]
         private static string testName;
 
@@ -102,7 +108,8 @@ namespace RKCIUIAutomation.Base
 
         [ThreadStatic]
         private Cookie cookie = null;
-        #endregion
+
+        #endregion TestCase Details
 
         private ConfigUtils Configs = new ConfigUtils();
 
@@ -112,7 +119,7 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.I15Tech}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
