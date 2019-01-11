@@ -96,7 +96,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            AddAssertionToList(VerifyPageTitle("List of CDR Reports"), "VerifyPageTitle");
             QaRcrdCtrl_GeneralCDR.ClickBtn_New();
             QaRcrdCtrl_GeneralCDR.PopulateRequiredFieldsAndSaveForward();
             return QaRcrdCtrl_GeneralCDR.GetCDRDocDescription();

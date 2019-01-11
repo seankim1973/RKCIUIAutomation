@@ -255,7 +255,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             cdrDescKey = $"{descKey}_CdrDescription";
             CreateVar(cdrDescKey, guid);
             cdrDescription = GetVar(cdrDescKey);
-            Console.WriteLine($"#####NCR Description: {cdrDescription}");
+            // Console.WriteLine($"#####NCR Description: {cdrDescription}");
         }
 
         public virtual string GetCDRDocDescription() => GetVar(cdrDescKey);

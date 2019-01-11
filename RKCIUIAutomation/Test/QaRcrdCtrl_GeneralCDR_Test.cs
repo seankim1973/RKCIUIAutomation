@@ -16,9 +16,9 @@ namespace RKCIUIAutomation.Test.CDR
         [Description("To validate successful create and save of an CDR (Construction Deficiency Report) document.")]
         public void Create_And_Save_CDR_Document()
         {
-            WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
-            Assert.True(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review));
-            LogoutToLoginPage();
+            string cdrDescription= WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.Bhoomi);
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review), "VerifyCDRDocIsDisplayedinQCReviewTab");
+            AssertAll();
         }
     }
 
