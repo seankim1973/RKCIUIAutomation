@@ -74,6 +74,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Save & Forward")] SaveForward,
             [StringValue("Back To QC Review")] Back_To_QC_Review,
             [StringValue ("Back To Disposition")] Back_To_Disposition
+                //buttonAgree
+                //ButtonDisagree
         }
 
        

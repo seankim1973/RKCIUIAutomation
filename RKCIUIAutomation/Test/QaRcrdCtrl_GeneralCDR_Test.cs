@@ -139,7 +139,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_Create_And_Save_CDR_Document : TestBase
     {
-        [Test]
+       // [Test]
         [Category(Component.CDR)]
         [Property(TestCaseNumber, 2187609)]
         [Property(Priority, "High")]
@@ -155,7 +155,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_QC_Review_of_CDR_document : TestBase
     {
-        [Test]
+       // [Test]
         [Category(Component.CDR)]
         [Property(Component2, Component.CDR_WF_Complex)]
         [Property(TestCaseNumber, 2187610)]
@@ -178,7 +178,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_QC_Review_of_CDR_document_by_CDR_Manager : TestBase
     {
-        [Test]
+       // [Test]
         [Category(Component.CDR)]
         [Property(TestCaseNumber, 2187784)]
         [Property(Priority, "High")]
@@ -195,7 +195,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_Revising_the_CDR_Document : TestBase
     {
-        [Test]
+       // [Test]
         [Category(Component.CDR)]
         [Property(TestCaseNumber, 2187609)]
         [Property(Priority, "High")]
@@ -214,7 +214,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_Disposition_Of_the_CDR_Document : TestBase
     {
-        [Test]
+       // [Test]
         [Category(Component.CDR)]
         [Property(Component2, Component.CDR_WF_Complex)]
         [Property(TestCaseNumber, 2187784)]
@@ -235,7 +235,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_Closing_the_CDR_Document : TestBase
     {
-        [Test]
+        //[Test]
         [Category(Component.CDR)]
         [Property(TestCaseNumber, 2187784)]
         [Property(Priority, "High")]
@@ -251,7 +251,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_KickBack_To_Disposition_the_CDR_Document : TestBase
     {
-        [Test]
+       // [Test]
         [Category(Component.CDR)]
         [Property(Component2, Component.CDR_WF_Complex)]
         [Property(TestCaseNumber, 2187784)]
@@ -276,7 +276,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_KickBack_To_QC_Review_the_CDR_Document : TestBase
     {
-        [Test]
+       // [Test]
         [Category(Component.CDR)]
         [Property(TestCaseNumber, 2187784)]
         [Property(Priority, "High")]
@@ -297,7 +297,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_Editing_the_CDR_Document : TestBase
     {
-        [Test]
+       // [Test]
         [Category(Component.CDR)]
         [Property(TestCaseNumber, 2187610)]
         [Property(Priority, "High")]
@@ -312,7 +312,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_Vewing_CDR_Document_Report : TestBase
     {
-        [Test]
+       // [Test]
         [Category(Component.CDR)]
         [Property(TestCaseNumber, 2187609)]
         [Property(Priority, "High")]
