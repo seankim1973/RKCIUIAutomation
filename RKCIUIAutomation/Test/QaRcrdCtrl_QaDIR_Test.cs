@@ -453,6 +453,11 @@ namespace RKCIUIAutomation.Test.DIR
         [Description("To validate function of Report View feature for DIR.")]
         public void PDF_Report_View()
         {
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            string dirNumber = "QA3303190115";
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewReport_forDIR_inAuthorization(dirNumber));
+
+            /*
             //Simple WF
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveOnly_DIR();
@@ -467,7 +472,7 @@ namespace RKCIUIAutomation.Test.DIR
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewReport_forDIR_inAuthorization(dirNumber));
             //AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
             LogoutToLoginPage();
-
+            */
             AssertAll();
         }
     }

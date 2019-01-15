@@ -468,10 +468,9 @@ namespace RKCIUIAutomation.Page
 
                 mainTab = Driver.WindowHandles[0];
                 viewPdfTab = Driver.WindowHandles[1];
-
+                //bool newTabDisplayed = Driver.WindowHandles.Count.Equals(2);
                 Thread.Sleep(3000);
-                Driver.SwitchTo().Window(viewPdfTab);
-                string actualReportUrl = Driver.Url;
+                string actualReportUrl = Driver.SwitchTo().Window(viewPdfTab).Url;
                 pdfTabUrlExpected = expectedReportUrl.Equals(actualReportUrl);
                 reportUrlLogMsg = pdfTabUrlExpected
                     ? $"PDF Report URL is as expected"

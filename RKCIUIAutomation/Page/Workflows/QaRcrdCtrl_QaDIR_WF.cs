@@ -16,9 +16,64 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public QaRcrdCtrl_QaDIR_WF(IWebDriver driver) => this.Driver = driver;
 
-        internal bool Verify_ViewReport_forDIR(TableTab tableTab, string dirNumber, bool rowEndsWithChkbx = false)
+        //TODO
+        internal string GetDirNumberForFirstRow()
+        {
+            string dirNumber = "";
+            return dirNumber;
+        }
+        internal bool Verify_ViewReport_forDIR(TableTab tableTab, string dirNumber = "", bool rowEndsWithChkbx = false)
         {
             bool reportOpened = false;
+
+            #region WIP
+            /*
+            //mockStart
+
+            bool dirRowExists = false;
+            bool newDirCreated = false;
+
+            bool tblIsCreateType = (tableTab == TableTab.Create_Revise || tableTab == TableTab.Creating)
+                ? true
+                : false;
+
+            if (dirNumber.Equals(""))
+            {
+                //dirRowExists = CheckIfTblRowsExist();
+
+                if (dirRowExists)
+                {
+                    dirNumber = GetDirNumberForFirstRow();
+                }
+                else
+                {
+                    if (!tblIsCreateType)
+                    {
+                        WF_QaRcrdCtrl_QaDIR.ClickTab_Create();
+                    }
+
+                    dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveOnly_DIR();
+                }
+
+                QaRcrdCtrl_QaDIR.SetDirNumber(dirNumber);
+
+            }
+            else
+            {
+                QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
+            }
+
+            reportOpened = VerifyViewPdfReport(dirNumber, true, rowEndsWithChkbx);
+
+            if (tblIsCreateType)
+            {
+                ClickEditBtnForRow();
+                QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            }
+
+            //mockEnd
+            */
+            #endregion
 
             QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
             reportOpened = VerifyViewPdfReport(dirNumber, true, rowEndsWithChkbx);
@@ -34,6 +89,8 @@ namespace RKCIUIAutomation.Page.Workflows
         void LoginToQaFieldDirPage(UserType userType);
 
         void LoginToRcrdCtrlDirPage(UserType userType);
+
+        void ClickTab_Create();
 
         string Create_and_SaveForward_DIR();
 
@@ -127,43 +184,43 @@ namespace RKCIUIAutomation.Page.Workflows
 
             if (tenantName == TenantName.SGWay)
             {
-                log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_SGWay instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_SGWay instance ###### ");
                 instance = new QaRcrdCtrl_QaDIR_WF_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
-                log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_SH249 instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_SH249 instance ###### ");
                 instance = new QaRcrdCtrl_QaDIR_WF_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_Garnet instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_Garnet instance ###### ");
                 instance = new QaRcrdCtrl_QaDIR_WF_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_GLX instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_GLX instance ###### ");
                 instance = new QaRcrdCtrl_QaDIR_WF_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_I15South instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_I15South instance ###### ");
                 instance = new QaRcrdCtrl_QaDIR_WF_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_I15Tech instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_I15Tech instance ###### ");
                 instance = new QaRcrdCtrl_QaDIR_WF_I15Tech(driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_LAX instance ###### ");
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_LAX instance ###### ");
                 instance = new QaRcrdCtrl_QaDIR_WF_LAX(driver);
             }
             return instance;
         }
 
-        internal QaRcrdCtrl_QaDIR_WF QaDIR_WF => new QaRcrdCtrl_QaDIR_WF();
+        internal QaRcrdCtrl_QaDIR_WF QaDIR_WF => new QaRcrdCtrl_QaDIR_WF(Driver);
 
         public virtual void LoginToDirPage(UserType userType, bool useQaFieldMenu = false)
         {
@@ -222,6 +279,10 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void LoginToQaFieldDirPage(UserType userType) => LoginToDirPage(userType, true);
 
         public virtual void LoginToRcrdCtrlDirPage(UserType userType) => LoginToDirPage(userType);
+
+        //SH249, SG, Garnet - Creating
+        //LAX, I15Tech, I15SB, GLX - Create/Revise
+        public virtual void ClickTab_Create() => QaRcrdCtrl_QaDIR.ClickTab_Create_Revise();
 
         //GLX, LAX, I15SB, I15Tech
         public virtual bool VerifyDirIsDisplayedInCreate(string dirNumber)
@@ -780,6 +841,9 @@ namespace RKCIUIAutomation.Page.Workflows
         public QaRcrdCtrl_QaDIR_WF_Garnet(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void ClickTab_Create() => QaRcrdCtrl_QaDIR.ClickTab_Creating();
+
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_I15Tech : QaRcrdCtrl_QaDIR_WF
@@ -801,6 +865,8 @@ namespace RKCIUIAutomation.Page.Workflows
         public QaRcrdCtrl_QaDIR_WF_SH249(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void ClickTab_Create() => QaRcrdCtrl_QaDIR.ClickTab_Creating();
 
         public override bool VerifyDirIsDisplayedInRevise(string dirNumber)
             => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Revise, dirNumber);
@@ -879,6 +945,8 @@ namespace RKCIUIAutomation.Page.Workflows
         public QaRcrdCtrl_QaDIR_WF_SGWay(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void ClickTab_Create() => QaRcrdCtrl_QaDIR.ClickTab_Creating();
 
         public override bool VerifyDirIsDisplayedInRevise(string dirNumber)
             => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Revise, dirNumber);
