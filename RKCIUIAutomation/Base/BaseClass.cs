@@ -191,7 +191,7 @@ namespace RKCIUIAutomation.Base
 
         private void InitExtentTestInstance()
         {
-            reportInstance = ExtentManager.Instance;
+            reportInstance = ExtentManager.GetReportInstance();
             parentTest = (reporter == Reporter.Html) ?
                 reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv) : null;
             testInstance = (reporter == Reporter.Html) ?
