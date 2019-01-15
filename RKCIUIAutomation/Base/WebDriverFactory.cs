@@ -32,12 +32,8 @@ namespace RKCIUIAutomation.Base
                 }
                 else
                 {
-                    var gridHub = platform == TestPlatform.GridLocal
-                        ? "localhost"
-                        : GridVmIP;
-
                     var options = DetermineDriverOptions(platform, browser, testDetails);
-                    _Driver = new RemoteWebDriver(new Uri($"http://{gridHub}:4444/wd/hub"), options);
+                    _Driver = new RemoteWebDriver(new Uri($"http://{GridVmIP}:4444/wd/hub"), options);
 
                     //string sessionId = ((RemoteWebDriver)_Driver).SessionId.ToString();
                     //Console.WriteLine($"DRIVER SESSION ID#: {sessionId}");

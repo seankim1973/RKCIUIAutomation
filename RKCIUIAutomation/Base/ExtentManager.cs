@@ -12,39 +12,38 @@ namespace RKCIUIAutomation.Base
         public static readonly string reportFilePath = $"{extentReportPath}\\extent_{tenantName.ToString()}.html";
 
         private static readonly Lazy<ExtentReports> _lazy;
-        public static ExtentReports Instance { get { return _lazy.Value; } }
 
-        private static ExtentHtmlReporter htmlReporter;
-        private static KlovReporter klov;
+        public static ExtentReports GetReportInstance()
+        { return _lazy.Value; }
+        public static KlovReporter Klov { get; set; }
+        public static ExtentHtmlReporter HtmlReporter { get; set; }
 
         static ExtentManager()
         {
             try
             {
                 Directory.CreateDirectory(extentReportPath);
-                htmlReporter = new ExtentHtmlReporter(reportFilePath);
-                htmlReporter = GetHtmlReporter();
+                HtmlReporter = new ExtentHtmlReporter(reportFilePath);
+                HtmlReporter = GetHtmlReporter();
 
                 _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
 
                 if (reporter == Reporter.Klov)
                 {
-                    var gridHub = testPlatform == TestPlatform.GridLocal
+                    var gridHub = testPlatform.Equals(TestPlatform.GridLocal)
                         ? GridVmIP
                         : "localhost";
 
-                    klov = GetKlovReporter(gridHub);
-                    klov.InitMongoDbConnection(gridHub, 27017);
-                    Instance.AttachReporter(htmlReporter, klov);
+                    GetReportInstance().AttachReporter(HtmlReporter, GetKlovReporter(GridVmIP));
                 }
                 else
                 {
-                    Instance.AttachReporter(htmlReporter);
+                    GetReportInstance().AttachReporter(HtmlReporter);
                 }
 
-                Instance.AddSystemInfo("Tenant", tenantName.ToString());
-                Instance.AddSystemInfo("Environment", testEnv.ToString());
-                Instance.AddSystemInfo("URL", siteUrl);
+                GetReportInstance().AddSystemInfo("Tenant", tenantName.ToString());
+                GetReportInstance().AddSystemInfo("Environment", testEnv.ToString());
+                GetReportInstance().AddSystemInfo("URL", siteUrl);
             }
             catch (Exception e)
             {
@@ -57,14 +56,14 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
-                htmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
+                HtmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
             }
             catch (Exception e)
             {
                 log.Error($"Error in GetHtmlReporter method:\n{e.Message}");
             }
 
-            return htmlReporter;
+            return HtmlReporter;
         }
 
         private static KlovReporter GetKlovReporter(string gridHub)
@@ -73,19 +72,21 @@ namespace RKCIUIAutomation.Base
             {
                 string reportName = $"{tenantName.ToString()}({testEnv.ToString()}) - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 
-                klov = new KlovReporter
+                Klov = new KlovReporter
                 {
                     ProjectName = "RKCIUIAutomation",
                     ReportName = reportName,
                     KlovUrl = $"http://{gridHub}:8888"
                 };
+
+                Klov.InitMongoDbConnection(GridVmIP, 27017);
             }
             catch (Exception e)
             {
                 log.Error($"Error in GetKlovReporter method:\n{e.Message}");
             }
 
-            return klov;
+            return Klov;
         }
     }
 }

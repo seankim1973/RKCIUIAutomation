@@ -137,6 +137,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ControlPoint,
             EngineerComments
         }
+
+        internal void StoreDirNumber(string dirNum = "")
+        {
+            dirNumber = dirNum.Equals("")
+                ? GetAttribute(By.Id("DIRNO"), "value")
+                : dirNum;
+
+            dirNumberKey = $"{tenantName}{GetTestName()}_dirNumber";
+            CreateVar(dirNumberKey, dirNumber);
+            log.Debug($"#####Stored DIR Number - KEY: {dirNumberKey} || VALUE: {GetVar(dirNumberKey)}");
+        }
+
     }
 
     #endregion DIR/IDR/DWR Generic Class
@@ -194,6 +206,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void PopulateRequiredFields();
 
         string GetDirNumber(string DirNumberKey = "");
+
+        void SetDirNumber(string DirNumberKey = "");
 
         void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00);
 
@@ -369,6 +383,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return instance;
         }
 
+        QADIRs QaDIRs => new QADIRs(Driver);
+
         [ThreadStatic]
         internal static string dirNumber;
 
@@ -381,13 +397,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return GetVar(dirNumKey);
         }
 
-        internal void StoreDirNumber()
-        {
-            dirNumber = GetAttribute(By.Id("DIRNO"), "value");
-            dirNumberKey = $"{tenantName}{GetTestName()}_dirNumber";
-            CreateVar(dirNumberKey, dirNumber);
-            log.Debug($"#####Stored DIR Number - KEY: {dirNumberKey} || VALUE: {GetVar(dirNumberKey)}");
-        }
+        public virtual void SetDirNumber(string dirNum = "")
+            => QaDIRs.StoreDirNumber(dirNum);
 
         public virtual bool IsLoaded() => Driver.Title.Equals("DIR List - ELVIS PMC");
 
@@ -1355,7 +1366,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_ReadyDateTime();
             Enter_CompletedDateTime("", TimeBlock.PM_12_00);
             Enter_TotalInspectionTime();
-            StoreDirNumber();
+            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1429,7 +1440,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_HoldPointType();
 
-            StoreDirNumber();
+            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1486,7 +1497,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
-            StoreDirNumber();
+            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1536,7 +1547,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
-            StoreDirNumber();
+            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1587,7 +1598,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber(4);
-            StoreDirNumber();
+            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1650,7 +1661,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             //SelectDDL_ControlPointNumber(); //Currently does not have values to choose in the drop down list
             SelectChkbox_InspectionType_I();
-            StoreDirNumber();
+            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
