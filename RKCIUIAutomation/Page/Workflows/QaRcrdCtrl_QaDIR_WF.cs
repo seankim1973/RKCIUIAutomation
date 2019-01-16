@@ -167,6 +167,8 @@ namespace RKCIUIAutomation.Page.Workflows
 
         void Verify_Column_Filter_In_ToBeClosed(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
 
+        bool Verify_ViewReport_forDIR_inCreate(string dirNumber);
+
         bool Verify_ViewReport_forDIR_inRevise(string dirNumber);
 
         bool Verify_ViewReport_forDIR_inQcReview(string dirNumber);
@@ -805,6 +807,9 @@ namespace RKCIUIAutomation.Page.Workflows
             => WF_QaRcrdCtrl_QaDIR.VerifyColumnFilterInTab(TableTab.To_Be_Closed, currentUser, dirNumber, dirRev, kickedBack, useQaFieldMenu);
 
         //GLX, LAX, I15SB, I15Tech
+        public virtual bool Verify_ViewReport_forDIR_inCreate(string dirNumber)
+            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Create_Revise, dirNumber, false);
+
         public virtual bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
             => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Create_Revise, dirNumber, false);
         
@@ -936,8 +941,11 @@ namespace RKCIUIAutomation.Page.Workflows
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
         }
 
-        public override bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
+        public override bool Verify_ViewReport_forDIR_inCreate(string dirNumber)
             => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Creating, dirNumber, false);
+
+        public override bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
+            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Revise, dirNumber, false);
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_SGWay : QaRcrdCtrl_QaDIR_WF
@@ -1004,8 +1012,11 @@ namespace RKCIUIAutomation.Page.Workflows
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
         }
 
-        public override bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
+        public override bool Verify_ViewReport_forDIR_inCreate(string dirNumber)
             => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Creating, dirNumber, false);
+
+        public override bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
+            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Revise, dirNumber, false);
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_LAX : QaRcrdCtrl_QaDIR_WF

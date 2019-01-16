@@ -481,6 +481,7 @@ namespace RKCIUIAutomation.Page
             string viewPdfTab = string.Empty;
             string expectedReportUrl = string.Empty;
             string pageErrorHeadingText = string.Empty;
+            string actualReportUrl = string.Empty;
 
             try
             {
@@ -488,32 +489,52 @@ namespace RKCIUIAutomation.Page
 
                 mainTab = Driver.WindowHandles[0];
                 viewPdfTab = Driver.WindowHandles[1];
-                //bool newTabDisplayed = Driver.WindowHandles.Count.Equals(2);
-                Thread.Sleep(3000);
-                string actualReportUrl = Driver.SwitchTo().Window(viewPdfTab).Url;
+                //bool newTabDisplayed = Driver.WindowHandles.Count.Equals(2) ? true : false;
+
+                int retryCount = 0;
+                do
+                {
+                    Thread.Sleep(3000);
+
+                    if (retryCount < 5)
+                    {
+                        Driver.SwitchTo().Window(viewPdfTab);
+                        actualReportUrl = Driver.Url;
+                        retryCount++;
+                    }
+                }
+                while (string.IsNullOrEmpty(actualReportUrl) || actualReportUrl.Contains("blank"));
+  
                 pdfTabUrlExpected = expectedReportUrl.Equals(actualReportUrl);
                 reportUrlLogMsg = pdfTabUrlExpected
                     ? $"PDF Report URL is as expected"
                     : $"Unexpected PDF Report URL";
 
-                LogInfo($"{reportUrlLogMsg}<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}>", pdfTabUrlExpected);
+                LogInfo($"{reportUrlLogMsg}<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}", pdfTabUrlExpected);
 
-                try
+                //check for correct title 
+                Driver.SwitchTo().Window(viewPdfTab);
+                string currentTitle = Driver.Title;
+
+                if (!currentTitle.Equals("ViewDirPDF"))
                 {
-                    IWebElement headingElem = null;
-                    headingElem = Driver.FindElement(By.XPath("//h1"))?.FindElement(By.XPath("//h2"));
-
-                    if (headingElem != null)
+                    try
                     {
-                        pageErrorHeadingText = headingElem?.Text;
-                        logMsg = $"View PDF page shows an error : {pageErrorHeadingText}";
-                        result = false;
+                        IWebElement headingElem = null;
+                        headingElem = Driver.FindElement(By.XPath("//h1"))?.FindElement(By.XPath("//h2"));
+
+                        if (headingElem != null)
+                        {
+                            pageErrorHeadingText = headingElem?.Text;
+                            logMsg = $"View PDF page shows an error : {pageErrorHeadingText}";
+                            result = false;
+                        }
                     }
-                }
-                catch (Exception)
-                {
-                    logMsg = "Searched for Error page headings, but did not find any";
-                    result = true;
+                    catch (Exception)
+                    {
+                        logMsg = "Searched for Error page headings, but did not find any";
+                        result = true;
+                    }
                 }
 
                 TestUtils testUtils = new TestUtils();
