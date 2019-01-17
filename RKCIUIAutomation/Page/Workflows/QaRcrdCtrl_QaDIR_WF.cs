@@ -17,7 +17,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public QaRcrdCtrl_QaDIR_WF(IWebDriver driver) => this.Driver = driver;
 
         //TODO
-        internal string GetDirNumberForFirstRow()
+        internal string GetDirNumberForRow()
         {
             string dirNumber = "";
             return dirNumber;
@@ -43,7 +43,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
                 if (dirRowExists)
                 {
-                    dirNumber = GetDirNumberForFirstRow();
+                    dirNumber = GetDirNumberForRow();
                 }
                 else
                 {

@@ -31,9 +31,7 @@ namespace RKCIUIAutomation.Page
             [StringValue("var evObj = document.createEvent('MouseEvents');" +
                     "evObj.initMouseEvent(\"mouseover\",true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);" +
                     "arguments[0].dispatchEvent(evObj);")]
-            Hover,
-
-            [StringValue("")] GetCssValue
+            Hover
         }
 
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
@@ -53,6 +51,27 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
                 throw;
             }
+        }
+
+        public string JsGetPageTitle(string windowHandle = "")
+        {
+            string title = string.Empty;
+
+            try
+            {
+                if (!windowHandle.Equals(""))
+                {
+                    Driver.SwitchTo().Window(windowHandle);
+                }
+                IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+                title = (string)executor.ExecuteScript("return document.title");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return title;
         }
 
         public void JsClickElement(By elementByLocator)
@@ -129,20 +148,17 @@ namespace RKCIUIAutomation.Page
             log.Info($"...Waiting for page to be in Ready state #####");
         }
 
-        public IWebDriver RefreshWebPage(IWebDriver driver)
+        public void RefreshWebPage()
         {
-            this.Driver = driver;
             try
             {
-                driver.Navigate().Refresh();
+                Driver.Navigate().Refresh();
                 log.Info("Refreshed Web Page");
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
-
-            return driver;
         }
 
         public IWebElement GetElement(By elementByLocator)

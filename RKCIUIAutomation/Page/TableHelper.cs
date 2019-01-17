@@ -15,6 +15,7 @@ namespace RKCIUIAutomation.Page
         public TableHelper(IWebDriver driver) => this.Driver = driver;
 
         private KendoGrid kendo;
+
         private KendoGrid Kendo => kendo = new KendoGrid(Driver);
 
         #region Kendo Grid Public Methods
@@ -221,6 +222,7 @@ namespace RKCIUIAutomation.Page
 
             return xpath;
         }
+
         private By GetTblRowBtn_ByLocator<T>(TableButton tblRowBtn, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumnOrRowIndex)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
 
@@ -334,7 +336,7 @@ namespace RKCIUIAutomation.Page
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public string ClickViewReportForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
+        public string ClickViewReportBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
         {
             By viewBtnLocator = By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}");
             string hrefPDF = GetAttribute(viewBtnLocator, "href");
@@ -346,6 +348,7 @@ namespace RKCIUIAutomation.Page
         public void SelectCheckboxForRow<T>(T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true)
             => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumnOrRowIndex, isMultiTabGrid);
         
+
 
         #endregion Table Row Button Methods
 
@@ -477,34 +480,37 @@ namespace RKCIUIAutomation.Page
             bool pdfTabUrlExpected = false;
             string logMsg = string.Empty;
             string reportUrlLogMsg = string.Empty;
-            string mainTab = string.Empty;
-            string viewPdfTab = string.Empty;
+            string mainWindowHandle = string.Empty;
+            string viewPdfWindowHandle = string.Empty;
             string expectedReportUrl = string.Empty;
             string pageErrorHeadingText = string.Empty;
             string actualReportUrl = string.Empty;
+            string viewPdfWindowTitle = string.Empty;
 
             try
             {
-                expectedReportUrl = ClickViewReportForRow(textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbx);
+                expectedReportUrl = ClickViewReportBtnForRow(textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbx);
 
-                mainTab = Driver.WindowHandles[0];
-                viewPdfTab = Driver.WindowHandles[1];
+                mainWindowHandle = Driver.WindowHandles[0];
+                viewPdfWindowHandle = Driver.WindowHandles[1];
                 //bool newTabDisplayed = Driver.WindowHandles.Count.Equals(2) ? true : false;
 
                 int retryCount = 0;
                 do
                 {
-                    Thread.Sleep(3000);
+                    Thread.Sleep(1000);
 
                     if (retryCount < 5)
                     {
-                        Driver.SwitchTo().Window(viewPdfTab);
+                        Driver.SwitchTo().Window(viewPdfWindowHandle);
                         actualReportUrl = Driver.Url;
                         retryCount++;
                     }
+
+                    viewPdfWindowTitle = Driver.Title;
                 }
                 while (string.IsNullOrEmpty(actualReportUrl) || actualReportUrl.Contains("blank"));
-  
+
                 pdfTabUrlExpected = expectedReportUrl.Equals(actualReportUrl);
                 reportUrlLogMsg = pdfTabUrlExpected
                     ? $"PDF Report URL is as expected"
@@ -512,11 +518,7 @@ namespace RKCIUIAutomation.Page
 
                 LogInfo($"{reportUrlLogMsg}<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}", pdfTabUrlExpected);
 
-                //check for correct title 
-                Driver.SwitchTo().Window(viewPdfTab);
-                string currentTitle = Driver.Title;
-
-                if (!currentTitle.Equals("ViewDirPDF"))
+                if (!viewPdfWindowTitle.Equals("ViewDirPDF"))
                 {
                     try
                     {
@@ -550,8 +552,8 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                Driver.SwitchTo().Window(viewPdfTab).Close();
-                Driver.SwitchTo().Window(mainTab);
+                Driver.SwitchTo().Window(viewPdfWindowHandle).Close();
+                Driver.SwitchTo().Window(mainWindowHandle);
             }
 
             return result;
