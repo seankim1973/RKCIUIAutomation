@@ -665,4 +665,20 @@ namespace RKCIUIAutomation.UnitTest
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(GeneralNCR.TableTab.CQM_Review, ncrDesc));
         }
     }
+
+    public class Cipher
+    {
+        [Test]
+        public void EncryptDecryptPW()
+        {
+            string pw = "";
+
+            ConfigUtils configUtils = new ConfigUtils();
+            var encrypted = configUtils.GetEncryptedPW(pw);
+            Console.WriteLine($"ENCRYPTED : {encrypted}");
+            var decrypted = configUtils.GetDecryptedPW(encrypted);
+            Console.WriteLine($"DECRYPTED : {decrypted}");
+            Assert.True(decrypted.Equals(pw));
+        }
+    }
 }

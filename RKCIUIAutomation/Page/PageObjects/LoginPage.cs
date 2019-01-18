@@ -81,8 +81,6 @@ namespace RKCIUIAutomation.Page.PageObjects
                 foreach (By field in loginFields)
                 {
                     userAcctIndex = (field == field_Email) ? 0 : 1;
-                    IWebElement webElem = null;
-
                     credential = userAcct[userAcctIndex];
 
                     try
@@ -94,8 +92,17 @@ namespace RKCIUIAutomation.Page.PageObjects
                         };
                         wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
                         wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                        webElem = wait.Until(x => x.FindElement(field));
-                        webElem.SendKeys(credential);
+                        IWebElement webElem = wait.Until(x => x.FindElement(field));
+
+                        if (userAcctIndex == 1)
+                        {
+                            webElem.SendKeys(Configs.GetDecryptedPW(credential));
+                        }
+                        else
+                        {
+                            webElem.SendKeys(credential);
+                        }
+                        
                     }
                     catch (Exception e)
                     {

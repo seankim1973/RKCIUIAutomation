@@ -489,8 +489,9 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                expectedReportUrl = ClickViewReportBtnForRow(textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbx);
+                TestUtils testUtils = new TestUtils();
 
+                expectedReportUrl = ClickViewReportBtnForRow(textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbx);
                 mainWindowHandle = Driver.WindowHandles[0];
                 viewPdfWindowHandle = Driver.WindowHandles[1];
                 //bool newTabDisplayed = Driver.WindowHandles.Count.Equals(2) ? true : false;
@@ -518,7 +519,7 @@ namespace RKCIUIAutomation.Page
 
                 LogInfo($"{reportUrlLogMsg}<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}", pdfTabUrlExpected);
 
-                if (!viewPdfWindowTitle.Equals("ViewDirPDF"))
+                if (!pdfTabUrlExpected)
                 {
                     try
                     {
@@ -529,7 +530,6 @@ namespace RKCIUIAutomation.Page
                         {
                             pageErrorHeadingText = headingElem?.Text;
                             logMsg = $"View PDF page shows an error : {pageErrorHeadingText}";
-                            result = false;
                         }
                     }
                     catch (Exception)
@@ -537,14 +537,17 @@ namespace RKCIUIAutomation.Page
                         logMsg = "Searched for Error page headings, but did not find any";
                         result = true;
                     }
+
+                    testUtils.AddAssertionToList(result, logMsg);
+                    LogInfo(logMsg, result);
+                }
+                else
+                {
+                    result = true;
                 }
 
-                TestUtils testUtils = new TestUtils();
-
                 testUtils.AddAssertionToList(pdfTabUrlExpected, reportUrlLogMsg);
-                testUtils.AddAssertionToList(result, logMsg);
 
-                LogInfo(logMsg, result);
             }
             catch (NoSuchWindowException e)
             {

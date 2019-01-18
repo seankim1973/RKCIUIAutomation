@@ -493,7 +493,6 @@ namespace RKCIUIAutomation.Test.DIR
             
             //WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
             //AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
-            LogoutToLoginPage();
 
             AssertAll();
         }
