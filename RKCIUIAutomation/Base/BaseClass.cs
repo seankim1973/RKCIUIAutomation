@@ -119,8 +119,8 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.SGWay}");
-            string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
+            string _reporter = Parameters.Get("Reporter", $"{Reporter.Html}");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
             testPlatform = Configs.GetTestRunEnv<TestPlatform>(_testPlatform);
@@ -131,7 +131,10 @@ namespace RKCIUIAutomation.Base
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
-            testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local) ? TestPlatform.Windows : testPlatform;
+            testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local)
+                ? TestPlatform.Windows
+                : testPlatform;
+
             DetermineReportFilePath();
 
             if (hiptest)
@@ -188,7 +191,7 @@ namespace RKCIUIAutomation.Base
 
         private void InitExtentTestInstance()
         {
-            reportInstance = ExtentManager.Instance;
+            reportInstance = ExtentManager.GetReportInstance();
             parentTest = (reporter == Reporter.Html) ?
                 reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv) : null;
             testInstance = (reporter == Reporter.Html) ?
@@ -207,7 +210,7 @@ namespace RKCIUIAutomation.Base
                 {
                     string testDetails = $"({testEnv}){tenantName} - {testName}";
                     Driver = GetWebDriver(testPlatform, browserType, testDetails);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(20);
+                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(45);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 
@@ -359,12 +362,14 @@ namespace RKCIUIAutomation.Base
                         Driver.Manage().Cookies.AddCookie(cookie);
                     }
 
-                    if (Driver.Title.Contains("ELVIS PMC"))
+                    if (!Driver.Title.Equals("Home Page"))
                     {
-                        IWebElement logoutLink = Driver.FindElement(By.XPath("//a[text()=' Log out']"));
-                        if (logoutLink?.Displayed == true)
+                        try
                         {
-                            logoutLink.Click();
+                            Driver.FindElement(By.XPath("//a[text()=' Log out']")).Click();
+                        }
+                        catch (Exception)
+                        {
                         }
                     }
                 }

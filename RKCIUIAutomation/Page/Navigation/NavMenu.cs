@@ -1,7 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using System;
-using System.Threading;
 
 namespace RKCIUIAutomation.Page.Navigation
 {
@@ -12,54 +11,59 @@ namespace RKCIUIAutomation.Page.Navigation
         public void Menu<T>(T navEnum)
         {
             Enum mainNavEnum = null;
-            Enum projAdminEnum = null;
-            Enum projUserMgmtEnum = null;
-            Enum projSysConfigEnum = null;
-            Enum projAdminToolsEnum = null;
-            Enum projSysConfigEquipEnum = null;
-            Enum projSysConfigGradeMgmtEnum = null;
-            Enum recordCtrlQaEnum = null;
+            Enum subOfMainNavEnum = null;
+            Enum childOfSubMenuEnum = null;
+            Enum subOfChildMenuEnum = null;
 
-            Actions builder;
-            IWebElement element;
-
-            var reflectedPageType = navEnum.GetType().ReflectedType;
+            Type reflectedPageType = null;
             By clickLocator = null;
+            IWebElement element;
+            Actions builder;
 
-            if (reflectedPageType.Equals(typeof(Project)) || reflectedPageType.IsSubclassOf(typeof(Project)))
+            try
             {
-                mainNavEnum = MainNav.Menu.Project;
-
-                if (reflectedPageType.Equals(typeof(Project.Administration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration)))
+                try
                 {
-                    projAdminEnum = Project.SubMenu_Project.Administration;
+                    WaitForPageReady();
+                }
+                catch (Exception)
+                {
+                }
 
-                    if (reflectedPageType.Equals(typeof(Project.Administration.UserManagement)))
-                    {
-                        projUserMgmtEnum = Project.Administration.SubMenu_Administration.User_Management;
-                    }
-                    else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration.SystemConfiguration)))
-                    {
-                        projSysConfigEnum = Project.Administration.SubMenu_Administration.System_Configuration;
+                reflectedPageType = navEnum.GetType().ReflectedType;
+                
+                if (reflectedPageType.Equals(typeof(Project)) || reflectedPageType.IsSubclassOf(typeof(Project)))
+                {
+                    mainNavEnum = MainNav.Menu.Project;
 
-                        if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.Equipment)))
-                        {
-                            projSysConfigEquipEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Equipment;
-                        }
-                        else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.GradeManagement)))
-                        {
-                            projSysConfigGradeMgmtEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Grade_Management;
-                        }
-                    }
-                    else if (reflectedPageType.Equals(typeof(Project.Administration.AdminTools)))
+                    if (reflectedPageType.Equals(typeof(Project.Administration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration)))
                     {
-                        projAdminToolsEnum = Project.Administration.SubMenu_Administration.Admin_Tools;
+                        subOfMainNavEnum = Project.SubMenu_Project.Administration;
+
+                        if (reflectedPageType.Equals(typeof(Project.Administration.UserManagement)))
+                        {
+                            childOfSubMenuEnum = Project.Administration.SubMenu_Administration.User_Management;
+                        }
+                        else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration)) || reflectedPageType.IsSubclassOf(typeof(Project.Administration.SystemConfiguration)))
+                        {
+                            childOfSubMenuEnum = Project.Administration.SubMenu_Administration.System_Configuration;
+
+                            if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.Equipment)))
+                            {
+                                subOfChildMenuEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Equipment;
+                            }
+                            else if (reflectedPageType.Equals(typeof(Project.Administration.SystemConfiguration.GradeManagement)))
+                            {
+                                subOfChildMenuEnum = Project.Administration.SystemConfiguration.SubMenu_SystemConfiguration.Grade_Management;
+                            }
+                        }
+                        else if (reflectedPageType.Equals(typeof(Project.Administration.AdminTools)))
+                        {
+                            childOfSubMenuEnum = Project.Administration.SubMenu_Administration.Admin_Tools;
+                        }
                     }
                 }
-            }
-            else
-            {
-                if (reflectedPageType.Equals(typeof(QALab)))
+                else if (reflectedPageType.Equals(typeof(QALab)))
                 {
                     mainNavEnum = MainNav.Menu.QA_Lab;
                 }
@@ -83,9 +87,18 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     mainNavEnum = MainNav.Menu.QA_Search;
                 }
-                else if (reflectedPageType.Equals(typeof(QualitySearch)))
+                else if (reflectedPageType.Equals(typeof(QualitySearch)) || reflectedPageType.IsSubclassOf(typeof(QualitySearch)))
                 {
                     mainNavEnum = MainNav.Menu.Quality_Search;
+
+                    if (reflectedPageType.Equals(typeof(QualitySearch.QA)))
+                    {
+                        subOfMainNavEnum = QualitySearch.SubMenu_QualitySearch.QA;
+                    }
+                    else if (reflectedPageType.Equals(typeof(QualitySearch.QC)))
+                    {
+                        subOfMainNavEnum = QualitySearch.SubMenu_QualitySearch.QC;
+                    }
                 }
                 else if (reflectedPageType.Equals(typeof(QAField)))
                 {
@@ -131,13 +144,17 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     mainNavEnum = MainNav.Menu.QC_Lab;
                 }
-                else if (reflectedPageType.Equals(typeof(RecordControl)))
+                else if (reflectedPageType.Equals(typeof(RecordControl)) || reflectedPageType.IsSubclassOf(typeof(RecordControl)))
                 {
                     mainNavEnum = MainNav.Menu.Record_Control;
 
                     if (reflectedPageType.Equals(typeof(RecordControl.QA)))
                     {
-                        recordCtrlQaEnum = RecordControl.SubMenu_RecordControl.QA;
+                        subOfMainNavEnum = RecordControl.SubMenu_RecordControl.QA;
+                    }
+                    else if (reflectedPageType.Equals(typeof(RecordControl.QC)))
+                    {
+                        subOfMainNavEnum = RecordControl.SubMenu_RecordControl.QC;
                     }
                 }
                 else if (reflectedPageType.Equals(typeof(QCRecordControl)))
@@ -156,51 +173,31 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     mainNavEnum = MainNav.Menu.ELVIS;
                 }
-            }
 
-            try
-            {
-                VerifyPageIsLoaded();
+                //VerifyPageIsLoaded();
                 JsHover(GetMainNavMenuByLocator(mainNavEnum));
                 builder = new Actions(Driver);
 
-                if (projAdminEnum != null)
-                {    
-                    element = Driver.FindElement(GetNavMenuByLocator(projAdminEnum));
-                    builder.MoveToElement(element).Perform();
-                    clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum));
-
-                    if (projUserMgmtEnum != null)
-                    {
-                        element = Driver.FindElement(GetNavMenuByLocator(projUserMgmtEnum));
-                        builder.MoveToElement(element).Perform();
-                    }
-                    else if (projSysConfigEnum != null)
-                    {
-                        element = Driver.FindElement(GetNavMenuByLocator(projSysConfigEnum));
-                        builder.MoveToElement(element).Perform();
-
-                        if (projSysConfigEquipEnum != null)
-                        {
-                            element = Driver.FindElement(GetNavMenuByLocator(projSysConfigEquipEnum));
-                            builder.MoveToElement(element).Perform();
-                        }
-                        else if (projSysConfigGradeMgmtEnum != null)
-                        {
-                            element = Driver.FindElement(GetNavMenuByLocator(projSysConfigGradeMgmtEnum));
-                            builder.MoveToElement(element).Perform();
-                        }
-                    }
-                    else if (projAdminToolsEnum != null)
-                    {
-                        element = Driver.FindElement(GetNavMenuByLocator(projAdminToolsEnum));
-                        builder.MoveToElement(element).Perform();
-                    }
-                }
-                else if (recordCtrlQaEnum != null)
+                if (subOfMainNavEnum != null)
                 {
-                    element = Driver.FindElement(GetNavMenuByLocator(recordCtrlQaEnum, ConvertToType<Enum>(mainNavEnum)));
+                    By subOfMainNavLocator = GetNavMenuByLocator(subOfMainNavEnum, mainNavEnum);
+                    element = Driver.FindElement(subOfMainNavLocator);
                     builder.MoveToElement(element).Perform();
+
+                    if (childOfSubMenuEnum != null)
+                    {
+                        By childOfSubMenuLocator = GetNavMenuByLocator(childOfSubMenuEnum, subOfMainNavEnum);
+                        element = Driver.FindElement(childOfSubMenuLocator);
+                        builder.MoveToElement(element).Perform();
+
+                        if (subOfChildMenuEnum != null)
+                        {
+                            By subOfChildMenuLocator = GetNavMenuByLocator(subOfChildMenuEnum, childOfSubMenuEnum);
+                            element = Driver.FindElement(subOfChildMenuLocator);
+                            builder.MoveToElement(element).Perform();
+                        }
+                    }
+
                     clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum));
                 }
                 else
@@ -210,12 +207,20 @@ namespace RKCIUIAutomation.Page.Navigation
             }
             catch (Exception e)
             {
-                log.Error($"Exception occured during Menu Navigation", e);
+                log.Error(e.Message);
             }
             finally
             {
                 JsClickElement(clickLocator);
-                Thread.Sleep(2000);
+
+                try
+                {
+                    WaitForPageReady();
+                }
+                catch (Exception e)
+                {
+                    log.Error(e.Message);
+                }
             }
         }
 
@@ -232,6 +237,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Reports & Notices")] Reports_Notices,
                 [StringValue("QA Search")] QA_Search,
                 [StringValue("Quality Search")] Quality_Search,
+                [StringValue("Lab")] Lab,
                 [StringValue("QA Field")] QA_Field,
                 [StringValue("Owner")] Owner,
                 [StringValue("Material/Mix Codes")] Material_Mix_Codes,
@@ -376,7 +382,20 @@ namespace RKCIUIAutomation.Page.Navigation
             }
         }
 
-        //QA Record Control Menu Navigation Enums
+        //Lab Menu Navigation Enums
+        public class Lab
+        {
+            public enum Menu
+            {
+                [StringValue("Technician Random")] Technician_Random,
+                [StringValue("BreakSheet Creation")] BreakSheet_Creation,
+                [StringValue("BreakSheet Legacy")] BreakSheet_Legacy,
+                [StringValue("Equipment Management")] Equipment_Management,
+                [StringValue("BreakSheet Forecast")] BreakSheet_Forecast
+            }
+        }
+
+        //Record Control Menu Navigation Enums
         public class QARecordControl
         {
             public enum Menu
@@ -432,10 +451,15 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("QA Test Summary Search")] QA_Test_Summary_Search,
                 [StringValue("QA Guide Schedule Summary Report")] QA_Guide_Schedule_Summary_Report,
                 [StringValue("Inspection Deficiency Log Report")] Inspection_Deficiency_Log_Report,
+                [StringValue("PCC Mix Design Report")] PCC_Mix_Design_Report,
+                [StringValue("Hma Mix Design Summary")] Hma_Mix_Design_Summary,
                 [StringValue("Daily Inspection Report")] Daily_Inspection_Report,
+                [StringValue("Hma Mix Design Report")] Hma_Mix_Design_Report,
                 [StringValue("DIR Summary Report")] DIR_Summary_Report,
                 [StringValue("DIR Checklist Search")] DIR_Checklist_Search,
-                [StringValue("Ncr Log View")] Ncr_Log_View,
+                [StringValue("Material Traceability Matrix Search")] Material_Traceability_Matrix_Search,
+                [StringValue("NCR Log View")] NCR_Log_View,
+                [StringValue("CDR Log View")] CDR_Log_View,
                 [StringValue("QMS Document Search")] QMS_Document_Search,
                 [StringValue("Environmental Document Search")] Environmental_Document_Search,
                 [StringValue("QA/QO Test - Proctor Curve Report")] QAQO_Test_Proctor_Curve_Report,
@@ -446,6 +470,12 @@ namespace RKCIUIAutomation.Page.Navigation
         //Quality Search Menu Navigation Enums
         public class QualitySearch
         {
+            internal enum SubMenu_QualitySearch
+            {
+                [StringValue("QA")] QA,
+                [StringValue("QC")] QC
+            }
+
             public enum Menu
             {
                 [StringValue("Test Summary")] Test_Summary,
@@ -456,11 +486,40 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("IDR Summary Report")] IDR_Summary_Report,
                 [StringValue("Mix Design Summary - HMA")] Mix_Design_Summary_HMA,
                 [StringValue("Mix Design Report - HMA")] Mix_Design_Report_HMA,
-                [StringValue("Material Traceability Matrix")] Material_Traceability_Matrix,
                 [StringValue("NCR Log View")] NCR_Log_View,
                 [StringValue("CDR Log View")] CDR_Log_View,
-                [StringValue("QA/QO: Test - Proctor Curve Summary")] QA_QO_Test_Proctor_Curve_Summary,
-                [StringValue("QA/QO: Test - Proctor Curve Report")] QA_QO_Test_Proctor_Curve_Report
+                [StringValue("QA/QO: Test - Proctor Curve Summary")] QA_QO_Test_Proctor_Curve_Summary, //GLX
+                [StringValue("QA/QO: Test - Proctor Curve Report")] QA_QO_Test_Proctor_Curve_Report, //GLX
+                [StringValue("Deficiency Log View")] Deficiency_Log_View,
+                [StringValue("HMA Mix Design Summary")] HMA_Mix_Design_Summary,
+                [StringValue("HMA Mix Design Report")] HMA_Mix_Design_Report,
+                [StringValue("PCC Mix Design Summary")] PCC_Mix_Design_Summary,
+                [StringValue("Material Traceability Matrix")] Material_Traceability_Matrix, //LAX
+                [StringValue("Material Traceability Matrix Search")] Material_Traceability_Matrix_Search, //GLX
+                [StringValue("Test - Proctor Curve Summary")] Test_Proctor_Curve_Summary,
+                [StringValue("Test - Proctor Curve Report")] Test_Proctor_Curve_Report
+            }
+
+            public class QA : QualitySearch
+            {
+                public new enum Menu
+                {
+                    [StringValue("QA Test Search")] QA_Test_Search,
+                    [StringValue("QA Test Summary Search")] QA_Test_Summary_Search,
+                    [StringValue("QA Daily Inspection Report")] QA_Daily_Inspection_Report,
+                    [StringValue("QA DIR Summary Report")] QA_DIR_Summary_Report
+                }
+            }
+
+            public class QC : QualitySearch
+            {
+                public new enum Menu
+                {
+                    [StringValue("QC Test Search")] QC_Test_Search,
+                    [StringValue("QC Test Summary Search")] QC_Test_Summary_Search,
+                    [StringValue("QC Daily Inspection Report")] QC_Daily_Inspection_Report,
+                    [StringValue("QC DIR Summary Report")] QC_DIR_Summary_Report
+                }
             }
         }
 
@@ -519,21 +578,42 @@ namespace RKCIUIAutomation.Page.Navigation
         {
             internal enum SubMenu_RecordControl
             {
-                [StringValue("QA")] QA
+                [StringValue("QA")] QA,
+                [StringValue("QC")] QC
             }
 
             public enum Menu
             {
-                [StringValue("QC")] QC,
+                [StringValue("Test Count")] Test_Count,
                 [StringValue("DIR Count")] DIR_Count,
+                [StringValue("Retaining Wall Backfill Quantity Tracker")] Retaining_Wall_Backfill_Quantity_Tracker,
+                [StringValue("Concrete Paving Quantity Tracker")] Concrete_Paving_Quantity_Tracker,
+                [StringValue("MPL Tracker")] MPL_Tracker,
+                [StringValue("Girder Tracker")] Girder_Tracker,
+                [StringValue("Weekly Environmental Monitoring")] Weekly_Environmental_Monitoring,
+                [StringValue("Daily Environmental Inspection")] Daily_Environmental_Inspection,
+                [StringValue("Weekly Environmental Inspection")] Weekly_Environmental_Inspection,
             }
 
             public class QA : RecordControl
             {
                 public new enum Menu
                 {
+                    [StringValue("QA Test - All")] QA_Test_All,
                     [StringValue("QA DIRs")] QA_DIRs,
-                    [StringValue("QA NCR")] QA_NCR
+                    [StringValue("QA NCR")] QA_NCR,
+                    [StringValue("QA Deficiency Notice")] QA_Deficiency_Notice,
+                }
+            }
+
+            public class QC : RecordControl
+            {
+                public new enum Menu
+                {
+                    [StringValue("QC Test - All")] QC_Test_All,
+                    [StringValue("QC DIRs")] QC_DIRs,
+                    [StringValue("QC NCR")] QC_NCR,
+                    [StringValue("QC Deficiency Notice")] QC_Deficiency_Notice,
                 }
             }
         }

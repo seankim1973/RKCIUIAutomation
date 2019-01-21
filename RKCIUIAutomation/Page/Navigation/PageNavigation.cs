@@ -145,13 +145,39 @@ namespace RKCIUIAutomation.Page.Navigation
         void ReportsNotices_General_DN();
 
         // Record Control Menu - LAX
+        void RecordControl_QA_QaTest_All();
+
         void RecordControl_QA_QaDIRs();
 
         void RecordControl_QA_QaNCR();
 
-        void RecordControl_QC();
+        void RecordControl_QA_QaDeficiency_Notice();
+
+        void RecordControl_QC_QcTest_All();
+
+        void RecordControl_QC_QcDIRs();
+
+        void RecordControl_QC_QcNCR();
+
+        void RecordControl_QC_QcDeficiency_Notice();
+
+        void RecordControl_Test_Count();
 
         void RecordControl_DIR_Count();
+
+        void RecordControl_Retaining_Wall_Backfill_Quantity_Tracker();
+
+        void RecordControl_Concrete_Paving_Quantity_Tracker();
+
+        void RecordControl_MPL_Tracker();
+
+        void RecordControl_Girder_Tracker();
+
+        void RecordControl_Weekly_Environmental_Monitoring();
+
+        void RecordControlDaily_Environmental_Inspection();
+
+        void RecordControl_Weekly_Environmental_Inspection();
 
         // QA Search
         void QASearch_QA_Tests();
@@ -168,7 +194,15 @@ namespace RKCIUIAutomation.Page.Navigation
 
         void QASearch_DIR_Checklist_Search();
 
-        void QASearch_Ncr_Log_View();
+        void QASearch_Mix_Design_Summary_HMA();
+
+        void QASearch_Mix_Design_Report_HMA();
+
+        void QASearch_Material_Traceability_Matrix();
+
+        void QASearch_CDR_Log_View();
+
+        void QASearch_NCR_Log_View();
 
         void QASearch_QMS_Document_Search();
 
@@ -283,8 +317,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
     #endregion PageNavigation Interface class
 
-    #region PageNavigation Common Implementation class
-
+    //PageNavigation Common Implementation class
     public abstract class PageNavigation_Impl : PageBase, IPageNavigation
     {
         internal NavMenu Navigate => new NavMenu(Driver);
@@ -334,6 +367,8 @@ namespace RKCIUIAutomation.Page.Navigation
             return instance;
         }
 
+
+        #region Project Menu
         // QMS_Document / QMS_Document_Search
         /// <summary>
         /// for SG >QA Record Control>Qms Document, >QA Search>QMS Document Search
@@ -342,7 +377,6 @@ namespace RKCIUIAutomation.Page.Navigation
         /// </summary>
         public virtual void Qms_Document() => Navigate.Menu(NavMenu.Project.Menu.Qms_Document);
 
-        //Project Menu
         public virtual void My_Details() => Navigate.Menu(NavMenu.Project.Menu.My_Details);
 
         //Project>Administration
@@ -396,13 +430,15 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void SysConfig_Grades() => Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.GradeManagement.Menu.Grades);
 
         public virtual void SysConfig_Grade_Types() => Navigate.Menu(NavMenu.Project.Administration.SystemConfiguration.GradeManagement.Menu.Grade_Types);
+        #endregion Project Menu
 
-        // Control Point Menu
+        #region Control Point Menu
         public virtual void Control_Point_Log() => Navigate.Menu(NavMenu.ControlPoint.Menu.Control_Point_Log);
 
         public virtual void Control_Point_Scheduler() => Navigate.Menu(NavMenu.ControlPoint.Menu.Control_Point_Scheduler);
+        #endregion Control Point Menu
 
-        // Material Mix Codes Menu
+        #region Material Mix Codes Menu
         public virtual void MaterialMixCodes_Material_Code_Base_Aggregate() => Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Material_Code_Base_Aggregate);
 
         public virtual void MaterialMixCodes_Material_Code_Concrete_Aggregate() => Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Material_Code_Concrete_Aggregate);
@@ -418,13 +454,15 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void MaterialMixCodes_Sieve_Analyses_IOC() => Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Sieve_Analyses_IOC);
 
         public virtual void MaterialMixCodes_Sieve_Analyses_JMF() => Navigate.Menu(NavMenu.MaterialMixCodes.Menu.Sieve_Analyses_JMF);
+        #endregion Material Mix Codes Menu virtual methods
 
-        // Owner Menu
+        #region Owner Menu
         public virtual void Owner_DIRs() => Navigate.Menu(NavMenu.Owner.Menu.Owner_DIRs);
 
         public virtual void Owner_NCRs() => Navigate.Menu(NavMenu.Owner.Menu.Owner_NCRs);
+        #endregion Owner Menu
 
-        // QA Engineer Menu
+        #region QA Engineer Menu
         public virtual void QAEngineer_QA_Test_Lab_Supervisor_Review() => Navigate.Menu(NavMenu.QAEngineer.Menu.QA_Test_Lab_Supervisor_Review);
 
         public virtual void QAEngineer_QA_Test_Field_Supervisor_Review() => Navigate.Menu(NavMenu.QAEngineer.Menu.QA_Test_Field_Supervisor_Review);
@@ -434,8 +472,9 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QAEngineer_DIR_QA_Review_Approval() => Navigate.Menu(NavMenu.QAEngineer.Menu.DIR_QA_Review_Approval);
 
         public virtual void QA_Test_Proctor_Curve_Controller() => Navigate.Menu(NavMenu.QAEngineer.Menu.QA_Test_Proctor_Curve_Controller);
+        #endregion QA Engineer Menu
 
-        // QA Field Menu
+        #region QA Field Menu
         public virtual void QAField_Daily_Environmental_Inspection() => Navigate.Menu(NavMenu.QAField.Menu.Daily_Environmental_Inspection);
 
         public virtual void QAField_QA_DIRs() => Navigate.Menu(NavMenu.QAField.Menu.QA_DIRs);
@@ -447,8 +486,9 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QAField_Weekly_Environmental_Inspection() => Navigate.Menu(NavMenu.QAField.Menu.Weekly_Environmental_Inspection);
 
         public virtual void QAField_Weekly_Environmental_Monitoring() => Navigate.Menu(NavMenu.QAField.Menu.Weekly_Environmental_Monitoring);
+        #endregion QA Field Menu
 
-        // QA Lab Menu
+        #region QA Lab Menu
         public virtual void QALab_BreakSheet_Creation() => Navigate.Menu(NavMenu.QALab.Menu.BreakSheet_Creation);
 
         public virtual void QALab_BreakSheet_Legacy() => Navigate.Menu(NavMenu.QALab.Menu.BreakSheet_Legacy);
@@ -462,13 +502,15 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QALab_Cylinder_PickUp_List() => Navigate.Menu(NavMenu.QALab.Menu.Cylinder_PickUp_List);
 
         public virtual void QALab_Early_Break_Calendar() => Navigate.Menu(NavMenu.QALab.Menu.Early_Break_Calendar);
+        #endregion QA Lab Menu
 
-        // OV Menu
+        #region OV Menu
         public virtual void OV_Create_OV_Test() => Navigate.Menu(NavMenu.OV.Menu.Create_OV_Test);
 
         public virtual void OV_OV_Test() => Navigate.Menu(NavMenu.OV.Menu.OV_Tests);
+        #endregion OV Menu
 
-        // QA Records Control Menu
+        #region QA Records Control Menu
         // use Qms_Document() for QARecordControl_Qms_Document
         public virtual void QARecordControl_QA_Test_Original_Report() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Original_Report);
 
@@ -493,27 +535,63 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QARecordControl_QA_Test_Retest_Report() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Test_Retest_Report);
 
         public virtual void QARecordControl_Environmental_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.Environmental_Document);
+        #endregion QA Records Control Menu
 
-        // Record Control Menu - LAX
+        #region Record Control Menu
+
+        public virtual void RecordControl_QA_QaTest_All() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Test_All);
+
         public virtual void RecordControl_QA_QaDIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
 
         public virtual void RecordControl_QA_QaNCR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_NCR);
 
-        public virtual void RecordControl_QC() => Navigate.Menu(NavMenu.RecordControl.Menu.QC);
+        public virtual void RecordControl_QA_QaDeficiency_Notice() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Deficiency_Notice);
+
+        public virtual void RecordControl_QC_QcTest_All() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Test_All);
+
+        public virtual void RecordControl_QC_QcDIRs() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_DIRs);
+
+        public virtual void RecordControl_QC_QcNCR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_NCR);
+
+        public virtual void RecordControl_QC_QcDeficiency_Notice() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Deficiency_Notice);
+
+        public virtual void RecordControl_Test_Count() => Navigate.Menu(NavMenu.RecordControl.Menu.Test_Count);
 
         public virtual void RecordControl_DIR_Count() => Navigate.Menu(NavMenu.RecordControl.Menu.DIR_Count);
 
+        public virtual void RecordControl_Retaining_Wall_Backfill_Quantity_Tracker() => Navigate.Menu(NavMenu.RecordControl.Menu.Retaining_Wall_Backfill_Quantity_Tracker);
 
-        // QA Search
+        public virtual void RecordControl_Concrete_Paving_Quantity_Tracker() => Navigate.Menu(NavMenu.RecordControl.Menu.Concrete_Paving_Quantity_Tracker);
+
+        public virtual void RecordControl_MPL_Tracker() => Navigate.Menu(NavMenu.RecordControl.Menu.MPL_Tracker);
+
+        public virtual void RecordControl_Girder_Tracker() => Navigate.Menu(NavMenu.RecordControl.Menu.Girder_Tracker);
+
+        public virtual void RecordControl_Weekly_Environmental_Monitoring() => Navigate.Menu(NavMenu.RecordControl.Menu.Weekly_Environmental_Monitoring);
+
+        public virtual void RecordControlDaily_Environmental_Inspection() => Navigate.Menu(NavMenu.RecordControl.Menu.Daily_Environmental_Inspection);
+
+        public virtual void RecordControl_Weekly_Environmental_Inspection() => Navigate.Menu(NavMenu.RecordControl.Menu.Weekly_Environmental_Inspection);
+        #endregion Record Control Menu - LAX
+
+        #region QA Search
         public virtual void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QASearch.Menu.Daily_Inspection_Report);
 
         public virtual void QASearch_DIR_Checklist_Search() => Navigate.Menu(NavMenu.QASearch.Menu.DIR_Checklist_Search);
+
+        public virtual void QASearch_Mix_Design_Summary_HMA() => Navigate.Menu(NavMenu.QASearch.Menu.Hma_Mix_Design_Summary);
+
+        public virtual void QASearch_Mix_Design_Report_HMA() => Navigate.Menu(NavMenu.QASearch.Menu.Hma_Mix_Design_Report);
+
+        public virtual void QASearch_Material_Traceability_Matrix() => Navigate.Menu(NavMenu.QASearch.Menu.Material_Traceability_Matrix_Search);
+
+        public virtual void QASearch_CDR_Log_View() => Navigate.Menu(NavMenu.QASearch.Menu.CDR_Log_View);
 
         public virtual void QASearch_DIR_Summary_Report() => Navigate.Menu(NavMenu.QASearch.Menu.DIR_Summary_Report);
 
         public virtual void QASearch_Inspection_Deficiency_Log_Report() => Navigate.Menu(NavMenu.QASearch.Menu.Inspection_Deficiency_Log_Report);
 
-        public virtual void QASearch_Ncr_Log_View() => Navigate.Menu(NavMenu.QASearch.Menu.Ncr_Log_View);
+        public virtual void QASearch_NCR_Log_View() => Navigate.Menu(NavMenu.QASearch.Menu.NCR_Log_View);
 
         public virtual void QASearch_QA_Guide_Schedule_Summary_Report() => Navigate.Menu(NavMenu.QASearch.Menu.QA_Guide_Schedule_Summary_Report);
 
@@ -528,13 +606,15 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QAQO_Test_Proctor_Curve_Report() => Navigate.Menu(NavMenu.QASearch.Menu.QAQO_Test_Proctor_Curve_Report);
 
         public virtual void QAQO_Test_Proctor_Curve_Summary() => Navigate.Menu(NavMenu.QASearch.Menu.QAQO_Test_Proctor_Curve_Summary);
+        #endregion QA Search
 
-        // Reports & Notices Menu
+        #region Reports & Notices Menu
         public virtual void ReportsNotices_General_DN() => Navigate.Menu(NavMenu.ReportsNotices.Menu.General_DN);
 
         public virtual void ReportsNotices_General_NCR() => Navigate.Menu(NavMenu.ReportsNotices.Menu.General_NCR);
+        #endregion Reports & Notices Menu
 
-        // RM Center Menu
+        #region RM Center Menu
         public virtual void RMCenter_Comment_Summary() => Navigate.Menu(NavMenu.RMCenter.Menu.Comment_Summary);
 
         public virtual void RMCenter_Design_Documents() => Navigate.Menu(NavMenu.RMCenter.Menu.Design_Documents);
@@ -556,20 +636,23 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void RMCenter_Upload_Owner_Submittal() => Navigate.Menu(NavMenu.RMCenter.Menu.Upload_Owner_Submittal);
 
         public virtual void RMCenter_Upload_QA_Submittal() => Navigate.Menu(NavMenu.RMCenter.Menu.Upload_QA_Submittal);
+        #endregion RM Center Menu
 
-        // RFI
+        #region RFI
         public virtual void RFI_List() => Navigate.Menu(NavMenu.RFI.Menu.List);
 
         public virtual void RFI_Create() => Navigate.Menu(NavMenu.RFI.Menu.Create);
+        #endregion RFI
 
-        //QC Lab Menu
+        #region QC Lab Menu
         public virtual void QCLab_BreakSheet_Creation() => Navigate.Menu(NavMenu.QCLab.Menu.BreakSheet_Creation);
 
         public virtual void QCLab_BreakSheet_Legacy() => Navigate.Menu(NavMenu.QCLab.Menu.BreakSheet_Legacy);
 
         public virtual void QCLab_Equipment_Management() => Navigate.Menu(NavMenu.QCLab.Menu.Equipment_Management);
+        #endregion QC Lab Menu
 
-        //QC Record Control Menu
+        #region QC Record Control Menu
         public virtual void QCRecordControl_QC_Test_Original_Report() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_Test_Original_Report);
 
         public virtual void QCRecordControl_QC_Test_Correction_Report() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_Test_Correction_Report);
@@ -581,13 +664,15 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QCRecordControl_QC_NCR() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_NCR);
 
         public virtual void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_CDR);
+        #endregion QC Record Control Menu
 
-        //QC Engineer Menu
+        #region QC Engineer Menu
         public virtual void QCEngineer_QC_Test_Lab_Supervisor_Review() => Navigate.Menu(NavMenu.QCEngineer.Menu.QC_Test_Lab_Supervisor_Review);
 
         public virtual void QCEngineer_QC_Test_Authorization() => Navigate.Menu(NavMenu.QCEngineer.Menu.QC_Test_Authorization);
+        #endregion QC Engineer Menu
 
-        //QC Search Menu
+        #region QC Search Menu
         public virtual void QCSearch_QC_Tests_Search() => Navigate.Menu(NavMenu.QCSearch.Menu.QC_Tests_Search);
 
         public virtual void QCSearch_QC_Test_Summary_Search() => Navigate.Menu(NavMenu.QCSearch.Menu.QC_Test_Summary_Search);
@@ -595,10 +680,9 @@ namespace RKCIUIAutomation.Page.Navigation
         public virtual void QCSearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QCSearch.Menu.Daily_Inspection_Report);
 
         public virtual void QCSearch_DIR_Summary_Report() => Navigate.Menu(NavMenu.QCSearch.Menu.DIR_Summary_Report);
-
+        #endregion QC Search Menu
     }
 
-    #endregion PageNavigation Common Implementation class
 
     /// <summary>
     /// Tenant specific implementation of PageNavigation
@@ -658,6 +742,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public override void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QualitySearch.Menu.Inspector_Daily_Report);
 
+        public override void QASearch_Material_Traceability_Matrix() => Navigate.Menu(NavMenu.QualitySearch.Menu.Material_Traceability_Matrix);
 
     }
 
@@ -692,13 +777,70 @@ namespace RKCIUIAutomation.Page.Navigation
         public PageNavigation_LAX(IWebDriver driver) : base(driver)
         { }
 
-        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_Deficiency_Notice);
+        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Deficiency_Notice);
 
-        public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_Deficiency_Notice);
+        public override void QARecordControl_General_NCR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_NCR);
 
         public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
 
+
+        public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Deficiency_Notice);
+
+        public override void QCRecordControl_QC_NCR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_NCR);
+
+        public override void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_DIRs);
+
+
+        public override void QALab_Technician_Random() => Navigate.Menu(NavMenu.Lab.Menu.Technician_Random);
+
+        public override void QALab_BreakSheet_Creation() => Navigate.Menu(NavMenu.Lab.Menu.BreakSheet_Creation);
+
+        public override void QALab_BreakSheet_Legacy() => Navigate.Menu(NavMenu.Lab.Menu.BreakSheet_Legacy);
+
+        public override void QALab_BreakSheet_Forecast() => Navigate.Menu(NavMenu.Lab.Menu.BreakSheet_Forecast);
+
+        public override void QALab_Equipment_Management() => Navigate.Menu(NavMenu.Lab.Menu.Equipment_Management);
+
+        public override void QCLab_BreakSheet_Creation() => Navigate.Menu(NavMenu.Lab.Menu.BreakSheet_Creation);
+
+        public override void QCLab_BreakSheet_Legacy() => Navigate.Menu(NavMenu.Lab.Menu.BreakSheet_Legacy);
+
+        public override void QCLab_Equipment_Management() => Navigate.Menu(NavMenu.Lab.Menu.Equipment_Management);
+
+        public override void QASearch_QA_Tests() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_Test_Search);
+
+        public override void QASearch_QA_Test_Summary_Search() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_Test_Summary_Search);
+
+        public override void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_Daily_Inspection_Report);
+
+        public override void QASearch_DIR_Summary_Report() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_DIR_Summary_Report);
+
+        public override void QCSearch_QC_Tests_Search() => Navigate.Menu(NavMenu.QualitySearch.QC.Menu.QC_Test_Search);
+
+        public override void QCSearch_QC_Test_Summary_Search() => Navigate.Menu(NavMenu.QualitySearch.QC.Menu.QC_Test_Summary_Search);
+
+        public override void QCSearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QualitySearch.QC.Menu.QC_Daily_Inspection_Report);
+
+        public override void QCSearch_DIR_Summary_Report() => Navigate.Menu(NavMenu.QualitySearch.QC.Menu.QC_DIR_Summary_Report);
+
+        public override void QASearch_NCR_Log_View() => Navigate.Menu(NavMenu.QualitySearch.Menu.NCR_Log_View);
+
+        public override void QASearch_CDR_Log_View() => Navigate.Menu(NavMenu.QualitySearch.Menu.Deficiency_Log_View);
+
+        public override void QASearch_Inspection_Deficiency_Log_Report() => Navigate.Menu(NavMenu.QualitySearch.Menu.Inspection_Deficiency_Log_Report);
+
+        public override void QASearch_QA_Guide_Schedule_Summary_Report() => Navigate.Menu(NavMenu.QualitySearch.Menu.Guide_Schedule_Summary_Report);
+
+        public override void QASearch_Mix_Design_Summary_HMA() => Navigate.Menu(NavMenu.QualitySearch.Menu.HMA_Mix_Design_Summary);
+
+        public override void QASearch_Mix_Design_Report_HMA() => Navigate.Menu(NavMenu.QualitySearch.Menu.HMA_Mix_Design_Report);
+
+        public override void QASearch_Material_Traceability_Matrix() => Navigate.Menu(NavMenu.QualitySearch.Menu.Material_Traceability_Matrix_Search);
+
+        public override void QAQO_Test_Proctor_Curve_Report() => Navigate.Menu(NavMenu.QualitySearch.Menu.Test_Proctor_Curve_Report);
+
+        public override void QAQO_Test_Proctor_Curve_Summary() => Navigate.Menu(NavMenu.QualitySearch.Menu.Test_Proctor_Curve_Summary);
     }
 }
 
-    #endregion Implementation specific to LAX
+#endregion Implementation specific to LAX

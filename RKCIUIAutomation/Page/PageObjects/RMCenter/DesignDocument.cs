@@ -255,19 +255,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void ClickBtn_SaveOnly()
         {
-            ScrollToElement(SaveOnlyBtn_ByLocator);
+            //ScrollToElement(SaveOnlyBtn_ByLocator);
             ClickElement(SaveOnlyBtn_ByLocator);
         }
 
         public virtual void ClickBtn_SaveForward()
         {
-            ScrollToElement(SaveForwardBtn_ByLocator);
+            //ScrollToElement(SaveForwardBtn_ByLocator);
             ClickElement(SaveForwardBtn_ByLocator);
         }
 
         public virtual void ClickBtnJs_SaveForward()
         {
-            ScrollToElement(SaveForwardBtn_ByLocator);
+            //ScrollToElement(SaveForwardBtn_ByLocator);
             JsClickElement(SaveForwardBtn_ByLocator);
             WaitForPageReady();
         }
@@ -332,8 +332,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// <param name="filterByValue"></param>
         public virtual void FilterDocNumber(string filterByValue = "")
         {
-            designDocNumber = string.IsNullOrWhiteSpace(filterByValue) ? designDocNumber : filterByValue;
-            FilterTableColumnByValue(ColumnName.Number, designDocNumber);
+            try
+            {
+                designDocNumber = string.IsNullOrWhiteSpace(filterByValue) ? designDocNumber : filterByValue;
+                FilterTableColumnByValue(ColumnName.Number, designDocNumber);
+            }
+            catch (Exception e)
+            {
+                LogError(e.StackTrace);
+                throw;
+            }
+
         }
 
         public virtual void EnterRegularCommentAndDrawingPageNo()

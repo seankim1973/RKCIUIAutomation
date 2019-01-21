@@ -98,6 +98,7 @@ namespace RKCIUIAutomation.Test.LinkCoverage
     {
         [Test]
         [Category(Component.Link_Coverage)]
+        [Property(Component2, Component.Control_Point)]
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Page Title for Control Point Menu only")]

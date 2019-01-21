@@ -269,19 +269,18 @@ namespace RKCIUIAutomation.Test.NCR
     }
 
     [TestFixture]//complete, updated hiptest
-    public class Verify_Create_And_Save_Ncr_Document : TestBase
+    public class Verify_Create_And_SaveForward_Ncr_Document : TestBase
     {
         [Test]
         [Category(Component.NCR)]
         [Property(Component2, Component.NCR_WF_Complex)]
         [Property(TestCaseNumber, 2187687)]
         [Property(Priority, "High")]
-        [Description("To validate successful create and save of an NCR (Nonconformance Report) document.")]
+        [Description("To validate successful create and SaveForward of an NCR (Nonconformance Report) document.")]
         public void Create_And_SaveForward_Ncr_Document()
         {
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
-            //Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
             AssertAll();
         }
     }

@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Security.Cryptography;
+using System.Text;
 using static RKCIUIAutomation.Base.BaseUtils;
 using static RKCIUIAutomation.Tools.HipTestApi;
 
@@ -32,10 +34,7 @@ namespace RKCIUIAutomation.Config
         }
 
         public string GetHipTestCreds(HipTestKey credType)
-        {
-            string credKey = $"{credType}";
-            return GetValueFromConfigManager(hiptestKey: credKey);
-        }
+            => GetValueFromConfigManager(hiptestKey: $"{credType}");
 
         private string GetValueFromConfigManager(string hiptestKey = "", string siteUrlKey = "", string userTypeKey = "")
         {
@@ -68,6 +67,52 @@ namespace RKCIUIAutomation.Config
                 log.Error($"Exception occured in GetValueFromConfigManager method - ", e);
             }
             return collection[key];
+        }
+
+        internal string GetEncryptedPW(string decryptedPW)
+            => Encrypt(decryptedPW);
+
+        internal string GetDecryptedPW(string encryptedPW)
+            => Decrypt(encryptedPW);
+
+        private string GetCryptoHash() => GetValueFromConfigManager(userTypeKey: "Hash");
+
+        private string Encrypt(string decryptedPw)
+        {
+            string encryptedPw = string.Empty;
+
+            byte[] data = Encoding.UTF8.GetBytes(decryptedPw);
+            using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
+            {
+                byte[] keys = md5.ComputeHash(Encoding.UTF8.GetBytes(GetCryptoHash()));
+                using (TripleDESCryptoServiceProvider tripDes = new TripleDESCryptoServiceProvider() { Key = keys, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
+                {
+                    ICryptoTransform transform = tripDes.CreateEncryptor();
+                    byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
+                    encryptedPw = Convert.ToBase64String(results, 0, results.Length);
+                }
+            }
+
+            return encryptedPw;
+        }
+
+        private string Decrypt(string encryptedPw)
+        {
+            string decryptedPw = string.Empty;
+
+            byte[] data = Convert.FromBase64String(encryptedPw);
+            using (MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider())
+            {
+                byte[] keys = md5.ComputeHash(Encoding.UTF8.GetBytes(GetCryptoHash()));
+                using (TripleDESCryptoServiceProvider tripDes = new TripleDESCryptoServiceProvider() { Key = keys, Mode = CipherMode.ECB, Padding = PaddingMode.PKCS7 })
+                {
+                    ICryptoTransform transform = tripDes.CreateDecryptor();
+                    byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
+                    decryptedPw = Encoding.UTF8.GetString(results, 0, results.Length);
+                }
+            }
+
+            return decryptedPw;
         }
     }
 }

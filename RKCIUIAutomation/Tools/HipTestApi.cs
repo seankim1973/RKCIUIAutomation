@@ -67,6 +67,7 @@ namespace RKCIUIAutomation.Tools
         {
             try
             {
+                
                 var request = new RestRequest(requestMethod)
                 {
                     Resource = resource
@@ -74,9 +75,9 @@ namespace RKCIUIAutomation.Tools
 
                 request
                     .AddHeader("Accept", "application/vnd.api+json; version=1")
-                    .AddHeader("access-token", _accessToken)
-                    .AddHeader("client", _clientId)
-                    .AddHeader("uid", _userId);
+                    .AddHeader("access-token", config.GetDecryptedPW(_accessToken))
+                    .AddHeader("client", config.GetDecryptedPW(_clientId))
+                    .AddHeader("uid", config.GetDecryptedPW(_userId));
                 return request;
             }
             catch (Exception e)
