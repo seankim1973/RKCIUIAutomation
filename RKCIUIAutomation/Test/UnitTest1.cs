@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using RKCIUIAutomation.Tools;
 
 namespace RKCIUIAutomation.UnitTest
 {
@@ -679,6 +680,38 @@ namespace RKCIUIAutomation.UnitTest
             var decrypted = configUtils.GetDecryptedPW(encrypted);
             Console.WriteLine($"DECRYPTED : {decrypted}");
             Assert.True(decrypted.Equals(pw));
+        }
+    }
+
+    public class QueryDB : TestBase
+    {
+        [Test]
+        [Category(Component.Other)]
+        [Property(TestCaseNumber, 2222)]
+        [Property(Priority, "Priority 1")]
+        [Description("Get DIR Tab Names")]
+        public void GetDirDataFromDB()
+        {
+            string dirNumber = "3333190121";
+
+            DirDbData data = new DirDbData();
+
+            List<DirDbData> dataList = new List<DirDbData>();
+
+            DirDbAccess db = new DirDbAccess();
+            dataList = db.GetDirData(dirNumber);
+            data = dataList[0];
+            Console.WriteLine($"BEFORE: {data.DirData}");
+
+            db.SetDirIsDeletedDbValue(dirNumber);
+            dataList = db.GetDirData(dirNumber);
+            data = dataList[0];
+            Console.WriteLine($"AFTER: {data.DirData}");
+
+            db.SetDirIsDeletedDbValue(dirNumber, "A", false);
+            dataList = db.GetDirData(dirNumber);
+            data = dataList[0];
+            Console.WriteLine($"Set IsDeleted to 1: {data.DirData}");
         }
     }
 }

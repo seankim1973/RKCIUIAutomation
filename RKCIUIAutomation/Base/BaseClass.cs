@@ -362,12 +362,14 @@ namespace RKCIUIAutomation.Base
                         Driver.Manage().Cookies.AddCookie(cookie);
                     }
 
-                    if (Driver.Title.Contains("ELVIS PMC"))
+                    if (!Driver.Title.Equals("Home Page"))
                     {
-                        IWebElement logoutLink = Driver.FindElement(By.XPath("//a[text()=' Log out']"));
-                        if (logoutLink?.Displayed == true)
+                        try
                         {
-                            logoutLink.Click();
+                            Driver.FindElement(By.XPath("//a[text()=' Log out']")).Click();
+                        }
+                        catch (Exception)
+                        {
                         }
                     }
                 }

@@ -1,9 +1,10 @@
-﻿using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using RKCIUIAutomation.Test;
+using RKCIUIAutomation.Tools;
 using System;
+using System.Collections.Generic;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Page.Workflows
@@ -174,6 +175,8 @@ namespace RKCIUIAutomation.Page.Workflows
         bool Verify_ViewReport_forDIR_inQcReview(string dirNumber);
 
         bool Verify_ViewReport_forDIR_inAuthorization(string dirNumber);
+
+        bool VerifyDbCleanupForDIR(string dirnumber, string revision = "A", bool setAsDeleted = true);
     }
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
@@ -818,6 +821,31 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual bool Verify_ViewReport_forDIR_inAuthorization(string dirNumber)
             => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Authorization, dirNumber, false);
+
+        public virtual bool VerifyDbCleanupForDIR(string dirNumber, string dirRevision = "A", bool setAsDeleted = true)
+        {
+            DirDbAccess db = new DirDbAccess();
+            db.SetDirIsDeletedDbValue(dirNumber, dirRevision, setAsDeleted);
+
+            List<DirDbData> dataList = new List<DirDbData>();
+            dataList = db.GetDirData(dirNumber, dirRevision);
+
+            DirDbData data = new DirDbData();
+            data = dataList[0];
+            int isDeleted = data.IsDeleted;
+
+            //if isDeleted = 1 && setAsDeleted = true --> success
+            //if isDeleted = 0 && setAsDeleted = false --> success
+            //if isDeleted = 0 && setAsDeleted = true --> fail
+            //if isDeleted = 1 && setAsDeleted = false --> fail
+            bool cleanupSuccessful = setAsDeleted
+                ? isDeleted == 1
+                    ? true : false
+                : isDeleted == 0
+                    ? true : false;
+
+            return cleanupSuccessful;
+        }
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_GLX : QaRcrdCtrl_QaDIR_WF
