@@ -5,6 +5,7 @@ using RKCIUIAutomation.Test;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Page.Workflows
@@ -17,69 +18,51 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public QaRcrdCtrl_QaDIR_WF(IWebDriver driver) => this.Driver = driver;
 
-        //TODO
-        internal string GetDirNumberForRow()
+        internal string[] GetDirIdForRow<T>(T textInColumnForRowOrRowIndex)
         {
-            string dirNumber = "";
-            return dirNumber;
+            string href = GetPdfHref(textInColumnForRowOrRowIndex, true, true);
+            string[] dirID = Regex.Split(href, "ViewDirPDF\\?DirId=");
+            return dirID;
         }
-        internal bool Verify_ViewReport_forDIR(TableTab tableTab, string dirNumber = "", bool rowEndsWithChkbx = false)
+
+        internal bool Verify_ViewDirPDF(TableTab tableTab, string dirNumber = "")
         {
-            bool reportOpened = false;
+            QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
+            return VerifyViewPdfReport(dirNumber);
+        }
 
-            #region WIP
-            /*
-            //mockStart
-
-            bool dirRowExists = false;
-            bool newDirCreated = false;
-
-            bool tblIsCreateType = (tableTab == TableTab.Create_Revise || tableTab == TableTab.Creating)
-                ? true
-                : false;
-
-            if (dirNumber.Equals(""))
+        internal string ClickViewSelectedDirPDFs(bool selectNoneForMultiView)
+        {
+            string expectedUrl = "No Checkboxes Selected (Expected URL is Empty)";
+            try
             {
-                //dirRowExists = CheckIfTblRowsExist();
+                if (!selectNoneForMultiView)
+                {
+                    int rowCount = GetTableRowCount();
+                    rowCount = rowCount > 3 ? 3 : rowCount;
 
-                if (dirRowExists)
-                {
-                    dirNumber = GetDirNumberForRow();
-                }
-                else
-                {
-                    if (!tblIsCreateType)
+                    expectedUrl = $"{GetDirIdForRow(1)[0]}ViewMultiDirPDF?";
+
+                    for (int i = 0; i < rowCount; i++)
                     {
-                        WF_QaRcrdCtrl_QaDIR.ClickTab_Create();
+                        int rowIndex = i + 1;
+                        string dirID = $"DirIds[{i}]={GetDirIdForRow(rowIndex)[1]}&";
+                        expectedUrl = $"{expectedUrl}{dirID}";
+                        SelectCheckboxForRow(rowIndex);
                     }
 
-                    dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveOnly_DIR();
+                    expectedUrl = expectedUrl.TrimEnd('&');
                 }
 
-                QaRcrdCtrl_QaDIR.SetDirNumber(dirNumber);
-
+                QaRcrdCtrl_QaDIR.ClickBtn_View_Selected();
             }
-            else
+            catch (Exception e)
             {
-                QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
+                log.Error(e.StackTrace);
+                throw;
             }
 
-            reportOpened = VerifyViewPdfReport(dirNumber, true, rowEndsWithChkbx);
-
-            if (tblIsCreateType)
-            {
-                ClickEditBtnForRow();
-                QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            }
-
-            //mockEnd
-            */
-            #endregion
-
-            QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
-            reportOpened = VerifyViewPdfReport(dirNumber, true, rowEndsWithChkbx);
-
-            return reportOpened;
+            return expectedUrl;
         }
     }
 
@@ -175,6 +158,8 @@ namespace RKCIUIAutomation.Page.Workflows
         bool Verify_ViewReport_forDIR_inQcReview(string dirNumber);
 
         bool Verify_ViewReport_forDIR_inAuthorization(string dirNumber);
+
+        bool Verify_ViewMultiDirPDF(bool selectNoneForMultiView = false);
 
         bool VerifyDbCleanupForDIR(string dirnumber, string revision = "A", bool setAsDeleted = true);
     }
@@ -811,16 +796,19 @@ namespace RKCIUIAutomation.Page.Workflows
 
         //GLX, LAX, I15SB, I15Tech
         public virtual bool Verify_ViewReport_forDIR_inCreate(string dirNumber)
-            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Create_Revise, dirNumber, false);
+            => QaDIR_WF.Verify_ViewDirPDF(TableTab.Create_Revise, dirNumber);
 
         public virtual bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
-            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Create_Revise, dirNumber, false);
+            => QaDIR_WF.Verify_ViewDirPDF(TableTab.Create_Revise, dirNumber);
         
         public virtual bool Verify_ViewReport_forDIR_inQcReview(string dirNumber)
-            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.QC_Review, dirNumber, false);
+            => QaDIR_WF.Verify_ViewDirPDF(TableTab.QC_Review, dirNumber);
 
         public virtual bool Verify_ViewReport_forDIR_inAuthorization(string dirNumber)
-            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Authorization, dirNumber, false);
+            => QaDIR_WF.Verify_ViewDirPDF(TableTab.Authorization, dirNumber);
+
+        public virtual bool Verify_ViewMultiDirPDF(bool selectNoneForMultiView = false)
+            => VerifyViewPdfReport("", true, selectNoneForMultiView);
 
         public virtual bool VerifyDbCleanupForDIR(string dirNumber, string dirRevision = "A", bool setAsDeleted = true)
         {
@@ -970,10 +958,10 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         public override bool Verify_ViewReport_forDIR_inCreate(string dirNumber)
-            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Creating, dirNumber, false);
+            => QaDIR_WF.Verify_ViewDirPDF(TableTab.Creating, dirNumber);
 
         public override bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
-            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Revise, dirNumber, false);
+            => QaDIR_WF.Verify_ViewDirPDF(TableTab.Revise, dirNumber);
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_SGWay : QaRcrdCtrl_QaDIR_WF
@@ -1041,10 +1029,10 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         public override bool Verify_ViewReport_forDIR_inCreate(string dirNumber)
-            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Creating, dirNumber, false);
+            => QaDIR_WF.Verify_ViewDirPDF(TableTab.Creating, dirNumber);
 
         public override bool Verify_ViewReport_forDIR_inRevise(string dirNumber)
-            => QaDIR_WF.Verify_ViewReport_forDIR(TableTab.Revise, dirNumber, false);
+            => QaDIR_WF.Verify_ViewDirPDF(TableTab.Revise, dirNumber);
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_LAX : QaRcrdCtrl_QaDIR_WF

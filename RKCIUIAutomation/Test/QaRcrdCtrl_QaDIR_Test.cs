@@ -11,17 +11,6 @@ namespace RKCIUIAutomation.Test.DIR
     [TestFixture]
     public class Verify_DIR_SimpleWF_End_To_End : TestBase
     {
-        //private UserType technician;
-        //private UserType manager;
-
-        //public Verify_DIR_SimpleWF_End_To_End(UserGroup userGroup)
-        //{
-        //    ConfigTestUsers configUsers = new ConfigTestUsers();
-        //    configUsers.AssignUsersByGroup(userGroup);
-        //    technician = configUsers.technicianUser;
-        //    manager = configUsers.managerUser;
-        //}
-
         //For Tenants: GLX, I15SB, I15Tech, LAX
         [Test]
         [Category(Component.DIR)]
@@ -499,8 +488,8 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewReport_forDIR_inAuthorization(dirNumber), "Verify View Report for DIR in QC Authorization tab");
 
-            //WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
-            //AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForDIR(dirNumber), $"VerifyDbCleanupForDIR : {dirNumber}");
             AssertAll();
         }
@@ -519,24 +508,9 @@ namespace RKCIUIAutomation.Test.DIR
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_To_Be_Closed();
-
-            //select no checkbox and click ViewSelected btn
-            QaRcrdCtrl_QaDIR.ClickBtn_View_Selected();
-            //expected behavior = no action - verify another tab did not open??
-
-            //select single checkbox and click ViewSelected btn
-            //get DIR IDs
-            SelectCheckboxForRow(1);
-            QaRcrdCtrl_QaDIR.ClickBtn_View_Selected();
-            //switch browser tab and verify DIR IDs are in URL and look for error
-
-            //select single checkbox and click ViewSelected btn
-            //get DIR IDs
-            SelectCheckboxForRow(1);
-            SelectCheckboxForRow(2);
-            SelectCheckboxForRow(3);
-            QaRcrdCtrl_QaDIR.ClickBtn_View_Selected();
-            //switch browser tab and verify DIR IDs are in URL and look for error
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewMultiDirPDF(true), "Verify_ViewMultiDirPDF - No DIR Rows Selected");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewMultiDirPDF(), "Verify_ViewMultiDirPDF - Top 3 DIR Rows Selected");
+            AssertAll();
         }
     }
 }

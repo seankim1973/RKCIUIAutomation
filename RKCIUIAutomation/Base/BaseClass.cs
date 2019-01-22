@@ -119,8 +119,8 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
-            string _reporter = Parameters.Get("Reporter", $"{Reporter.Html}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.SGWay}");
+            string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
             testPlatform = Configs.GetTestRunEnv<TestPlatform>(_testPlatform);

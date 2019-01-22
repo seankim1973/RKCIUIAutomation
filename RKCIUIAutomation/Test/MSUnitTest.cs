@@ -686,5 +686,27 @@ namespace RKCIUIAutomation.Sandbox
 
         }
 
+        [TestMethod]
+        public void StringTest()
+        {
+            //string[] rowIDs = new string[]{ "123", "456", "789" };
+            //string url = "http://stage.sh249.elvispmc.com/Dir/ViewDirPDF?DirId=5626";
+            //string[] split = Regex.Split(url, "ViewDirPDF\\?DirId=");
+
+            //int rowCount = 3;
+            //string expectedUrl = $"{split[0]}ViewMultiDirPDF?";
+
+            //for (int i = 0; i < rowCount; i++)
+            //{
+            //    string dirID = $"DirIds[{i}]={rowIDs[i]}&";
+            //    expectedUrl = $"{expectedUrl}{dirID}";
+            //}
+
+            //expectedUrl = expectedUrl.TrimEnd('&');
+            //Console.WriteLine(expectedUrl);
+
+            string val = "-1";
+            Console.WriteLine((int.Parse(val) - 1).ToString());
+        }
     }
 }
