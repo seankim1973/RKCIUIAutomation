@@ -171,12 +171,12 @@ namespace RKCIUIAutomation.Base
                 log.Debug(details);
         }
 
-        public void LogErrorWithScreenshot(string details = "")
+        public void LogErrorWithScreenshot(string details = "", ExtentColor color = ExtentColor.Red)
         {
             string screenshotName = CaptureScreenshot(GetTestName());
             var screenshotRemotePath = $"http://10.1.1.207/errorscreenshots/{screenshotName}";
             var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">";
-            testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, ExtentColor.Red));
+            testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color));
         }
 
         public static void LogInfo(string details)
@@ -217,53 +217,63 @@ namespace RKCIUIAutomation.Base
             testInstance = assertion ? testInstance.Pass(markupTable) : testInstance.Fail(markupTable);
         }
 
-        public void LogInfo(string details, bool assertion, Exception e = null)
+        public void LogStep(string testStep)
         {
-            bool hasPgBreak = false;
-            string[] detailsBr = null;
+            testInstance.Info(CreateReportMarkupLabel(testStep, ExtentColor.Brown));
+            log.Debug(testStep);
+        }
 
+        public void LogInfo<T>(string details, T assertion, Exception e = null)
+        {
             if (details.Contains("<br>"))
             {
-                detailsBr = Regex.Split(details, "<br>");
-                hasPgBreak = true;
-            }
-
-            if (assertion)
-            {
-                if (hasPgBreak)
+                string[] detailsBr = Regex.Split(details, "<br>");
+                for (int i = 0; i < detailsBr.Length; i++)
                 {
-                    for (int i = 0; i < detailsBr.Length; i++)
-                    {
-                        log.Info(detailsBr[i]);
-                    }
+                    log.Error(detailsBr[i]);
                 }
-                else
-                {
-                    log.Info(details);
-                }
-
-                testInstance.Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
             }
             else
             {
-                if (hasPgBreak)
-                {
-                    for (int i = 0; i < detailsBr.Length; i++)
-                    {
-                        log.Error(detailsBr[i]);
-                    }
-                }
-                else
-                {
-                    log.Error(details);
-                }
+                log.Error(details);
+            }
 
-                if (e != null)
-                {
-                    log.Debug(e.StackTrace);
-                }
+            if (e != null)
+            {
+                log.Debug(e.Message);
+            }
 
+            int resultGauge = 0;
+            Type assertionType = assertion.GetType();
+            PageHelper pgHelper = new PageHelper();
+
+            if (assertionType == typeof(bool))
+            {
+                bool result = pgHelper.ConvertToType<bool>(assertion);
+                resultGauge = result ? resultGauge + 1 : resultGauge - 1;
+            }
+            else if (assertionType == typeof(bool[]))
+            {
+                bool[] assertions = new bool[] { };
+                assertions = pgHelper.ConvertToType<bool[]>(assertion);
+
+                for (int i = 0; i < assertions.Length; i++)
+                {
+                    resultGauge = assertions[i] ? resultGauge + 1 : resultGauge - 1;
+                }
+            }
+
+            if (resultGauge >= 1)
+            {
+                testInstance.Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
+            }
+            else if (resultGauge <= -1)
+            {
                 LogErrorWithScreenshot(details);
+            }
+            else if (resultGauge == 0)
+            {
+                LogErrorWithScreenshot(details, ExtentColor.Orange);
             }
         }
 

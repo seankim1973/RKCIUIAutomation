@@ -481,7 +481,7 @@ namespace RKCIUIAutomation.Page
 
         public bool VerifyViewPdfReport(string textInRowForAnyColumn = "", bool isMultiViewPDF = false, bool selectNoneForMultiView = false)
         {
-            bool errorSearchResult = false;
+            bool errorSearchResult = true;
             bool pdfTabUrlExpected = false;
             bool newTabDisplayed = false;
             string logMsg = string.Empty;
@@ -504,7 +504,7 @@ namespace RKCIUIAutomation.Page
 
                 mainWindowHandle = Driver.WindowHandles[0];
                 viewPdfWindowHandle = Driver.WindowHandles[1];
-                newTabDisplayed = Driver.WindowHandles.Count == 2 ? true : false;
+                newTabDisplayed = Driver.WindowHandles.Count > 1 ? true : false;
 
                 if (newTabDisplayed)
                 {
@@ -527,46 +527,46 @@ namespace RKCIUIAutomation.Page
                 
                 pdfTabUrlExpected = expectedReportUrl.Equals(actualReportUrl);
 
-                reportUrlLogMsg = pdfTabUrlExpected
-                        ? $"Expected and Actual PDF Report URLs match<br>{actualReportUrl}"
-                        : selectNoneForMultiView
-                            ? newTabDisplayed
-                                ? "No DIR Rows were selected for MultiView, but a new tab opened"
-                                : "Change this message when bug is fixed - should show/check for a pop-up msg (Select a DIR Row)"
-                            : $"Unexpected Actual PDF Report URL<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}";
-
-                LogInfo($"{reportUrlLogMsg}", pdfTabUrlExpected);
-
-                if (!pdfTabUrlExpected || pdfWindowTitle.Contains("Object reference") || pdfWindowTitle.Contains("Error"))
+                if (!pdfTabUrlExpected || pdfWindowTitle.Contains("Error") || pdfWindowTitle.Contains("Object reference"))
                 {
                     try
                     {
-                        IWebElement headingElem = null;
-                        headingElem = Driver.FindElement(By.XPath("//h1"))?.FindElement(By.XPath("//h2"));
+                        IWebElement headingElem = Driver.FindElement(By.XPath("//h1")) ?? Driver.FindElement(By.XPath("//h2"));
 
                         if (headingElem != null)
                         {
                             pageErrorHeadingText = headingElem?.Text;
-                            logMsg = $"View PDF page shows an error : {pageErrorHeadingText}";
+                            logMsg = $"an error was found on the ViewDirPDF page: {pageErrorHeadingText}";
+                            errorSearchResult = false;
                         }
                     }
                     catch (Exception)
                     {
                         logMsg = "Searched for Error page headings, but did not find any";
-                        errorSearchResult = true;
                     }
 
-                    testUtils.AddAssertionToList(errorSearchResult, logMsg);
-                    LogInfo(logMsg, errorSearchResult);
+                    testUtils.AddAssertionToList(errorSearchResult, "Checked ViewDirPDF papge for errors");
                 }
 
-                testUtils.AddAssertionToList(pdfTabUrlExpected, reportUrlLogMsg);
+                string logURLsMatch = $"Expected and Actual PDF Report URLs match<br>{actualReportUrl}";
 
+                reportUrlLogMsg = pdfTabUrlExpected
+                    ? errorSearchResult
+                        ? logURLsMatch
+                        : $"{logURLsMatch}<br>However {logMsg}"
+                    : selectNoneForMultiView
+                        ? newTabDisplayed
+                            ? "No DIR Rows were selected for MultiView, but a new tab opened"
+                            : "Change this message when bug is fixed - should show/check for a pop-up msg (Select a DIR Row)"
+                        : $"Unexpected Actual PDF Report URL<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}";
+
+                testUtils.AddAssertionToList(pdfTabUrlExpected, "ViewDirPDF URL is as expected");
+                bool[] results = new bool[]{pdfTabUrlExpected, errorSearchResult};
+                LogInfo($"{reportUrlLogMsg}", results);
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
-                throw;
+                log.Error(e.Message);
             }
             finally
             {

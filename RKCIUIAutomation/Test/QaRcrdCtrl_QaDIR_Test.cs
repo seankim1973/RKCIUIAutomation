@@ -107,6 +107,7 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
+    //SG & SH249 - DIR ComplexWF Tenants
     [TestFixture]
     public class Verify_Filter_of_DIR_Table_ComplexWF : TestBase
     {
@@ -127,21 +128,16 @@ namespace RKCIUIAutomation.Test.DIR
             LogoutToLoginPage();
             currentUser = UserType.DIRMgrQA;
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, true);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev, false, true);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev, false, true);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, true, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_ForTabs_In_QaFieldMenu(currentUser, dirNumber, dirRev);
 
-            WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inQcReview(dirNumber, false);
-            WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inAuthorization(dirNumber, false, true);
             //2nd half of ComplexWF
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Attachments(currentUser, dirNumber, dirRev, false, false);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, true, false);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev, true, false);
-            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_ToBeClosed(currentUser, dirNumber, dirRev, true, false);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Attachments(currentUser, dirNumber, dirRev, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev);
+            WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_ToBeClosed(currentUser, dirNumber, dirRev, true);
             
             ToggleCheckBoxForRow(dirNumber);
-            QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected(); //<-- uncomment to close DIR
-            //Update WorkflowLocation to .Closed when Closing DIR by uncommenting step above
+            QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected();
             AddAssertionToList(QaSearch_DIR.VerifyDirWorkflowLocationBySearch(dirNumber, WorkflowLocation.Closed), "QaSearch_DIR.VerifyDirWorkflowLocationBySearch");
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForDIR(dirNumber), $"VerifyDbCleanupForDIR : {dirNumber}");
             AssertAll();
@@ -351,7 +347,7 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
-    //SG & SH249 - DIR ComplexWF Tenatns
+    //SG & SH249 - DIR ComplexWF Tenants
     [TestFixture]
     public class Verify_IDLReport_for_QaDIR_With_Deficiencies_ComplexWF : TestBase
     {
