@@ -176,7 +176,10 @@ namespace RKCIUIAutomation.Base
             string screenshotName = CaptureScreenshot(GetTestName());
             var screenshotRemotePath = $"http://10.1.1.207/errorscreenshots/{screenshotName}";
             var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">";
-            testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color));
+
+            testInstance = color.Equals(ExtentColor.Red)
+                ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
+                : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color));
         }
 
         public static void LogInfo(string details)

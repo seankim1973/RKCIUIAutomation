@@ -238,13 +238,16 @@ namespace RKCIUIAutomation.Page
         public string GetColumnValueForRow(string textInRowForAnyColumn, string getValueFromColumnName, bool isMultiTabGrid = true)
         {
             string rowXPath = string.Empty;
+            string gridTypeXPath = string.Empty;
 
             try
             {
-                By headerLocator = By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableColumnIndex(getValueFromColumnName)}");
+                gridTypeXPath = $"{GetGridTypeXPath(isMultiTabGrid)}";
+
+                By headerLocator = By.XPath($"{gridTypeXPath}{TableColumnIndex(getValueFromColumnName)}");
                 string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
                 int xPathIndex = int.Parse(dataIndexAttribute) + 1;
-                rowXPath = $"{TableByTextInRow(textInRowForAnyColumn)}[{xPathIndex.ToString()}]";
+                rowXPath = $"{gridTypeXPath}{TableByTextInRow(textInRowForAnyColumn)}[{xPathIndex.ToString()}]";
             }
             catch (Exception e)
             {
@@ -416,6 +419,7 @@ namespace RKCIUIAutomation.Page
                 }
 
                 By noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
+                By tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
 
                 if (noRecordsExpected)
                 {
@@ -423,12 +427,11 @@ namespace RKCIUIAutomation.Page
 
                     if (noRecordsMsgDisplayed)
                     {
-                        isDisplayedAsExpected = false;
                         logMsg = "'No Records Located' message is displayed as expected";
                     }
                     else
                     {
-                        tblRowElems = GetElements(By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr"));
+                        tblRowElems = GetElements(tableRowsLocator);
                         tblRowCount = (int)tblRowElems?.Count;
 
                         if (tblRowCount > 0)
@@ -447,12 +450,12 @@ namespace RKCIUIAutomation.Page
                 }
                 else
                 {
-                    tblRowElems = GetElements(By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr"));
+                    tblRowElems = GetElements(tableRowsLocator);
                     tblRowCount = (int)tblRowElems?.Count;
 
                     if (tblRowCount > 0)
                     {
-                        LogDebug($"Searching for record: {recordNameOrNumber}");
+                        LogStep($"Searching for record: {recordNameOrNumber}");
                         isDisplayedAsExpected = ElementIsDisplayed(recordRowLocator);
 
                         string contains = filterOperator == FilterOperator.Contains ? "Containing Value: " : "";
@@ -475,7 +478,12 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
             }
 
-            LogInfo(logMsg, noRecordsExpected ? !isDisplayedAsExpected : isDisplayedAsExpected);
+            LogInfo(logMsg, noRecordsExpected
+                ? isDisplayedAsExpected
+                    ? false : true
+                : isDisplayedAsExpected
+                    ? true : false);
+
             return isDisplayedAsExpected;
         }
 

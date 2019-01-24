@@ -136,8 +136,6 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_QcReview(currentUser, dirNumber, dirRev);
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_ToBeClosed(currentUser, dirNumber, dirRev, true);
             
-            ToggleCheckBoxForRow(dirNumber);
-            QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected();
             AddAssertionToList(QaSearch_DIR.VerifyDirWorkflowLocationBySearch(dirNumber, WorkflowLocation.Closed), "QaSearch_DIR.VerifyDirWorkflowLocationBySearch");
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForDIR(dirNumber), $"VerifyDbCleanupForDIR : {dirNumber}");
             AssertAll();
@@ -264,8 +262,7 @@ namespace RKCIUIAutomation.Test.DIR
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review - 2ndRound)");
             ToggleCheckBoxForRow(dirNumber);
 
-            QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected(); //<--uncomment to Close DIR
-            //Update WorkflowLocation to .Closed when Closing DIR by uncommenting step above
+            QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected();
             AddAssertionToList(QaSearch_DIR.VerifyDirWorkflowLocationBySearch(dirNumber, WorkflowLocation.Closed), "QaSearch_DIR.VerifyDirWorkflowLocationBySearch");
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForDIR(dirNumber), $"VerifyDbCleanupForDIR : {dirNumber}");
 
@@ -407,7 +404,7 @@ namespace RKCIUIAutomation.Test.DIR
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
-            QaRcrdCtrl_QaDIR.VerifyPackage_After_Click_CreateBtn_forRow();
+            QaRcrdCtrl_QaDIR.VerifyPackages_Column_Filters();
             AssertAll();
         }
     }
@@ -425,12 +422,6 @@ namespace RKCIUIAutomation.Test.DIR
         public void Packages_Table_Columns_Filter()
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
-            QaRcrdCtrl_QaDIR.ClickTab_Packages();
-            //read data from first row
-            //filter weekStart column, verify row is seen, clear filter
-            //filter weekEnd column, verify row is seen, clear filter
-            //filter PackageNumber column (eql, contains), verify row is seen, clear filter
-            //filter DIRs column (eql, contains), verify row is seen, clear filter
 
             QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
             //read data from first row
@@ -438,6 +429,13 @@ namespace RKCIUIAutomation.Test.DIR
             //filter weekEnd column, verify row is seen, clear filter
             //filter NewDIRCount column (eql), verify row is seen, clear filter
             //filter NewDIRs column (eql, contains), verify row is seen, clear filter
+                        
+            QaRcrdCtrl_QaDIR.ClickTab_Packages();
+            //read data from first row
+            //filter weekStart column, verify row is seen, clear filter
+            //filter weekEnd column, verify row is seen, clear filter
+            //filter PackageNumber column (eql, contains), verify row is seen, clear filter
+            //filter DIRs column (eql, contains), verify row is seen, clear filter
 
             AssertAll();
         }
