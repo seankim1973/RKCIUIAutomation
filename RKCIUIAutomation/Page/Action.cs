@@ -217,6 +217,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 LogError(e.StackTrace);
+                throw e;
             }
         }
 
@@ -233,6 +234,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw e;
             }
         }
 
@@ -267,6 +269,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw e;
             }
         }
 
@@ -283,6 +286,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw e;
             }
         }
 
@@ -298,7 +302,8 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                LogError(e.StackTrace);
+                log.Error(e.StackTrace);
+                throw e;
             }
         }
 
@@ -330,6 +335,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw e;
             }
             finally
             {
@@ -355,28 +361,24 @@ namespace RKCIUIAutomation.Page
                 catch (Exception e)
                 {
                     LogError(e.Message);
+                    throw e;
                 }
             }
         }
 
         public string GetPageTitle()
         {
-            string pageTitle = string.Empty;
-
             try
             {
                 Thread.Sleep(3000);
-                //WaitForPageReady();
+                WaitForPageReady();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-            }
-            finally
-            {
-                pageTitle = Driver.Title;
+                log.Error(e.StackTrace);
             }
 
-            return pageTitle;
+            return Driver.Title;
         }
 
         public string GetPageUrl()

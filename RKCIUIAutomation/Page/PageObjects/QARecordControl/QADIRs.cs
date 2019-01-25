@@ -1876,7 +1876,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectChkbox_InspectionResult_P();
             ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
-            SelectDDL_ControlPointNumber(4);
+            SelectDDL_ControlPointNumber(3);
             SetDirNumber();
         }
 
