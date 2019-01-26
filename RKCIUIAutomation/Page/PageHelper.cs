@@ -38,19 +38,7 @@ namespace RKCIUIAutomation.Page
             return $"{date} {time}";
         }
 
-        public OutType ConvertToType<OutType>(object objToConvert)
-        {
-            try
-            {
-                Type inputType = objToConvert.GetType();
-                return (OutType)Convert.ChangeType(objToConvert, typeof(OutType));
-            }
-            catch (Exception e)
-            {
-                log.Error($"Error occured in ConvertToType method:\n{e.Message}");
-                throw;
-            }
-        }
+
 
         private string SetDDListFieldXpath<T>(T ddListID)
         {

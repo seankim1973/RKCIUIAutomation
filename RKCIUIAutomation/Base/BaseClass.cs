@@ -78,6 +78,8 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         public static bool hiptest;
 
+        public static string GridVmIP;
+
         #endregion Test Environment Details
 
         #region TestCase Details
@@ -119,8 +121,9 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
+            string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
             testPlatform = Configs.GetTestRunEnv<TestPlatform>(_testPlatform);
@@ -136,6 +139,7 @@ namespace RKCIUIAutomation.Base
                 : testPlatform;
 
             DetermineReportFilePath();
+            GridVmIP = SetGridAddress(testPlatform, _gridAddress);
 
             if (hiptest)
             {
@@ -158,11 +162,7 @@ namespace RKCIUIAutomation.Base
                 hipTestInstance.SyncTestRun(hipTestRunId);
             }
 
-            if (Driver != null)
-            {
-                Driver.Close();
-                Driver.Quit();
-            }
+            DismissAllDriverInstances();
         }
 
         private void GenerateTestRunDetails()
@@ -209,7 +209,7 @@ namespace RKCIUIAutomation.Base
                 if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
                 {
                     string testDetails = $"({testEnv}){tenantName} - {testName}";
-                    Driver = GetWebDriver(testPlatform, browserType, testDetails);
+                    Driver = GetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
                     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(45);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
@@ -372,6 +372,9 @@ namespace RKCIUIAutomation.Base
                         {
                         }
                     }
+
+                    Driver.Close();
+                    DismissDriverInstance(Driver);
                 }
             }
         }

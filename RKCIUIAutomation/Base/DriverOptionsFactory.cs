@@ -5,33 +5,36 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Safari;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
+using System;
 using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Base
 {
     public class DriverOptionsFactory
     {
-        protected DriverOptions Options { get; set; }
+        [ThreadStatic]
+        private DriverOptions Options;
 
         public DriverOptions DetermineDriverOptions(TestPlatform platform, BrowserType browser, string testDetails)
-        {
-            Options = DetermineBrowser(browser, testDetails);
-            Options.DeterminePlatform(platform);
-            return Options;
-        }
+            => DetermineBrowser(browser, testDetails).DeterminePlatform(platform);
+        //{
+        //    Options = DetermineBrowser(browser, testDetails);
+        //    Options.DeterminePlatform(platform);
+        //    return Options;
+        //}
 
         private DriverOptions DetermineBrowser(BrowserType browser, string testDetails)
         {
             if (browser == BrowserType.Chrome)
             {
                 ChromeOptions chromeOptions = new ChromeOptions();
-                chromeOptions.AddAdditionalCaps(browser, testDetails);
+                chromeOptions.AddBrowserCapabilities(browser, testDetails);
                 Options = chromeOptions;
             }
             else if (browser == BrowserType.Firefox)
             {
                 FirefoxOptions ffOptions = new FirefoxOptions();
-                ffOptions.AddAdditionalCaps(browser, testDetails);
+                ffOptions.AddBrowserCapabilities(browser, testDetails);
                 Options = ffOptions;
             }
             else if (browser == BrowserType.MicrosoftEdge || browser == BrowserType.Safari)
@@ -47,13 +50,13 @@ namespace RKCIUIAutomation.Base
                         break;
                 }
 
-                Options.AddAdditionalCaps(browser, testDetails);
+                Options.AddBrowserCapabilities(browser, testDetails);
             }
             else
             {
                 log.Debug("Unrecognized browser type specified ...defaulting to Chrome");
                 ChromeOptions chromeOptions = new ChromeOptions();
-                chromeOptions.AddAdditionalCaps(browser, testDetails);
+                chromeOptions.AddBrowserCapabilities(browser, testDetails);
                 Options = chromeOptions;
             }
             return Options;
@@ -62,7 +65,36 @@ namespace RKCIUIAutomation.Base
 
     internal static class DriverOptionsHelper
     {
-        internal static PageHelper pageHelper = new PageHelper();
+        internal static void AddBrowserCapabilities<T>(this T options, BrowserType browser, string testDetails)
+        {
+            PageHelper pageHelper = new PageHelper();
+
+            if (browser == BrowserType.Chrome)
+            {
+                ChromeOptions chromeOptions = pageHelper.ConvertToType<ChromeOptions>(options);
+                chromeOptions.PageLoadStrategy = PageLoadStrategy.None;
+                chromeOptions.AddArgument("no-sandbox");
+                chromeOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
+                chromeOptions.AddAdditionalCapability("zal:name", testDetails, true);
+                chromeOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
+            }
+            else if (browser == BrowserType.Firefox)
+            {
+                FirefoxOptions firefoxOptions = pageHelper.ConvertToType<FirefoxOptions>(options);
+                firefoxOptions.PageLoadStrategy = PageLoadStrategy.None;
+                firefoxOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
+                firefoxOptions.AddAdditionalCapability("zal:name", testDetails, true);
+                firefoxOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
+            }
+            else
+            {
+                DriverOptions _options = pageHelper.ConvertToType<DriverOptions>(options);
+                _options.PageLoadStrategy = PageLoadStrategy.None;
+                _options.AddAdditionalCapability("zal:tz", "America/Chicago");
+                _options.AddAdditionalCapability("zal:name", testDetails);
+                _options.AddAdditionalCapability("zal:screenResolution", "1600x900");
+            }
+        }
 
         internal static DriverOptions DeterminePlatform(this DriverOptions options, TestPlatform platform)
         {
@@ -71,6 +103,10 @@ namespace RKCIUIAutomation.Base
             switch (platform)
             {
                 case TestPlatform.Grid:
+                    platformType = PlatformType.Linux;
+                    break;
+
+                case TestPlatform.GridLocal:
                     platformType = PlatformType.Linux;
                     break;
 
@@ -101,35 +137,6 @@ namespace RKCIUIAutomation.Base
 
             options.PlatformName = platformType.ToString();
             return options;
-        }
-
-        internal static void AddAdditionalCaps<T>(this T options, BrowserType browser, string testDetails)
-        {
-            if (browser == BrowserType.Chrome)
-            {
-                ChromeOptions chromeOptions = pageHelper.ConvertToType<ChromeOptions>(options);
-                chromeOptions.PageLoadStrategy = PageLoadStrategy.None;
-                chromeOptions.AddArgument("no-sandbox");
-                chromeOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
-                chromeOptions.AddAdditionalCapability("zal:name", testDetails, true);
-                chromeOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
-            }
-            else if (browser == BrowserType.Firefox)
-            {
-                FirefoxOptions firefoxOptions = pageHelper.ConvertToType<FirefoxOptions>(options);
-                firefoxOptions.PageLoadStrategy = PageLoadStrategy.None;
-                firefoxOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
-                firefoxOptions.AddAdditionalCapability("zal:name", testDetails, true);
-                firefoxOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
-            }
-            else
-            {
-                DriverOptions _options = pageHelper.ConvertToType<DriverOptions>(options);
-                _options.PageLoadStrategy = PageLoadStrategy.None;
-                _options.AddAdditionalCapability("zal:tz", "America/Chicago");
-                _options.AddAdditionalCapability("zal:name", testDetails);
-                _options.AddAdditionalCapability("zal:screenResolution", "1600x900");
-            }
         }
     }
 }

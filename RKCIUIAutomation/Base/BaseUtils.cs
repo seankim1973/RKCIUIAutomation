@@ -11,8 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.BaseClass;
 
@@ -103,6 +101,17 @@ namespace RKCIUIAutomation.Base
             }
 
             return uniqueFileName;
+        }
+
+        public string SetGridAddress(TestPlatform platform, string gridIPv4Hostname = "")
+        {
+            string gridIPv4 = gridIPv4Hostname.Equals("")
+                ? platform == TestPlatform.GridLocal
+                    ? "localhost"
+                    : "10.1.1.207"
+                : gridIPv4Hostname;
+
+            return gridIPv4;
         }
 
         //ExtentReports Loggers
@@ -466,6 +475,20 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        public OutType ConvertToType<OutType>(object objToConvert)
+        {
+            try
+            {
+                Type inputType = objToConvert.GetType();
+                return (OutType)Convert.ChangeType(objToConvert, typeof(OutType));
+            }
+            catch (Exception e)
+            {
+                log.Error($"Error occured in ConvertToType method:\n{e.Message}");
+                throw;
             }
         }
     }

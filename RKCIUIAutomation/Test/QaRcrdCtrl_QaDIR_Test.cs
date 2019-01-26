@@ -166,7 +166,8 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev);
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, true, false);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inQcReview(dirNumber);
-            WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inAuthorization(dirNumber, false, false);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inAuthorization(dirNumber, false, true);
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyWorkflowLocationAfterSimpleWF");
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForDIR(dirNumber), $"VerifyDbCleanupForDIR : {dirNumber}");
             AssertAll();
         }
@@ -195,7 +196,7 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyWorkflowLocationAfterSimpleWF");
 
             //ComplexWF
             NavigateToPage.QARecordControl_QA_DIRs();
@@ -291,7 +292,7 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyWorkflowLocationAfterSimpleWF");
             LogoutToLoginPage();
 
             //Create Revision of Closed DIR
@@ -483,7 +484,7 @@ namespace RKCIUIAutomation.Test.DIR
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewReport_forDIR_inAuthorization(dirNumber), "Verify View Report for DIR in QC Authorization tab");
 
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyWorkflowLocationAfterSimpleWF");
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForDIR(dirNumber), $"VerifyDbCleanupForDIR : {dirNumber}");
             AssertAll();
         }
