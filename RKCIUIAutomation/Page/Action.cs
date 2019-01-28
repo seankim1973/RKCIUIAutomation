@@ -16,13 +16,13 @@ namespace RKCIUIAutomation.Page
     public class Action : PageHelper
     {
         private PageHelper pgHelper = new PageHelper();
-        private BaseUtils baseUtils = new BaseUtils();
+        //private readonly BaseUtils baseUtils = new BaseUtils();
 
         public Action()
         {
         }
 
-        public Action(IWebDriver driver) => this.Driver = driver;
+        public Action(IWebDriver driver) => Driver = driver;
 
         private enum JSAction
         {
@@ -121,6 +121,7 @@ namespace RKCIUIAutomation.Page
                 catch (Exception e)
                 {
                     log.Error($"WaitForElement timeout occurred for element: - {elementByLocator}\n{e.Message}");
+                    throw e;
                 }
             }
         }
@@ -138,11 +139,11 @@ namespace RKCIUIAutomation.Page
                     PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
                 };
                 bool readyCondition(IWebDriver webDriver) => (bool)javaScriptExecutor.ExecuteScript("return (document.readyState == 'complete' && jQuery.active == 0)");
-                wait.Until(readyCondition);
+                wait?.Until(readyCondition);
             }
             catch (InvalidOperationException)
             {
-                wait.Until(wd => javaScriptExecutor.ExecuteScript("return document.readyState").ToString() == "complete");
+                wait?.Until(wd => javaScriptExecutor.ExecuteScript("return document.readyState").ToString() == "complete");
             }
 
             log.Info($"...Waiting for page to be in Ready state #####");
@@ -205,9 +206,11 @@ namespace RKCIUIAutomation.Page
 
         public void ClickElement(By elementByLocator)
         {
+            IWebElement elem = null;
+
             try
             {
-                IWebElement elem = GetElement(elementByLocator);
+                elem = GetElement(elementByLocator);
                 ScrollToElement(elementByLocator);
                 elem?.Click();
                 bool elemNotNull = elem != null ? true : false;
@@ -227,7 +230,7 @@ namespace RKCIUIAutomation.Page
             {
                 if (webElement != null)
                 {
-                    webElement.Click();
+                    webElement?.Click();
                     LogInfo($"Clicked {webElement.Text}");
                 }
             }
@@ -238,7 +241,8 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public string GetAttribute(By elementByLocator, string attributeName) => GetElement(elementByLocator).GetAttribute(attributeName);
+        public string GetAttribute(By elementByLocator, string attributeName)
+            => GetElement(elementByLocator)?.GetAttribute(attributeName);
 
         public IList<string> GetAttributes(By elementByLocator, string attributeName)
         {

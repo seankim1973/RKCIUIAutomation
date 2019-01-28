@@ -138,6 +138,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EngineerComments
         }
 
+        [ThreadStatic]
+        internal static string dirNumber;
+
+        [ThreadStatic]
+        internal static string dirNumberKey;
+
         internal void StoreDirNumber(string dirNum = "")
         {
             dirNumber = dirNum.Equals("")
@@ -626,12 +632,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         QADIRs QaDIRs_Base => new QADIRs(Driver);
-
-        [ThreadStatic]
-        internal static string dirNumber;
-
-        [ThreadStatic]
-        internal static string dirNumberKey;
 
         public virtual string GetDirNumber(string dirNumKey = "")
             => GetVar(dirNumKey.Equals("") ? dirNumberKey : dirNumKey);
