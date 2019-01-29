@@ -39,8 +39,8 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        public static IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridIPv4Hostname = "")
-            => FactoryInstance._GetDriver(platform, browser, testDetails, gridIPv4Hostname);
+        public static IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
+            => FactoryInstance._GetDriver(platform, browser, testDetails, gridUri);
 
         public static void DismissDriverInstance(IWebDriver driver)
             => FactoryInstance._DismissDriver(driver);
@@ -48,37 +48,43 @@ namespace RKCIUIAutomation.Base
         public static void DismissAllDriverInstances()
             => FactoryInstance._DismissAll();
 
+        private static ICapabilities GetCapabilities(TestPlatform platform, BrowserType browser, string testDetails)
+        {
+            DriverOptionsFactory DriverOptions = new DriverOptionsFactory();
+            return DriverOptions.DetermineDriverOptions(platform, browser, testDetails).ToCapabilities();
+        }
+
         private static ThreadLocal<IWebDriver> driverThread = new ThreadLocal<IWebDriver>();
         private Dictionary<IWebDriver, string> driverToKeyMap = new Dictionary<IWebDriver, string>();
 
-        private IWebDriver _GetDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridIPv4 = "")
+        private IWebDriver _GetDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
         {
-            IWebDriver currentDriver = null;
-
-            string newKey = CreateKey(testDetails, gridIPv4);
+            ICapabilities caps = GetCapabilities(platform, browser, testDetails);
+            string newKey = CreateKey(caps, testDetails);
             Console.WriteLine($"_SETDRIVER - NEWKEY: {newKey}");
 
             if (!driverThread.IsValueCreated)
             {
-                CreateNewDriver(platform, browser, testDetails, gridIPv4);
+                CreateNewDriver(platform, browser, testDetails, gridUri);
             }
             else
             {
-                currentDriver = driverThread.Value;
+                IWebDriver currentDriver = driverThread.Value;
+                string currentKey = null;
 
-                if (!driverToKeyMap.TryGetValue(currentDriver, out string currentKey))
+                if (!driverToKeyMap.TryGetValue(currentDriver, out currentKey))
                 {
                     Console.WriteLine($"_SETDRIVER - CURRENT KEY: {currentKey}");
                     // The driver was dismissed
-                    CreateNewDriver(platform, browser, testDetails, gridIPv4);
+                    CreateNewDriver(platform, browser, testDetails, gridUri);
                 }
                 else
                 {
-                    if (!newKey.Equals(currentKey))
+                    if (newKey != currentKey)
                     {
                         // A different flavour of WebDriver is required
-                        //_DismissDriver(currentDriver);
-                        CreateNewDriver(platform, browser, testDetails, gridIPv4);
+                        _DismissDriver(currentDriver);
+                        CreateNewDriver(platform, browser, testDetails, gridUri);
                     }
                     else
                     {
@@ -89,12 +95,13 @@ namespace RKCIUIAutomation.Base
                         }
                         catch (WebDriverException)
                         {
-                            CreateNewDriver(platform, browser, testDetails, gridIPv4);
+                            CreateNewDriver(platform, browser, testDetails, gridUri);
                         }
                     }
                 }
             }
 
+            Console.WriteLine($"DriverThread Value: {driverThread.Value.ToString()}");
             return driverThread.Value;
         }
 
@@ -142,31 +149,32 @@ namespace RKCIUIAutomation.Base
                 throw new Exception("The driver does not belong to the current thread: " + driver);
             }
 
-            driverThread.Value.Dispose();
-            driverThread.Value.Close();
-            //driverToKeyMap.Remove(driver);          
+            driver.Quit();
+            driverToKeyMap.Remove(driver);
+            driverThread.Dispose();
         }
 
         private void _DismissAll()
         {
             foreach (IWebDriver driver in new List<IWebDriver>(driverToKeyMap.Keys))
             {
-                driverThread.Value.Dispose();
-                //driverToKeyMap.Remove(driver);
+                driver.Quit();
+                driverToKeyMap.Remove(driver);
             }
-            driverToKeyMap.Clear();
+            //driverToKeyMap.Clear();
         }
 
-        protected static string CreateKey(string testDetails, string gridIP)
+        protected static string CreateKey(ICapabilities capabilities, string testDetails)
         {
-            string key = $"{testDetails}:{gridIP}";
+            string key = $"{capabilities.ToString()}:{testDetails}";
             Console.WriteLine($"CREATE KEY: {key}");
             return key;
         }
 
         private void CreateNewDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
         {
-            string newKey = CreateKey(testDetails, gridUri);
+            ICapabilities caps = GetCapabilities(platform, browser, testDetails);
+            string newKey = CreateKey(caps, testDetails);
 
             IWebDriver driver = DetermineWebDriver(platform, browser, testDetails, gridUri);
             driverToKeyMap.Add(driver, newKey);
@@ -175,6 +183,8 @@ namespace RKCIUIAutomation.Base
 
         private static IWebDriver DetermineWebDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri)
         {
+            ICapabilities caps = GetCapabilities(platform, browser, testDetails);
+
             if (platform == TestPlatform.Local)
             {
                 switch (browser)
@@ -198,11 +208,11 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                DriverOptionsFactory driverOptions = new DriverOptionsFactory();
-                ICapabilities capabilities = driverOptions.DetermineDriverOptions(platform, browser, testDetails).ToCapabilities();
-                return new RemoteWebDriver(new Uri($"http://{gridUri}:4444/wd/hub"), capabilities, TimeSpan.FromMinutes(10));
+                return new RemoteWebDriver(new Uri($"http://{gridUri}:4444/wd/hub"), caps, TimeSpan.FromMinutes(10));
             }
         }
+
+
 
 
         //private static IWebDriver DetermineRemoteDriver(ICapabilities capabilities, string gridUri)

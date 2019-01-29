@@ -926,15 +926,25 @@ namespace RKCIUIAutomation.Page
         {
             bool isLoaded = false;
             string pageTitle = null;
-            string expectedPageTitle = (checkingLoginPage == false) ? "ELVIS PMC" : "Log in";
             string logMsg = string.Empty;
+
+            string expectedPageTitle = !checkingLoginPage
+                ? "ELVIS PMC" 
+                : "Log in";
 
             try
             {
                 WaitForPageReady();
-                pageTitle = Driver.Title;
-                isLoaded = (pageTitle.Contains(expectedPageTitle)) ? true : IsPageLoadedSuccessfully();
-                logMsg = isLoaded ? ">>> Page Loaded Successfully <<<" : GetPageErrorLogMsg();
+                pageTitle = GetPageTitle();
+
+                isLoaded = pageTitle.Contains(expectedPageTitle)
+                    ? true 
+                    : IsPageLoadedSuccessfully();
+
+                logMsg = isLoaded 
+                    ? ">>> Page Loaded Successfully <<<"
+                    : GetPageErrorLogMsg();
+
                 LogInfo(logMsg, isLoaded);
 
                 if (!isLoaded)
