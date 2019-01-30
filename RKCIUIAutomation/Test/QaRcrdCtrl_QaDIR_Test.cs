@@ -404,7 +404,7 @@ namespace RKCIUIAutomation.Test.DIR
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
-            QaRcrdCtrl_QaDIR.VerifyPackages_Column_Filters();
+            QaRcrdCtrl_QaDIR.Verify_Column_Filters_DirPackages();
             AssertAll();
         }
     }
@@ -443,12 +443,31 @@ namespace RKCIUIAutomation.Test.DIR
 
     //SG & SH249 - DIR Complex Tenants
     [TestFixture]
-    public class Verify_Packages_Download_and_Recreate : TestBase
+    public class Verify_Packages_Download : TestBase
     {
         [Test]
         [Category(Component.DIR)]
         [Property(Component2, Component.DIR_WF_Complex)]
-        [Property(TestCaseNumber, 2518643)]
+        [Property(TestCaseNumber, 2556982)]
+        [Property(Priority, "High")]
+        [Description("To validate creation of DIR packages in Complex Workflow.")]
+        public void Packages_Download_and_Recreate()
+        {
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            QaRcrdCtrl_QaDIR.ClickTab_Packages();
+            //QaRcrdCtrl_QaDIR.VerifyPackage_After_Click_CreateBtn_forRow();
+            AssertAll();
+        }
+    }
+
+    //SG & SH249 - DIR Complex Tenants
+    [TestFixture]
+    public class Verify_Packages_Recreate : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Complex)]
+        [Property(TestCaseNumber, 2690311)]
         [Property(Priority, "High")]
         [Description("To validate creation of DIR packages in Complex Workflow.")]
         public void Packages_Download_and_Recreate()

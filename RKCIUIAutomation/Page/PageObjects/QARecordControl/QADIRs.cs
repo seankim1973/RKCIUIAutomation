@@ -437,11 +437,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void ClickBtn_View_Selected();
 
-        void VerifyPackages_Column_Filters(int indexOfRow = 1);
+        void Verify_Column_Filters_DirPackages(int indexOfRow = 1);
 
-        void FilterTable_CreatePackageTab(int indexOfRow = 1);
+        void FilterTable_CreatePackagesTab(int indexOfRow = 1);
 
-        void FilterTable_PackageTab(int indexOfRow = 1);
+        void FilterTable_PackagesTab(int indexOfRow = 1);
 
         void FilterDirNumber(string DirNumber);
 
@@ -1518,7 +1518,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         //    return pkgData;
         //}
 
-        public virtual void VerifyPackages_Column_Filters(int indexOfRow = 1)
+        public virtual void Verify_Column_Filters_DirPackages(int indexOfRow = 1)
         {
             try
             {
@@ -1545,11 +1545,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.New_DIRs, newDIRs, TableType.MultiTab, false, FilterOperator.Contains), $"Verify Filter of 'New DIRs' column for 'Create Packages' table Contains {newDIRs}");
                 ClearTableFilters();
 
-                ClickCreateBtnForRow(indexOfRow.ToString());
-                AcceptAlertMessage();
+                //ClickCreateBtnForRow(indexOfRow.ToString());
+                //AcceptAlertMessage();
 
-                QaRcrdCtrl_QaDIR.ClickTab_Packages();
-                AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.DIRs, newDIRs, TableType.MultiTab, false, FilterOperator.Contains), "Verify Package with DIRs List is Displayed");
+                //QaRcrdCtrl_QaDIR.ClickTab_Packages();
+                //AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.DIRs, newDIRs, TableType.MultiTab, false, FilterOperator.Contains), "Verify Package with DIRs List is Displayed");
             }
             catch (Exception e)
             {
@@ -1558,7 +1558,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        public virtual void FilterTable_CreatePackageTab(int indexOfRow = 1)
+        public virtual void FilterTable_CreatePackagesTab(int indexOfRow = 1)
         {
             string[] pkgData = QaDIRs_Base.GetPackageDataForRow(indexOfRow);
 
@@ -1568,7 +1568,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             string newDIRs = pkgData[3];
         }
 
-        public virtual void FilterTable_PackageTab(int indexOfRow = 1)
+        public virtual void FilterTable_PackagesTab(int indexOfRow = 1)
         {
             string[] pkgData = QaDIRs_Base.GetPackageDataForRow(indexOfRow, false);
 
