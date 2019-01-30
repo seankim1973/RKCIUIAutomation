@@ -5,8 +5,6 @@ using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralCDR;
 
 namespace RKCIUIAutomation.Test.CDR
 {
-
-
     [TestFixture]//complete, updated hiptest
     public class Verify_CDR_SimpleWF_End_To_End : TestBase
     {
@@ -297,7 +295,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_Editing_the_CDR_Document : TestBase
     {
-        [Test]
+        //[Test]
         [Category(Component.CDR)]
         [Property(TestCaseNumber, 2187610)]
         [Property(Priority, "High")]
@@ -312,7 +310,7 @@ namespace RKCIUIAutomation.Test.CDR
     [TestFixture]
     public class Verify_Vewing_CDR_Document_Report : TestBase
     {
-        [Test]
+        //[Test]
         [Category(Component.CDR)]
         [Property(TestCaseNumber, 2187609)]
         [Property(Priority, "High")]

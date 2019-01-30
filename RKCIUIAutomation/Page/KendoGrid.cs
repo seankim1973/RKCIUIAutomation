@@ -203,9 +203,8 @@ namespace RKCIUIAutomation.Page
                     filterLogic = currentFilter.FilterLogic.GetString();
                     string jsFilterBase = $"grid.dataSource.filter({{ logic: '{filterLogic}', filters: [";
 
-                    DateTime filterDateTime;
                     filterValue = currentFilter.FilterValue;
-                    bool isFilterDateTime = DateTime.TryParse(filterValue, out filterDateTime);
+                    bool isFilterDateTime = DateTime.TryParse(filterValue, out DateTime filterDateTime);
                     string filterValueToBeApplied =
                         isFilterDateTime ? $"new Date({filterDateTime.Year}, {filterDateTime.Month - 1}, {filterDateTime.Day})" : $"{filterValue}";
 

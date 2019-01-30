@@ -48,7 +48,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 //ClickEditBtnForRow();
                 //QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
                 isDisplayed = WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(tableTab, dirNumber, delete);
-                assertMsg = $"Set to Delete DIR: {delete}";
+                assertMsg = $"Set to Delete DIR";
             }
             else
             {
@@ -74,7 +74,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 assertMsg = $"Verify DIR isDisplayed";
             }
 
-            AddAssertionToList(isDisplayed, $"DIR_DeleteOrApproveNoError - {tableTab.ToString()}\n{assertMsg}\nPassed: ");
+            AddAssertionToList(isDisplayed, $"DIR_DeleteOrApproveNoError ({tableTab.ToString()}) {assertMsg}");
             return isDisplayed;
         }
 

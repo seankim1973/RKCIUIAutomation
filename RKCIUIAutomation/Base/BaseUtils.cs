@@ -11,8 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.BaseClass;
 
@@ -86,15 +84,18 @@ namespace RKCIUIAutomation.Base
                 uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
                 fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
 
-                if (reporter == Reporter.Klov)
-                {
-                    ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
-                    impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
-                }
-                else
+                if (testPlatform == TestPlatform.GridLocal || testPlatform == TestPlatform.Local)
                 {
                     var screenshot = Driver.TakeScreenshot();
                     screenshot.SaveAsFile(fullFilePath);
+                }
+                else
+                {
+                    if (reporter == Reporter.Klov)
+                    {
+                        ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
+                        impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
+                    }
                 }
             }
             catch (Exception e)
@@ -103,6 +104,17 @@ namespace RKCIUIAutomation.Base
             }
 
             return uniqueFileName;
+        }
+
+        public string SetGridAddress(TestPlatform platform, string gridIPv4Hostname = "")
+        {
+            string gridIPv4 = gridIPv4Hostname.Equals("")
+                ? platform == TestPlatform.GridLocal
+                    ? "127.0.0.1"
+                    : "10.1.1.207"
+                : gridIPv4Hostname;
+
+            return gridIPv4;
         }
 
         //ExtentReports Loggers
@@ -174,8 +186,10 @@ namespace RKCIUIAutomation.Base
         public void LogErrorWithScreenshot(string details = "", ExtentColor color = ExtentColor.Red)
         {
             string screenshotName = CaptureScreenshot(GetTestName());
-            var screenshotRemotePath = $"http://10.1.1.207/errorscreenshots/{screenshotName}";
-            var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">";
+            var screenshotRefPath = testPlatform == TestPlatform.GridLocal
+                ? $"{screenshotSavePath}/{screenshotName}"
+                : $"http://10.1.1.207/errorscreenshots/{screenshotName}";
+            var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRefPath}\" class=\"step-img\" src=\"{screenshotRefPath}\" data-src=\"{screenshotRefPath}\" width=\"200\">";
 
             testInstance = color.Equals(ExtentColor.Red)
                 ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
@@ -233,12 +247,12 @@ namespace RKCIUIAutomation.Base
                 string[] detailsBr = Regex.Split(details, "<br>");
                 for (int i = 0; i < detailsBr.Length; i++)
                 {
-                    log.Error(detailsBr[i]);
+                    log.Info(detailsBr[i]);
                 }
             }
             else
             {
-                log.Error(details);
+                log.Info(details);
             }
 
             if (e != null)
@@ -253,7 +267,9 @@ namespace RKCIUIAutomation.Base
             if (assertionType == typeof(bool))
             {
                 bool result = pgHelper.ConvertToType<bool>(assertion);
-                resultGauge = result ? resultGauge + 1 : resultGauge - 1;
+                resultGauge = result
+                    ? resultGauge + 1
+                    : resultGauge - 1;
             }
             else if (assertionType == typeof(bool[]))
             {
@@ -262,7 +278,9 @@ namespace RKCIUIAutomation.Base
 
                 for (int i = 0; i < assertions.Length; i++)
                 {
-                    resultGauge = assertions[i] ? resultGauge + 1 : resultGauge - 1;
+                    resultGauge = assertions[i]
+                        ? resultGauge + 1
+                        : resultGauge - 1;
                 }
             }
 
@@ -466,6 +484,20 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        public OutType ConvertToType<OutType>(object objToConvert)
+        {
+            try
+            {
+                Type inputType = objToConvert.GetType();
+                return (OutType)Convert.ChangeType(objToConvert, typeof(OutType));
+            }
+            catch (Exception e)
+            {
+                log.Error($"Error occured in ConvertToType method:\n{e.Message}");
+                throw;
             }
         }
     }
