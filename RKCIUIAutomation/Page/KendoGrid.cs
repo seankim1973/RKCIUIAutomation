@@ -227,7 +227,7 @@ namespace RKCIUIAutomation.Page
                 ExecuteJsScript(sb.ToString());
 
                 string addnlFilter = (addnlFilterValue != null) ? $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}" : string.Empty;
-                LogInfo($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilter}");
+                LogStep($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilter}");
             }
             catch (Exception e)
             {

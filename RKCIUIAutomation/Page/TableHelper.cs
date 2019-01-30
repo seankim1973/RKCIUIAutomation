@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Page.Workflows;
 using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace RKCIUIAutomation.Page
         public TableHelper(IWebDriver driver) => this.Driver = driver;
 
         private KendoGrid kendo;
+
         private KendoGrid Kendo => kendo = new KendoGrid(Driver);
 
         #region Kendo Grid Public Methods
@@ -169,11 +171,16 @@ namespace RKCIUIAutomation.Page
                     break;
 
                 case BtnCategory.MultiDupsInRow:
+                    xPathExtValue = rowEndsWithChkbx 
+                        ? (int.Parse(xPathExtValue) - 1).ToString()
+                        : xPathExtValue;
                     xPathExt = $"{xPathLast(xPathExtValue)}/a";
                     break;
 
                 case BtnCategory.ActionColumnBtn:
-                    string xPathExtRowType = rowEndsWithChkbx ? "" : $"{xPathLast()}";
+                    string xPathExtRowType = rowEndsWithChkbx
+                        ? ""
+                        : $"{xPathLast()}";
                     xPathExt = $"{xPathExtRowType}/a[contains(text(),'{xPathExtValue}')]";
                     break;
 
@@ -216,11 +223,12 @@ namespace RKCIUIAutomation.Page
             else if (argType == typeof(int))
             {
                 rowIndex = ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
-                xpath = $"tr[{rowIndex}]/td";
+                xpath = $"//tr[{rowIndex}]/td";
             }
 
             return xpath;
         }
+
         private By GetTblRowBtn_ByLocator<T>(TableButton tblRowBtn, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumnOrRowIndex)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
 
@@ -230,13 +238,16 @@ namespace RKCIUIAutomation.Page
         public string GetColumnValueForRow(string textInRowForAnyColumn, string getValueFromColumnName, bool isMultiTabGrid = true)
         {
             string rowXPath = string.Empty;
+            string gridTypeXPath = string.Empty;
 
             try
             {
-                By headerLocator = By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableColumnIndex(getValueFromColumnName)}");
+                gridTypeXPath = $"{GetGridTypeXPath(isMultiTabGrid)}";
+
+                By headerLocator = By.XPath($"{gridTypeXPath}{TableColumnIndex(getValueFromColumnName)}");
                 string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
                 int xPathIndex = int.Parse(dataIndexAttribute) + 1;
-                rowXPath = $"{TableByTextInRow(textInRowForAnyColumn)}[{xPathIndex.ToString()}]";
+                rowXPath = $"{gridTypeXPath}{TableByTextInRow(textInRowForAnyColumn)}[{xPathIndex.ToString()}]";
             }
             catch (Exception e)
             {
@@ -331,22 +342,22 @@ namespace RKCIUIAutomation.Page
             => ClickButtonForRow(TableButton.WebForm_View, textInRowForAnyColumn, isMultiTabGrid);
 
         /// <summary>
-        /// If no argument is provided, the button on the first row will be clicked.
+        /// If no argument is provided, the button on the first row will be clicked and return URL for PDF
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public string ClickViewReportForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
+        public string ClickViewReportBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
         {
-            By viewBtnLocator = By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}");
-            string hrefPDF = GetAttribute(viewBtnLocator, "href");
+            string hrefPDF = GetPdfHref(textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbx);
             ClickButtonForRow(TableButton.Report_View, textInRowForAnyColumn, isMultiTabGrid);
-
             return hrefPDF;
         }
+
+        internal string GetPdfHref<T>(T textInColumnForRowOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
+            => GetAttribute(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInColumnForRowOrRowIndex)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}"), "href");
 
         public void SelectCheckboxForRow<T>(T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true)
             => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumnOrRowIndex, isMultiTabGrid);
         
-
         #endregion Table Row Button Methods
 
         public void FilterTableColumnByValue(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown, FilterOperator filterOperator = FilterOperator.EqualTo)
@@ -408,6 +419,7 @@ namespace RKCIUIAutomation.Page
                 }
 
                 By noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
+                By tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
 
                 if (noRecordsExpected)
                 {
@@ -415,12 +427,11 @@ namespace RKCIUIAutomation.Page
 
                     if (noRecordsMsgDisplayed)
                     {
-                        isDisplayedAsExpected = false;
                         logMsg = "'No Records Located' message is displayed as expected";
                     }
                     else
                     {
-                        tblRowElems = GetElements(By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr"));
+                        tblRowElems = GetElements(tableRowsLocator);
                         tblRowCount = (int)tblRowElems?.Count;
 
                         if (tblRowCount > 0)
@@ -439,12 +450,12 @@ namespace RKCIUIAutomation.Page
                 }
                 else
                 {
-                    tblRowElems = GetElements(By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr"));
+                    tblRowElems = GetElements(tableRowsLocator);
                     tblRowCount = (int)tblRowElems?.Count;
 
                     if (tblRowCount > 0)
                     {
-                        LogDebug($"Searching for record: {recordNameOrNumber}");
+                        LogStep($"Searching for record: {recordNameOrNumber}");
                         isDisplayedAsExpected = ElementIsDisplayed(recordRowLocator);
 
                         string contains = filterOperator == FilterOperator.Contains ? "Containing Value: " : "";
@@ -467,73 +478,114 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
             }
 
-            LogInfo(logMsg, noRecordsExpected ? !isDisplayedAsExpected : isDisplayedAsExpected);
+            LogInfo(logMsg, noRecordsExpected
+                ? isDisplayedAsExpected
+                    ? false : true
+                : isDisplayedAsExpected
+                    ? true : false);
+
             return isDisplayedAsExpected;
         }
 
-        public bool VerifyViewPdfReport(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
+        public bool VerifyViewPdfReport(string textInRowForAnyColumn = "", bool isMultiViewPDF = false, bool selectNoneForMultiView = false)
         {
-            bool result = false;
+            bool errorSearchResult = true;
             bool pdfTabUrlExpected = false;
+            bool newTabDisplayed = false;
             string logMsg = string.Empty;
             string reportUrlLogMsg = string.Empty;
-            string mainTab = string.Empty;
-            string viewPdfTab = string.Empty;
+            string mainWindowHandle = string.Empty;
+            string viewPdfWindowHandle = string.Empty;
             string expectedReportUrl = string.Empty;
             string pageErrorHeadingText = string.Empty;
+            string actualReportUrl = string.Empty;
+            string pdfWindowTitle = string.Empty;
 
             try
             {
-                expectedReportUrl = ClickViewReportForRow(textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbx);
+                TestUtils testUtils = new TestUtils(Driver);
+                QaRcrdCtrl_QaDIR_WF qaDirWF = new QaRcrdCtrl_QaDIR_WF(Driver);
 
-                mainTab = Driver.WindowHandles[0];
-                viewPdfTab = Driver.WindowHandles[1];
-                //bool newTabDisplayed = Driver.WindowHandles.Count.Equals(2);
-                Thread.Sleep(3000);
-                string actualReportUrl = Driver.SwitchTo().Window(viewPdfTab).Url;
-                pdfTabUrlExpected = expectedReportUrl.Equals(actualReportUrl);
-                reportUrlLogMsg = pdfTabUrlExpected
-                    ? $"PDF Report URL is as expected"
-                    : $"Unexpected PDF Report URL";
+                expectedReportUrl = isMultiViewPDF
+                    ? qaDirWF.ClickViewSelectedDirPDFs(selectNoneForMultiView)
+                    : ClickViewReportBtnForRow(textInRowForAnyColumn, true, false);
 
-                LogInfo($"{reportUrlLogMsg}<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}>", pdfTabUrlExpected);
+                mainWindowHandle = Driver.WindowHandles[0];
+                viewPdfWindowHandle = Driver.WindowHandles[1];
+                newTabDisplayed = Driver.WindowHandles.Count > 1 ? true : false;
 
-                try
+                if (newTabDisplayed)
                 {
-                    IWebElement headingElem = null;
-                    headingElem = Driver.FindElement(By.XPath("//h1"))?.FindElement(By.XPath("//h2"));
+                    int retryCount = 0;
 
-                    if (headingElem != null)
+                    do
                     {
-                        pageErrorHeadingText = headingElem?.Text;
-                        logMsg = $"View PDF page shows an error : {pageErrorHeadingText}";
-                        result = false;
+                        Thread.Sleep(1000);
+
+                        if (retryCount < 5)
+                        {
+                            Driver.SwitchTo().Window(viewPdfWindowHandle);
+                            actualReportUrl = Driver.Url;
+                            pdfWindowTitle = Driver.Title;
+                            retryCount++;
+                        }
                     }
+                    while (string.IsNullOrEmpty(actualReportUrl) || actualReportUrl.Contains("blank"));
                 }
-                catch (Exception)
+                
+                pdfTabUrlExpected = expectedReportUrl.Equals(actualReportUrl);
+
+                if (!pdfTabUrlExpected || pdfWindowTitle.Contains("Error") || pdfWindowTitle.Contains("Object reference"))
                 {
-                    logMsg = "Searched for Error page headings, but did not find any";
-                    result = true;
+                    try
+                    {
+                        IWebElement headingElem = Driver.FindElement(By.XPath("//h1")) ?? Driver.FindElement(By.XPath("//h2"));
+
+                        if (headingElem != null)
+                        {
+                            pageErrorHeadingText = headingElem?.Text;
+                            logMsg = $"an error was found on the ViewDirPDF page: {pageErrorHeadingText}";
+                            errorSearchResult = false;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        logMsg = "Searched for Error page headings, but did not find any";
+                    }
+
+                    testUtils.AddAssertionToList(errorSearchResult, "Checked ViewDirPDF papge for errors");
                 }
 
-                TestUtils testUtils = new TestUtils();
+                string logURLsMatch = $"Expected and Actual PDF Report URLs match<br>{actualReportUrl}";
 
-                testUtils.AddAssertionToList(pdfTabUrlExpected, reportUrlLogMsg);
-                testUtils.AddAssertionToList(result, logMsg);
+                reportUrlLogMsg = pdfTabUrlExpected
+                    ? errorSearchResult
+                        ? logURLsMatch
+                        : $"{logURLsMatch}<br>However {logMsg}"
+                    : selectNoneForMultiView
+                        ? newTabDisplayed
+                            ? "No DIR Rows were selected for MultiView, but a new tab opened"
+                            : "Change this message when bug is fixed - should show/check for a pop-up msg (Select a DIR Row)"
+                        : $"Unexpected Actual PDF Report URL<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}";
 
-                LogInfo(logMsg, result);
+                testUtils.AddAssertionToList(pdfTabUrlExpected, "ViewDirPDF URL is as expected");
+                bool[] results = new bool[]{pdfTabUrlExpected, errorSearchResult};
+                LogInfo($"{reportUrlLogMsg}", results);
             }
-            catch (NoSuchWindowException e)
+            catch (Exception e)
             {
                 log.Error(e.Message);
             }
             finally
             {
-                Driver.SwitchTo().Window(viewPdfTab).Close();
-                Driver.SwitchTo().Window(mainTab);
+                if (newTabDisplayed)
+                {
+                    Driver.SwitchTo().Window(viewPdfWindowHandle).Close();
+                    Driver.SwitchTo().Window(mainWindowHandle);
+                }
             }
 
-            return result;
+            return pdfTabUrlExpected;
         }
 
         //TODO: Horizontal scroll in table (i.e. QA Search>ProctorCurveSummary)

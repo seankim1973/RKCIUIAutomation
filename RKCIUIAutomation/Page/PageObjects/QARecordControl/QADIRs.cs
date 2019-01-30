@@ -149,6 +149,248 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             log.Debug($"#####Stored DIR Number - KEY: {dirNumberKey} || VALUE: {GetVar(dirNumberKey)}");
         }
 
+        internal string[] GetPackageDataForRow(int indexOfRow = 1, bool CreatePkgTab = true)
+        {
+            string rowXPath = $"//div[contains(@class,'k-state-active')]//tbody/tr[{indexOfRow}]/td";
+
+            string weekStart = null;
+            string weekEnd = null;
+            string newDirCountOrPkgNum = null;
+            string newDIRsOrDIRsToString = null;
+            string[] pkgData = null;
+
+            By locator(int indexOfCol) => By.XPath($"{rowXPath}[{indexOfCol.ToString()}]");
+
+            try
+            {
+                weekStart = GetText(locator(1));
+                weekEnd = GetText(locator(2));
+                newDirCountOrPkgNum = GetText(locator(3));
+                newDIRsOrDIRsToString = CreatePkgTab ? GetText(locator(5)) : GetText(locator(4));
+
+                pkgData = new string[4]
+                {
+                    weekStart,
+                    weekEnd,
+                    newDirCountOrPkgNum,
+                    newDIRsOrDIRsToString
+                };
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            return pkgData;
+        }
+
+        internal string FormatInspectionTimesIDs(string id)
+        {
+            if (id.Equals("DateReady"))
+            {
+                id = "Ready";
+            }
+            else if (id.Equals("DateCompleted"))
+            {
+                id = "Completed Date";
+            }
+            else if (id.Equals("InspectionHours"))
+            {
+                id = "Total Inspection Time";
+            }
+            else if (id.Contains("Time"))
+            {
+                id = Regex.Replace(id, "Only", "");
+            }
+
+            return id;
+        }
+
+        internal IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern)
+        {
+            IList<string> trimmedList = null;
+
+            try
+            {
+                trimmedList = new List<string>();
+
+                foreach (string fieldId in fieldIdList)
+                {
+                    string[] split = new string[2];
+                    string id = string.Empty;
+
+                    if (fieldId.Contains(splitPattern))
+                    {
+                        split = Regex.Split(fieldId, splitPattern);
+                        id = split[1];
+
+                        string[] newId = new string[2];
+                        if (id.Contains("Id"))
+                        {
+                            newId = Regex.Split(id, "Id");
+                            id = newId[0];
+                        }
+                        else if (id.Contains("HoldPoint"))
+                        {
+                            if (id.Equals("HoldPointTypeID"))
+                            {
+                                bool complexWfTenant = tenantName == TenantName.SGWay || tenantName == TenantName.SH249 ? true : false;
+                                id = complexWfTenant ? "HoldPoint Type" : "ControlPoint No.";
+                            }
+                            else
+                                id = "ControlPoint Type";
+                        }
+                        else if (id.Equals("EngineerComment"))
+                        {
+                            id = $"{id}s";
+                        }
+                        else if (id.Contains("ID") && !id.Contains("HoldPoint"))
+                        {
+                            newId = Regex.Split(id, "ID");
+                            id = newId[0];
+                        }
+                        else if (id.Contains("PassFail"))
+                        {
+                            id = Regex.Replace(id, "PassFail", "Result");
+                        }
+                        else if (id.Equals("DateReady") || id.Equals("DateCompleted") || id.Equals("InspectionHours"))
+                        {
+                            id = FormatInspectionTimesIDs(id);
+                        }
+                        else if (id.Contains("Only"))
+                        {
+                            id = Regex.Replace(id, "Only", "");
+                            id = FormatInspectionTimesIDs(id);
+
+                            if (!id.Contains(" "))
+                            {
+                                id = id.SplitCamelCase();
+                            }
+                        }
+
+                        if (!fieldId.Contains("Time"))
+                        {
+                            if (!id.Contains(" "))
+                            {
+                                id = id.SplitCamelCase();
+                            }
+                        }
+                    }
+                    else if (fieldId.Equals("InspectionPassFail") || fieldId.Equals("InspectionType"))
+                    {
+                        id = fieldId.Equals("InspectionPassFail") ? Regex.Replace(fieldId, "PassFail", "Result") : fieldId;
+                        id = id.SplitCamelCase();
+                    }
+                    else
+                    {
+                        id = fieldId;
+                    }
+
+                    trimmedList.Add(id);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return trimmedList;
+        }
+
+        internal bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs)
+        {
+            int expectedCount = 0;
+            int actualCount = 0;
+            bool countsMatch = false;
+            bool reqFieldsMatch = false;
+
+            try
+            {
+                IList<string> trimmedExpectedIDs = TrimInputFieldIDs(expectedRequiredFieldIDs, "0__");
+                IList<bool> results = new List<bool>();
+
+                expectedCount = trimmedExpectedIDs.Count;
+                actualCount = actualRequiredFieldIDs.Count;
+                countsMatch = expectedCount.Equals(actualCount);
+
+                int tblRowIndex = 0;
+                string[][] idTable = new string[expectedCount + 2][];
+                idTable[tblRowIndex] = new string[2] { $"|  Expected ID  | ", $" |  Found Matching Actual ID  | " };
+
+                if (countsMatch)
+                {
+                    for (int i = 0; i < expectedCount; i++)
+                    {
+                        tblRowIndex++;
+                        string actualID = actualRequiredFieldIDs[i];
+                        reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
+                        results.Add(reqFieldsMatch);
+
+                        string tblRowNumber = tblRowIndex.ToString();
+                        tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}" : tblRowNumber;
+                        idTable[tblRowIndex] = new string[2] { $"{tblRowNumber}: {actualID} : ", $"{reqFieldsMatch.ToString()}" };
+                    }
+                }
+                else
+                {
+                    LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
+                        $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
+                }
+
+                reqFieldsMatch = results.Contains(false) ? false : true;
+                idTable[tblRowIndex + 1] = new string[2] { "Total Required Fields:", (results.Count).ToString() };
+                LogInfo(idTable, reqFieldsMatch);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return reqFieldsMatch;
+        }
+
+        internal IList<string> GetErrorSummaryIDs()
+        {
+            IList<string> errorElements = null;
+            IList<string> extractedFieldNames = null;
+
+            try
+            {
+                errorElements = GetTextForElements(By.XPath("//div[contains(@class,'validation-summary-errors')]/ul/li"));
+                extractedFieldNames = new List<string>();
+
+                foreach (string error in errorElements)
+                {
+                    string[] splitType = new string[2];
+
+                    if (error.Contains("DIR:"))
+                    {
+                        splitType = Regex.Split(error, "Shift ");
+                    }
+                    else if (error.Contains("Entry Number"))
+                    {
+                        splitType = Regex.Split(error, "1: ");
+                    }
+
+                    string[] splitReq = Regex.Split(splitType[1], " Required");
+                    string fieldName = splitReq[0];
+                    extractedFieldNames.Add(fieldName);
+                    log.Debug($"Adding Required Field Error Summary ID to Actuals list: {fieldName}");
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            finally
+            {
+                JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
+            }
+
+            return extractedFieldNames;
+        }
+
     }
 
     #endregion DIR/IDR/DWR Generic Class
@@ -195,7 +437,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void ClickBtn_View_Selected();
 
-        void VerifyPackage_After_Click_CreateBtn_forRow(int indexOfRow = 1);
+        void VerifyPackages_Column_Filters(int indexOfRow = 1);
 
         void FilterTable_CreatePackageTab(int indexOfRow = 1);
 
@@ -383,7 +625,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return instance;
         }
 
-        QADIRs QaDIRs => new QADIRs(Driver);
+        QADIRs QaDIRs_Base => new QADIRs(Driver);
 
         [ThreadStatic]
         internal static string dirNumber;
@@ -392,73 +634,104 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         internal static string dirNumberKey;
 
         public virtual string GetDirNumber(string dirNumKey = "")
-        {
-            dirNumKey = dirNumKey.Equals("") ? dirNumberKey : dirNumKey;
-            return GetVar(dirNumKey);
-        }
+            => GetVar(dirNumKey.Equals("") ? dirNumberKey : dirNumKey);
+        //{
+        //    dirNumKey = dirNumKey.Equals("") ? dirNumberKey : dirNumKey;
+        //    return GetVar(dirNumKey);
+        //}
 
         public virtual void SetDirNumber(string dirNum = "")
-            => QaDIRs.StoreDirNumber(dirNum);
+            => QaDIRs_Base.StoreDirNumber(dirNum);
 
-        public virtual bool IsLoaded() => Driver.Title.Equals("DIR List - ELVIS PMC");
+        public virtual bool IsLoaded()
+            => Driver.Title.Equals("DIR List - ELVIS PMC");
 
-        public virtual void ClickBtn_CreateNew() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_New));
+        public virtual void ClickBtn_CreateNew()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_New));
 
-        public virtual void ClickBtn_CreateRevision() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_Revision));
+        public virtual void ClickBtn_CreateRevision()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_Revision));
 
-        public virtual void ClickBtn_Refresh() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Refresh, false));
+        public virtual void ClickBtn_Refresh()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Refresh, false));
 
-        public virtual void ClickBtn_Cancel() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
+        public virtual void ClickBtn_Cancel()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
 
-        public virtual void ClickBtn_KickBack() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Kick_Back, false));
+        public virtual void ClickBtn_KickBack()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Kick_Back, false));
 
-        public virtual void ClickBtn_SubmitRevise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Submit_Revise, false));
+        public virtual void ClickBtn_SubmitRevise()
+           => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Submit_Revise, false));
 
-        public virtual void ClickBtn_Send_To_Attachment() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Send_To_Attachment));
+        public virtual void ClickBtn_Send_To_Attachment()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Send_To_Attachment));
 
-        public virtual void ClickBtn_Save() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save));
+        public virtual void ClickBtn_Save()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save));
 
-        public virtual void ClickBtn_Save_Forward() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Forward));
+        public virtual void ClickBtn_Save_Forward()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Forward));
 
-        public virtual void ClickBtn_Save_Edit() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Edit));
+        public virtual void ClickBtn_Save_Edit()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Edit));
         
-        public virtual void ClickBtn_Approve() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Approve));
+        public virtual void ClickBtn_Approve()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Approve));
 
-        public virtual void ClickBtn_Add() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Add));
+        public virtual void ClickBtn_Add()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Add));
 
-        public virtual void ClickBtn_Delete() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Delete));
+        public virtual void ClickBtn_Delete()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Delete));
 
-        public virtual void ClickBtn_NoError() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.No_Error));
+        public virtual void ClickBtn_NoError()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.No_Error));
 
-        public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review));
+        public virtual void ClickBtn_Back_To_QC_Review()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review));
 
-        public virtual void ClickBtn_Back_To_Field() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_Field, false));
+        public virtual void ClickBtn_Back_To_Field()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_Field, false));
 
-        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise, false));
+        public virtual void ClickBtn_Revise()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise, false));
 
-        public virtual void ClickBtn_Close_Selected() => JsClickElement(By.XPath("//button[text()='Close Selected']"));
+        public virtual void ClickBtn_Close_Selected()
+            => JsClickElement(By.XPath("//button[text()='Close Selected']"));
 
-        public virtual void ClickBtn_View_Selected() => JsClickElement(By.XPath("//button[text()='View Selected']"));
+        public virtual void ClickBtn_View_Selected()
+            => JsClickElement(By.XPath("//button[text()='View Selected']"));
 
-        public virtual void ClickTab_Create_Revise() => ClickTab(TableTab.Create_Revise);
+        public virtual void ClickTab_Create_Revise()
+            => ClickTab(TableTab.Create_Revise);
 
-        public virtual void ClickTab_QC_Review() => ClickTab(TableTab.QC_Review);
+        public virtual void ClickTab_QC_Review()
+            => ClickTab(TableTab.QC_Review);
 
-        public virtual void ClickTab_Authorization() => ClickTab(TableTab.Authorization);
+        public virtual void ClickTab_Authorization()
+            => ClickTab(TableTab.Authorization);
 
-        public virtual void ClickTab_Creating() => ClickTab(TableTab.Creating);
+        public virtual void ClickTab_Creating()
+            => ClickTab(TableTab.Creating);
 
-        public virtual void ClickTab_Attachments() => ClickTab(TableTab.Attachments);
+        public virtual void ClickTab_Attachments()
+            => ClickTab(TableTab.Attachments);
 
-        public virtual void ClickTab_Revise() => ClickTab(TableTab.Revise);
+        public virtual void ClickTab_Revise()
+            => ClickTab(TableTab.Revise);
 
-        public virtual void ClickTab_To_Be_Closed() => ClickTab(TableTab.To_Be_Closed);
+        public virtual void ClickTab_To_Be_Closed()
+            => ClickTab(TableTab.To_Be_Closed);
 
-        public virtual void ClickTab_Closed() => ClickTab(TableTab.Closed);
+        public virtual void ClickTab_Closed()
+            => ClickTab(TableTab.Closed);
 
-        public virtual void ClickTab_Create_Packages() => ClickTab(TableTab.Create_Packages);
+        public virtual void ClickTab_Create_Packages()
+            => ClickTab(TableTab.Create_Packages);
 
-        public virtual void ClickTab_Packages() => ClickTab(TableTab.Packages);
+        public virtual void ClickTab_Packages()
+            => ClickTab(TableTab.Packages);
 
         public virtual void FilterDirNumber(string DirNumber)
             => FilterTableColumnByValue(ColumnName.DIR_No, DirNumber);
@@ -660,6 +933,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 ClickTab(tableTab);
                 string _dirNum = dirNumber.Equals("") ? GetDirNumber() : dirNumber;
                 isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, TableType.MultiTab, noRecordsExpected);
+
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
                 LogInfo($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", noRecordsExpected ? !isDisplayed : isDisplayed);
             }
@@ -852,211 +1126,215 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return msgMatch;
         }
 
-        private string FormatInspectionTimesIDs(string id)
-        {
-            if (id.Equals("DateReady"))
-            {
-                id = "Ready";
-            }
-            else if (id.Equals("DateCompleted"))
-            {
-                id = "Completed Date";
-            }
-            else if (id.Equals("InspectionHours"))
-            {
-                id = "Total Inspection Time";
-            }
-            else if (id.Contains("Time"))
-            {
-                id = Regex.Replace(id, "Only", "");
-            }
 
-            return id;
-        }
 
-        internal IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern)
-        {
-            IList<string> trimmedList = null;
+        //private string FormatInspectionTimesIDs(string id)
+        //{
+        //    if (id.Equals("DateReady"))
+        //    {
+        //        id = "Ready";
+        //    }
+        //    else if (id.Equals("DateCompleted"))
+        //    {
+        //        id = "Completed Date";
+        //    }
+        //    else if (id.Equals("InspectionHours"))
+        //    {
+        //        id = "Total Inspection Time";
+        //    }
+        //    else if (id.Contains("Time"))
+        //    {
+        //        id = Regex.Replace(id, "Only", "");
+        //    }
 
-            try
-            {
-                trimmedList = new List<string>();
+        //    return id;
+        //}
 
-                foreach (string fieldId in fieldIdList)
-                {
-                    string[] split = new string[2];
-                    string id = string.Empty;
+        //internal IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern)
+        //{
+        //    IList<string> trimmedList = null;
 
-                    if (fieldId.Contains(splitPattern))
-                    {
-                        split = Regex.Split(fieldId, splitPattern);
-                        id = split[1];
+        //    try
+        //    {
+        //        trimmedList = new List<string>();
 
-                        string[] newId = new string[2];
-                        if (id.Contains("Id"))
-                        {
-                            newId = Regex.Split(id, "Id");
-                            id = newId[0];
-                        }
-                        else if (id.Contains("HoldPoint"))
-                        {
-                            if (id.Equals("HoldPointTypeID"))
-                            {
-                                bool complexWfTenant = tenantName == TenantName.SGWay || tenantName == TenantName.SH249 ? true : false;
-                                id = complexWfTenant ? "HoldPoint Type" : "ControlPoint No.";
-                            }
-                            else
-                                id = "ControlPoint Type";
-                        }
-                        else if (id.Equals("EngineerComment"))
-                        {
-                            id = $"{id}s";
-                        }
-                        else if (id.Contains("ID") && !id.Contains("HoldPoint"))
-                        {
-                            newId = Regex.Split(id, "ID");
-                            id = newId[0];
-                        }
-                        else if (id.Contains("PassFail"))
-                        {
-                            id = Regex.Replace(id, "PassFail", "Result");
-                        }
-                        else if (id.Equals("DateReady") || id.Equals("DateCompleted") || id.Equals("InspectionHours"))
-                        {
-                            id = FormatInspectionTimesIDs(id);
-                        }
-                        else if (id.Contains("Only"))
-                        {
-                            id = Regex.Replace(id, "Only", "");
-                            id = FormatInspectionTimesIDs(id);
+        //        foreach (string fieldId in fieldIdList)
+        //        {
+        //            string[] split = new string[2];
+        //            string id = string.Empty;
 
-                            if (!id.Contains(" "))
-                            {
-                                id = id.SplitCamelCase();
-                            }
-                        }
+        //            if (fieldId.Contains(splitPattern))
+        //            {
+        //                split = Regex.Split(fieldId, splitPattern);
+        //                id = split[1];
 
-                        if (!fieldId.Contains("Time"))
-                        {
-                            if (!id.Contains(" "))
-                            {
-                                id = id.SplitCamelCase();
-                            }
-                        }
-                    }
-                    else if (fieldId.Equals("InspectionPassFail") || fieldId.Equals("InspectionType"))
-                    {
-                        id = fieldId.Equals("InspectionPassFail") ? Regex.Replace(fieldId, "PassFail", "Result") : fieldId;
-                        id = id.SplitCamelCase();
-                    }
-                    else
-                    {
-                        id = fieldId;
-                    }
+        //                string[] newId = new string[2];
+        //                if (id.Contains("Id"))
+        //                {
+        //                    newId = Regex.Split(id, "Id");
+        //                    id = newId[0];
+        //                }
+        //                else if (id.Contains("HoldPoint"))
+        //                {
+        //                    if (id.Equals("HoldPointTypeID"))
+        //                    {
+        //                        bool complexWfTenant = tenantName == TenantName.SGWay || tenantName == TenantName.SH249 ? true : false;
+        //                        id = complexWfTenant ? "HoldPoint Type" : "ControlPoint No.";
+        //                    }
+        //                    else
+        //                        id = "ControlPoint Type";
+        //                }
+        //                else if (id.Equals("EngineerComment"))
+        //                {
+        //                    id = $"{id}s";
+        //                }
+        //                else if (id.Contains("ID") && !id.Contains("HoldPoint"))
+        //                {
+        //                    newId = Regex.Split(id, "ID");
+        //                    id = newId[0];
+        //                }
+        //                else if (id.Contains("PassFail"))
+        //                {
+        //                    id = Regex.Replace(id, "PassFail", "Result");
+        //                }
+        //                else if (id.Equals("DateReady") || id.Equals("DateCompleted") || id.Equals("InspectionHours"))
+        //                {
+        //                    id = FormatInspectionTimesIDs(id);
+        //                }
+        //                else if (id.Contains("Only"))
+        //                {
+        //                    id = Regex.Replace(id, "Only", "");
+        //                    id = FormatInspectionTimesIDs(id);
 
-                    trimmedList.Add(id);
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
+        //                    if (!id.Contains(" "))
+        //                    {
+        //                        id = id.SplitCamelCase();
+        //                    }
+        //                }
 
-            return trimmedList;
-        }
+        //                if (!fieldId.Contains("Time"))
+        //                {
+        //                    if (!id.Contains(" "))
+        //                    {
+        //                        id = id.SplitCamelCase();
+        //                    }
+        //                }
+        //            }
+        //            else if (fieldId.Equals("InspectionPassFail") || fieldId.Equals("InspectionType"))
+        //            {
+        //                id = fieldId.Equals("InspectionPassFail") ? Regex.Replace(fieldId, "PassFail", "Result") : fieldId;
+        //                id = id.SplitCamelCase();
+        //            }
+        //            else
+        //            {
+        //                id = fieldId;
+        //            }
 
-        internal bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs)
-        {
-            int expectedCount = 0;
-            int actualCount = 0;
-            bool countsMatch = false;
-            bool reqFieldsMatch = false;
+        //            trimmedList.Add(id);
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        log.Error(e.StackTrace);
+        //    }
 
-            try
-            {
-                IList<string> trimmedExpectedIDs = TrimInputFieldIDs(expectedRequiredFieldIDs, "0__");
-                IList<bool> results = new List<bool>();
+        //    return trimmedList;
+        //}
 
-                expectedCount = trimmedExpectedIDs.Count;
-                actualCount = actualRequiredFieldIDs.Count;
-                countsMatch = expectedCount.Equals(actualCount);
+        //internal bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs)
+        //{
+        //    int expectedCount = 0;
+        //    int actualCount = 0;
+        //    bool countsMatch = false;
+        //    bool reqFieldsMatch = false;
 
-                int tblRowIndex = 0;
-                string[][] idTable = new string[expectedCount + 2][];
-                idTable[tblRowIndex] = new string[2] { $"|  Expected ID  | ", $" |  Found Matching Actual ID  | " };
+        //    try
+        //    {
+        //        IList<string> trimmedExpectedIDs = TrimInputFieldIDs(expectedRequiredFieldIDs, "0__");
+        //        IList<bool> results = new List<bool>();
 
-                if (countsMatch)
-                {
-                    for (int i = 0; i < expectedCount; i++)
-                    {
-                        tblRowIndex++;
-                        string actualID = actualRequiredFieldIDs[i];
-                        reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
-                        results.Add(reqFieldsMatch);
+        //        expectedCount = trimmedExpectedIDs.Count;
+        //        actualCount = actualRequiredFieldIDs.Count;
+        //        countsMatch = expectedCount.Equals(actualCount);
 
-                        string tblRowNumber = tblRowIndex.ToString();
-                        tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}" : tblRowNumber;
-                        idTable[tblRowIndex] = new string[2] { $"{tblRowNumber}: {actualID} : ", $"{reqFieldsMatch.ToString()}" };
-                    }
-                }
-                else
-                {
-                    LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
-                        $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
-                }
+        //        int tblRowIndex = 0;
+        //        string[][] idTable = new string[expectedCount + 2][];
+        //        idTable[tblRowIndex] = new string[2] { $"|  Expected ID  | ", $" |  Found Matching Actual ID  | " };
 
-                reqFieldsMatch = results.Contains(false) ? false : true;
-                idTable[tblRowIndex + 1] = new string[2] {"Total Required Fields:", (results.Count).ToString()};
-                LogInfo(idTable, reqFieldsMatch);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
+        //        if (countsMatch)
+        //        {
+        //            for (int i = 0; i < expectedCount; i++)
+        //            {
+        //                tblRowIndex++;
+        //                string actualID = actualRequiredFieldIDs[i];
+        //                reqFieldsMatch = trimmedExpectedIDs.Contains(actualID);
+        //                results.Add(reqFieldsMatch);
 
-            return reqFieldsMatch;
-        }
+        //                string tblRowNumber = tblRowIndex.ToString();
+        //                tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}" : tblRowNumber;
+        //                idTable[tblRowIndex] = new string[2] { $"{tblRowNumber}: {actualID} : ", $"{reqFieldsMatch.ToString()}" };
+        //            }
+        //        }
+        //        else
+        //        {
+        //            LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
+        //                $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
+        //        }
 
-        private IList<string> GetErrorSummaryIDs()
-        {
-            IList<string> errorElements = null;
-            IList<string> extractedFieldNames = null;
+        //        reqFieldsMatch = results.Contains(false) ? false : true;
+        //        idTable[tblRowIndex + 1] = new string[2] {"Total Required Fields:", (results.Count).ToString()};
+        //        LogInfo(idTable, reqFieldsMatch);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        log.Error(e.StackTrace);
+        //    }
 
-            try
-            {
-                errorElements = GetTextForElements(By.XPath("//div[contains(@class,'validation-summary-errors')]/ul/li"));
-                extractedFieldNames = new List<string>();
+        //    return reqFieldsMatch;
+        //}
 
-                foreach (string error in errorElements)
-                {
-                    string[] splitType = new string[2];
+        //private IList<string> GetErrorSummaryIDs()
+        //{
+        //    IList<string> errorElements = null;
+        //    IList<string> extractedFieldNames = null;
 
-                    if (error.Contains("DIR:"))
-                    {
-                        splitType = Regex.Split(error, "Shift ");
-                    }
-                    else if (error.Contains("Entry Number"))
-                    {
-                        splitType = Regex.Split(error, "1: ");
-                    }
+        //    try
+        //    {
+        //        errorElements = GetTextForElements(By.XPath("//div[contains(@class,'validation-summary-errors')]/ul/li"));
+        //        extractedFieldNames = new List<string>();
 
-                    string[] splitReq = Regex.Split(splitType[1], " Required");
-                    string fieldName = splitReq[0];
-                    extractedFieldNames.Add(fieldName);
-                    log.Debug($"Adding Required Field Error Summary ID to Actuals list: {fieldName}");
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-            finally
-            {
-                JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
-            }
+        //        foreach (string error in errorElements)
+        //        {
+        //            string[] splitType = new string[2];
 
-            return extractedFieldNames;
-        }
+        //            if (error.Contains("DIR:"))
+        //            {
+        //                splitType = Regex.Split(error, "Shift ");
+        //            }
+        //            else if (error.Contains("Entry Number"))
+        //            {
+        //                splitType = Regex.Split(error, "1: ");
+        //            }
+
+        //            string[] splitReq = Regex.Split(splitType[1], " Required");
+        //            string fieldName = splitReq[0];
+        //            extractedFieldNames.Add(fieldName);
+        //            log.Debug($"Adding Required Field Error Summary ID to Actuals list: {fieldName}");
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        log.Error(e.StackTrace);
+        //    }
+        //    finally
+        //    {
+        //        JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
+        //    }
+
+        //    return extractedFieldNames;
+        //}
+
+
 
         public virtual IList<string> GetExpectedHoldPointReqFieldIDsList()
         {
@@ -1088,7 +1366,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 errorSummaryIDs = new List<string>();
-                errorSummaryIDs = GetErrorSummaryIDs();
+                errorSummaryIDs = QaDIRs_Base.GetErrorSummaryIDs();
 
                 string reqFieldIdXPath = string.Empty;
                 string splitPattern = string.Empty;
@@ -1114,9 +1392,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         break;
                 }
 
-                IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
+                IList<string> trimmedActualIds = QaDIRs_Base.TrimInputFieldIDs(GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
 
-                bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
+                bool actualMatchesExpected = QaDIRs_Base.VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
 
                 if (actualMatchesExpected)
                 {
@@ -1204,48 +1482,48 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return revAsExpected;
         }
 
-        private string[] GetPackageDataForRow(int indexOfRow = 1, bool CreatePkgTab = true)
-        {
-            string rowXPath = $"//div[contains(@class,'k-state-active')]//tbody/tr[{indexOfRow}]/td";
+        //private string[] GetPackageDataForRow(int indexOfRow = 1, bool CreatePkgTab = true)
+        //{
+        //    string rowXPath = $"//div[contains(@class,'k-state-active')]//tbody/tr[{indexOfRow}]/td";
 
-            string weekStart = null;
-            string weekEnd = null;
-            string newDirCountOrPkgNum = null;
-            string newDIRsOrDIRsToString = null;
-            string[] pkgData = null;
+        //    string weekStart = null;
+        //    string weekEnd = null;
+        //    string newDirCountOrPkgNum = null;
+        //    string newDIRsOrDIRsToString = null;
+        //    string[] pkgData = null;
 
-            By locator(int indexOfCol) => By.XPath($"{rowXPath}[{indexOfCol.ToString()}]");
+        //    By locator(int indexOfCol) => By.XPath($"{rowXPath}[{indexOfCol.ToString()}]");
 
-            try
-            {
-                weekStart = GetText(locator(1));
-                weekEnd = GetText(locator(2));
-                newDirCountOrPkgNum = GetText(locator(3));
-                newDIRsOrDIRsToString = CreatePkgTab ? GetText(locator(5)) : GetText(locator(4));
+        //    try
+        //    {
+        //        weekStart = GetText(locator(1));
+        //        weekEnd = GetText(locator(2));
+        //        newDirCountOrPkgNum = GetText(locator(3));
+        //        newDIRsOrDIRsToString = CreatePkgTab ? GetText(locator(5)) : GetText(locator(4));
 
-                pkgData = new string[4]
-                {
-                    weekStart,
-                    weekEnd,
-                    newDirCountOrPkgNum,
-                    newDIRsOrDIRsToString
-                };
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-                throw;
-            }
+        //        pkgData = new string[4]
+        //        {
+        //            weekStart,
+        //            weekEnd,
+        //            newDirCountOrPkgNum,
+        //            newDIRsOrDIRsToString
+        //        };
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        log.Error(e.StackTrace);
+        //        throw;
+        //    }
 
-            return pkgData;
-        }
+        //    return pkgData;
+        //}
 
-        public virtual void VerifyPackage_After_Click_CreateBtn_forRow(int indexOfRow = 1)
+        public virtual void VerifyPackages_Column_Filters(int indexOfRow = 1)
         {
             try
             {
                 string[] splitNewDIRs = null;
-                string[] pkgData = GetPackageDataForRow(indexOfRow);
+                string[] pkgData = QaDIRs_Base.GetPackageDataForRow(indexOfRow);
                 string wkStart = pkgData[0];
                 string wkEnd = pkgData[1];
                 string newDirCount = pkgData[2];
@@ -1275,13 +1553,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error(e.Message);
+                throw e;
             }
         }
 
         public virtual void FilterTable_CreatePackageTab(int indexOfRow = 1)
         {
-            string[] pkgData = GetPackageDataForRow(indexOfRow);
+            string[] pkgData = QaDIRs_Base.GetPackageDataForRow(indexOfRow);
 
             string wkStart = pkgData[0];
             string wkEnd = pkgData[1];
@@ -1291,7 +1570,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void FilterTable_PackageTab(int indexOfRow = 1)
         {
-            string[] pkgData = GetPackageDataForRow(indexOfRow, false);
+            string[] pkgData = QaDIRs_Base.GetPackageDataForRow(indexOfRow, false);
 
             string wkStart = pkgData[0];
             string wkEnd = pkgData[1];
@@ -1597,7 +1876,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectChkbox_InspectionResult_P();
             ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
-            SelectDDL_ControlPointNumber(4);
+            SelectDDL_ControlPointNumber(3);
             SetDirNumber();
         }
 

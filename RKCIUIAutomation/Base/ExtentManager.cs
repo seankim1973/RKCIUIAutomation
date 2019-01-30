@@ -30,10 +30,6 @@ namespace RKCIUIAutomation.Base
 
                 if (reporter == Reporter.Klov)
                 {
-                    var gridHub = testPlatform.Equals(TestPlatform.GridLocal)
-                        ? GridVmIP
-                        : "localhost";
-
                     GetReportInstance().AttachReporter(HtmlReporter, GetKlovReporter(GridVmIP));
                 }
                 else

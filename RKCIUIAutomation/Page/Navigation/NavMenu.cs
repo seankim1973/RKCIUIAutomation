@@ -180,21 +180,25 @@ namespace RKCIUIAutomation.Page.Navigation
 
                 if (subOfMainNavEnum != null)
                 {
-                    element = Driver.FindElement(GetNavMenuByLocator(subOfMainNavEnum));
+                    By subOfMainNavLocator = GetNavMenuByLocator(subOfMainNavEnum, mainNavEnum);
+                    element = Driver.FindElement(subOfMainNavLocator);
                     builder.MoveToElement(element).Perform();
-                    clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum));
 
                     if (childOfSubMenuEnum != null)
                     {
-                        element = Driver.FindElement(GetNavMenuByLocator(childOfSubMenuEnum));
+                        By childOfSubMenuLocator = GetNavMenuByLocator(childOfSubMenuEnum, subOfMainNavEnum);
+                        element = Driver.FindElement(childOfSubMenuLocator);
                         builder.MoveToElement(element).Perform();
 
                         if (subOfChildMenuEnum != null)
                         {
-                            element = Driver.FindElement(GetNavMenuByLocator(subOfChildMenuEnum));
+                            By subOfChildMenuLocator = GetNavMenuByLocator(subOfChildMenuEnum, childOfSubMenuEnum);
+                            element = Driver.FindElement(subOfChildMenuLocator);
                             builder.MoveToElement(element).Perform();
                         }
                     }
+
+                    clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum));
                 }
                 else
                 {
