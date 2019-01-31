@@ -449,7 +449,7 @@ namespace RKCIUIAutomation.Test.DIR
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Packages();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.Verify_Package_Download());
+            AddAssertionToList(QaRcrdCtrl_QaDIR.Verify_Package_Download(), "Verify DIR Package Downloaded");
             AssertAll();
         }
     }

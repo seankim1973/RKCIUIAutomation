@@ -1392,6 +1392,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             bool isEnabled = false;
             bool fileDownloaded = false;
+            string logMsg = string.Empty;
             string fileName = string.Empty;
 
             try
@@ -1431,8 +1432,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 log.Error(e.Message);
                 throw e;
             }
+            logMsg = fileDownloaded
+                ? "Success"
+                : "Failed";
 
-            LogInfo($"Downloaded Package ({fileName})?", fileDownloaded);
+            LogInfo($"Download for DIR Package ({fileName}) {logMsg}", fileDownloaded);
 
             return fileDownloaded;
         }
