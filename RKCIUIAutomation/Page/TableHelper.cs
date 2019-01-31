@@ -105,9 +105,10 @@ namespace RKCIUIAutomation.Page
             internal const string ActionColumnBtn = "ActionColumnBtn";
             internal const string RowEndsWithChkbx = "RowEndsWithChkbx";
             internal const string ActionCreatePkg = "ActionCreatePkg";
+            internal const string Download = "Download";
         }
 
-        private enum TableButton
+        internal enum TableButton
         {
             [StringValue("/input", BtnCategory.LastOrOnlyInRow)] CheckBox,
             [StringValue("/a", BtnCategory.LastOrOnlyInRow)] QMS_Attachments_View,
@@ -120,6 +121,7 @@ namespace RKCIUIAutomation.Page
             [StringValue("Edit", BtnCategory.ActionColumnBtn)] Action_Edit,
             [StringValue("Close DIR", BtnCategory.ActionColumnBtn)] Action_Close_DIR,
             [StringValue("Create", BtnCategory.ActionCreatePkg)] Action_Create_Package,
+            [StringValue("/a[contains(@onclick, 'download')]", BtnCategory.Download)] Download,
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
@@ -196,14 +198,35 @@ namespace RKCIUIAutomation.Page
         }
 
         private string GetGridTypeXPath(bool isMultiTabGrid)
-            => isMultiTabGrid ? "//div[@class='k-content k-state-active']" : "//div[@data-role='grid']";
+            => isMultiTabGrid 
+            ? "//div[@class='k-content k-state-active']"
+            : "//div[@data-role='grid']";
 
         //private readonly string ActiveTableDiv = "//div[@class='k-content k-state-active']";
 
-        private string TableByTextInRow(string textInRowForAnyColumn, bool useContainsOperator = false)
-            => useContainsOperator 
-            ? $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td" 
-            : $"//td[contains(text(),'{textInRowForAnyColumn}')]/parent::tr/td";
+        private string TableByTextInRow<T>(T textInRowForAnyColumnOrRowIndex, bool useContainsOperator = false)
+        {
+            Type argType = textInRowForAnyColumnOrRowIndex.GetType();
+            int argInt = 0;
+            string argString = "";
+
+            string xpath = string.Empty;
+
+            if (argType == typeof(string))
+            {
+                argInt = ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
+                xpath = $"//tr[{argInt.ToString()}]/td//parent::tr/td";
+            }
+            else if (argType == typeof(int))
+            {
+                argString = ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
+                xpath = useContainsOperator
+                    ? $"//td[text()='{argString}']/parent::tr/td"
+                    : $"//td[contains(text(),'{argString}')]/parent::tr/td";
+            }
+
+            return xpath;
+        }
 
         private string TableColumnIndex(string columnName)
             => $"//th[@data-title='{columnName}']";
@@ -235,7 +258,7 @@ namespace RKCIUIAutomation.Page
         public By GetTableRowLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableByTextInRow(textInRowForAnyColumn)}");
 
-        public string GetColumnValueForRow(string textInRowForAnyColumn, string getValueFromColumnName, bool isMultiTabGrid = true)
+        public string GetColumnValueForRow<T>(T textInRowForAnyColumnOrRowIndex, string getValueFromColumnName, bool isMultiTabGrid = true)
         {
             string rowXPath = string.Empty;
             string gridTypeXPath = string.Empty;
@@ -247,7 +270,8 @@ namespace RKCIUIAutomation.Page
                 By headerLocator = By.XPath($"{gridTypeXPath}{TableColumnIndex(getValueFromColumnName)}");
                 string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
                 int xPathIndex = int.Parse(dataIndexAttribute) + 1;
-                rowXPath = $"{gridTypeXPath}{TableByTextInRow(textInRowForAnyColumn)}[{xPathIndex.ToString()}]";
+
+                rowXPath = $"{gridTypeXPath}{TableByTextInRow(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
             }
             catch (Exception e)
             {
@@ -275,6 +299,9 @@ namespace RKCIUIAutomation.Page
             }
         }
 
+        internal By GetTableBtnLocator<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
+            => GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
+
         //<<-- Table Row Button Public Methods -->>
         /// <summary>
         /// If no argument is provided, the checkbox for the first row will be selected.
@@ -299,6 +326,9 @@ namespace RKCIUIAutomation.Page
 
         public void ClickCreateBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = true)
             => ClickButtonForRow(TableButton.Action_Create_Package, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
+
+        public void ClickDownloadBtnForRow(int rowIndex = 1, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
+            => ClickButtonForRow(TableButton.Download, rowIndex, isMultiTabGrid, rowEndsWithChkbox);
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.

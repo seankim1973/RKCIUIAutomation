@@ -70,9 +70,8 @@ namespace RKCIUIAutomation.Base
             else
             {
                 IWebDriver currentDriver = driverThread.Value;
-                string currentKey = null;
 
-                if (!driverToKeyMap.TryGetValue(currentDriver, out currentKey))
+                if (!driverToKeyMap.TryGetValue(currentDriver, out string currentKey))
                 {
                     Console.WriteLine($"_SETDRIVER - CURRENT KEY: {currentKey}");
                     // The driver was dismissed

@@ -120,10 +120,10 @@ namespace RKCIUIAutomation.Base
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
+            string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.SH249}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
@@ -282,7 +282,7 @@ namespace RKCIUIAutomation.Base
             log.Info($"#");
             log.Info($"#  -->> Test Case Details <<--");
             log.Info($"#  Name: {testName}");
-            log.Info($"#  Desription: {testDescription}");
+            log.Info($"#  Description: {testDescription}");
             log.Info($"#  TC#: {_tcNumber}, {_priority}");
             log.Info($"#  Suite: {_suite}, Component{components}");
             log.Info($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");

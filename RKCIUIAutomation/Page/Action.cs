@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.Win32;
+using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
@@ -1210,5 +1211,10 @@ namespace RKCIUIAutomation.Page
 
             return userAcct;
         }
+
+        public string GetUserDownloadFolderPath()
+            => Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "{374DE290-123F-4565-9164-39C4925E467B}", string.Empty).ToString();
+
+
     }
 }

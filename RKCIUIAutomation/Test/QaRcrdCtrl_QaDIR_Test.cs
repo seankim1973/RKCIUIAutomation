@@ -405,7 +405,10 @@ namespace RKCIUIAutomation.Test.DIR
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
-            QaRcrdCtrl_QaDIR.Verify_Column_Filters_DirPackages();
+            // if rows do not exist, then create DIR Rev. A & B
+            // Get and store WeekStart value of first row
+            // click Packages tab
+            // filter WeekStart column by stored value
             AssertAll();
         }
     }
@@ -425,26 +428,16 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
 
             QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
-            //read data from first row
-            //filter weekStart column, verify row is seen, clear filter
-            //filter weekEnd column, verify row is seen, clear filter
-            //filter NewDIRCount column (eql), verify row is seen, clear filter
-            //filter NewDIRs column (eql, contains), verify row is seen, clear filter
-                        
+            QaRcrdCtrl_QaDIR.FilterTable_CreatePackagesTab();                        
             QaRcrdCtrl_QaDIR.ClickTab_Packages();
-            //read data from first row
-            //filter weekStart column, verify row is seen, clear filter
-            //filter weekEnd column, verify row is seen, clear filter
-            //filter PackageNumber column (eql, contains), verify row is seen, clear filter
-            //filter DIRs column (eql, contains), verify row is seen, clear filter
-
+            QaRcrdCtrl_QaDIR.FilterTable_PackagesTab();
             AssertAll();
         }
     }
 
     //SG & SH249 - DIR Complex Tenants
     [TestFixture]
-    public class Verify_Packages_Download : TestBase
+    public class Verify_DIR_Packages_Download : TestBase
     {
         [Test]
         [Category(Component.DIR)]
@@ -452,18 +445,18 @@ namespace RKCIUIAutomation.Test.DIR
         [Property(TestCaseNumber, 2556982)]
         [Property(Priority, "High")]
         [Description("To validate creation of DIR packages in Complex Workflow.")]
-        public void Packages_Download_and_Recreate()
+        public void DIR_Packages_Download()
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Packages();
-            //QaRcrdCtrl_QaDIR.VerifyPackage_After_Click_CreateBtn_forRow();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.Verify_Package_Download());
             AssertAll();
         }
     }
 
     //SG & SH249 - DIR Complex Tenants
     [TestFixture]
-    public class Verify_Packages_Recreate : TestBase
+    public class Verify_DIR_Packages_Recreate : TestBase
     {
         [Test]
         [Category(Component.DIR)]
@@ -471,7 +464,7 @@ namespace RKCIUIAutomation.Test.DIR
         [Property(TestCaseNumber, 2690311)]
         [Property(Priority, "High")]
         [Description("To validate creation of DIR packages in Complex Workflow.")]
-        public void Packages_Download_and_Recreate()
+        public void DIR_Packages_Recreate()
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Packages();

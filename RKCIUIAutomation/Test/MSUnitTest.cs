@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Win32;
 using MiniGuids;
 using NUnit.Framework.Interfaces;
 using RKCIUIAutomation.Base;
@@ -9,6 +10,7 @@ using RKCIUIAutomation.Test;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -252,7 +254,7 @@ namespace RKCIUIAutomation.Sandbox
             internal const string Cat1 = "Cat1";
         }
 
-        private enum TableButton
+        private new enum TableButton
         {
             [StringValue("", BtnCategory.Cat1)] QMS_Attachments_View,
             [StringValue("-1")] Report_View,
@@ -707,6 +709,23 @@ namespace RKCIUIAutomation.Sandbox
 
             string val = "-1";
             Console.WriteLine((int.Parse(val) - 1).ToString());
+        }
+
+        [TestMethod]
+        public void CurrentUserDownloadFolder()
+        {
+            var path = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "{374DE290-123F-4565-9164-39C4925E467B}", string.Empty).ToString();
+            string fileName = "IQF-DIR-20190127-1.zip";
+            string file = $"{path}\\{fileName}";
+            bool fileExists = File.Exists(file);
+            Assert.IsTrue(fileExists);
+            if (fileExists)
+            {
+                File.Delete(file);
+            }
+            fileExists = File.Exists(file);
+            Assert.IsFalse(fileExists);
+            Console.WriteLine(file);
         }
     }
 }
