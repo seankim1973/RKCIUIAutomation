@@ -93,6 +93,23 @@ namespace RKCIUIAutomation.Tools
                 log.Debug(e.StackTrace);
             }
         }
+
+
+        public bool VerifyResetDIRPackageID(string packageNumber, bool setAsDeleted = true)
+        {
+            try
+            {
+                int projID = GetCurrentProjectID();
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                log.Debug(e.StackTrace);
+            }
+
+            return false;
+        }
+
+
     }
 
     public class DirDbData

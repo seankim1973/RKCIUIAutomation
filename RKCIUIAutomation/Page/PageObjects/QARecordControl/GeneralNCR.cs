@@ -171,7 +171,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 log.Error(e.AlertText);
             }
 
-            LogInfo(ConfirmActionDialog());
+            LogStep(ConfirmActionDialog());
         }
 
         internal void ClickBtn_Sign(InputFields signBtnType)

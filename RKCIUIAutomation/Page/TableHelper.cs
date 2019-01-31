@@ -291,7 +291,7 @@ namespace RKCIUIAutomation.Page
                     : new string[] { "Clicked", "button" };
                 By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
                 JsClickElement(locator);
-                log.Debug($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
+                LogStep($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
             }
             catch (Exception e)
             {
@@ -324,7 +324,7 @@ namespace RKCIUIAutomation.Page
         public void ClickEditBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
             => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
 
-        public void ClickCreateBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = true)
+        public void ClickCreateBtnForRow(int textInRowForAnyColumn = 1, bool isMultiTabGrid = true, bool rowEndsWithChkbox = true)
             => ClickButtonForRow(TableButton.Action_Create_Package, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
 
         public void ClickDownloadBtnForRow(int rowIndex = 1, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)

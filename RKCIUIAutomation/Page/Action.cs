@@ -728,7 +728,7 @@ namespace RKCIUIAutomation.Page
                     IAlert alert = Driver.SwitchTo().Alert();
                     alertMsg = alert.Text;
                     alert.Accept();
-                    LogInfo($"Accepted browser alert message: '{alertMsg}'");
+                    LogStep($"Accepted browser alert message: '{alertMsg}'");
                 }
                 catch (NoAlertPresentException e)
                 {
@@ -753,7 +753,7 @@ namespace RKCIUIAutomation.Page
             {
                 IAlert alert = Driver.SwitchTo().Alert();
                 alert.Dismiss();
-                LogInfo("Dismissed browser alert message");
+                LogStep("Dismissed browser alert message");
             }
         }
 

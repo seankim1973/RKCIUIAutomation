@@ -80,12 +80,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public enum PackagesColumnName
         {
-            [StringValue("WeekStart")] Week_Start,
-            [StringValue("WeekEnd")] Week_End,
-            [StringValue("PackageNumber")] Package_Number,
-            [StringValue("DIRsToString")] DIRs,
-            [StringValue("DirsCount")] New_DIR_Count,
-            [StringValue("DIRsToString")] New_DIRs
+            [StringValue("WeekStart", "Week Start")] Week_Start,
+            [StringValue("WeekEnd", "Week End")] Week_End,
+            [StringValue("PackageNumber", "Package number")] Package_Number,
+            [StringValue("DIRsToString", "DIRs")] DIRs,
+            [StringValue("DirsCount", "New DIR Count")] New_DIR_Count,
+            [StringValue("DIRsToString", "New DIRs")] New_DIRs
         }
 
         public enum SubmitButtons
@@ -656,6 +656,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void RefreshAutoSaveTimer();
 
         bool Verify_Package_Download();
+
+        TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1);
+
+        bool Verify_Package_Created(int createPkgsRowIndex, string weekStart, string[] dirNumbers);
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -1404,7 +1408,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                     if (isEnabled)
                     {
-                        fileName = $"{GetColumnValueForRow(i, "Package number")}.zip";
+                        fileName = $"{GetColumnValueForRow(i, PackagesColumnName.Package_Number.GetString(true))}.zip";
                         string fullFilePath = $"C:\\Automation\\Downloads\\{fileName}";
                         //delete if file already exists in download folder
                         if (File.Exists(fullFilePath))
@@ -1440,6 +1444,65 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return fileDownloaded;
         }
+
+        public virtual TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1)
+        {
+            TOut output = default(TOut);
+            string tblData = string.Empty;
+            string colName = packagesColumnName.GetString(true);
+
+            tblData = GetColumnValueForRow(rowIndex, colName);
+
+            if (packagesColumnName == PackagesColumnName.New_DIRs || packagesColumnName == PackagesColumnName.DIRs)
+            {
+                string[] arrayArg = new string[] { };
+                arrayArg = Regex.Split(tblData, ", ");
+                output = ConvertToType<TOut>(arrayArg);
+            }
+            else
+            {
+                output = ConvertToType<TOut>(tblData);
+            }
+
+            return output;
+        }
+
+        public virtual bool Verify_Package_Created(int createPkgsRowIndex, string weekStart, string[] dirNumbers)
+        {
+            bool pkgIsCreated = false;
+            try
+            {
+                ClickCreateBtnForRow(createPkgsRowIndex);
+                LogStep(ConfirmActionDialog());
+                LogStep(ConfirmActionDialog());
+                QaRcrdCtrl_QaDIR.ClickTab_Packages();
+
+                pkgIsCreated = VerifyRecordIsDisplayed(PackagesColumnName.Week_Start, weekStart);
+
+                string actualPkgNum = GetColumnValueForRow(1, PackagesColumnName.Package_Number.GetString(true));
+                string[] wkStartSplit = new string[] { };
+                wkStartSplit = Regex.Split(weekStart, "/");
+                string mm = wkStartSplit[0];
+                string dd = wkStartSplit[1];
+                string yyyy = wkStartSplit[2];
+                string expectedPkNum = $"IQF-DIR-{yyyy}{mm}{dd}-1";
+
+                bool pkgNumAsExpected = actualPkgNum.Equals(expectedPkNum);
+                string logMsg(string lineBrk) => pkgNumAsExpected
+                    ? $"Package Number is as expected {actualPkgNum}"
+                    : $"Package Number is not as expected!{lineBrk}EXPECTED: {expectedPkNum}{lineBrk}ACTUAL: {actualPkgNum}";
+                LogInfo(logMsg("<br>"), pkgNumAsExpected);
+                AddAssertionToList(pkgNumAsExpected, logMsg("\n"));
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                throw e;
+            }
+            
+            return pkgIsCreated;
+        }
+
     }
 
     //Tenant Specific Classes

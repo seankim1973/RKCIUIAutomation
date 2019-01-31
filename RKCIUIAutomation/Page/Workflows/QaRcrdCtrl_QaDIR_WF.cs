@@ -483,6 +483,8 @@ namespace RKCIUIAutomation.Page.Workflows
         bool Verify_ViewMultiDirPDF(bool selectNoneForMultiView = false);
 
         bool VerifyDbCleanupForDIR(string dirnumber, string revision = "A", bool setAsDeleted = true);
+
+        bool VerifyDbCleanupForCreatePackages(string weekStartDate, string[] dirNumbers);
     }
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
@@ -1157,6 +1159,18 @@ namespace RKCIUIAutomation.Page.Workflows
                     ? true : false;
             LogStep($"Performed DB Cleanup for DIR# {dirNumber}");
             return cleanupSuccessful;
+        }
+
+        public virtual bool VerifyDbCleanupForCreatePackages(string weekStartDate, string[] dirNumbers)
+        {
+            string[] wkStartSplit = new string[] { };
+            wkStartSplit = Regex.Split(weekStartDate, "/");
+            string mm = wkStartSplit[0];
+            string dd = wkStartSplit[1];
+            string yyyy = wkStartSplit[2];
+            string packageNumber = $"IQF-DIR-{yyyy}{mm}{dd}-1";
+
+            return false;
         }
     }
 
