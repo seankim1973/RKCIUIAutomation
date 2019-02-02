@@ -3,6 +3,7 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.QASearch;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
@@ -447,17 +448,17 @@ namespace RKCIUIAutomation.Test.DIR
             int rowIndex = 1;
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
-            string weekStart = QaRcrdCtrl_QaDIR.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_Start, rowIndex);
-            string[] newDIRs = QaRcrdCtrl_QaDIR.GetDirPackagesDataForRow<string[]>(PackagesColumnName.New_DIRs, rowIndex);
+            SortColumnAscending(PackagesColumnName.Week_Start); //sort to have oldest Week Start date on top
+            string weekStart = QaRcrdCtrl_QaDIR.GetDirPackageWeekStartFromRow(rowIndex).Trim();
+            string[] newDIRs = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnName.New_DIRs, rowIndex);
 
-            bool pkgIsCreated = QaRcrdCtrl_QaDIR.Verify_Package_Created(rowIndex, weekStart, newDIRs);
+            ClickCreateBtnForRow(rowIndex);
+            LogStep(ConfirmActionDialog());
+            LogStep(ConfirmActionDialog());
+
+            bool pkgIsCreated = QaRcrdCtrl_QaDIR.Verify_Package_Created(weekStart, newDIRs);
             AddAssertionToList(pkgIsCreated, "Verify DIR Package Created Successfully");
-
-            if (pkgIsCreated)
-            {
-                WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForCreatePackages(weekStart, newDIRs);
-            }
-
+            WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForCreatePackages(pkgIsCreated, weekStart, newDIRs);
             AssertAll();
         }
     }

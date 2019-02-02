@@ -205,8 +205,9 @@ namespace RKCIUIAutomation.Page
 
                     filterValue = currentFilter.FilterValue;
                     bool isFilterDateTime = DateTime.TryParse(filterValue, out DateTime filterDateTime);
-                    string filterValueToBeApplied =
-                        isFilterDateTime ? $"new Date({filterDateTime.Year}, {filterDateTime.Month - 1}, {filterDateTime.Day})" : $"{filterValue}";
+                    string filterValueToBeApplied = isFilterDateTime 
+                        ? $"new Date({filterDateTime.Month}/{filterDateTime.Day}/{filterDateTime.Year})"
+                        : $"{filterValue}";
 
                     columnName = currentFilter.ColumnName;
                     filterOperator = currentFilter.FilterOperator.GetString();

@@ -57,7 +57,7 @@ namespace RKCIUIAutomation.Tools
             return projID;
         }
 
-        public List<DirDbData> GetDirData(string dirNumber, string revision = "A")
+        public DirDbData GetDirData(string dirNumber, string revision = "A")
         {
             List<DirDbData> output = new List<DirDbData>();
             try
@@ -66,26 +66,27 @@ namespace RKCIUIAutomation.Tools
 
                 using (IDbConnection connection = DbHelper.GetSqlConnection())
                 {
-                    output = connection.Query<DirDbData>($"select IsDeleted, * from DIR  where ProjectID={projID} and DIRNO='{dirNumber}' and Revision='{revision}'").ToList();
+                    output = connection.Query<DirDbData>($"select * from DIR where ProjectID={projID} and DIRNO='{dirNumber}' and Revision='{revision}'").ToList();
                 }              
             }
             catch (ArgumentOutOfRangeException e)
             {
-                log.Debug(e.StackTrace);
+                log.Error(e.StackTrace);
+                throw e;
             }
-            return output;
+            return output[0];
         }
 
-        public void SetDirIsDeletedDbValue(string dirNumber, string revision = "A", bool setAsDeleted = true)
+        public void SetDIR_DIRNO_IsDeleted(string dirNumber, string revision = "A", bool setAsDeleted = true)
         {
             try
             {
                 int projID = GetCurrentProjectID();
-                int isDelected = setAsDeleted ? 1 : 0;
+                int isDeleted = setAsDeleted ? 1 : 0;
 
                 using (IDbConnection connection = DbHelper.GetSqlConnection())
                 {
-                    connection.Execute($"update DIR set IsDeleted={isDelected} where ProjectId={projID} and DIRNO='{dirNumber}' and Revision='{revision}'");
+                    connection.Execute($"update DIR set IsDeleted={isDeleted} where ProjectId={projID} and DIRNO='{dirNumber}' and Revision='{revision}'");
                 }
             }
             catch (ArgumentOutOfRangeException e)
@@ -94,19 +95,54 @@ namespace RKCIUIAutomation.Tools
             }
         }
 
-
-        public bool VerifyResetDIRPackageID(string packageNumber, bool setAsDeleted = true)
+        public DirDbData GetDirPackageData(string packageNumber)
         {
+            List<DirDbData> output = new List<DirDbData>();
+
             try
             {
                 int projID = GetCurrentProjectID();
+
+                using (IDbConnection connection = DbHelper.GetSqlConnection())
+                {
+                    output = connection.Query<DirDbData>($"select * from DIRPackage where ProjectID={projID} and PackageNo='{packageNumber}'").ToList();
+                }
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                log.Error(e.StackTrace);
+                throw e;
+            }
+            
+            return output[0];
+        }
+
+        public void SetDIRPackageNo_AndReferences_AsDeleted(string packageNumber)
+        {
+            DirDbData data = new DirDbData();
+            List<DirDbData> output = new List<DirDbData>();
+
+            try
+            {
+                int projID = GetCurrentProjectID();
+
+                using (IDbConnection connection = DbHelper.GetSqlConnection())
+                {
+                    output = connection.Query<DirDbData>($"select [Id] from DIRPackage where ProjectId={projID} and PackageNo='{packageNumber}'").ToList();
+                    data = output[0];
+
+                    var pkgId = data.Id;
+
+                    connection.Execute($"update DIR set DIRPackageID=null where ProjectId={projID} and DIRPackageID={pkgId}");
+                    connection.Execute($"update DIRPackage set IsDeleted=1 from (select * from DIRPackage where Id=" +
+                        $"(select max(Id) from DIRPackage as pkg where ProjectId={projID} and PackageNo='{packageNumber}')" +
+                        $") t1 where DIRPackage.Id=t1.Id");
+                }
             }
             catch (ArgumentOutOfRangeException e)
             {
                 log.Debug(e.StackTrace);
             }
-
-            return false;
         }
 
 
@@ -120,9 +156,15 @@ namespace RKCIUIAutomation.Tools
 
         public int ProjectId { get; set; }
 
+        public object DIRPackageID { get; set; }
+
+        public string PackageNo { get; set; }
+
         public string DIRNO { get; set; }
 
         public string Revision { get; set; }
+
+
 
         public string DirData
         {

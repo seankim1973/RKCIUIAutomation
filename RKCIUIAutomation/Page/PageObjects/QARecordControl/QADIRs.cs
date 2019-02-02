@@ -471,6 +471,26 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
+        internal Object GetDirPackagesDataForRow(PackagesColumnName packagesColumnName, int rowIndex = 1)
+        {
+            //object output = null;
+            string colName = packagesColumnName.GetString(true);
+            string tblData = GetColumnValueForRow(rowIndex, colName);
+
+            if (packagesColumnName == PackagesColumnName.New_DIRs || packagesColumnName == PackagesColumnName.DIRs)
+            {
+                string[] arrayArg = new string[] { };
+                arrayArg = Regex.Split(tblData, ", ");
+                return ConvertToType<string[]>(arrayArg);
+            }
+            else
+            {
+                return ConvertToType<string>(tblData);
+            }
+
+            //return output;
+        }
+
     }
 
     #endregion DIR/IDR/DWR Generic Class
@@ -516,8 +536,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Close_Selected();
 
         void ClickBtn_View_Selected();
-
-        //void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1);
 
         void FilterTable_CreatePackagesTab(int indexOfRow = 1);
 
@@ -657,9 +675,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool Verify_Package_Download();
 
-        TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1);
+        bool Verify_Package_Created(string weekStart, string[] dirNumbers);
 
-        bool Verify_Package_Created(int createPkgsRowIndex, string weekStart, string[] dirNumbers);
+        string GetDirPackageWeekStartFromRow(int rowIndex);
+
+        string GetDirPackageWeekEndFromRow(int rowIndex);
+
+        string GetDirPackageNewDirCountFromRow(int rowIndex);
+
+        string GetDirPackageNumberFromRow(int rowIndex = 1);
+
+        string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex);
+
+        string CalculateDirPackageNumber(string weekStartDate);
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -1445,52 +1473,35 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return fileDownloaded;
         }
 
-        public virtual TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1)
-        {
-            TOut output = default(TOut);
-            string tblData = string.Empty;
-            string colName = packagesColumnName.GetString(true);
+        public virtual string GetDirPackageWeekStartFromRow(int rowIndex)
+            => (string)QaDIRs_Base.GetDirPackagesDataForRow(PackagesColumnName.Week_Start, rowIndex);
 
-            tblData = GetColumnValueForRow(rowIndex, colName);
+        public virtual string GetDirPackageWeekEndFromRow(int rowIndex)
+            => (string)QaDIRs_Base.GetDirPackagesDataForRow(PackagesColumnName.Week_End, rowIndex);
 
-            if (packagesColumnName == PackagesColumnName.New_DIRs || packagesColumnName == PackagesColumnName.DIRs)
-            {
-                string[] arrayArg = new string[] { };
-                arrayArg = Regex.Split(tblData, ", ");
-                output = ConvertToType<TOut>(arrayArg);
-            }
-            else
-            {
-                output = ConvertToType<TOut>(tblData);
-            }
+        public virtual string GetDirPackageNewDirCountFromRow(int rowIndex)
+            => (string)QaDIRs_Base.GetDirPackagesDataForRow(PackagesColumnName.New_DIR_Count, rowIndex);
 
-            return output;
-        }
+        public virtual string GetDirPackageNumberFromRow(int rowIndex = 1)
+            => (string)QaDIRs_Base.GetDirPackagesDataForRow(PackagesColumnName.Package_Number, rowIndex);
 
-        public virtual bool Verify_Package_Created(int createPkgsRowIndex, string weekStart, string[] dirNumbers)
+        public virtual string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex)
+            => (string[])QaDIRs_Base.GetDirPackagesDataForRow(NewDIRsOrDIRs, rowIndex);
+
+        public virtual bool Verify_Package_Created(string weekStart, string[] dirNumbers)
         {
             bool pkgIsCreated = false;
             try
             {
-                ClickCreateBtnForRow(createPkgsRowIndex);
-                LogStep(ConfirmActionDialog());
-                LogStep(ConfirmActionDialog());
                 QaRcrdCtrl_QaDIR.ClickTab_Packages();
+                string expectedPkgNum = CalculateDirPackageNumber(weekStart);
+                pkgIsCreated = VerifyRecordIsDisplayed(PackagesColumnName.Package_Number, expectedPkgNum);
+                string actualPkgNum = GetDirPackageNumberFromRow();
 
-                pkgIsCreated = VerifyRecordIsDisplayed(PackagesColumnName.Week_Start, weekStart);
-
-                string actualPkgNum = GetColumnValueForRow(1, PackagesColumnName.Package_Number.GetString(true));
-                string[] wkStartSplit = new string[] { };
-                wkStartSplit = Regex.Split(weekStart, "/");
-                string mm = wkStartSplit[0];
-                string dd = wkStartSplit[1];
-                string yyyy = wkStartSplit[2];
-                string expectedPkNum = $"IQF-DIR-{yyyy}{mm}{dd}-1";
-
-                bool pkgNumAsExpected = actualPkgNum.Equals(expectedPkNum);
+                bool pkgNumAsExpected = actualPkgNum.Equals(expectedPkgNum);
                 string logMsg(string lineBrk) => pkgNumAsExpected
                     ? $"Package Number is as expected {actualPkgNum}"
-                    : $"Package Number is not as expected!{lineBrk}EXPECTED: {expectedPkNum}{lineBrk}ACTUAL: {actualPkgNum}";
+                    : $"Package Number is not as expected!{lineBrk}EXPECTED: {expectedPkgNum}{lineBrk}ACTUAL: {actualPkgNum}";
                 LogInfo(logMsg("<br>"), pkgNumAsExpected);
                 AddAssertionToList(pkgNumAsExpected, logMsg("\n"));
             }
@@ -1503,6 +1514,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return pkgIsCreated;
         }
 
+        public virtual string CalculateDirPackageNumber(string weekStartDate)
+        {
+            string[] wkStartSplit = new string[] { };
+            wkStartSplit = Regex.Split(weekStartDate, "/");
+            string mm = wkStartSplit[0];
+            string dd = wkStartSplit[1];
+            string yyyy = wkStartSplit[2];
+            return $"IQF-DIR-{yyyy}{mm}{dd}-1";
+        }
     }
 
     //Tenant Specific Classes

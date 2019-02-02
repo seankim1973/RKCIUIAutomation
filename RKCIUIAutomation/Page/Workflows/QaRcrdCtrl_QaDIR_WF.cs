@@ -383,6 +383,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
             return expectedUrl;
         }
+
     }
 
     public interface IQaRcrdCtrl_QaDIR_WF
@@ -484,7 +485,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         bool VerifyDbCleanupForDIR(string dirnumber, string revision = "A", bool setAsDeleted = true);
 
-        bool VerifyDbCleanupForCreatePackages(string weekStartDate, string[] dirNumbers);
+        void VerifyDbCleanupForCreatePackages(bool isPkgCreated, string weekStartDate, string[] dirNumbers);
     }
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
@@ -1139,13 +1140,10 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual bool VerifyDbCleanupForDIR(string dirNumber, string dirRevision = "A", bool setAsDeleted = true)
         {
             DirDbAccess db = new DirDbAccess();
-            db.SetDirIsDeletedDbValue(dirNumber, dirRevision, setAsDeleted);
-
-            List<DirDbData> dataList = new List<DirDbData>();
-            dataList = db.GetDirData(dirNumber, dirRevision);
+            db.SetDIR_DIRNO_IsDeleted(dirNumber, dirRevision, setAsDeleted);
 
             DirDbData data = new DirDbData();
-            data = dataList[0];
+            data = db.GetDirData(dirNumber, dirRevision);
             int isDeleted = data.IsDeleted;
 
             //if isDeleted = 1 && setAsDeleted = true --> success
@@ -1161,16 +1159,51 @@ namespace RKCIUIAutomation.Page.Workflows
             return cleanupSuccessful;
         }
 
-        public virtual bool VerifyDbCleanupForCreatePackages(string weekStartDate, string[] dirNumbers)
+        public virtual void VerifyDbCleanupForCreatePackages(bool isPkgCreated, string weekStartDate, string[] dirNumbers)
         {
-            string[] wkStartSplit = new string[] { };
-            wkStartSplit = Regex.Split(weekStartDate, "/");
-            string mm = wkStartSplit[0];
-            string dd = wkStartSplit[1];
-            string yyyy = wkStartSplit[2];
-            string packageNumber = $"IQF-DIR-{yyyy}{mm}{dd}-1";
+            if (isPkgCreated)
+            {
+                string packageNumber = QaRcrdCtrl_QaDIR.CalculateDirPackageNumber(weekStartDate);
 
-            return false;
+                DirDbAccess db = new DirDbAccess();
+                db.SetDIRPackageNo_AndReferences_AsDeleted(packageNumber);
+
+                DirDbData data = new DirDbData();
+                data = db.GetDirPackageData(packageNumber);
+                int isDeleted = data.IsDeleted;
+
+                bool result = isDeleted == 1 ? true : false;
+                string resultLog = isDeleted == 0 ? " NOT" : "";
+                AddAssertionToList(result, $"PackageNo ({packageNumber}) IsDeleted has{resultLog} been updated)");
+
+                List<bool> dirPkgIdResetResults = new List<bool>();
+                foreach (string dir in dirNumbers)
+                {
+                    bool dirPkgIdisNull = false;
+
+                    data = db.GetDirData(dir);
+                    var dirPkgId = data.DIRPackageID;
+
+                    if (dirPkgId == null)
+                    {
+                        dirPkgIdisNull = true;
+                    }
+                    else
+                    {
+                        AddAssertionToList(dirPkgIdisNull, $"DIR ({dir}) should have NULL value for DIRPackageID, but has value of: ({dirPkgId.ToString()})");
+                    }
+
+                    dirPkgIdResetResults.Add(dirPkgIdisNull);
+                }
+
+                result = !dirPkgIdResetResults.Contains(false);
+                resultLog = result ? "" : " NOT";
+                AddAssertionToList(result, $"DB cleanup for DIRPackageID references for the associated DIRs are as{resultLog} expected.");
+            }
+            else
+            {
+                AddAssertionToList(false, $"Task, DB cleanup for DIRPackageID references, was not performed because the Package was not created successfully in the previous step.");
+            }
         }
     }
 
