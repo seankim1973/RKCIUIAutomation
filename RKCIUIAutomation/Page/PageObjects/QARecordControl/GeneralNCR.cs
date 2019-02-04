@@ -226,21 +226,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             log.Debug($"#####Created a {logMsg}NCR Description: KEY: {descKey} VALUE: {descValue}");
         }
 
-        //internal void PopulateRequiredFieldsAndSave(bool SaveForward)
-        //{
-        //    PopulateRequiredFields();
-        //    UploadFile("test.xlsx");
-
-        //    if (SaveForward)
-        //    {
-        //        ClickBtn_SaveForward();
-        //    }
-        //    else
-        //    {
-        //        ClickBtn_SaveOnly();
-        //    }
-        //}
-
         internal bool CheckNCRisClosed(string description, TableTab closedTab)
         {
             bool ncrIsClosed = false;
@@ -538,23 +523,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         internal GeneralNCR GeneralNCR_Base => new GeneralNCR(Driver);
-        //[ThreadStatic]
-        //internal static string ncrDescription;
-
-        //[ThreadStatic]
-        //internal static string ncrNewDescription;
-
-        //[ThreadStatic]
-        //internal static string ncrDescKey;
-
-        //[ThreadStatic]
-        //internal static string ncrNewDescKey;
-
-        //private MiniGuid guid;
-
-        //private readonly By newBtn_ByLocator = By.XPath("//div[@id='NcrGrid_Revise']/div/a[contains(@class, 'k-button')]");
-
-        //private readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
 
         public virtual void FilterDescription(string description = "")
         {
@@ -576,20 +544,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickBtn_DisapproveClose()
             => GeneralNCR_Base.ActionConfirmation(SubmitButtons.DisapproveClose);
 
-        //private void ActionConfirmation(SubmitButtons submitButton, bool acceptAlert = true)
-        //{
-        //    try
-        //    {
-        //        JsClickElement(GetSubmitButtonByLocator(submitButton));
-        //    }
-        //    catch (UnhandledAlertException e)
-        //    {
-        //        log.Error(e.AlertText);
-        //    }
-
-        //    LogInfo(ConfirmActionDialog());
-        //}
-
         public virtual void ClickBtn_KickBack()
             => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.KickBack));
 
@@ -607,8 +561,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickBtn_ExportToExcel()
             => JsClickElement(exportToExcel_ByLocator);
-
-        //private void ClickBtn_Sign(InputFields signBtnType) => JsClickElement(By.XPath($"//a[@signaturehidden='{signBtnType.GetString()}']"));
 
         public virtual void ClickBtn_Sign_RecordEngineer()
             => GeneralNCR_Base.ClickBtn_Sign(InputFields.RecordEngineer_SignBtn);
@@ -881,23 +833,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual string EnterRootCauseOfTheProblem(string description = "", bool tempDescription = false)
             => GeneralNCR_Base.EnterDesc(description, InputFields.RootCause_of_the_Problem, false, false);
 
-        //internal string EnterDesc(string desc, InputFields descField, bool tempDescription = false, bool replaceCurrentDesc = true)
-        //{
-        //    By descLocator = GetTextAreaFieldByLocator(descField);
-
-        //    if (replaceCurrentDesc)
-        //    {
-        //        CreateNcrDescription(tempDescription);
-        //    }
-        //    desc = desc.Equals("") || string.IsNullOrEmpty(desc) 
-        //        ? GetVar(tempDescription 
-        //            ? ncrNewDescKey 
-        //            : ncrDescKey)
-        //        : desc;
-        //    EnterText(descLocator, desc);
-        //    return desc;
-        //}
-
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
         {
             By textAreaLocator = GetTextAreaFieldByLocator(InputFields.CorrectiveAction);
@@ -1144,33 +1079,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        //internal bool CheckNCRisClosed(string description, TableTab closedTab)
-        //{
-        //    bool ncrIsClosed = false;
-        //    string logMsg = "not found.";
-
-        //    try
-        //    {
-        //        string _ncrDesc = description.Equals("") ? GetNCRDocDescription() : description;
-        //        bool isDisplayed = VerifyNCRDocIsDisplayed(closedTab, _ncrDesc);
-
-        //        if (isDisplayed)
-        //        {
-        //            string docStatus = GetColumnValueForRow(_ncrDesc, "Workflow location");
-        //            ncrIsClosed = docStatus.Equals("Closed") ? true : false;
-        //            logMsg = $"Workflow Location displayed as: {docStatus}";
-        //        }
-
-        //        LogInfo($"NCR with description ({_ncrDesc}), {logMsg}", ncrIsClosed);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        log.Error(e.StackTrace);
-        //    }
-
-        //    return ncrIsClosed;
-        //}
-
         public void SendBackToRevise(UserType user, string ncrDescription)
         {
             FilterDescription(ncrDescription);
@@ -1342,9 +1250,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCQAMDate();
         }
 
-        //public override bool VerifyNCRDocIsClosed(string description = "")
-        //    => CheckNCRisClosed(description, TableTab.Closed_NCR);
-
         public override string EnterDescription(string description = "", bool tempDescription = false)
             => EnterDesc(description, InputFields.Description_of_NCR);
 
@@ -1390,9 +1295,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCQAM();
             EnterCQAMDate();
         }
-
-        //public override bool VerifyNCRDocIsClosed(string description = "")
-        //    => CheckNCRisClosed(description, TableTab.Closed_NCR);
 
         public override string EnterDescription(string description = "", bool tempDescription = false)
             => EnterDesc(description, InputFields.Description_of_NCR);

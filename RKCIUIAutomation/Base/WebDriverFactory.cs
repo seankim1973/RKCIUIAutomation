@@ -104,38 +104,6 @@ namespace RKCIUIAutomation.Base
             return driverThread.Value;
         }
 
-        /*
-        protected IWebDriver Driver { get; set; }
-
-        private IWebDriver _Driver = null;
-
-        public static string GridVmIP => gridVmIP;
-        private const string gridVmIP = "10.1.1.207";
-
-        protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testDetails)
-        {
-            if (Driver == null)
-            {
-                if (platform == TestPlatform.Local)
-                {
-                    _Driver = DetermineLocalDriver(browser);
-                }
-                else
-                {
-                    var options = DetermineDriverOptions(platform, browser, testDetails);
-                    _Driver = new RemoteWebDriver(new Uri($"http://{GridVmIP}:4444/wd/hub"), options);
-
-                    //string sessionId = ((RemoteWebDriver)_Driver).SessionId.ToString();
-                    //Console.WriteLine($"DRIVER SESSION ID#: {sessionId}");
-                }
-                Driver = _Driver;
-                return Driver;
-            }
-            else
-                return Driver;
-        }
-        */
-
         private void _DismissDriver(IWebDriver driver)
         {
             if (!driverToKeyMap.ContainsKey(driver))
@@ -214,33 +182,5 @@ namespace RKCIUIAutomation.Base
                 return new RemoteWebDriver(new Uri($"http://{gridUri}:4444/wd/hub"), caps, TimeSpan.FromMinutes(10));
             }
         }
-
-
-
-
-        //private static IWebDriver DetermineRemoteDriver(ICapabilities capabilities, string gridUri)
-        //    => new RemoteWebDriver(new Uri($"http://{gridUri}:4444/wd/hub"), capabilities, TimeSpan.FromMinutes(10));
-
-        //private static IWebDriver DetermineLocalDriver(BrowserType browser)
-        //{
-        //    switch (browser)
-        //    {
-        //        case BrowserType.Chrome:
-        //            return new ChromeDriver();
-
-        //        case BrowserType.Firefox:
-        //            return new FirefoxDriver();
-
-        //        case BrowserType.MicrosoftEdge:
-        //            return new EdgeDriver();
-
-        //        case BrowserType.Safari:
-        //            return new SafariDriver();
-
-        //        default:
-        //            log.Debug("Unrecognized Browser type specified ... defaulting to ChromeDriver");
-        //            return new ChromeDriver();
-        //    }
-        //}
     }
 }

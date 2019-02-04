@@ -451,7 +451,6 @@ namespace RKCIUIAutomation.Page
 
         public void ExpandDDL<E>(E ddListID)
         {
-            //var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
             By locator = pgHelper.GetExpandDDListButtonByLocator(ddListID);
             try
             {
@@ -467,7 +466,6 @@ namespace RKCIUIAutomation.Page
 
         public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName)
         {
-            //var _ddListID = (ddListID.GetType() == typeof(string)) ? ConvertToType<string>(ddListID) : ConvertToType<Enum>(ddListID).GetString();
             ExpandDDL(ddListID);
             ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName));
         }
@@ -523,7 +521,6 @@ namespace RKCIUIAutomation.Page
             try
             {
                 By uploadInput_ByLocator = By.XPath("//input[@id='UploadFiles_0_']");
-                //EnterText(uploadInput_ByLocator, filePath, false);
                 Driver.FindElement(uploadInput_ByLocator).SendKeys(filePath);
                 log.Info($"Entered {filePath}' for file upload");
 
@@ -1210,7 +1207,5 @@ namespace RKCIUIAutomation.Page
 
         public string GetUserDownloadFolderPath()
             => Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "{374DE290-123F-4565-9164-39C4925E467B}", string.Empty).ToString();
-
-
     }
 }
