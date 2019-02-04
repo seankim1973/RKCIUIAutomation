@@ -260,25 +260,26 @@ namespace RKCIUIAutomation.Base
                 log.Debug(e.Message);
             }
 
+            object resultObj = null;
             int resultGauge = 0;
             Type assertionType = assertion.GetType();
-            PageHelper pgHelper = new PageHelper();
+            BaseUtils baseUtils = new BaseUtils();
 
             if (assertionType == typeof(bool))
             {
-                bool result = pgHelper.ConvertToType<bool>(assertion);
-                resultGauge = result
+                resultObj = baseUtils.ConvertToType<bool>(assertion);
+                resultGauge = (bool)resultObj
                     ? resultGauge + 1
                     : resultGauge - 1;
             }
             else if (assertionType == typeof(bool[]))
             {
-                bool[] assertions = new bool[] { };
-                assertions = pgHelper.ConvertToType<bool[]>(assertion);
+                resultObj = new bool[] { };
+                resultObj = baseUtils.ConvertToType<bool[]>(assertion);
 
-                for (int i = 0; i < assertions.Length; i++)
+                foreach (bool obj in (bool[])resultObj)
                 {
-                    resultGauge = assertions[i]
+                    resultGauge = obj
                         ? resultGauge + 1
                         : resultGauge - 1;
                 }
@@ -307,7 +308,6 @@ namespace RKCIUIAutomation.Base
         //TODO: Generic Result Calculator and Logger
         public void GetResults<T>(Enum element, ValidationType validationType, T expected, T actual)
         {
-            PageHelper pgHelper = new PageHelper();
             string expectedHeader = string.Empty;
             string actualHeader = string.Empty;
 
@@ -324,7 +324,9 @@ namespace RKCIUIAutomation.Base
                     break;
             }
 
-            bool isResultExpected = actual.Equals(expected) ? true : false;
+            bool isResultExpected = actual.Equals(expected)
+                ? true
+                : false;
 
             string[] resultLogMsg = isResultExpected
                 ? new string[]
@@ -338,50 +340,64 @@ namespace RKCIUIAutomation.Base
                     ", but"
                 };
 
-            var argType = expected.GetType();
+            Type argType = expected.GetType();
+            BaseUtils baseUtils = new BaseUtils();
             string Should = string.Empty;
             string Is = string.Empty;
 
             if (argType == typeof(string))
             {
-                pgHelper.ConvertToType<string>(expected);
-                pgHelper.ConvertToType<string>(actual);
+                baseUtils.ConvertToType<string>(expected);
+                baseUtils.ConvertToType<string>(actual);
 
                 Should = isResultExpected ? "" : "";
             }
             else if (argType == typeof(int))
             {
-                pgHelper.ConvertToType<int>(expected);
-                pgHelper.ConvertToType<int>(actual);
+                baseUtils.ConvertToType<int>(expected);
+                baseUtils.ConvertToType<int>(actual);
             }
             else if (argType == typeof(bool))
             {
-                Should = pgHelper.ConvertToType<bool>(expected) ? "Should be selected" : "Should Not be selected";
-                Is = pgHelper.ConvertToType<bool>(actual) ? "Is selected" : "Is Not selected";
+                Should = baseUtils.ConvertToType<bool>(expected)
+                    ? "Should be selected"
+                    : "Should Not be selected";
+                Is = baseUtils.ConvertToType<bool>(actual)
+                    ? "Is selected"
+                    : "Is Not selected";
             }
 
             string logMsg = $" [Result {resultLogMsg[0]} expectations] {Should}{resultLogMsg[1]} {Is}";
             LogInfo($"{expectedHeader}: {expected}<br>{actualHeader}: {actual}<br>{element.ToString()} {logMsg} ", isResultExpected);
         }
 
-        private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue) => MarkupHelper.CreateLabel(details, extentColor);
+        private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
+            => MarkupHelper.CreateLabel(details, extentColor);
 
-        private static IMarkup CreateReportMarkupCodeBlock(Exception e) => MarkupHelper.CreateCodeBlock($"Exception: {e.StackTrace}");
+        private static IMarkup CreateReportMarkupCodeBlock(Exception e)
+            => MarkupHelper.CreateCodeBlock($"Exception: {e.StackTrace}");
 
         //Helper methods to gather Test Context Details
-        public static string GetTestName() => GetTestContextProperty(TestContextProperty.TestName);
+        public static string GetTestName()
+            => GetTestContextProperty(TestContextProperty.TestName);
 
-        public static string GetTestComponent1() => GetTestContextProperty(TestContextProperty.TestComponent1);
+        public static string GetTestComponent1()
+            => GetTestContextProperty(TestContextProperty.TestComponent1);
 
-        public static string GetTestComponent2() => GetTestContextProperty(TestContextProperty.TestComponent2);
+        public static string GetTestComponent2()
+            => GetTestContextProperty(TestContextProperty.TestComponent2);
 
-        public static string GetTestDescription() => GetTestContextProperty(TestContextProperty.TestDescription);
+        public static string GetTestDescription()
+            => GetTestContextProperty(TestContextProperty.TestDescription);
 
-        public static string GetTestPriority() => GetTestContextProperty(TestContextProperty.TestPriority);
+        public static string GetTestPriority()
+            => GetTestContextProperty(TestContextProperty.TestPriority);
 
-        public static string GetTestCaseNumber() => GetTestContextProperty(TestContextProperty.TestCaseNumber);
+        public static string GetTestCaseNumber()
+            => GetTestContextProperty(TestContextProperty.TestCaseNumber);
 
-        public static string GetTestClassName() => GetTestContextProperty(TestContextProperty.TestClass);
+        public static string GetTestClassName()
+            => GetTestContextProperty(TestContextProperty.TestClass);
 
         private static string GetTestContextProperty(TestContextProperty testContextProperty)
         {

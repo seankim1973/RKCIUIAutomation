@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using NUnit.Framework.Interfaces;
 using RestSharp;
+using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System;
@@ -105,6 +106,8 @@ namespace RKCIUIAutomation.Tools
             string content = string.Empty;
             string statusCode = string.Empty;
 
+            BaseUtils baseUtils = new BaseUtils();
+
             try
             {
                 switch (resource)
@@ -114,12 +117,12 @@ namespace RKCIUIAutomation.Tools
                         if (requestMethod == Method.GET)
                         {
                             TestRunType testRunType = (TestRunType)requestParams[0];
-                            testRunId = ConvertToType<int>(requestParams[1]);
+                            testRunId = baseUtils.ConvertToType<int>(requestParams[1]);
 
                             if (testRunType == TestRunType.GetTest)
                             {
-                                testSnapshotId = ConvertToType<int>(requestParams[3]);
-                                bool allTests = ConvertToType<bool>(requestParams[2]);
+                                testSnapshotId = baseUtils.ConvertToType<int>(requestParams[3]);
+                                bool allTests = baseUtils.ConvertToType<bool>(requestParams[2]);
                                 endPoint = allTests ? $"/test_runs/{testRunId}/test_snapshots" : $"/test_runs/{testRunId}";
                             }
                             else if (testRunType == TestRunType.Sync)
@@ -136,27 +139,27 @@ namespace RKCIUIAutomation.Tools
                     case ResourceType.TestResults:
                         if (requestMethod == Method.POST)
                         {
-                            testRunId = ConvertToType<int>(requestParams[0]);
-                            buildId = ConvertToType<int>(requestParams[1]);
+                            testRunId = baseUtils.ConvertToType<int>(requestParams[0]);
+                            buildId = baseUtils.ConvertToType<int>(requestParams[1]);
                             endPoint = $"/test_runs/{testRunId}/builds/{buildId}/test_results";
                         }
                         else if (requestMethod == Method.PATCH)
                         {
-                            testRunId = ConvertToType<int>(requestParams[0]);
-                            testSnapshotId = ConvertToType<int>(requestParams[1]);
-                            testResultId = ConvertToType<int>(requestParams[2]);
+                            testRunId = baseUtils.ConvertToType<int>(requestParams[0]);
+                            testSnapshotId = baseUtils.ConvertToType<int>(requestParams[1]);
+                            testResultId = baseUtils.ConvertToType<int>(requestParams[2]);
                             endPoint = $"/test_runs/{testRunId}/test_snapshots/{testSnapshotId}/test_results/{testResultId}";
                         }
                         else
                         {
-                            testRunId = ConvertToType<int>(requestParams[0]);
-                            testSnapshotId = ConvertToType<int>(requestParams[1]);
+                            testRunId = baseUtils.ConvertToType<int>(requestParams[0]);
+                            testSnapshotId = baseUtils.ConvertToType<int>(requestParams[1]);
                             endPoint = $"/test_runs/{testRunId}/test_snapshots/{testSnapshotId}?include=last-result";
                         }
                         break;
 
                     case ResourceType.TestSnapshots:
-                        testRunId = ConvertToType<int>(requestParams[0]);
+                        testRunId = baseUtils.ConvertToType<int>(requestParams[0]);
                         endPoint = $"/test_runs/{testRunId}/test_snapshots?include=scenario";
                         break;
                 }
@@ -463,20 +466,21 @@ namespace RKCIUIAutomation.Tools
 
         private IRestResponse GetTestRunTask<T>(TestRunType testRunType, T taskParams)
         {
+            int testBuildId = -1;
             string content = string.Empty;
             string statusCode = string.Empty;
             Type paramType = taskParams.GetType();
-            int testBuildId = -1;
+            BaseUtils baseUtils = new BaseUtils();
 
             try
             {
                 if (paramType == typeof(int))
                 {
-                    testBuildId = ConvertToType<int>(taskParams);
+                    testBuildId = baseUtils.ConvertToType<int>(taskParams);
                 }
                 else if (paramType == typeof(object[]))
                 {
-                    testBuildId = (int)ConvertToType<object[]>(taskParams)[0];
+                    testBuildId = (int)baseUtils.ConvertToType<object[]>(taskParams)[0];
                 }
 
                 var testRunTaskParms = new object[]

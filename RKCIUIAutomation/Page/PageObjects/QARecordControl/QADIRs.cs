@@ -471,9 +471,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        internal Object GetDirPackagesDataForRow(PackagesColumnName packagesColumnName, int rowIndex = 1)
+        internal TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1)
         {
-            //object output = null;
+            BaseUtils baseUtils = new BaseUtils();
             string colName = packagesColumnName.GetString(true);
             string tblData = GetColumnValueForRow(rowIndex, colName);
 
@@ -481,14 +481,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 string[] arrayArg = new string[] { };
                 arrayArg = Regex.Split(tblData, ", ");
-                return ConvertToType<string[]>(arrayArg);
+                return baseUtils.ConvertToType<TOut>(arrayArg);
             }
             else
             {
-                return ConvertToType<string>(tblData);
+                return baseUtils.ConvertToType<TOut>(tblData);
             }
-
-            //return output;
         }
 
     }
@@ -1474,19 +1472,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public virtual string GetDirPackageWeekStartFromRow(int rowIndex)
-            => (string)QaDIRs_Base.GetDirPackagesDataForRow(PackagesColumnName.Week_Start, rowIndex);
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_Start, rowIndex);
 
         public virtual string GetDirPackageWeekEndFromRow(int rowIndex)
-            => (string)QaDIRs_Base.GetDirPackagesDataForRow(PackagesColumnName.Week_End, rowIndex);
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_End, rowIndex);
 
         public virtual string GetDirPackageNewDirCountFromRow(int rowIndex)
-            => (string)QaDIRs_Base.GetDirPackagesDataForRow(PackagesColumnName.New_DIR_Count, rowIndex);
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.New_DIR_Count, rowIndex);
 
         public virtual string GetDirPackageNumberFromRow(int rowIndex = 1)
-            => (string)QaDIRs_Base.GetDirPackagesDataForRow(PackagesColumnName.Package_Number, rowIndex);
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Package_Number, rowIndex);
 
         public virtual string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex)
-            => (string[])QaDIRs_Base.GetDirPackagesDataForRow(NewDIRsOrDIRs, rowIndex);
+            => QaDIRs_Base.GetDirPackagesDataForRow<string[]>(NewDIRsOrDIRs, rowIndex);
 
         public virtual bool Verify_Package_Created(string weekStart, string[] dirNumbers)
         {

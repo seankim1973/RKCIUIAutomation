@@ -212,7 +212,7 @@ namespace RKCIUIAutomation.Base
                 {
                     string testDetails = $"({testEnv}){tenantName} - {testName}";
                     Driver = GetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(45);
+                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(300);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 

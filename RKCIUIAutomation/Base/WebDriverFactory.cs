@@ -148,6 +148,9 @@ namespace RKCIUIAutomation.Base
                 throw new Exception("The driver does not belong to the current thread: " + driver);
             }
 
+            
+            Console.WriteLine($"_DISMISSDRIVER - {driverThread.Value}");
+
             driver.Quit();
             driverToKeyMap.Remove(driver);
             driverThread.Dispose();
@@ -157,6 +160,7 @@ namespace RKCIUIAutomation.Base
         {
             foreach (IWebDriver driver in new List<IWebDriver>(driverToKeyMap.Keys))
             {
+                Console.WriteLine($"_DISMISSALLDRIVERs - {driverThread.Value}");
                 driver.Quit();
                 driverToKeyMap.Remove(driver);
             }

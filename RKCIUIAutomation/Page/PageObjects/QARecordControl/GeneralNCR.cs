@@ -168,10 +168,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (UnhandledAlertException e)
             {
-                log.Error(e.AlertText);
+                log.Debug(e.AlertText);
             }
 
-            LogStep(ConfirmActionDialog());
+            ConfirmActionDialog();
         }
 
         internal void ClickBtn_Sign(InputFields signBtnType)

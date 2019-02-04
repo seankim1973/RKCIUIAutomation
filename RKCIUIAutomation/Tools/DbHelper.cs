@@ -105,7 +105,8 @@ namespace RKCIUIAutomation.Tools
 
                 using (IDbConnection connection = DbHelper.GetSqlConnection())
                 {
-                    output = connection.Query<DirDbData>($"select * from DIRPackage where ProjectID={projID} and PackageNo='{packageNumber}'").ToList();
+                    string sql = $"SELECT * FROM DIRPackage where Id = (select max(Id) from DIRPackage as pkg where ProjectID={projID} and PackageNo='{packageNumber}')";
+                    output = connection.Query<DirDbData>(sql).ToList();
                 }
             }
             catch (ArgumentOutOfRangeException e)
@@ -119,33 +120,27 @@ namespace RKCIUIAutomation.Tools
 
         public void SetDIRPackageNo_AndReferences_AsDeleted(string packageNumber)
         {
-            DirDbData data = new DirDbData();
-            List<DirDbData> output = new List<DirDbData>();
-
             try
             {
                 int projID = GetCurrentProjectID();
 
                 using (IDbConnection connection = DbHelper.GetSqlConnection())
                 {
-                    output = connection.Query<DirDbData>($"select [Id] from DIRPackage where ProjectId={projID} and PackageNo='{packageNumber}'").ToList();
-                    data = output[0];
+                    string sql =
+                        $"DECLARE @pkgId int " +
+                        $"SET @pkgId = (Select max(Id) from DIRPackage as pkg where ProjectId={projID} and PackageNo='{packageNumber}') " +
+                        $"update DIR set DIRPackageID = null from(Select * From DIR) t1 where DIR.DIRPackageID = @pkgId " +
+                        $"update DIRPackage set IsDeleted = 1 where DIRPackage.Id = @pkgId";
 
-                    var pkgId = data.Id;
-
-                    connection.Execute($"update DIR set DIRPackageID=null where ProjectId={projID} and DIRPackageID={pkgId}");
-                    connection.Execute($"update DIRPackage set IsDeleted=1 from (select * from DIRPackage where Id=" +
-                        $"(select max(Id) from DIRPackage as pkg where ProjectId={projID} and PackageNo='{packageNumber}')" +
-                        $") t1 where DIRPackage.Id=t1.Id");
+                    connection.Execute(sql);
                 }
             }
             catch (ArgumentOutOfRangeException e)
             {
-                log.Debug(e.StackTrace);
+                log.Error(e.StackTrace);
+                throw e;
             }
         }
-
-
     }
 
     public class DirDbData

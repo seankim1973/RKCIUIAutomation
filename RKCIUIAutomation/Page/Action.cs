@@ -564,6 +564,7 @@ namespace RKCIUIAutomation.Page
             int actualCount = 0;
 
             Type argType = expectedFileName.GetType();
+            BaseUtils baseUtils = new BaseUtils();
 
             try
             {
@@ -587,12 +588,12 @@ namespace RKCIUIAutomation.Page
 
                     if (argType == typeof(string))
                     {
-                        expectedName = ConvertToType<string>(expectedFileName);
+                        expectedName = baseUtils.ConvertToType<string>(expectedFileName);
                     }
                     else if (argType == typeof(IList<string>))
                     {
                         expectedNamesList = new List<string>();
-                        expectedNamesList = ConvertToType<IList<string>>(expectedFileName);
+                        expectedNamesList = baseUtils.ConvertToType<IList<string>>(expectedFileName);
                     }
 
                     if (actualCount > 0)
@@ -656,60 +657,42 @@ namespace RKCIUIAutomation.Page
             return fileNamesMatch;
         }
 
-        public string ConfirmActionDialog(bool confirmYes = true)
-        {
-            IAlert alert = null;
-            string logMsg = string.Empty;
-            string alertText = string.Empty;
-
-            try
-            {
-                WaitForPageReady();
-            }
-            catch (Exception e)
-            {
-                log.Error($"ConfirmActionDialog - {e.Message}");
-            }
-            finally
-            {
-                alert = new WebDriverWait(Driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
-                alert = Driver.SwitchTo().Alert();
-                alertText = alert.Text;
-
-                if (confirmYes)
-                {
-                    alert.Accept();
-                    logMsg = "Accepted";
-                }
-                else
-                {
-                    alert.Dismiss();
-                    logMsg = "Dismissed";
-                }
-            }
-
-            return $"{logMsg} Confirmation Dialog: {alertText}";
-        }
-
-        public string GetAlertMessage()
+        public void ConfirmActionDialog(bool confirmYes = true)
         {
             string alertMsg = string.Empty;
+            string actionMsg = string.Empty;
 
             try
             {
                 WaitForPageReady();
             }
-            catch (Exception e)
+            catch (UnhandledAlertException)
             {
-                log.Error(e.StackTrace);
-            }
-            finally
-            {
-                IAlert alert = Driver.SwitchTo().Alert();
-                alertMsg = alert.Text;
+                try
+                {
+                    IAlert alert = new WebDriverWait(Driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
+                    alert = Driver.SwitchTo().Alert();
+                    alertMsg = alert.Text;
+
+                    if (confirmYes)
+                    {
+                        alert.Accept();
+                        actionMsg = "Accepted";
+                    }
+                    else
+                    {
+                        alert.Dismiss();
+                        actionMsg = "Dismissed";
+                    }
+                }
+                catch (NoAlertPresentException e)
+                {
+                    log.Error($"NoAlertPresentException Msg: {e.Message}");
+                    throw e;
+                }
             }
 
-            return alertMsg;
+           LogStep($"{actionMsg} Confirmation Dialog: {alertMsg}");
         }
 
         public string AcceptAlertMessage()
@@ -720,41 +703,54 @@ namespace RKCIUIAutomation.Page
             {
                 WaitForPageReady();
             }
-            catch (UnhandledAlertException f)
+            catch (UnhandledAlertException)
             {
-                log.Debug($"UnhandledAlertException Msg: {f.Message}");
                 try
                 {
                     IAlert alert = Driver.SwitchTo().Alert();
-                    alertMsg = alert.Text;
+                    alertMsg = $"Accepted browser alert: '{alert.Text}'";
                     alert.Accept();
-                    LogStep($"Accepted browser alert message: '{alertMsg}'");
+                    LogStep(alertMsg);
                 }
                 catch (NoAlertPresentException e)
                 {
-                    log.Debug($"NoAlertPresentException Msg: {e.Message}");
+                    log.Error($"NoAlertPresentException Msg: {e.Message}");
+                    throw e;
                 }
+
+                LogStep(alertMsg);
             }
 
             return alertMsg;
         }
 
-        public void DismissAlertMessage()
+        public string DismissAlertMessage()
         {
+            string alertMsg = string.Empty;
+
             try
             {
                 WaitForPageReady();
             }
-            catch (Exception e)
+            catch (UnhandledAlertException)
             {
-                log.Error(e.StackTrace);
+                try
+                {
+                    IAlert alert = Driver.SwitchTo().Alert();
+                    alertMsg = $"Dismissed browser alert: '{alert.Text}'";
+                    alert.Dismiss();
+                    LogStep(alertMsg);
+                }
+                catch (NoAlertPresentException e)
+                {
+                    log.Error($"NoAlertPresentException Msg: {e.Message}");
+                    throw e;
+                }
+
+                LogStep(alertMsg);
             }
-            finally
-            {
-                IAlert alert = Driver.SwitchTo().Alert();
-                alert.Dismiss();
-                LogStep("Dismissed browser alert message");
-            }
+
+            return alertMsg;
         }
 
         public bool VerifyAlertMessage(string expectedMessage)

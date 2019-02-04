@@ -453,8 +453,8 @@ namespace RKCIUIAutomation.Test.DIR
             string[] newDIRs = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnName.New_DIRs, rowIndex);
 
             ClickCreateBtnForRow(rowIndex);
-            LogStep(ConfirmActionDialog());
-            LogStep(ConfirmActionDialog());
+            AcceptAlertMessage();
+            AcceptAlertMessage();
 
             bool pkgIsCreated = QaRcrdCtrl_QaDIR.Verify_Package_Created(weekStart, newDIRs);
             AddAssertionToList(pkgIsCreated, "Verify DIR Package Created Successfully");

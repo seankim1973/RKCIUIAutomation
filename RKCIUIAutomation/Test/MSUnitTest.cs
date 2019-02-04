@@ -284,10 +284,11 @@ namespace RKCIUIAutomation.Sandbox
         public void EnumParseTest()
         {
             Enum tblTabEnum = TableButton.Report_View;
+            BaseUtils baseUtils = new BaseUtils();
 
             Type enumType = tblTabEnum.GetType();
             object kendoTabStripEnum = Enum.Parse(enumType, "KendoTabStripId");
-            Enum tabStripEnum = ConvertToType<Enum>(kendoTabStripEnum);
+            Enum tabStripEnum = baseUtils.ConvertToType<Enum>(kendoTabStripEnum);
             string expected = "KENDOUItabStripID";
             string actual = tabStripEnum.GetString();
             Console.WriteLine($"EXPECTED VALUE: {expected}\nACTUAL VALUE: {actual}");
@@ -726,6 +727,39 @@ namespace RKCIUIAutomation.Sandbox
             fileExists = File.Exists(file);
             Assert.IsFalse(fileExists);
             Console.WriteLine(file);
+        }
+
+        internal TOut GetDirPackagesDataForRow<TOut>(bool returnArray)
+        {
+            string tblData = returnArray
+                ? "2286180604, 6045180604, 3421180604, 0083180604, 6045180605, 3424180606, 0663180606, 2286180606, 6045180606, 3424180607, 0663180607, 2286180607, 6045180607, 1716180607, 6045180608, 2286180608, 6621180609, 1716180607"
+                : "DIRNumber";
+            BaseUtils utils = new BaseUtils();
+
+            if (returnArray)
+            {
+                string[] arrayArg = new string[] { };
+                arrayArg = Regex.Split(tblData, ", ");
+                return utils.ConvertToType<TOut>(arrayArg);
+            }
+            else
+            {
+                return utils.ConvertToType<TOut>(tblData);
+            }
+        }
+
+        [TestMethod]
+        public void GenericOutput()
+        {
+            //string valueString = GetDirPackagesDataForRow<string>(false);
+            string[] valueArray = GetDirPackagesDataForRow<string[]>(true);
+
+            //Console.WriteLine(valueString);
+
+            foreach (string i in valueArray)
+            {
+                Console.WriteLine(i);
+            }
         }
     }
 }

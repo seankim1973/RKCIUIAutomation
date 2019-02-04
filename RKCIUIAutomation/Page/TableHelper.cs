@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Page.Workflows;
 using RKCIUIAutomation.Test;
 using System;
@@ -202,27 +203,24 @@ namespace RKCIUIAutomation.Page
             ? "//div[@class='k-content k-state-active']"
             : "//div[@data-role='grid']";
 
-        //private readonly string ActiveTableDiv = "//div[@class='k-content k-state-active']";
-
         private string TableByTextInRow<T>(T textInRowForAnyColumnOrRowIndex, bool useContainsOperator = false)
         {
-            Type argType = textInRowForAnyColumnOrRowIndex.GetType();
-            int argInt = 0;
-            string argString = "";
-
+            object argObj = null;
             string xpath = string.Empty;
+            Type argType = textInRowForAnyColumnOrRowIndex.GetType();
+            BaseUtils baseUtils = new BaseUtils();
 
-            if (argType == typeof(string))
+            if (argType == typeof(int))
             {
-                argInt = ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
-                xpath = $"//tr[{argInt.ToString()}]/td//parent::tr/td";
+                argObj = baseUtils.ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
+                xpath = $"//tr[{argObj.ToString()}]/td//parent::tr/td";
             }
-            else if (argType == typeof(int))
+            else if (argType == typeof(string))
             {
-                argString = ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
+                argObj = baseUtils.ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
                 xpath = useContainsOperator
-                    ? $"//td[text()='{argString}']/parent::tr/td"
-                    : $"//td[contains(text(),'{argString}')]/parent::tr/td";
+                    ? $"//td[text()='{argObj}']/parent::tr/td"
+                    : $"//td[contains(text(),'{argObj}')]/parent::tr/td";
             }
 
             return xpath;
@@ -233,20 +231,22 @@ namespace RKCIUIAutomation.Page
 
         private string SetXPath_TableRowBaseByTextInRow<T>(T textInRowForAnyColumnOrRowIndex)
         {
+            object argObj = null;
             string xpath = string.Empty;
-            string textInRow;
-            int rowIndex;
-
             Type argType = textInRowForAnyColumnOrRowIndex.GetType();
+            BaseUtils baseUtils = new BaseUtils();
+
             if (argType == typeof(string))
             {
-                textInRow = ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
-                xpath = textInRow.Equals("") ? "//tr[1]/td" : $"{TableByTextInRow(textInRow)}";
+                argObj = baseUtils.ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
+                xpath = argObj.Equals("")
+                    ? "//tr[1]/td"
+                    : $"{TableByTextInRow(argObj)}";
             }
             else if (argType == typeof(int))
             {
-                rowIndex = ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
-                xpath = $"//tr[{rowIndex}]/td";
+                argObj = baseUtils.ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
+                xpath = $"//tr[{argObj}]/td";
             }
 
             return xpath;
