@@ -3,6 +3,7 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.QASearch;
 using System;
+using System.Text.RegularExpressions;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
@@ -166,7 +167,8 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Authorization(currentUser, dirNumber, dirRev);
             WF_QaRcrdCtrl_QaDIR.Verify_Column_Filter_In_Revise(currentUser, dirNumber, dirRev, true, false);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inQcReview(dirNumber);
-            WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inAuthorization(dirNumber, false, false);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete_or_ApproveNoError_inAuthorization(dirNumber, false, true);
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyWorkflowLocationAfterSimpleWF");
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForDIR(dirNumber), $"VerifyDbCleanupForDIR : {dirNumber}");
             AssertAll();
         }
@@ -195,7 +197,7 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyWorkflowLocationAfterSimpleWF");
 
             //ComplexWF
             NavigateToPage.QARecordControl_QA_DIRs();
@@ -291,7 +293,7 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyWorkflowLocationAfterSimpleWF");
             LogoutToLoginPage();
 
             //Create Revision of Closed DIR
@@ -392,25 +394,6 @@ namespace RKCIUIAutomation.Test.DIR
 
     //SG & SH249 - DIR Complex Tenants
     [TestFixture]
-    public class Verify_Create_Packages : TestBase
-    {
-        [Test]
-        [Category(Component.DIR)]
-        [Property(Component2, Component.DIR_WF_Complex)]
-        [Property(TestCaseNumber, 2518643)]
-        [Property(Priority, "High")]
-        [Description("To validate creation of DIR packages in Complex Workflow.")]
-        public void Create_Packages()
-        {
-            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
-            QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
-            QaRcrdCtrl_QaDIR.VerifyPackages_Column_Filters();
-            AssertAll();
-        }
-    }
-
-    //SG & SH249 - DIR Complex Tenants
-    [TestFixture]
     public class Verify_Packages_Table_Columns_Filter : TestBase
     {
         [Test]
@@ -424,26 +407,35 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
 
             QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
-            //read data from first row
-            //filter weekStart column, verify row is seen, clear filter
-            //filter weekEnd column, verify row is seen, clear filter
-            //filter NewDIRCount column (eql), verify row is seen, clear filter
-            //filter NewDIRs column (eql, contains), verify row is seen, clear filter
-                        
+            QaRcrdCtrl_QaDIR.FilterTable_CreatePackagesTab();                        
             QaRcrdCtrl_QaDIR.ClickTab_Packages();
-            //read data from first row
-            //filter weekStart column, verify row is seen, clear filter
-            //filter weekEnd column, verify row is seen, clear filter
-            //filter PackageNumber column (eql, contains), verify row is seen, clear filter
-            //filter DIRs column (eql, contains), verify row is seen, clear filter
-
+            QaRcrdCtrl_QaDIR.FilterTable_PackagesTab();
             AssertAll();
         }
     }
 
     //SG & SH249 - DIR Complex Tenants
     [TestFixture]
-    public class Verify_Packages_Download_and_Recreate : TestBase
+    public class Verify_DIR_Packages_Download : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Complex)]
+        [Property(TestCaseNumber, 2556982)]
+        [Property(Priority, "High")]
+        [Description("To validate creation of DIR packages in Complex Workflow.")]
+        public void DIR_Packages_Download()
+        {
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            QaRcrdCtrl_QaDIR.ClickTab_Packages();
+            AddAssertionToList(QaRcrdCtrl_QaDIR.Verify_Package_Download(), "Verify DIR Package Downloaded");
+            AssertAll();
+        }
+    }
+
+    //SG & SH249 - DIR Complex Tenants
+    [TestFixture]
+    public class Verify_Create_Packages : TestBase
     {
         [Test]
         [Category(Component.DIR)]
@@ -451,11 +443,41 @@ namespace RKCIUIAutomation.Test.DIR
         [Property(TestCaseNumber, 2518643)]
         [Property(Priority, "High")]
         [Description("To validate creation of DIR packages in Complex Workflow.")]
-        public void Packages_Download_and_Recreate()
+        public void Create_Packages()
+        {
+            int rowIndex = 1;
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
+            SortColumnAscending(PackagesColumnName.Week_Start); //sort to have oldest Week Start date on top
+            string weekStart = QaRcrdCtrl_QaDIR.GetDirPackageWeekStartFromRow(rowIndex).Trim();
+            string[] newDIRs = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnName.New_DIRs, rowIndex);
+
+            ClickCreateBtnForRow(rowIndex);
+            AcceptAlertMessage();
+            AcceptAlertMessage();
+
+            bool pkgIsCreated = QaRcrdCtrl_QaDIR.Verify_Package_Created(weekStart, newDIRs);
+            AddAssertionToList(pkgIsCreated, "Verify DIR Package Created Successfully");
+            WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForCreatePackages(pkgIsCreated, weekStart, newDIRs);
+            AssertAll();
+        }
+    }
+
+    //SG & SH249 - DIR Complex Tenants
+    [TestFixture]
+    public class Verify_DIR_Packages_Recreate : TestBase
+    {
+        [Test]
+        [Category(Component.DIR)]
+        [Property(Component2, Component.DIR_WF_Complex)]
+        [Property(TestCaseNumber, 2690311)]
+        [Property(Priority, "High")]
+        [Description("To validate re-creation of DIR packages in Complex Workflow.")]
+        public void DIR_Packages_Recreate()
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Packages();
-            //QaRcrdCtrl_QaDIR.VerifyPackage_After_Click_CreateBtn_forRow();
+
             AssertAll();
         }
     }
@@ -483,7 +505,7 @@ namespace RKCIUIAutomation.Test.DIR
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewReport_forDIR_inAuthorization(dirNumber), "Verify View Report for DIR in QC Authorization tab");
 
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyDirIsClosedByTblFilter");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyWorkflowLocationAfterSimpleWF");
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDbCleanupForDIR(dirNumber), $"VerifyDbCleanupForDIR : {dirNumber}");
             AssertAll();
         }

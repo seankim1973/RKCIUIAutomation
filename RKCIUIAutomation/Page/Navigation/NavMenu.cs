@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
+using RKCIUIAutomation.Base;
 using System;
 
 namespace RKCIUIAutomation.Page.Navigation
@@ -15,6 +16,7 @@ namespace RKCIUIAutomation.Page.Navigation
             Enum childOfSubMenuEnum = null;
             Enum subOfChildMenuEnum = null;
 
+            BaseUtils baseUtils = new BaseUtils();
             Type reflectedPageType = null;
             By clickLocator = null;
             IWebElement element;
@@ -198,11 +200,11 @@ namespace RKCIUIAutomation.Page.Navigation
                         }
                     }
 
-                    clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum));
+                    clickLocator = GetNavMenuByLocator(baseUtils.ConvertToType<Enum>(navEnum));
                 }
                 else
                 {
-                    clickLocator = GetNavMenuByLocator(ConvertToType<Enum>(navEnum), ConvertToType<Enum>(mainNavEnum));
+                    clickLocator = GetNavMenuByLocator(baseUtils.ConvertToType<Enum>(navEnum), baseUtils.ConvertToType<Enum>(mainNavEnum));
                 }
             }
             catch (Exception e)

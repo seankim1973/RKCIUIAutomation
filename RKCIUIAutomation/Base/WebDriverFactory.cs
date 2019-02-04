@@ -7,6 +7,8 @@ using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Safari;
 using RKCIUIAutomation.Config;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Base
@@ -15,55 +17,169 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class WebDriverFactory : DriverOptionsFactory
     {
-        protected IWebDriver Driver { get; set; }
+        [ThreadStatic]
+        public IWebDriver Driver;
 
-        private IWebDriver _Driver = null;
-
-        public static string GridVmIP => gridVmIP;
-        private const string gridVmIP = "10.1.1.207";
-
-        protected IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testDetails)
+        public WebDriverFactory()
         {
-            if (Driver == null)
+        }
+
+        private static WebDriverFactory instance;
+
+        private static WebDriverFactory FactoryInstance
+        {
+            get
             {
-                if (platform == TestPlatform.Local)
+                if (instance == null)
                 {
-                    _Driver = DetermineLocalDriver(browser);
+                    instance = new WebDriverFactory();
+                }
+
+                return instance;
+            }
+        }
+
+        public static IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
+            => FactoryInstance._GetDriver(platform, browser, testDetails, gridUri);
+
+        public static void DismissDriverInstance(IWebDriver driver)
+            => FactoryInstance._DismissDriver(driver);
+
+        public static void DismissAllDriverInstances()
+            => FactoryInstance._DismissAll();
+
+        private static ICapabilities GetCapabilities(TestPlatform platform, BrowserType browser, string testDetails)
+        {
+            DriverOptionsFactory DriverOptions = new DriverOptionsFactory();
+            return DriverOptions.DetermineDriverOptions(platform, browser, testDetails).ToCapabilities();
+        }
+
+        private static ThreadLocal<IWebDriver> driverThread = new ThreadLocal<IWebDriver>();
+        private Dictionary<IWebDriver, string> driverToKeyMap = new Dictionary<IWebDriver, string>();
+
+        private IWebDriver _GetDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
+        {
+            ICapabilities caps = GetCapabilities(platform, browser, testDetails);
+            string newKey = CreateKey(caps, testDetails);
+            Console.WriteLine($"_SETDRIVER - NEWKEY: {newKey}");
+
+            if (!driverThread.IsValueCreated)
+            {
+                CreateNewDriver(platform, browser, testDetails, gridUri);
+            }
+            else
+            {
+                IWebDriver currentDriver = driverThread.Value;
+
+                if (!driverToKeyMap.TryGetValue(currentDriver, out string currentKey))
+                {
+                    Console.WriteLine($"_SETDRIVER - CURRENT KEY: {currentKey}");
+                    // The driver was dismissed
+                    CreateNewDriver(platform, browser, testDetails, gridUri);
                 }
                 else
                 {
-                    var options = DetermineDriverOptions(platform, browser, testDetails);
-                    _Driver = new RemoteWebDriver(new Uri($"http://{GridVmIP}:4444/wd/hub"), options);
-
-                    //string sessionId = ((RemoteWebDriver)_Driver).SessionId.ToString();
-                    //Console.WriteLine($"DRIVER SESSION ID#: {sessionId}");
+                    if (newKey != currentKey)
+                    {
+                        // A different flavour of WebDriver is required
+                        _DismissDriver(currentDriver);
+                        CreateNewDriver(platform, browser, testDetails, gridUri);
+                    }
+                    else
+                    {
+                        // Check the browser is alive
+                        try
+                        {
+                            string currentUrl = currentDriver.Url;
+                        }
+                        catch (WebDriverException)
+                        {
+                            CreateNewDriver(platform, browser, testDetails, gridUri);
+                        }
+                    }
                 }
-                Driver = _Driver;
-                return Driver;
             }
-            else
-                return Driver;
+
+            Console.WriteLine($"DriverThread Value: {driverThread.Value.ToString()}");
+            return driverThread.Value;
         }
 
-        private IWebDriver DetermineLocalDriver(BrowserType browser)
+        private void _DismissDriver(IWebDriver driver)
         {
-            switch (browser)
+            if (!driverToKeyMap.ContainsKey(driver))
             {
-                case BrowserType.Chrome:
-                    return new ChromeDriver();
+                throw new Exception($"The driver is not owned by the factory: {driver}");
+            }
 
-                case BrowserType.Firefox:
-                    return new FirefoxDriver();
+            if (driver != driverThread.Value)
+            {
+                throw new Exception("The driver does not belong to the current thread: " + driver);
+            }
 
-                case BrowserType.MicrosoftEdge:
-                    return new EdgeDriver();
+            
+            Console.WriteLine($"_DISMISSDRIVER - {driverThread.Value}");
 
-                case BrowserType.Safari:
-                    return new SafariDriver();
+            driver.Quit();
+            driverToKeyMap.Remove(driver);
+            driverThread.Dispose();
+        }
 
-                default:
-                    log.Debug("Unrecognized Browser type specified ... defaulting to ChromeDriver");
-                    return new ChromeDriver();
+        private void _DismissAll()
+        {
+            foreach (IWebDriver driver in new List<IWebDriver>(driverToKeyMap.Keys))
+            {
+                Console.WriteLine($"_DISMISSALLDRIVERs - {driverThread.Value}");
+                driver.Quit();
+                driverToKeyMap.Remove(driver);
+            }
+            //driverToKeyMap.Clear();
+        }
+
+        protected static string CreateKey(ICapabilities capabilities, string testDetails)
+        {
+            string key = $"{capabilities.ToString()}:{testDetails}";
+            Console.WriteLine($"CREATE KEY: {key}");
+            return key;
+        }
+
+        private void CreateNewDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
+        {
+            ICapabilities caps = GetCapabilities(platform, browser, testDetails);
+            string newKey = CreateKey(caps, testDetails);
+
+            IWebDriver driver = DetermineWebDriver(platform, browser, testDetails, gridUri);
+            driverToKeyMap.Add(driver, newKey);
+            driverThread.Value = driver;
+        }
+
+        private static IWebDriver DetermineWebDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri)
+        {
+            ICapabilities caps = GetCapabilities(platform, browser, testDetails);
+
+            if (platform == TestPlatform.Local)
+            {
+                switch (browser)
+                {
+                    case BrowserType.Chrome:
+                        return new ChromeDriver();
+
+                    case BrowserType.Firefox:
+                        return new FirefoxDriver();
+
+                    case BrowserType.MicrosoftEdge:
+                        return new EdgeDriver();
+
+                    case BrowserType.Safari:
+                        return new SafariDriver();
+
+                    default:
+                        log.Debug("Unrecognized Browser type specified ... defaulting to ChromeDriver");
+                        return new ChromeDriver();
+                }
+            }
+            else
+            {
+                return new RemoteWebDriver(new Uri($"http://{gridUri}:4444/wd/hub"), caps, TimeSpan.FromMinutes(10));
             }
         }
     }

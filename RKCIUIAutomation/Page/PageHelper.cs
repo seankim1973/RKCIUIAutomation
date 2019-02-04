@@ -15,13 +15,17 @@ namespace RKCIUIAutomation.Page
 
         public PageHelper(IWebDriver driver) => this.Driver = driver;
 
-        public static PageBaseHelper PgBaseHelper => new PageBaseHelper();
+        public static PageBaseHelper PgBaseHelper
+            => new PageBaseHelper();
 
-        public static string GetMaxShortDate() => DateTime.MaxValue.Date.ToShortDateString();
+        public static string GetMaxShortDate()
+            => DateTime.MaxValue.Date.ToShortDateString();
 
-        public static string GetShortDate() => DateTime.Now.ToShortDateString();
+        public static string GetShortDate()
+            => DateTime.Now.ToShortDateString();
 
-        public static string GetShortTime() => DateTime.Now.ToShortTimeString();
+        public static string GetShortTime()
+            => DateTime.Now.ToShortTimeString();
 
         private static string FormatTimeBlock(TimeBlock timeBlock)
         {
@@ -33,30 +37,22 @@ namespace RKCIUIAutomation.Page
 
         public static string GetShortDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
         {
-            string date = shortDate.Equals("") ? GetShortDate() : shortDate;
-            string time = shortTime.Equals(TimeBlock.AM_12_00) ? GetShortTime() : FormatTimeBlock(shortTime);
+            string date = shortDate.Equals("")
+                ? GetShortDate()
+                : shortDate;
+            string time = shortTime.Equals(TimeBlock.AM_12_00)
+                ? GetShortTime()
+                : FormatTimeBlock(shortTime);
             return $"{date} {time}";
-        }
-
-        public OutType ConvertToType<OutType>(object objToConvert)
-        {
-            try
-            {
-                Type inputType = objToConvert.GetType();
-                return (OutType)Convert.ChangeType(objToConvert, typeof(OutType));
-            }
-            catch (Exception e)
-            {
-                log.Error($"Error occured in ConvertToType method:\n{e.Message}");
-                throw;
-            }
         }
 
         private string SetDDListFieldXpath<T>(T ddListID)
         {
+            BaseUtils baseUtils = new BaseUtils();
+
             string _ddListID = (ddListID.GetType() == typeof(string))
-                ? ConvertToType<string>(ddListID)
-                : ConvertToType<Enum>(ddListID).GetString();
+                ? baseUtils.ConvertToType<string>(ddListID)
+                : baseUtils.ConvertToType<Enum>(ddListID).GetString();
 
             string _ddFieldXpath = _ddListID.Contains("Time")
                 ? $"//span[@aria-controls='{_ddListID}_timeview']"
@@ -67,9 +63,11 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListFieldExpandArrowXpath<T>(T ddListID)
         {
+            BaseUtils baseUtils = new BaseUtils();
+
             string _ddListID = (ddListID.GetType() == typeof(string))
-                ? ConvertToType<string>(ddListID)
-                : ConvertToType<Enum>(ddListID).GetString();
+                ? baseUtils.ConvertToType<string>(ddListID)
+                : baseUtils.ConvertToType<Enum>(ddListID).GetString();
 
             string _ddArrowXpath = _ddListID.Contains("Time")
                 ? $"{SetDDListFieldXpath(_ddListID)}/parent::span/span"
@@ -78,9 +76,11 @@ namespace RKCIUIAutomation.Page
             return _ddArrowXpath;
         }
 
-        private string SetDDListCurrentSelectionXpath(Enum ddListID) => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-input']";
+        private string SetDDListCurrentSelectionXpath(Enum ddListID)
+            => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-input']";
 
-        private string SetMainNavMenuXpath(Enum navEnum) => $"//li[@class='dropdown']/a[contains(text(),'{navEnum.GetString()}')]";
+        private string SetMainNavMenuXpath(Enum navEnum)
+            => $"//li[@class='dropdown']/a[contains(text(),'{navEnum.GetString()}')]";
 
         private string SetNavMenuXpath(Enum navEnum, Enum parentNavEnum = null)
         {
@@ -98,9 +98,11 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListItemsXpath<T, I>(T ddListID, I itemIndexOrName)
         {
+            BaseUtils baseUtils = new BaseUtils();
+
             string _ddListID = ddListID.GetType() == typeof(string)
-                ? ConvertToType<string>(ddListID)
-                : ConvertToType<Enum>(ddListID).GetString();
+                ? baseUtils.ConvertToType<string>(ddListID)
+                : baseUtils.ConvertToType<Enum>(ddListID).GetString();
 
             string ddListXPath = _ddListID.Contains("Time")
                 ? $"//ul[@id='{_ddListID}_timeview']"
@@ -110,11 +112,11 @@ namespace RKCIUIAutomation.Page
 
             if (itemIndexOrName.GetType().Equals(typeof(string)))
             {
-                itemValueXPath = $"text()='{ConvertToType<string>(itemIndexOrName)}'";
+                itemValueXPath = $"text()='{baseUtils.ConvertToType<string>(itemIndexOrName)}'";
             }
             else if (itemIndexOrName.GetType().Equals(typeof(int)))
             {
-                int itemIndex = ConvertToType<int>(itemIndexOrName);
+                int itemIndex = baseUtils.ConvertToType<int>(itemIndexOrName);
                 itemIndex = _ddListID.Contains("Time") ? itemIndex + 1 : itemIndex;
                 itemValueXPath = itemIndex.ToString();
             }
@@ -122,15 +124,20 @@ namespace RKCIUIAutomation.Page
             return $"{ddListXPath}//li[{itemValueXPath}]";
         }
 
-        private string SetDDListItemsXpath(Enum ddListID, int itemIndex) => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";
+        private string SetDDListItemsXpath(Enum ddListID, int itemIndex)
+            => $"//div[@id='{ddListID.GetString()}-list']//li[{itemIndex}]";
 
-        private string SetTextInputFieldByLocator(Enum inputEnum) => $"//input[@id='{inputEnum.GetString()}']";
+        private string SetTextInputFieldByLocator(Enum inputEnum)
+            => $"//input[@id='{inputEnum.GetString()}']";
 
-        private string SetTextAreaFieldByLocator(Enum textAreaEnum) => $"//textarea[@id='{textAreaEnum.GetString()}']";
+        private string SetTextAreaFieldByLocator(Enum textAreaEnum)
+            => $"//textarea[@id='{textAreaEnum.GetString()}']";
 
-        private string SetButtonXpath(string buttonName) => $"//a[text()='{buttonName}']";
+        private string SetButtonXpath(string buttonName)
+            => $"//a[text()='{buttonName}']";
 
-        private string SetInputButtonXpath(string buttonName) => $"//input[@value='{buttonName}']";
+        private string SetInputButtonXpath(string buttonName)
+            => $"//input[@value='{buttonName}']";
 
         public By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true)
         {
@@ -139,27 +146,38 @@ namespace RKCIUIAutomation.Page
             return locator;
         }
 
-        public By GetMainNavMenuByLocator(Enum navEnum) => By.XPath(SetMainNavMenuXpath(navEnum));
+        public By GetMainNavMenuByLocator(Enum navEnum)
+            => By.XPath(SetMainNavMenuXpath(navEnum));
 
-        public By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null) => By.XPath(SetNavMenuXpath(navEnum, parentNavEnum));
+        public By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null)
+            => By.XPath(SetNavMenuXpath(navEnum, parentNavEnum));
 
-        public By GetInputFieldByLocator(string inputFieldLabel) => By.XPath(SetInputFieldXpath(inputFieldLabel));
+        public By GetInputFieldByLocator(string inputFieldLabel)
+            => By.XPath(SetInputFieldXpath(inputFieldLabel));
 
-        public By GetDDListByLocator(Enum ddListID) => By.XPath(SetDDListFieldXpath(ddListID));
+        public By GetDDListByLocator(Enum ddListID)
+            => By.XPath(SetDDListFieldXpath(ddListID));
 
-        public By GetDDListCurrentSelectionByLocator(Enum ddListID) => By.XPath(SetDDListCurrentSelectionXpath(ddListID));
+        public By GetDDListCurrentSelectionByLocator(Enum ddListID)
+            => By.XPath(SetDDListCurrentSelectionXpath(ddListID));
 
-        public By GetExpandDDListButtonByLocator<T>(T ddListID) => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
+        public By GetExpandDDListButtonByLocator<T>(T ddListID)
+            => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
 
-        public By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName) => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
+        public By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName)
+            => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
 
-        public By GetTextInputFieldByLocator(Enum inputEnum) => By.XPath(SetTextInputFieldByLocator(inputEnum));
+        public By GetTextInputFieldByLocator(Enum inputEnum)
+            => By.XPath(SetTextInputFieldByLocator(inputEnum));
 
-        public By GetTextAreaFieldByLocator(Enum textAreaEnum) => By.XPath(SetTextAreaFieldByLocator(textAreaEnum));
+        public By GetTextAreaFieldByLocator(Enum textAreaEnum)
+            => By.XPath(SetTextAreaFieldByLocator(textAreaEnum));
 
-        public By GetButtonByLocator(string buttonName) => By.XPath(SetButtonXpath(buttonName));
+        public By GetButtonByLocator(string buttonName)
+            => By.XPath(SetButtonXpath(buttonName));
 
-        public By GetInputButtonByLocator(string buttonName) => By.XPath(SetInputButtonXpath(buttonName));
+        public By GetInputButtonByLocator(string buttonName)
+            => By.XPath(SetInputButtonXpath(buttonName));
     }
 
     public static class EnumHelper

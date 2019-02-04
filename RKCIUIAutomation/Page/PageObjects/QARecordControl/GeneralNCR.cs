@@ -67,6 +67,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public enum TableTab
         {
             [StringValue("All NCRs")] All_NCRs,
+            [StringValue("ALL NCRs")] ALL_NCRs,
             [StringValue("Closed NCR")] Closed_NCR,
             [StringValue("CQM Review")] CQM_Review,
             [StringValue("Creating/Revise")] Creating_Revise,
@@ -139,6 +140,117 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             IQF_Manager,
             QC_Manager,
             EngineerOfRecord
+        }
+
+        [ThreadStatic]
+        internal static string ncrDescription;
+
+        [ThreadStatic]
+        internal static string ncrNewDescription;
+
+        [ThreadStatic]
+        internal static string ncrDescKey;
+
+        [ThreadStatic]
+        internal static string ncrNewDescKey;
+
+        internal MiniGuid guid;
+
+        internal static readonly By newBtn_ByLocator = By.XPath("//div[@id='NcrGrid_Revise']/div/a[contains(@class, 'k-button')]");
+
+        internal static readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
+
+        internal void ActionConfirmation(SubmitButtons submitButton, bool acceptAlert = true)
+        {
+            try
+            {
+                JsClickElement(GetSubmitButtonByLocator(submitButton));
+            }
+            catch (UnhandledAlertException e)
+            {
+                log.Debug(e.AlertText);
+            }
+
+            ConfirmActionDialog();
+        }
+
+        internal void ClickBtn_Sign(InputFields signBtnType)
+            => JsClickElement(By.XPath($"//a[@signaturehidden='{signBtnType.GetString()}']"));
+
+        internal By SignaturePanelBtnXPathLocator(string btnName)
+            => By.XPath($"//div[@id='ncrSignaturePopup']//a[text()='{btnName}']");
+
+        internal string EnterDesc(string desc, InputFields descField, bool tempDescription = false, bool replaceCurrentDesc = true)
+        {
+            By descLocator = GetTextAreaFieldByLocator(descField);
+
+            if (replaceCurrentDesc)
+            {
+                CreateNcrDescription(tempDescription);
+            }
+            desc = desc.Equals("") || string.IsNullOrEmpty(desc)
+                ? GetVar(tempDescription
+                    ? ncrNewDescKey
+                    : ncrDescKey)
+                : desc;
+            EnterText(descLocator, desc);
+            return desc;
+        }
+
+        internal void CreateNcrDescription(bool tempDescription = false)
+        {
+            guid = MiniGuid.NewGuid();
+            string descKey = $"{tenantName}{GetTestName()}";
+            string logMsg = string.Empty;
+            string descValue = string.Empty;
+
+            if (tempDescription)
+            {
+                ncrNewDescKey = $"{descKey}_NcrNewDescription";
+                CreateVar(ncrNewDescKey, guid);
+                ncrNewDescription = GetVar(ncrNewDescKey);
+                descKey = ncrNewDescKey;
+                descValue = ncrNewDescription;
+                logMsg = "new temp ";
+            }
+            else
+            {
+                ncrDescKey = $"{descKey}_NcrDescription";
+                CreateVar(ncrDescKey, guid);
+                ncrDescription = GetVar(ncrDescKey);
+                descKey = ncrDescKey;
+                descValue = ncrDescription;
+                logMsg = "";
+            }
+
+            log.Debug($"#####Created a {logMsg}NCR Description: KEY: {descKey} VALUE: {descValue}");
+        }
+
+        internal bool CheckNCRisClosed(string description, TableTab closedTab)
+        {
+            bool ncrIsClosed = false;
+            string logMsg = "not found.";
+
+            try
+            {
+                string _ncrDesc = description.Equals("") ? GetNCRDocDescription() : description;
+                bool isDisplayed = VerifyNCRDocIsDisplayed(closedTab, _ncrDesc);
+
+                if (isDisplayed)
+                {
+                    string docStatus = GetColumnValueForRow(_ncrDesc, "Workflow location");
+                    ncrIsClosed = docStatus.Equals("Closed") ? true : false;
+                    logMsg = $"Workflow Location displayed as: {docStatus}";
+                }
+
+                LogInfo($"NCR with description ({_ncrDesc}), {logMsg}", ncrIsClosed);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return ncrIsClosed;
         }
     }
 
@@ -410,79 +522,63 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return instance;
         }
 
-        [ThreadStatic]
-        internal static string ncrDescription;
-
-        [ThreadStatic]
-        internal static string ncrNewDescription;
-
-        [ThreadStatic]
-        internal static string ncrDescKey;
-
-        [ThreadStatic]
-        internal static string ncrNewDescKey;
-
-        private MiniGuid guid;
-
-        private readonly By newBtn_ByLocator = By.XPath("//div[@id='NcrGrid_Revise']/div/a[contains(@class, 'k-button')]");
-
-        private readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
+        internal GeneralNCR GeneralNCR_Base => new GeneralNCR(Driver);
 
         public virtual void FilterDescription(string description = "")
         {
-            ncrDescription = string.IsNullOrEmpty(description) ? ncrDescription : description;
+            ncrDescription = string.IsNullOrEmpty(description) 
+                ? ncrDescription 
+                : description;
             FilterTableColumnByValue(ColumnName.Description, ncrDescription);
         }
 
-        public virtual void ClickBtn_Cancel() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
+        public virtual void ClickBtn_Cancel() 
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
 
-        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise));
+        public virtual void ClickBtn_Revise()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise));
 
-        public virtual void ClickBtn_Approve() => ActionConfirmation(SubmitButtons.Approve);
+        public virtual void ClickBtn_Approve()
+            => GeneralNCR_Base.ActionConfirmation(SubmitButtons.Approve);
 
-        public virtual void ClickBtn_DisapproveClose() => ActionConfirmation(SubmitButtons.DisapproveClose);
+        public virtual void ClickBtn_DisapproveClose()
+            => GeneralNCR_Base.ActionConfirmation(SubmitButtons.DisapproveClose);
 
-        private void ActionConfirmation(SubmitButtons submitButton, bool acceptAlert = true)
-        {
-            try
-            {
-                JsClickElement(GetSubmitButtonByLocator(submitButton));
-            }
-            catch (UnhandledAlertException e)
-            {
-                log.Error(e.AlertText);
-            }
+        public virtual void ClickBtn_KickBack()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.KickBack));
 
-            LogInfo(ConfirmActionDialog());
-        }
+        public virtual void ClickBtn_Close()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Close));
 
-        public virtual void ClickBtn_KickBack() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.KickBack));
+        public virtual void ClickBtn_SaveOnly()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.SaveOnly));
 
-        public virtual void ClickBtn_Close() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Close));
+        public virtual void ClickBtn_SaveForward()
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.SaveForward));
 
-        public virtual void ClickBtn_SaveOnly() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.SaveOnly));
+        public virtual void ClickBtn_New()
+            => JsClickElement(newBtn_ByLocator);
 
-        public virtual void ClickBtn_SaveForward() => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.SaveForward));
+        public virtual void ClickBtn_ExportToExcel()
+            => JsClickElement(exportToExcel_ByLocator);
 
-        public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
+        public virtual void ClickBtn_Sign_RecordEngineer()
+            => GeneralNCR_Base.ClickBtn_Sign(InputFields.RecordEngineer_SignBtn);
 
-        public virtual void ClickBtn_ExportToExcel() => JsClickElement(exportToExcel_ByLocator);
+        public virtual void ClickBtn_Sign_Owner()
+            => GeneralNCR_Base.ClickBtn_Sign(InputFields.Owner_SignBtn);
 
-        private void ClickBtn_Sign(InputFields signBtnType) => JsClickElement(By.XPath($"//a[@signaturehidden='{signBtnType.GetString()}']"));
+        public virtual void ClickBtn_Sign_IQFManager()
+            => GeneralNCR_Base.ClickBtn_Sign(InputFields.IQFManager_SignBtn);
 
-        public virtual void ClickBtn_Sign_RecordEngineer() => ClickBtn_Sign(InputFields.RecordEngineer_SignBtn);
+        public virtual void ClickBtn_Sign_QCManager()
+            => GeneralNCR_Base.ClickBtn_Sign(InputFields.QCManager_SignBtn);
 
-        public virtual void ClickBtn_Sign_Owner() => ClickBtn_Sign(InputFields.Owner_SignBtn);
+        public virtual void ClickBtn_SignaturePanel_OK()
+            => JsClickElement(GeneralNCR_Base.SignaturePanelBtnXPathLocator("OK"));
 
-        public virtual void ClickBtn_Sign_IQFManager() => ClickBtn_Sign(InputFields.IQFManager_SignBtn);
-
-        public virtual void ClickBtn_Sign_QCManager() => ClickBtn_Sign(InputFields.QCManager_SignBtn);
-
-        private By SignaturePanelBtnXPathLocator(string btnName) => By.XPath($"//div[@id='ncrSignaturePopup']//a[text()='{btnName}']");
-
-        public virtual void ClickBtn_SignaturePanel_OK() => JsClickElement(SignaturePanelBtnXPathLocator("OK"));
-
-        public virtual void ClickBtn_SignaturePanel_Clear() => JsClickElement(SignaturePanelBtnXPathLocator("Clear"));
+        public virtual void ClickBtn_SignaturePanel_Clear()
+            => JsClickElement(GeneralNCR_Base.SignaturePanelBtnXPathLocator("Clear"));
 
         public virtual void SignDateApproveNCR(Reviewer reviewer, bool Approve = true)
         {
@@ -514,7 +610,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             EnterText(GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer}");
 
-            ClickBtn_Sign(signBtn);
+            GeneralNCR_Base.ClickBtn_Sign(signBtn);
             ClickBtn_SignaturePanel_OK();
 
             if (reviewer == Reviewer.EngineerOfRecord || reviewer == Reviewer.Owner)
@@ -523,93 +619,137 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        public virtual void ClickTab_All_NCRs() => ClickTab(TableTab.All_NCRs);
+        public virtual void ClickTab_All_NCRs()
+            => ClickTab(TableTab.All_NCRs);
 
-        public virtual void ClickTab_Closed_NCR() => ClickTab(TableTab.Closed_NCR);
+        public virtual void ClickTab_Closed_NCR()
+            => ClickTab(TableTab.Closed_NCR);
 
-        public virtual void ClickTab_CQM_Review() => ClickTab(TableTab.CQM_Review);
+        public virtual void ClickTab_CQM_Review()
+            => ClickTab(TableTab.CQM_Review);
 
-        public virtual void ClickTab_Creating_Revise() => ClickTab(TableTab.Creating_Revise);
+        public virtual void ClickTab_Creating_Revise()
+            => ClickTab(TableTab.Creating_Revise);
 
-        public virtual void ClickTab_Developer_Concurrence() => ClickTab(TableTab.Developer_Concurrence);
+        public virtual void ClickTab_Developer_Concurrence()
+            => ClickTab(TableTab.Developer_Concurrence);
 
-        public virtual void ClickTab_DOT_Approval() => ClickTab(TableTab.DOT_Approval);
+        public virtual void ClickTab_DOT_Approval()
+            => ClickTab(TableTab.DOT_Approval);
 
-        public virtual void ClickTab_Engineer_Concurrence() => ClickTab(TableTab.Engineer_Concurrence);
+        public virtual void ClickTab_Engineer_Concurrence()
+            => ClickTab(TableTab.Engineer_Concurrence);
 
-        public virtual void ClickTab_Originator_Concurrence() => ClickTab(TableTab.Originator_Concurrence);
+        public virtual void ClickTab_Originator_Concurrence()
+            => ClickTab(TableTab.Originator_Concurrence);
 
-        public virtual void ClickTab_Owner_Concurrence() => ClickTab(TableTab.Owner_Concurrence);
+        public virtual void ClickTab_Owner_Concurrence()
+            => ClickTab(TableTab.Owner_Concurrence);
 
-        public virtual void ClickTab_QC_Review() => ClickTab(TableTab.QC_Review);
+        public virtual void ClickTab_QC_Review()
+            => ClickTab(TableTab.QC_Review);
 
-        public virtual void ClickTab_Resolution_Disposition() => ClickTab(TableTab.Resolution_Disposition);
+        public virtual void ClickTab_Resolution_Disposition()
+            => ClickTab(TableTab.Resolution_Disposition);
 
-        public virtual void ClickTab_Review_Assign_NCR() => ClickTab(TableTab.Review_Assign_NCR);
+        public virtual void ClickTab_Review_Assign_NCR()
+            => ClickTab(TableTab.Review_Assign_NCR);
 
-        public virtual void ClickTab_Revise() => ClickTab(TableTab.Revise);
+        public virtual void ClickTab_Revise()
+            => ClickTab(TableTab.Revise);
 
-        public virtual void ClickTab_To_Be_Closed() => ClickTab(TableTab.To_Be_Closed);
+        public virtual void ClickTab_To_Be_Closed()
+            => ClickTab(TableTab.To_Be_Closed);
 
-        public virtual void ClickTab_Verification() => ClickTab(TableTab.Verification);
+        public virtual void ClickTab_Verification()
+            => ClickTab(TableTab.Verification);
 
-        public virtual void ClickTab_Verification_and_Closure() => ClickTab(TableTab.Verification_and_Closure);
+        public virtual void ClickTab_Verification_and_Closure()
+            => ClickTab(TableTab.Verification_and_Closure);
 
-        public virtual void SortTable_Descending() => SortColumnDescending(ColumnName.Action);
+        public virtual void SortTable_Descending()
+            => SortColumnDescending(ColumnName.Action);
 
-        public virtual void SortTable_Ascending() => SortColumnAscending(ColumnName.Action);
+        public virtual void SortTable_Ascending()
+            => SortColumnAscending(ColumnName.Action);
 
-        public virtual void SortTable_ToDefault() => SortColumnToDefault(ColumnName.Action);
+        public virtual void SortTable_ToDefault()
+            => SortColumnToDefault(ColumnName.Action);
 
-        public virtual void SelectRdoBtn_TypeOfNCR_Level1() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level1);
+        public virtual void SelectRdoBtn_TypeOfNCR_Level1()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level1);
 
-        public virtual void SelectRdoBtn_TypeOfNCR_Level2() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level2);
+        public virtual void SelectRdoBtn_TypeOfNCR_Level2()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level2);
 
-        public virtual void SelectRdoBtn_TypeOfNCR_Level3() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level3);
+        public virtual void SelectRdoBtn_TypeOfNCR_Level3()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level3);
 
-        public virtual void SelectRdoBtn_EngOfRecordApproval_Yes() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_Yes);
+        public virtual void SelectRdoBtn_EngOfRecordApproval_Yes()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_Yes);
 
-        public virtual void SelectRdoBtn_EngOfRecordApproval_No() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_No);
+        public virtual void SelectRdoBtn_EngOfRecordApproval_No()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_No);
 
-        public virtual void SelectRdoBtn_EngOfRecordApproval_NA() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_NA);
+        public virtual void SelectRdoBtn_EngOfRecordApproval_NA()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_NA);
 
-        public virtual void SelectRdoBtn_OwnerApproval_Yes() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_Yes);
+        public virtual void SelectRdoBtn_OwnerApproval_Yes()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_Yes);
 
-        public virtual void SelectRdoBtn_OwnerApproval_No() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_No);
+        public virtual void SelectRdoBtn_OwnerApproval_No()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_No);
 
-        public virtual void SelectRdoBtn_OwnerApproval_NA() => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_NA);
+        public virtual void SelectRdoBtn_OwnerApproval_NA()
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_NA);
 
-        public virtual void SelectChkbox_AsBuiltRequired(bool toggleChkboxIfAlreadySelected = true) => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, toggleChkboxIfAlreadySelected);
+        public virtual void SelectChkbox_AsBuiltRequired(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, toggleChkboxIfAlreadySelected);
 
-        public virtual void SelectChkbox_RcmndDisposition_CorrectRework(bool toggleChkboxIfAlreadySelected = true) => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework, toggleChkboxIfAlreadySelected);
+        public virtual void SelectChkbox_RcmndDisposition_CorrectRework(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework, toggleChkboxIfAlreadySelected);
 
-        public virtual void SelectChkbox_RcmndDisposition_Replace(bool toggleChkboxIfAlreadySelected = true) => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Replace, toggleChkboxIfAlreadySelected);
+        public virtual void SelectChkbox_RcmndDisposition_Replace(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Replace, toggleChkboxIfAlreadySelected);
 
-        public virtual void SelectChkbox_RcmndDisposition_AcceptAsIs(bool toggleChkboxIfAlreadySelected = true) => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Accept_As_Is, toggleChkboxIfAlreadySelected);
+        public virtual void SelectChkbox_RcmndDisposition_AcceptAsIs(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Accept_As_Is, toggleChkboxIfAlreadySelected);
 
-        public virtual void SelectChkbox_RcmndDisposition_Repair(bool toggleChkboxIfAlreadySelected = true) => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Repair, toggleChkboxIfAlreadySelected);
+        public virtual void SelectChkbox_RcmndDisposition_Repair(bool toggleChkboxIfAlreadySelected = true)
+            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Repair, toggleChkboxIfAlreadySelected);
 
-        public virtual void SelectDDL_Originator(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
+        public virtual void SelectDDL_Originator(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
 
-        public virtual void SelectDDL_ResponsibleManager(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.ResponsibleManager, selectionIndex);
+        public virtual void SelectDDL_ResponsibleManager(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.ResponsibleManager, selectionIndex);
         
-        public virtual void SelectDDL_Foreman(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Foreman, selectionIndex);
+        public virtual void SelectDDL_Foreman(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.Foreman, selectionIndex);
 
-        public virtual void SelectDDL_PreparedBy(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.PreparedBy, selectionIndex);
+        public virtual void SelectDDL_PreparedBy(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.PreparedBy, selectionIndex);
 
-        public virtual void SelectDDL_Specification(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Specification, selectionIndex);
+        public virtual void SelectDDL_Specification(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.Specification, selectionIndex);
 
-        public virtual void SelectDDL_Location(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Location, selectionIndex);
+        public virtual void SelectDDL_Location(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.Location, selectionIndex);
 
-        public virtual void SelectDDL_Area(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Area, selectionIndex);
+        public virtual void SelectDDL_Area(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.Area, selectionIndex);
 
-        public virtual void SelectDDL_Segment(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Segment, selectionIndex);
+        public virtual void SelectDDL_Segment(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.Segment, selectionIndex);
 
-        public virtual void SelectDDL_Roadway(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
+        public virtual void SelectDDL_Roadway(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
 
-        public virtual void SelectDDL_Feature(int selectionIndex = 2) => ExpandAndSelectFromDDList(InputFields.Feature, selectionIndex);
+        public virtual void SelectDDL_Feature(int selectionIndex = 2)
+            => ExpandAndSelectFromDDList(InputFields.Feature, selectionIndex);
 
-        public virtual void SelectDDL_SubFeature(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.SubFeature, selectionIndex);
+        public virtual void SelectDDL_SubFeature(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.SubFeature, selectionIndex);
 
         public virtual void PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ReturnToConformance()
         {
@@ -685,26 +825,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => EnterText(GetTextInputFieldByLocator(InputFields.PreparedBy_Date), GetShortDate());
 
         public virtual string EnterDescription(string description = "", bool tempDescription = false)
-            => EnterDesc(description, InputFields.Description_of_Nonconformance);
+            => GeneralNCR_Base.EnterDesc(description, InputFields.Description_of_Nonconformance);
 
         public virtual string EnterDescriptionOfNCR(string description = "", bool tempDescription = false)
-            => EnterDesc(description, InputFields.Description_of_NCR);
+            => GeneralNCR_Base.EnterDesc(description, InputFields.Description_of_NCR);
 
         public virtual string EnterRootCauseOfTheProblem(string description = "", bool tempDescription = false)
-            => EnterDesc(description, InputFields.RootCause_of_the_Problem, false, false);
-
-        internal string EnterDesc(string desc, InputFields descField, bool tempDescription = false, bool replaceCurrentDesc = true)
-        {
-            By descLocator = GetTextAreaFieldByLocator(descField);
-
-            if (replaceCurrentDesc)
-            {
-                CreateNcrDescription(tempDescription);
-            }
-            desc = desc.Equals("") || string.IsNullOrEmpty(desc) ? GetNCRDocDescription(tempDescription) : desc;
-            EnterText(descLocator, desc);
-            return desc;
-        }
+            => GeneralNCR_Base.EnterDesc(description, InputFields.RootCause_of_the_Problem, false, false);
 
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
         {
@@ -746,35 +873,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => GetVar(tempDescription ? ncrNewDescKey : ncrDescKey);
 
         public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);
-
-        internal void CreateNcrDescription(bool tempDescription = false)
-        {
-            guid = MiniGuid.NewGuid();
-            string descKey = $"{tenantName}{GetTestName()}";
-            string logMsg = string.Empty;
-            string descValue = string.Empty;
-
-            if (tempDescription)
-            {
-                ncrNewDescKey = $"{descKey}_NcrNewDescription";
-                CreateVar(ncrNewDescKey, guid);
-                ncrNewDescription = GetVar(ncrNewDescKey);
-                descKey = ncrNewDescKey;
-                descValue = ncrNewDescription;
-                logMsg = "new temp ";
-            }
-            else
-            {
-                ncrDescKey = $"{descKey}_NcrDescription";
-                CreateVar(ncrDescKey, guid);
-                ncrDescription = GetVar(ncrDescKey);
-                descKey = ncrDescKey;
-                descValue = ncrDescription;
-                logMsg = "";
-            }
-            
-            log.Debug($"#####Created a {logMsg}NCR Description: KEY: {descKey} VALUE: {descValue}");
-        }
 
         public virtual bool VerifyReqFieldErrorLabelsForNewDoc()
         {
@@ -934,21 +1032,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterDescription();
         }
 
-        internal void PopulateRequiredFieldsAndSave(bool SaveForward)
-        {
-            PopulateRequiredFields();
-            UploadFile("test.xlsx");
-
-            if (SaveForward)
-            {
-                ClickBtn_SaveForward();
-            }
-            else
-            {
-                ClickBtn_SaveOnly();
-            }
-        }
-
         public virtual void PopulateRequiredFieldsAndSaveForward()
             => PopulateRequiredFieldsAndSave(true);
 
@@ -979,33 +1062,21 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription);
 
         public virtual bool VerifyNCRDocIsClosed(string description = "")
-            => CheckNCRisClosed(description, TableTab.All_NCRs);
+            => GeneralNCR_Base.CheckNCRisClosed(description, TableTab.All_NCRs);
 
-        internal bool CheckNCRisClosed(string description, TableTab closedTab)
+        private void PopulateRequiredFieldsAndSave(bool SaveForward)
         {
-            bool ncrIsClosed = false;
-            string logMsg = "not found.";
+            PopulateRequiredFields();
+            UploadFile("test.xlsx");
 
-            try
+            if (SaveForward)
             {
-                string _ncrDesc = description.Equals("") ? GetNCRDocDescription() : description;
-                bool isDisplayed = VerifyNCRDocIsDisplayed(closedTab, _ncrDesc);
-
-                if (isDisplayed)
-                {
-                    string docStatus = GetColumnValueForRow(_ncrDesc, "Workflow location");
-                    ncrIsClosed = docStatus.Equals("Closed") ? true : false;
-                    logMsg = $"Workflow Location displayed as: {docStatus}";
-                }
-
-                LogInfo($"NCR with description ({_ncrDesc}), {logMsg}", ncrIsClosed);
+                ClickBtn_SaveForward();
             }
-            catch (Exception e)
+            else
             {
-                log.Error(e.StackTrace);
+                ClickBtn_SaveOnly();
             }
-
-            return ncrIsClosed;
         }
 
         public void SendBackToRevise(UserType user, string ncrDescription)
@@ -1031,6 +1102,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public GeneralNCR_Garnet(IWebDriver driver) : base(driver)
         {
         }
+
+        public override bool VerifyNCRDocIsClosed(string description = "")
+            => GeneralNCR_Base.CheckNCRisClosed(description, TableTab.Closed_NCR);
     }
 
     #endregion Implementation specific to Garnet
@@ -1176,11 +1250,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCQAMDate();
         }
 
-        public override bool VerifyNCRDocIsClosed(string description = "")
-            => CheckNCRisClosed(description, TableTab.Closed_NCR);
-
         public override string EnterDescription(string description = "", bool tempDescription = false)
             => EnterDesc(description, InputFields.Description_of_NCR);
+
+        public override void ClickTab_All_NCRs()
+            => ClickTab(TableTab.ALL_NCRs);
+
+        public override bool VerifyNCRDocIsClosed(string description = "")
+            => GeneralNCR_Base.CheckNCRisClosed(description, TableTab.ALL_NCRs);
     }
 
     #endregion Implementation specific to SH249 - SimpleWF
@@ -1219,11 +1296,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterCQAMDate();
         }
 
-        public override bool VerifyNCRDocIsClosed(string description = "")
-            => CheckNCRisClosed(description, TableTab.Closed_NCR);
-
         public override string EnterDescription(string description = "", bool tempDescription = false)
             => EnterDesc(description, InputFields.Description_of_NCR);
+
+        public override void ClickTab_All_NCRs()
+            => ClickTab(TableTab.ALL_NCRs);
+
+        public override bool VerifyNCRDocIsClosed(string description = "")
+            => GeneralNCR_Base.CheckNCRisClosed(description, TableTab.ALL_NCRs);
     }
 
     #endregion Implementation specific to SGWay - SimpleWF

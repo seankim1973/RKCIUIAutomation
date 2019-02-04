@@ -48,7 +48,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 //ClickEditBtnForRow();
                 //QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
                 isDisplayed = WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(tableTab, dirNumber, delete);
-                assertMsg = $"Set to Delete DIR: {delete}";
+                assertMsg = $"Set to Delete DIR";
             }
             else
             {
@@ -74,7 +74,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 assertMsg = $"Verify DIR isDisplayed";
             }
 
-            AddAssertionToList(isDisplayed, $"DIR_DeleteOrApproveNoError - {tableTab.ToString()}\n{assertMsg}\nPassed: ");
+            AddAssertionToList(isDisplayed, $"DIR_DeleteOrApproveNoError ({tableTab.ToString()}) {assertMsg}");
             return isDisplayed;
         }
 
@@ -383,6 +383,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
             return expectedUrl;
         }
+
     }
 
     public interface IQaRcrdCtrl_QaDIR_WF
@@ -432,8 +433,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
         bool Verify_DIR_Delete(TableTab tableTab, string dirNumber, bool acceptAlert = true);
 
-        //bool DIR_DeleteOrApproveNoError(TableTab tableTab, string dirNumber, bool delete = false, bool approveDIR = true);
-
         void Verify_Column_Filter_ForTabs_In_QaFieldMenu(UserType currentUser, string dirNumber, string dirRev = "A");
 
         bool Verify_DIR_Delete_or_ApproveNoError_inQcReview(string dirNumber, bool delete = false);
@@ -454,11 +453,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         void RefreshAutoSaveTimer();
 
-        //void IterateColumnsByFilter(TableTab tableTab, UserType currentUser, string dirNumber, string sentBy, string lockedBy, string dirRev, bool useQaFieldMenu = false);
-
         void IterateColumnsByFilterInRevise(UserType currentUser, string dirNumber, string sentBy, string lockedBy, string dirRev, bool useQaFieldMenu = false);
-
-        //void VerifyColumnFilterInTab(TableTab tableTab, UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
 
         void Verify_Column_Filter_In_Create(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false);
 
@@ -483,6 +478,8 @@ namespace RKCIUIAutomation.Page.Workflows
         bool Verify_ViewMultiDirPDF(bool selectNoneForMultiView = false);
 
         bool VerifyDbCleanupForDIR(string dirnumber, string revision = "A", bool setAsDeleted = true);
+
+        void VerifyDbCleanupForCreatePackages(bool isPkgCreated, string weekStartDate, string[] dirNumbers);
     }
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
@@ -603,16 +600,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual bool VerifyDirIsDisplayedInRevise(string dirNumber)
             => QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, dirNumber);
-
-        //private void CreateNew_and_PopulateRequiredFields()
-        //{
-        //    LogDebug($"-->---> CreateNew_and_PopulateRequiredFields <---<--");
-
-        //    QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
-        //    QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-        //    AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(), "VerifyReqFieldErrorsForNewDir");
-        //    QaRcrdCtrl_QaDIR.PopulateRequiredFields();
-        //}
 
         //GLX,
         public virtual string Create_and_SaveForward_DIR()
@@ -748,16 +735,6 @@ namespace RKCIUIAutomation.Page.Workflows
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
         }
 
-        //private void Verify_DIR_then_Approve(TableTab tableTab, string dirNumber)
-        //{
-        //    string tableTabName = tableTab.ToString();
-        //    LogDebug($"---> Verify_DIR_then_Approve_in {tableTabName} <---");
-
-        //    AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"VerifyDirIsDisplayed(TableTab.{tableTabName})");
-        //    ClickEditBtnForRow();
-        //    WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
-        //}
-
         public virtual void Verify_DIR_then_Approve_inReview(string dirNumber)
             => QaDirWF_Base.Verify_DIR_then_Approve(TableTab.QC_Review, dirNumber);
 
@@ -769,46 +746,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual bool VerifyWorkflowLocationAfterSimpleWF_forDirRevision(string dirNumber, string expectedRevision)
             => QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber, WorkflowLocation.Closed, true, expectedRevision);
-
-        //public virtual bool DIR_DeleteOrApproveNoError(TableTab tableTab, string dirNumber, bool delete = false, bool approveDIR = true)
-        //{
-        //    string assertMsg = string.Empty;
-        //    bool isDisplayed = false;
-
-        //    if (delete)
-        //    {
-        //        //ClickEditBtnForRow();
-        //        //QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
-        //        isDisplayed = WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(tableTab, dirNumber, delete);
-        //        assertMsg = $"Set to Delete DIR: {delete}";
-        //    }
-        //    else
-        //    {
-        //        isDisplayed = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
-
-        //        if (isDisplayed)
-        //        {
-        //            ClickEditBtnForRow();
-
-        //            if (approveDIR)
-        //            {
-        //                WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
-        //            }
-        //            else
-        //            {
-        //                By latestWfStatusLocator = By.XPath("//div[@class='CommentsDiv']//table//tbody/tr[1]/td[4]");
-        //                string latestStatus = GetText(latestWfStatusLocator);
-
-        //                LogInfo($"Activity Log Latest Workflow Status from Authorization : {latestStatus}", isDisplayed);
-        //            }
-        //        }
-
-        //        assertMsg = $"Verify DIR isDisplayed";
-        //    }
-                        
-        //    AddAssertionToList(isDisplayed, $"DIR_DeleteOrApproveNoError - {tableTab.ToString()}\n{assertMsg}\nPassed: ");
-        //    return isDisplayed;
-        //}
 
         public virtual bool Verify_DIR_Delete_or_ApproveNoError_inQcReview(string dirNumber, bool delete = false)
             => QaDirWF_Base.DIR_DeleteOrApproveNoError(TableTab.QC_Review, dirNumber, delete, true);
@@ -895,54 +832,6 @@ namespace RKCIUIAutomation.Page.Workflows
             return result;
         }
 
-        //private bool Verify_DirRevision_inTblRow_then_Approve(TableTab tableTab, string dirNumber, string expectedDirRev)
-        //{
-        //    LogDebug($"---> Verify_DirRevision_inTblRow_then_Approve in {tableTab.ToString()} - Expected DIR Rev: {expectedDirRev} <---");
-
-        //    bool dirRevMatches = false;
-        //    string ifFalseLog = string.Empty;
-        //    bool isDisplayed = false;
-
-        //    try
-        //    {
-        //        if (string.IsNullOrEmpty(expectedDirRev))
-        //        {
-        //            bool dirRevFound = VerifyRecordIsDisplayed(QADIRs.ColumnName.Revision, expectedDirRev);
-        //            AddAssertionToList(dirRevFound, $"VerifyRecordIsDisplayed - DIR Revision: {expectedDirRev}");
-        //            LogInfo($"Successfully filtered table by expected DIR Revision: {expectedDirRev}", dirRevFound);
-        //        }
-
-        //        isDisplayed = (tableTab == TableTab.Creating || tableTab == TableTab.Create_Revise)
-        //            ? WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber)
-        //            : QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, false);
-
-        //        string actualDirRev = isDisplayed ? GetColumnValueForRow(dirNumber, "Revision") : "DIR Not Found";
-        //        dirRevMatches = actualDirRev.Equals(expectedDirRev);
-        //        ifFalseLog = dirRevMatches ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
-
-        //        if (isDisplayed)
-        //        {
-        //            ClickEditBtnForRow();
-
-        //            if (tableTab == TableTab.Creating || tableTab == TableTab.Create_Revise)
-        //            {
-        //                QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-        //            }
-        //            else
-        //            {
-        //                WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
-        //            }
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        log.Error(e.Message);
-        //    }
-
-        //    LogInfo($"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual Matches Expected Rev? : {dirRevMatches}", dirRevMatches);
-        //    return dirRevMatches;
-        //}
-
         public virtual bool Verify_DirRevision_inTblRow_then_SaveForward_inCreateRevise(string dirNumber, string expectedDirRev)
             => QaDirWF_Base.Verify_DirRevision_inTblRow_then_Approve(TableTab.Create_Revise, dirNumber, expectedDirRev);
 
@@ -964,126 +853,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void RefreshAutoSaveTimer()
             => QaRcrdCtrl_QaDIR.ClickBtn_Refresh();
-
-        //public virtual void IterateColumnsByFilter(TableTab tableTab, UserType currentUser, string dirNumber, string sentBy, string lockedBy, string dirRev, bool useQaFieldMenu = false)
-        //{
-        //    LogDebug($"---> IterateColumnsByFilter <---<br>TableTab {tableTab.ToString()}<br>DIR# {dirNumber}<br>SentBy {sentBy}<br>LockedBy {lockedBy}<br>DIR Rev {dirRev}<br>Use Qa Field Menu {useQaFieldMenu}");
-
-        //    string dirTechEmail = "testDirTech@rkci.com";
-        //    try
-        //    {
-        //        AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"\nIterateColumnsByFilter VerifyDirIsDisplayed {tableTab.ToString()}, before DIR Locked");
-
-        //        if (tableTab == TableTab.To_Be_Closed)
-        //        {
-        //            ClickEditBtnForRow(dirNumber, true, true);
-        //        }
-        //        else
-        //        {
-        //            ClickEditBtnForRow();
-        //        }
-
-        //        WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, useQaFieldMenu); //locks DIR
-        //        AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"IterateColumnsByFilter VerifyDirIsDisplayed {tableTab.ToString()}, after DIR Locked");
-        //        ClearTableFilters();
-        //        AddAssertionToList(true, $"#### IterateColumnsByFilter ####\nTableTab : {tableTab.ToString()}, Use QAField Menu : {useQaFieldMenu}, DIR# : {dirNumber}, SentBy : {sentBy}, LockedBy : {lockedBy}, DIR Rev : {dirRev}");
-        //        AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Revision, dirRev), $"IterateColumnsByFilter Column Revision");
-        //        AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Created_By, dirTechEmail), $"IterateColumnsByFilter Column Created_By");
-        //        AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_By, sentBy, TableType.MultiTab, false, FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Sent_By");
-        //        AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Sent_Date");
-        //        AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_By, lockedBy), $"IterateColumnsByFilter Column Locked_By");
-        //        AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Locked Date");
-        //        AddAssertionToList(QaRcrdCtrl_QaDIR.GetDirNumberForRow(dirTechEmail).Equals(dirNumber), $"IterateColumnsByFilter DIR# for Filtered Row Matches Expected: ");
-
-        //        int totalRows = GetTableRowCount();
-        //        bool filteredToOneRow = totalRows.Equals(1);
-        //        string logMsg = filteredToOneRow 
-        //            ? "Filtered table down to single row as expected"
-        //            : $"Expected To Filter Table to 1 Row, but found {totalRows.ToString()} rows";
-        //        AddAssertionToList(filteredToOneRow, $"IterateColumnsByFilter - Total Number of Rows after Filter Equals 1");
-
-        //        LogInfo(logMsg, filteredToOneRow);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        log.Error(e.StackTrace);
-        //        throw;
-        //    }
-        //}
-
-        //public virtual void VerifyColumnFilterInTab(TableTab tableTab, UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
-        //{
-        //    LogDebug($"---> VerifyColumnFilterInTab <---<br>TableTab {tableTab.ToString()}<br>Current User {currentUser}<br>DIR# {dirNumber}<br>DIR Rev {dirRev}<br> KickedBack {kickedBack}<br>Use QA Field Menu {useQaFieldMenu}");
-
-        //    string dirTechEmail = "testDirTech@rkci.com";
-        //    string dirMgrEmail = "testDirMgr@rkci.com";
-
-        //    string sentBy = dirMgrEmail;
-        //    string lockedBy = dirMgrEmail;
-
-        //    try
-        //    {
-        //        switch (tableTab)
-        //        {
-        //            case TableTab.Creating:
-        //                sentBy = dirTechEmail;
-        //                lockedBy = dirTechEmail;
-        //                break;
-        //            case TableTab.Create_Revise:
-        //                sentBy = kickedBack ? dirMgrEmail : dirTechEmail;
-        //                lockedBy = kickedBack ? dirMgrEmail : dirTechEmail;
-        //                break;
-        //            case TableTab.QC_Review:
-        //                sentBy = kickedBack ? dirMgrEmail : dirTechEmail;
-        //                break;
-        //        }
-
-        //        if (tableTab == TableTab.Attachments)
-        //        {
-        //            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser);
-        //        }
-
-        //        WF_QaRcrdCtrl_QaDIR.IterateColumnsByFilter(tableTab, currentUser, dirNumber, sentBy, lockedBy, dirRev, useQaFieldMenu);
-        //        ClickEditBtnForRow();
-
-        //        if (tableTab == TableTab.Creating || tableTab == TableTab.Create_Revise)
-        //        {
-        //            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-        //        }
-        //        else if (tableTab == TableTab.QC_Review)
-        //        {
-        //            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
-        //        }
-        //        else if (tableTab == TableTab.Authorization)
-        //        {
-        //            WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();
-        //            QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
-        //            QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
-        //        }
-        //        else if (tableTab == TableTab.Attachments)
-        //        {
-        //            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-        //            WF_QaRcrdCtrl_QaDIR.IterateColumnsByFilter(TableTab.QC_Review, currentUser, dirNumber, dirMgrEmail, dirMgrEmail, dirRev, useQaFieldMenu);
-        //            ClickEditBtnForRow();
-        //            WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();
-        //        }
-        //        else if (tableTab == TableTab.Revise)
-        //        {
-        //            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-        //        }
-        //        else if (tableTab == TableTab.To_Be_Closed)
-        //        {
-        //            QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        log.Error(e.StackTrace);
-        //        throw;
-        //    }
-        //}
-
-        //GLX, LAX, I15SB, I15Tech
 
         public virtual void IterateColumnsByFilterInRevise(UserType currentUser, string dirNumber, string sentBy, string lockedBy, string dirRev, bool useQaFieldMenu = false)
             => QaDirWF_Base.IterateColumnsByFilter(TableTab.Create_Revise, currentUser, new string[] { dirNumber, sentBy, lockedBy, dirRev }, useQaFieldMenu);
@@ -1137,13 +906,10 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual bool VerifyDbCleanupForDIR(string dirNumber, string dirRevision = "A", bool setAsDeleted = true)
         {
             DirDbAccess db = new DirDbAccess();
-            db.SetDirIsDeletedDbValue(dirNumber, dirRevision, setAsDeleted);
-
-            List<DirDbData> dataList = new List<DirDbData>();
-            dataList = db.GetDirData(dirNumber, dirRevision);
+            db.SetDIR_DIRNO_IsDeleted(dirNumber, dirRevision, setAsDeleted);
 
             DirDbData data = new DirDbData();
-            data = dataList[0];
+            data = db.GetDirData(dirNumber, dirRevision);
             int isDeleted = data.IsDeleted;
 
             //if isDeleted = 1 && setAsDeleted = true --> success
@@ -1157,6 +923,53 @@ namespace RKCIUIAutomation.Page.Workflows
                     ? true : false;
             LogStep($"Performed DB Cleanup for DIR# {dirNumber}");
             return cleanupSuccessful;
+        }
+
+        public virtual void VerifyDbCleanupForCreatePackages(bool isPkgCreated, string weekStartDate, string[] dirNumbers)
+        {
+            if (isPkgCreated)
+            {
+                string packageNumber = QaRcrdCtrl_QaDIR.CalculateDirPackageNumber(weekStartDate);
+
+                DirDbAccess db = new DirDbAccess();
+                db.SetDIRPackageNo_AndReferences_AsDeleted(packageNumber);
+
+                DirDbData data = new DirDbData();
+                data = db.GetDirPackageData(packageNumber);
+                int isDeleted = data.IsDeleted;
+
+                bool result = isDeleted == 1 ? true : false;
+                string resultLog = isDeleted == 0 ? " NOT" : "";
+                AddAssertionToList(result, $"PackageNo ({packageNumber}) IsDeleted has{resultLog} been updated)");
+
+                List<bool> dirPkgIdResetResults = new List<bool>();
+                foreach (string dir in dirNumbers)
+                {
+                    bool dirPkgIdisNull = false;
+
+                    data = db.GetDirData(dir);
+                    var dirPkgId = data.DIRPackageID;
+
+                    if (dirPkgId == null)
+                    {
+                        dirPkgIdisNull = true;
+                    }
+                    else
+                    {
+                        AddAssertionToList(dirPkgIdisNull, $"DIR ({dir}) should have NULL value for DIRPackageID, but has value of: ({dirPkgId.ToString()})");
+                    }
+
+                    dirPkgIdResetResults.Add(dirPkgIdisNull);
+                }
+
+                result = !dirPkgIdResetResults.Contains(false);
+                resultLog = result ? "" : " NOT";
+                AddAssertionToList(result, $"DB cleanup for DIRPackageID references for the associated DIRs are as{resultLog} expected.");
+            }
+            else
+            {
+                AddAssertionToList(false, $"Task, DB cleanup for DIRPackageID references, was not performed because the Package was not created successfully in the previous step.");
+            }
         }
     }
 
