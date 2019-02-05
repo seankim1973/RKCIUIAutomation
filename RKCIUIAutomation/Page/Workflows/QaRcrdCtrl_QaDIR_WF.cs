@@ -400,6 +400,10 @@ namespace RKCIUIAutomation.Page.Workflows
 
         string Create_and_SaveOnly_DIR();
 
+        string Create_DIR_For_Package_Recreate_ComplexWF_EndToEnd(string weekStartDate, string packageNumber, string[] dirNumbers);
+
+        void FilterRecreateColumnWithoutButtonAscending();
+
         /// <summary>
         /// Returns string[] array: [0] dirNumber of newly created DIR, [1] dirNumber of Previous Failing Report
         /// </summary>
@@ -555,7 +559,13 @@ namespace RKCIUIAutomation.Page.Workflows
 
                     if (tenant.Equals("SGWay") || tenant.Equals("SH249") || tenant.Equals("Garnet"))
                     {
-                        QaFieldDIR = useQaFieldMenu ? true : userType == UserType.DIRTechQA ? true : false;
+                        //if DIRTechQA && useQaFieldMenu == true --> true
+                        //if DIRTechQA && useQaFieldMenu == false --> false
+                        QaFieldDIR = useQaFieldMenu 
+                            ? true 
+                            : userType == UserType.DIRTechQA 
+                                ? true
+                                : false;
 
                         //QaFieldDIR = userType == UserType.DIRTechQA ? true : useQaFieldMenu ? true : false;
 
@@ -641,6 +651,25 @@ namespace RKCIUIAutomation.Page.Workflows
                     previousFailedDirNumber
                 };
             return dirNumbers;
+        }
+
+        public virtual string Create_DIR_For_Package_Recreate_ComplexWF_EndToEnd(string weekStartDate, string packageNumber, string[] dirNumbers)
+        {
+            string[] splitWkStartDate = Regex.Split(weekStartDate, "/");
+            string mm = splitWkStartDate[0];
+            string dd = splitWkStartDate[1];
+            string yy = Regex.Split(splitWkStartDate[2], "20")[1];
+            string techID = QaRcrdCtrl_QaDIR.GetCurrentUserTechID();
+
+
+            QaRcrdCtrl_QaDIR.EnterText_InspectionDate(weekStartDate);
+            return "";
+        }
+
+        public virtual void FilterRecreateColumnWithoutButtonAscending()
+        {
+            SortColumnAscending(PackagesColumnName.Week_Start);
+            FilterTableColumnByValue(PackagesColumnName.Recreate, "false");
         }
 
         public virtual void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)

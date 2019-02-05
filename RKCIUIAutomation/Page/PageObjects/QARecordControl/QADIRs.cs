@@ -85,7 +85,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("PackageNumber", "Package number")] Package_Number,
             [StringValue("DIRsToString", "DIRs")] DIRs,
             [StringValue("DirsCount", "New DIR Count")] New_DIR_Count,
-            [StringValue("DIRsToString", "New DIRs")] New_DIRs
+            [StringValue("DIRsToString", "New DIRs")] New_DIRs,
+            [StringValue("RecreateRequired")] Recreate
         }
 
         public enum SubmitButtons
@@ -675,17 +676,21 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool Verify_Package_Created(string weekStart, string[] dirNumbers);
 
-        string GetDirPackageWeekStartFromRow(int rowIndex);
+        string GetDirPackageWeekStartFromRow(int rowIndex = 1);
 
-        string GetDirPackageWeekEndFromRow(int rowIndex);
+        string GetDirPackageWeekEndFromRow(int rowIndex = 1);
 
-        string GetDirPackageNewDirCountFromRow(int rowIndex);
+        string GetDirPackageNewDirCountFromRow(int rowIndex = 1);
 
         string GetDirPackageNumberFromRow(int rowIndex = 1);
 
-        string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex);
+        string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex = 1);
 
         string CalculateDirPackageNumber(string weekStartDate);
+
+        void EnterText_InspectionDate(string weekStartDate);
+
+        string GetCurrentUserTechID();
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -1471,19 +1476,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return fileDownloaded;
         }
 
-        public virtual string GetDirPackageWeekStartFromRow(int rowIndex)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_Start, rowIndex);
+        public virtual string GetDirPackageWeekStartFromRow(int rowIndex = 1)
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_Start, rowIndex).Trim();
 
-        public virtual string GetDirPackageWeekEndFromRow(int rowIndex)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_End, rowIndex);
+        public virtual string GetDirPackageWeekEndFromRow(int rowIndex = 1)
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_End, rowIndex).Trim();
 
-        public virtual string GetDirPackageNewDirCountFromRow(int rowIndex)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.New_DIR_Count, rowIndex);
+        public virtual string GetDirPackageNewDirCountFromRow(int rowIndex = 1)
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.New_DIR_Count, rowIndex).Trim();
 
         public virtual string GetDirPackageNumberFromRow(int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Package_Number, rowIndex);
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Package_Number, rowIndex).Trim();
 
-        public virtual string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex)
+        public virtual string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex = 1)
             => QaDIRs_Base.GetDirPackagesDataForRow<string[]>(NewDIRsOrDIRs, rowIndex);
 
         public virtual bool Verify_Package_Created(string weekStart, string[] dirNumbers)
@@ -1521,6 +1526,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             string yyyy = wkStartSplit[2];
             return $"IQF-DIR-{yyyy}{mm}{dd}-1";
         }
+
+        public virtual void EnterText_InspectionDate(string weekStartDate)
+        {
+
+        }
+
+        public virtual string GetCurrentUserTechID()
+            => GetAttribute(By.Id("TechID"), "value");
     }
 
     //Tenant Specific Classes

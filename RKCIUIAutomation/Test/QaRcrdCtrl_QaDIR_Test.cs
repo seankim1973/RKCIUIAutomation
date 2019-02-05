@@ -477,6 +477,15 @@ namespace RKCIUIAutomation.Test.DIR
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Packages();
+            WF_QaRcrdCtrl_QaDIR.FilterRecreateColumnWithoutButtonAscending();
+            
+            string weekStartDate = QaRcrdCtrl_QaDIR.GetDirPackageWeekStartFromRow();
+            string packageNumber = QaRcrdCtrl_QaDIR.GetDirPackageNumberFromRow();
+            string[] dirNumbers = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnName.DIRs);
+
+            LogoutToLoginPage();
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            string newDirNumber = WF_QaRcrdCtrl_QaDIR.Create_DIR_For_Package_Recreate_ComplexWF_EndToEnd(weekStartDate, packageNumber, dirNumbers);
 
             AssertAll();
         }

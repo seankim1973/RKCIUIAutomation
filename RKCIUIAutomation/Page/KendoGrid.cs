@@ -204,10 +204,12 @@ namespace RKCIUIAutomation.Page
                     string jsFilterBase = $"grid.dataSource.filter({{ logic: '{filterLogic}', filters: [";
 
                     filterValue = currentFilter.FilterValue;
-                    bool isFilterDateTime = DateTime.TryParse(filterValue, out DateTime filterDateTime);
-                    string filterValueToBeApplied = isFilterDateTime 
-                        ? $"new Date({filterDateTime.Month}/{filterDateTime.Day}/{filterDateTime.Year})"
-                        : $"{filterValue}";
+                    //bool isFilterDateTime = DateTime.TryParse(filterValue, out DateTime filterDateTime);
+                    //string filterValueToBeApplied = isFilterDateTime 
+                    //    ? $"new Date({filterDateTime.Year}, {filterDateTime.Month}, {filterDateTime.Day})"
+                    //    : $"{filterValue}";
+
+                    string filterValueToBeApplied = filterValue;
 
                     columnName = currentFilter.ColumnName;
                     filterOperator = currentFilter.FilterOperator.GetString();
@@ -215,8 +217,10 @@ namespace RKCIUIAutomation.Page
 
                     addnlFilterValue = currentFilter.AdditionalFilterValue;
                     addnlFilterOperator = currentFilter.AdditionalFilterOperator.GetString();
-                    filterScript = (addnlFilterValue == null) ? filterScript :
-                        $"{filterScript},{{ field: '{columnName}', operator: '{addnlFilterOperator}', value: '{addnlFilterValue}' }}";
+
+                    filterScript = addnlFilterValue == null
+                        ? filterScript 
+                        : $"{filterScript},{{ field: '{columnName}', operator: '{addnlFilterOperator}', value: '{addnlFilterValue}' }}";
                 }
 
                 StringBuilder sb = new StringBuilder();
@@ -226,8 +230,11 @@ namespace RKCIUIAutomation.Page
                 sb.Append($"{gridRef}{filterScript}] }});");
                 ExecuteJsScript(sb.ToString());
 
-                string addnlFilter = (addnlFilterValue != null) ? $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}" : string.Empty;
-                LogStep($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilter}");
+                string addnlFilterLogMsg = addnlFilterValue == null
+                    ? string.Empty
+                    : $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}";
+
+                LogStep($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilterLogMsg}");
             }
             catch (Exception e)
             {
