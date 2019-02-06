@@ -209,11 +209,11 @@ namespace RKCIUIAutomation.Page
                     //    ? $"new Date({filterDateTime.Year}, {filterDateTime.Month}, {filterDateTime.Day})"
                     //    : $"{filterValue}";
 
-                    string filterValueToBeApplied = filterValue;
+                    //string filterValueToBeApplied = filterValue;
 
                     columnName = currentFilter.ColumnName;
                     filterOperator = currentFilter.FilterOperator.GetString();
-                    filterScript = $"{jsFilterBase}{{ field: '{columnName}', operator: '{filterOperator}', value: '{filterValueToBeApplied}' }}";
+                    filterScript = $"{jsFilterBase}{{ field: '{columnName}', operator: '{filterOperator}', value: '{filterValue}' }}";
 
                     addnlFilterValue = currentFilter.AdditionalFilterValue;
                     addnlFilterOperator = currentFilter.AdditionalFilterOperator.GetString();

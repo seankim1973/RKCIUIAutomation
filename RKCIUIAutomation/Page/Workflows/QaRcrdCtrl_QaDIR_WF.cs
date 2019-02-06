@@ -388,6 +388,11 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public interface IQaRcrdCtrl_QaDIR_WF
     {
+        /// <summary>
+        /// [bool]useQaFieldMenu arg defaults to false and is ignored for Simple Workflow Tenants or when using [UserType]DIRTechQA
+        /// </summary>
+        /// <param name="userType"></param>
+        /// <param name="useQaFieldMenu"></param>
         void LoginToDirPage(UserType userType, bool useQaFieldMenu = false);
 
         void LoginToQaFieldDirPage(UserType userType);
@@ -400,7 +405,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         string Create_and_SaveOnly_DIR();
 
-        string Create_DIR_For_Package_Recreate_ComplexWF_EndToEnd(string weekStartDate, string packageNumber, string[] dirNumbers);
+        string Create_DirRevision_For_Package_Recreate_ComplexWF_EndToEnd(string weekStartDate, string packageNumber, string[] dirNumbers);
 
         void FilterRecreateColumnWithoutButtonAscending();
 
@@ -537,9 +542,9 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void LoginToDirPage(UserType userType, bool useQaFieldMenu = false)
         {
             bool QaFieldDIR = false;
-            string expectedPageTitle = "List of Inspector's Daily Report";
-            string logMsg = QaFieldDIR ? "LoginToQaFieldDirPage" : "LoginToRcrdCtrlDirPage";
-            LogDebug($"---> {logMsg} <---");
+            string expectedPageTitle = "List of Inspector's Daily Report"; //(default) QcRecordControl page title
+            string logMsg = useQaFieldMenu ? "QaField" : "RecordControl";
+            LogDebug($"---> LoginToDirPage : {logMsg} <---");
 
             try
             {
@@ -559,15 +564,11 @@ namespace RKCIUIAutomation.Page.Workflows
 
                     if (tenant.Equals("SGWay") || tenant.Equals("SH249") || tenant.Equals("Garnet"))
                     {
-                        //if DIRTechQA && useQaFieldMenu == true --> true
-                        //if DIRTechQA && useQaFieldMenu == false --> false
-                        QaFieldDIR = useQaFieldMenu 
-                            ? true 
-                            : userType == UserType.DIRTechQA 
+                        QaFieldDIR = userType == UserType.DIRTechQA 
+                            ? true
+                            : useQaFieldMenu
                                 ? true
                                 : false;
-
-                        //QaFieldDIR = userType == UserType.DIRTechQA ? true : useQaFieldMenu ? true : false;
 
                         if (QaFieldDIR)
                         {
@@ -653,23 +654,40 @@ namespace RKCIUIAutomation.Page.Workflows
             return dirNumbers;
         }
 
-        public virtual string Create_DIR_For_Package_Recreate_ComplexWF_EndToEnd(string weekStartDate, string packageNumber, string[] dirNumbers)
+        public virtual string Create_DirRevision_For_Package_Recreate_ComplexWF_EndToEnd(string weekStartDate, string packageNumber, string[] dirNumbers)
         {
             string[] splitWkStartDate = Regex.Split(weekStartDate, "/");
             string mm = splitWkStartDate[0];
             string dd = splitWkStartDate[1];
             string yy = Regex.Split(splitWkStartDate[2], "20")[1];
-            string techID = QaRcrdCtrl_QaDIR.GetCurrentUserTechID();
+            string techID = QaRcrdCtrl_QaDIR.GetTechIdForDirUserAcct();
 
+            string inspectDate = string.Empty;
+            for (int i = 0; i < dirNumbers.Length; i++)
+            {
+                var dir = dirNumbers[i];
+                if (dir.Contains($"{techID}{yy}"))
+                {
+                    var mmdd = Regex.Split(dir, $"{techID}{yy}")[1];
+                    var splitmmdd = Regex.Split(mmdd, mm);
+                    inspectDate = $"{splitmmdd[0]}/{splitmmdd[1]}/20{yy}";
+                    break;
+                }
+            }
 
-            QaRcrdCtrl_QaDIR.EnterText_InspectionDate(weekStartDate);
-            return "";
+            QaRcrdCtrl_QaDIR.EnterText_InspectionDate(inspectDate);
+            QaRcrdCtrl_QaDIR.ClickBtn_CreateRevision();
+            QaRcrdCtrl_QaDIR.SetDirNumber();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+
+            return QaRcrdCtrl_QaDIR.GetDirNumber();
         }
 
         public virtual void FilterRecreateColumnWithoutButtonAscending()
         {
             SortColumnAscending(PackagesColumnName.Week_Start);
             FilterTableColumnByValue(PackagesColumnName.Recreate, "false");
+            FilterTableColumnByValue(PackagesColumnName.DIRs, QaRcrdCtrl_QaDIR.GetTechIdForDirUserAcct(), TableType.MultiTab, FilterOperator.Contains);
         }
 
         public virtual void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)

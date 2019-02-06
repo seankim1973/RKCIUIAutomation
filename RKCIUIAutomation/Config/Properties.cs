@@ -1,4 +1,5 @@
-﻿using RKCIUIAutomation.Test;
+﻿using RKCIUIAutomation.Page;
+using RKCIUIAutomation.Test;
 using System;
 
 namespace RKCIUIAutomation.Config
@@ -43,22 +44,22 @@ namespace RKCIUIAutomation.Config
 
     public enum UserType
     {
-        Bhoomi,
-        IQFRecordsMgr,
-        IQFUser,
-        IQFAdmin,
-        DOTUser,
-        DOTAdmin,
-        DEVUser,
-        DEVAdmin,
-        NCRTech,
-        CDRTech,
-        CDRMgr,
-        NCRMgr,
-        DIRMgrQA,
-        DIRMgrQC,
-        DIRTechQA,
-        DIRTechQC
+        [StringValue("Bhoomi")]Bhoomi,
+        [StringValue("IQF Records Manager")] IQFRecordsMgr,
+        [StringValue("IQF User")] IQFUser,
+        [StringValue("IQF Admin")] IQFAdmin,
+        [StringValue("DOT User")] DOTUser,
+        [StringValue("DOT Admin")] DOTAdmin,
+        [StringValue("DEV User")] DEVUser,
+        [StringValue("DEV Admin")] DEVAdmin,
+        [StringValue("NCR Manager")] NCRMgr,
+        [StringValue("NCR Technician")] NCRTech,
+        [StringValue("CDR Manager")] CDRMgr,
+        [StringValue("CDR Technician")] CDRTech,
+        [StringValue("AT_DIR Mgr")] DIRMgrQA,
+        [StringValue("AT_DIR Tech")] DIRTechQA,
+        [StringValue("AT_DIR Mgr QC")] DIRMgrQC,
+        [StringValue("AT_DIR Tech QC")] DIRTechQC
     }
 
     public enum UserGroup
@@ -71,48 +72,5 @@ namespace RKCIUIAutomation.Config
     {
         Html,
         Klov
-    }
-
-    public class ConfigTestUsers
-    {
-        [ThreadStatic]
-        internal UserType technicianUser;
-
-        [ThreadStatic]
-        internal UserType managerUser;
-
-        public ConfigTestUsers()
-        {
-        }
-
-        //public ConfigTestUsers(UserGroup userGroup)
-        //{
-        //    switch (userGroup)
-        //    {
-        //        case UserGroup.DirQA:
-        //            technicianUser = UserType.DIRTechQA;
-        //            managerUser = UserType.DIRMgrQA;
-        //            break;
-        //        case UserGroup.DirQC:
-        //            technicianUser = UserType.DIRTechQC;
-        //            managerUser = UserType.DIRMgrQC;
-        //            break;
-        //    }
-        //}
-
-        public void AssignUsersByGroup(UserGroup userGroup)
-        {
-            switch (userGroup)
-            {
-                case UserGroup.DirQA:
-                    technicianUser = UserType.DIRTechQA;
-                    managerUser = UserType.DIRMgrQA;
-                    break;
-                case UserGroup.DirQC:
-                    technicianUser = UserType.DIRTechQC;
-                    managerUser = UserType.DIRMgrQC;
-                    break;
-            }
-        }
     }
 }

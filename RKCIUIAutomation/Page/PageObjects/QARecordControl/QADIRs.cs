@@ -25,6 +25,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public enum InputFields
         {
+            [StringValue("InspectDate")] Inspect_Date,
             [StringValue("TimeBegin1")] Time_Begin,
             [StringValue("TimeEnd1")] Time_End,
             [StringValue("DIREntries_0__AverageTemperature")] Average_Temperature,
@@ -688,9 +689,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         string CalculateDirPackageNumber(string weekStartDate);
 
-        void EnterText_InspectionDate(string weekStartDate);
+        void EnterText_InspectionDate(string inspectDate);
 
-        string GetCurrentUserTechID();
+        /// <summary>
+        /// Returns TechID for [UserType]DIRTechQA by default
+        /// </summary>
+        /// <param name="dirNoTechFromDDL"></param>
+        /// <returns></returns>
+        string GetTechIdForDirUserAcct(UserType dirNoDDListTech = UserType.DIRTechQA);
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -860,7 +866,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //Enter_ReadyDate();
             //Enter_CompletedDate();
             //Enter_TotalInspectionTime();
-            //StoreDirNumber();
+            //SetDirNumber();
         }
 
         //All SimpleWF Tenants have different required fields
@@ -1527,13 +1533,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return $"IQF-DIR-{yyyy}{mm}{dd}-1";
         }
 
-        public virtual void EnterText_InspectionDate(string weekStartDate)
+        public virtual void EnterText_InspectionDate(string inspectDate)
+            => EnterText(By.Id(InputFields.Inspect_Date.GetString()), inspectDate);
+
+        public virtual string GetTechIdForDirUserAcct(UserType dirNoDDListTech = UserType.DIRTechQA)
         {
-
+            ExpandAndSelectFromDDList("TechID", dirNoDDListTech.GetString(), true);
+            return GetAttribute(By.Id("TechID"), "value");
         }
-
-        public virtual string GetCurrentUserTechID()
-            => GetAttribute(By.Id("TechID"), "value");
     }
 
     //Tenant Specific Classes
