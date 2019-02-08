@@ -194,6 +194,8 @@ namespace RKCIUIAutomation.Base
             testInstance = color.Equals(ExtentColor.Red)
                 ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
                 : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color));
+
+            log.Error(details);
         }
 
         public static void LogInfo(string details)
@@ -231,13 +233,16 @@ namespace RKCIUIAutomation.Base
         public void LogInfo(string[][] detailsList, bool assertion)
         {
             IMarkup markupTable = MarkupHelper.CreateTable(detailsList);
-            testInstance = assertion ? testInstance.Pass(markupTable) : testInstance.Fail(markupTable);
+            testInstance = assertion
+                ? testInstance.Pass(markupTable)
+                : testInstance.Fail(markupTable);
         }
 
         public void LogStep(string testStep)
         {
-            testInstance.Info(CreateReportMarkupLabel(testStep, ExtentColor.Brown));
-            log.Debug(testStep);
+            string logMsg = $"TestStep: {testStep}";
+            testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
+            log.Info(logMsg);
         }
 
         public void LogInfo<T>(string details, T assertion, Exception e = null)
@@ -274,8 +279,8 @@ namespace RKCIUIAutomation.Base
             }
             else if (assertionType == typeof(bool[]))
             {
-                resultObj = new bool[] { };
                 resultObj = baseUtils.ConvertToType<bool[]>(assertion);
+                resultObj = new bool[] { };
 
                 foreach (bool obj in (bool[])resultObj)
                 {
@@ -288,6 +293,7 @@ namespace RKCIUIAutomation.Base
             if (resultGauge >= 1)
             {
                 testInstance.Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
+                log.Debug(details);
             }
             else if (resultGauge <= -1)
             {

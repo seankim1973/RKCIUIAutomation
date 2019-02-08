@@ -25,6 +25,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public enum InputFields
         {
+            [StringValue("InspectDate")] Inspect_Date,
             [StringValue("TimeBegin1")] Time_Begin,
             [StringValue("TimeEnd1")] Time_End,
             [StringValue("DIREntries_0__AverageTemperature")] Average_Temperature,
@@ -85,7 +86,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("PackageNumber", "Package number")] Package_Number,
             [StringValue("DIRsToString", "DIRs")] DIRs,
             [StringValue("DirsCount", "New DIR Count")] New_DIR_Count,
-            [StringValue("DIRsToString", "New DIRs")] New_DIRs
+            [StringValue("DIRsToString", "New DIRs")] New_DIRs,
+            [StringValue("RecreateRequired")] Recreate
         }
 
         public enum SubmitButtons
@@ -675,17 +677,28 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool Verify_Package_Created(string weekStart, string[] dirNumbers);
 
-        string GetDirPackageWeekStartFromRow(int rowIndex);
+        string GetDirPackageWeekStartFromRow(int rowIndex = 1);
 
-        string GetDirPackageWeekEndFromRow(int rowIndex);
+        string GetDirPackageWeekEndFromRow(int rowIndex = 1);
 
-        string GetDirPackageNewDirCountFromRow(int rowIndex);
+        string GetDirPackageNewDirCountFromRow(int rowIndex = 1);
 
         string GetDirPackageNumberFromRow(int rowIndex = 1);
 
-        string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex);
+        string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex = 1);
 
         string CalculateDirPackageNumber(string weekStartDate);
+
+        void EnterText_InspectionDate(string inspectDate);
+
+        /// <summary>
+        /// Returns TechID for [UserType]DIRTechQA by default
+        /// </summary>
+        /// <param name="dirNoTechFromDDL"></param>
+        /// <returns></returns>
+        string GetTechIdForDirUserAcct(bool selectUserFromDDList = false, UserType dirNoDDListTech = UserType.DIRTechQA);
+
+        void VerifyRecreateBtnIsDisplayed(string packageNumber, string newDirNumber);
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -855,7 +868,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //Enter_ReadyDate();
             //Enter_CompletedDate();
             //Enter_TotalInspectionTime();
-            //StoreDirNumber();
+            //SetDirNumber();
         }
 
         //All SimpleWF Tenants have different required fields
@@ -1471,19 +1484,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return fileDownloaded;
         }
 
-        public virtual string GetDirPackageWeekStartFromRow(int rowIndex)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_Start, rowIndex);
+        public virtual string GetDirPackageWeekStartFromRow(int rowIndex = 1)
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_Start, rowIndex).Trim();
 
-        public virtual string GetDirPackageWeekEndFromRow(int rowIndex)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_End, rowIndex);
+        public virtual string GetDirPackageWeekEndFromRow(int rowIndex = 1)
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_End, rowIndex).Trim();
 
-        public virtual string GetDirPackageNewDirCountFromRow(int rowIndex)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.New_DIR_Count, rowIndex);
+        public virtual string GetDirPackageNewDirCountFromRow(int rowIndex = 1)
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.New_DIR_Count, rowIndex).Trim();
 
         public virtual string GetDirPackageNumberFromRow(int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Package_Number, rowIndex);
+            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Package_Number, rowIndex).Trim();
 
-        public virtual string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex)
+        public virtual string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex = 1)
             => QaDIRs_Base.GetDirPackagesDataForRow<string[]>(NewDIRsOrDIRs, rowIndex);
 
         public virtual bool Verify_Package_Created(string weekStart, string[] dirNumbers)
@@ -1520,6 +1533,67 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             string dd = wkStartSplit[1];
             string yyyy = wkStartSplit[2];
             return $"IQF-DIR-{yyyy}{mm}{dd}-1";
+        }
+
+        public virtual void EnterText_InspectionDate(string inspectDate)
+            => EnterText(By.Id(InputFields.Inspect_Date.GetString()), inspectDate);
+
+        public virtual string GetTechIdForDirUserAcct(bool selectUserFromDDList = false, UserType dirNoDDListTech = UserType.DIRTechQA)
+        {
+            if (selectUserFromDDList)
+            {
+                ExpandAndSelectFromDDList("TechID", dirNoDDListTech.GetString(), true);
+            }
+
+            return GetAttribute(By.Id("TechID"), "value");
+        }
+
+        public virtual void VerifyRecreateBtnIsDisplayed(string packageNumber, string newDirNumber)
+        {
+            string logMsg = string.Empty;
+            string btnIsDisplayedMsg = "Record was not displayed";
+            string dirsContainsMsg = string.Empty;
+            string trimedPkgNumber = packageNumber.TrimEnd('1', '2');
+            bool recreateBtnIsDisplayed = false;
+            bool dirNumbersContainsNewDIR = false;
+
+            bool recordIsDisplayed = VerifyRecordIsDisplayed(PackagesColumnName.Package_Number, trimedPkgNumber, TableType.MultiTab, false, FilterOperator.Contains);
+
+            AddAssertionToList(recordIsDisplayed, $"VerifyRecreateBtnIsDisplayed: Verify Record PackageNumber({packageNumber}) is displayed");
+
+            if (recordIsDisplayed)
+            {
+                recreateBtnIsDisplayed = ElementIsDisplayed(GetTableBtnLocator(TableButton.Recreate_Package, 1, true, false));
+                btnIsDisplayedMsg = recreateBtnIsDisplayed
+                    ? ""
+                    : " NOT";
+                if (recreateBtnIsDisplayed)
+                {
+                    ClickRecreateBtnForRow();
+                    AcceptAlertMessage();
+                    AcceptAlertMessage();
+
+                    string pkgDIRs = GetColumnValueForRow(1, PackagesColumnName.DIRs.GetString(true));
+                    string newPkgNumber = GetColumnValueForRow(1, PackagesColumnName.Package_Number.GetString(true));
+
+                    List<string> dirNumbers = new List<string>(Regex.Split(pkgDIRs, ", "));
+                    dirNumbersContainsNewDIR = dirNumbers.Contains(newDirNumber);
+                    dirsContainsMsg = dirNumbersContainsNewDIR
+                        ? $""
+                        : $" DOES NOT";
+
+                    string expectedNewPkgNumber = $"{trimedPkgNumber}2";
+                    AddAssertionToList(newPkgNumber.Equals(expectedNewPkgNumber), $"VerifyRecreateBtnIsDisplayed: Verify Expected Package Number after Recreate");
+
+                }
+
+                logMsg = $"Recreate button is{btnIsDisplayedMsg} displayed.<br>New DIRs column{dirsContainsMsg} contain new DIR number {newDirNumber}.";
+            }
+
+            AddAssertionToList(recreateBtnIsDisplayed, $"VerifyRecreateBtnIsDisplayed: Verify Recreate button is displayed");
+            AddAssertionToList(dirNumbersContainsNewDIR, $"VerifyRecreateBtnIsDisplayed: Verify DIRs column shows new DIR");
+
+            LogInfo(logMsg, new bool[] { recreateBtnIsDisplayed, dirNumbersContainsNewDIR });
         }
     }
 

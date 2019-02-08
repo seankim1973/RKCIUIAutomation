@@ -96,7 +96,16 @@ namespace RKCIUIAutomation.Page
 
         private string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
 
-        private string SetDDListItemsXpath<T, I>(T ddListID, I itemIndexOrName)
+        /// <summary>
+        /// [bool] useContains arg defaults to false and is ignored if arg [I]itemIndexOrName is int type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="I"></typeparam>
+        /// <param name="ddListID"></param>
+        /// <param name="itemIndexOrName"></param>
+        /// <param name="useContains"></param>
+        /// <returns></returns>
+        private string SetDDListItemsXpath<T, I>(T ddListID, I itemIndexOrName, bool useContains = false)
         {
             BaseUtils baseUtils = new BaseUtils();
 
@@ -112,12 +121,17 @@ namespace RKCIUIAutomation.Page
 
             if (itemIndexOrName.GetType().Equals(typeof(string)))
             {
-                itemValueXPath = $"text()='{baseUtils.ConvertToType<string>(itemIndexOrName)}'";
+                var argName = baseUtils.ConvertToType<string>(itemIndexOrName);
+                itemValueXPath = useContains
+                    ? $"contains(text(),'{argName}')"
+                    : $"text()='{argName}'";
             }
             else if (itemIndexOrName.GetType().Equals(typeof(int)))
             {
                 int itemIndex = baseUtils.ConvertToType<int>(itemIndexOrName);
-                itemIndex = _ddListID.Contains("Time") ? itemIndex + 1 : itemIndex;
+                itemIndex = _ddListID.Contains("Time")
+                    ? itemIndex + 1
+                    : itemIndex;
                 itemValueXPath = itemIndex.ToString();
             }
 
@@ -164,8 +178,17 @@ namespace RKCIUIAutomation.Page
         public By GetExpandDDListButtonByLocator<T>(T ddListID)
             => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
 
-        public By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName)
-            => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName));
+        /// <summary>
+        /// [bool] useContains arg defaults to false and is ignored if arg [I]itemIndexOrName is int type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="I"></typeparam>
+        /// <param name="ddListID"></param>
+        /// <param name="itemIndexOrName"></param>
+        /// <param name="useContains"></param>
+        /// <returns></returns>
+        public By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContains = false)
+            => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName, useContains));
 
         public By GetTextInputFieldByLocator(Enum inputEnum)
             => By.XPath(SetTextInputFieldByLocator(inputEnum));

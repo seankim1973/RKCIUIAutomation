@@ -388,6 +388,11 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public interface IQaRcrdCtrl_QaDIR_WF
     {
+        /// <summary>
+        /// [bool]useQaFieldMenu arg defaults to false and is ignored for Simple Workflow Tenants or when using [UserType]DIRTechQA
+        /// </summary>
+        /// <param name="userType"></param>
+        /// <param name="useQaFieldMenu"></param>
         void LoginToDirPage(UserType userType, bool useQaFieldMenu = false);
 
         void LoginToQaFieldDirPage(UserType userType);
@@ -399,6 +404,10 @@ namespace RKCIUIAutomation.Page.Workflows
         string Create_and_SaveForward_DIR();
 
         string Create_and_SaveOnly_DIR();
+
+        string Create_DirRevision_For_Package_Recreate_ComplexWF_EndToEnd(string weekStartDate, string packageNumber, string[] dirNumbers);
+
+        void FilterRecreateColumnWithoutButtonAscending();
 
         /// <summary>
         /// Returns string[] array: [0] dirNumber of newly created DIR, [1] dirNumber of Previous Failing Report
@@ -533,9 +542,9 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void LoginToDirPage(UserType userType, bool useQaFieldMenu = false)
         {
             bool QaFieldDIR = false;
-            string expectedPageTitle = "List of Inspector's Daily Report";
-            string logMsg = QaFieldDIR ? "LoginToQaFieldDirPage" : "LoginToRcrdCtrlDirPage";
-            LogDebug($"---> {logMsg} <---");
+            string expectedPageTitle = "List of Inspector's Daily Report"; //(default) QcRecordControl page title
+            string logMsg = useQaFieldMenu ? "QaField" : "RecordControl";
+            LogDebug($"---> LoginToDirPage : {logMsg} <---");
 
             try
             {
@@ -555,9 +564,11 @@ namespace RKCIUIAutomation.Page.Workflows
 
                     if (tenant.Equals("SGWay") || tenant.Equals("SH249") || tenant.Equals("Garnet"))
                     {
-                        QaFieldDIR = useQaFieldMenu ? true : userType == UserType.DIRTechQA ? true : false;
-
-                        //QaFieldDIR = userType == UserType.DIRTechQA ? true : useQaFieldMenu ? true : false;
+                        QaFieldDIR = userType == UserType.DIRTechQA 
+                            ? true
+                            : useQaFieldMenu
+                                ? true
+                                : false;
 
                         if (QaFieldDIR)
                         {
@@ -641,6 +652,25 @@ namespace RKCIUIAutomation.Page.Workflows
                     previousFailedDirNumber
                 };
             return dirNumbers;
+        }
+
+        public virtual string Create_DirRevision_For_Package_Recreate_ComplexWF_EndToEnd(string weekStartDate, string packageNumber, string[] dirNumbers)
+        {
+            //TODO - can't use weekStartDate as inspectDate - DIRs in package may not always be on weekStart date
+            //need to arg needs to be an existing DIR for TechID of DIRQA user
+            QaRcrdCtrl_QaDIR.EnterText_InspectionDate(weekStartDate);
+            QaRcrdCtrl_QaDIR.ClickBtn_CreateRevision();
+            QaRcrdCtrl_QaDIR.SetDirNumber();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+
+            return QaRcrdCtrl_QaDIR.GetDirNumber();
+        }
+
+        public virtual void FilterRecreateColumnWithoutButtonAscending()
+        {
+            SortColumnAscending(PackagesColumnName.Week_Start);
+            FilterTableColumnByValue(PackagesColumnName.Recreate, "false");
+            FilterTableColumnByValue(PackagesColumnName.DIRs, QaRcrdCtrl_QaDIR.GetTechIdForDirUserAcct(true), TableType.MultiTab, FilterOperator.Contains);
         }
 
         public virtual void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)

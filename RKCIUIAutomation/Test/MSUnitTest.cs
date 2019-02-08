@@ -761,5 +761,22 @@ namespace RKCIUIAutomation.Sandbox
                 Console.WriteLine(i);
             }
         }
+
+        [TestMethod]
+        public void DateTimeParse()
+        {
+            string filterValue = "04/22/2018";
+            DateTime.TryParse(filterValue, out DateTime filterDateTime);
+            Console.WriteLine($"MM: {filterDateTime.Month}");
+            Console.WriteLine($"DD: {filterDateTime.Day}");
+            Console.WriteLine($"YYYY: {filterDateTime.Year}");
+        }
+
+        [TestMethod]
+        public void RegexTest()
+        {
+            string packageNumber = "IQF-DIR-20181209-2";
+            Console.WriteLine(packageNumber.TrimEnd('1', '2'));
+        }
     }
 }

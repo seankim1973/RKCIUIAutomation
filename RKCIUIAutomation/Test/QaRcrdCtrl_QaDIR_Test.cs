@@ -24,7 +24,7 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
             LogoutToLoginPage();
-            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA, true);
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             WF_QaRcrdCtrl_QaDIR.Return_DIR_ForRevise_FromQcReview_then_Edit_SaveForward(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Cancel_Verify_inCreateRevise(dirNumber);
             WF_QaRcrdCtrl_QaDIR.Modify_Save_Verify_and_SaveForward_inCreateRevise(dirNumber);
@@ -64,6 +64,7 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
+    //Works for both SimpleWF and ComplexWF Tenants
     [TestFixture]
     public class Verify_QC_Review_by_Project_Manager : TestBase
     {
@@ -88,6 +89,7 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
+    //Works for both SimpleWF and ComplexWF Tenants
     [TestFixture]
     public class Verify_Delete_a_DIR : TestBase
     {
@@ -199,7 +201,7 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyWorkflowLocationAfterSimpleWF(dirNumber), "VerifyWorkflowLocationAfterSimpleWF");
 
-            //ComplexWF
+            //ComplexWF portion (QaRecordControl menu)
             NavigateToPage.QARecordControl_QA_DIRs();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
             ClickEditBtnForRow();
@@ -358,7 +360,7 @@ namespace RKCIUIAutomation.Test.DIR
         [Description("To validate lookup of a DIR with Deficiency in an Inspection Deficiency Log Report in Complex Workflow.")]
         public void Inspection_Deficiency_Log_Report_for_QaDIR_With_Deficiencies()
         {
-            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA, true);
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
             string[] dirNumbers = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR_with_Failed_Inspection_and_PreviousFailingReports();
             string dirNumber = dirNumbers[0];
             string previousFailedDirNumber = dirNumbers[1];
@@ -477,11 +479,44 @@ namespace RKCIUIAutomation.Test.DIR
         {
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Packages();
+            WF_QaRcrdCtrl_QaDIR.FilterRecreateColumnWithoutButtonAscending();
 
+            string weekStartDate = QaRcrdCtrl_QaDIR.GetDirPackageWeekStartFromRow();
+            string packageNumber = QaRcrdCtrl_QaDIR.GetDirPackageNumberFromRow();
+            string[] dirNumbers = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnName.DIRs);
+            LogoutToLoginPage();
+
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
+            string newDirNumber = WF_QaRcrdCtrl_QaDIR.Create_DirRevision_For_Package_Recreate_ComplexWF_EndToEnd(weekStartDate, packageNumber, dirNumbers);
+            LogoutToLoginPage();
+
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA, true);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(newDirNumber);
+            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(newDirNumber);
+
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, newDirNumber), "VerifyDirIsDisplayed in 'Attachments' tab");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, newDirNumber), "VerifyDirIsDisplayed in 'QC Review' tab");
+            ClickEditBtnForRow();
+            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
+
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, newDirNumber), "VerifyDirIsDisplayed in 'To Be Closed' tab");
+            ClickCloseDirBtnForRow(newDirNumber);
+            AcceptAlertMessage();
+            AcceptAlertMessage();
+
+            QaRcrdCtrl_QaDIR.ClickTab_Packages();
+            QaRcrdCtrl_QaDIR.VerifyRecreateBtnIsDisplayed(packageNumber, newDirNumber);
+
+            //need DB cleanup
             AssertAll();
         }
     }
 
+    //Works for both SimpleWF and ComplexWF Tenants
     [TestFixture]
     public class Verify_PDF_Report_View : TestBase
     {
@@ -499,7 +534,7 @@ namespace RKCIUIAutomation.Test.DIR
             ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();            
             LogoutToLoginPage();
-            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA, true);
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewReport_forDIR_inQcReview(dirNumber), "Verify View Report for DIR in QC Review tab");
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(dirNumber);
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_ViewReport_forDIR_inAuthorization(dirNumber), "Verify View Report for DIR in QC Authorization tab");

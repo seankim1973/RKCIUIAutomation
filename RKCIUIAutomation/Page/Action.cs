@@ -464,10 +464,20 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName)
+        /// <summary>
+        /// Use [bool] useContains arg when selecting a DDList item with partial value for [T](string)itemIndexOrName
+        /// <para>[bool] useContains arg defaults to false and is ignored if arg [I]itemIndexOrName is int type</para>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="I"></typeparam>
+        /// <param name="ddListID"></param>
+        /// <param name="itemIndexOrName"></param>
+        /// <param name="useContains"></param>
+        /// <returns></returns>
+        public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false)
         {
             ExpandDDL(ddListID);
-            ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName));
+            ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName, useContains));
         }
 
         public void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true)
@@ -681,6 +691,8 @@ namespace RKCIUIAutomation.Page
                         alert.Dismiss();
                         actionMsg = "Dismissed";
                     }
+
+                    LogStep($"{actionMsg} Confirmation Dialog: {alertMsg}");
                 }
                 catch (NoAlertPresentException e)
                 {
@@ -688,8 +700,6 @@ namespace RKCIUIAutomation.Page
                     throw e;
                 }
             }
-
-           LogStep($"{actionMsg} Confirmation Dialog: {alertMsg}");
         }
 
         public string AcceptAlertMessage()
@@ -714,8 +724,6 @@ namespace RKCIUIAutomation.Page
                     log.Error($"NoAlertPresentException Msg: {e.Message}");
                     throw e;
                 }
-
-                LogStep(alertMsg);
             }
 
             return alertMsg;
@@ -743,8 +751,6 @@ namespace RKCIUIAutomation.Page
                     log.Error($"NoAlertPresentException Msg: {e.Message}");
                     throw e;
                 }
-
-                LogStep(alertMsg);
             }
 
             return alertMsg;
@@ -792,8 +798,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                //IWebElement element = null;
-                //element = GetElement(elementByLocator);
                 isDisplayed = ScrollToElement(elementByLocator)?.Displayed == true ? true : false;
             }
             catch (Exception e)
