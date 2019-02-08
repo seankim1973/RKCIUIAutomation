@@ -1757,6 +1757,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
+            SelectDDL_Feature();
             SetDirNumber();
         }
 
@@ -1807,6 +1808,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
+            SelectDDL_Feature();
             SetDirNumber();
         }
 
@@ -1853,11 +1855,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Contractor();
             SelectDDL_CrewForeman();
             //EnterText_SectionDescription();  //auto-populates field with selection of SpecSection DDList
-            SelectChkbox_InspectionType_C();
+            SelectChkbox_InspectionType_I();
             SelectChkbox_InspectionResult_P();
-            ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
-            SelectDDL_ControlPointNumber(3);
+            // --- Selecting InspectionType_C and selecting from availale ControlPoint DDList clears (required)Feature DDList without any available selections
+            //ClickBtn_Save_Forward();
+            //AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
+            //SelectDDL_ControlPointNumber(2);
             SetDirNumber();
         }
 

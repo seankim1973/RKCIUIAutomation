@@ -679,13 +679,17 @@ namespace RKCIUIAutomation.Page.Workflows
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber), "VerifyDirIsDisplayed");
             ClickEditBtnForRow();
-            WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();
-            QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
-            QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
         }
 
         public virtual void Return_DIR_ForRevise_FromQcReview_then_Edit_SaveForward(string dirNumber)
-            => WF_QaRcrdCtrl_QaDIR.Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.QC_Review, dirNumber);
+        {
+            WF_QaRcrdCtrl_QaDIR.Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.QC_Review, dirNumber);
+            ClickBtn_KickBackOrRevise();
+            QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
+            QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
+            AddAssertionToList(VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
+            ClickEditBtnForRow();
+        }
 
         public virtual void Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(string dirNumber)
         {
@@ -1016,11 +1020,6 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber), $"VerifyDirIsDisplayed({kickBackfromTableTab.ToString()})");
             ClickEditBtnForRow();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifySectionDescription(), "VerifySectionDescription");
-            ClickBtn_KickBackOrRevise();
-            QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
-            QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
-            AddAssertionToList(VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
-            ClickEditBtnForRow();
         }
     }
 
