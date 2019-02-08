@@ -82,6 +82,26 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Comment_ResolutionMeetingDecision_")] CommentResolutionInput,
             [StringValue("Comment_ClosingComment_")] CommentClosingInput
         }
+
+        [ThreadStatic]
+        internal static string designDocTitle;
+
+        [ThreadStatic]
+        internal static string designDocNumber;
+
+        [ThreadStatic]
+        internal static string docTitleKey;
+
+        [ThreadStatic]
+        internal static string docNumberKey;
+
+        internal By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
+        internal By CancelBtnUploadPage_ByLocator => By.Id("btnCancel");
+        internal By SaveOnlyBtnUploadPage_ByLocator => By.Id("btnSave");
+        internal By SaveForwardBtnUploadPage_ByLocator => By.Id("btnSaveForward");
+        internal By SaveOnlyBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSave_')]");
+        internal By SaveForwardBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSaveForward_')]");
+        internal By BackToListBtn_ByLocator => By.XPath("//button[text()='Back To List']");
     }
 
     #endregion DesignDocument Generic class
@@ -163,6 +183,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void SelectDisagreeResponseCode(int commentTabNumber = 1);
 
         void SelectDDL_ClosingStamp(int commentTabNumber = 1);
+
+        void WaitForActiveCommentTab();
+
+        void ClickCommentTabNumber(int commentTabNumber);
     }
 
     #endregion Workflow Interface class
@@ -218,66 +242,48 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return instance;
         }
 
-        [ThreadStatic]
-        private static string designDocTitle;
+        private DesignDocument DesignDoc_Base => new DesignDocument(Driver);
 
-        [ThreadStatic]
-        private static string designDocNumber;
+        private KendoGrid Kendo => new KendoGrid(Driver);
 
-        [ThreadStatic]
-        private static string docTitleKey;
-
-        [ThreadStatic]
-        private static string docNumberKey;
-
-        private MiniGuid guid;
-
-        private By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
-        private By CancelBtnUploadPage_ByLocator => By.Id("btnCancel");
-        private By SaveOnlyBtnUploadPage_ByLocator => By.Id("btnSave");
-        private By SaveForwardBtnUploadPage_ByLocator => By.Id("btnSaveForward");
-        private By SaveOnlyBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSave_')]");
-        private By SaveForwardBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSaveForward_')]");
-        private By BackToListBtn_ByLocator => By.XPath("//button[text()='Back To List']");
-
-        public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(UploadNewDesignDoc_ByLocator);
+        public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(DesignDoc_Base.UploadNewDesignDoc_ByLocator);
 
         public virtual void ClickBtn_BackToList()
         {
-            IWebElement elem = GetElement(BackToListBtn_ByLocator);
+            IWebElement elem = GetElement(DesignDoc_Base.BackToListBtn_ByLocator);
 
             if (elem != null)
             {
                 elem.Click();
-                LogInfo($"Clicked element - {BackToListBtn_ByLocator}");
+                LogInfo($"Clicked element - {DesignDoc_Base.BackToListBtn_ByLocator}");
             }
         }
 
         public virtual void ClickBtn_SaveOnly()
         {
             //ScrollToElement(SaveOnlyBtn_ByLocator);
-            ClickElement(SaveOnlyBtn_ByLocator);
+            ClickElement(DesignDoc_Base.SaveOnlyBtn_ByLocator);
         }
 
         public virtual void ClickBtn_SaveForward()
         {
             //ScrollToElement(SaveForwardBtn_ByLocator);
-            ClickElement(SaveForwardBtn_ByLocator);
+            ClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
         }
 
         public virtual void ClickBtnJs_SaveForward()
         {
             //ScrollToElement(SaveForwardBtn_ByLocator);
-            JsClickElement(SaveForwardBtn_ByLocator);
+            JsClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
             WaitForPageReady();
         }
 
         public virtual void CreateDocument()
         {
-            ClickElement(UploadNewDesignDoc_ByLocator);
+            ClickElement(DesignDoc_Base.UploadNewDesignDoc_ByLocator);
             EnterDesignDocTitleAndNumber();
             UploadFile("test.xlsx");
-            ClickElement(SaveForwardBtnUploadPage_ByLocator);
+            ClickElement(DesignDoc_Base.SaveForwardBtnUploadPage_ByLocator);
             WaitForPageReady();
         }
 
@@ -305,7 +311,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         private void SetDesignDocTitleAndNumber()
         {
-            guid = MiniGuid.NewGuid();
+            MiniGuid guid = MiniGuid.NewGuid();
 
             string docKey = $"{tenantName}{GetTestName()}";
             docTitleKey = $"{docKey}_DsgnDocTtl";
@@ -486,9 +492,38 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void ClickTab_Closed() => SelectTab(TableTab.Closed);
 
-        public void SortTable_Descending() => SortColumnDescending(ColumnName.Action);
+        public virtual void SortTable_Descending() => SortColumnDescending(ColumnName.Action);
 
-        public void SortTable_Ascending() => SortColumnAscending(ColumnName.Action);
+        public virtual void SortTable_Ascending() => SortColumnAscending(ColumnName.Action);
+
+        public virtual void WaitForActiveCommentTab()
+        {
+            bool activeTabNotDisplayed = true;
+
+            for (int i = 0; i > 30; i++)
+            {
+                do
+                {
+                    if (i == 30)
+                    {
+                        ElementNotVisibleException e = new ElementNotVisibleException();
+                        log.Error($"Comment tab is not visible: {e.Message}");
+                        throw e;
+                    }
+                    else
+                    {
+                        activeTabNotDisplayed = ElementIsDisplayed(By.XPath("//div[@class='k-content k-state-active']"));
+                    }
+                }
+                while (activeTabNotDisplayed);
+            }
+        }
+
+        public virtual void ClickCommentTabNumber(int commentTabNumber)
+        {
+            WaitForActiveCommentTab();
+            Kendo.ClickCommentTab(commentTabNumber);
+        }
     }
 
     #endregion Common Workflow Implementation class

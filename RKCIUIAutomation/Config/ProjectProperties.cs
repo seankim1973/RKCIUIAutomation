@@ -200,7 +200,8 @@ namespace RKCIUIAutomation.Config
             Component.NCR_WF_Complex,
             Component.DIR,
             Component.DIR_WF_Simple_QA,
-            Component.DIR_WF_Simple_QC
+            Component.DIR_WF_Simple_QC,
+            Component.DesignDoc_CommentReview
         };
 
         private readonly List<string> CommonComponents = new List<string>

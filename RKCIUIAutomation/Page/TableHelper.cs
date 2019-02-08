@@ -22,7 +22,7 @@ namespace RKCIUIAutomation.Page
 
         #region Kendo Grid Public Methods
 
-        public void ClickCommentTabNumber(int commentNumber) => Kendo.ClickCommentTab(commentNumber);
+        //public void ClickCommentTabNumber(int commentNumber) => Kendo.ClickCommentTab(commentNumber);
 
         public void ClickTab(Enum tblTabEnum) => Kendo.ClickTableTab(tblTabEnum.GetString());
 
