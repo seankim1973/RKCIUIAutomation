@@ -480,7 +480,7 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Packages();
             WF_QaRcrdCtrl_QaDIR.FilterRecreateColumnWithoutButtonAscending();
-            
+
             string weekStartDate = QaRcrdCtrl_QaDIR.GetDirPackageWeekStartFromRow();
             string packageNumber = QaRcrdCtrl_QaDIR.GetDirPackageNumberFromRow();
             string[] dirNumbers = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnName.DIRs);
@@ -494,18 +494,23 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(newDirNumber);
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(newDirNumber);
 
+            WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, newDirNumber), "VerifyDirIsDisplayed in 'Attachments' tab");
             ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, newDirNumber), "VerifyDirIsDisplayed in 'QC Review' tab");
             ClickEditBtnForRow();
-            WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inReview(newDirNumber);
+            WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, newDirNumber), "VerifyDirIsDisplayed in 'To Be Closed' tab");
             ClickCloseDirBtnForRow(newDirNumber);
+            AcceptAlertMessage();
+            AcceptAlertMessage();
 
-            //verify 'Recreate' button is displayed and DIRs array contians 'newDirNumber'
+            QaRcrdCtrl_QaDIR.ClickTab_Packages();
+            QaRcrdCtrl_QaDIR.VerifyRecreateBtnIsDisplayed(packageNumber, newDirNumber);
+
             //need DB cleanup
             AssertAll();
         }

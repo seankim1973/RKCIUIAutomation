@@ -691,6 +691,8 @@ namespace RKCIUIAutomation.Page
                         alert.Dismiss();
                         actionMsg = "Dismissed";
                     }
+
+                    LogStep($"{actionMsg} Confirmation Dialog: {alertMsg}");
                 }
                 catch (NoAlertPresentException e)
                 {
@@ -698,8 +700,6 @@ namespace RKCIUIAutomation.Page
                     throw e;
                 }
             }
-
-           LogStep($"{actionMsg} Confirmation Dialog: {alertMsg}");
         }
 
         public string AcceptAlertMessage()
@@ -724,8 +724,6 @@ namespace RKCIUIAutomation.Page
                     log.Error($"NoAlertPresentException Msg: {e.Message}");
                     throw e;
                 }
-
-                LogStep(alertMsg);
             }
 
             return alertMsg;
@@ -753,8 +751,6 @@ namespace RKCIUIAutomation.Page
                     log.Error($"NoAlertPresentException Msg: {e.Message}");
                     throw e;
                 }
-
-                LogStep(alertMsg);
             }
 
             return alertMsg;
@@ -802,8 +798,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                //IWebElement element = null;
-                //element = GetElement(elementByLocator);
                 isDisplayed = ScrollToElement(elementByLocator)?.Displayed == true ? true : false;
             }
             catch (Exception e)

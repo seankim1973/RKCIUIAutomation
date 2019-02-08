@@ -105,7 +105,7 @@ namespace RKCIUIAutomation.Page
             internal const string MultiDupsInRow = "MultiDupsInRow";
             internal const string ActionColumnBtn = "ActionColumnBtn";
             internal const string RowEndsWithChkbx = "RowEndsWithChkbx";
-            internal const string ActionCreatePkg = "ActionCreatePkg";
+            internal const string Packages = "Package";
             internal const string Download = "Download";
         }
 
@@ -121,7 +121,8 @@ namespace RKCIUIAutomation.Page
             [StringValue("Delete", BtnCategory.ActionColumnBtn)] Action_Delete,
             [StringValue("Edit", BtnCategory.ActionColumnBtn)] Action_Edit,
             [StringValue("Close DIR", BtnCategory.ActionColumnBtn)] Action_Close_DIR,
-            [StringValue("Create", BtnCategory.ActionCreatePkg)] Action_Create_Package,
+            [StringValue("Create", BtnCategory.Packages)] Create_Package,
+            [StringValue("Recreate", BtnCategory.Packages)] Recreate_Package,
             [StringValue("/a[contains(@onclick, 'download')]", BtnCategory.Download)] Download,
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
@@ -161,6 +162,7 @@ namespace RKCIUIAutomation.Page
 
         private string DetermineTblRowBtnXPathExt(TableButton tblBtn, bool rowEndsWithChkbx = false)
         {
+            string xPathExtRowType = string.Empty;
             string xPathExt = string.Empty;
             string xPathLast(string value = "") => $"[last(){value}]";
 
@@ -181,14 +183,17 @@ namespace RKCIUIAutomation.Page
                     break;
 
                 case BtnCategory.ActionColumnBtn:
-                    string xPathExtRowType = rowEndsWithChkbx
+                    xPathExtRowType = rowEndsWithChkbx
                         ? ""
                         : $"{xPathLast()}";
                     xPathExt = $"{xPathExtRowType}/a[contains(text(),'{xPathExtValue}')]";
                     break;
 
-                case BtnCategory.ActionCreatePkg:
-                    xPathExt = $"/a[text()='{xPathExtValue}']";
+                case BtnCategory.Packages:
+                    xPathExtRowType = rowEndsWithChkbx
+                        ? ""
+                        : $"{xPathLast()}";
+                    xPathExt = $"{xPathExtRowType}/a[text()='{xPathExtValue}']";
                     break;
 
                 default:
@@ -200,10 +205,10 @@ namespace RKCIUIAutomation.Page
 
         private string GetGridTypeXPath(bool isMultiTabGrid)
             => isMultiTabGrid 
-            ? "//div[@class='k-content k-state-active']"
-            : "//div[@data-role='grid']";
+                ? "//div[@class='k-content k-state-active']"
+                : "//div[@data-role='grid']";
 
-        private string TableByTextInRow<T>(T textInRowForAnyColumnOrRowIndex, bool useContainsOperator = false)
+        private string GetXPathForTblRowBasedOnTextInRowOrRowIndex<T>(T textInRowForAnyColumnOrRowIndex, bool useContainsOperator = false)
         {
             object argObj = null;
             string xpath = string.Empty;
@@ -218,68 +223,68 @@ namespace RKCIUIAutomation.Page
             else if (argType == typeof(string))
             {
                 argObj = baseUtils.ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
-                xpath = useContainsOperator
-                    ? $"//td[text()='{argObj}']/parent::tr/td"
-                    : $"//td[contains(text(),'{argObj}')]/parent::tr/td";
+                xpath = string.IsNullOrWhiteSpace((string)argObj)
+                    ? "//tr[1]/td"
+                    : useContainsOperator
+                        ? $"//td[text()='{argObj}']/parent::tr/td"
+                        : $"//td[contains(text(),'{argObj}')]/parent::tr/td";
             }
 
             return xpath;
         }
 
-        private string TableColumnIndex(string columnName)
-            => $"//th[@data-title='{columnName}']";
-
-        private string SetXPath_TableRowBaseByTextInRow<T>(T textInRowForAnyColumnOrRowIndex)
+        private string SetXPath_TableRowBasedOnTextInRowOrRowIndex<T>(T textInRowForAnyColumnOrRowIndex)
         {
             object argObj = null;
             string xpath = string.Empty;
             Type argType = textInRowForAnyColumnOrRowIndex.GetType();
             BaseUtils baseUtils = new BaseUtils();
 
-            if (argType == typeof(string))
+            if (argType == typeof(int))
+            {
+                argObj = baseUtils.ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
+                xpath = $"//tr[{argObj}]/td";
+            }
+            else if (argType == typeof(string))
             {
                 argObj = baseUtils.ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
                 xpath = argObj.Equals("")
                     ? "//tr[1]/td"
-                    : $"{TableByTextInRow(argObj)}";
-            }
-            else if (argType == typeof(int))
-            {
-                argObj = baseUtils.ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
-                xpath = $"//tr[{argObj}]/td";
+                    : $"{GetXPathForTblRowBasedOnTextInRowOrRowIndex(argObj)}";
             }
 
             return xpath;
         }
 
         private By GetTblRowBtn_ByLocator<T>(TableButton tblRowBtn, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
-            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumnOrRowIndex)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
+            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
 
-        public By GetTableRowLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
-            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{TableByTextInRow(textInRowForAnyColumn)}");
+        public By GetTblRow_ByLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
+            => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumn)}");
+
+        private string TableColumnIndex(string columnName)
+            => $"//th[@data-title='{columnName}']";
 
         public string GetColumnValueForRow<T>(T textInRowForAnyColumnOrRowIndex, string getValueFromColumnName, bool isMultiTabGrid = true)
         {
             string rowXPath = string.Empty;
-            string gridTypeXPath = string.Empty;
 
             try
             {
-                gridTypeXPath = $"{GetGridTypeXPath(isMultiTabGrid)}";
+                string gridTypeXPath = $"{GetGridTypeXPath(isMultiTabGrid)}";
 
                 By headerLocator = By.XPath($"{gridTypeXPath}{TableColumnIndex(getValueFromColumnName)}");
                 string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
                 int xPathIndex = int.Parse(dataIndexAttribute) + 1;
 
-                rowXPath = $"{gridTypeXPath}{TableByTextInRow(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
+                rowXPath = $"{gridTypeXPath}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
 
-            string text = GetText(By.XPath(rowXPath));
-            return text;
+            return GetText(By.XPath(rowXPath));
         }
 
         private void ClickButtonForRow<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
@@ -324,8 +329,11 @@ namespace RKCIUIAutomation.Page
         public void ClickEditBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
             => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
 
-        public void ClickCreateBtnForRow(int textInRowForAnyColumn = 1, bool isMultiTabGrid = true, bool rowEndsWithChkbox = true)
-            => ClickButtonForRow(TableButton.Action_Create_Package, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
+        public void ClickCreateBtnForRow(int textInRowForAnyColumn = 1, bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.Create_Package, textInRowForAnyColumn, isMultiTabGrid, true);
+
+        public void ClickRecreateBtnForRow(int textInRowForAnyColumn = 1, bool isMultiTabGrid = true)
+            => ClickButtonForRow(TableButton.Recreate_Package, textInRowForAnyColumn, isMultiTabGrid, false);
 
         public void ClickDownloadBtnForRow(int rowIndex = 1, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
             => ClickButtonForRow(TableButton.Download, rowIndex, isMultiTabGrid, rowEndsWithChkbox);
@@ -383,7 +391,7 @@ namespace RKCIUIAutomation.Page
         }
 
         internal string GetPdfHref<T>(T textInColumnForRowOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
-            => GetAttribute(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{SetXPath_TableRowBaseByTextInRow(textInColumnForRowOrRowIndex)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}"), "href");
+            => GetAttribute(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInColumnForRowOrRowIndex)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}"), "href");
 
         public void SelectCheckboxForRow<T>(T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true)
             => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumnOrRowIndex, isMultiTabGrid);
@@ -440,7 +448,7 @@ namespace RKCIUIAutomation.Page
                         break;
                 }
 
-                By recordRowLocator = GetTableRowLocator(recordNameOrNumber, isMultiTabGrid, filterOperator == FilterOperator.Contains ? true : false);
+                By recordRowLocator = GetTblRow_ByLocator(recordNameOrNumber, isMultiTabGrid, filterOperator == FilterOperator.Contains ? true : false);
 
                 if (isMultiTabGrid)
                 {
@@ -583,7 +591,7 @@ namespace RKCIUIAutomation.Page
                         logMsg = "Searched for Error page headings, but did not find any";
                     }
 
-                    testUtils.AddAssertionToList(errorSearchResult, "Checked ViewDirPDF papge for errors");
+                    testUtils.AddAssertionToList(errorSearchResult, "Verify ViewDirPDF page loaded successfully");
                 }
 
                 string logURLsMatch = $"Expected and Actual PDF Report URLs match<br>{actualReportUrl}";
@@ -594,7 +602,7 @@ namespace RKCIUIAutomation.Page
                         : $"{logURLsMatch}<br>However {logMsg}"
                     : selectNoneForMultiView
                         ? newTabDisplayed
-                            ? "No DIR Rows were selected for MultiView, but a new tab opened"
+                            ? "No DIR Rows were selected for MultiView, but a new browser tab opened"
                             : "Change this message when bug is fixed - should show/check for a pop-up msg (Select a DIR Row)"
                         : $"Unexpected Actual PDF Report URL<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}";
 

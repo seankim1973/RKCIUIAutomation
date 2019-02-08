@@ -696,7 +696,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         /// </summary>
         /// <param name="dirNoTechFromDDL"></param>
         /// <returns></returns>
-        string GetTechIdForDirUserAcct(UserType dirNoDDListTech = UserType.DIRTechQA);
+        string GetTechIdForDirUserAcct(bool selectUserFromDDList = false, UserType dirNoDDListTech = UserType.DIRTechQA);
+
+        void VerifyRecreateBtnIsDisplayed(string packageNumber, string newDirNumber);
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -1536,10 +1538,62 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void EnterText_InspectionDate(string inspectDate)
             => EnterText(By.Id(InputFields.Inspect_Date.GetString()), inspectDate);
 
-        public virtual string GetTechIdForDirUserAcct(UserType dirNoDDListTech = UserType.DIRTechQA)
+        public virtual string GetTechIdForDirUserAcct(bool selectUserFromDDList = false, UserType dirNoDDListTech = UserType.DIRTechQA)
         {
-            ExpandAndSelectFromDDList("TechID", dirNoDDListTech.GetString(), true);
+            if (selectUserFromDDList)
+            {
+                ExpandAndSelectFromDDList("TechID", dirNoDDListTech.GetString(), true);
+            }
+
             return GetAttribute(By.Id("TechID"), "value");
+        }
+
+        public virtual void VerifyRecreateBtnIsDisplayed(string packageNumber, string newDirNumber)
+        {
+            string logMsg = string.Empty;
+            string btnIsDisplayedMsg = "Record was not displayed";
+            string dirsContainsMsg = string.Empty;
+            string trimedPkgNumber = packageNumber.TrimEnd('1', '2');
+            bool recreateBtnIsDisplayed = false;
+            bool dirNumbersContainsNewDIR = false;
+
+            bool recordIsDisplayed = VerifyRecordIsDisplayed(PackagesColumnName.Package_Number, trimedPkgNumber, TableType.MultiTab, false, FilterOperator.Contains);
+
+            AddAssertionToList(recordIsDisplayed, $"VerifyRecreateBtnIsDisplayed: Verify Record PackageNumber({packageNumber}) is displayed");
+
+            if (recordIsDisplayed)
+            {
+                recreateBtnIsDisplayed = ElementIsDisplayed(GetTableBtnLocator(TableButton.Recreate_Package, 1, true, false));
+                btnIsDisplayedMsg = recreateBtnIsDisplayed
+                    ? ""
+                    : " NOT";
+                if (recreateBtnIsDisplayed)
+                {
+                    ClickRecreateBtnForRow();
+                    AcceptAlertMessage();
+                    AcceptAlertMessage();
+
+                    string pkgDIRs = GetColumnValueForRow(1, PackagesColumnName.DIRs.GetString(true));
+                    string newPkgNumber = GetColumnValueForRow(1, PackagesColumnName.Package_Number.GetString(true));
+
+                    List<string> dirNumbers = new List<string>(Regex.Split(pkgDIRs, ", "));
+                    dirNumbersContainsNewDIR = dirNumbers.Contains(newDirNumber);
+                    dirsContainsMsg = dirNumbersContainsNewDIR
+                        ? $""
+                        : $" DOES NOT";
+
+                    string expectedNewPkgNumber = $"{trimedPkgNumber}2";
+                    AddAssertionToList(newPkgNumber.Equals(expectedNewPkgNumber), $"VerifyRecreateBtnIsDisplayed: Verify Expected Package Number after Recreate");
+
+                }
+
+                logMsg = $"Recreate button is{btnIsDisplayedMsg} displayed.<br>New DIRs column{dirsContainsMsg} contain new DIR number {newDirNumber}.";
+            }
+
+            AddAssertionToList(recreateBtnIsDisplayed, $"VerifyRecreateBtnIsDisplayed: Verify Recreate button is displayed");
+            AddAssertionToList(dirNumbersContainsNewDIR, $"VerifyRecreateBtnIsDisplayed: Verify DIRs column shows new DIR");
+
+            LogInfo(logMsg, new bool[] { recreateBtnIsDisplayed, dirNumbersContainsNewDIR });
         }
     }
 

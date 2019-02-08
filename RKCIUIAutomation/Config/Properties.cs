@@ -56,10 +56,10 @@ namespace RKCIUIAutomation.Config
         [StringValue("NCR Technician")] NCRTech,
         [StringValue("CDR Manager")] CDRMgr,
         [StringValue("CDR Technician")] CDRTech,
-        [StringValue("AT_DIR Mgr")] DIRMgrQA,
-        [StringValue("AT_DIR Tech")] DIRTechQA,
-        [StringValue("AT_DIR Mgr QC")] DIRMgrQC,
-        [StringValue("AT_DIR Tech QC")] DIRTechQC
+        [StringValue("AT_Dir Mgr")] DIRMgrQA,
+        [StringValue("AT_Dir Tech")] DIRTechQA,
+        [StringValue("AT_Dir Mgr QC")] DIRMgrQC,
+        [StringValue("AT_Dir Tech QC")] DIRTechQC
     }
 
     public enum UserGroup

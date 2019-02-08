@@ -656,26 +656,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual string Create_DirRevision_For_Package_Recreate_ComplexWF_EndToEnd(string weekStartDate, string packageNumber, string[] dirNumbers)
         {
-            string[] splitWkStartDate = Regex.Split(weekStartDate, "/");
-            string mm = splitWkStartDate[0];
-            string dd = splitWkStartDate[1];
-            string yy = Regex.Split(splitWkStartDate[2], "20")[1];
-            string techID = QaRcrdCtrl_QaDIR.GetTechIdForDirUserAcct();
-
-            string inspectDate = string.Empty;
-            for (int i = 0; i < dirNumbers.Length; i++)
-            {
-                var dir = dirNumbers[i];
-                if (dir.Contains($"{techID}{yy}"))
-                {
-                    var mmdd = Regex.Split(dir, $"{techID}{yy}")[1];
-                    var splitmmdd = Regex.Split(mmdd, mm);
-                    inspectDate = $"{splitmmdd[0]}/{splitmmdd[1]}/20{yy}";
-                    break;
-                }
-            }
-
-            QaRcrdCtrl_QaDIR.EnterText_InspectionDate(inspectDate);
+            //TODO - can't use weekStartDate as inspectDate - DIRs in package may not always be on weekStart date
+            //need to arg needs to be an existing DIR for TechID of DIRQA user
+            QaRcrdCtrl_QaDIR.EnterText_InspectionDate(weekStartDate);
             QaRcrdCtrl_QaDIR.ClickBtn_CreateRevision();
             QaRcrdCtrl_QaDIR.SetDirNumber();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
@@ -687,7 +670,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             SortColumnAscending(PackagesColumnName.Week_Start);
             FilterTableColumnByValue(PackagesColumnName.Recreate, "false");
-            FilterTableColumnByValue(PackagesColumnName.DIRs, QaRcrdCtrl_QaDIR.GetTechIdForDirUserAcct(), TableType.MultiTab, FilterOperator.Contains);
+            FilterTableColumnByValue(PackagesColumnName.DIRs, QaRcrdCtrl_QaDIR.GetTechIdForDirUserAcct(true), TableType.MultiTab, FilterOperator.Contains);
         }
 
         public virtual void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)
