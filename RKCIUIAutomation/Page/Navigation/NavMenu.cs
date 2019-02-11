@@ -33,7 +33,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 }
 
                 reflectedPageType = navEnum.GetType().ReflectedType;
-                
+
                 if (reflectedPageType.Equals(typeof(Project)) || reflectedPageType.IsSubclassOf(typeof(Project)))
                 {
                     mainNavEnum = MainNav.Menu.Project;
@@ -101,6 +101,10 @@ namespace RKCIUIAutomation.Page.Navigation
                     {
                         subOfMainNavEnum = QualitySearch.SubMenu_QualitySearch.QC;
                     }
+                }
+                else if (reflectedPageType.Equals(typeof(DeficienciesAndAudits)))
+                {
+                    mainNavEnum = MainNav.Menu.Deficiencies_and_Audits;
                 }
                 else if (reflectedPageType.Equals(typeof(QAField)))
                 {
@@ -239,6 +243,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Reports & Notices")] Reports_Notices,
                 [StringValue("QA Search")] QA_Search,
                 [StringValue("Quality Search")] Quality_Search,
+                [StringValue("Deficiencies and Audits")] Deficiencies_and_Audits,
                 [StringValue("Lab")] Lab,
                 [StringValue("QA Field")] QA_Field,
                 [StringValue("Owner")] Owner,
@@ -525,6 +530,14 @@ namespace RKCIUIAutomation.Page.Navigation
             }
         }
 
+        public class DeficienciesAndAudits
+        {
+            public enum Menu
+            {
+                [StringValue("General Deficiency Notice")] General_Deficiency_Notice
+            }
+        }
+
         //QA Field Menu Navigation Enums
         public class QAField
         {
@@ -544,8 +557,8 @@ namespace RKCIUIAutomation.Page.Navigation
         {
             public enum Menu
             {
-                [StringValue("Owner_DIRs")] Owner_DIRs,
-                [StringValue("Owner_NCRs")] Owner_NCRs
+                [StringValue("Owner DIRs")] Owner_DIRs,
+                [StringValue("Owner NCRs")] Owner_NCRs
             }
         }
 

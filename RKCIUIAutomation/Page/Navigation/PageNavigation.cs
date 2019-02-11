@@ -734,11 +734,13 @@ namespace RKCIUIAutomation.Page.Navigation
         {
         }
 
-        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.QARecordControl.Menu.General_Deficiency_Notice);
+        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.DeficienciesAndAudits.Menu.General_Deficiency_Notice);
 
         public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.QARecordControl.Menu.QA_IDRs);
 
         public override void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.QCRecordControl.Menu.QC_IDRs);
+
+        public override void QARecordControl_General_NCR() => Navigate.Menu(NavMenu.Owner.Menu.Owner_NCRs);
 
         public override void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QualitySearch.Menu.Inspector_Daily_Report);
 

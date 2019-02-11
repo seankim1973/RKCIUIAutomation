@@ -454,7 +454,7 @@ namespace RKCIUIAutomation.Page
             By locator = pgHelper.GetExpandDDListButtonByLocator(ddListID);
             try
             {
-                ClickElement(locator);
+                JsClickElement(locator);
                 Thread.Sleep(1000);
                 log.Info($"Expanded DDList - {ddListID.ToString()}");
             }

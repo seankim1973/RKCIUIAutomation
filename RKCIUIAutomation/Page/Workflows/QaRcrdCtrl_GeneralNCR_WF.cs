@@ -108,6 +108,7 @@ namespace RKCIUIAutomation.Page.Workflows
             if (!Driver.Title.Contains("NCR List"))
             {
                 NavigateToPage.QARecordControl_General_NCR();
+                QaRcrdCtrl_GeneralNCR.ClickTab_Creating_Revise();
                 Assert.True(VerifyPageTitle("List of NCR Reports"));
             }
         }
