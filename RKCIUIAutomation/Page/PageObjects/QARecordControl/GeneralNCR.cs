@@ -70,6 +70,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("ALL NCRs")] ALL_NCRs,
             [StringValue("Closed NCR")] Closed_NCR,
             [StringValue("CQM Review")] CQM_Review,
+            [StringValue("QM Review")] QM_Review,
+            [StringValue("Create/Revise")] Create_Revise,
             [StringValue("Creating/Revise")] Creating_Revise,
             [StringValue("Developer Concurrence")] Developer_Concurrence,
             [StringValue("DOT Approval")] DOT_Approval,
@@ -83,7 +85,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("To Be Closed")] To_Be_Closed,
             [StringValue("Verification")] Verification,
             [StringValue("Verification and Closure")] Verification_and_Closure,
-            [StringValue("QM Review")] QM_Review,
             [StringValue("EOR Concurrence")] EOR_Concurrence,
             [StringValue("MBTA Concurrence")] MBTA_Concurrence,
             [StringValue("GLXC Acceptance")] GLXC_Acceptance,
@@ -905,22 +906,20 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 string[][] reqFieldTable = new string[expectedCount + 2][];
                 reqFieldTable[tblRowIndex] = new string[2] {"| Expected Required Field | ", " | Found Matching Field |"};
 
-                if (countsMatch)
+                for (int i = 0; i < expectedCount; i++)
                 {
-                    for (int i = 0; i < expectedCount; i++)
-                    {
-                        IWebElement actualElem = ActualReqFieldErrorLabelElements[i];
-                        tblRowIndex++;
-                        string actualId = actualElem.GetAttribute("data-valmsg-for");
-                        reqFieldsMatch = ExpectedRequiredFieldIDs.Contains(actualId);
-                        results.Add(reqFieldsMatch);
+                    IWebElement actualElem = ActualReqFieldErrorLabelElements[i];
+                    tblRowIndex++;
+                    string actualId = actualElem.GetAttribute("data-valmsg-for");
+                    reqFieldsMatch = ExpectedRequiredFieldIDs.Contains(actualId);
+                    results.Add(reqFieldsMatch);
 
-                        string tblRowNumber = tblRowIndex.ToString();
-                        tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}" : tblRowNumber;
-                        reqFieldTable[tblRowIndex] = new string[2] { $"{tblRowNumber}: {actualId}", reqFieldsMatch.ToString() };
-                    }
+                    string tblRowNumber = tblRowIndex.ToString();
+                    tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}" : tblRowNumber;
+                    reqFieldTable[tblRowIndex] = new string[2] { $"{tblRowNumber}: {actualId}", reqFieldsMatch.ToString() };
                 }
-                else
+
+                if (!countsMatch)
                 {
                     LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
                         $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
@@ -1123,6 +1122,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 InputFields.IssuedDate.GetString(),
                 InputFields.Area.GetString(),
+                InputFields.Originator.GetString(),
                 InputFields.Description_of_Nonconformance.GetString(),
                 InputFields.RootCause_of_the_Problem.GetString(),
                 InputFields.PreparedBy.GetString(),
@@ -1136,6 +1136,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             EnterIssuedDate();
             SelectDDL_Area();
+            SelectDDL_Originator();
             EnterDescription();
             EnterRootCauseOfTheProblem();
             SelectDDL_PreparedBy();
@@ -1144,6 +1145,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
             => VerifyNCRDocIsDisplayed(TableTab.QM_Review, ncrDescription);
+
+        public override void ClickTab_Creating_Revise()
+            => ClickTab(TableTab.Create_Revise);
     }
 
     #endregion Implementation specific to GLX
