@@ -676,20 +676,17 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)
         {
             LogDebug($"---> KickBack_DIR_ForRevise_From{kickBackfromTableTab.ToString()}Tab_then_Edit_inCreateReview <---");
-
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber), "VerifyDirIsDisplayed");
             ClickEditBtnForRow();
-        }
-
-        public virtual void Return_DIR_ForRevise_FromQcReview_then_Edit_SaveForward(string dirNumber)
-        {
-            WF_QaRcrdCtrl_QaDIR.Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.QC_Review, dirNumber);
             ClickBtn_KickBackOrRevise();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
             AddAssertionToList(VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
             ClickEditBtnForRow();
         }
+
+        public virtual void Return_DIR_ForRevise_FromQcReview_then_Edit_SaveForward(string dirNumber)
+            => WF_QaRcrdCtrl_QaDIR.Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab.QC_Review, dirNumber);
 
         public virtual void Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(string dirNumber)
         {
@@ -1011,15 +1008,6 @@ namespace RKCIUIAutomation.Page.Workflows
     {
         public QaRcrdCtrl_QaDIR_WF_GLX(IWebDriver driver) : base(driver)
         {
-        }
-
-        public override void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)
-        {
-            LogDebug($"---> GLX - KickBack_DIR_ForRevise_FromTab_{kickBackfromTableTab.ToString()}_then_Edit_inCreateReview <---");
-
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber), $"VerifyDirIsDisplayed({kickBackfromTableTab.ToString()})");
-            ClickEditBtnForRow();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifySectionDescription(), "VerifySectionDescription");
         }
     }
 
