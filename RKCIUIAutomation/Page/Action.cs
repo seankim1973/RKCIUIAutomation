@@ -4,6 +4,7 @@ using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using System;
@@ -1046,26 +1047,44 @@ namespace RKCIUIAutomation.Page
             return isResultExpected;
         }
 
-        public bool VerifyTextAreaField(Enum textAreaField, bool shouldFieldBeEmpty = false)
+        public bool VerifyTextAreaField(Enum textAreaField, bool emptyFieldExpected = false)
         {
-            string text = string.Empty;
-            bool isResultExpected = false;
+            bool result = false;
+
             try
             {
-                text = GetText(GetTextAreaFieldByLocator(textAreaField));
+                string text = GetText(GetTextAreaFieldByLocator(textAreaField));
 
-                bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
-                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty);
-                string expected = shouldFieldBeEmpty ? "empty field" : $"retrieved text: {text}";
-                string logMsg = isResultExpected ? "" : "not ";
-                LogInfo($"Result {logMsg}as expected:<br>{expected}", isResultExpected);
+                if (text.HasValue())
+                {
+                    if (!emptyFieldExpected)
+                    {
+                        result = true;
+                    }
+                }
+                else
+                {
+                    if (emptyFieldExpected)
+                    {
+                        result = true;
+                    }
+                }
+
+                string expected = emptyFieldExpected 
+                    ? "text field should be empty" 
+                    : $"retrieved text: {text}";
+                string logMsg = result 
+                    ? "" 
+                    : "NOT ";
+
+                LogInfo($"Result is {logMsg}as expected:<br>{expected}", result);
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
 
-            return isResultExpected;
+            return result;
         }
 
         private static string ActiveModalXpath => "//div[contains(@style,'opacity: 1')]";

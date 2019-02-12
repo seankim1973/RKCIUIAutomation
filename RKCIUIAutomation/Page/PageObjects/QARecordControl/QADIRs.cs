@@ -1915,15 +1915,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Contractor("LINXS");
             SelectDDL_CrewForeman();
             EnterText_SectionDescription(GetTextFromDDL(QADIRs.InputFields.Spec_Section));
-            SelectChkbox_InspectionType_C();
+            SelectChkbox_InspectionType_I();
             SelectChkbox_InspectionResult_P();
             Enter_ReadyDateTime();
             Enter_CompletedDateTime();
             Enter_TotalInspectionTime();
-            QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
-            //SelectDDL_ControlPointNumber(); //Currently does not have values to choose in the drop down list
-            SelectChkbox_InspectionType_I();
+
+            //<---- Currently does not have values to choose in the drop down list
+            //QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            //AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
+            //SelectDDL_ControlPointNumber(); 
+
             SetDirNumber();
         }
 
