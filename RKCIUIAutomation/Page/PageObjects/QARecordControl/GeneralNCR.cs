@@ -163,15 +163,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         internal void ActionConfirmation(SubmitButtons submitButton, bool acceptAlert = true)
         {
-            try
-            {
-                JsClickElement(GetSubmitButtonByLocator(submitButton));
-            }
-            catch (UnhandledAlertException e)
-            {
-                log.Debug(e.AlertText);
-            }
-
+            JsClickElement(GetSubmitButtonByLocator(submitButton));
             ConfirmActionDialog();
         }
 

@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using static RKCIUIAutomation.Base.BaseUtils;
+using static RKCIUIAutomation.Base.BaseClass;
+
 
 namespace RKCIUIAutomation.Base
 {
@@ -17,13 +19,20 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class WebDriverFactory : DriverOptionsFactory
     {
-        [ThreadStatic]
-        public IWebDriver Driver;
+        public IWebDriver Driver
+        {
+            get
+            {
+                return FactoryInstance._GetDriver(testPlatform, browserType, testDetails, GridVmIP);
+            }
+            set { }
+        }
 
         public WebDriverFactory()
         {
         }
 
+        [ThreadStatic]
         private static WebDriverFactory instance;
 
         private static WebDriverFactory FactoryInstance
@@ -42,8 +51,8 @@ namespace RKCIUIAutomation.Base
         public static IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
             => FactoryInstance._GetDriver(platform, browser, testDetails, gridUri);
 
-        public static void DismissDriverInstance(IWebDriver driver)
-            => FactoryInstance._DismissDriver(driver);
+        public static void DismissDriverInstance()
+            => FactoryInstance._DismissDriver();
 
         public static void DismissAllDriverInstances()
             => FactoryInstance._DismissAll();
@@ -54,14 +63,14 @@ namespace RKCIUIAutomation.Base
             return DriverOptions.DetermineDriverOptions(platform, browser, testDetails).ToCapabilities();
         }
 
-        private static ThreadLocal<IWebDriver> driverThread = new ThreadLocal<IWebDriver>();
+        private ThreadLocal<IWebDriver> driverThread = new ThreadLocal<IWebDriver>();
         private Dictionary<IWebDriver, string> driverToKeyMap = new Dictionary<IWebDriver, string>();
 
         private IWebDriver _GetDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
         {
             ICapabilities caps = GetCapabilities(platform, browser, testDetails);
             string newKey = CreateKey(caps, testDetails);
-            Console.WriteLine($"_SETDRIVER - NEWKEY: {newKey}");
+            //Console.WriteLine($"_SETDRIVER - NEWKEY: {newKey}");
 
             if (!driverThread.IsValueCreated)
             {
@@ -73,7 +82,7 @@ namespace RKCIUIAutomation.Base
 
                 if (!driverToKeyMap.TryGetValue(currentDriver, out string currentKey))
                 {
-                    Console.WriteLine($"_SETDRIVER - CURRENT KEY: {currentKey}");
+                    //Console.WriteLine($"_SETDRIVER - CURRENT KEY: {currentKey}");
                     // The driver was dismissed
                     CreateNewDriver(platform, browser, testDetails, gridUri);
                 }
@@ -82,7 +91,7 @@ namespace RKCIUIAutomation.Base
                     if (newKey != currentKey)
                     {
                         // A different flavour of WebDriver is required
-                        _DismissDriver(currentDriver);
+                        _DismissDriver();
                         CreateNewDriver(platform, browser, testDetails, gridUri);
                     }
                     else
@@ -100,28 +109,30 @@ namespace RKCIUIAutomation.Base
                 }
             }
 
-            Console.WriteLine($"DriverThread Value: {driverThread.Value.ToString()}");
+            //Console.WriteLine($"DriverThread Value: {driverThread.Value.ToString()}");
             return driverThread.Value;
         }
 
-        private void _DismissDriver(IWebDriver driver)
+        private void _DismissDriver()
         {
-            if (!driverToKeyMap.ContainsKey(driver))
+            IWebDriver currentDriver = driverThread.Value;
+
+            if (!driverToKeyMap.ContainsKey(currentDriver))
             {
-                throw new Exception($"The driver is not owned by the factory: {driver}");
+                throw new Exception($"The driver is not owned by the factory: {currentDriver}");
             }
 
-            if (driver != driverThread.Value)
+            if (currentDriver != driverThread.Value)
             {
-                throw new Exception("The driver does not belong to the current thread: " + driver);
+                throw new Exception("The driver does not belong to the current thread: " + currentDriver);
             }
 
             
             Console.WriteLine($"_DISMISSDRIVER - {driverThread.Value}");
 
-            driver.Quit();
-            driverToKeyMap.Remove(driver);
-            driverThread.Dispose();
+            currentDriver.Quit();
+            driverToKeyMap.Remove(currentDriver);
+            currentDriver.Dispose();
         }
 
         private void _DismissAll()
@@ -129,7 +140,8 @@ namespace RKCIUIAutomation.Base
             foreach (IWebDriver driver in new List<IWebDriver>(driverToKeyMap.Keys))
             {
                 Console.WriteLine($"_DISMISSALLDRIVERs - {driverThread.Value}");
-                driver.Quit();
+                //driver.Quit();
+                driver.Dispose();
                 driverToKeyMap.Remove(driver);
             }
             //driverToKeyMap.Clear();
@@ -138,7 +150,7 @@ namespace RKCIUIAutomation.Base
         protected static string CreateKey(ICapabilities capabilities, string testDetails)
         {
             string key = $"{capabilities.ToString()}:{testDetails}";
-            Console.WriteLine($"CREATE KEY: {key}");
+            //Console.WriteLine($"CREATE KEY: {key}");
             return key;
         }
 

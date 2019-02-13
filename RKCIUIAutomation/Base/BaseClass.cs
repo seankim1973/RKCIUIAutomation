@@ -105,17 +105,20 @@ namespace RKCIUIAutomation.Base
         internal static string testComponent2;
 
         [ThreadStatic]
-        private static string testDescription;
+        internal static string testDescription;
 
         [ThreadStatic]
-        private static string[] testRunDetails;
+        internal static string[] testRunDetails;
+
+        [ThreadStatic]
+        internal static string testDetails;
 
         [ThreadStatic]
         private Cookie cookie = null;
 
         #endregion TestCase Details
 
-        private ConfigUtils Configs = new ConfigUtils();
+        private ConfigUtils Configs => new ConfigUtils();
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -123,7 +126,7 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.I15Tech}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
@@ -189,6 +192,8 @@ namespace RKCIUIAutomation.Base
                 testEnv.ToString(),
                 tenantName.ToString()
             };
+
+            testDetails = $"({testEnv}){tenantName} - {testName}";
         }
 
         private void InitExtentTestInstance()
@@ -210,7 +215,6 @@ namespace RKCIUIAutomation.Base
             {
                 if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
                 {
-                    string testDetails = $"({testEnv}){tenantName} - {testName}";
                     Driver = GetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
                     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
                     Driver.Manage().Window.Maximize();
@@ -351,7 +355,7 @@ namespace RKCIUIAutomation.Base
             }
             catch (Exception e)
             {
-                log.Error($"Exception occured for Failed TC in AfterTest method {e.Message}");
+                log.Error($"Exception occurred for a Failed TC in AfterTest method {e.Message}");
             }
             finally
             {
@@ -359,9 +363,13 @@ namespace RKCIUIAutomation.Base
                 {
                     reportInstance.Flush();
 
-                    if (cookie != null)
+                    if (testPlatform == TestPlatform.Grid || testPlatform == TestPlatform.GridLocal)
                     {
-                        Driver.Manage().Cookies.AddCookie(cookie);
+                        if (cookie != null)
+                        {
+                            AddZaleniumCookie(cookie);
+                            //Driver.Manage().Cookies.AddCookie(cookie);
+                        }
                     }
 
                     if (!Driver.Title.Equals("Home Page"))
@@ -375,7 +383,7 @@ namespace RKCIUIAutomation.Base
                         }
                     }
 
-                    DismissDriverInstance(Driver);
+                    DismissDriverInstance();
                 }
             }
         }

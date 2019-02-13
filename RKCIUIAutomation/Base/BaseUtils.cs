@@ -33,7 +33,7 @@ namespace RKCIUIAutomation.Base
         public BaseUtils()
         {
             baseTempFolder = $"{GetCodeBasePath()}\\Temp";
-            fileName = BaseClass.tenantName.ToString();
+            fileName = tenantName.ToString();
             dateString = GetDateString();
         }
 
@@ -238,11 +238,20 @@ namespace RKCIUIAutomation.Base
                 : testInstance.Fail(markupTable);
         }
 
+        public void AddZaleniumCookie(Cookie cookie)
+            => Driver.Manage().Cookies.AddCookie(cookie);
+
         public void LogStep(string testStep)
         {
             string logMsg = $"TestStep: {testStep}";
             testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
             log.Info(logMsg);
+
+            //if (testPlatform == TestPlatform.Grid || testPlatform == TestPlatform.GridLocal)
+            //{
+            //    cookie = new Cookie("zaleniumMessage", testStep);
+            //    AddZaleniumCookie(cookie);
+            //}
         }
 
         public void LogInfo<T>(string details, T assertion, Exception e = null)
