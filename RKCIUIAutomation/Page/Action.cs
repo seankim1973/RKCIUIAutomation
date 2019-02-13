@@ -23,6 +23,8 @@ namespace RKCIUIAutomation.Page
 
         public Action() { }
 
+        public Action(IWebDriver driver) => this.Driver = driver;
+
         private enum JSAction
         {
             [StringValue("arguments[0].click();")] Click,
@@ -695,25 +697,6 @@ namespace RKCIUIAutomation.Page
                 catch (NoAlertPresentException e)
                 {
                     log.Error($"NoAlertPresentException Msg: {e.Message}");
-                }
-            }
-            finally
-            {
-                try
-                {
-                    IAlert alert = Driver.SwitchTo().Alert();
-                    if (confirmYes)
-                    {
-                        alert.Accept();
-                    }
-                    else
-                    {
-                        alert.Dismiss();
-                    }
-                }
-                catch (Exception e)
-                {
-                    log.Error(e.Message);
                 }
             }
         }
