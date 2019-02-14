@@ -73,10 +73,31 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Save Only")] SaveOnly,
             [StringValue("Save & Forward")] SaveForward,
             [StringValue("Back To QC Review")] Back_To_QC_Review,
-            [StringValue ("Back To Disposition")] Back_To_Disposition
+            [StringValue("Back To Disposition")] Back_To_Disposition,
+            [StringValue("QC Disagree")] QC_Disagree,
+            [StringValue("QC Agree")] QC_Agree
         }
 
-       
+        [ThreadStatic]
+        internal static string cdrDescription;
+
+        [ThreadStatic]
+        internal static string cdrNewDescription;
+
+        [ThreadStatic]
+        internal static string cdrDescKey;
+
+        [ThreadStatic]
+        internal static string cdrNewDescKey;
+
+        internal readonly By newBtn_ByLocator = By.XPath("//div[@id='CdrGrid_Revise']/div/a[contains(@class, 'k-button')]");
+
+        internal By GetSubmitBtnLocator(SubmitButtons buttonName)
+        {
+            string buttonValue = buttonName.GetString();
+            By locator = By.XPath($"//input[@value='{buttonValue}']");
+            return locator;
+        }
     }
 
     #endregion CDR Generic class
@@ -193,46 +214,24 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return instance;
         }
 
+        internal GeneralCDR GeneralCDR_Base => new GeneralCDR(Driver);
 
-        [ThreadStatic]
-        private static string cdrDescription;
+        public virtual void ClickBtn_Cancel() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Cancel));
 
-        [ThreadStatic]
-        internal static string cdrNewDescription;
+        public virtual void ClickBtn_SaveOnly() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.SaveOnly));
 
-        [ThreadStatic]
-        private static string cdrDescKey;
+        public virtual void ClickBtn_SaveForward() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.SaveForward));
 
-        [ThreadStatic]
-        internal static string cdrNewDescKey;
+        public virtual void ClickBtn_CloseCDR() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Close_CDR));
 
-        private MiniGuid guid;
+        public virtual void ClickBtn_Revise() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Revise));
 
-        private readonly By newBtn_ByLocator = By.XPath("//div[@id='CdrGrid_Revise']/div/a[contains(@class, 'k-button')]");
-       
-        private By GetSubmitBtnLocator(SubmitButtons buttonName)
-        {
-            string buttonValue = buttonName.GetString();
-            By locator = By.XPath($"//input[@value='{buttonValue}']");
-            return locator;
-        }
+        public virtual void ClickBtn_Back_To_Disposition() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Back_To_Disposition));
 
-        public virtual void ClickBtn_Cancel() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Cancel));
-
-        public virtual void ClickBtn_SaveOnly() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveOnly));
-
-        public virtual void ClickBtn_SaveForward() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.SaveForward));
-
-        public virtual void ClickBtn_CloseCDR() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Close_CDR));
-
-        public virtual void ClickBtn_Revise() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Revise));
-
-        public virtual void ClickBtn_Back_To_Disposition() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Back_To_Disposition));
-
-        public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GetSubmitBtnLocator(SubmitButtons.Back_To_QC_Review));
+        public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Back_To_QC_Review));
 
 
-        public virtual void ClickBtn_New() => JsClickElement(newBtn_ByLocator);
+        public virtual void ClickBtn_New() => JsClickElement(GeneralCDR_Base.newBtn_ByLocator);
 
         public virtual void ClickTab_All() => ClickTab(TableTab.All);
         public virtual void ClickTab_Closed_DN() => ClickTab(TableTab.Closed_DN);
@@ -261,7 +260,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         private void CreateCdrDescription(bool tempDescription = false)
         {
-            guid = MiniGuid.NewGuid();
+            MiniGuid guid = MiniGuid.NewGuid();
             string descKey = $"{tenantName}{GetTestName()}";
             string logMsg = string.Empty;
             string descValue = string.Empty;
@@ -451,6 +450,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public GeneralCDR_GLX(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void ClickBtn_Back_To_Disposition()
+            => JsClickElement(GetSubmitBtnLocator(SubmitButtons.QC_Disagree));
+
+        public override void ClickBtn_CloseCDR()
+            => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.QC_Agree));
     }
 
     #endregion Implementation specific to GLX

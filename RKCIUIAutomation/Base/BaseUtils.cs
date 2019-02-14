@@ -1,6 +1,7 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.MarkupUtils;
 using log4net;
+using log4net.Core;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
@@ -11,8 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.BaseClass;
 
@@ -28,8 +27,7 @@ namespace RKCIUIAutomation.Base
         private static string fileName = string.Empty;
         private static string dateString = string.Empty;
         private static string screenshotSavePath = string.Empty;
-        private readonly string klovPath = @"\\10.1.1.207\errorscreenshots\";
-
+        
         public BaseUtils(IWebDriver driver) => this.Driver = driver;
 
         public BaseUtils()
@@ -79,6 +77,7 @@ namespace RKCIUIAutomation.Base
         {
             string uniqueFileName = string.Empty;
             string fullFilePath = string.Empty;
+            string klovPath = string.Empty;
 
             try
             {
@@ -88,14 +87,43 @@ namespace RKCIUIAutomation.Base
 
                 if (reporter == Reporter.Klov)
                 {
-                    ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
-                    impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
+                    if (testPlatform == TestPlatform.Grid)
+                    {
+                        klovPath = @"\\10.1.1.207\errorscreenshots\";
+
+                        ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
+                        impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
+                    }
+                    else if (testPlatform == TestPlatform.GridLocal)
+                    {
+                        klovPath = @"C:\Automation\klov\errorscreenshots\";
+                        var screenshot = Driver.TakeScreenshot();
+                        screenshot.SaveAsFile($"{klovPath}{uniqueFileName}");
+                    }
                 }
                 else
                 {
                     var screenshot = Driver.TakeScreenshot();
                     screenshot.SaveAsFile(fullFilePath);
+
                 }
+
+                //if (testPlatform == TestPlatform.GridLocal || testPlatform == TestPlatform.Grid)
+                //{
+                //    if (reporter == Reporter.Klov)
+                //    {
+                //        klovPath = testPlatform == TestPlatform.Grid 
+                //            ? @"\\10.1.1.207"
+                //            : @"\\127.0.0.1";
+                //        ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
+                //        impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}\\errorscreenshots\\{uniqueFileName}");
+                //    }
+                //}
+                //else
+                //{
+                //    var screenshot = Driver.TakeScreenshot();
+                //    screenshot.SaveAsFile(fullFilePath);
+                //}
             }
             catch (Exception e)
             {
@@ -105,42 +133,84 @@ namespace RKCIUIAutomation.Base
             return uniqueFileName;
         }
 
+        public string SetGridAddress(TestPlatform platform, string gridIPv4Hostname = "")
+        {
+            string gridIPv4 = gridIPv4Hostname.Equals("")
+                ? platform == TestPlatform.GridLocal
+                    ? "127.0.0.1"
+                    : "10.1.1.207"
+                : gridIPv4Hostname;
+
+            return gridIPv4;
+        }
+
         //ExtentReports Loggers
+
+        private static void LevelLogger(Level logLevel, string logDetails)
+        {
+            if (logLevel == Level.Debug)
+            {
+                log.Debug(logDetails);
+            }
+            else if (logLevel == Level.Warn)
+            {
+                log.Warn(logDetails);
+            }
+            else if (logLevel == Level.Error)
+            {
+                log.Error(logDetails);
+            }
+            else
+            {
+                log.Info(logDetails);
+            }
+        }
+
+        private static void CheckForLineBreaksInLogMsg(Level logLevel, string logDetails, Exception e = null)
+        {
+            if (logDetails.Contains("<br>"))
+            {
+                string[] detailsBr = Regex.Split(logDetails, "<br>");
+                for (int i = 0; i < detailsBr.Length; i++)
+                {
+                    string detail = detailsBr[i];
+                    LevelLogger(logLevel, detail);
+                }
+            }
+            else
+            {
+                LevelLogger(logLevel, logDetails);
+            }
+
+            if (e != null)
+            {
+                testInstance.Error(CreateReportMarkupCodeBlock(e));
+                LevelLogger(Level.Error, e.StackTrace);
+            }
+        }
+
         public void LogAssertIgnore(string msg)
         {
             testInstance.Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
-            log.Debug(msg);
+            CheckForLineBreaksInLogMsg(Level.Debug, msg);
         }
 
         public void LogFail(string details, Exception e = null)
         {
             testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
-            log.Error(details);
-
-            if (e != null)
-            {
-                testInstance.Error(CreateReportMarkupCodeBlock(e));
-                log.Error(e.Message);
-            }
+            CheckForLineBreaksInLogMsg(Level.Error, details, e);
         }
 
         public void LogError(string details, bool takeScreenshot = true, Exception e = null)
         {
             if (takeScreenshot)
             {
-                LogErrorWithScreenshot(details);
+                LogErrorWithScreenshot(details, ExtentColor.Red, e);
             }
             else
             {
                 testInstance.Error(CreateReportMarkupLabel(details, ExtentColor.Red));
-            }
-
-            log.Error(details);
-
-            if (e != null)
-            {
-                testInstance.Error(CreateReportMarkupCodeBlock(e));
-                log.Error(e.Message);
+                CheckForLineBreaksInLogMsg(Level.Error, details, e);
             }
         }
 
@@ -157,40 +227,40 @@ namespace RKCIUIAutomation.Base
             else
                 testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
 
-
-            if (details.Contains("<br>"))
-            {
-                details = Regex.Replace(details, "<br>", "\n");
-            }
-
-            if (exception != null)
-            {
-                log.Debug(details, exception);
-            }
-            else
-                log.Debug(details);
+            CheckForLineBreaksInLogMsg(Level.Debug, details, exception);
         }
 
-        public void LogErrorWithScreenshot(string details = "")
+        public void LogErrorWithScreenshot(string details = "", ExtentColor color = ExtentColor.Red, Exception e = null)
         {
+            string localScreenshotPath = @"C:\Automation\klov\errorscreenshots\";
             string screenshotName = CaptureScreenshot(GetTestName());
-            var screenshotRemotePath = $"http://10.1.1.207/errorscreenshots/{screenshotName}";
-            var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">";
-            testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, ExtentColor.Red));
+            var screenshotRefPath = reporter == Reporter.Klov
+                ? testPlatform == TestPlatform.GridLocal
+                    ? $"http://127.0.0.1/errorscreenshots/{screenshotName}"
+                    : $"http://10.1.1.207/errorscreenshots/{screenshotName}"
+                : $"{localScreenshotPath}{screenshotName}";
+            var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRefPath}\" class=\"step-img\" src=\"{screenshotRefPath}\" data-src=\"{screenshotRefPath}\" width=\"200\">";
+
+            //testInstance = color.Equals(ExtentColor.Red)
+            //    ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
+            //    : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color));
+
+            testInstance = reporter == Reporter.Klov
+                ? color.Equals(ExtentColor.Red)
+                    ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
+                    : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color))
+                : color.Equals(ExtentColor.Red)
+                    ? testInstance.Error($"Test Failed: <br> {details}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotRefPath, screenshotName).Build())
+                    : testInstance.Warning($"Test Failed: <br> {details}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotRefPath, screenshotName).Build());
+
+            CheckForLineBreaksInLogMsg(Level.Error, details, e);
         }
 
         public static void LogInfo(string details)
         {
-            string[] detailsBr = null;
-
             if (details.Contains("<br>"))
             {
                 testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
-                detailsBr = Regex.Split(details, "<br>");
-                for (int i = 0; i < detailsBr.Length; i++)
-                {
-                    log.Info(detailsBr[i]);
-                }
             }
             else if (details.Contains("#####"))
             {
@@ -207,63 +277,70 @@ namespace RKCIUIAutomation.Base
             else
             {
                 testInstance.Info(details);
-                log.Info(details);
             }
+
+            CheckForLineBreaksInLogMsg(Level.Info, details);
         }
 
         public void LogInfo(string[][] detailsList, bool assertion)
         {
             IMarkup markupTable = MarkupHelper.CreateTable(detailsList);
-            testInstance = assertion ? testInstance.Pass(markupTable) : testInstance.Fail(markupTable);
+            testInstance = assertion
+                ? testInstance.Pass(markupTable)
+                : testInstance.Fail(markupTable);
         }
 
-        public void LogInfo(string details, bool assertion, Exception e = null)
+        public void LogStep(string testStep)
         {
-            bool hasPgBreak = false;
-            string[] detailsBr = null;
+            string logMsg = $"TestStep: {testStep}";
+            testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
+            CheckForLineBreaksInLogMsg(Level.Info, logMsg);
+        }
 
-            if (details.Contains("<br>"))
+        public void LogInfo<T>(string details, T assertion, Exception e = null)
+        {
+            object resultObj = null;
+            int resultGauge = 0;
+            Type assertionType = assertion.GetType();
+            BaseUtils baseUtils = new BaseUtils();
+
+            if (assertionType == typeof(bool))
             {
-                detailsBr = Regex.Split(details, "<br>");
-                hasPgBreak = true;
+                resultObj = baseUtils.ConvertToType<bool>(assertion);
+                resultGauge = (bool)resultObj
+                    ? resultGauge + 1
+                    : resultGauge - 1;
+            }
+            else if (assertionType == typeof(bool[]))
+            {
+                resultObj = baseUtils.ConvertToType<bool[]>(assertion);
+                resultObj = new bool[] { };
+
+                foreach (bool obj in (bool[])resultObj)
+                {
+                    resultGauge = obj
+                        ? resultGauge + 1
+                        : resultGauge - 1;
+                }
             }
 
-            if (assertion)
+            if (resultGauge >= 1)
             {
-                if (hasPgBreak)
-                {
-                    for (int i = 0; i < detailsBr.Length; i++)
-                    {
-                        log.Info(detailsBr[i]);
-                    }
-                }
-                else
-                {
-                    log.Info(details);
-                }
-
                 testInstance.Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
+                CheckForLineBreaksInLogMsg(Level.Info, details);
             }
-            else
+            else if (resultGauge <= -1)
             {
-                if (hasPgBreak)
-                {
-                    for (int i = 0; i < detailsBr.Length; i++)
-                    {
-                        log.Error(detailsBr[i]);
-                    }
-                }
-                else
-                {
-                    log.Error(details);
-                }
-
-                if (e != null)
-                {
-                    log.Debug(e.StackTrace);
-                }
-
                 LogErrorWithScreenshot(details);
+            }
+            else if (resultGauge == 0)
+            {
+                LogErrorWithScreenshot(details, ExtentColor.Orange);
+            }
+
+            if (e != null)
+            {
+                log.Error(e.StackTrace);
             }
         }
 
@@ -276,7 +353,6 @@ namespace RKCIUIAutomation.Base
         //TODO: Generic Result Calculator and Logger
         public void GetResults<T>(Enum element, ValidationType validationType, T expected, T actual)
         {
-            PageHelper pgHelper = new PageHelper();
             string expectedHeader = string.Empty;
             string actualHeader = string.Empty;
 
@@ -293,7 +369,9 @@ namespace RKCIUIAutomation.Base
                     break;
             }
 
-            bool isResultExpected = actual.Equals(expected) ? true : false;
+            bool isResultExpected = actual.Equals(expected)
+                ? true
+                : false;
 
             string[] resultLogMsg = isResultExpected
                 ? new string[]
@@ -307,50 +385,64 @@ namespace RKCIUIAutomation.Base
                     ", but"
                 };
 
-            var argType = expected.GetType();
+            Type argType = expected.GetType();
+            BaseUtils baseUtils = new BaseUtils();
             string Should = string.Empty;
             string Is = string.Empty;
 
             if (argType == typeof(string))
             {
-                pgHelper.ConvertToType<string>(expected);
-                pgHelper.ConvertToType<string>(actual);
+                baseUtils.ConvertToType<string>(expected);
+                baseUtils.ConvertToType<string>(actual);
 
                 Should = isResultExpected ? "" : "";
             }
             else if (argType == typeof(int))
             {
-                pgHelper.ConvertToType<int>(expected);
-                pgHelper.ConvertToType<int>(actual);
+                baseUtils.ConvertToType<int>(expected);
+                baseUtils.ConvertToType<int>(actual);
             }
             else if (argType == typeof(bool))
             {
-                Should = pgHelper.ConvertToType<bool>(expected) ? "Should be selected" : "Should Not be selected";
-                Is = pgHelper.ConvertToType<bool>(actual) ? "Is selected" : "Is Not selected";
+                Should = baseUtils.ConvertToType<bool>(expected)
+                    ? "Should be selected"
+                    : "Should Not be selected";
+                Is = baseUtils.ConvertToType<bool>(actual)
+                    ? "Is selected"
+                    : "Is Not selected";
             }
 
             string logMsg = $" [Result {resultLogMsg[0]} expectations] {Should}{resultLogMsg[1]} {Is}";
             LogInfo($"{expectedHeader}: {expected}<br>{actualHeader}: {actual}<br>{element.ToString()} {logMsg} ", isResultExpected);
         }
 
-        private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue) => MarkupHelper.CreateLabel(details, extentColor);
+        private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
+            => MarkupHelper.CreateLabel(details, extentColor);
 
-        private static IMarkup CreateReportMarkupCodeBlock(Exception e) => MarkupHelper.CreateCodeBlock($"Exception: {e.StackTrace}");
+        private static IMarkup CreateReportMarkupCodeBlock(Exception e)
+            => MarkupHelper.CreateCodeBlock($"Exception: {e.StackTrace}");
 
         //Helper methods to gather Test Context Details
-        public static string GetTestName() => GetTestContextProperty(TestContextProperty.TestName);
+        public static string GetTestName()
+            => GetTestContextProperty(TestContextProperty.TestName);
 
-        public static string GetTestComponent1() => GetTestContextProperty(TestContextProperty.TestComponent1);
+        public static string GetTestComponent1()
+            => GetTestContextProperty(TestContextProperty.TestComponent1);
 
-        public static string GetTestComponent2() => GetTestContextProperty(TestContextProperty.TestComponent2);
+        public static string GetTestComponent2()
+            => GetTestContextProperty(TestContextProperty.TestComponent2);
 
-        public static string GetTestDescription() => GetTestContextProperty(TestContextProperty.TestDescription);
+        public static string GetTestDescription()
+            => GetTestContextProperty(TestContextProperty.TestDescription);
 
-        public static string GetTestPriority() => GetTestContextProperty(TestContextProperty.TestPriority);
+        public static string GetTestPriority()
+            => GetTestContextProperty(TestContextProperty.TestPriority);
 
-        public static string GetTestCaseNumber() => GetTestContextProperty(TestContextProperty.TestCaseNumber);
+        public static string GetTestCaseNumber()
+            => GetTestContextProperty(TestContextProperty.TestCaseNumber);
 
-        public static string GetTestClassName() => GetTestContextProperty(TestContextProperty.TestClass);
+        public static string GetTestClassName()
+            => GetTestContextProperty(TestContextProperty.TestClass);
 
         private static string GetTestContextProperty(TestContextProperty testContextProperty)
         {
@@ -453,6 +545,20 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+            }
+        }
+
+        public OutType ConvertToType<OutType>(object objToConvert)
+        {
+            try
+            {
+                Type inputType = objToConvert.GetType();
+                return (OutType)Convert.ChangeType(objToConvert, typeof(OutType));
+            }
+            catch (Exception e)
+            {
+                log.Error($"Error occured in ConvertToType method:\n{e.Message}");
+                throw;
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using System;
 using System.ComponentModel;
@@ -221,9 +222,15 @@ namespace RKCIUIAutomation.Config
 
         public void ScreenshotTool(Task task, string sourceFile, string destinationFilePath = "", string userName = "", string domain = "", string password = "")
         {
-            ImpersonateUser.userName = string.IsNullOrEmpty(userName) ? "rkci" : userName;
-            ImpersonateUser.domain = string.IsNullOrEmpty(domain) ? "." : domain;
-            ImpersonateUser.password = string.IsNullOrEmpty(password) ? "Password@123" : password;
+            ImpersonateUser.userName = userName.HasValue()
+                ? userName
+                : "rkci";
+            ImpersonateUser.domain = domain.HasValue()
+                ? domain
+                : ".";
+            ImpersonateUser.password = password.HasValue()
+                ? password
+                : "Password@123";
 
             if (!LogonUser(ImpersonateUser.userName, ImpersonateUser.domain, ImpersonateUser.password, LogonType.NewCredentials, LogonProvider.Default, out IntPtr token))
             {
@@ -243,13 +250,14 @@ namespace RKCIUIAutomation.Config
                     {
                         if (task == Task.COPY)
                         {
-                            if (string.IsNullOrEmpty(destinationFilePath))
+                            if (destinationFilePath.HasValue())
                             {
-                                Console.WriteLine("Destination File Path is not specified.");
+                                Console.WriteLine($"COPY FROM: {sourceFile}");
+                                Console.WriteLine($"COPY TO: {destinationFilePath}");
+                                File.Copy($"{sourceFile}", $"{destinationFilePath}", true);
                             }
-                            Console.WriteLine($"COPY FROM: {sourceFile}");
-                            Console.WriteLine($"COPY TO: {destinationFilePath}");
-                            File.Copy($"{sourceFile}", $"{destinationFilePath}", true);
+                            else
+                                Console.WriteLine("Destination File Path is not specified.");
                         }
                         else
                         {

@@ -4,11 +4,13 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static NUnit.Framework.TestContext;
 
 namespace RKCIUIAutomation.Base
@@ -78,6 +80,9 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         public static bool hiptest;
 
+        [ThreadStatic]
+        public static string GridVmIP;
+
         #endregion Test Environment Details
 
         #region TestCase Details
@@ -109,6 +114,9 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         private Cookie cookie = null;
 
+        [ThreadStatic]
+        internal static string testDetails;
+
         #endregion TestCase Details
 
         private ConfigUtils Configs = new ConfigUtils();
@@ -116,11 +124,12 @@ namespace RKCIUIAutomation.Base
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Local}");
+            string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
-            string _reporter = Parameters.Get("Reporter", $"{Reporter.Html}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
+            string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
+            string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
             testPlatform = Configs.GetTestRunEnv<TestPlatform>(_testPlatform);
@@ -136,6 +145,7 @@ namespace RKCIUIAutomation.Base
                 : testPlatform;
 
             DetermineReportFilePath();
+            GridVmIP = SetGridAddress(testPlatform, _gridAddress);
 
             if (hiptest)
             {
@@ -158,11 +168,7 @@ namespace RKCIUIAutomation.Base
                 hipTestInstance.SyncTestRun(hipTestRunId);
             }
 
-            if (Driver != null)
-            {
-                Driver.Close();
-                Driver.Quit();
-            }
+            DismissAllDriverInstances();
         }
 
         private void GenerateTestRunDetails()
@@ -208,9 +214,9 @@ namespace RKCIUIAutomation.Base
             {
                 if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
                 {
-                    string testDetails = $"({testEnv}){tenantName} - {testName}";
-                    Driver = GetWebDriver(testPlatform, browserType, testDetails);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(45);
+                    testDetails = $"({testEnv}){tenantName} - {testName}";
+                    Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
+                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 
@@ -245,7 +251,7 @@ namespace RKCIUIAutomation.Base
             Driver = InitWebDriverInstance();
         }
 
-        internal void SkipTest(string testComponent = "", string[] reportCategories = null)
+        private void SkipTest(string testComponent = "", string[] reportCategories = null)
         {
             //string component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
             reportCategories = reportCategories ?? testRunDetails;
@@ -280,7 +286,7 @@ namespace RKCIUIAutomation.Base
             log.Info($"#");
             log.Info($"#  -->> Test Case Details <<--");
             log.Info($"#  Name: {testName}");
-            log.Info($"#  Desription: {testDescription}");
+            log.Info($"#  Description: {testDescription}");
             log.Info($"#  TC#: {_tcNumber}, {_priority}");
             log.Info($"#  Suite: {_suite}, Component{components}");
             log.Info($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");
@@ -300,7 +306,11 @@ namespace RKCIUIAutomation.Base
                 {
                     case TestStatus.Failed:
                         string injMsg = (string)testResults[1];
-                        string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? (injMsg = string.IsNullOrEmpty(injMsg) ? "" : $"{injMsg}<br> ") : $"<pre>{result.StackTrace}</pre>";
+                        string stacktrace = result.StackTrace.HasValue()
+                            ? (injMsg = injMsg.HasValue()
+                                ? ""
+                                : $"{injMsg}<br> ")
+                            : $"<pre>{result.StackTrace}</pre>";
                         string screenshotName = CaptureScreenshot(GetTestName());
 
                         if (reporter == Reporter.Klov)
@@ -312,7 +322,7 @@ namespace RKCIUIAutomation.Base
                             */
 
                             //Workaround due to bug in Klov Reporter
-                            var screenshotRemotePath = $"http://10.1.1.207/errorscreenshots/{screenshotName}";
+                            var screenshotRemotePath = $"http://{GridVmIP}/errorscreenshots/{screenshotName}";
                             var detailsWithScreenshot = $"Test Failed:<br> {stacktrace}<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">";
                             testInstance.Fail(MarkupHelper.CreateLabel(detailsWithScreenshot, ExtentColor.Red));
                         }
@@ -372,6 +382,8 @@ namespace RKCIUIAutomation.Base
                         {
                         }
                     }
+
+                    DismissDriverInstance(Driver);
                 }
             }
         }

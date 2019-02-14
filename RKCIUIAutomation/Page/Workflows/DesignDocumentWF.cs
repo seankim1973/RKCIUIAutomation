@@ -15,28 +15,28 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public DesignDocumentWF(IWebDriver driver) => this.Driver = driver;
 
-        internal void WaitForActiveCommentTab()
-        {
-            bool activeTabNotDisplayed = true;
+        //internal void WaitForActiveCommentTab()
+        //{
+        //    bool activeTabNotDisplayed = true;
 
-            for (int i = 0; i > 30; i++)
-            {
-                do
-                {
-                    if (i == 30)
-                    {
-                        ElementNotVisibleException e = new ElementNotVisibleException();
-                        log.Error($"Comment tab is not visible: {e.Message}");
-                        throw e;
-                    }
-                    else
-                    {
-                        activeTabNotDisplayed = ElementIsDisplayed(By.XPath("//div[@class='k-content k-state-active']"));
-                    }
-                }
-                while (activeTabNotDisplayed);
-            }
-        }
+        //    for (int i = 0; i > 30; i++)
+        //    {
+        //        do
+        //        {
+        //            if (i == 30)
+        //            {
+        //                ElementNotVisibleException e = new ElementNotVisibleException();
+        //                log.Error($"Comment tab is not visible: {e.Message}");
+        //                throw e;
+        //            }
+        //            else
+        //            {
+        //                activeTabNotDisplayed = ElementIsDisplayed(By.XPath("//div[@class='k-content k-state-active']"));
+        //            }
+        //        }
+        //        while (activeTabNotDisplayed);
+        //    }
+        //}
     }
 
     public interface IDesignDocumentWF
@@ -126,7 +126,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
             ClickEnterBtnForRow();
-            DesignDocWF.WaitForActiveCommentTab();
+            DesignDocCommentReview.WaitForActiveCommentTab();
         }
 
         //All Tenants
@@ -169,7 +169,7 @@ namespace RKCIUIAutomation.Page.Workflows
             //TableHelper.ClickEnterBtnForRow();
             //WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
-            DesignDocWF.WaitForActiveCommentTab();
+            DesignDocCommentReview.WaitForActiveCommentTab();
             WaitForPageReady();
         }
 
@@ -314,28 +314,6 @@ namespace RKCIUIAutomation.Page.Workflows
         {
         }
 
-        public override void TCWF_CommentReviewNoComment()
-        {
-            LogInfo("--------------------------1.Login As IQF User and Create Document----------------------");
-            CreateDesignDocCommentReviewDocument(UserType.IQFUser);
-            LogoutToLoginPage();
-
-            LogInfo("--------------------------2.Login As DOT User and enter no comment----------------------");
-            EnterNoComment(UserType.DOTUser);
-            LogoutToLoginPage();
-
-            LogInfo("--------------------------3. Login As DOT Admin and Forward Comment----------------------");
-            ForwardComment(UserType.DOTAdmin);
-            LogoutToLoginPage();
-
-            LogInfo("--------------------------4. DEV Admin verifies if record in closed tab ----------------------");
-
-            //missing steps - Doc is not seen under Closed tab after previous step for GLX
-
-            LogInfo("--------------------------5. DEV Admin verifies if record in closed tab ----------------------");
-            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
-        }
-
         public override void ForwardResolutionCommentAndCodeForDisagreeResponse()
         {
             DesignDocCommentReview.ClickTab_Pending_Resolution();
@@ -455,7 +433,7 @@ namespace RKCIUIAutomation.Page.Workflows
             //TableHelper.ClickEnterBtnForRow();
             //WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
-            DesignDocWF.WaitForActiveCommentTab();
+            DesignDocCommentReview.WaitForActiveCommentTab();
             WaitForPageReady();
         }
 
@@ -641,7 +619,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             int commentTabNumber = 2;
-            ClickCommentTabNumber(commentTabNumber);
+            DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
             EnterComment(CommentType.CommentResolutionInput, commentTabNumber);
             DesignDocCommentReview.SelectDisagreeResolutionCode(commentTabNumber);
             DesignDocCommentReview.ClickBtn_SaveOnly();
@@ -667,7 +645,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.SelectDisagreeResponseCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             int commentTabNumber = 2;
-            ClickCommentTabNumber(commentTabNumber);
+            DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
             EnterComment(CommentType.CommentResponseInput, commentTabNumber);
             DesignDocCommentReview.SelectDisagreeResponseCode(commentTabNumber);
             DesignDocCommentReview.ClickBtn_SaveOnly();
@@ -690,7 +668,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.SelectDDL_ClosingStamp();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             int commentTabNumber = 2;
-            ClickCommentTabNumber(commentTabNumber);
+            DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
             EnterComment(CommentType.CommentClosingInput, commentTabNumber);
             DesignDocCommentReview.SelectDDL_ClosingStamp(commentTabNumber);
             DesignDocCommentReview.ClickBtn_SaveOnly();

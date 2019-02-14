@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Win32;
 using MiniGuids;
 using NUnit.Framework.Interfaces;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
@@ -9,6 +11,7 @@ using RKCIUIAutomation.Test;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -252,7 +255,7 @@ namespace RKCIUIAutomation.Sandbox
             internal const string Cat1 = "Cat1";
         }
 
-        private enum TableButton
+        private new enum TableButton
         {
             [StringValue("", BtnCategory.Cat1)] QMS_Attachments_View,
             [StringValue("-1")] Report_View,
@@ -282,10 +285,11 @@ namespace RKCIUIAutomation.Sandbox
         public void EnumParseTest()
         {
             Enum tblTabEnum = TableButton.Report_View;
+            BaseUtils baseUtils = new BaseUtils();
 
             Type enumType = tblTabEnum.GetType();
             object kendoTabStripEnum = Enum.Parse(enumType, "KendoTabStripId");
-            Enum tabStripEnum = ConvertToType<Enum>(kendoTabStripEnum);
+            Enum tabStripEnum = baseUtils.ConvertToType<Enum>(kendoTabStripEnum);
             string expected = "KENDOUItabStripID";
             string actual = tabStripEnum.GetString();
             Console.WriteLine($"EXPECTED VALUE: {expected}\nACTUAL VALUE: {actual}");
@@ -686,5 +690,100 @@ namespace RKCIUIAutomation.Sandbox
 
         }
 
+        [TestMethod]
+        public void StringTest()
+        {
+            //string[] rowIDs = new string[]{ "123", "456", "789" };
+            //string url = "http://stage.sh249.elvispmc.com/Dir/ViewDirPDF?DirId=5626";
+            //string[] split = Regex.Split(url, "ViewDirPDF\\?DirId=");
+
+            //int rowCount = 3;
+            //string expectedUrl = $"{split[0]}ViewMultiDirPDF?";
+
+            //for (int i = 0; i < rowCount; i++)
+            //{
+            //    string dirID = $"DirIds[{i}]={rowIDs[i]}&";
+            //    expectedUrl = $"{expectedUrl}{dirID}";
+            //}
+
+            //expectedUrl = expectedUrl.TrimEnd('&');
+            //Console.WriteLine(expectedUrl);
+
+            string val = "-1";
+            Console.WriteLine((int.Parse(val) - 1).ToString());
+        }
+
+        [TestMethod]
+        public void CurrentUserDownloadFolder()
+        {
+            var path = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders", "{374DE290-123F-4565-9164-39C4925E467B}", string.Empty).ToString();
+            string fileName = "IQF-DIR-20190127-1.zip";
+            string file = $"{path}\\{fileName}";
+            bool fileExists = File.Exists(file);
+            Assert.IsTrue(fileExists);
+            if (fileExists)
+            {
+                File.Delete(file);
+            }
+            fileExists = File.Exists(file);
+            Assert.IsFalse(fileExists);
+            Console.WriteLine(file);
+        }
+
+        internal TOut GetDirPackagesDataForRow<TOut>(bool returnArray)
+        {
+            string tblData = returnArray
+                ? "2286180604, 6045180604, 3421180604, 0083180604, 6045180605, 3424180606, 0663180606, 2286180606, 6045180606, 3424180607, 0663180607, 2286180607, 6045180607, 1716180607, 6045180608, 2286180608, 6621180609, 1716180607"
+                : "DIRNumber";
+            BaseUtils utils = new BaseUtils();
+
+            if (returnArray)
+            {
+                string[] arrayArg = new string[] { };
+                arrayArg = Regex.Split(tblData, ", ");
+                return utils.ConvertToType<TOut>(arrayArg);
+            }
+            else
+            {
+                return utils.ConvertToType<TOut>(tblData);
+            }
+        }
+
+        [TestMethod]
+        public void GenericOutput()
+        {
+            //string valueString = GetDirPackagesDataForRow<string>(false);
+            string[] valueArray = GetDirPackagesDataForRow<string[]>(true);
+
+            //Console.WriteLine(valueString);
+
+            foreach (string i in valueArray)
+            {
+                Console.WriteLine(i);
+            }
+        }
+
+        [TestMethod]
+        public void DateTimeParse()
+        {
+            string filterValue = "04/22/2018";
+            DateTime.TryParse(filterValue, out DateTime filterDateTime);
+            Console.WriteLine($"MM: {filterDateTime.Month}");
+            Console.WriteLine($"DD: {filterDateTime.Day}");
+            Console.WriteLine($"YYYY: {filterDateTime.Year}");
+        }
+
+        [TestMethod]
+        public void Test()
+        {
+            //string packageNumber = "IQF-DIR-20181209-2";
+            //Console.WriteLine(packageNumber.TrimEnd('1', '2'));
+
+            string test = "";
+            bool hasValue = test.HasValue();
+            bool isNullOrEmpty = string.IsNullOrEmpty(test);
+            Console.WriteLine($"HAS VALUE: {hasValue}");
+            Console.WriteLine($"ISNULLOREMPTY: {isNullOrEmpty}");
+        }
     }
 }

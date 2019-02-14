@@ -692,25 +692,20 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Get DIR Tab Names")]
         public void GetDirDataFromDB()
         {
-            string dirNumber = "3333190121";
-
+            string dirNumber = "3333181211";
+            string dirRev = "B";
             DirDbData data = new DirDbData();
 
-            List<DirDbData> dataList = new List<DirDbData>();
-
             DirDbAccess db = new DirDbAccess();
-            dataList = db.GetDirData(dirNumber);
-            data = dataList[0];
+            data = db.GetDirData(dirNumber, dirRev);
             Console.WriteLine($"BEFORE: {data.DirData}");
 
-            db.SetDirIsDeletedDbValue(dirNumber);
-            dataList = db.GetDirData(dirNumber);
-            data = dataList[0];
+            db.SetDIR_DIRNO_IsDeleted(dirNumber);
+            data = db.GetDirData(dirNumber, dirRev);
             Console.WriteLine($"AFTER: {data.DirData}");
 
-            db.SetDirIsDeletedDbValue(dirNumber, "A", false);
-            dataList = db.GetDirData(dirNumber);
-            data = dataList[0];
+            db.SetDIR_DIRNO_IsDeleted(dirNumber, dirRev, false);
+            data = db.GetDirData(dirNumber, dirRev);
             Console.WriteLine($"Set IsDeleted to 1: {data.DirData}");
         }
     }

@@ -57,7 +57,7 @@ namespace RKCIUIAutomation.Tools
             return projID;
         }
 
-        public List<DirDbData> GetDirData(string dirNumber, string revision = "A")
+        public DirDbData GetDirData(string dirNumber, string revision = "A")
         {
             List<DirDbData> output = new List<DirDbData>();
             try
@@ -66,31 +66,79 @@ namespace RKCIUIAutomation.Tools
 
                 using (IDbConnection connection = DbHelper.GetSqlConnection())
                 {
-                    output = connection.Query<DirDbData>($"select IsDeleted, * from DIR  where ProjectID={projID} and DIRNO='{dirNumber}' and Revision='{revision}'").ToList();
+                    output = connection.Query<DirDbData>($"select * from DIR where ProjectID={projID} and DIRNO='{dirNumber}' and Revision='{revision}'").ToList();
                 }              
             }
             catch (ArgumentOutOfRangeException e)
             {
-                log.Debug(e.StackTrace);
+                log.Error(e.StackTrace);
+                throw e;
             }
-            return output;
+            return output[0];
         }
 
-        public void SetDirIsDeletedDbValue(string dirNumber, string revision = "A", bool setAsDeleted = true)
+        public void SetDIR_DIRNO_IsDeleted(string dirNumber, string revision = "A", bool setAsDeleted = true)
         {
             try
             {
                 int projID = GetCurrentProjectID();
-                int isDelected = setAsDeleted ? 1 : 0;
+                int isDeleted = setAsDeleted ? 1 : 0;
 
                 using (IDbConnection connection = DbHelper.GetSqlConnection())
                 {
-                    connection.Execute($"update DIR set IsDeleted={isDelected} where ProjectId={projID} and DIRNO='{dirNumber}' and Revision='{revision}'");
+                    connection.Execute($"update DIR set IsDeleted={isDeleted} where ProjectId={projID} and DIRNO='{dirNumber}' and Revision='{revision}'");
                 }
             }
             catch (ArgumentOutOfRangeException e)
             {
                 log.Debug(e.StackTrace);
+            }
+        }
+
+        public DirDbData GetDirPackageData(string packageNumber)
+        {
+            List<DirDbData> output = new List<DirDbData>();
+
+            try
+            {
+                int projID = GetCurrentProjectID();
+
+                using (IDbConnection connection = DbHelper.GetSqlConnection())
+                {
+                    string sql = $"SELECT * FROM DIRPackage where Id = (select max(Id) from DIRPackage as pkg where ProjectID={projID} and PackageNo='{packageNumber}')";
+                    output = connection.Query<DirDbData>(sql).ToList();
+                }
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                log.Error(e.StackTrace);
+                throw e;
+            }
+            
+            return output[0];
+        }
+
+        public void SetDIRPackageNo_AndReferences_AsDeleted(string packageNumber)
+        {
+            try
+            {
+                int projID = GetCurrentProjectID();
+
+                using (IDbConnection connection = DbHelper.GetSqlConnection())
+                {
+                    string sql =
+                        $"DECLARE @pkgId int " +
+                        $"SET @pkgId = (Select max(Id) from DIRPackage as pkg where ProjectId={projID} and PackageNo='{packageNumber}') " +
+                        $"update DIR set DIRPackageID = null from(Select * From DIR) t1 where DIR.DIRPackageID = @pkgId " +
+                        $"update DIRPackage set IsDeleted = 1 where DIRPackage.Id = @pkgId";
+
+                    connection.Execute(sql);
+                }
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                log.Error(e.StackTrace);
+                throw e;
             }
         }
     }
@@ -103,9 +151,15 @@ namespace RKCIUIAutomation.Tools
 
         public int ProjectId { get; set; }
 
+        public object DIRPackageID { get; set; }
+
+        public string PackageNo { get; set; }
+
         public string DIRNO { get; set; }
 
         public string Revision { get; set; }
+
+
 
         public string DirData
         {

@@ -30,10 +30,6 @@ namespace RKCIUIAutomation.Base
 
                 if (reporter == Reporter.Klov)
                 {
-                    var gridHub = testPlatform.Equals(TestPlatform.GridLocal)
-                        ? GridVmIP
-                        : "localhost";
-
                     GetReportInstance().AttachReporter(HtmlReporter, GetKlovReporter(GridVmIP));
                 }
                 else
@@ -48,7 +44,7 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw;
+                throw e;
             }
         }
 
@@ -61,12 +57,13 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 log.Error($"Error in GetHtmlReporter method:\n{e.Message}");
+                throw e;
             }
 
             return HtmlReporter;
         }
 
-        private static KlovReporter GetKlovReporter(string gridHub)
+        private static KlovReporter GetKlovReporter(string gridVmIP)
         {
             try
             {
@@ -76,14 +73,15 @@ namespace RKCIUIAutomation.Base
                 {
                     ProjectName = "RKCIUIAutomation",
                     ReportName = reportName,
-                    KlovUrl = $"http://{gridHub}:8888"
+                    KlovUrl = $"http://{gridVmIP}:8888"
                 };
 
-                Klov.InitMongoDbConnection(GridVmIP, 27017);
+                Klov.InitMongoDbConnection(gridVmIP, 27017);
             }
             catch (Exception e)
             {
                 log.Error($"Error in GetKlovReporter method:\n{e.Message}");
+                throw e;
             }
 
             return Klov;

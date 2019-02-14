@@ -203,20 +203,17 @@ namespace RKCIUIAutomation.Page
                     filterLogic = currentFilter.FilterLogic.GetString();
                     string jsFilterBase = $"grid.dataSource.filter({{ logic: '{filterLogic}', filters: [";
 
-                    DateTime filterDateTime;
                     filterValue = currentFilter.FilterValue;
-                    bool isFilterDateTime = DateTime.TryParse(filterValue, out filterDateTime);
-                    string filterValueToBeApplied =
-                        isFilterDateTime ? $"new Date({filterDateTime.Year}, {filterDateTime.Month - 1}, {filterDateTime.Day})" : $"{filterValue}";
-
                     columnName = currentFilter.ColumnName;
                     filterOperator = currentFilter.FilterOperator.GetString();
-                    filterScript = $"{jsFilterBase}{{ field: '{columnName}', operator: '{filterOperator}', value: '{filterValueToBeApplied}' }}";
+                    filterScript = $"{jsFilterBase}{{ field: '{columnName}', operator: '{filterOperator}', value: '{filterValue}' }}";
 
                     addnlFilterValue = currentFilter.AdditionalFilterValue;
                     addnlFilterOperator = currentFilter.AdditionalFilterOperator.GetString();
-                    filterScript = (addnlFilterValue == null) ? filterScript :
-                        $"{filterScript},{{ field: '{columnName}', operator: '{addnlFilterOperator}', value: '{addnlFilterValue}' }}";
+
+                    filterScript = addnlFilterValue == null
+                        ? filterScript 
+                        : $"{filterScript},{{ field: '{columnName}', operator: '{addnlFilterOperator}', value: '{addnlFilterValue}' }}";
                 }
 
                 StringBuilder sb = new StringBuilder();
@@ -226,8 +223,11 @@ namespace RKCIUIAutomation.Page
                 sb.Append($"{gridRef}{filterScript}] }});");
                 ExecuteJsScript(sb.ToString());
 
-                string addnlFilter = (addnlFilterValue != null) ? $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}" : string.Empty;
-                LogInfo($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilter}");
+                string addnlFilterLogMsg = addnlFilterValue == null
+                    ? string.Empty
+                    : $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}";
+
+                LogStep($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilterLogMsg}");
             }
             catch (Exception e)
             {
