@@ -113,6 +113,9 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         private Cookie cookie = null;
 
+        [ThreadStatic]
+        internal static string testDetails;
+
         #endregion TestCase Details
 
         private ConfigUtils Configs = new ConfigUtils();
@@ -210,7 +213,7 @@ namespace RKCIUIAutomation.Base
             {
                 if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
                 {
-                    string testDetails = $"({testEnv}){tenantName} - {testName}";
+                    testDetails = $"({testEnv}){tenantName} - {testName}";
                     Driver = GetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
                     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
                     Driver.Manage().Window.Maximize();

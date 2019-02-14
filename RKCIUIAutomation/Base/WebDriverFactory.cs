@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using static RKCIUIAutomation.Base.BaseUtils;
+using static RKCIUIAutomation.Base.BaseClass;
 
 namespace RKCIUIAutomation.Base
 {
@@ -18,7 +19,22 @@ namespace RKCIUIAutomation.Base
     public class WebDriverFactory : DriverOptionsFactory
     {
         [ThreadStatic]
-        public IWebDriver Driver;
+        protected static IWebDriver _webDriver;
+
+        public IWebDriver Driver
+        {
+            get
+            {
+                if (_webDriver == null)
+                {
+                    _webDriver = GetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
+                }
+
+                return _webDriver;
+            }
+            set
+            { }
+        }
 
         public WebDriverFactory()
         {
@@ -61,7 +77,7 @@ namespace RKCIUIAutomation.Base
         {
             ICapabilities caps = GetCapabilities(platform, browser, testDetails);
             string newKey = CreateKey(caps, testDetails);
-            Console.WriteLine($"_SETDRIVER - NEWKEY: {newKey}");
+            //Console.WriteLine($"_SETDRIVER - NEWKEY: {newKey}");
 
             if (!driverThread.IsValueCreated)
             {
@@ -73,7 +89,7 @@ namespace RKCIUIAutomation.Base
 
                 if (!driverToKeyMap.TryGetValue(currentDriver, out string currentKey))
                 {
-                    Console.WriteLine($"_SETDRIVER - CURRENT KEY: {currentKey}");
+                    //Console.WriteLine($"_SETDRIVER - CURRENT KEY: {currentKey}");
                     // The driver was dismissed
                     CreateNewDriver(platform, browser, testDetails, gridUri);
                 }
@@ -100,7 +116,7 @@ namespace RKCIUIAutomation.Base
                 }
             }
 
-            Console.WriteLine($"DriverThread Value: {driverThread.Value.ToString()}");
+            //Console.WriteLine($"DriverThread Value: {driverThread.Value.ToString()}");
             return driverThread.Value;
         }
 
@@ -117,18 +133,18 @@ namespace RKCIUIAutomation.Base
             }
 
             
-            Console.WriteLine($"_DISMISSDRIVER - {driverThread.Value}");
+            //Console.WriteLine($"_DISMISSDRIVER - {driverThread.Value}");
 
             driver.Quit();
             driverToKeyMap.Remove(driver);
-            driverThread.Dispose();
+            driverThread.Value.Dispose();
         }
 
         private void _DismissAll()
         {
             foreach (IWebDriver driver in new List<IWebDriver>(driverToKeyMap.Keys))
             {
-                Console.WriteLine($"_DISMISSALLDRIVERs - {driverThread.Value}");
+                //Console.WriteLine($"_DISMISSALLDRIVERs - {driverThread.Value}");
                 driver.Quit();
                 driverToKeyMap.Remove(driver);
             }
@@ -138,7 +154,7 @@ namespace RKCIUIAutomation.Base
         protected static string CreateKey(ICapabilities capabilities, string testDetails)
         {
             string key = $"{capabilities.ToString()}:{testDetails}";
-            Console.WriteLine($"CREATE KEY: {key}");
+            //Console.WriteLine($"CREATE KEY: {key}");
             return key;
         }
 
