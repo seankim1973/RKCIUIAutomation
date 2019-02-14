@@ -18,19 +18,11 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class WebDriverFactory : DriverOptionsFactory
     {
-        [ThreadStatic]
-        protected static IWebDriver _webDriver;
-
-        public IWebDriver Driver
+        protected IWebDriver Driver
         {
             get
             {
-                if (_webDriver == null)
-                {
-                    _webDriver = GetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
-                }
-
-                return _webDriver;
+                return GetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
             }
             set
             { }
@@ -137,7 +129,6 @@ namespace RKCIUIAutomation.Base
 
             driver.Quit();
             driverToKeyMap.Remove(driver);
-            driverThread.Value.Dispose();
         }
 
         private void _DismissAll()
