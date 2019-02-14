@@ -314,28 +314,6 @@ namespace RKCIUIAutomation.Page.Workflows
         {
         }
 
-        public override void TCWF_CommentReviewNoComment()
-        {
-            LogInfo("--------------------------1.Login As IQF User and Create Document----------------------");
-            CreateDesignDocCommentReviewDocument(UserType.IQFUser);
-            LogoutToLoginPage();
-
-            LogInfo("--------------------------2.Login As DOT User and enter no comment----------------------");
-            EnterNoComment(UserType.DOTUser);
-            LogoutToLoginPage();
-
-            LogInfo("--------------------------3. Login As DOT Admin and Forward Comment----------------------");
-            ForwardComment(UserType.DOTAdmin);
-            LogoutToLoginPage();
-
-            LogInfo("--------------------------4. DEV Admin verifies if record in closed tab ----------------------");
-
-            //missing steps - Doc is not seen under Closed tab after previous step for GLX
-
-            LogInfo("--------------------------5. DEV Admin verifies if record in closed tab ----------------------");
-            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
-        }
-
         public override void ForwardResolutionCommentAndCodeForDisagreeResponse()
         {
             DesignDocCommentReview.ClickTab_Pending_Resolution();

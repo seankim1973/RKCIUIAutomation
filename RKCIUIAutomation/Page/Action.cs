@@ -18,13 +18,12 @@ namespace RKCIUIAutomation.Page
     public class Action : PageHelper
     {
         private PageHelper pgHelper = new PageHelper();
+
         //private readonly BaseUtils baseUtils = new BaseUtils();
 
-        public Action()
-        {
-        }
+        public Action() { }
 
-        public Action(IWebDriver driver) => Driver = driver;
+        public Action(IWebDriver driver) => this.Driver = driver;
 
         private enum JSAction
         {
@@ -698,7 +697,6 @@ namespace RKCIUIAutomation.Page
                 catch (NoAlertPresentException e)
                 {
                     log.Error($"NoAlertPresentException Msg: {e.Message}");
-                    throw e;
                 }
             }
         }
@@ -723,7 +721,6 @@ namespace RKCIUIAutomation.Page
                 catch (NoAlertPresentException e)
                 {
                     log.Error($"NoAlertPresentException Msg: {e.Message}");
-                    throw e;
                 }
             }
 
@@ -750,7 +747,6 @@ namespace RKCIUIAutomation.Page
                 catch (NoAlertPresentException e)
                 {
                     log.Error($"NoAlertPresentException Msg: {e.Message}");
-                    throw e;
                 }
             }
 

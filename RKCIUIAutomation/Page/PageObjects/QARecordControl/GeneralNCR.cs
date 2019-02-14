@@ -168,12 +168,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 JsClickElement(GetSubmitButtonByLocator(submitButton));
             }
-            catch (UnhandledAlertException e)
+            catch (UnhandledAlertException)
             {
-                log.Debug(e.AlertText);
+                Action action = new Action(Driver);
+                action.ConfirmActionDialog(acceptAlert);
             }
-
-            ConfirmActionDialog();
         }
 
         internal void ClickBtn_Sign(InputFields signBtnType)
