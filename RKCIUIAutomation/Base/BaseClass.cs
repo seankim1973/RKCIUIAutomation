@@ -4,6 +4,7 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using System;
@@ -214,7 +215,7 @@ namespace RKCIUIAutomation.Base
                 if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
                 {
                     testDetails = $"({testEnv}){tenantName} - {testName}";
-                    Driver = GetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
+                    Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
                     Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
@@ -305,7 +306,11 @@ namespace RKCIUIAutomation.Base
                 {
                     case TestStatus.Failed:
                         string injMsg = (string)testResults[1];
-                        string stacktrace = string.IsNullOrEmpty(result.StackTrace) ? (injMsg = string.IsNullOrEmpty(injMsg) ? "" : $"{injMsg}<br> ") : $"<pre>{result.StackTrace}</pre>";
+                        string stacktrace = result.StackTrace.HasValue()
+                            ? (injMsg = injMsg.HasValue()
+                                ? ""
+                                : $"{injMsg}<br> ")
+                            : $"<pre>{result.StackTrace}</pre>";
                         string screenshotName = CaptureScreenshot(GetTestName());
 
                         if (reporter == Reporter.Klov)

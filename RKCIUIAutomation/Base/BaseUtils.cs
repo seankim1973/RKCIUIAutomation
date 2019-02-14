@@ -1,6 +1,7 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.MarkupUtils;
 using log4net;
+using log4net.Core;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
@@ -26,8 +27,7 @@ namespace RKCIUIAutomation.Base
         private static string fileName = string.Empty;
         private static string dateString = string.Empty;
         private static string screenshotSavePath = string.Empty;
-        private readonly string klovPath = @"\\10.1.1.207\errorscreenshots\";
-
+        
         public BaseUtils(IWebDriver driver) => this.Driver = driver;
 
         public BaseUtils()
@@ -77,6 +77,7 @@ namespace RKCIUIAutomation.Base
         {
             string uniqueFileName = string.Empty;
             string fullFilePath = string.Empty;
+            string klovPath = string.Empty;
 
             try
             {
@@ -84,19 +85,45 @@ namespace RKCIUIAutomation.Base
                 uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
                 fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
 
-                if (testPlatform == TestPlatform.GridLocal || testPlatform == TestPlatform.Local)
+                if (reporter == Reporter.Klov)
                 {
-                    var screenshot = Driver.TakeScreenshot();
-                    screenshot.SaveAsFile(fullFilePath);
-                }
-                else
-                {
-                    if (reporter == Reporter.Klov)
+                    if (testPlatform == TestPlatform.Grid)
                     {
+                        klovPath = @"\\10.1.1.207\errorscreenshots\";
+
                         ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
                         impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
                     }
+                    else if (testPlatform == TestPlatform.GridLocal)
+                    {
+                        klovPath = @"C:\Automation\klov\errorscreenshots\";
+                        var screenshot = Driver.TakeScreenshot();
+                        screenshot.SaveAsFile($"{klovPath}{uniqueFileName}");
+                    }
                 }
+                else
+                {
+                    var screenshot = Driver.TakeScreenshot();
+                    screenshot.SaveAsFile(fullFilePath);
+
+                }
+
+                //if (testPlatform == TestPlatform.GridLocal || testPlatform == TestPlatform.Grid)
+                //{
+                //    if (reporter == Reporter.Klov)
+                //    {
+                //        klovPath = testPlatform == TestPlatform.Grid 
+                //            ? @"\\10.1.1.207"
+                //            : @"\\127.0.0.1";
+                //        ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
+                //        impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}\\errorscreenshots\\{uniqueFileName}");
+                //    }
+                //}
+                //else
+                //{
+                //    var screenshot = Driver.TakeScreenshot();
+                //    screenshot.SaveAsFile(fullFilePath);
+                //}
             }
             catch (Exception e)
             {
@@ -118,41 +145,72 @@ namespace RKCIUIAutomation.Base
         }
 
         //ExtentReports Loggers
+
+        private static void LevelLogger(Level logLevel, string logDetails)
+        {
+            if (logLevel == Level.Debug)
+            {
+                log.Debug(logDetails);
+            }
+            else if (logLevel == Level.Warn)
+            {
+                log.Warn(logDetails);
+            }
+            else if (logLevel == Level.Error)
+            {
+                log.Error(logDetails);
+            }
+            else
+            {
+                log.Info(logDetails);
+            }
+        }
+
+        private static void CheckForLineBreaksInLogMsg(Level logLevel, string logDetails, Exception e = null)
+        {
+            if (logDetails.Contains("<br>"))
+            {
+                string[] detailsBr = Regex.Split(logDetails, "<br>");
+                for (int i = 0; i < detailsBr.Length; i++)
+                {
+                    string detail = detailsBr[i];
+                    LevelLogger(logLevel, detail);
+                }
+            }
+            else
+            {
+                LevelLogger(logLevel, logDetails);
+            }
+
+            if (e != null)
+            {
+                testInstance.Error(CreateReportMarkupCodeBlock(e));
+                LevelLogger(Level.Error, e.StackTrace);
+            }
+        }
+
         public void LogAssertIgnore(string msg)
         {
             testInstance.Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
-            log.Debug(msg);
+            CheckForLineBreaksInLogMsg(Level.Debug, msg);
         }
 
         public void LogFail(string details, Exception e = null)
         {
             testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
-            log.Error(details);
-
-            if (e != null)
-            {
-                testInstance.Error(CreateReportMarkupCodeBlock(e));
-                log.Error(e.Message);
-            }
+            CheckForLineBreaksInLogMsg(Level.Error, details, e);
         }
 
         public void LogError(string details, bool takeScreenshot = true, Exception e = null)
         {
             if (takeScreenshot)
             {
-                LogErrorWithScreenshot(details);
+                LogErrorWithScreenshot(details, ExtentColor.Red, e);
             }
             else
             {
                 testInstance.Error(CreateReportMarkupLabel(details, ExtentColor.Red));
-            }
-
-            log.Error(details);
-
-            if (e != null)
-            {
-                testInstance.Error(CreateReportMarkupCodeBlock(e));
-                log.Error(e.Message);
+                CheckForLineBreaksInLogMsg(Level.Error, details, e);
             }
         }
 
@@ -169,47 +227,40 @@ namespace RKCIUIAutomation.Base
             else
                 testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
 
-
-            if (details.Contains("<br>"))
-            {
-                details = Regex.Replace(details, "<br>", "\n");
-            }
-
-            if (exception != null)
-            {
-                log.Debug(details, exception);
-            }
-            else
-                log.Debug(details);
+            CheckForLineBreaksInLogMsg(Level.Debug, details, exception);
         }
 
-        public void LogErrorWithScreenshot(string details = "", ExtentColor color = ExtentColor.Red)
+        public void LogErrorWithScreenshot(string details = "", ExtentColor color = ExtentColor.Red, Exception e = null)
         {
+            string localScreenshotPath = @"C:\Automation\klov\errorscreenshots\";
             string screenshotName = CaptureScreenshot(GetTestName());
-            var screenshotRefPath = testPlatform == TestPlatform.GridLocal
-                ? $"{screenshotSavePath}/{screenshotName}"
-                : $"http://10.1.1.207/errorscreenshots/{screenshotName}";
+            var screenshotRefPath = reporter == Reporter.Klov
+                ? testPlatform == TestPlatform.GridLocal
+                    ? $"http://127.0.0.1/errorscreenshots/{screenshotName}"
+                    : $"http://10.1.1.207/errorscreenshots/{screenshotName}"
+                : $"{localScreenshotPath}{screenshotName}";
             var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRefPath}\" class=\"step-img\" src=\"{screenshotRefPath}\" data-src=\"{screenshotRefPath}\" width=\"200\">";
 
-            testInstance = color.Equals(ExtentColor.Red)
-                ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
-                : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color));
+            //testInstance = color.Equals(ExtentColor.Red)
+            //    ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
+            //    : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color));
 
-            log.Error(details);
+            testInstance = reporter == Reporter.Klov
+                ? color.Equals(ExtentColor.Red)
+                    ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
+                    : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color))
+                : color.Equals(ExtentColor.Red)
+                    ? testInstance.Error($"Test Failed: <br> {details}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotRefPath, screenshotName).Build())
+                    : testInstance.Warning($"Test Failed: <br> {details}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotRefPath, screenshotName).Build());
+
+            CheckForLineBreaksInLogMsg(Level.Error, details, e);
         }
 
         public static void LogInfo(string details)
         {
-            string[] detailsBr = null;
-
             if (details.Contains("<br>"))
             {
                 testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
-                detailsBr = Regex.Split(details, "<br>");
-                for (int i = 0; i < detailsBr.Length; i++)
-                {
-                    log.Info(detailsBr[i]);
-                }
             }
             else if (details.Contains("#####"))
             {
@@ -226,8 +277,9 @@ namespace RKCIUIAutomation.Base
             else
             {
                 testInstance.Info(details);
-                log.Info(details);
             }
+
+            CheckForLineBreaksInLogMsg(Level.Info, details);
         }
 
         public void LogInfo(string[][] detailsList, bool assertion)
@@ -242,29 +294,11 @@ namespace RKCIUIAutomation.Base
         {
             string logMsg = $"TestStep: {testStep}";
             testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
-            log.Info(logMsg);
+            CheckForLineBreaksInLogMsg(Level.Info, logMsg);
         }
 
         public void LogInfo<T>(string details, T assertion, Exception e = null)
         {
-            if (details.Contains("<br>"))
-            {
-                string[] detailsBr = Regex.Split(details, "<br>");
-                for (int i = 0; i < detailsBr.Length; i++)
-                {
-                    log.Info(detailsBr[i]);
-                }
-            }
-            else
-            {
-                log.Info(details);
-            }
-
-            if (e != null)
-            {
-                log.Debug(e.Message);
-            }
-
             object resultObj = null;
             int resultGauge = 0;
             Type assertionType = assertion.GetType();
@@ -293,7 +327,7 @@ namespace RKCIUIAutomation.Base
             if (resultGauge >= 1)
             {
                 testInstance.Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
-                log.Debug(details);
+                CheckForLineBreaksInLogMsg(Level.Info, details);
             }
             else if (resultGauge <= -1)
             {
@@ -302,6 +336,11 @@ namespace RKCIUIAutomation.Base
             else if (resultGauge == 0)
             {
                 LogErrorWithScreenshot(details, ExtentColor.Orange);
+            }
+
+            if (e != null)
+            {
+                log.Error(e.StackTrace);
             }
         }
 

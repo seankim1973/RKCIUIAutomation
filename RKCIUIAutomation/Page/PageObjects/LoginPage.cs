@@ -16,6 +16,7 @@ namespace RKCIUIAutomation.Page.PageObjects
         }
 
         public LoginPage(IWebDriver driver) => this.Driver = driver;
+
     }
 
     #endregion LoginPage Generic class
@@ -27,26 +28,6 @@ namespace RKCIUIAutomation.Page.PageObjects
         void LoginUser(UserType userType);
 
         void ToggleRememberMeChkbox();
-
-        //void LoginAsSysAdmin();
-
-        //void LoginAsProjAdmin();
-
-        //void LoginAsProjUser();
-
-        //void LoginAsIQFRecordsMgr();
-
-        //void LoginAsIQFAdmin();
-
-        //void LoginAsIQFUser();
-
-        //void LoginAsDOTAdmin();
-
-        //void LoginAsDOTUser();
-
-        //void LoginAsDEVAdmin();
-
-        //void LoginAsDEVUser();
     }
 
     #endregion LoginPage Interface class
@@ -55,113 +36,6 @@ namespace RKCIUIAutomation.Page.PageObjects
 
     public abstract class LoginPage_Impl : PageBase, ILoginPage
     {
-        internal readonly By field_Email = By.Name("Email");
-        internal readonly By field_Password = By.Name("Password");
-        internal readonly By chkbx_RememberMe = By.Name("RememberMe");
-        internal readonly By btn_Login = By.XPath("//input[@type='submit']");
-        internal int userAcctIndex = 0;
-        internal string credential = string.Empty;
-
-        public virtual void LoginUser(UserType userType)
-        {
-            WaitForPageReady();
-
-            if (Driver.Title.Contains("Log in"))
-            {
-                VerifyPageIsLoaded(true, false);
-
-                ConfigUtils Configs = new ConfigUtils();
-                string[] userAcct = Configs.GetUser(userType);
-                IList<By> loginFields = new List<By>
-                {
-                    field_Email,
-                    field_Password
-                };
-
-                foreach (By field in loginFields)
-                {
-                    userAcctIndex = (field == field_Email) ? 0 : 1;
-                    credential = userAcct[userAcctIndex];
-
-                    try
-                    {
-                        log.Info($"...waiting for element {field}");
-                        WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(2))
-                        {
-                            PollingInterval = TimeSpan.FromMilliseconds(250)
-                        };
-                        wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                        wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                        IWebElement webElem = wait.Until(x => x.FindElement(field));
-
-                        if (userAcctIndex == 1)
-                        {
-                            webElem.SendKeys(Configs.GetDecryptedPW(credential));
-                        }
-                        else
-                        {
-                            webElem.SendKeys(credential);
-                        }
-                        
-                    }
-                    catch (Exception e)
-                    {
-                        LogError($"Exception occured while waiting for element - {field}", true, e);
-                        throw;
-                    }
-                }
-
-                LogInfo($"Using account : {userAcct[0]}");
-                ClickElement(btn_Login);
-
-                WaitForPageReady();
-                if (Driver.Title.Contains("Log in"))
-                {
-                    IWebElement invalidLoginError = Driver.FindElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
-
-                    if (invalidLoginError.Displayed)
-                    {
-                        try
-                        {
-                            string logMsg = invalidLoginError.Text;
-                            LogError(logMsg, true);
-                            throw new System.Exception(logMsg);
-                        }
-                        catch (Exception)
-                        {
-                            throw;
-                        }
-                    }
-                }
-            }
-        }
-
-        public virtual void ToggleRememberMeChkbox()
-        {
-            ClickElement(chkbx_RememberMe);
-        }
-
-
-        //public virtual void LoginAsIQFRecordsMgr() => LoginUser(UserType.IQFRecordsMgr);
-
-        //public virtual void LoginAsIQFAdmin() => LoginUser(UserType.IQFAdmin);
-
-        //public virtual void LoginAsIQFUser() => LoginUser(UserType.IQFUser);
-
-        //public virtual void LoginAsDOTAdmin() => LoginUser(UserType.DOTAdmin);
-
-        //public virtual void LoginAsDOTUser() => LoginUser(UserType.DOTUser);
-
-        //public virtual void LoginAsDEVAdmin() => LoginUser(UserType.DEVAdmin);
-
-        //public virtual void LoginAsDEVUser() => LoginUser(UserType.DEVUser);
-
-        //Only SH249 and SG use IQF Records Mgr accts
-        // --> SH249 use only IQFRecordsMgr, IQFAdmin, and IQFUser accts
-        // --> SG uses all 7 IQF accts
-        // --> Garnet and GLX do not use IQFRecordsMgr and IQFAdmin accts
-        //I15Tech and I15South do not use IQF Accts
-
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
 
         private ILoginPage SetPageClassBasedOnTenant(IWebDriver driver)
@@ -204,6 +78,89 @@ namespace RKCIUIAutomation.Page.PageObjects
                 instance = new LoginPage_LAX(driver);
             }
             return instance;
+        }
+
+        internal readonly By field_Email = By.Name("Email");
+        internal readonly By field_Password = By.Name("Password");
+        internal readonly By chkbx_RememberMe = By.Name("RememberMe");
+        internal readonly By btn_Login = By.XPath("//input[@type='submit']");
+        internal int userAcctIndex = 0;
+        internal string credential = string.Empty;
+
+        public virtual void LoginUser(UserType userType)
+        {
+            WaitForPageReady();
+
+            if (Driver.Title.Contains("Log in"))
+            {
+                VerifyPageIsLoaded(true, false);
+
+                ConfigUtils Configs = new ConfigUtils();
+                string[] userAcct = Configs.GetUser(userType);
+                IList<By> loginFields = new List<By>
+                {
+                    field_Email,
+                    field_Password
+                };
+
+                foreach (By field in loginFields)
+                {
+                    userAcctIndex = field == field_Email
+                        ? 0
+                        : 1;
+
+                    credential = userAcct[userAcctIndex];
+
+                    try
+                    {
+                        log.Info($"...waiting for element {field}");
+                        WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(2))
+                        {
+                            PollingInterval = TimeSpan.FromMilliseconds(250)
+                        };
+                        wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                        wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                        IWebElement webElem = wait.Until(x => x.FindElement(field));
+
+                        if (userAcctIndex == 1)
+                        {
+                            webElem.SendKeys(Configs.GetDecryptedPW(credential));
+                        }
+                        else
+                        {
+                            webElem.SendKeys(credential);
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        LogError($"Exception occured while waiting for element - {field}", true, e);
+                        throw;
+                    }
+                }
+
+                LogInfo($"Using account : {userAcct[0]}");
+                ClickElement(btn_Login);
+
+                WaitForPageReady();
+                if (Driver.Title.Contains("Log in"))
+                {
+                    IWebElement invalidLoginError = Driver.FindElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+
+                    if (invalidLoginError.Displayed)
+                    {
+                        string logMsg = invalidLoginError.Text;
+                        var ex = new Exception(logMsg);
+                        LogError(logMsg, true);
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public virtual void ToggleRememberMeChkbox()
+        {
+            ClickElement(chkbx_RememberMe);
         }
     }
 

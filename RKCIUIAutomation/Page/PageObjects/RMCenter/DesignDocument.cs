@@ -346,7 +346,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             catch (Exception e)
             {
                 LogError(e.StackTrace);
-                throw;
+                throw e;
             }
 
         }

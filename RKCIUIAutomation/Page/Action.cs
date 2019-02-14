@@ -1107,7 +1107,8 @@ namespace RKCIUIAutomation.Page
 
         public void ClickCancel()
         {
-            VerifyPageIsLoaded();
+            //VerifyPageIsLoaded();
+            WaitForPageReady();
             IWebElement cancelBtn = GetElement(GetButtonByLocator("Cancel")) ?? GetElement(GetInputButtonByLocator("Cancel")) ?? GetElement(By.Id("CancelSubmittal"));
 
             if (cancelBtn.Displayed)
@@ -1123,25 +1124,29 @@ namespace RKCIUIAutomation.Page
 
         public void ClickSave()
         {
-            VerifyPageIsLoaded();
+            //VerifyPageIsLoaded();
+            WaitForPageReady();
             ClickElement(By.Id("SaveSubmittal"));
         }
 
         public void ClickSubmitForward()
         {
-            VerifyPageIsLoaded();
+            //VerifyPageIsLoaded();
+            WaitForPageReady();
             ClickElement(By.Id("SaveForwardSubmittal"));
         }
 
         public void ClickCreate()
         {
-            VerifyPageIsLoaded();
+            //VerifyPageIsLoaded();
+            WaitForPageReady();
             ClickElement(By.Id("btnCreate"));
         }
 
         public void ClickNew()
         {
-            VerifyPageIsLoaded();
+            //VerifyPageIsLoaded();
+            WaitForPageReady();
             IWebElement newBtn = GetElement(GetButtonByLocator("New")) ?? GetElement(GetInputButtonByLocator("Create New"));
             ClickElement(newBtn);
         }
@@ -1154,7 +1159,8 @@ namespace RKCIUIAutomation.Page
             {
                 elem = GetElement(elementByLocator);
 
-                if (elem.Enabled)
+                //if (elem.Enabled)
+                if (elem != null)
                 {
                     Actions actions = new Actions(Driver);
                     actions.MoveToElement(elem);
@@ -1174,7 +1180,7 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                if (!element.Displayed)
+                if (element != null)
                 {
                     Actions actions = new Actions(Driver);
                     actions.MoveToElement(element);

@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using MiniGuids;
 using NUnit.Framework.Interfaces;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
@@ -773,10 +774,16 @@ namespace RKCIUIAutomation.Sandbox
         }
 
         [TestMethod]
-        public void RegexTest()
+        public void Test()
         {
-            string packageNumber = "IQF-DIR-20181209-2";
-            Console.WriteLine(packageNumber.TrimEnd('1', '2'));
+            //string packageNumber = "IQF-DIR-20181209-2";
+            //Console.WriteLine(packageNumber.TrimEnd('1', '2'));
+
+            string test = "";
+            bool hasValue = test.HasValue();
+            bool isNullOrEmpty = string.IsNullOrEmpty(test);
+            Console.WriteLine($"HAS VALUE: {hasValue}");
+            Console.WriteLine($"ISNULLOREMPTY: {isNullOrEmpty}");
         }
     }
 }

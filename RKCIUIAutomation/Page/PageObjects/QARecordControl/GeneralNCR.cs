@@ -1,6 +1,7 @@
 ﻿using MiniGuids;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
@@ -958,6 +959,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             InputFields reviewerId = InputFields.Engineer_of_Record;
             string signatureValueAttrib = string.Empty;
+            bool isResultExpected = false;
 
             try
             {
@@ -981,39 +983,40 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 By locator = By.Id(reviewerId.GetString());
                 ScrollToElement(locator);
-                IWebElement signatureFieldElement = GetElement(locator);
-                signatureValueAttrib = signatureFieldElement.GetAttribute("value");
+                //signatureValueAttrib = GetAttribute(locator, "value");
 
-                bool isFieldEmpty = string.IsNullOrEmpty(signatureValueAttrib) ? true : false;
-                bool isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty) ? true : false;
+                bool isFieldEmpty = GetAttribute(locator, "value").HasValue() ? true : false;
+                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty) ? true : false;
 
                 string logMsg = isResultExpected ? "Result As Expected" : "Unexpected Result";
 
                 LogInfo($"Signature Field: {logMsg}", isResultExpected);
-                return isResultExpected;
+                
             }
             catch (Exception e)
             {
                 LogError(e.StackTrace);
-                return false;
             }
+
+            return isResultExpected;
         }
     
         public virtual bool VerifyReqFieldErrorLabelForConcessionRequest()
         {
+            bool errorLabelIsDisplayed = false;
             try
             {
-                bool errorLabelIsDisplayed = false;
                 IWebElement ConcessionRequestDDListElem = GetElement(By.Id(InputFields.Concession_Request.GetString()));
-                errorLabelIsDisplayed = ConcessionRequestDDListElem.FindElement(By.XPath("//preceding-sibling::span[@data-valmsg-for='ConcessionRequest']")).Displayed ? true : false;
-
-                return errorLabelIsDisplayed;
+                errorLabelIsDisplayed = ConcessionRequestDDListElem.FindElement(By.XPath("//preceding-sibling::span[@data-valmsg-for='ConcessionRequest']")).Displayed
+                    ? true 
+                    : false;
             }
             catch (Exception e)
             {
                 LogError(e.StackTrace);
-                return false;
             }
+
+            return errorLabelIsDisplayed;
         }
 
         //I15Tech, LAX

@@ -18,21 +18,17 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class WebDriverFactory : DriverOptionsFactory
     {
-        protected IWebDriver Driver
+        public IWebDriver Driver
         {
-            get
-            {
-                return GetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
-            }
-            set
-            { }
+            get => driverThread.Value;
+            set { }
         }
 
         public WebDriverFactory()
         {
         }
 
-        private static WebDriverFactory instance;
+        private static WebDriverFactory instance = null;
 
         private static WebDriverFactory FactoryInstance
         {
@@ -47,8 +43,8 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        public static IWebDriver GetWebDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
-            => FactoryInstance._GetDriver(platform, browser, testDetails, gridUri);
+        public static IWebDriver SetWebDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
+            => FactoryInstance._SetDriver(platform, browser, testDetails, gridUri);
 
         public static void DismissDriverInstance(IWebDriver driver)
             => FactoryInstance._DismissDriver(driver);
@@ -65,7 +61,7 @@ namespace RKCIUIAutomation.Base
         private static ThreadLocal<IWebDriver> driverThread = new ThreadLocal<IWebDriver>();
         private Dictionary<IWebDriver, string> driverToKeyMap = new Dictionary<IWebDriver, string>();
 
-        private IWebDriver _GetDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
+        private IWebDriver _SetDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
         {
             ICapabilities caps = GetCapabilities(platform, browser, testDetails);
             string newKey = CreateKey(caps, testDetails);
@@ -129,6 +125,7 @@ namespace RKCIUIAutomation.Base
 
             driver.Quit();
             driverToKeyMap.Remove(driver);
+            driver.Dispose();
         }
 
         private void _DismissAll()
