@@ -107,23 +107,6 @@ namespace RKCIUIAutomation.Base
                     screenshot.SaveAsFile(fullFilePath);
 
                 }
-
-                //if (testPlatform == TestPlatform.GridLocal || testPlatform == TestPlatform.Grid)
-                //{
-                //    if (reporter == Reporter.Klov)
-                //    {
-                //        klovPath = testPlatform == TestPlatform.Grid 
-                //            ? @"\\10.1.1.207"
-                //            : @"\\127.0.0.1";
-                //        ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
-                //        impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}\\errorscreenshots\\{uniqueFileName}");
-                //    }
-                //}
-                //else
-                //{
-                //    var screenshot = Driver.TakeScreenshot();
-                //    screenshot.SaveAsFile(fullFilePath);
-                //}
             }
             catch (Exception e)
             {
@@ -241,10 +224,6 @@ namespace RKCIUIAutomation.Base
                 : $"{localScreenshotPath}{screenshotName}";
             var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRefPath}\" class=\"step-img\" src=\"{screenshotRefPath}\" data-src=\"{screenshotRefPath}\" width=\"200\">";
 
-            //testInstance = color.Equals(ExtentColor.Red)
-            //    ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
-            //    : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color));
-
             testInstance = reporter == Reporter.Klov
                 ? color.Equals(ExtentColor.Red)
                     ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
@@ -290,11 +269,18 @@ namespace RKCIUIAutomation.Base
                 : testInstance.Fail(markupTable);
         }
 
+
+        [ThreadStatic]
+        private Cookie cookie = null;
+
         public void LogStep(string testStep)
         {
             string logMsg = $"TestStep: {testStep}";
             testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
             CheckForLineBreaksInLogMsg(Level.Info, logMsg);
+
+            cookie = new Cookie("zaleniumMessage", testStep);
+            Driver.Manage().Cookies.AddCookie(cookie);
         }
 
         public void LogInfo<T>(string details, T assertion, Exception e = null)

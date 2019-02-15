@@ -139,7 +139,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                     }
                 }
 
-                LogInfo($"Using account : {userAcct[0]}");
+                LogStep($"Using account : {userAcct[0]}");
                 ClickElement(btn_Login);
 
                 WaitForPageReady();
@@ -159,9 +159,8 @@ namespace RKCIUIAutomation.Page.PageObjects
         }
 
         public virtual void ToggleRememberMeChkbox()
-        {
-            ClickElement(chkbx_RememberMe);
-        }
+            => ClickElement(chkbx_RememberMe);
+
     }
 
     #endregion LoginPage Common Implementation class
