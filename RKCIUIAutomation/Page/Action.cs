@@ -23,7 +23,7 @@ namespace RKCIUIAutomation.Page
 
         public Action() { }
 
-        public Action(IWebDriver driver) => this.Driver = driver;
+        public Action(IWebDriver driver) => driver = Driver;
 
         private enum JSAction
         {
@@ -38,12 +38,13 @@ namespace RKCIUIAutomation.Page
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
         {
             IWebElement element = null;
-
+            IWebDriver driver = null;
             try
             {
+                driver = Driver;
                 string javaScript = jsAction.GetString();
                 element = GetElement(elementByLocator);
-                IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
                 executor.ExecuteScript(javaScript, element);
                 log.Info($"{jsAction.ToString()}ed on javascript element: - {elementByLocator}");
             }
@@ -131,11 +132,12 @@ namespace RKCIUIAutomation.Page
         {
             IJavaScriptExecutor javaScriptExecutor = null;
             WebDriverWait wait = null;
-
+            IWebDriver driver = null;
             try
             {
-                javaScriptExecutor = Driver as IJavaScriptExecutor;
-                wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                driver = Driver;
+                javaScriptExecutor = driver as IJavaScriptExecutor;
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
                 };
@@ -895,10 +897,12 @@ namespace RKCIUIAutomation.Page
             bool isLoaded = false;
             string logMsg = string.Empty;
             string pageTitle = string.Empty;
+            IWebDriver driver = null;
 
             try
             {
-                Driver.Navigate().GoToUrl(pageUrl);
+                driver = Driver;
+                driver.Navigate().GoToUrl(pageUrl);
 
                 pageTitle = GetPageTitle();
 
@@ -1150,15 +1154,17 @@ namespace RKCIUIAutomation.Page
         public IWebElement ScrollToElement(By elementByLocator)
         {
             IWebElement elem = null;
+            IWebDriver driver = null;
 
             try
             {
+                driver = Driver;
                 elem = GetElement(elementByLocator);
 
                 //if (elem.Enabled)
                 if (elem != null)
                 {
-                    Actions actions = new Actions(Driver);
+                    Actions actions = new Actions(driver);
                     actions.MoveToElement(elem);
                     actions.Perform();
                     log.Info($"Scrolled to element - {elementByLocator}");
@@ -1174,11 +1180,14 @@ namespace RKCIUIAutomation.Page
 
         public void ScrollToElement(IWebElement element)
         {
+            IWebDriver driver = null;
+
             try
             {
+                driver = Driver;
                 if (element != null)
                 {
-                    Actions actions = new Actions(Driver);
+                    Actions actions = new Actions(driver);
                     actions.MoveToElement(element);
                     actions.Perform();
                     log.Info($"Scrolled to WebElement");

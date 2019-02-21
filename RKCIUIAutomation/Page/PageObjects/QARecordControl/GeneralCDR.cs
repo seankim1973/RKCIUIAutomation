@@ -1,6 +1,7 @@
 ﻿using MiniGuids;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
@@ -411,13 +412,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRDescription = "")
         {
             ClickTab(tableTab);
-            cdrDescription = string.IsNullOrWhiteSpace(CDRDescription) ? cdrDescription : CDRDescription;
+            cdrDescription = CDRDescription.HasValue() ? CDRDescription : cdrDescription;
             return VerifyRecordIsDisplayed(ColumnName.Description, cdrDescription);
         }
 
         public virtual void FilterDescription(string description = "")
         {
-            cdrDescription = !string.IsNullOrWhiteSpace(description) ? description : cdrDescription;
+            cdrDescription = description.HasValue() ? description : cdrDescription;
             FilterTableColumnByValue(ColumnName.Description, cdrDescription);
         }
 

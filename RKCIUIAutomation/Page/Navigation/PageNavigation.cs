@@ -541,7 +541,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public virtual void RecordControl_QA_QaTest_All() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Test_All);
 
-        public virtual void RecordControl_QA_QaDIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
+        public virtual void RecordControl_QA_QaDIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIR);
 
         public virtual void RecordControl_QA_QaNCR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_NCR);
 
@@ -549,7 +549,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public virtual void RecordControl_QC_QcTest_All() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Test_All);
 
-        public virtual void RecordControl_QC_QcDIRs() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_DIRs);
+        public virtual void RecordControl_QC_QcDIRs() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_DIR);
 
         public virtual void RecordControl_QC_QcNCR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_NCR);
 
@@ -783,14 +783,14 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public override void QARecordControl_General_NCR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_NCR);
 
-        public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIRs);
+        public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIR);
 
 
         public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Deficiency_Notice);
 
         public override void QCRecordControl_QC_NCR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_NCR);
 
-        public override void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_DIRs);
+        public override void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_DIR);
 
 
         public override void QALab_Technician_Random() => Navigate.Menu(NavMenu.Lab.Menu.Technician_Random);

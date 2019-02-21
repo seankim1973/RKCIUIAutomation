@@ -466,6 +466,7 @@ namespace RKCIUIAutomation.Page
                     if (noRecordsMsgDisplayed)
                     {
                         logMsg = "'No Records Located' message is displayed as expected";
+                        isDisplayedAsExpected = true;
                     }
                     else
                     {
@@ -516,11 +517,7 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
             }
 
-            LogInfo(logMsg, noRecordsExpected
-                ? isDisplayedAsExpected
-                    ? false : true
-                : isDisplayedAsExpected
-                    ? true : false);
+            LogInfo(logMsg, isDisplayedAsExpected);
 
             return isDisplayedAsExpected;
         }

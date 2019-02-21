@@ -271,16 +271,34 @@ namespace RKCIUIAutomation.Base
 
 
         [ThreadStatic]
-        private Cookie cookie = null;
+        private static Cookie cookie;
 
         public void LogStep(string testStep)
         {
-            string logMsg = $"TestStep: {testStep}";
-            testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
-            CheckForLineBreaksInLogMsg(Level.Info, logMsg);
+            IWebDriver driver = null;
 
-            cookie = new Cookie("zaleniumMessage", testStep);
-            Driver.Manage().Cookies.AddCookie(cookie);
+            try
+            {
+                string logMsg = $"TestStep: {testStep}";
+                testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
+                CheckForLineBreaksInLogMsg(Level.Info, logMsg);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+            finally
+            {
+                try
+                {
+                    driver = Driver;
+                    cookie = new Cookie("zaleniumMessage", testStep);
+                    driver.Manage().Cookies.AddCookie(cookie);
+                }
+                catch (UnableToSetCookieException)
+                {
+                }
+            }
         }
 
         public void LogInfo<T>(string details, T assertion, Exception e = null)
