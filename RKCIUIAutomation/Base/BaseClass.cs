@@ -127,7 +127,7 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.SGWay}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
@@ -140,9 +140,10 @@ namespace RKCIUIAutomation.Base
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
-            testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local)
-                ? TestPlatform.Windows
-                : testPlatform;
+            if (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local)
+            {
+                testPlatform = TestPlatform.Windows;
+            }
 
             DetermineReportFilePath();
             GridVmIP = SetGridAddress(testPlatform, _gridAddress);

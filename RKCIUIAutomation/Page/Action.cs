@@ -167,12 +167,14 @@ namespace RKCIUIAutomation.Page
 
         public IWebElement GetElement(By elementByLocator)
         {
+            IWebDriver driver = null;
             IWebElement elem = null;
             WaitForElement(elementByLocator);
 
             try
             {
-                elem = Driver.FindElement(elementByLocator);
+                driver = Driver;
+                elem = driver.FindElement(elementByLocator);
             }
             catch (Exception e)
             {
@@ -184,13 +186,15 @@ namespace RKCIUIAutomation.Page
 
         public IList<IWebElement> GetElements(By elementByLocator)
         {
+            IWebDriver driver = null;
             IList<IWebElement> elements = null;
             WaitForElement(elementByLocator);
 
             try
             {
+                driver = Driver;
                 elements = new List<IWebElement>();
-                elements = Driver.FindElements(elementByLocator);
+                elements = driver.FindElements(elementByLocator);
                 log.Info($"Getting list of WebElements: {elementByLocator}");
             }
             catch (Exception e)
@@ -375,8 +379,11 @@ namespace RKCIUIAutomation.Page
 
         public string GetPageTitle()
         {
+            IWebDriver driver = null;
+
             try
             {
+                driver = Driver;
                 Thread.Sleep(3000);
                 WaitForPageReady();
             }
@@ -385,15 +392,17 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
             }
 
-            return Driver.Title;
+            return driver.Title;
         }
 
         public string GetPageUrl()
         {
+            IWebDriver driver = null;
             string pageUrl = string.Empty;
 
             try
             {
+                driver = Driver;
                 Thread.Sleep(3000);
                 //WaitForPageReady();
             }
@@ -402,7 +411,7 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                pageUrl = Driver.Url;
+                pageUrl = driver.Url;
             }
 
             return pageUrl;
@@ -527,13 +536,15 @@ namespace RKCIUIAutomation.Page
 
         public string UploadFile(string fileName = "")
         {
+            IWebDriver driver = null;
             fileName = fileName.Equals("") ? "test.xlsx" : fileName;
             string filePath = (testPlatform == TestPlatform.Local) ? $"{GetCodeBasePath()}\\UploadFiles\\{fileName}" : $"/home/seluser/UploadFiles/{fileName}";
 
             try
             {
+                driver = Driver;
                 By uploadInput_ByLocator = By.XPath("//input[@id='UploadFiles_0_']");
-                Driver.FindElement(uploadInput_ByLocator).SendKeys(filePath);
+                driver.FindElement(uploadInput_ByLocator).SendKeys(filePath);
                 log.Info($"Entered {filePath}' for file upload");
 
                 By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
