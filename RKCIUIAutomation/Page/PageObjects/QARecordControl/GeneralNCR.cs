@@ -383,6 +383,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectDDL_Segment(int selectionIndex = 1);
 
+        void SelectDDL_TrackNo(int selectionIndex = 1);
+
         void SelectDDL_Roadway(int selectionIndex = 1);
 
         void SelectDDL_Feature(int selectionIndex = 2);
@@ -742,6 +744,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectDDL_Segment(int selectionIndex = 1)
             => ExpandAndSelectFromDDList(InputFields.Segment, selectionIndex);
+
+        public virtual void SelectDDL_TrackNo(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
 
         public virtual void SelectDDL_Roadway(int selectionIndex = 1)
             => ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
@@ -1124,6 +1129,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 InputFields.IssuedDate.GetString(),
                 InputFields.Area.GetString(),
+                InputFields.Roadway.GetString(),
                 InputFields.Originator.GetString(),
                 InputFields.Description_of_Nonconformance.GetString(),
                 InputFields.RootCause_of_the_Problem.GetString(),
@@ -1138,6 +1144,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             EnterIssuedDate();
             SelectDDL_Area();
+            SelectDDL_TrackNo();
             SelectDDL_Originator();
             EnterDescription();
             EnterRootCauseOfTheProblem();
