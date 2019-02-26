@@ -11,6 +11,8 @@ using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Tools
 {
+    extern alias newtJson;
+
     public static class HipTest
     {
         [ThreadStatic]
@@ -184,16 +186,16 @@ namespace RKCIUIAutomation.Tools
 
         public class Attributes
         {
-            [JsonProperty("scenario-snapshot-id")]
+            [newtJson.Newtonsoft.Json.JsonProperty("scenario-snapshot-id")]
             public int scenario_snapshot_id { get; set; }
 
-            [JsonProperty("created-at")]
+            [newtJson.Newtonsoft.Json.JsonProperty("created-at")]
             public DateTime created_at { get; set; }
 
-            [JsonProperty("updated-at")]
+            [newtJson.Newtonsoft.Json.JsonProperty("updated-at")]
             public DateTime updated_at { get; set; }
 
-            [JsonProperty("last-author")]
+            [newtJson.Newtonsoft.Json.JsonProperty("last-author")]
             public string last_author { get; set; }
 
             public string name { get; set; }
@@ -201,7 +203,7 @@ namespace RKCIUIAutomation.Tools
             public Statuses statuses { get; set; }
             public string status { get; set; }
 
-            [JsonProperty("status-author")]
+            [newtJson.Newtonsoft.Json.JsonProperty("status-author")]
             public string status_author { get; set; }
 
             public bool archived { get; set; }
@@ -265,7 +267,7 @@ namespace RKCIUIAutomation.Tools
 
             public Tags tags { get; set; }
 
-            [JsonProperty("tag-snapshots")]
+            [newtJson.Newtonsoft.Json.JsonProperty("tag-snapshots")]
             public TagSnapshots tagSnapshots { get; set; }
         }
 
@@ -282,10 +284,10 @@ namespace RKCIUIAutomation.Tools
 
         public class Relationships
         {
-            [JsonProperty("test-snapshot")]
+            [newtJson.Newtonsoft.Json.JsonProperty("test-snapshot")]
             public TestSnapshot testSnapshot { get; set; }
 
-            [JsonProperty("last-result")]
+            [newtJson.Newtonsoft.Json.JsonProperty("last-result")]
             public LastResult lastResult { get; set; }
 
             public Tags tags { get; set; }

@@ -72,11 +72,8 @@
     <Reference Include="DocumentFormat.OpenXml, Version=2.9.0.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.9.0\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
-    <Reference Include="ExtentReports, Version=3.1.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ExtentReports.3.1.3\lib\ExtentReports.dll</HintPath>
-    </Reference>
-    <Reference Include="GitHub, Version=1.13.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GitHub.1.13.2\lib\netstandard2.0\GitHub.dll</HintPath>
+    <Reference Include="ExtentReports, Version=3.0.2.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExtentReports.3.1.0\lib\ExtentReports.dll</HintPath>
     </Reference>
     <Reference Include="HtmlAgilityPack, Version=1.8.14.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.1.8.14\lib\Net45\HtmlAgilityPack.dll</HintPath>
@@ -113,12 +110,13 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Aliases>global, newtJson</Aliases>
     </Reference>
     <Reference Include="nunit.framework, Version=3.11.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="RazorEngine, Version=3.10.0.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
-      <HintPath>..\packages\RazorEngine.3.10.0\lib\net45\RazorEngine.dll</HintPath>
+    <Reference Include="RazorEngine, Version=3.0.0.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
+      <HintPath>..\packages\RazorEngine.3.0.0\lib\net40\RazorEngine.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp, Version=106.6.7.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.6.7\lib\net452\RestSharp.dll</HintPath>
@@ -259,6 +257,9 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\RazorEngine.3.0.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -426,7 +427,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Jenkinsfile" />
-    <None Include="license" />
     <None Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -447,7 +447,6 @@
     <Content Include=".gitignore">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="extent-config.xml" />
     <Content Include="Lib\html-report.xslt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
