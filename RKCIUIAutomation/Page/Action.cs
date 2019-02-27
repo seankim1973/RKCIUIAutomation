@@ -23,7 +23,7 @@ namespace RKCIUIAutomation.Page
 
         public Action() { }
 
-        public Action(IWebDriver driver) => driver = Driver;
+        public Action(IWebDriver driver) => this.Driver = driver;
 
         private enum JSAction
         {
@@ -97,6 +97,8 @@ namespace RKCIUIAutomation.Page
 
         private void WaitForElement(By elementByLocator, int timeOutInSeconds = 5, int pollingInterval = 500)
         {
+            IWebDriver driver = null;
+
             try
             {
                 WaitForPageReady();
@@ -109,8 +111,9 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
+                    driver = Driver;
                     log.Info($"...waiting for element: - {elementByLocator}");
-                    WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                     {
                         PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
                     };
@@ -133,16 +136,15 @@ namespace RKCIUIAutomation.Page
             IJavaScriptExecutor javaScriptExecutor = null;
             WebDriverWait wait = null;
             IWebDriver driver = null;
+
             try
             {
                 driver = Driver;
                 javaScriptExecutor = driver as IJavaScriptExecutor;
-                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
-                {
-                    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-                };
-                bool readyCondition(IWebDriver webDriver) => (bool)javaScriptExecutor.ExecuteScript("return (document.readyState == 'complete' && jQuery.active == 0)");
-                wait?.Until(readyCondition);
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
+                wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
+
+                //bool readyCondition(IWebDriver webDriver) => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"); //"return (document.readyState == 'complete' && jQuery.active == 0)"
             }
             catch (InvalidOperationException)
             {
@@ -387,11 +389,10 @@ namespace RKCIUIAutomation.Page
         public string GetPageTitle()
         {
             IWebDriver driver = null;
-            string pageTitle = "PAGE TITLE NOT FOUND";
+            string pageTitle = string.Empty;
 
             try
             {
-                driver = Driver;
                 Thread.Sleep(3000);
                 WaitForPageReady();
             }
@@ -401,6 +402,9 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
+                driver = Driver;
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5)) { };
+                wait.Until(x => driver.Title.HasValue());
                 pageTitle = driver.Title;
             }
 
@@ -410,11 +414,10 @@ namespace RKCIUIAutomation.Page
         public string GetPageUrl()
         {
             IWebDriver driver = null;
-            string pageUrl = "PAGE URL NOT FOUND";
+            string pageUrl = string.Empty;
 
             try
             {
-                driver = Driver;
                 Thread.Sleep(3000);
                 WaitForPageReady();
             }
@@ -424,6 +427,9 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
+                driver = Driver;
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5)) { };
+                wait.Until(x => driver.Url.HasValue());
                 pageUrl = driver.Url;
             }
 
@@ -693,6 +699,7 @@ namespace RKCIUIAutomation.Page
 
         public void ConfirmActionDialog(bool confirmYes = true)
         {
+            IWebDriver driver = null;
             string alertMsg = string.Empty;
             string actionMsg = string.Empty;
 
@@ -704,8 +711,9 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    IAlert alert = new WebDriverWait(Driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
-                    alert = Driver.SwitchTo().Alert();
+                    driver = Driver;
+                    IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
+                    alert = driver.SwitchTo().Alert();
                     alertMsg = alert.Text;
 
                     if (confirmYes)
@@ -730,6 +738,7 @@ namespace RKCIUIAutomation.Page
 
         public string AcceptAlertMessage()
         {
+            IWebDriver driver = null;
             string alertMsg = string.Empty;
 
             try
@@ -740,7 +749,8 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    IAlert alert = Driver.SwitchTo().Alert();
+                    driver = Driver;
+                    IAlert alert = driver.SwitchTo().Alert();
                     alertMsg = alert.Text;
                     alert.Accept();
                     LogStep($"Accepted browser alert: '{alertMsg}'");
@@ -756,6 +766,7 @@ namespace RKCIUIAutomation.Page
 
         public string DismissAlertMessage()
         {
+            IWebDriver driver = null;
             string alertMsg = string.Empty;
 
             try
@@ -766,7 +777,8 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    IAlert alert = Driver.SwitchTo().Alert();
+                    driver = Driver;
+                    IAlert alert = driver.SwitchTo().Alert();
                     alertMsg = alert.Text;
                     alert.Dismiss();
                     LogStep($"Dismissed browser alert: '{alertMsg}'");
@@ -782,9 +794,21 @@ namespace RKCIUIAutomation.Page
 
         public bool VerifyAlertMessage(string expectedMessage)
         {
-            string actualAlertMsg = Driver.SwitchTo().Alert().Text;
-            bool msgMatch = (actualAlertMsg).Contains(expectedMessage) ? true : false;
-            LogInfo($"## Expected Alert Message: {expectedMessage}<br>## Actual Alert Message: {actualAlertMsg}", msgMatch);
+            IWebDriver driver = null;
+            bool msgMatch = false;
+
+            try
+            {
+                driver = Driver;
+                string actualAlertMsg = driver.SwitchTo().Alert().Text;
+                msgMatch = (actualAlertMsg).Contains(expectedMessage) ? true : false;
+                LogInfo($"## Expected Alert Message: {expectedMessage}<br>## Actual Alert Message: {actualAlertMsg}", msgMatch);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            
             return msgMatch;
         }
 
@@ -834,6 +858,7 @@ namespace RKCIUIAutomation.Page
 
         public bool VerifyPageTitle(string expectedPageTitle)
         {
+            IWebDriver driver = null;
             bool isMatchingTitle = false;
             bool isDisplayed = false;
             string actualHeading = string.Empty;
@@ -843,16 +868,17 @@ namespace RKCIUIAutomation.Page
             try
             {
                 WaitForPageReady();
-
-                headingElem = Driver.FindElement(By.XPath("//h3"))
-                    ?? Driver.FindElement(By.XPath("//h2"))
-                    ?? Driver.FindElement(By.XPath("//h4"));
             }
             catch (Exception)
             {
             }
             finally
             {
+                driver = Driver;
+                headingElem = driver.FindElement(By.XPath("//h3"))
+                    ?? driver.FindElement(By.XPath("//h2"))
+                    ?? driver.FindElement(By.XPath("//h4"));
+
                 isDisplayed = headingElem?.Displayed == true ? true : false;
 
                 if (isDisplayed)
@@ -896,9 +922,13 @@ namespace RKCIUIAutomation.Page
                 By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
 
                 IWebElement pageErrElement = null;
-                pageErrElement = GetElement(serverErrorH1Tag) ?? GetElement(stackTraceTagByLocator) ?? GetElement(resourceNotFoundH2Tag);
+                pageErrElement = GetElement(serverErrorH1Tag)
+                    ?? GetElement(stackTraceTagByLocator)
+                    ?? GetElement(resourceNotFoundH2Tag);
 
-                isPageLoaded = pageErrElement.Displayed ? false : true;
+                isPageLoaded = pageErrElement.Displayed
+                    ? false
+                    : true;
                 //Console.WriteLine($"##### IsPageLoadedSuccessfully - IsPageLoaded: {isPageLoaded}");
 
                 string logMsg = isPageLoaded 

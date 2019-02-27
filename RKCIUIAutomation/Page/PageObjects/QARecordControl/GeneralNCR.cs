@@ -170,8 +170,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (UnhandledAlertException)
             {
-                Action action = new Action(Driver);
-                action.ConfirmActionDialog(acceptAlert);
+                //Action action = new Action(Driver);
+                ConfirmActionDialog(acceptAlert);
             }
         }
 

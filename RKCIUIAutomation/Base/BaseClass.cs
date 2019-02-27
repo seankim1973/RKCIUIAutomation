@@ -124,10 +124,10 @@ namespace RKCIUIAutomation.Base
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
+            string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.Grid}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
@@ -199,27 +199,26 @@ namespace RKCIUIAutomation.Base
         private void InitExtentTestInstance()
         {
             reportInstance = ExtentManager.GetReportInstance();
-            parentTest = (reporter == Reporter.Html) ?
-                reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv) : null;
-            testInstance = (reporter == Reporter.Html) ?
-                parentTest.CreateNode(testDescription) : testInstance = reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv);
+            parentTest = reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv);
+            testInstance = parentTest.CreateNode(testDescription);
         }
 
         private IWebDriver InitWebDriverInstance()
         {
+            IWebDriver driver = null;
             List<string> tenantComponents = new List<string>();
             ProjectProperties props = new ProjectProperties();
             tenantComponents = props.GetComponentsForProject(tenantName);
 
             if (tenantComponents.Contains(testComponent1))
             {
-                if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
+                if (tenantComponents.Contains(testComponent2) || !testComponent2.HasValue())
                 {
                     testDetails = $"({testEnv}){tenantName} - {testName}";
-                    Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
-                    Driver.Manage().Window.Maximize();
-                    Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+                    driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
+                    driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
+                    driver.Manage().Window.Maximize();
+                    driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 
                     LogTestDetails(testRunDetails);
                     testInstance.AssignReportCategories(testRunDetails);
@@ -234,7 +233,7 @@ namespace RKCIUIAutomation.Base
                 SkipTest(testComponent1, testRunDetails);
             }
 
-            return Driver;
+            return driver;
         }
 
         [SetUp]
@@ -256,8 +255,12 @@ namespace RKCIUIAutomation.Base
         {
             //string component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
             reportCategories = reportCategories ?? testRunDetails;
-            var component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
-            testComponent = testComponent.Equals("") ? component : testComponent;
+            var component = !testComponent2.HasValue()
+                ? testComponent1
+                : testComponent2;
+            testComponent = testComponent.Equals("")
+                ? component
+                : testComponent;
             testInstance.AssignReportCategories(reportCategories);
             string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
             LogAssertIgnore(msg);
@@ -275,7 +278,9 @@ namespace RKCIUIAutomation.Base
             string _testEnv = testDetails[5];
             string _tenantName = testDetails[6];
 
-            string components = (string.IsNullOrEmpty(_component2)) ? $": {_component1}" : $"s: {_component1}, {_component2}";
+            string components = !_component2.HasValue()
+                ? $": {_component1}"
+                : $"s: {_component1}, {_component2}";
 
             log.Info($"################################################################");
             log.Info($"#                   RKCI ELVIS UI Test Automation");
@@ -364,27 +369,30 @@ namespace RKCIUIAutomation.Base
             }
             finally
             {
-                if (Driver != null)
+                IWebDriver driver = null;
+                driver = Driver;
+
+                if (driver != null)
                 {
                     reportInstance.Flush();
 
                     if (cookie != null)
                     {
-                        Driver.Manage().Cookies.AddCookie(cookie);
+                        driver.Manage().Cookies.AddCookie(cookie);
                     }
 
-                    if (!Driver.Title.Equals("Home Page"))
+                    if (!driver.Title.Equals("Home Page"))
                     {
                         try
                         {
-                            Driver.FindElement(By.XPath("//a[text()=' Log out']")).Click();
+                            driver.FindElement(By.XPath("//a[text()=' Log out']")).Click();
                         }
                         catch (Exception)
                         {
                         }
                     }
 
-                    DismissDriverInstance(Driver);
+                    DismissDriverInstance(driver);
                 }
             }
         }
