@@ -146,7 +146,14 @@ namespace RKCIUIAutomation.Page
             }
             catch (InvalidOperationException)
             {
-                wait?.Until(wd => javaScriptExecutor.ExecuteScript("return document.readyState").ToString() == "complete");
+                try
+                {
+                    wait?.Until(wd => javaScriptExecutor.ExecuteScript("return document.readyState").ToString() == "complete");
+                }
+                catch (Exception e)
+                {
+                    log.Error(e.Message);
+                }
             }
 
             log.Info($"...Waiting for page to be in Ready state #####");
@@ -380,6 +387,7 @@ namespace RKCIUIAutomation.Page
         public string GetPageTitle()
         {
             IWebDriver driver = null;
+            string pageTitle = "PAGE TITLE NOT FOUND";
 
             try
             {
@@ -391,23 +399,28 @@ namespace RKCIUIAutomation.Page
             {
                 log.Error(e.StackTrace);
             }
+            finally
+            {
+                pageTitle = driver.Title;
+            }
 
-            return driver.Title;
+            return pageTitle;
         }
 
         public string GetPageUrl()
         {
             IWebDriver driver = null;
-            string pageUrl = string.Empty;
+            string pageUrl = "PAGE URL NOT FOUND";
 
             try
             {
                 driver = Driver;
                 Thread.Sleep(3000);
-                //WaitForPageReady();
+                WaitForPageReady();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                log.Error(e.StackTrace);
             }
             finally
             {
@@ -429,8 +442,9 @@ namespace RKCIUIAutomation.Page
                 {
                     ScrollToElement(element);
                     text = element.Text;
-                    bool validText = !string.IsNullOrEmpty(text);
-                    string logMsg = validText ? $"Retrieved '{text}'" : $"Unable to retrieve text {text}";
+                    string logMsg = text.HasValue()
+                        ? $"Retrieved '{text}'"
+                        : $"Unable to retrieve text {text}";
                     LogDebug($"{logMsg} from element - {elementByLocator}");
                 }
             }
@@ -887,7 +901,9 @@ namespace RKCIUIAutomation.Page
                 isPageLoaded = pageErrElement.Displayed ? false : true;
                 //Console.WriteLine($"##### IsPageLoadedSuccessfully - IsPageLoaded: {isPageLoaded}");
 
-                string logMsg = isPageLoaded ? $"!!! Page Error - {pageErrElement.Text}<br>{pageUrl}" : $"!!! Error at {pageUrl}";
+                string logMsg = isPageLoaded 
+                    ? $"!!! Page Error - {pageErrElement.Text}<br>{pageUrl}"
+                    : $"!!! Error at {pageUrl}";
                 //Console.WriteLine($"##### IsPageLoadedSuccessfully - LogMsg: {logMsg}");
 
                 logMsgKey = $"{testEnv}{tenantName}{GetTestName()}";
