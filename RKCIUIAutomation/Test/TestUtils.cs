@@ -34,17 +34,14 @@ namespace RKCIUIAutomation.Test
 
         public void LoopThroughNavMenu()
         {
-            IWebDriver driver = null;
-
             try
             {
-                driver = Driver;
                 string pageUrl = string.Empty;
                 WriteToFile($"{tenantName} Navigation Menu", ".txt", true); //create {overwrite existing} txt file
                 WriteToFile(Environment.NewLine);
 
                 IList<IWebElement> elements = new List<IWebElement>();
-                elements = driver.FindElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
+                elements = GetElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
                 if (elements?.Any() == true)
                 {
                     foreach (IWebElement mainNavElem in elements)

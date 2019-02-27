@@ -6,6 +6,7 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using System;
@@ -534,21 +535,24 @@ namespace RKCIUIAutomation.Base
                 StreamWriter streamWriter = File.Exists(path) ? File.AppendText(path) : File.CreateText(path);
                 using (StreamWriter sw = streamWriter)
                 {
-                    if (!string.IsNullOrEmpty(msg) && msg.Contains("<br>"))
+                    if (msg.HasValue())
                     {
-                        string[] message = Regex.Split(msg, "<br>");
-                        sw.WriteLine(message[0]);
-                        sw.WriteLine(message[1]);
-                    }
-                    else
-                    {
-                        sw.WriteLine(msg);
+                        if (msg.Contains("<br>"))
+                        {
+                            string[] message = Regex.Split(msg, "<br>");
+                            sw.WriteLine(message[0]);
+                            sw.WriteLine(message[1]);
+                        }
+                        else
+                        {
+                            sw.WriteLine(msg);
+                        }
                     }
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                log.Error(e.Message);
             }
         }
 

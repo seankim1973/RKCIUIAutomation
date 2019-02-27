@@ -9,6 +9,7 @@ using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Test.DIR
 {
+    [NonParallelizable]
     [TestFixture]
     public class Verify_DIR_SimpleWF_End_To_End : TestBase
     {
@@ -37,6 +38,7 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
+    [NonParallelizable]
     [TestFixture]
     public class Verify_DIR_SimpleWF_End_To_End_UserGroup_QC : TestBase
     {
@@ -65,6 +67,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //Works for both SimpleWF and ComplexWF Tenants
+    [NonParallelizable]
     [TestFixture]
     public class Verify_QC_Review_by_Project_Manager : TestBase
     {
@@ -90,6 +93,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //Works for both SimpleWF and ComplexWF Tenants
+    [NonParallelizable]
     [TestFixture]
     public class Verify_Delete_a_DIR : TestBase
     {
@@ -111,6 +115,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //SG & SH249 - DIR ComplexWF Tenants
+    [NonParallelizable]
     [TestFixture]
     public class Verify_Filter_of_DIR_Table_ComplexWF : TestBase
     {
@@ -145,6 +150,7 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
+    [NonParallelizable]
     [TestFixture]
     public class Verify_Filter_of_DIR_Table_SimpleWF : TestBase
     {
@@ -176,6 +182,7 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
+    [NonParallelizable]
     [TestFixture]
     public class Verify_DIR_ComplexWF_End_To_End : TestBase
     {
@@ -275,6 +282,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //GLX, I15SB, I15Tech, LAX
+    [NonParallelizable]
     [TestFixture]
     public class Verify_Creating_A_Revision_Of_A_Closed_DIR : TestBase
     {
@@ -319,6 +327,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //GLX, LAX, I15SB, I15Tech - DIR SimpleWF Tenants
+    [NonParallelizable]
     [TestFixture]
     public class Verify_IDLReport_for_QaDIR_With_Deficiencies_SimpleWF : TestBase
     {
@@ -349,6 +358,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //SG & SH249 - DIR ComplexWF Tenants
+    [NonParallelizable]
     [TestFixture]
     public class Verify_IDLReport_for_QaDIR_With_Deficiencies_ComplexWF : TestBase
     {
@@ -395,6 +405,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //SG & SH249 - DIR Complex Tenants
+    [NonParallelizable]
     [TestFixture]
     public class Verify_Packages_Table_Columns_Filter : TestBase
     {
@@ -417,6 +428,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //SG & SH249 - DIR Complex Tenants
+    [NonParallelizable]
     [TestFixture]
     public class Verify_DIR_Packages_Download : TestBase
     {
@@ -436,6 +448,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //SG & SH249 - DIR Complex Tenants
+    [NonParallelizable]
     [TestFixture]
     public class Verify_Create_Packages : TestBase
     {
@@ -466,6 +479,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //SG & SH249 - DIR Complex Tenants
+    [NonParallelizable]
     [TestFixture]
     public class Verify_DIR_Packages_Recreate : TestBase
     {
@@ -517,6 +531,7 @@ namespace RKCIUIAutomation.Test.DIR
     }
 
     //Works for both SimpleWF and ComplexWF Tenants
+    [NonParallelizable]
     [TestFixture]
     public class Verify_PDF_Report_View : TestBase
     {
@@ -546,6 +561,7 @@ namespace RKCIUIAutomation.Test.DIR
         }
     }
 
+    [NonParallelizable]
     [TestFixture]
     public class Verify_PDF_Report_MultiView : TestBase
     {
