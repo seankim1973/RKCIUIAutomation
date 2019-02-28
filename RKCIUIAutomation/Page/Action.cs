@@ -95,7 +95,7 @@ namespace RKCIUIAutomation.Page
             Thread.Sleep(1000);
         }
 
-        private void WaitForElement(By elementByLocator, int timeOutInSeconds = 5, int pollingInterval = 500)
+        internal void WaitForElement(By elementByLocator, int timeOutInSeconds = 5, int pollingInterval = 500)
         {
             IWebDriver driver = null;
 
@@ -131,7 +131,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        private void WaitForElement(IWebElement webElement, int timeOutInSeconds = 5, int pollingInterval = 500)
+        internal void WaitForElement(IWebElement webElement, int timeOutInSeconds = 5, int pollingInterval = 500)
         {
             try
             {
@@ -210,13 +210,12 @@ namespace RKCIUIAutomation.Page
 
         public IWebElement GetElement(By elementByLocator)
         {
-            IWebDriver driver = null;
             IWebElement elem = null;
             WaitForElement(elementByLocator);
 
             try
             {
-                driver = Driver;
+                IWebDriver driver = Driver;
                 elem = driver.FindElement(elementByLocator);
             }
             catch (Exception e)
@@ -229,13 +228,12 @@ namespace RKCIUIAutomation.Page
 
         public IList<IWebElement> GetElements(By elementByLocator)
         {
-            IWebDriver driver = null;
             IList<IWebElement> elements = null;
             WaitForElement(elementByLocator);
 
             try
             {
-                driver = Driver;
+                IWebDriver driver = Driver;
                 elements = new List<IWebElement>();
                 elements = driver.FindElements(elementByLocator);
                 log.Info($"Getting list of WebElements: {elementByLocator}");
@@ -296,8 +294,18 @@ namespace RKCIUIAutomation.Page
 
         public string GetAttribute(IWebElement webElement, string attributeName)
         {
-            WaitForElement(webElement);
-            return webElement?.GetAttribute(attributeName);
+            string attribValue = string.Empty;
+
+            try
+            {
+                attribValue = webElement?.GetAttribute(attributeName);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return attribValue;
         }
 
         public IList<string> GetAttributes(By elementByLocator, string attributeName)
