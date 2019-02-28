@@ -292,22 +292,6 @@ namespace RKCIUIAutomation.Page
         public string GetAttribute(By elementByLocator, string attributeName)
             => GetElement(elementByLocator)?.GetAttribute(attributeName);
 
-        public string GetAttribute(IWebElement webElement, string attributeName)
-        {
-            string attribValue = string.Empty;
-
-            try
-            {
-                attribValue = webElement?.GetAttribute(attributeName);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-
-            return attribValue;
-        }
-
         public IList<string> GetAttributes(By elementByLocator, string attributeName)
         {
             IList<IWebElement> elements = GetElements(elementByLocator);

@@ -21,39 +21,31 @@ namespace RKCIUIAutomation.Test
         [ThreadStatic]
         private List<string> pageUrlList;
 
-        private string GetInnerText(IWebElement listElement)
+        private string GetElemATagAttribute(IWebElement rootElement, string attributeName)
         {
-            string innerText = string.Empty;
+            IWebElement anchorElem = null;
+            string attribValue = string.Empty;
 
             try
             {
-                IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
-                innerText = GetAttribute(anchorElem, "innerText");
+                anchorElem = rootElement.FindElement(By.XPath("./a"));
+                attribValue = attributeName == "innerText"
+                    ? anchorElem.Text
+                    : anchorElem.GetAttribute($"{attributeName}");
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
 
-            return innerText;
+            return attribValue;
         }
+
+        private string GetInnerText(IWebElement listElement)
+            => GetElemATagAttribute(listElement, "innerText");
 
         private string GetElementHref(IWebElement listElement)
-        {
-            string href = string.Empty;
-
-            try
-            {
-                IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
-                href = GetAttribute(anchorElem, "href");
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-
-            return href;
-        }
+            => GetElemATagAttribute(listElement, "href");
 
         public void LoopThroughNavMenu()
         {
