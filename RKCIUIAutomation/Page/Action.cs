@@ -133,8 +133,6 @@ namespace RKCIUIAutomation.Page
 
         private void WaitForElement(IWebElement webElement, int timeOutInSeconds = 5, int pollingInterval = 500)
         {
-            IWebDriver driver = null;
-
             try
             {
                 WaitForPageReady();
@@ -147,7 +145,7 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    driver = Driver;
+                    IWebDriver driver = Driver;
                     log.Info($"...waiting for element: - {webElement.ToString()}");
                     WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                     {
@@ -157,7 +155,7 @@ namespace RKCIUIAutomation.Page
                     wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
                     wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
                     wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                    wait.Until(x => webElement.Displayed);
+                    wait.Until(x => webElement.Enabled);
                 }
                 catch (Exception e)
                 {
@@ -430,7 +428,6 @@ namespace RKCIUIAutomation.Page
 
         public string GetPageTitle(int timeOutInSeconds = 5, int pollingInterval = 500)
         {
-            IWebDriver driver = null;
             string pageTitle = string.Empty;
 
             try
@@ -445,7 +442,7 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    driver = Driver;
+                    IWebDriver driver = Driver;
                     log.Info($"...waiting for page title");
                     WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                     {
@@ -455,7 +452,6 @@ namespace RKCIUIAutomation.Page
                     wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
                     wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
                     wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                    wait.IgnoreExceptionTypes(typeof(WebDriverException));
                     wait.Until(x => x.Title.HasValue());
 
                     pageTitle = driver.Title;
@@ -471,7 +467,6 @@ namespace RKCIUIAutomation.Page
 
         public string GetPageUrl(int timeOutInSeconds = 5, int pollingInterval = 500)
         {
-            IWebDriver driver = null;
             string pageUrl = string.Empty;
 
             try
@@ -486,7 +481,7 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    driver = Driver;
+                    IWebDriver driver = Driver;
                     log.Info($"...waiting for page title");
                     WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                     {
@@ -496,7 +491,6 @@ namespace RKCIUIAutomation.Page
                     wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
                     wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
                     wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                    wait.IgnoreExceptionTypes(typeof(WebDriverException));
                     wait.Until(x => x.Url.HasValue());
 
                     pageUrl = driver.Url;

@@ -19,7 +19,7 @@ namespace RKCIUIAutomation.Test
         public TestUtils(IWebDriver driver) => this.Driver = driver;
 
         [ThreadStatic]
-        private List<string> pageUrlList;
+        private static List<string> pageUrlList;
 
         private string GetInnerText(IWebElement listElement)
         {
