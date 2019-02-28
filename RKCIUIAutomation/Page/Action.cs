@@ -121,11 +121,47 @@ namespace RKCIUIAutomation.Page
                     wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
                     wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
                     wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                    IWebElement webElem = wait.Until(x => x.FindElement(elementByLocator));
+                    wait.Until(x => x.FindElement(elementByLocator));
                 }
                 catch (Exception e)
                 {
                     log.Error($"WaitForElement timeout occurred for element: - {elementByLocator}\n{e.Message}");
+                    throw e;
+                }
+            }
+        }
+
+        private void WaitForElement(IWebElement webElement, int timeOutInSeconds = 5, int pollingInterval = 500)
+        {
+            IWebDriver driver = null;
+
+            try
+            {
+                WaitForPageReady();
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            finally
+            {
+                try
+                {
+                    driver = Driver;
+                    log.Info($"...waiting for element: - {webElement.ToString()}");
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                    {
+                        PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
+                    };
+                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                    wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                    wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
+                    wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
+                    wait.Until(x => webElement.Displayed);
+                }
+                catch (Exception e)
+                {
+                    log.Error($"WaitForElement timeout occurred for element: - {webElement.ToString()}\n{e.Message}");
                     throw e;
                 }
             }
@@ -259,6 +295,12 @@ namespace RKCIUIAutomation.Page
 
         public string GetAttribute(By elementByLocator, string attributeName)
             => GetElement(elementByLocator)?.GetAttribute(attributeName);
+
+        public string GetAttribute(IWebElement webElement, string attributeName)
+        {
+            WaitForElement(webElement);
+            return webElement?.GetAttribute(attributeName);
+        }
 
         public IList<string> GetAttributes(By elementByLocator, string attributeName)
         {

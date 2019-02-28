@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Generic;
@@ -18,18 +19,40 @@ namespace RKCIUIAutomation.Test
         public TestUtils(IWebDriver driver) => this.Driver = driver;
 
         [ThreadStatic]
-        private static List<string> pageUrlList;
+        private List<string> pageUrlList;
 
-        private static string GetInnerText(IWebElement listElement)
+        private string GetInnerText(IWebElement listElement)
         {
-            IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
-            return $"{anchorElem.GetAttribute("innerText")}";
+            string innerText = string.Empty;
+
+            try
+            {
+                IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
+                innerText = GetAttribute(anchorElem, "innerText");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return innerText;
         }
 
-        private static string GetElementHref(IWebElement listElement)
+        private string GetElementHref(IWebElement listElement)
         {
-            IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
-            return $"{anchorElem.GetAttribute("href")}";
+            string href = string.Empty;
+
+            try
+            {
+                IWebElement anchorElem = listElement.FindElement(By.XPath("./a"));
+                href = GetAttribute(anchorElem, "href");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return href;
         }
 
         public void LoopThroughNavMenu()
@@ -58,7 +81,7 @@ namespace RKCIUIAutomation.Test
 
                             if (!subMainNavElem.GetAttribute("class").Contains("dropdown-submenu"))
                             {
-                                if (!string.IsNullOrEmpty(GetInnerText(subMainNavElem)))
+                                if (GetInnerText(subMainNavElem).HasValue())
                                 {
                                     pageUrl = GetElementHref(subMainNavElem);
                                     pageUrlList.Add(pageUrl);
