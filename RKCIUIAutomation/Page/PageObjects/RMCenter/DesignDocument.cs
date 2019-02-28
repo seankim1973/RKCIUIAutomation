@@ -1,5 +1,6 @@
 ﻿using MiniGuids;
 using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Threading;
@@ -15,7 +16,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public DesignDocument(IWebDriver driver) => this.Driver = driver;
+        public DesignDocument(IWebDriver driver) => driver = Driver;
 
         public enum DesignDocDetails_InputFields
         {
@@ -195,6 +196,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public abstract class DesignDocument_Impl : PageBase, IDesignDocument
     {
+        IWebDriver driver;
+
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
@@ -242,9 +245,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return instance;
         }
 
-        private DesignDocument DesignDoc_Base => new DesignDocument(Driver);
+        private DesignDocument DesignDoc_Base => new DesignDocument(driver = Driver);
 
-        private KendoGrid Kendo => new KendoGrid(Driver);
+        private KendoGrid Kendo => new KendoGrid(driver = Driver);
 
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(DesignDoc_Base.UploadNewDesignDoc_ByLocator);
 
@@ -287,27 +290,38 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForPageReady();
         }
 
-        internal string SetCommentStamp(DesignDocDetails_InputFields inputFieldEnum, int commentTabIndex) => $"{inputFieldEnum.GetString()}{(commentTabIndex - 1).ToString()}_";
+        internal string SetCommentStamp(DesignDocDetails_InputFields inputFieldEnum, int commentTabIndex)
+            => $"{inputFieldEnum.GetString()}{(commentTabIndex - 1).ToString()}_";
 
-        public virtual void SelectRegularCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 3);
+        public virtual void SelectRegularCommentReviewType(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 3);
 
-        public virtual void SelectNoCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 1);
+        public virtual void SelectNoCommentReviewType(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 1);
 
-        public void SelectAgreeResponseCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 2); //check the index, UI not working so need to confirm later
+        public void SelectAgreeResponseCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 2); //check the index, UI not working so need to confirm later
 
-        public virtual void SelectDisagreeResponseCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 3);//check the index, UI not working so need to confirm later
+        public virtual void SelectDisagreeResponseCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 3);//check the index, UI not working so need to confirm later
 
-        public void SelectAgreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
+        public void SelectAgreeResolutionCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
 
-        public virtual void SelectDisagreeResolutionCode(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
+        public virtual void SelectDisagreeResolutionCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
 
-        public virtual void SelectDDL_ClosingStamp(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
+        public virtual void SelectDDL_ClosingStamp(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
 
-        public void SelectCommentType(int commentTypeTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.CommentType, commentTypeTabNumber), 1);
+        public void SelectCommentType(int commentTypeTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.CommentType, commentTypeTabNumber), 1);
 
-        public void SelectDiscipline(int disciplineNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Discipline, disciplineNumber), 1);
+        public void SelectDiscipline(int disciplineNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Discipline, disciplineNumber), 1);
 
-        public void SelectCategory(int categoryNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Category, categoryNumber), 1);
+        public void SelectCategory(int categoryNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Category, categoryNumber), 1);
 
         private void SetDesignDocTitleAndNumber()
         {
@@ -340,7 +354,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             try
             {
-                designDocNumber = string.IsNullOrWhiteSpace(filterByValue) ? designDocNumber : filterByValue;
+                designDocNumber = !filterByValue.HasValue()
+                    ? designDocNumber
+                    : filterByValue;
                 FilterTableColumnByValue(ColumnName.Number, designDocNumber);
             }
             catch (Exception e)

@@ -759,7 +759,6 @@ namespace RKCIUIAutomation.Page
 
         public void ConfirmActionDialog(bool confirmYes = true)
         {
-            IWebDriver driver = null;
             string alertMsg = string.Empty;
             string actionMsg = string.Empty;
 
@@ -771,7 +770,7 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    driver = Driver;
+                    IWebDriver driver = Driver;
                     IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
                     alert = driver.SwitchTo().Alert();
                     alertMsg = alert.Text;
@@ -798,7 +797,6 @@ namespace RKCIUIAutomation.Page
 
         public string AcceptAlertMessage()
         {
-            IWebDriver driver = null;
             string alertMsg = string.Empty;
 
             try
@@ -809,7 +807,7 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    driver = Driver;
+                    IWebDriver driver = Driver;
                     IAlert alert = driver.SwitchTo().Alert();
                     alertMsg = alert.Text;
                     alert.Accept();
@@ -826,7 +824,6 @@ namespace RKCIUIAutomation.Page
 
         public string DismissAlertMessage()
         {
-            IWebDriver driver = null;
             string alertMsg = string.Empty;
 
             try
@@ -837,7 +834,7 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    driver = Driver;
+                    IWebDriver driver = Driver;
                     IAlert alert = driver.SwitchTo().Alert();
                     alertMsg = alert.Text;
                     alert.Dismiss();
@@ -854,12 +851,11 @@ namespace RKCIUIAutomation.Page
 
         public bool VerifyAlertMessage(string expectedMessage)
         {
-            IWebDriver driver = null;
             bool msgMatch = false;
 
             try
             {
-                driver = Driver;
+                IWebDriver driver = Driver;
                 string actualAlertMsg = driver.SwitchTo().Alert().Text;
                 msgMatch = (actualAlertMsg).Contains(expectedMessage) ? true : false;
                 LogInfo($"## Expected Alert Message: {expectedMessage}<br>## Actual Alert Message: {actualAlertMsg}", msgMatch);
@@ -918,7 +914,6 @@ namespace RKCIUIAutomation.Page
 
         public bool VerifyPageTitle(string expectedPageTitle)
         {
-            IWebDriver driver = null;
             bool isMatchingTitle = false;
             bool isDisplayed = false;
             string actualHeading = string.Empty;
@@ -934,7 +929,7 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                driver = Driver;
+                IWebDriver driver = Driver;
                 headingElem = driver.FindElement(By.XPath("//h3"))
                     ?? driver.FindElement(By.XPath("//h2"))
                     ?? driver.FindElement(By.XPath("//h4"));
@@ -1014,11 +1009,10 @@ namespace RKCIUIAutomation.Page
             bool isLoaded = false;
             string logMsg = string.Empty;
             string pageTitle = string.Empty;
-            IWebDriver driver = null;
 
             try
             {
-                driver = Driver;
+                IWebDriver driver = Driver;
                 driver.Navigate().GoToUrl(pageUrl);
 
                 pageTitle = GetPageTitle();
@@ -1271,11 +1265,10 @@ namespace RKCIUIAutomation.Page
         public IWebElement ScrollToElement(By elementByLocator)
         {
             IWebElement elem = null;
-            IWebDriver driver = null;
 
             try
             {
-                driver = Driver;
+                IWebDriver driver = Driver;
                 elem = GetElement(elementByLocator);
 
                 //if (elem.Enabled)
@@ -1297,11 +1290,9 @@ namespace RKCIUIAutomation.Page
 
         public void ScrollToElement(IWebElement element)
         {
-            IWebDriver driver = null;
-
             try
             {
-                driver = Driver;
+                IWebDriver driver = Driver;
                 if (element != null)
                 {
                     Actions actions = new Actions(driver);

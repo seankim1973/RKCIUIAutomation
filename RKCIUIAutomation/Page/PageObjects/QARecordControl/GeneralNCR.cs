@@ -167,11 +167,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 JsClickElement(GetSubmitButtonByLocator(submitButton));
-            }
-            catch (UnhandledAlertException)
-            {
-                //Action action = new Action(Driver);
                 ConfirmActionDialog(acceptAlert);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
             }
         }
 
@@ -189,7 +189,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 CreateNcrDescription(tempDescription);
             }
-            desc = desc.Equals("") || string.IsNullOrEmpty(desc)
+            desc = desc.Equals("") || !desc.HasValue()
                 ? GetVar(tempDescription
                     ? ncrNewDescKey
                     : ncrDescKey)
@@ -477,6 +477,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     public abstract class GeneralNCR_Impl : PageBase, IGeneralNCR
     {
+        IWebDriver driver;
+
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
@@ -525,7 +527,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return instance;
         }
 
-        internal GeneralNCR GeneralNCR_Base => new GeneralNCR(Driver);
+        internal GeneralNCR GeneralNCR_Base => new GeneralNCR(driver = Driver);
 
         public virtual void FilterDescription(string description = "")
         {
@@ -587,7 +589,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             InputFields signBtn = InputFields.RecordEngineer_SignBtn;
             InputFields reviewerField = InputFields.Engineer_of_Record;
-            RadioBtnsAndCheckboxes approvalField = Approve ? RadioBtnsAndCheckboxes.Engineer_Approval_Yes : RadioBtnsAndCheckboxes.Engineer_Approval_No;
+            RadioBtnsAndCheckboxes approvalField = Approve
+                ? RadioBtnsAndCheckboxes.Engineer_Approval_Yes
+                : RadioBtnsAndCheckboxes.Engineer_Approval_No;
 
             switch (reviewer)
             {
@@ -597,7 +601,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 case Reviewer.Owner:
                     signBtn = InputFields.Owner_SignBtn;
                     reviewerField = InputFields.Owner_Review;
-                    approvalField = Approve ? RadioBtnsAndCheckboxes.Owner_Approval_Yes : RadioBtnsAndCheckboxes.Owner_Approval_No;
+                    approvalField = Approve
+                        ? RadioBtnsAndCheckboxes.Owner_Approval_Yes
+                        : RadioBtnsAndCheckboxes.Owner_Approval_No;
                     break;
 
                 case Reviewer.IQF_Manager:
@@ -989,10 +995,16 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 ScrollToElement(locator);
                 //signatureValueAttrib = GetAttribute(locator, "value");
 
-                bool isFieldEmpty = GetAttribute(locator, "value").HasValue() ? true : false;
-                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty) ? true : false;
+                bool isFieldEmpty = GetAttribute(locator, "value").HasValue()
+                    ? false
+                    : true;
+                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty)
+                    ? true
+                    : false;
 
-                string logMsg = isResultExpected ? "Result As Expected" : "Unexpected Result";
+                string logMsg = isResultExpected
+                    ? "Result As Expected"
+                    : "Unexpected Result";
 
                 LogInfo($"Signature Field: {logMsg}", isResultExpected);
                 
