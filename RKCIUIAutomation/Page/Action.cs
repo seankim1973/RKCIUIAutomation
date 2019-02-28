@@ -428,14 +428,13 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public string GetPageTitle()
+        public string GetPageTitle(int timeOutInSeconds = 5, int pollingInterval = 500)
         {
             IWebDriver driver = null;
             string pageTitle = string.Empty;
 
             try
             {
-                Thread.Sleep(3000);
                 WaitForPageReady();
             }
             catch (Exception e)
@@ -444,23 +443,39 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                driver = Driver;
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5)) { };
-                wait.Until(x => driver.Title.HasValue());
-                pageTitle = driver.Title;
+                try
+                {
+                    driver = Driver;
+                    log.Info($"...waiting for page title");
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                    {
+                        PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
+                    };
+                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                    wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                    wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
+                    wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
+                    wait.IgnoreExceptionTypes(typeof(WebDriverException));
+                    wait.Until(x => x.Title.HasValue());
+
+                    pageTitle = driver.Title;
+                }
+                catch (Exception e)
+                {
+                    log.Error($"timed out while waiting for page title\n{e.Message}");
+                }
             }
 
             return pageTitle;
         }
 
-        public string GetPageUrl()
+        public string GetPageUrl(int timeOutInSeconds = 5, int pollingInterval = 500)
         {
             IWebDriver driver = null;
             string pageUrl = string.Empty;
 
             try
             {
-                Thread.Sleep(3000);
                 WaitForPageReady();
             }
             catch (Exception e)
@@ -469,10 +484,27 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                driver = Driver;
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5)) { };
-                wait.Until(x => driver.Url.HasValue());
-                pageUrl = driver.Url;
+                try
+                {
+                    driver = Driver;
+                    log.Info($"...waiting for page title");
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                    {
+                        PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
+                    };
+                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                    wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                    wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
+                    wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
+                    wait.IgnoreExceptionTypes(typeof(WebDriverException));
+                    wait.Until(x => x.Url.HasValue());
+
+                    pageUrl = driver.Url;
+                }
+                catch (Exception e)
+                {
+                    log.Error($"timed out while waiting for page url\n{e.Message}");
+                }
             }
 
             return pageUrl;
