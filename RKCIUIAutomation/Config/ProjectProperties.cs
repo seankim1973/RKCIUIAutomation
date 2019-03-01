@@ -130,7 +130,6 @@ namespace RKCIUIAutomation.Config
             Component.GLX,
             Component.CDR,
             Component.CDR_WF_Complex,
-            Component.DesignDoc_CommentReview,
             Component.RFI,
             Component.NCR,
             Component.NCR_WF_Complex,

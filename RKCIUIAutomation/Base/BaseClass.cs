@@ -355,6 +355,8 @@ namespace RKCIUIAutomation.Base
             }
             finally
             {
+                driverInstance = Driver;
+
                 if (driverInstance != null)
                 {
                     reportInstance.Flush();
@@ -392,8 +394,6 @@ namespace RKCIUIAutomation.Base
                 hipTestInstance.UpdateHipTestRunData(hipTestRunData, hipTestResults);
                 hipTestInstance.SyncTestRun(hipTestRunId);
             }
-
-            //DismissAllDriverInstances();
         }
     }
 }
