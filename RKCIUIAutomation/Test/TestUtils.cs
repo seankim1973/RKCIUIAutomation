@@ -29,9 +29,7 @@ namespace RKCIUIAutomation.Test
             try
             {
                 anchorElem = rootElement.FindElement(By.XPath("./a"));
-                attribValue = attributeName == "innerText"
-                    ? anchorElem.Text
-                    : anchorElem.GetAttribute($"{attributeName}");
+                attribValue = anchorElem.GetAttribute(attributeName);
             }
             catch (Exception e)
             {
@@ -57,7 +55,7 @@ namespace RKCIUIAutomation.Test
 
                 IList<IWebElement> elements = new List<IWebElement>();
                 elements = GetElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
-                if (elements?.Any() == true)
+                if (elements.Any())
                 {
                     foreach (IWebElement mainNavElem in elements)
                     {

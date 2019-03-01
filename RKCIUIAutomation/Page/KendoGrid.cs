@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using OpenQA.Selenium;
+using RestSharp.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -61,13 +62,15 @@ namespace RKCIUIAutomation.Page
 
         private void ExecuteJsScript(string jsToBeExecuted)
         {
-            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+            driver = Driver;
+            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
             executor.ExecuteScript(jsToBeExecuted);
         }
 
         private object ExecuteJsScriptGet(string jsToBeExecuted)
         {
-            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+            driver = Driver;
+            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
             return executor.ExecuteScript(jsToBeExecuted);
         }
 
@@ -76,8 +79,9 @@ namespace RKCIUIAutomation.Page
             int index = -1;
             try
             {
+                driver = Driver;
                 IList<IWebElement> elements = new List<IWebElement>();
-                elements = Driver.FindElements(findElementsLocator);
+                elements = driver.FindElements(findElementsLocator);
 
                 for (int i = 0; i < elements.Count; i++)
                 {
@@ -240,9 +244,10 @@ namespace RKCIUIAutomation.Page
 
         public int GetCurrentPageNumber(TableType tableType = TableType.Unknown)
         {
+            driver = Driver;
             string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} return grid.dataSource.page();";
-            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
             var result = executor.ExecuteScript(jsToBeExecuted);
             int pageNumber = int.Parse(result.ToString());
             return pageNumber;
@@ -277,7 +282,9 @@ namespace RKCIUIAutomation.Page
             try
             {
                 gridId = GetGridID(tableType);
-                logMsg = !string.IsNullOrEmpty(gridId) ? $"Found Kendo Grid ID: {gridId}" : $"NULL Kendo Grid ID";
+                logMsg = gridId.HasValue()
+                    ? $"Found Kendo Grid ID: {gridId}"
+                    : $"NULL Kendo Grid ID";
                 log.Debug(logMsg);
             }
             catch (Exception e)
@@ -311,7 +318,6 @@ namespace RKCIUIAutomation.Page
                         break;
                 }
 
-                //gridElem = GetElement(multiActiveGridDivLocator) ?? GetElement(singleGridDivLocator);
                 gridId = gridElem.GetAttribute("id");
             }
             catch (Exception e)

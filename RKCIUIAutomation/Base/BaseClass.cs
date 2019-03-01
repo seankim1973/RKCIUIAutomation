@@ -20,7 +20,7 @@ namespace RKCIUIAutomation.Base
     public class BaseClass : BaseUtils
     {
         [ThreadStatic]
-        public IWebDriver driverInstance;
+        public static IWebDriver driver;
 
         #region ExtentReports Details
 
@@ -130,7 +130,7 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.Garnet}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.I15South}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
@@ -234,7 +234,7 @@ namespace RKCIUIAutomation.Base
 
             InitExtentTestInstance();
 
-            driverInstance = InitWebDriverInstance();
+            driver = InitWebDriverInstance();
         }
 
         private void SkipTest(string testComponent = "", string[] reportCategories = null)
@@ -355,29 +355,29 @@ namespace RKCIUIAutomation.Base
             }
             finally
             {
-                driverInstance = Driver;
+                driver = Driver;
 
-                if (driverInstance != null)
+                if (driver != null)
                 {
                     reportInstance.Flush();
 
                     if (cookie != null)
                     {
-                        driverInstance.Manage().Cookies.AddCookie(cookie);
+                        driver.Manage().Cookies.AddCookie(cookie);
                     }
 
-                    if (!driverInstance.Title.Equals("Home Page"))
+                    if (!driver.Title.Equals("Home Page"))
                     {
                         try
                         {
-                            driverInstance.FindElement(By.XPath("//a[text()=' Log out']")).Click();
+                            driver.FindElement(By.XPath("//a[text()=' Log out']")).Click();
                         }
                         catch (Exception)
                         {
                         }
                     }
 
-                    DismissDriverInstance(driverInstance);
+                    DismissDriverInstance(driver);
                 }
             }
         }

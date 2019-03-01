@@ -196,8 +196,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public abstract class DesignDocument_Impl : PageBase, IDesignDocument
     {
-        IWebDriver driver;
-
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
@@ -245,9 +243,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return instance;
         }
 
-        private DesignDocument DesignDoc_Base => new DesignDocument(driver = Driver);
+        private DesignDocument DesignDoc_Base => new DesignDocument(driver);
 
-        private KendoGrid Kendo => new KendoGrid(driver = Driver);
+        private KendoGrid Kendo => new KendoGrid(driver);
 
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(DesignDoc_Base.UploadNewDesignDoc_ByLocator);
 

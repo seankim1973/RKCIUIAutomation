@@ -19,8 +19,6 @@ namespace RKCIUIAutomation.Page
     {
         private PageHelper pgHelper = new PageHelper();
 
-        //private readonly BaseUtils baseUtils = new BaseUtils();
-
         public Action() { }
 
         public Action(IWebDriver driver) => this.Driver = driver;
@@ -38,7 +36,7 @@ namespace RKCIUIAutomation.Page
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
         {
             IWebElement element = null;
-            IWebDriver driver = null;
+
             try
             {
                 driver = Driver;
@@ -97,18 +95,10 @@ namespace RKCIUIAutomation.Page
 
         internal void WaitForElement(By elementByLocator, int timeOutInSeconds = 5, int pollingInterval = 500)
         {
-            IWebDriver driver = null;
-
             try
             {
                 WaitForPageReady();
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-            finally
-            {
+
                 try
                 {
                     driver = Driver;
@@ -129,70 +119,45 @@ namespace RKCIUIAutomation.Page
                     throw e;
                 }
             }
-        }
-
-        internal void WaitForElement(IWebElement webElement, int timeOutInSeconds = 5, int pollingInterval = 500)
-        {
-            try
-            {
-                WaitForPageReady();
-            }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-            }
-            finally
-            {
-                try
-                {
-                    IWebDriver driver = Driver;
-                    log.Info($"...waiting for element: - {webElement.ToString()}");
-                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
-                    {
-                        PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-                    };
-                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                    wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                    wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
-                    wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                    wait.Until(x => webElement.Enabled);
-                }
-                catch (Exception e)
-                {
-                    log.Error($"WaitForElement timeout occurred for element: - {webElement.ToString()}\n{e.Message}");
-                    throw e;
-                }
             }
         }
 
         internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 500)
         {
-            IJavaScriptExecutor javaScriptExecutor = null;
-            WebDriverWait wait = null;
-            IWebDriver driver = null;
+            log.Info($"...Waiting for page to be in Ready state #####");
 
             try
             {
                 driver = Driver;
-                javaScriptExecutor = driver as IJavaScriptExecutor;
-                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
-                wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
+                IJavaScriptExecutor javaScriptExecutor = driver as IJavaScriptExecutor;
 
-                //bool readyCondition(IWebDriver webDriver) => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"); //"return (document.readyState == 'complete' && jQuery.active == 0)"
-            }
-            catch (InvalidOperationException)
-            {
                 try
                 {
-                    wait?.Until(wd => javaScriptExecutor.ExecuteScript("return document.readyState").ToString() == "complete");
+                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
+                    wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
                 }
-                catch (Exception e)
+                catch (InvalidOperationException ex)
                 {
-                    log.Error(e.Message);
+                    log.Error(ex);
+
+                    try
+                    {
+                        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
+                        wait?.Until(wd => javaScriptExecutor.ExecuteScript("return document.readyState").ToString() == "complete");
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error(e.Message);
+                    }
                 }
             }
-
-            log.Info($"...Waiting for page to be in Ready state #####");
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
         }
 
         public void RefreshWebPage()
@@ -215,7 +180,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IWebDriver driver = Driver;
+                driver = Driver;
                 elem = driver.FindElement(elementByLocator);
             }
             catch (Exception e)
@@ -233,7 +198,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IWebDriver driver = Driver;
+                driver = Driver;
                 elements = new List<IWebElement>();
                 elements = driver.FindElements(elementByLocator);
                 log.Info($"Getting list of WebElements: {elementByLocator}");
@@ -263,7 +228,7 @@ namespace RKCIUIAutomation.Page
                 elem?.Click();
                 bool elemNotNull = elem != null ? true : false;
                 string logMsg = elemNotNull ? "Clicked" : "Null";
-                LogInfo($"{logMsg} element: - {elementByLocator}");
+                LogStep($"{logMsg} element: - {elementByLocator}");
             }
             catch (Exception e)
             {
@@ -418,79 +383,63 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public string GetPageTitle(int timeOutInSeconds = 5, int pollingInterval = 500)
+        public string GetPageTitle(int timeOutInSeconds = 10, int pollingInterval = 500)
         {
             string pageTitle = string.Empty;
+            WaitForPageReady();
 
             try
             {
-                WaitForPageReady();
+                driver = Driver;
+                log.Info($"...waiting for page title");
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                {
+                    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
+                };
+                wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
+                wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
+                wait.Until(x => driver.Title.HasValue());
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"timed out while waiting for page title\n{e.Message}");
             }
             finally
             {
-                try
-                {
-                    IWebDriver driver = Driver;
-                    log.Info($"...waiting for page title");
-                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
-                    {
-                        PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-                    };
-                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                    wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                    wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
-                    wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                    wait.Until(x => x.Title.HasValue());
-
-                    pageTitle = driver.Title;
-                }
-                catch (Exception e)
-                {
-                    log.Error($"timed out while waiting for page title\n{e.Message}");
-                }
+                pageTitle = driver.Title;
             }
 
             return pageTitle;
         }
 
-        public string GetPageUrl(int timeOutInSeconds = 5, int pollingInterval = 500)
+        public string GetPageUrl(int timeOutInSeconds = 10, int pollingInterval = 500)
         {
             string pageUrl = string.Empty;
+            WaitForPageReady();
 
             try
             {
-                WaitForPageReady();
+                driver = Driver;
+                log.Info($"...waiting for page title");
+                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                {
+                    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
+                };
+                wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
+                wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
+                wait.Until(x => driver.Url.HasValue());
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"timed out while waiting for page url\n{e.Message}");
             }
             finally
             {
-                try
-                {
-                    IWebDriver driver = Driver;
-                    log.Info($"...waiting for page title");
-                    WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
-                    {
-                        PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-                    };
-                    wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                    wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                    wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
-                    wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                    wait.Until(x => x.Url.HasValue());
-
-                    pageUrl = driver.Url;
-                }
-                catch (Exception e)
-                {
-                    log.Error($"timed out while waiting for page url\n{e.Message}");
-                }
+                pageUrl = driver.Url;
             }
 
             return pageUrl;
@@ -616,7 +565,6 @@ namespace RKCIUIAutomation.Page
 
         public string UploadFile(string fileName = "")
         {
-            IWebDriver driver = null;
             fileName = fileName.Equals("") ? "test.xlsx" : fileName;
             string filePath = (testPlatform == TestPlatform.Local) ? $"{GetCodeBasePath()}\\UploadFiles\\{fileName}" : $"/home/seluser/UploadFiles/{fileName}";
 
@@ -770,7 +718,7 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    IWebDriver driver = Driver;
+                    driver = Driver;
                     IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
                     alert = driver.SwitchTo().Alert();
                     alertMsg = alert.Text;
@@ -807,7 +755,7 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    IWebDriver driver = Driver;
+                    driver = Driver;
                     IAlert alert = driver.SwitchTo().Alert();
                     alertMsg = alert.Text;
                     alert.Accept();
@@ -834,7 +782,7 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    IWebDriver driver = Driver;
+                    driver = Driver;
                     IAlert alert = driver.SwitchTo().Alert();
                     alertMsg = alert.Text;
                     alert.Dismiss();
@@ -855,7 +803,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IWebDriver driver = Driver;
+                driver = Driver;
                 string actualAlertMsg = driver.SwitchTo().Alert().Text;
                 msgMatch = (actualAlertMsg).Contains(expectedMessage) ? true : false;
                 LogInfo($"## Expected Alert Message: {expectedMessage}<br>## Actual Alert Message: {actualAlertMsg}", msgMatch);
@@ -929,7 +877,7 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                IWebDriver driver = Driver;
+                driver = Driver;
                 headingElem = driver.FindElement(By.XPath("//h3"))
                     ?? driver.FindElement(By.XPath("//h2"))
                     ?? driver.FindElement(By.XPath("//h4"));
@@ -1012,13 +960,17 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IWebDriver driver = Driver;
+                driver = Driver;
                 driver.Navigate().GoToUrl(pageUrl);
 
                 pageTitle = GetPageTitle();
+                isLoaded = pageTitle.Contains("ELVIS PMC")
+                    ? true
+                    : IsPageLoadedSuccessfully();
 
-                isLoaded = pageTitle.Contains("ELVIS PMC") ? true : IsPageLoadedSuccessfully();
-                logMsg = isLoaded ? $">>> Page Loaded Successfully <<<<br>{pageUrl}" : GetPageErrorLogMsg();
+                logMsg = isLoaded
+                    ? $">>> Page Loaded Successfully <<<<br>{pageUrl}"
+                    : GetPageErrorLogMsg();
 
                 LogInfo(logMsg, isLoaded);
 
@@ -1038,15 +990,13 @@ namespace RKCIUIAutomation.Page
             string pageTitle = null;
             string logMsg = string.Empty;
 
-            string expectedPageTitle = !checkingLoginPage
-                ? "ELVIS PMC" 
-                : "Log in";
+            string expectedPageTitle = checkingLoginPage
+                ? "Log in"
+                : "ELVIS PMC";
 
             try
             {
-                WaitForPageReady();
                 pageTitle = GetPageTitle();
-
                 isLoaded = pageTitle.Contains(expectedPageTitle)
                     ? true 
                     : IsPageLoadedSuccessfully();
@@ -1061,10 +1011,16 @@ namespace RKCIUIAutomation.Page
                 {
                     if (continueTestIfPageNotLoaded == true)
                     {
+                        driver = Driver;
                         LogInfo(">>> Attempting to navigate back to previous page to continue testing <<<");
-                        Driver.Navigate().Back();
-                        pageTitle = Driver.Title;
-                        isLoaded = pageTitle.Contains("ELVIS PMC") ? true : IsPageLoadedSuccessfully();
+                        driver.Navigate().Back();
+                        WaitForPageReady();
+
+                        pageTitle = GetPageTitle();
+                        isLoaded = pageTitle.Contains("ELVIS PMC")
+                            ? true
+                            : IsPageLoadedSuccessfully();
+
                         if (isLoaded)
                         {
                             LogInfo(">>> Navigated to previous page successfully <<<");
@@ -1268,7 +1224,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IWebDriver driver = Driver;
+                driver = Driver;
                 elem = GetElement(elementByLocator);
 
                 //if (elem.Enabled)
@@ -1292,7 +1248,7 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                IWebDriver driver = Driver;
+                driver = Driver;
                 if (element != null)
                 {
                     Actions actions = new Actions(driver);

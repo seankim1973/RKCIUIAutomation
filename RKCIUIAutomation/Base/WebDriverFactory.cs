@@ -120,12 +120,12 @@ namespace RKCIUIAutomation.Base
                 throw new Exception("The driver does not belong to the current thread: " + driver);
             }
 
-            
+
             //Console.WriteLine($"_DISMISSDRIVER - {driverThread.Value}");
 
-            driver.Quit();
+            driverThread.Value.Quit();
+            driverThread.Value.Dispose();
             driverToKeyMap.Remove(driver);
-            driver.Dispose();
         }
 
         private void _DismissAll()

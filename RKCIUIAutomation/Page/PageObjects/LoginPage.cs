@@ -90,7 +90,7 @@ namespace RKCIUIAutomation.Page.PageObjects
         public virtual void LoginUser(UserType userType)
         {
             WaitForPageReady();
-            IWebDriver driver = Driver;
+            driver = Driver;
 
             if (driver.Title.Contains("Log in"))
             {

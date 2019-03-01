@@ -82,6 +82,7 @@ namespace RKCIUIAutomation.Base
 
             try
             {
+                driver = Driver;
                 Directory.CreateDirectory(screenshotSavePath);
                 uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
                 fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
@@ -92,19 +93,19 @@ namespace RKCIUIAutomation.Base
                     {
                         klovPath = @"\\10.1.1.207\errorscreenshots\";
 
-                        ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
+                        ImpersonateUser impersonateUser = new ImpersonateUser(driver);
                         impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
                     }
                     else if (testPlatform == TestPlatform.GridLocal)
                     {
                         klovPath = @"C:\Automation\klov\errorscreenshots\";
-                        var screenshot = Driver.TakeScreenshot();
+                        var screenshot = driver.TakeScreenshot();
                         screenshot.SaveAsFile($"{klovPath}{uniqueFileName}");
                     }
                 }
                 else
                 {
-                    var screenshot = Driver.TakeScreenshot();
+                    var screenshot = driver.TakeScreenshot();
                     screenshot.SaveAsFile(fullFilePath);
 
                 }
@@ -276,8 +277,6 @@ namespace RKCIUIAutomation.Base
 
         public void LogStep(string testStep)
         {
-            IWebDriver driver = null;
-
             try
             {
                 string logMsg = $"TestStep: {testStep}";
