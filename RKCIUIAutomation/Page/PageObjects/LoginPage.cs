@@ -90,8 +90,9 @@ namespace RKCIUIAutomation.Page.PageObjects
         public virtual void LoginUser(UserType userType)
         {
             WaitForPageReady();
+            IWebDriver driver = Driver;
 
-            if (Driver.Title.Contains("Log in"))
+            if (driver.Title.Contains("Log in"))
             {
                 VerifyPageIsLoaded(true, false);
 
@@ -114,7 +115,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                     try
                     {
                         log.Info($"...waiting for element {field}");
-                        WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(2))
+                        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2))
                         {
                             PollingInterval = TimeSpan.FromMilliseconds(250)
                         };
@@ -143,9 +144,9 @@ namespace RKCIUIAutomation.Page.PageObjects
                 ClickElement(btn_Login);
 
                 WaitForPageReady();
-                if (Driver.Title.Contains("Log in"))
+                if (driver.Title.Contains("Log in"))
                 {
-                    IWebElement invalidLoginError = Driver.FindElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+                    IWebElement invalidLoginError = driver.FindElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
 
                     if (invalidLoginError.Displayed)
                     {

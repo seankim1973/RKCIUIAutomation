@@ -7,6 +7,10 @@ namespace RKCIUIAutomation.Page.Navigation
 {
     public class NavMenu : PageBase
     {
+        public NavMenu()
+        {
+        }
+
         public NavMenu(IWebDriver driver) => this.Driver = driver;
 
         public void Menu<T>(T navEnum)

@@ -320,7 +320,7 @@ namespace RKCIUIAutomation.Page.Navigation
     //PageNavigation Common Implementation class
     public abstract class PageNavigation_Impl : PageBase, IPageNavigation
     {
-        internal NavMenu Navigate => new NavMenu(Driver);
+        internal NavMenu Navigate => new NavMenu();
 
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
 
