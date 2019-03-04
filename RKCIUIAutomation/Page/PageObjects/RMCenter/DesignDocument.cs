@@ -84,6 +84,23 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Comment_ClosingComment_")] CommentClosingInput
         }
 
+        //data-field attribute values
+        public enum PkgComments_TblHeader
+        {
+            [StringValue("RowId")] RowNumber,
+            [StringValue("CommentType")] DocType,
+            [StringValue("DrawingPageNumber")] Page_Sht_Dwg,
+            [StringValue("Discipline")] Discipline,
+            [StringValue("Text")] Comment,
+            [StringValue("ContractReference")] Contract_Doc_Reference,
+            [StringValue("Organization")] Org,
+            [StringValue("ReviewerName")] By,
+            [StringValue("ReviewType")] ReviewType,
+            [StringValue("Reviewer")] Reviwer,
+            [StringValue("CommentType")] CommentType,
+            [StringValue("Category")] Category,
+        }
+
         [ThreadStatic]
         internal static string designDocTitle;
 
@@ -97,12 +114,40 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         internal static string docNumberKey;
 
         internal By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
+
         internal By CancelBtnUploadPage_ByLocator => By.Id("btnCancel");
+
         internal By SaveOnlyBtnUploadPage_ByLocator => By.Id("btnSave");
+
         internal By SaveForwardBtnUploadPage_ByLocator => By.Id("btnSaveForward");
+
         internal By SaveOnlyBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSave_')]");
+
         internal By SaveForwardBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSaveForward_')]");
+
         internal By BackToListBtn_ByLocator => By.XPath("//button[text()='Back To List']");
+
+        internal By Btn_AddComment_ByLocator => By.XPath("//a[contains(@class,'k-grid-add')]");
+
+        internal By Btn_Refresh_ByLocator => By.XPath("//a[@aria-label='Refresh']");
+
+        internal By Btn_Cancel_ByLocator => By.Id("btnCancelSave");
+
+        internal By Btn_Forward_ByLocator => By.XPath("//button[@id='btnSaveForward']");
+
+        internal By Btn_ShowFileList_ByLocator => By.XPath("//button[contains(@class,'showFileList')]");
+
+        internal By Btn_BackToList_ByLocator => By.XPath("//a[contains(@class,'cancelComments')]");
+
+        internal By Btn_PDF_ByLocator => By.Id("PdfExportLink");
+
+        internal By Btn_XLS_ByLocator => By.Id("CsvExportLink");
+
+        private string GetTblColumnIndex()
+        {
+            By locator = By.XPath("");
+            return GetAttribute(locator, "data-index");
+        }
     }
 
     #endregion DesignDocument Generic class
@@ -243,9 +288,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return instance;
         }
 
-        private DesignDocument DesignDoc_Base => new DesignDocument(driver);
+        private DesignDocument DesignDoc_Base => new DesignDocument();
 
-        private KendoGrid Kendo => new KendoGrid(driver);
+        private KendoGrid Kendo => new KendoGrid();
 
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(DesignDoc_Base.UploadNewDesignDoc_ByLocator);
 

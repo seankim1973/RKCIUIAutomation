@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Page.Workflows;
 using RKCIUIAutomation.Test;
@@ -223,34 +224,11 @@ namespace RKCIUIAutomation.Page
             else if (argType == typeof(string))
             {
                 argObj = baseUtils.ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
-                xpath = string.IsNullOrWhiteSpace((string)argObj)
-                    ? "//tr[1]/td"
-                    : useContainsOperator
+                xpath = ((string)argObj).HasValue()
+                    ? useContainsOperator
                         ? $"//td[text()='{argObj}']/parent::tr/td"
-                        : $"//td[contains(text(),'{argObj}')]/parent::tr/td";
-            }
-
-            return xpath;
-        }
-
-        private string SetXPath_TableRowBasedOnTextInRowOrRowIndex<T>(T textInRowForAnyColumnOrRowIndex)
-        {
-            object argObj = null;
-            string xpath = string.Empty;
-            Type argType = textInRowForAnyColumnOrRowIndex.GetType();
-            BaseUtils baseUtils = new BaseUtils();
-
-            if (argType == typeof(int))
-            {
-                argObj = baseUtils.ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
-                xpath = $"//tr[{argObj}]/td";
-            }
-            else if (argType == typeof(string))
-            {
-                argObj = baseUtils.ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
-                xpath = argObj.Equals("")
-                    ? "//tr[1]/td"
-                    : $"{GetXPathForTblRowBasedOnTextInRowOrRowIndex(argObj)}";
+                        : $"//td[contains(text(),'{argObj}')]/parent::tr/td"
+                    : "//tr[1]/td";
             }
 
             return xpath;

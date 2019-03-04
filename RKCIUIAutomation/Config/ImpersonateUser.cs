@@ -261,7 +261,8 @@ namespace RKCIUIAutomation.Config
                         }
                         else
                         {
-                            var screenshot = Driver.TakeScreenshot();
+                            IWebDriver driver = Driver;
+                            var screenshot = driver.TakeScreenshot();
                             screenshot.SaveAsFile(sourceFile);
                             Console.WriteLine($"Saved screenshot to {sourceFile}");
                         }
