@@ -96,9 +96,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Organization")] Org,
             [StringValue("ReviewerName")] By,
             [StringValue("ReviewType")] ReviewType,
-            [StringValue("Reviewer")] Reviwer,
+            [StringValue("Reviewer")] Reviewer,
             [StringValue("CommentType")] CommentType,
             [StringValue("Category")] Category,
+            [StringValue("ResolutionStamp")] ResolutionStamp,
+            [StringValue("Response")] ResponseCode,
+            [StringValue("ClosingStamp")] ClosingStamp
+        }
+
+        public enum PkgComments_Button
+        {
+            Edit,
+            Delete,
+            Files,
+            Details
         }
 
         [ThreadStatic]
@@ -143,10 +154,29 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal By Btn_XLS_ByLocator => By.Id("CsvExportLink");
 
-        private string GetTblColumnIndex()
+        private string GetTblColumnIndex(PkgComments_TblHeader tableHeader)
         {
-            By locator = By.XPath("");
+            By locator = By.XPath($"//thead[@role='rowgroup']/tr/th[@data-field='{tableHeader.GetString()}']");
             return GetAttribute(locator, "data-index");
+        }
+
+        private By GetTblBtnByLocator(PkgComments_Button rowButton, int rowID)
+        {
+            var dataIndex = GetTblColumnIndex(PkgComments_TblHeader.RowNumber);
+            By locator = By.XPath($"//tbody/tr[{dataIndex}]/td[1]/a[text()='{rowButton.GetString()}']");
+            return locator;
+        }
+
+        internal void Click_TblRowBtn(PkgComments_Button rowButton, int rowID)
+        {
+            var locator = GetTblBtnByLocator(rowButton, rowID);
+            JsClickElement(locator);
+        }
+
+        internal void Click_UniqueTblBtn(string btnClass)
+        {
+            var locator = By.XPath($"//a[contains(@class, '{btnClass}')]");
+            JsClickElement(locator);
         }
     }
 
@@ -156,6 +186,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public interface IDesignDocument
     {
+        void ClickBtn_AddComment();
+
+        void ClickBtn_Update();
+
+        void ClickBtn_Cancel();
+
+        void Click_TblBtn_Edit(int rowID);
+
+        void Click_TblBtn_Delete(int rowID);
+
+        void Click_TblBtn_Files(int rowID);
+
+        void Click_TblBtn_Details(int rowID);
+
         void SelectTab(TableTab tableTab);
 
         void SortTable_Descending();
@@ -226,6 +270,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         void SelectDisagreeResolutionCode(int commentTabNumber = 1);
 
+        void SelectCommentType(int commentTypeTabNumber = 1);
+
+        void SelectDiscipline(int disciplineNumber = 1);
+
+        void SelectCategory(int categoryNumber = 1);
+
+        void SelectAgreeResolutionCode(int commentTabNumber = 1);
+
+        void SelectAgreeResponseCode(int commentTabNumber = 1);
+
         void SelectDisagreeResponseCode(int commentTabNumber = 1);
 
         void SelectDDL_ClosingStamp(int commentTabNumber = 1);
@@ -233,6 +287,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void WaitForActiveCommentTab();
 
         void ClickCommentTabNumber(int commentTabNumber);
+
+        void SelectDDL_ReviewType(int selectionIndex);
+
+        void SelectDDL_Reviewer(int selectionIndex);
+
+        void SelectDDL_CommentType(int selectionIndex);
+
+        void SelectDDL_Category(int selectionIndex);
+
+        void SelectDDL_Discipline(int selectionIndex);
     }
 
     #endregion Workflow Interface class
@@ -292,6 +356,42 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         private KendoGrid Kendo => new KendoGrid();
 
+        public virtual void SelectDDL_ReviewType(int selectionIndex)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, selectionIndex);
+
+        public virtual void SelectDDL_Reviewer(int selectionIndex)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Reviewer, selectionIndex);
+
+        public virtual void SelectDDL_CommentType(int selectionIndex)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.CommentType, selectionIndex);
+
+        public virtual void SelectDDL_Category(int selectionIndex)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Category, selectionIndex);
+
+        public virtual void SelectDDL_Discipline(int selectionIndex)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Discipline, selectionIndex);
+
+        public virtual void ClickBtn_AddComment()
+            => DesignDoc_Base.Click_UniqueTblBtn("k-grid-add");
+
+        public virtual void ClickBtn_Update()
+            => DesignDoc_Base.Click_UniqueTblBtn("k-grid-update");
+
+        public virtual void ClickBtn_Cancel()
+            => DesignDoc_Base.Click_UniqueTblBtn("k-grid-cancel");
+
+        public virtual void Click_TblBtn_Edit(int rowID)
+            => DesignDoc_Base.Click_TblRowBtn(PkgComments_Button.Edit, rowID);
+
+        public virtual void Click_TblBtn_Delete(int rowID)
+            => DesignDoc_Base.Click_TblRowBtn(PkgComments_Button.Delete, rowID);
+        
+        public virtual void Click_TblBtn_Files(int rowID)
+            => DesignDoc_Base.Click_TblRowBtn(PkgComments_Button.Files, rowID);
+
+        public virtual void Click_TblBtn_Details(int rowID)
+            => DesignDoc_Base.Click_TblRowBtn(PkgComments_Button.Details, rowID);
+
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(DesignDoc_Base.UploadNewDesignDoc_ByLocator);
 
         public virtual void ClickBtn_BackToList()
@@ -306,20 +406,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public virtual void ClickBtn_SaveOnly()
-        {
-            //ScrollToElement(SaveOnlyBtn_ByLocator);
-            ClickElement(DesignDoc_Base.SaveOnlyBtn_ByLocator);
-        }
+            => ClickElement(DesignDoc_Base.SaveOnlyBtn_ByLocator);
+        
 
         public virtual void ClickBtn_SaveForward()
-        {
-            //ScrollToElement(SaveForwardBtn_ByLocator);
-            ClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
-        }
+            =>ClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
+       
 
         public virtual void ClickBtnJs_SaveForward()
         {
-            //ScrollToElement(SaveForwardBtn_ByLocator);
             JsClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
             WaitForPageReady();
         }
@@ -342,29 +437,29 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual void SelectNoCommentReviewType(int commentTabNumber = 1)
             => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 1);
 
-        public void SelectAgreeResponseCode(int commentTabNumber = 1)
+        public virtual void SelectCommentType(int commentTypeTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.CommentType, commentTypeTabNumber), 1);
+
+        public virtual void SelectDiscipline(int disciplineNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Discipline, disciplineNumber), 1);
+
+        public virtual void SelectCategory(int categoryNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Category, categoryNumber), 1);
+
+        public virtual void SelectAgreeResolutionCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
+
+        public virtual void SelectAgreeResponseCode(int commentTabNumber = 1)
             => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 2); //check the index, UI not working so need to confirm later
 
         public virtual void SelectDisagreeResponseCode(int commentTabNumber = 1)
             => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 3);//check the index, UI not working so need to confirm later
-
-        public void SelectAgreeResolutionCode(int commentTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
 
         public virtual void SelectDisagreeResolutionCode(int commentTabNumber = 1)
             => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
 
         public virtual void SelectDDL_ClosingStamp(int commentTabNumber = 1)
             => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
-
-        public void SelectCommentType(int commentTypeTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.CommentType, commentTypeTabNumber), 1);
-
-        public void SelectDiscipline(int disciplineNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Discipline, disciplineNumber), 1);
-
-        public void SelectCategory(int categoryNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Category, categoryNumber), 1);
 
         private void SetDesignDocTitleAndNumber()
         {
@@ -599,9 +694,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override void SelectRegularCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 2);
+        public override void SelectRegularCommentReviewType(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 2);
 
-        public override void SelectNoCommentReviewType(int commentTabNumber = 1) => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 3);
+        public override void SelectNoCommentReviewType(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 3);
     }
 
     #endregion Implementation specific to Garnet
@@ -693,6 +790,37 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             //WaitForPageReady();
             ClickBtn_SaveForward();
         }
+
+        public override void SelectRegularCommentReviewType(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, 3);
+
+        public override void SelectNoCommentReviewType(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, 1);
+
+        public override void SelectCommentType(int commentTypeTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.CommentType, 1);
+
+        public override void SelectDiscipline(int disciplineNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Discipline, 1);
+
+        public override void SelectCategory(int categoryNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Category, 1);
+
+        public override void SelectAgreeResolutionCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResolutionStamp, 1);
+
+        public override void SelectAgreeResponseCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResponseCode, 2);
+
+        public override void SelectDisagreeResponseCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResponseCode, 3);
+
+        public override void SelectDisagreeResolutionCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResolutionStamp, 2);
+
+        public override void SelectDDL_ClosingStamp(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ClosingStamp, 1);
+
     }
 
     #endregion Implementation specific to SH249
@@ -804,6 +932,36 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public DesignDocument_LAX(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void SelectRegularCommentReviewType(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, 3);
+
+        public override void SelectNoCommentReviewType(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, 1);
+
+        public override void SelectCommentType(int commentTypeTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.CommentType, 1);
+
+        public override void SelectDiscipline(int disciplineNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Discipline, 1);
+
+        public override void SelectCategory(int categoryNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Category, 1);
+
+        public override void SelectAgreeResolutionCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResolutionStamp, 1);
+
+        public override void SelectAgreeResponseCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResponseCode, 2);
+
+        public override void SelectDisagreeResponseCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResponseCode, 3);
+
+        public override void SelectDisagreeResolutionCode(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResolutionStamp, 2);
+
+        public override void SelectDDL_ClosingStamp(int commentTabNumber = 1)
+            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ClosingStamp, 1);
     }
 
     #endregion Implementation specific to LAX

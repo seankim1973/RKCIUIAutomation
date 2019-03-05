@@ -15,28 +15,38 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public DesignDocumentWF(IWebDriver driver) => this.Driver = driver;
 
-        //internal void WaitForActiveCommentTab()
-        //{
-        //    bool activeTabNotDisplayed = true;
+        internal enum CR_Workflow
+        {
+            CreateComment,
+            EnterComment,
+            ForwardComment,
+            EnterResponse,
+            ForwardResponse,
+            EnterResolution,
+            ForwardResolution
+        }
 
-        //    for (int i = 0; i > 30; i++)
-        //    {
-        //        do
-        //        {
-        //            if (i == 30)
-        //            {
-        //                ElementNotVisibleException e = new ElementNotVisibleException();
-        //                log.Error($"Comment tab is not visible: {e.Message}");
-        //                throw e;
-        //            }
-        //            else
-        //            {
-        //                activeTabNotDisplayed = ElementIsDisplayed(By.XPath("//div[@class='k-content k-state-active']"));
-        //            }
-        //        }
-        //        while (activeTabNotDisplayed);
-        //    }
-        //}
+        internal void LogInToDesignDocument(CR_Workflow workflow)
+        {
+            switch (workflow)
+            {
+                case CR_Workflow.CreateComment:
+
+                    break;
+                case CR_Workflow.EnterComment:
+                    break;
+                case CR_Workflow.ForwardComment:
+                    break;
+                case CR_Workflow.EnterResponse:
+                    break;
+                case CR_Workflow.ForwardResponse:
+                    break;
+                case CR_Workflow.EnterResolution:
+                    break;
+                case CR_Workflow.ForwardResolution:
+                    break;
+            }
+        }
     }
 
     public interface IDesignDocumentWF
@@ -134,7 +144,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.RMCenter_Design_Documents();
-            Assert.True(VerifyPageTitle("Design Document"));
+            AddAssertionToList(VerifyPageTitle("Design Document"), "VerifyPageTitle(\"Design Document\")");
             DesignDocCommentReview.CreateDocument();
         }
 
