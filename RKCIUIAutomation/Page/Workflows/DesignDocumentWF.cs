@@ -26,26 +26,94 @@ namespace RKCIUIAutomation.Page.Workflows
             ForwardResolution
         }
 
-        internal void LogInToDesignDocument(CR_Workflow workflow)
+        internal void LoginToDesignDocuments(CR_Workflow workflow)
         {
-            switch (workflow)
-            {
-                case CR_Workflow.CreateComment:
+            var currentTenant = tenantName;
+            UserType cdrUserAcct = UserType.Bhoomi;
 
+            switch (currentTenant)
+            {
+                case TenantName.Garnet:
                     break;
-                case CR_Workflow.EnterComment:
+                case TenantName.GLX:
                     break;
-                case CR_Workflow.ForwardComment:
+                case TenantName.I15South:
                     break;
-                case CR_Workflow.EnterResponse:
+                case TenantName.I15Tech:
                     break;
-                case CR_Workflow.ForwardResponse:
+                case TenantName.LAX:
+
+                    //
+                    // IQF User - AtCRCreate@rkci.com - CreateComment & EnterComment(SG & SH249)
+                    // IQF Records Mgr - CreateComment(SG & SH249) & FwdComment(SH249)
+                    // DOT User - ATCRComment @rkci.com - EnterComment
+                    // DOT Admin - ATCRCommentAdmin@rkci.com - FwdComment
+                    // IQF Admin - FwdComment(SG) & EnterResolution(SG)
+                    // *Dev User - ATCRResponse@rkci.com - EnterResponse
+                    // *Dev Admin - ATCRResponseAdmin@rkci.com - FwdResponse    
+                    // *Dev User - ATCRVerify@rkci.com       
+                    // *Dev Admin - ATCRVerifyAdmin@rkci.com
+                    // 
+
+                    switch (workflow)
+                    {
+                        case CR_Workflow.CreateComment:
+                            cdrUserAcct = UserType.CR_Create;
+                            break;
+                        case CR_Workflow.EnterComment:
+                            cdrUserAcct = UserType.CR_Comment;
+                            break;
+                        case CR_Workflow.ForwardComment:
+                            cdrUserAcct = UserType.CR_CommentAdmin;
+                            break;
+                        case CR_Workflow.EnterResponse:
+                            cdrUserAcct = UserType.CR_Response;
+                            break;
+                        case CR_Workflow.ForwardResponse:
+                            cdrUserAcct = UserType.CR_ResponseAdmin;
+                            break;
+                        case CR_Workflow.EnterResolution:
+                            cdrUserAcct = UserType.CR_Verify;
+                            break;
+                        case CR_Workflow.ForwardResolution:
+                            cdrUserAcct = UserType.CR_VerifyAdmin;
+                            break;
+                    }
                     break;
-                case CR_Workflow.EnterResolution:
+                case TenantName.SGWay:
                     break;
-                case CR_Workflow.ForwardResolution:
+                case TenantName.SH249:
                     break;
+                default:
+                    switch (workflow)
+                    {
+                        case CR_Workflow.CreateComment:
+                            cdrUserAcct = UserType.IQFUser;
+                            break;
+                        case CR_Workflow.EnterComment:
+                            cdrUserAcct = UserType.DOTUser;
+                            break;
+                        case CR_Workflow.ForwardComment:
+                            cdrUserAcct = UserType.DOTAdmin;
+                            break;
+                        case CR_Workflow.EnterResponse:
+                            cdrUserAcct = UserType.DEVUser;
+                            break;
+                        case CR_Workflow.ForwardResponse:
+                            cdrUserAcct = UserType.DEVAdmin;
+                            break;
+                        case CR_Workflow.EnterResolution:
+                            cdrUserAcct = UserType.IQFAdmin;
+                            break;
+                        case CR_Workflow.ForwardResolution:
+                            cdrUserAcct = UserType.DEVAdmin;
+                            break;
+                    }
+                    break;          
             }
+
+            LoginAs(cdrUserAcct);
+            NavigateToPage.RMCenter_Design_Documents();
         }
     }
 
@@ -479,7 +547,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public DesignDocumentWF_SGWay(IWebDriver driver) : base(driver)
         {
         }
-
+        
         public override void TCWF_CommentReviewRegularComment()
         {
             LogInfo("--------------------------1. Log in as IQFRMgr and Create Document----------------------");
@@ -723,6 +791,15 @@ namespace RKCIUIAutomation.Page.Workflows
     {
         public DesignDocumentWF_LAX(IWebDriver driver) : base(driver)
         {
+        }
+
+        public override void CreateDesignDocCommentReviewDocument(UserType user)
+        {
+            //LoginAs(user);
+            //NavigateToPage.RMCenter_Design_Documents();
+            DesignDocWF.LoginToDesignDocuments(CR_Workflow.CreateComment);
+            AddAssertionToList(VerifyPageTitle("Design Document"), "VerifyPageTitle(\"Design Document\")");
+            DesignDocCommentReview.CreateDocument();
         }
     }
 }
