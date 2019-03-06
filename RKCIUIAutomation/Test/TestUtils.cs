@@ -166,7 +166,7 @@ namespace RKCIUIAutomation.Test
         }
 
         [ThreadStatic]
-        private IList<KeyValuePair<string, bool>> assertionList = null;
+        private static IList<KeyValuePair<string, bool>> assertionList;
 
         public void AddAssertionToList(bool assertion, string details = "")
         {

@@ -55,6 +55,8 @@ namespace RKCIUIAutomation.Page.Workflows
         void CloseNCR_CQMReview_Disapprove(UserType user, string ncrDescription);
 
         void CloseNCR_in_VerificationAndClosure(string ncrDescription);
+
+        bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "");
     }
 
     public abstract class QaRcrdCtrl_GeneralNCR_WF_Impl : TestBase, IQaRcrdCtrl_GeneralNCR_WF
@@ -144,12 +146,12 @@ namespace RKCIUIAutomation.Page.Workflows
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
             ClickEditBtnForRow();
 
             //verify required field error label is shown
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelForTypeOfNCR());
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelForTypeOfNCR(), "VerifyReqFieldErrorLabelForTypeOfNCR");
             QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level1();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
         }
@@ -160,7 +162,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
         }
@@ -170,7 +172,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription));
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_DisapproveClose();
         }
@@ -272,6 +274,9 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
         }
+
+        public virtual bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
+            => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription);
     }
 
 
@@ -279,6 +284,20 @@ namespace RKCIUIAutomation.Page.Workflows
     {
         public QaRcrdCtrl_GeneralNCR_WF_GLX(IWebDriver driver) : base(driver)
         {
+        }
+
+        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
+            =>QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QM_Review, ncrDescription);
+
+        public override void Review_and_Approve_NCR(UserType user, string ncrDescription)
+        {
+            LogDebug("------------WF Review_and_Approve_NCR_Document-------------");
+
+            LoginAs(user);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
         }
     }
 
