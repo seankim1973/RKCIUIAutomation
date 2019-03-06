@@ -742,21 +742,14 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                try
-                {
-                    driver = Driver;
-                    IAlert alert = driver.SwitchTo().Alert();
-                    alertMsg = alert.Text;
-                    alert.Accept();
-                    LogStep($"Accepted browser alert: '{alertMsg}'");
-                }
-                catch (Exception)
-                {
-                }
+                driver = Driver;
+                IAlert alert = driver.SwitchTo().Alert();
+                alertMsg = alert.Text;
+                alert.Accept();
+                LogStep($"Accepted browser alert: '{alertMsg}'");
             }
             catch (UnhandledAlertException)
             {
-                //log.Debug($"Alert Message: {e.AlertText}");
             }
 
             return alertMsg;
@@ -775,9 +768,8 @@ namespace RKCIUIAutomation.Page
                 alert.Dismiss();
                 LogStep($"Dismissed browser alert: '{alertMsg}'");
             }
-            catch (UnhandledAlertException e)
+            catch (UnhandledAlertException)
             {
-                log.Debug($"Alert Message: {e.AlertText}");
             }
 
             return alertMsg;
