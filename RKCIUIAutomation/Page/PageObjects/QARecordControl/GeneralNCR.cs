@@ -162,12 +162,16 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         internal static readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
 
-        internal void ActionConfirmation(SubmitButtons submitButton, bool acceptAlert = true)
+        internal void ActionConfirmation(SubmitButtons submitButton, bool tenantHasAlert = true, bool acceptAlert = true)
         {
             try
             {
                 JsClickElement(GetSubmitButtonByLocator(submitButton));
-                ConfirmActionDialog(acceptAlert);
+
+                if (tenantHasAlert)
+                {
+                    ConfirmActionDialog(acceptAlert);
+                }
             }
             catch (Exception e)
             {
@@ -461,8 +465,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         /// <param name="ncrDescription"></param>
         /// <returns>Return true if NCR document is shown in the tab specified</returns>
         bool VerifyNCRDocIsDisplayed(TableTab tableTab, string ncrDescription = "");
-
-        bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "");
 
         bool VerifyNCRDocIsClosed(string ncrDescription = "");
 
@@ -958,8 +960,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 errorLabelIsDisplayed = NcrTypeInputElem.FindElement(By.XPath("//preceding-sibling::span[@data-valmsg-for='NcrType']")).Displayed
                     ? true
                     : false;
-
-                return errorLabelIsDisplayed;
             }
             catch (Exception e)
             {
@@ -1087,9 +1087,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return isDisplayed;
         }
 
-        public virtual bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
-            => VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription);
-
         public virtual bool VerifyNCRDocIsClosed(string description = "")
             => GeneralNCR_Base.CheckNCRisClosed(description, TableTab.All_NCRs);
 
@@ -1167,11 +1164,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterPreparedByDate();
         }
 
-        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
-            => VerifyNCRDocIsDisplayed(TableTab.QM_Review, ncrDescription);
-
         public override void ClickTab_Creating_Revise()
             => ClickTab(TableTab.Create_Revise);
+
+        public override void ClickBtn_Approve()
+            => GeneralNCR_Base.ActionConfirmation(SubmitButtons.Approve, false);
+
+        public override void ClickBtn_DisapproveClose()
+            => GeneralNCR_Base.ActionConfirmation(SubmitButtons.DisapproveClose, false);
     }
 
     #endregion Implementation specific to GLX

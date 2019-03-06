@@ -709,49 +709,38 @@ namespace RKCIUIAutomation.Page
         {
             string alertMsg = string.Empty;
             string actionMsg = string.Empty;
+            WaitForPageReady();
 
             try
             {
-                WaitForPageReady();
+                driver = Driver;
+                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
+                alert = driver.SwitchTo().Alert();
+                alertMsg = alert.Text;
+
+                if (confirmYes)
+                {
+                    alert.Accept();
+                }
+                else
+                {
+                    alert.Dismiss();
+                }
+
+                LogStep($"{actionMsg} Confirmation Dialog: {(confirmYes? "Accepted" : "Dismissed")}");
             }
             catch (UnhandledAlertException)
             {
-                try
-                {
-                    driver = Driver;
-                    IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
-                    alert = driver.SwitchTo().Alert();
-                    alertMsg = alert.Text;
-
-                    if (confirmYes)
-                    {
-                        alert.Accept();
-                        actionMsg = "Accepted";
-                    }
-                    else
-                    {
-                        alert.Dismiss();
-                        actionMsg = "Dismissed";
-                    }
-
-                    LogStep($"{actionMsg} Confirmation Dialog: {alertMsg}");
-                }
-                catch (NoAlertPresentException e)
-                {
-                    log.Error($"NoAlertPresentException Msg: {e.Message}");
-                }
+                //log.Debug($"Alert Message: {e.AlertText}");
             }
         }
 
         public string AcceptAlertMessage()
         {
             string alertMsg = string.Empty;
+            WaitForPageReady();
 
             try
-            {
-                WaitForPageReady();
-            }
-            catch (UnhandledAlertException)
             {
                 try
                 {
@@ -761,10 +750,13 @@ namespace RKCIUIAutomation.Page
                     alert.Accept();
                     LogStep($"Accepted browser alert: '{alertMsg}'");
                 }
-                catch (NoAlertPresentException e)
+                catch (Exception)
                 {
-                    log.Error($"NoAlertPresentException Msg: {e.Message}");
                 }
+            }
+            catch (UnhandledAlertException)
+            {
+                //log.Debug($"Alert Message: {e.AlertText}");
             }
 
             return alertMsg;
@@ -773,25 +765,19 @@ namespace RKCIUIAutomation.Page
         public string DismissAlertMessage()
         {
             string alertMsg = string.Empty;
+            WaitForPageReady();
 
             try
             {
-                WaitForPageReady();
+                driver = Driver;
+                IAlert alert = driver.SwitchTo().Alert();
+                alertMsg = alert.Text;
+                alert.Dismiss();
+                LogStep($"Dismissed browser alert: '{alertMsg}'");
             }
-            catch (UnhandledAlertException)
+            catch (UnhandledAlertException e)
             {
-                try
-                {
-                    driver = Driver;
-                    IAlert alert = driver.SwitchTo().Alert();
-                    alertMsg = alert.Text;
-                    alert.Dismiss();
-                    LogStep($"Dismissed browser alert: '{alertMsg}'");
-                }
-                catch (NoAlertPresentException e)
-                {
-                    log.Error($"NoAlertPresentException Msg: {e.Message}");
-                }
+                log.Debug($"Alert Message: {e.AlertText}");
             }
 
             return alertMsg;

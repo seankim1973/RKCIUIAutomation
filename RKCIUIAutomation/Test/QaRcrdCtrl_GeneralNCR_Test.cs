@@ -221,7 +221,7 @@ namespace RKCIUIAutomation.Test.NCR
         public void NCR_SimpleWF_End_To_End()
         {
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription));
             ClickEditBtnForRow();
             LogInfo("------------send to revise from Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
@@ -240,7 +240,7 @@ namespace RKCIUIAutomation.Test.NCR
 
             LogInfo("------------save&fwd in Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription));
             ClickEditBtnForRow();
 
             LogInfo("------------save&fwd in ToBeClosed------------");
@@ -255,7 +255,7 @@ namespace RKCIUIAutomation.Test.NCR
 
             LogInfo("------------save&fwd from Revise to Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription));
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription));
             ClickEditBtnForRow();
 
             LogInfo("------------save&fwd in Review------------");
@@ -280,7 +280,7 @@ namespace RKCIUIAutomation.Test.NCR
         public void Create_And_SaveForward_Ncr_Document()
         {
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
             AssertAll();
         }
     }
@@ -299,8 +299,7 @@ namespace RKCIUIAutomation.Test.NCR
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
             LogoutToLoginPage();
             WF_QaRcrdCtrl_GeneralNCR.Review_and_Approve_NCR(UserType.NCRMgr, ncrDescription);
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
-            //Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(Resolution_Disposition)");
             AssertAll();
         }
     }
