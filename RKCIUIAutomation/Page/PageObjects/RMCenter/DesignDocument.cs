@@ -134,6 +134,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal By SaveOnlyBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSave_')]");
 
+        internal By Table_ForwardBtn_ByLocator => By.XPath("//button[@id='btnSaveForward']");
+
         internal By SaveForwardBtn_ByLocator => By.XPath("//div[@class='k-content k-state-active']//button[contains(@id,'btnSaveForward_')]");
 
         internal By BackToListBtn_ByLocator => By.XPath("//button[text()='Back To List']");
@@ -194,13 +196,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         void ClickBtn_Cancel();
 
-        void Click_TblBtn_Edit(int rowID);
+        void Click_TblBtn_Edit(int rowID = 1);
 
-        void Click_TblBtn_Delete(int rowID);
+        void Click_TblBtn_Delete(int rowID = 1);
 
-        void Click_TblBtn_Files(int rowID);
+        void Click_TblBtn_Files(int rowID = 1);
 
-        void Click_TblBtn_Details(int rowID);
+        void Click_TblBtn_Details(int rowID = 1);
 
         void SelectTab(TableTab tableTab);
 
@@ -354,9 +356,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return instance;
         }
 
-        private DesignDocument DesignDoc_Base => new DesignDocument();
+        internal DesignDocument DesignDoc_Base => new DesignDocument();
 
-        private KendoGrid Kendo => new KendoGrid();
+        internal KendoGrid Kendo => new KendoGrid();
 
         public virtual void SelectDDL_ReviewType(int selectionIndex)
             => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, selectionIndex);
@@ -382,16 +384,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual void ClickBtn_Cancel()
             => DesignDoc_Base.Click_UniqueTblBtn("k-grid-cancel");
 
-        public virtual void Click_TblBtn_Edit(int rowID)
+        public virtual void Click_TblBtn_Edit(int rowID = 1)
             => DesignDoc_Base.Click_TblRowBtn(PkgComments_Button.Edit, rowID);
 
-        public virtual void Click_TblBtn_Delete(int rowID)
+        public virtual void Click_TblBtn_Delete(int rowID = 1)
             => DesignDoc_Base.Click_TblRowBtn(PkgComments_Button.Delete, rowID);
         
-        public virtual void Click_TblBtn_Files(int rowID)
+        public virtual void Click_TblBtn_Files(int rowID = 1)
             => DesignDoc_Base.Click_TblRowBtn(PkgComments_Button.Files, rowID);
 
-        public virtual void Click_TblBtn_Details(int rowID)
+        public virtual void Click_TblBtn_Details(int rowID = 1)
             => DesignDoc_Base.Click_TblRowBtn(PkgComments_Button.Details, rowID);
 
         public virtual void ClickBtn_UploadNewDesignDoc() => ClickElement(DesignDoc_Base.UploadNewDesignDoc_ByLocator);
@@ -409,12 +411,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void ClickBtn_SaveOnly()
             => ClickElement(DesignDoc_Base.SaveOnlyBtn_ByLocator);
-        
 
         public virtual void ClickBtn_SaveForward()
-            =>ClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
+            => ClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
        
-
         public virtual void ClickBtnJs_SaveForward()
         {
             JsClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
@@ -801,6 +801,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             //WaitForPageReady();
             ClickBtn_SaveForward();
         }
+
+        public override void ClickBtn_SaveForward()
+            => ClickElement(DesignDoc_Base.Table_ForwardBtn_ByLocator);
 
         public override void SelectRegularCommentReviewType(int commentTabNumber = 1)
             => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, 3);

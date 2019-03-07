@@ -625,10 +625,12 @@ namespace RKCIUIAutomation.Page.Workflows
             FilterTableAndEditDoc();
             //DesignDocCommentReview.FilterDocNumber();
             //TableHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.Click_TblBtn_Edit();
             EnterComment(CommentType.CommentResponseInput);
             EnterComment(CommentType.CommentResolutionInput);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
-            DesignDocCommentReview.ClickBtn_SaveOnly();
+            DesignDocCommentReview.ClickBtn_Update();
+            //DesignDocCommentReview.ClickBtn_SaveOnly();
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
@@ -639,9 +641,11 @@ namespace RKCIUIAutomation.Page.Workflows
             //DesignDocCommentReview.FilterDocNumber();
             //ClickEnterBtnForRow();
             //WaitForPageReady();
+            DesignDocCommentReview.Click_TblBtn_Edit();
             EnterComment(CommentType.CommentClosingInput);
             DesignDocCommentReview.SelectDDL_ClosingStamp();
-            DesignDocCommentReview.ClickBtn_SaveOnly();
+            DesignDocCommentReview.ClickBtn_Update();
+            //DesignDocCommentReview.ClickBtn_SaveOnly();
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
     }
