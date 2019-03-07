@@ -121,7 +121,7 @@ namespace RKCIUIAutomation.Base
         public string SetGridAddress(TestPlatform platform, string gridIPv4Hostname = "")
         {
             string gridIPv4 = gridIPv4Hostname.Equals("")
-                ? platform == TestPlatform.GridLocal
+                ? platform == TestPlatform.GridLocal || platform == TestPlatform.Local
                     ? "127.0.0.1"
                     : "10.1.1.207"
                 : gridIPv4Hostname;

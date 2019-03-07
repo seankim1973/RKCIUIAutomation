@@ -87,75 +87,99 @@ namespace RKCIUIAutomation.Page.PageObjects
         internal int userAcctIndex = 0;
         internal string credential = string.Empty;
 
+        private bool AlreadyLoggedIn()
+        {
+            bool isDisplayed = false;
+            try
+            {
+                driver = Driver;
+                IWebElement logoutIcon = driver.FindElement(By.ClassName("glyphicon glyphicon-log-out"));
+                isDisplayed = logoutIcon.Displayed;
+            }
+            catch (Exception)
+            {
+            }
+            
+            return isDisplayed;
+        }
+
         public virtual void LoginUser(UserType userType)
         {
             WaitForPageReady();
-            driver = Driver;
-
-            if (driver.Title.Contains("Log in"))
+            
+            if (!AlreadyLoggedIn())
             {
-                VerifyPageIsLoaded(true, false);
+                driver = Driver;
 
-                ConfigUtils Configs = new ConfigUtils();
-                string[] userAcct = Configs.GetUser(userType);
-                IList<By> loginFields = new List<By>
-                {
-                    field_Email,
-                    field_Password
-                };
-
-                foreach (By field in loginFields)
-                {
-                    userAcctIndex = field == field_Email
-                        ? 0
-                        : 1;
-
-                    credential = userAcct[userAcctIndex];
-
-                    try
-                    {
-                        log.Info($"...waiting for element {field}");
-                        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2))
-                        {
-                            PollingInterval = TimeSpan.FromMilliseconds(250)
-                        };
-                        wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                        wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                        IWebElement webElem = wait.Until(x => x.FindElement(field));
-
-                        if (userAcctIndex == 1)
-                        {
-                            webElem.SendKeys(Configs.GetDecryptedPW(credential));
-                        }
-                        else
-                        {
-                            webElem.SendKeys(credential);
-                        }
-
-                    }
-                    catch (Exception e)
-                    {
-                        LogError($"Exception occured while waiting for element - {field}", true, e);
-                        throw;
-                    }
-                }
-
-                LogStep($"Using account : {userAcct[0]}");
-                ClickElement(btn_Login);
-
-                WaitForPageReady();
                 if (driver.Title.Contains("Log in"))
                 {
-                    IWebElement invalidLoginError = driver.FindElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+                    VerifyPageIsLoaded(true, false);
 
-                    if (invalidLoginError.Displayed)
+                    ConfigUtils Configs = new ConfigUtils();
+                    string[] userAcct = Configs.GetUser(userType);
+                    IList<By> loginFields = new List<By>
                     {
-                        string logMsg = invalidLoginError.Text;
-                        var ex = new Exception(logMsg);
-                        LogError(logMsg, true);
-                        throw ex;
+                        field_Email,
+                        field_Password
+                    };
+
+                    foreach (By field in loginFields)
+                    {
+                        userAcctIndex = field == field_Email
+                            ? 0
+                            : 1;
+
+                        credential = userAcct[userAcctIndex];
+
+                        try
+                        {
+                            log.Info($"...waiting for element {field}");
+                            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2))
+                            {
+                                PollingInterval = TimeSpan.FromMilliseconds(250)
+                            };
+                            wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                            wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                            IWebElement webElem = wait.Until(x => x.FindElement(field));
+
+                            if (userAcctIndex == 1)
+                            {
+                                webElem.SendKeys(Configs.GetDecryptedPW(credential));
+                            }
+                            else
+                            {
+                                webElem.SendKeys(credential);
+                            }
+
+                        }
+                        catch (Exception e)
+                        {
+                            LogError($"Exception occured while waiting for element - {field}", true, e);
+                            throw;
+                        }
+                    }
+
+                    LogStep($"Using account : {userAcct[0]}");
+                    ClickElement(btn_Login);
+
+                    WaitForPageReady();
+                    if (driver.Title.Contains("Log in"))
+                    {
+                        IWebElement invalidLoginError = driver.FindElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+
+                        if (invalidLoginError.Displayed)
+                        {
+                            string logMsg = invalidLoginError.Text;
+                            var ex = new Exception(logMsg);
+                            LogError(logMsg, true);
+                            throw ex;
+                        }
                     }
                 }
+            }
+            else
+            {
+                LogStep("Already Logged In");
             }
         }
 

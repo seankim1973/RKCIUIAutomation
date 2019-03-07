@@ -59,11 +59,13 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                if (!windowHandle.Equals(""))
+                driver = Driver;
+
+                if (!windowHandle.HasValue())
                 {
-                    Driver.SwitchTo().Window(windowHandle);
+                    driver.SwitchTo().Window(windowHandle);
                 }
-                IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
                 title = (string)executor.ExecuteScript("return document.title");
             }
             catch (Exception e)
@@ -856,30 +858,35 @@ namespace RKCIUIAutomation.Page
             finally
             {
                 driver = Driver;
-                headingElem = driver.FindElement(By.XPath("//h3"))
-                    ?? driver.FindElement(By.XPath("//h2"))
-                    ?? driver.FindElement(By.XPath("//h4"));
-
-                isDisplayed = headingElem?.Displayed == true ? true : false;
-
-                if (isDisplayed)
+                if (!driver.Title.Contains("Home Page"))
                 {
-                    actualHeading = headingElem.Text;
-                    isMatchingTitle = actualHeading.Equals(expectedPageTitle);
+                    headingElem = driver.FindElement(By.XPath("//h3"))
+                        ?? driver.FindElement(By.XPath("//h2"))
+                        ?? driver.FindElement(By.XPath("//h4"));
 
-                    logMsg = isMatchingTitle
-                        ? $"## Page Title is as expected: {actualHeading}"
-                        : $"Page titles did not match: Expected: {expectedPageTitle}, Actual: {actualHeading}";
+                    isDisplayed = headingElem?.Displayed == true
+                        ? true
+                        : false;
 
-                    if (!isMatchingTitle)
+                    if (isDisplayed)
                     {
+                        actualHeading = headingElem.Text;
+                        isMatchingTitle = actualHeading.Equals(expectedPageTitle);
+
+                        logMsg = isMatchingTitle
+                            ? $"## Page Title is as expected: {actualHeading}"
+                            : $"Page titles did not match: Expected: {expectedPageTitle}, Actual: {actualHeading}";
+
+                        if (!isMatchingTitle)
+                        {
+                            BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
+                        }
+                    }
+                    else
+                    {
+                        logMsg = $"Could not find page title with h2, h3 or h4 tag";
                         BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                     }
-                }
-                else
-                {
-                    logMsg = $"Could not find page title with h2, h3 or h4 tag";
-                    BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                 }
             }
 

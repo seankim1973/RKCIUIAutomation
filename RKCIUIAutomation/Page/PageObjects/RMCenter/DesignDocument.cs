@@ -178,6 +178,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             var locator = By.XPath($"//a[contains(@class, '{btnClass}')]");
             JsClickElement(locator);
         }
+
+        
     }
 
     #endregion DesignDocument Generic class
@@ -752,7 +754,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override void SelectTab(TableTab tableTab) => ClickTab(tableTab);
+        public override void EnterNoComment()
+        {
+            WaitForPageReady();
+            ClickBtn_AddComment();
+            SelectNoCommentReviewType();
+            ClickBtn_Update();
+        }
+
+        public override void SelectTab(TableTab tableTab)
+            => ClickTab(tableTab);
 
         public override void EnterRegularCommentAndDrawingPageNo()
         {
