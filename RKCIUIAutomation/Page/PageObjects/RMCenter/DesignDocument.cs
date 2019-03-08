@@ -613,10 +613,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterTextInCommentField(CommentType.CommentResolutionInput);
             SelectDisagreeResolutionCode(); //
             ClickBtn_SaveOnly();
-            //wait for saveforward to load
-            //WaitForPageReady();
-            //ClickElement(SaveForwardBtn_ByLocator);
-
             Thread.Sleep(2000);
             ClickBtn_BackToList();
             WaitForPageReady();

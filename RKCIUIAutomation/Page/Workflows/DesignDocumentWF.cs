@@ -188,7 +188,6 @@ namespace RKCIUIAutomation.Page.Workflows
             }
         }
 
-
     }
 
     public interface IDesignDocumentWF
@@ -197,7 +196,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
         void TCWF_CommentReviewNoComment();
 
-        //
         void CreateDesignDocCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment);
 
         void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment);
@@ -215,30 +213,6 @@ namespace RKCIUIAutomation.Page.Workflows
         void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResolution);
 
         void EnterAndForwardClosingComment(CR_Workflow workflowType = CR_Workflow.ClosingComment);
-
-        //
-
-        //void CreateDesignDocCommentReviewDocument(UserType user);
-
-        //void EnterRegularComment(UserType user);
-
-        //void EnterNoComment(UserType user);
-
-        //void ForwardComment(UserType user);
-
-        //void ForwardResponseComment(UserType user);
-
-        //void EnterResponseAndDisagreeResponseCode(UserType user);
-
-        //void EnterResponseAndAgreeResponseCode(UserType user);
-
-        //void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(UserType user);
-
-        //void EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
-
-        //void EnterAndForwardClosingComment(UserType user);
-
-        //void EnterAndForwardClosingComment();
 
         void EnterClosingCommentAndCode();
 
@@ -303,77 +277,51 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         //All Tenants
-        public virtual void CreateDesignDocCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment)//UserType user
+        public virtual void CreateDesignDocCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment)
         {
             DesignDocWF.LoginToDesignDocuments(workflowType);
-            //LoginAs(user);
-            //NavigateToPage.RMCenter_Design_Documents();
-            
             AddAssertionToList(VerifyPageTitle("Design Document"), "VerifyPageTitle(\"Design Document\")");
             DesignDocCommentReview.CreateDocument();
         }
 
         //Garnet and GLX
-        public virtual void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)//UserType user
+        public virtual void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
         {
             DesignDocWF.LoginToDesignDocuments(workflowType);
-            //LoginAs(user);
-            //NavigateToPage.RMCenter_Design_Documents();
-            
             FilterTableAndEditDoc();
-            //DesignDocCommentReview.FilterDocNumber();
-            //TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
         }
 
         //Garnet and GLX
-        public virtual void EnterNoComment(CR_Workflow workflowType = CR_Workflow.EnterComment)//
+        public virtual void EnterNoComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
         {
             DesignDocWF.LoginToDesignDocuments(workflowType);
-            //LoginAs(user);
-            //NavigateToPage.RMCenter_Design_Documents();
             FilterTableAndEditDoc();
-            //DesignDocCommentReview.FilterDocNumber();
-            //TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.EnterNoComment();
         }
 
-        public virtual void ForwardComment(CR_Workflow workflowType = CR_Workflow.ForwardComment)//UserType user
+        public virtual void ForwardComment(CR_Workflow workflowType = CR_Workflow.ForwardComment)
         {
             DesignDocWF.LoginToDesignDocuments(workflowType);
-            //LoginAs(user);
-            //NavigateToPage.RMCenter_Design_Documents();
             FilterTableAndEditDoc();
-            //DesignDocCommentReview.FilterDocNumber();
-            //TableHelper.ClickEnterBtnForRow();
-            //WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
             DesignDocCommentReview.WaitForActiveCommentTab();
             WaitForPageReady();
         }
 
-        public virtual void ForwardResponseComment(CR_Workflow workflowType = CR_Workflow.ForwardResponse)//UserType user
+        public virtual void ForwardResponseComment(CR_Workflow workflowType = CR_Workflow.ForwardResponse)
         {
             DesignDocWF.LoginToDesignDocuments(workflowType);
-            //LoginAs(user);
-            //NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Response();
             FilterTableAndEditDoc();
-            //DesignDocCommentReview.FilterDocNumber();
-            //TableHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.ClickBtnJs_SaveForward();
-            //DesignDocCommentReview.ClickBtn_BackToList();
         }
 
-        public virtual void EnterResponseAndDisagreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)//UserType user
+        public virtual void EnterResponseAndDisagreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)
         {
             DesignDocWF.LoginToDesignDocuments(workflowType);
-            //LoginAs(user);
-            //NavigateToPage.RMCenter_Design_Documents();
             DesignDocCommentReview.ClickTab_Requires_Response();
             FilterTableAndEditDoc();
-            //DesignDocCommentReview.FilterDocNumber();
-            //TableHelper.ClickEnterBtnForRow();
             EnterResponseCommentAndDisagreeResponseCode();
         }
 
@@ -382,27 +330,16 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
-            //DesignDocCommentReview.FilterDocNumber();
-            //ClickEnterBtnForRow();
             WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
-        //public virtual void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(UserType user)
-        //{
-        //}
-
         //Garnet
-        public virtual void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResolution)//UserType user
+        public virtual void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResolution)
         {
             DesignDocWF.LoginToDesignDocuments(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
-            //DesignDocCommentReview.FilterDocNumber();
-            //WaitForPageReady();
-            //ClickEnterBtnForRow();
-            //WaitForPageReady();
-            //Thread.Sleep(2000);
             DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentResolutionInput);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
@@ -419,19 +356,15 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickBtn_SaveOnly();
         }
 
-        public virtual void EnterResponseAndAgreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)//UserType user
+        public virtual void EnterResponseAndAgreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)
         {
         }
-
-        //public virtual void EnterAndForwardClosingComment()
-        //{
-        //}
 
         public virtual void EnterClosingCommentAndCode()
         {
         }
 
-        public virtual void EnterAndForwardClosingComment(CR_Workflow workflowType = CR_Workflow.ClosingComment)//UserType user
+        public virtual void EnterAndForwardClosingComment(CR_Workflow workflowType = CR_Workflow.ClosingComment)
         {
         }
 
@@ -500,22 +433,14 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             DesignDocCommentReview.ClickTab_Pending_Resolution();
             FilterTableAndEditDoc();
-            //DesignDocCommentReview.FilterDocNumber();
-            //ClickEnterBtnForRow();
-            //WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
-        public override void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResolution)//UserType user
+        public override void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResolution)
         {
             DesignDocWF.LoginToDesignDocuments(workflowType);
             DesignDocCommentReview.ClickTab_Pending_Resolution();
             FilterTableAndEditDoc();
-            //DesignDocCommentReview.FilterDocNumber();
-            //WaitForPageReady();
-            //ClickEnterBtnForRow();
-            //WaitForPageReady();
-            //Thread.Sleep(2000);
             DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentResolutionInput);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
