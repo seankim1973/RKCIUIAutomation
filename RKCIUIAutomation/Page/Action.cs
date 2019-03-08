@@ -214,11 +214,8 @@ namespace RKCIUIAutomation.Page
         }
 
         public int GetElementsCount(By elementByLocator)
-        {
-            IList<IWebElement> elements = GetElements(elementByLocator);
-            return elements.Count;
-        }
-
+            => GetElements(elementByLocator).Count;
+        
         public void ClickElement(By elementByLocator)
         {
             IWebElement elem = null;
@@ -228,8 +225,13 @@ namespace RKCIUIAutomation.Page
                 elem = GetElement(elementByLocator);
                 ScrollToElement(elementByLocator);
                 elem?.Click();
-                bool elemNotNull = elem != null ? true : false;
-                string logMsg = elemNotNull ? "Clicked" : "Null";
+                bool elemNotNull = elem != null
+                    ? true
+                    : false;
+                string logMsg = elemNotNull
+                    ? "Clicked"
+                    : "Null";
+
                 LogStep($"{logMsg} element: - {elementByLocator}");
             }
             catch (Exception e)
@@ -273,41 +275,41 @@ namespace RKCIUIAutomation.Page
             return attributes;
         }
 
-        public void EnterComment(CommentType commentType, int commentTabNumber = 1)
-        {
-            By commentTypeLocator = By.Id($"{commentType.GetString()}{commentTabNumber - 1}_");
-            ScrollToElement(commentTypeLocator);
+        //public void EnterComment(CommentType commentType, int commentTabNumber = 1)
+        //{
+        //    By commentTypeLocator = By.Id($"{commentType.GetString()}{commentTabNumber - 1}_");
+        //    ScrollToElement(commentTypeLocator);
 
-            try
-            {
-                string text = "Comment 123";
-                IWebElement element = GetElement(commentTypeLocator);
-                element.SendKeys(text);
-                LogInfo($"Entered '{text}' in field - {commentTypeLocator}");
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-                throw e;
-            }
-        }
+        //    try
+        //    {
+        //        string text = "Comment 123";
+        //        IWebElement element = GetElement(commentTypeLocator);
+        //        element.SendKeys(text);
+        //        LogInfo($"Entered '{text}' in field - {commentTypeLocator}");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        log.Error(e.StackTrace);
+        //        throw e;
+        //    }
+        //}
 
-        public void EnterComment(By elementByLocator)
-        {
-            ScrollToElement(elementByLocator);
+        //public void EnterComment(By elementByLocator)
+        //{
+        //    ScrollToElement(elementByLocator);
 
-            try
-            {
-                string text = "Comment 123";
-                GetElement(elementByLocator).SendKeys(text);
-                LogInfo($"Entered '{text}' in field - {elementByLocator}");
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-                throw e;
-            }
-        }
+        //    try
+        //    {
+        //        string text = "Comment 123";
+        //        GetElement(elementByLocator).SendKeys(text);
+        //        LogInfo($"Entered '{text}' in field - {elementByLocator}");
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        log.Error(e.StackTrace);
+        //        throw e;
+        //    }
+        //}
 
         public void ClearText(By elementByLocator)
         {
