@@ -19,6 +19,8 @@ namespace RKCIUIAutomation.Config
             public const string CVL_Lists = "CVL_Lists";
             public const string CVL_List = "CVL_List";
             public const string DesignDoc_CommentReview = "DesignDoc_CommentReview";
+            public const string CommentReview_NoComment = "CommentReview_NoComment";
+            public const string CommentReview_RegularComment = "CommentReview_RegularComment";
             public const string DIR = "DIR";
             public const string DIR_WF_Simple_QA = "DIR_WF_Simple_QA";
             public const string DIR_WF_Simple_QC = "DIR_WF_Simple_QC";
@@ -120,7 +122,6 @@ namespace RKCIUIAutomation.Config
             Component.Garnet,
             Component.CDR,
             Component.CDR_WF_Simple,
-            Component.DesignDoc_CommentReview,
             Component.RFI,
             Component.QAField,
         };
@@ -169,12 +170,15 @@ namespace RKCIUIAutomation.Config
             Component.SH249,
             Component.CDR,
             Component.CDR_WF_Simple,
-            Component.DesignDoc_CommentReview,
             Component.QAField,
             Component.NCR,
             Component.NCR_WF_Simple,
             Component.DIR,
-            Component.DIR_WF_Complex
+            Component.DIR_WF_Complex,
+            Component.DesignDoc_CommentReview,
+            Component.CommentReview_NoComment,
+            Component.CommentReview_RegularComment
+
         };
 
         private readonly List<string> Components_SouthernGateway = new List<string>
@@ -182,12 +186,15 @@ namespace RKCIUIAutomation.Config
             Component.SGWay,
             Component.CDR,
             Component.CDR_WF_Simple,
-            Component.DesignDoc_CommentReview,
             Component.QAField,
             Component.NCR,
             Component.NCR_WF_Simple,
             Component.DIR,
-            Component.DIR_WF_Complex
+            Component.DIR_WF_Complex,
+            Component.DesignDoc_CommentReview,
+            Component.CommentReview_NoComment,
+            Component.CommentReview_RegularComment
+
         };
 
         private readonly List<string> Components_LAX = new List<string>
@@ -200,7 +207,8 @@ namespace RKCIUIAutomation.Config
             Component.DIR,
             Component.DIR_WF_Simple_QA,
             Component.DIR_WF_Simple_QC,
-            Component.DesignDoc_CommentReview
+            Component.DesignDoc_CommentReview,
+            Component.CommentReview_RegularComment
         };
 
         private readonly List<string> CommonComponents = new List<string>

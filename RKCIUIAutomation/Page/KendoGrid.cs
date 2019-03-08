@@ -262,7 +262,9 @@ namespace RKCIUIAutomation.Page
             {
                 By tabStripLocator = By.XPath("//div[contains(@class,'k-tabstrip-top')]");
                 tabStripId = GetElement(tabStripLocator).GetAttribute("id");
-                logMsg = !string.IsNullOrEmpty(tabStripId) ? $"Found Kendo Grid TabStrip ID: {tabStripId}" : "NULL Kendo Grid TabStrip ID";
+                logMsg = tabStripId.HasValue()
+                    ? $"Found Kendo Grid TabStrip ID: {tabStripId}"
+                    : "NULL Kendo Grid TabStrip ID";
                 log.Debug(logMsg);
             }
             catch (Exception e)

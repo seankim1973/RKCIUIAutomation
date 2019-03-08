@@ -17,9 +17,10 @@ namespace RKCIUIAutomation.Page
 
         public TableHelper(IWebDriver driver) => this.Driver = driver;
 
-        private KendoGrid kendo;
+        [ThreadStatic]
+        private KendoGrid _kendo;
 
-        private KendoGrid Kendo => kendo = new KendoGrid(Driver);
+        internal KendoGrid Kendo => _kendo = new KendoGrid();
 
         #region Kendo Grid Public Methods
 
@@ -407,7 +408,7 @@ namespace RKCIUIAutomation.Page
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
 
-                string gridId = kendo.GetGridID(tableType);
+                string gridId = _kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = GetAttribute(gridParentDivLocator, "class");
 
