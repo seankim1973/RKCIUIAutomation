@@ -17,7 +17,7 @@ namespace RKCIUIAutomation.Page
 {
     public class Action : PageHelper
     {
-        private PageHelper pgHelper = new PageHelper();
+        private PageHelper pgHelper => new PageHelper();
 
         public Action() { }
 

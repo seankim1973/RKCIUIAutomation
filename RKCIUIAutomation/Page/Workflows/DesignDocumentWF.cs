@@ -29,7 +29,8 @@ namespace RKCIUIAutomation.Page.Workflows
             ForwardResponse,
             EnterResolution,
             ForwardResolution,
-            ClosingComment
+            ClosingComment, 
+            ForwardClosingComment
         }
 
         private bool AlreadyInDesignDocumentPage()
@@ -71,10 +72,10 @@ namespace RKCIUIAutomation.Page.Workflows
                         case CR_Workflow.ForwardResponse:
                             cdrUserAcct = UserType.CR_ResponseAdmin;
                             break;
-                        case CR_Workflow.EnterResolution:
+                        case CR_Workflow.ClosingComment:
                             cdrUserAcct = UserType.CR_Verify;
                             break;
-                        case CR_Workflow.ForwardResolution:
+                        case CR_Workflow.ForwardClosingComment:
                             cdrUserAcct = UserType.CR_VerifyAdmin;
                             break;
                     }
@@ -358,6 +359,10 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void EnterResponseAndAgreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)
         {
+            DesignDocWF.LoginToDesignDocuments(workflowType);
+            DesignDocCommentReview.ClickTab_Requires_Response();
+            FilterTableAndEditDoc();
+            DesignDocCommentReview.EnterResponseCommentAndAgreeResponseCode();
         }
 
         public virtual void EnterClosingCommentAndCode()
@@ -486,7 +491,7 @@ namespace RKCIUIAutomation.Page.Workflows
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
 
-
+        #region
         public override void TCWF_CommentReviewNoComment()
         {
             LogInfo("--------------------------1. Log in as IQF RecordsManager'----------------------");
@@ -531,13 +536,11 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocWF.LoginToDesignDocuments(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Comment();
             FilterTableAndEditDoc();
-            WaitForPageReady();
 
             DesignDocument ddBase = new DesignDocument();
             ddBase.ScrollToLastColumn();
 
             DesignDocCommentReview.ClickBtn_SaveForward();
-            WaitForPageReady();
         }
 
         public override void EnterResponseCommentAndDisagreeResponseCode()
@@ -551,7 +554,6 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickBtn_Update();
             WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
-            WaitForPageReady();
         }
 
         public override void EnterClosingCommentAndCode()
@@ -564,6 +566,12 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickBtn_Update();
             WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
+        }
+
+        public override void FilterTableAndEditDoc(string docNumber = "")
+        {
+            DesignDocCommentReview.FilterDocNumber(docNumber);
+            ClickEnterBtnForRow();
             WaitForPageReady();
         }
     }
@@ -616,7 +624,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LogInfo("--------------------------11. IQF Admin verifies if record in closed tab ----------------------");
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
-
+        
         public override void TCWF_CommentReviewNoComment()
         {
             LogInfo("--------------------------No comment Workflow begins----------------------");
@@ -717,7 +725,6 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_SaveForward();
-            WaitForPageReady();
         }
 
         public override void EnterResponseCommentAndDisagreeResponseCode()
@@ -753,14 +760,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickBtn_SaveOnly();
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
-
-        public override void EnterResponseAndAgreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)
-        {
-            DesignDocWF.LoginToDesignDocuments(workflowType);
-            DesignDocCommentReview.ClickTab_Requires_Response();
-            FilterTableAndEditDoc();
-            DesignDocCommentReview.EnterResponseCommentAndAgreeResponseCode();
-        }
+        
     }
 
     internal class DesignDocumentWF_I15Tech : DesignDocumentWF
@@ -783,33 +783,100 @@ namespace RKCIUIAutomation.Page.Workflows
         {
         }
 
-        public override void CreateDesignDocCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.EnterComment)
+        public override void FilterTableAndEditDoc(string docNumber = "")
         {
-            DesignDocWF.LoginToDesignDocuments(workflowType);
-            AddAssertionToList(VerifyPageTitle("Design Document"), "VerifyPageTitle(\"Design Document\")");
-            DesignDocCommentReview.CreateDocument();
+            DesignDocCommentReview.FilterDocNumber(docNumber);
+            ClickEnterBtnForRow();
+            WaitForPageReady();
         }
 
+        public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
+        {
+            DesignDocWF.LoginToDesignDocuments(workflowType);
+            DesignDocCommentReview.ClickTab_Comment();
+            FilterTableAndEditDoc();
+            DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
+        }
+
+        public override void ForwardComment(CR_Workflow workflowType = CR_Workflow.ForwardComment)
+        {
+            DesignDocWF.LoginToDesignDocuments(workflowType);
+            DesignDocCommentReview.ClickTab_Comment();
+            FilterTableAndEditDoc();
+
+            DesignDocument ddBase = new DesignDocument();
+            ddBase.ScrollToLastColumn();
+
+            DesignDocCommentReview.ClickBtn_SaveForward();
+        }
+
+        public override void EnterResponseCommentAndDisagreeResponseCode()
+        {
+            DesignDocWF.LoginToDesignDocuments(CR_Workflow.EnterResponse);
+            DesignDocCommentReview.ClickTab_Response();
+            FilterTableAndEditDoc();
+            DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
+            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentResponseInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentResolutionInput);
+            DesignDocCommentReview.SelectDisagreeResolutionCode();
+            DesignDocCommentReview.ClickBtn_Update();
+            WaitForPageReady();
+            DesignDocCommentReview.ClickBtn_SaveForward();
+        }
+
+        public override void ForwardResponseComment(CR_Workflow workflowType = CR_Workflow.ForwardResponse)
+        {
+            DesignDocWF.LoginToDesignDocuments(workflowType);
+            DesignDocCommentReview.ClickTab_Response();
+            FilterTableAndEditDoc();
+            DesignDocCommentReview.ClickBtnJs_SaveForward();
+        }
+
+        public override void EnterAndForwardClosingComment(CR_Workflow workflowType = CR_Workflow.ClosingComment)
+        {
+            DesignDocWF.LoginToDesignDocuments(workflowType);
+            DesignDocCommentReview.ClickTab_Verification();
+            FilterTableAndEditDoc();
+            DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
+            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentClosingInput);
+            DesignDocCommentReview.SelectDDL_ClosingStamp();
+            DesignDocCommentReview.ClickBtn_Update();
+            WaitForPageReady();
+
+            LogoutToLoginPage();
+            DesignDocWF.LoginToDesignDocuments(CR_Workflow.ForwardClosingComment);
+            DesignDocCommentReview.ClickTab_Verification();
+            FilterTableAndEditDoc();
+            DesignDocCommentReview.ClickBtn_SaveForward();
+        }
+
+        #endregion
         public override void TCWF_CommentReviewRegularComment()
         {
-            LogInfo("--------------------------1. Log in as IQF RecordsManager'----------------------");
-            CreateDesignDocCommentReviewDocument();//UserType.IQFRecordsMgr
+            LogInfo("--------------------------1. Log in as ATCRCreate User, upload and forward to comment'----------------------");
+            CreateDesignDocCommentReviewDocument();
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as IQF User, enters Comments----------------------");
-            EnterRegularComment();//UserType.IQFUser
+            LogInfo("--------------------------2. Log in as ATCRComment User, enters Comment----------------------");
+            EnterRegularComment();
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as IQF Admin, forwards Comments----------------------");
-            ForwardComment();//UserType.IQFRecordsMgr  //Workaround: using IQF Rcrds Mgr, instead of IQF Admin
+            LogInfo("--------------------------3. Log in as ATCRComment Admin, forwards Comments to response----------------------");
+            ForwardComment();
+            LogoutToLoginPage();
 
-            LogInfo("-------------------------4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode----------------------");
+            LogInfo("-------------------------4. Log in as ATCRResponse User, enters Response and Resolution stampcode to verification----------------------");
             EnterResponseCommentAndDisagreeResponseCode();
+            LogoutToLoginPage();
 
-            LogInfo("--------------------------5. Log in as IQF Admin, Enters,forwards closing comment----------------------");
-            EnterClosingCommentAndCode();
+            LogInfo("-------------------------5. Log in as ATCRResponse Admin, enters Response and Resolution stampcode to verification----------------------");
+            ForwardResponseComment();
+            LogoutToLoginPage();
 
-            LogInfo("--------------------------6. IQF Admin verifies if record in closed tab ----------------------");
+            LogInfo("--------------------------8. Log in as Enter Closing Comment as ATCRVerify and forward as ATCRVerify Admin (Resolution='Disagree workflow')----------------------");
+            EnterAndForwardClosingComment();
+
+            LogInfo("--------------------------9. ATCRVerify Admin verifies if record in closed tab ----------------------");
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
     }

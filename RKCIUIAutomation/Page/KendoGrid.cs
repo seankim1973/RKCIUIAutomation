@@ -49,7 +49,7 @@ namespace RKCIUIAutomation.Page
                         string tabSelect = $"tab.select('{tabIndex.ToString()}');";
                         jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
                         ExecuteJsScript(jsToBeExecuted);
-                        LogInfo($"Clicked Table Tab - {tblTabName}");
+                        LogStep($"Clicked Table Tab - {tblTabName}");
                     }
                 }
             }
@@ -86,7 +86,9 @@ namespace RKCIUIAutomation.Page
                 for (int i = 0; i < elements.Count; i++)
                 {
                     string spanText = elements[i].Text;
-                    bool match = spanText.Equals(matchValue) ? true : false;
+                    bool match = spanText.Equals(matchValue)
+                        ? true
+                        : false;
 
                     if (match)
                     {
