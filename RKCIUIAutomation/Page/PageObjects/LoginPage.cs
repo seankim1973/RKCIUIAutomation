@@ -87,7 +87,7 @@ namespace RKCIUIAutomation.Page.PageObjects
         internal int userAcctIndex = 0;
         internal string credential = string.Empty;
 
-        private bool AlreadyLoggedIn()
+        public bool AlreadyLoggedIn()
         {
             bool isDisplayed = false;
             try

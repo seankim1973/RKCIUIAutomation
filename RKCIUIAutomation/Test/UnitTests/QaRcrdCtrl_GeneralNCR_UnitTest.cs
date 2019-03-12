@@ -63,18 +63,18 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Property(TestCaseNumber, 123456)]
         [Property(Priority, "High")]
         [Description("NCR UserAccts")]
-        public void NCR_UserAccts()
+        public void UserName()
         {
             LogInfo($"Testing, UserAccts for {tenantName}");
-            LoginAs(UserType.NCRMgr);
+            LoginAs(UserType.CR_Comment);
             string CurrentUser = GetCurrentUser();
-            AddAssertionToList(CurrentUser == "NCR Manager");
-            ClickLogoutLink();
-            ClickLoginLink();
-            LoginAs(UserType.NCRTech);
+            Assert.True(CurrentUser == "AT_CR Comment");
+
+            LogoutToLoginPage();
+            driver.Navigate().GoToUrl("http://stage.sh249.elvispmc.com/Account/Login");
+            LoginAs(UserType.IQFRecordsMgr);
             CurrentUser = GetCurrentUser();
-            AddAssertionToList(CurrentUser == "NCR Technician");
-            AssertAll();
+            Assert.True(CurrentUser == "IQF Records Manager");
         }
     }
 
@@ -85,7 +85,7 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Category(Component.NCR)]
         [Property(TestCaseNumber, 123456)]
         [Property(Priority, "High")]
-        [Description("NCR UserAccts")]
+        [Description("NCR FilterAndSort")]
         public void NCR_FilterAndSort()
         {
             LogInfo($"Testing, UserAccts for {tenantName}");

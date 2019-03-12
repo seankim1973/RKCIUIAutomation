@@ -335,7 +335,10 @@ namespace RKCIUIAutomation.Page
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
         public void ClickEnterBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
-            => ClickButtonForRow(TableButton.Action_Enter, textInRowForAnyColumn, isMultiTabGrid);
+        {
+            ClickButtonForRow(TableButton.Action_Enter, textInRowForAnyColumn, isMultiTabGrid);
+            WaitForPageReady();
+        }
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.

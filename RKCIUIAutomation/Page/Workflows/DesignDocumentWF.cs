@@ -315,7 +315,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocWF.LoginToDesignDocuments(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Response();
             FilterTableAndEditDoc();
-            DesignDocCommentReview.ClickBtnJs_SaveForward();
+            DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
         public virtual void EnterResponseAndDisagreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)
@@ -346,7 +346,6 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickBtn_SaveOnly();
             Thread.Sleep(2000);
             DesignDocCommentReview.ClickBtn_BackToList();
-            WaitForPageReady();
         }
 
         public virtual void EnterResponseCommentAndDisagreeResponseCode()
@@ -451,7 +450,6 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickBtn_SaveOnly();
             Thread.Sleep(2000);
             DesignDocCommentReview.ClickBtn_BackToList();
-            WaitForPageReady();
         }
     }
 
@@ -564,7 +562,6 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentClosingInput);
             DesignDocCommentReview.SelectDDL_ClosingStamp();
             DesignDocCommentReview.ClickBtn_Update();
-            WaitForPageReady();
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
@@ -572,7 +569,6 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
             ClickEnterBtnForRow();
-            WaitForPageReady();
         }
     }
 
@@ -691,7 +687,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocWF.LoginToDesignDocuments(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Response();
             FilterTableAndEditDoc();
-            DesignDocCommentReview.ClickBtnJs_SaveForward();
+            DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
         public override void EnterResponseAndDisagreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)
@@ -715,9 +711,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentResolutionInput, commentTabNumber);
             DesignDocCommentReview.SelectDisagreeResolutionCode(commentTabNumber);
             DesignDocCommentReview.ClickBtn_SaveOnly();
-            WaitForPageReady();
             DesignDocCommentReview.ClickBtn_BackToList();
-            WaitForPageReady();
         }
 
         public override void ForwardResolutionCommentAndCodeForDisagreeResponse()
@@ -787,7 +781,6 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
             ClickEnterBtnForRow();
-            WaitForPageReady();
         }
 
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
@@ -806,7 +799,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
             DesignDocument ddBase = new DesignDocument();
             ddBase.ScrollToLastColumn();
-
+            
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
@@ -817,11 +810,9 @@ namespace RKCIUIAutomation.Page.Workflows
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
             DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentResponseInput);
-            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentResolutionInput);
-            DesignDocCommentReview.SelectDisagreeResolutionCode();
-            DesignDocCommentReview.ClickBtn_Update();
+            DesignDocCommentReview.SelectDisagreeResponseCode(3);
             WaitForPageReady();
-            DesignDocCommentReview.ClickBtn_SaveForward();
+            //DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
         public override void ForwardResponseComment(CR_Workflow workflowType = CR_Workflow.ForwardResponse)
@@ -829,7 +820,8 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocWF.LoginToDesignDocuments(workflowType);
             DesignDocCommentReview.ClickTab_Response();
             FilterTableAndEditDoc();
-            DesignDocCommentReview.ClickBtnJs_SaveForward();
+            DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
+            DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
         public override void EnterAndForwardClosingComment(CR_Workflow workflowType = CR_Workflow.ClosingComment)
@@ -838,15 +830,17 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickTab_Verification();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentClosingInput);
-            DesignDocCommentReview.SelectDDL_ClosingStamp();
-            DesignDocCommentReview.ClickBtn_Update();
+            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.VerifiedBy);
+            DesignDocCommentReview.EnterTextInCommentField(PkgComments_TblHeader.VerifiedDate);
+            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.VerificationNotes);
+            DesignDocCommentReview.SelectDDL_VerificationCode();
             WaitForPageReady();
-
             LogoutToLoginPage();
+
             DesignDocWF.LoginToDesignDocuments(CR_Workflow.ForwardClosingComment);
             DesignDocCommentReview.ClickTab_Verification();
             FilterTableAndEditDoc();
+            DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
 

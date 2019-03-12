@@ -28,14 +28,6 @@ namespace RKCIUIAutomation.Page.Navigation
 
             try
             {
-                try
-                {
-                    WaitForPageReady();
-                }
-                catch (Exception)
-                {
-                }
-
                 reflectedPageType = navEnum.GetType().ReflectedType;
 
                 if (reflectedPageType.Equals(typeof(Project)) || reflectedPageType.IsSubclassOf(typeof(Project)))
@@ -184,7 +176,6 @@ namespace RKCIUIAutomation.Page.Navigation
                     mainNavEnum = MainNav.Menu.ELVIS;
                 }
 
-                //VerifyPageIsLoaded();
                 JsHover(GetMainNavMenuByLocator(mainNavEnum));
                 builder = new Actions(Driver);
 
@@ -221,10 +212,9 @@ namespace RKCIUIAutomation.Page.Navigation
             }
             finally
             {
-                JsClickElement(clickLocator);
-
                 try
                 {
+                    JsClickElement(clickLocator);
                     WaitForPageReady();
                 }
                 catch (Exception e)
