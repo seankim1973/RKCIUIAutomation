@@ -127,10 +127,8 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal IWebDriver WaitForLoading(int timeOutInSeconds = 5, int pollingInterval = 500)
+        internal void WaitForLoading(int timeOutInSeconds = 20, int pollingInterval = 500)
         {
-            log.Info("...Waiting for page to be in Ready state #####");
-
             try
             {
                 driver = Driver;
@@ -143,31 +141,56 @@ namespace RKCIUIAutomation.Page
                 wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
                 wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(By.ClassName("k-loading-image")));
-            }
-            catch (Exception)
-            {
-            }
 
-            return driver;
+                log.Info("...Waiting for page to finish loading #####");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
         }
 
         internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 500)
         {
-            log.Info("...Waiting for page to be in Ready state #####");
             IJavaScriptExecutor javaScriptExecutor = null;
-
+                        
             try
             {
-                driver = WaitForLoading();
+                WaitForLoading();
+
+                driver = Driver;                
                 javaScriptExecutor = driver as IJavaScriptExecutor;
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
-                wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
-            }
-            catch (InvalidOperationException oe)
-            {
-                log.Error(oe.Message);
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
-                wait?.Until(wd => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
+                bool pageIsReady = false;
+
+                try
+                {
+                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0");
+                }
+                catch (InvalidOperationException)
+                {
+                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'");
+                }
+
+                if (!pageIsReady)
+                {
+                    log.Info("...Waiting for page to be in Ready state #####");
+
+                    try
+                    {
+                        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
+                        wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
+                    }
+                    catch (InvalidOperationException oe)
+                    {
+                        log.Error(oe.Message);
+                        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
+                        wait?.Until(wd => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
+                    }
+                }
+                else
+                {
+                    log.Debug("Page is in Ready state");
+                }
             }
             catch (Exception e)
             {
@@ -236,8 +259,9 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                elem = ScrollToElement(elementByLocator);
-                elem.Click();
+                ScrollToElement(elementByLocator);
+                elem = GetElement(elementByLocator);
+                elem?.Click();
 
                 bool elemNotNull = elem != null
                     ? true
@@ -293,66 +317,37 @@ namespace RKCIUIAutomation.Page
 
         public void EnterText(By elementByLocator, string text, bool clearField = true)
         {
-            IWebElement textField = null;
+            string logMsg = string.Empty;
 
             try
             {
-                bool exists = ExpectedConditions.ElementExists(elementByLocator).Equals(true);
-                
-                if (exists)
+                IWebElement textField = GetElement(elementByLocator);    
+                bool validField = textField != null;
+
+                if (validField)
                 {
-                    bool isVisible = ExpectedConditions.ElementIsVisible(elementByLocator).Equals(true);
-
-                    if (!isVisible)
-                    {
-                        textField = ScrollToElement(textField);
-                    }
-                    else
-                    {
-                        textField = GetElement(elementByLocator);
-                    }
-
                     if (clearField)
                     {
                         textField.Clear();
                     }
+
+                    textField.Click();
+                    textField.SendKeys(text);
+
+                    logMsg = $"Entered '{text}' in field - {elementByLocator}";
+                    LogStep(logMsg);
                 }
                 else
                 {
-                    log.Error($"Text field {elementByLocator.ToString()}, is disabled");
+                    logMsg = $"Element: {elementByLocator} is null";
                 }
+
+                LogInfo(logMsg, validField);
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
                 throw e;
-            }
-            finally
-            {
-                try
-                {
-                    string logMsg = string.Empty;
-                    bool validField = textField != null;
-
-                    if (validField)
-                    {
-                        textField.Click();
-                        textField.SendKeys(text);
-
-                        logMsg = $"Entered '{text}' in field - {elementByLocator}";
-                    }
-                    else
-                    {
-                        logMsg = $"Element: {elementByLocator} is null";
-                    }
-
-                    LogInfo(logMsg, validField);
-                }
-                catch (Exception e)
-                {
-                    LogError(e.Message);
-                    throw e;
-                }
             }
         }
 
@@ -425,14 +420,14 @@ namespace RKCIUIAutomation.Page
             try
             {
                 element = GetElement(elementByLocator);
-                if (element != null)
+
+                if (element.Displayed)
                 {
-                    ScrollToElement(element);
                     text = element.Text;
                     string logMsg = text.HasValue()
                         ? $"Retrieved '{text}'"
                         : $"Unable to retrieve text {text}";
-                    LogDebug($"{logMsg} from element - {elementByLocator}");
+                    LogStep($"{logMsg} from element - {elementByLocator}");
                 }
             }
             catch (Exception e)
@@ -800,7 +795,8 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                isDisplayed = ScrollToElement(elementByLocator)?.Displayed == true
+                IWebElement elem = GetElement(elementByLocator);
+                isDisplayed = elem.Displayed
                     ? true
                     : false;
             }
@@ -1185,56 +1181,24 @@ namespace RKCIUIAutomation.Page
                 {
                     elem = ConvertToType<IWebElement>(elementOrLocator);
                 }
-                else
+
+                driver = Driver;
+
+                if (elem != null)
                 {
-                    log.Error("argument type not recognized - supported types are IWebElement or By");
+                    Actions actions = new Actions(driver);
+                    actions.MoveToElement(elem);
+                    actions.Perform();
+                    log.Info($"Scrolled to element - {elementOrLocator}");
                 }
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
-            finally
-            {
-                try
-                {
-                    driver = Driver;
-
-                    if (elem != null)
-                    {
-                        Actions actions = new Actions(driver);
-                        actions.MoveToElement(elem);
-                        actions.Perform();
-                        log.Info($"Scrolled to element - {elementOrLocator}");
-                    }
-                }
-                catch (Exception e)
-                {
-                    log.Error(e.StackTrace);
-                }
-            }
 
             return elem;
         }
-
-        //public void ScrollToElement(IWebElement element)
-        //{
-        //    try
-        //    {
-        //        driver = Driver;
-        //        if (element != null)
-        //        {
-        //            Actions actions = new Actions(driver);
-        //            actions.MoveToElement(element);
-        //            actions.Perform();
-        //            log.Info($"Scrolled to WebElement");
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        log.Error(e.StackTrace);
-        //    }
-        //}
 
         public void LogoutToLoginPage()
         {

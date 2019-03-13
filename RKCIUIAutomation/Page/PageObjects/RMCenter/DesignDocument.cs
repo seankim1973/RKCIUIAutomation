@@ -198,6 +198,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForPageReady();
         }
 
+        internal void StoreDesignDocTitleAndNumber()
+        {
+            MiniGuid guid = MiniGuid.NewGuid();
+
+            string docKey = $"{tenantName}{GetTestName()}";
+            docTitleKey = $"{docKey}_DsgnDocTtl";
+            docNumberKey = $"{docKey}_DsgnDocNumb";
+            CreateVar(docTitleKey, docTitleKey);
+            CreateVar(docNumberKey, guid);
+            designDocTitle = GetVar(docTitleKey).ToString();
+            designDocNumber = GetVar(docNumberKey).ToString();
+            Console.WriteLine($"#####Title: {designDocTitle}\nNumber: {designDocNumber}");
+        }
+
     }
 
     #endregion DesignDocument Generic class
@@ -499,18 +513,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         private void SetDesignDocTitleAndNumber()
-        {
-            MiniGuid guid = MiniGuid.NewGuid();
-
-            string docKey = $"{tenantName}{GetTestName()}";
-            docTitleKey = $"{docKey}_DsgnDocTtl";
-            docNumberKey = $"{docKey}_DsgnDocNumb";
-            CreateVar(docTitleKey, docTitleKey);
-            CreateVar(docNumberKey, guid);
-            designDocTitle = GetVar(docTitleKey).ToString();
-            designDocNumber = GetVar(docNumberKey).ToString();
-            Console.WriteLine($"#####Title: {designDocTitle}\nNumber: {designDocNumber}");
-        }
+            => DesignDoc_Base.StoreDesignDocTitleAndNumber();
 
         public void EnterDesignDocTitleAndNumber()
         {
@@ -873,6 +876,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             //login as commenting user (SG- IQFuser, DoTuser | SH249-- IQFUser | Garenet and GLX-- DOTUser)
             WaitForPageReady();
             ClickBtn_AddComment();
+            SelectRegularCommentReviewType();
             EnterTextInCommentField(CommentType_InTable.DrawingPageNumberInput);
             EnterTextInCommentField(CommentType_InTable.ContractReferenceInput);
             EnterTextInCommentField(CommentType_InTable.CommentInput);
@@ -880,7 +884,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             SelectCategory();
             SelectCommentType();
             SelectDDL_Reviewer(GetCurrentUser(), true);
-            SelectRegularCommentReviewType();
             ClickBtn_Update();
         }
 
@@ -1125,9 +1128,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             EnterTextInCommentField(CommentType_InTable.CommentInput);
             EnterTextInCommentField(CommentType_InTable.DrawingPageNumberInput);
             SelectDiscipline();
-            //ClickBtn_Update();
             WaitForPageReady();
-            Assert.True(ElementIsDisplayed(By.XPath("//a[contains(@class, 'k-grid-add')]")));
         }
 
         public override void EnterResponseCommentAndAgreeResponseCode()

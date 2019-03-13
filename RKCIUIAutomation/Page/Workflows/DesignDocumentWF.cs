@@ -130,19 +130,19 @@ namespace RKCIUIAutomation.Page.Workflows
                             cdrUserAcct = UserType.IQFRecordsMgr;
                             break;
                         case CR_Workflow.EnterResponse:
-                            cdrUserAcct = UserType.IQFRecordsMgr;
+                            cdrUserAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.ForwardResponse:
-                            cdrUserAcct = UserType.IQFRecordsMgr;
+                            cdrUserAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.EnterResolution:
-                            cdrUserAcct = UserType.IQFRecordsMgr;
+                            cdrUserAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.ForwardResolution:
-                            cdrUserAcct = UserType.IQFRecordsMgr;
+                            cdrUserAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.ClosingComment:
-                            cdrUserAcct = UserType.IQFRecordsMgr;
+                            cdrUserAcct = UserType.IQFAdmin;
                             break;
                     }
                     break;
@@ -543,6 +543,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
+            DesignDocWF.LoginToDesignDocuments(CR_Workflow.EnterResponse);
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
@@ -556,6 +557,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterClosingCommentAndCode()
         {
+            DesignDocWF.LoginToDesignDocuments(CR_Workflow.ClosingComment);
             DesignDocCommentReview.ClickTab_Requires_Closing();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();

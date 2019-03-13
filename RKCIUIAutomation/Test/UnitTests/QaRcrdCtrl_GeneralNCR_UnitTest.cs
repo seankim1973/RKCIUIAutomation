@@ -70,11 +70,11 @@ namespace RKCIUIAutomation.Test.UnitTests
             string CurrentUser = GetCurrentUser();
             Assert.True(CurrentUser == "AT_CR Comment");
 
-            LogoutToLoginPage();
-            driver.Navigate().GoToUrl("http://stage.sh249.elvispmc.com/Account/Login");
-            LoginAs(UserType.IQFRecordsMgr);
-            CurrentUser = GetCurrentUser();
-            Assert.True(CurrentUser == "IQF Records Manager");
+            //LogoutToLoginPage();
+            //driver.Navigate().GoToUrl("http://stage.sh249.elvispmc.com/Account/Login");
+            //LoginAs(UserType.IQFRecordsMgr);
+            //CurrentUser = GetCurrentUser();
+            //Assert.True(CurrentUser == "IQF Records Manager");
         }
     }
 
