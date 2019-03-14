@@ -36,6 +36,7 @@ namespace RKCIUIAutomation.Test.Smoke
         }
     }
 
+    /*
     [TestFixture]
     public class Verify_CommentReviewRegularComment : DesignDocumentWF
     {
@@ -564,4 +565,5 @@ namespace RKCIUIAutomation.Test.Smoke
             Thread.Sleep(5000);
         }
     }
+    */
 }

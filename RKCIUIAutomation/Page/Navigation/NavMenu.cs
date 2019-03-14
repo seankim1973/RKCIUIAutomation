@@ -7,6 +7,10 @@ namespace RKCIUIAutomation.Page.Navigation
 {
     public class NavMenu : PageBase
     {
+        public NavMenu()
+        {
+        }
+
         public NavMenu(IWebDriver driver) => this.Driver = driver;
 
         public void Menu<T>(T navEnum)
@@ -24,14 +28,6 @@ namespace RKCIUIAutomation.Page.Navigation
 
             try
             {
-                try
-                {
-                    WaitForPageReady();
-                }
-                catch (Exception)
-                {
-                }
-
                 reflectedPageType = navEnum.GetType().ReflectedType;
 
                 if (reflectedPageType.Equals(typeof(Project)) || reflectedPageType.IsSubclassOf(typeof(Project)))
@@ -180,7 +176,6 @@ namespace RKCIUIAutomation.Page.Navigation
                     mainNavEnum = MainNav.Menu.ELVIS;
                 }
 
-                //VerifyPageIsLoaded();
                 JsHover(GetMainNavMenuByLocator(mainNavEnum));
                 builder = new Actions(Driver);
 
@@ -217,10 +212,9 @@ namespace RKCIUIAutomation.Page.Navigation
             }
             finally
             {
-                JsClickElement(clickLocator);
-
                 try
                 {
+                    JsClickElement(clickLocator);
                     WaitForPageReady();
                 }
                 catch (Exception e)
@@ -615,7 +609,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 public new enum Menu
                 {
                     [StringValue("QA Test - All")] QA_Test_All,
-                    [StringValue("QA DIRs")] QA_DIRs,
+                    [StringValue("QA DIR")] QA_DIR,
                     [StringValue("QA NCR")] QA_NCR,
                     [StringValue("QA Deficiency Notice")] QA_Deficiency_Notice,
                 }
@@ -626,7 +620,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 public new enum Menu
                 {
                     [StringValue("QC Test - All")] QC_Test_All,
-                    [StringValue("QC DIRs")] QC_DIRs,
+                    [StringValue("QC DIR")] QC_DIR,
                     [StringValue("QC NCR")] QC_NCR,
                     [StringValue("QC Deficiency Notice")] QC_Deficiency_Notice,
                 }

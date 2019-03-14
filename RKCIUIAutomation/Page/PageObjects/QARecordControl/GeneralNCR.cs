@@ -162,16 +162,20 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         internal static readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
 
-        internal void ActionConfirmation(SubmitButtons submitButton, bool acceptAlert = true)
+        internal void ActionConfirmation(SubmitButtons submitButton, bool tenantHasAlert = true, bool acceptAlert = true)
         {
             try
             {
                 JsClickElement(GetSubmitButtonByLocator(submitButton));
+
+                if (tenantHasAlert)
+                {
+                    ConfirmActionDialog(acceptAlert);
+                }
             }
-            catch (UnhandledAlertException)
+            catch (Exception e)
             {
-                Action action = new Action(Driver);
-                action.ConfirmActionDialog(acceptAlert);
+                log.Error(e.StackTrace);
             }
         }
 
@@ -189,11 +193,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 CreateNcrDescription(tempDescription);
             }
-            desc = desc.Equals("") || string.IsNullOrEmpty(desc)
-                ? GetVar(tempDescription
+            desc = desc.HasValue()
+                ? desc
+                : GetVar(tempDescription
                     ? ncrNewDescKey
-                    : ncrDescKey)
-                : desc;
+                    : ncrDescKey);
             EnterText(descLocator, desc);
             return desc;
         }
@@ -234,13 +238,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-                string _ncrDesc = description.Equals("") ? GetNCRDocDescription() : description;
+                string _ncrDesc = description.HasValue()
+                    ? description
+                    : GetNCRDocDescription();
                 bool isDisplayed = VerifyNCRDocIsDisplayed(closedTab, _ncrDesc);
 
                 if (isDisplayed)
                 {
                     string docStatus = GetColumnValueForRow(_ncrDesc, "Workflow location");
-                    ncrIsClosed = docStatus.Equals("Closed") ? true : false;
+                    ncrIsClosed = docStatus.Equals("Closed")
+                        ? true
+                        : false;
                     logMsg = $"Workflow Location displayed as: {docStatus}";
                 }
 
@@ -383,6 +391,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void SelectDDL_Segment(int selectionIndex = 1);
 
+        void SelectDDL_TrackNo(int selectionIndex = 1);
+
         void SelectDDL_Roadway(int selectionIndex = 1);
 
         void SelectDDL_Feature(int selectionIndex = 2);
@@ -456,8 +466,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         /// <returns>Return true if NCR document is shown in the tab specified</returns>
         bool VerifyNCRDocIsDisplayed(TableTab tableTab, string ncrDescription = "");
 
-        bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "");
-
         bool VerifyNCRDocIsClosed(string ncrDescription = "");
 
         bool VerifyReqFieldErrorLabelForTypeOfNCR();
@@ -523,15 +531,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return instance;
         }
 
-        internal GeneralNCR GeneralNCR_Base => new GeneralNCR(Driver);
+        internal GeneralNCR GeneralNCR_Base => new GeneralNCR();
 
         public virtual void FilterDescription(string description = "")
-        {
-            ncrDescription = string.IsNullOrEmpty(description) 
-                ? ncrDescription 
-                : description;
-            FilterTableColumnByValue(ColumnName.Description, ncrDescription);
-        }
+            => FilterTableColumnByValue(ColumnName.Description, description.HasValue()
+                ? description
+                : ncrDescription);
 
         public virtual void ClickBtn_Cancel() 
             => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
@@ -585,7 +590,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             InputFields signBtn = InputFields.RecordEngineer_SignBtn;
             InputFields reviewerField = InputFields.Engineer_of_Record;
-            RadioBtnsAndCheckboxes approvalField = Approve ? RadioBtnsAndCheckboxes.Engineer_Approval_Yes : RadioBtnsAndCheckboxes.Engineer_Approval_No;
+            RadioBtnsAndCheckboxes approvalField = Approve
+                ? RadioBtnsAndCheckboxes.Engineer_Approval_Yes
+                : RadioBtnsAndCheckboxes.Engineer_Approval_No;
 
             switch (reviewer)
             {
@@ -595,7 +602,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 case Reviewer.Owner:
                     signBtn = InputFields.Owner_SignBtn;
                     reviewerField = InputFields.Owner_Review;
-                    approvalField = Approve ? RadioBtnsAndCheckboxes.Owner_Approval_Yes : RadioBtnsAndCheckboxes.Owner_Approval_No;
+                    approvalField = Approve
+                        ? RadioBtnsAndCheckboxes.Owner_Approval_Yes
+                        : RadioBtnsAndCheckboxes.Owner_Approval_No;
                     break;
 
                 case Reviewer.IQF_Manager:
@@ -743,6 +752,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void SelectDDL_Segment(int selectionIndex = 1)
             => ExpandAndSelectFromDDList(InputFields.Segment, selectionIndex);
 
+        public virtual void SelectDDL_TrackNo(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
+
         public virtual void SelectDDL_Roadway(int selectionIndex = 1)
             => ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
 
@@ -835,20 +847,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => GeneralNCR_Base.EnterDesc(description, InputFields.RootCause_of_the_Problem, false, false);
 
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
-        {
-            By textAreaLocator = GetTextAreaFieldByLocator(InputFields.CorrectiveAction);
-            ScrollToElement(textAreaLocator);
-            EnterText(textAreaLocator, actionPlanText = (string.IsNullOrEmpty(actionPlanText)
-                  ? "RKCIUIAutomation Corrective Action Plan To Resolve Nonconformance." : actionPlanText));
-        }
+            => EnterText(GetTextAreaFieldByLocator(InputFields.CorrectiveAction), actionPlanText.HasValue()
+                  ? actionPlanText
+                  : "RKCIUIAutomation Corrective Action Plan To Resolve Nonconformance.");
 
         public virtual void EnterRepairPlan(string repairPlanText = "")
-        {
-            By textAreaLocator = GetTextAreaFieldByLocator(InputFields.RepairPlan);
-            ScrollToElement(textAreaLocator);
-            EnterText(textAreaLocator, repairPlanText = (string.IsNullOrEmpty(repairPlanText)
-                  ? "RKCIUIAutomation Repair Plan To Repair Issue If Applicable." : repairPlanText));
-        }
+            => EnterText(GetTextAreaFieldByLocator(InputFields.RepairPlan), repairPlanText.HasValue()
+                  ? repairPlanText
+                  : "RKCIUIAutomation Repair Plan To Repair Issue If Applicable.");
 
         //I15Tech, LAX
         public virtual IList<string> GetExpectedRequiredFieldIDs()
@@ -870,8 +876,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return RequiredFieldIDs;
         }
 
-        public virtual string GetNCRDocDescription(bool tempDescription = false) 
-            => GetVar(tempDescription ? ncrNewDescKey : ncrDescKey);
+        public virtual string GetNCRDocDescription(bool tempDescription = false)
+            => GetVar(tempDescription
+                ? ncrNewDescKey
+                : ncrDescKey);
 
         public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);
 
@@ -915,7 +923,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     results.Add(reqFieldsMatch);
 
                     string tblRowNumber = tblRowIndex.ToString();
-                    tblRowNumber = (tblRowNumber.Length == 1) ? $"0{tblRowNumber}" : tblRowNumber;
+                    tblRowNumber = tblRowNumber.Length == 1
+                        ? $"0{tblRowNumber}"
+                        : tblRowNumber;
                     reqFieldTable[tblRowIndex] = new string[2] { $"{tblRowNumber}: {actualId}", reqFieldsMatch.ToString() };
                 }
 
@@ -925,13 +935,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
                 }
 
-                reqFieldsMatch = results.Contains(false) ? false : true;
+                reqFieldsMatch = results.Contains(false)
+                    ? false
+                    : true;
                 reqFieldTable[tblRowIndex + 1] = new string[2] {"Total Required Fields:", results.Count.ToString()};
                 LogInfo(reqFieldTable, reqFieldsMatch);
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error(e.StackTrace);
             }
 
             return reqFieldsMatch;
@@ -939,19 +951,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual bool VerifyReqFieldErrorLabelForTypeOfNCR()
         {
+            bool errorLabelIsDisplayed = false;
+
             try
             {
-                bool errorLabelIsDisplayed = false;
+                
                 IWebElement NcrTypeInputElem = GetElement(By.Id(InputFields.Type_of_NCR.GetString()));
-                errorLabelIsDisplayed = NcrTypeInputElem.FindElement(By.XPath("//preceding-sibling::span[@data-valmsg-for='NcrType']")).Displayed ? true : false;
-
-                return errorLabelIsDisplayed;
+                errorLabelIsDisplayed = NcrTypeInputElem.FindElement(By.XPath("//preceding-sibling::span[@data-valmsg-for='NcrType']")).Displayed
+                    ? true
+                    : false;
             }
             catch (Exception e)
             {
-                LogError(e.Message);
-                return false;
+                log.Error(e.StackTrace);
             }
+
+            return errorLabelIsDisplayed;
         }
 
         public virtual bool VerifySignatureField(Reviewer reviewer, bool shouldFieldBeEmpty = false)
@@ -982,19 +997,24 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 By locator = By.Id(reviewerId.GetString());
                 ScrollToElement(locator);
-                //signatureValueAttrib = GetAttribute(locator, "value");
 
-                bool isFieldEmpty = GetAttribute(locator, "value").HasValue() ? true : false;
-                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty) ? true : false;
+                bool isFieldEmpty = GetAttribute(locator, "value").HasValue()
+                    ? false
+                    : true;
+                isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty)
+                    ? true
+                    : false;
 
-                string logMsg = isResultExpected ? "Result As Expected" : "Unexpected Result";
+                string logMsg = isResultExpected
+                    ? "Result As Expected"
+                    : "Unexpected Result";
 
                 LogInfo($"Signature Field: {logMsg}", isResultExpected);
                 
             }
             catch (Exception e)
             {
-                LogError(e.StackTrace);
+                log.Error(e.StackTrace);
             }
 
             return isResultExpected;
@@ -1012,7 +1032,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                LogError(e.StackTrace);
+                log.Error(e.StackTrace);
             }
 
             return errorLabelIsDisplayed;
@@ -1046,9 +1066,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 ClickTab(tableTab);
-                string _ncrDesc = description.Equals("") ? GetNCRDocDescription() : description;
+
+                string _ncrDesc = description.HasValue()
+                    ? description
+                    : GetNCRDocDescription();
+
                 isDisplayed = VerifyRecordIsDisplayed(ColumnName.Description, _ncrDesc);
-                string logMsg = isDisplayed ? "Found" : "Unable to find";
+
+                string logMsg = isDisplayed
+                    ? "Found"
+                    : "Unable to find";
+
                 LogInfo($"{logMsg} record under {tableTab.GetString()} tab with description: {_ncrDesc}.", isDisplayed);
             }
             catch (Exception e)
@@ -1058,9 +1086,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             return isDisplayed;
         }
-
-        public virtual bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
-            => VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription);
 
         public virtual bool VerifyNCRDocIsClosed(string description = "")
             => GeneralNCR_Base.CheckNCRisClosed(description, TableTab.All_NCRs);
@@ -1080,14 +1105,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        public void SendBackToRevise(UserType user, string ncrDescription)
-        {
-            FilterDescription(ncrDescription);
-            ClickEditBtnForRow();
-            ClickBtn_Revise();
-
-            Assert.True(VerifyNCRDocIsDisplayed(TableTab.Creating_Revise, ncrDescription));
-        }
     }
 
     #endregion Common Workflow Implementation class
@@ -1124,6 +1141,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 InputFields.IssuedDate.GetString(),
                 InputFields.Area.GetString(),
+                InputFields.Roadway.GetString(),
                 InputFields.Originator.GetString(),
                 InputFields.Description_of_Nonconformance.GetString(),
                 InputFields.RootCause_of_the_Problem.GetString(),
@@ -1138,6 +1156,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             EnterIssuedDate();
             SelectDDL_Area();
+            SelectDDL_TrackNo();
             SelectDDL_Originator();
             EnterDescription();
             EnterRootCauseOfTheProblem();
@@ -1145,11 +1164,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             EnterPreparedByDate();
         }
 
-        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
-            => VerifyNCRDocIsDisplayed(TableTab.QM_Review, ncrDescription);
-
         public override void ClickTab_Creating_Revise()
             => ClickTab(TableTab.Create_Revise);
+
+        public override void ClickBtn_Approve()
+            => GeneralNCR_Base.ActionConfirmation(SubmitButtons.Approve, false);
+
+        public override void ClickBtn_DisapproveClose()
+            => GeneralNCR_Base.ActionConfirmation(SubmitButtons.DisapproveClose, false);
     }
 
     #endregion Implementation specific to GLX

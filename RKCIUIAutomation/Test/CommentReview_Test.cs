@@ -13,6 +13,7 @@ namespace RKCIUIAutomation.Test.CommentReview
     {
         [Test]
         [Category(Component.DesignDoc_CommentReview)]
+        [Property(Component2, Component.CommentReview_RegularComment)]
         [Property(TestCaseNumber, 2238579)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Comment Review Regular Comment")]
@@ -27,6 +28,7 @@ namespace RKCIUIAutomation.Test.CommentReview
     {
         [Test]
         [Category(Component.DesignDoc_CommentReview)]
+        [Property(Component2, Component.CommentReview_NoComment)]
         [Property(TestCaseNumber, 123456)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Comment Review No Comment")]

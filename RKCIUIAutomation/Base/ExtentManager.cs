@@ -15,7 +15,7 @@ namespace RKCIUIAutomation.Base
 
         public static ExtentReports GetReportInstance()
         { return _lazy.Value; }
-        public static KlovReporter Klov { get; set; }
+        public static ExtentKlovReporter Klov { get; set; }
         public static ExtentHtmlReporter HtmlReporter { get; set; }
 
         static ExtentManager()
@@ -30,7 +30,7 @@ namespace RKCIUIAutomation.Base
 
                 if (reporter == Reporter.Klov)
                 {
-                    GetReportInstance().AttachReporter(HtmlReporter, GetKlovReporter(GridVmIP));
+                    GetReportInstance().AttachReporter(GetKlovReporter(GridVmIP));
                 }
                 else
                 {
@@ -63,20 +63,15 @@ namespace RKCIUIAutomation.Base
             return HtmlReporter;
         }
 
-        private static KlovReporter GetKlovReporter(string gridVmIP)
+        private static ExtentKlovReporter GetKlovReporter(string gridVmIP)
         {
             try
             {
                 string reportName = $"{tenantName.ToString()}({testEnv.ToString()}) - {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}";
 
-                Klov = new KlovReporter
-                {
-                    ProjectName = "RKCIUIAutomation",
-                    ReportName = reportName,
-                    KlovUrl = $"http://{gridVmIP}:8888"
-                };
-
+                Klov = new ExtentKlovReporter("RKCIUIAutomation", reportName);
                 Klov.InitMongoDbConnection(gridVmIP, 27017);
+                Klov.InitKlovServerConnection($"http://{gridVmIP}:8888");
             }
             catch (Exception e)
             {

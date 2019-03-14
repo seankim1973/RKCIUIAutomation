@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -21,7 +22,7 @@ namespace RKCIUIAutomation.Config
 
         public string GetSiteUrl(TestEnv testEnv, TenantName project)
         {
-            string siteKey = $"{project}_{testEnv}";
+            string siteKey = $"{project}_{testEnv.GetString()}";
             return GetValueFromConfigManager(siteUrlKey: siteKey);
         }
 

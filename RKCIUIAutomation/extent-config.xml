@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <extentreports>
     <configuration>
         <!-- report theme -->
         <!-- standard, dark -->
-        <theme>standard</theme>
+        <theme>dark</theme>
     
         <!-- document encoding -->
         <!-- defaults to UTF-8 -->
@@ -14,17 +14,14 @@
         <protocol>https</protocol>
         
         <!-- title of the document -->
-        <documentTitle>Extent</documentTitle>
-		
-		<chartVisibilityOnOpen>true</chartVisibilityOnOpen>
+        <documentTitle>Raba Kistner</documentTitle>
         
         <!-- report name - displayed at top-nav -->
-        <reportName>Automation Report</reportName>
-        
-        <!-- location of charts in the test view -->
-        <!-- top, bottom -->
-        <testViewChartLocation>bottom</testViewChartLocation>
-        
+        <reportName>RKCI UI Automation</reportName>
+
+		<!-- timestamp format -->
+		<timeStampFormat>MMM dd, yyyy HH:mm:ss</timeStampFormat>
+		
         <!-- custom javascript -->
         <scripts>
             <![CDATA[

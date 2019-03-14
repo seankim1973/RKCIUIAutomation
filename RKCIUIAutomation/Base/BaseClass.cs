@@ -19,6 +19,9 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class BaseClass : BaseUtils
     {
+        [ThreadStatic]
+        public static IWebDriver driver;
+
         #region ExtentReports Details
 
         [ThreadStatic]
@@ -126,8 +129,8 @@ namespace RKCIUIAutomation.Base
         {
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Stage}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
+            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Staging}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.SGWay}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
@@ -140,9 +143,10 @@ namespace RKCIUIAutomation.Base
             siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
-            testPlatform = (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local)
-                ? TestPlatform.Windows
-                : testPlatform;
+            if (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local)
+            {
+                testPlatform = TestPlatform.Windows;
+            }
 
             DetermineReportFilePath();
             GridVmIP = SetGridAddress(testPlatform, _gridAddress);
@@ -153,22 +157,6 @@ namespace RKCIUIAutomation.Base
                 hipTestRunTestCaseIDs = new List<int>();
                 hipTestResults = new List<KeyValuePair<int, KeyValuePair<TestStatus, string>>>();
             }
-        }
-
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            if (hiptest)
-            {
-                hipTestRunDetails = testRunDetails;
-
-                hipTestRunId = hipTestInstance.CreateTestRun(hipTestRunTestCaseIDs, hipTestRunDetails);
-                hipTestRunData = hipTestInstance.BuildTestRunSnapshotData(hipTestRunId);
-                hipTestInstance.UpdateHipTestRunData(hipTestRunData, hipTestResults);
-                hipTestInstance.SyncTestRun(hipTestRunId);
-            }
-
-            DismissAllDriverInstances();
         }
 
         private void GenerateTestRunDetails()
@@ -198,10 +186,8 @@ namespace RKCIUIAutomation.Base
         private void InitExtentTestInstance()
         {
             reportInstance = ExtentManager.GetReportInstance();
-            parentTest = (reporter == Reporter.Html) ?
-                reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv) : null;
-            testInstance = (reporter == Reporter.Html) ?
-                parentTest.CreateNode(testDescription) : testInstance = reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv);
+            parentTest = reportInstance.CreateTest(testCaseNumber, testName, tenantName, testEnv);
+            testInstance = parentTest.CreateNode(testDescription);
         }
 
         private IWebDriver InitWebDriverInstance()
@@ -212,7 +198,7 @@ namespace RKCIUIAutomation.Base
 
             if (tenantComponents.Contains(testComponent1))
             {
-                if (tenantComponents.Contains(testComponent2) || string.IsNullOrEmpty(testComponent2))
+                if (tenantComponents.Contains(testComponent2) || !testComponent2.HasValue())
                 {
                     testDetails = $"({testEnv}){tenantName} - {testName}";
                     Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
@@ -233,7 +219,7 @@ namespace RKCIUIAutomation.Base
                 SkipTest(testComponent1, testRunDetails);
             }
 
-            return Driver;
+            return this.Driver;
         }
 
         [SetUp]
@@ -248,15 +234,19 @@ namespace RKCIUIAutomation.Base
 
             InitExtentTestInstance();
 
-            Driver = InitWebDriverInstance();
+            driver = InitWebDriverInstance();
         }
 
         private void SkipTest(string testComponent = "", string[] reportCategories = null)
         {
             //string component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
             reportCategories = reportCategories ?? testRunDetails;
-            var component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
-            testComponent = testComponent.Equals("") ? component : testComponent;
+            var component = !testComponent2.HasValue()
+                ? testComponent1
+                : testComponent2;
+            testComponent = testComponent.Equals("")
+                ? component
+                : testComponent;
             testInstance.AssignReportCategories(reportCategories);
             string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
             LogAssertIgnore(msg);
@@ -274,7 +264,9 @@ namespace RKCIUIAutomation.Base
             string _testEnv = testDetails[5];
             string _tenantName = testDetails[6];
 
-            string components = (string.IsNullOrEmpty(_component2)) ? $": {_component1}" : $"s: {_component1}, {_component2}";
+            string components = !_component2.HasValue()
+                ? $": {_component1}"
+                : $"s: {_component1}, {_component2}";
 
             log.Info($"################################################################");
             log.Info($"#                   RKCI ELVIS UI Test Automation");
@@ -363,28 +355,44 @@ namespace RKCIUIAutomation.Base
             }
             finally
             {
-                if (Driver != null)
+                driver = Driver;
+
+                if (driver != null)
                 {
                     reportInstance.Flush();
 
                     if (cookie != null)
                     {
-                        Driver.Manage().Cookies.AddCookie(cookie);
+                        driver.Manage().Cookies.AddCookie(cookie);
                     }
 
-                    if (!Driver.Title.Equals("Home Page"))
+                    if (!driver.Title.Equals("Home Page"))
                     {
                         try
                         {
-                            Driver.FindElement(By.XPath("//a[text()=' Log out']")).Click();
+                            driver.FindElement(By.XPath("//a[text()=' Log out']")).Click();
                         }
                         catch (Exception)
                         {
                         }
                     }
 
-                    DismissDriverInstance(Driver);
+                    DismissDriverInstance(driver);
                 }
+            }
+        }
+
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            if (hiptest)
+            {
+                hipTestRunDetails = testRunDetails;
+
+                hipTestRunId = hipTestInstance.CreateTestRun(hipTestRunTestCaseIDs, hipTestRunDetails);
+                hipTestRunData = hipTestInstance.BuildTestRunSnapshotData(hipTestRunId);
+                hipTestInstance.UpdateHipTestRunData(hipTestRunData, hipTestResults);
+                hipTestInstance.SyncTestRun(hipTestRunId);
             }
         }
     }

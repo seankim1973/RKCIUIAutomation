@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using OpenQA.Selenium;
+using RestSharp.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,6 +8,8 @@ using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page
 {
+    extern alias newtJson;
+
     public class KendoGrid : Action
     {
         public KendoGrid()
@@ -46,7 +49,7 @@ namespace RKCIUIAutomation.Page
                         string tabSelect = $"tab.select('{tabIndex.ToString()}');";
                         jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
                         ExecuteJsScript(jsToBeExecuted);
-                        LogInfo($"Clicked Table Tab - {tblTabName}");
+                        LogStep($"Clicked Table Tab - {tblTabName}");
                     }
                 }
             }
@@ -59,13 +62,15 @@ namespace RKCIUIAutomation.Page
 
         private void ExecuteJsScript(string jsToBeExecuted)
         {
-            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+            driver = Driver;
+            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
             executor.ExecuteScript(jsToBeExecuted);
         }
 
         private object ExecuteJsScriptGet(string jsToBeExecuted)
         {
-            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+            driver = Driver;
+            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
             return executor.ExecuteScript(jsToBeExecuted);
         }
 
@@ -74,13 +79,16 @@ namespace RKCIUIAutomation.Page
             int index = -1;
             try
             {
+                driver = Driver;
                 IList<IWebElement> elements = new List<IWebElement>();
-                elements = Driver.FindElements(findElementsLocator);
+                elements = driver.FindElements(findElementsLocator);
 
                 for (int i = 0; i < elements.Count; i++)
                 {
                     string spanText = elements[i].Text;
-                    bool match = spanText.Equals(matchValue) ? true : false;
+                    bool match = spanText.Equals(matchValue)
+                        ? true
+                        : false;
 
                     if (match)
                     {
@@ -163,7 +171,7 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} return JSON.stringify(grid.dataSource.data());";
             var jsResults = ExecuteJsScriptGet(jsToBeExecuted);
-            var items = JsonConvert.DeserializeObject<List<T>>(jsResults.ToString());
+            var items = newtJson.Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(jsResults.ToString());
             return items;
         }
 
@@ -238,9 +246,10 @@ namespace RKCIUIAutomation.Page
 
         public int GetCurrentPageNumber(TableType tableType = TableType.Unknown)
         {
+            driver = Driver;
             string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} return grid.dataSource.page();";
-            IJavaScriptExecutor executor = Driver as IJavaScriptExecutor;
+            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
             var result = executor.ExecuteScript(jsToBeExecuted);
             int pageNumber = int.Parse(result.ToString());
             return pageNumber;
@@ -255,7 +264,9 @@ namespace RKCIUIAutomation.Page
             {
                 By tabStripLocator = By.XPath("//div[contains(@class,'k-tabstrip-top')]");
                 tabStripId = GetElement(tabStripLocator).GetAttribute("id");
-                logMsg = !string.IsNullOrEmpty(tabStripId) ? $"Found Kendo Grid TabStrip ID: {tabStripId}" : "NULL Kendo Grid TabStrip ID";
+                logMsg = tabStripId.HasValue()
+                    ? $"Found Kendo Grid TabStrip ID: {tabStripId}"
+                    : "NULL Kendo Grid TabStrip ID";
                 log.Debug(logMsg);
             }
             catch (Exception e)
@@ -275,7 +286,9 @@ namespace RKCIUIAutomation.Page
             try
             {
                 gridId = GetGridID(tableType);
-                logMsg = !string.IsNullOrEmpty(gridId) ? $"Found Kendo Grid ID: {gridId}" : $"NULL Kendo Grid ID";
+                logMsg = gridId.HasValue()
+                    ? $"Found Kendo Grid ID: {gridId}"
+                    : $"NULL Kendo Grid ID";
                 log.Debug(logMsg);
             }
             catch (Exception e)
@@ -309,7 +322,6 @@ namespace RKCIUIAutomation.Page
                         break;
                 }
 
-                //gridElem = GetElement(multiActiveGridDivLocator) ?? GetElement(singleGridDivLocator);
                 gridId = gridElem.GetAttribute("id");
             }
             catch (Exception e)

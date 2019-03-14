@@ -1,3 +1,6 @@
 ﻿RKCIUIAutomation.Test.Smoke.Verify_LinkCoverage_Level1
 RKCIUIAutomation.Test.Smoke.Verify_CommentReviewRegularComment
 RKCIUIAutomation.Test.Smoke.Verify_CommentReviewNoComment
+RKCIUIAutomation.Test.CDR.Verify_CDR_SimpleWF_End_To_End
+RKCIUIAutomation.Test.CDR.Verify_CDR_ComplexWF_End_To_End
+RKCIUIAutomation.Test.NCR.Verify_NCR_SimpleWF_End_To_End

@@ -6,9 +6,9 @@ namespace RKCIUIAutomation.Config
 {
     public enum TestEnv
     {
-        Test,
-        Stage,
-        Prod
+        [StringValue("Test")] Testing,
+        [StringValue("Stage")] Staging,
+        [StringValue("Prod")] Production
     }
 
     public enum TenantName
@@ -52,14 +52,21 @@ namespace RKCIUIAutomation.Config
         [StringValue("DOT Admin")] DOTAdmin,
         [StringValue("DEV User")] DEVUser,
         [StringValue("DEV Admin")] DEVAdmin,
-        [StringValue("NCR Manager")] NCRMgr,
-        [StringValue("NCR Technician")] NCRTech,
+        [StringValue("AT_Ncr Mgr")] NCRMgr,
+        [StringValue("AT_Ncr Tech")] NCRTech,
         [StringValue("CDR Manager")] CDRMgr,
-        [StringValue("CDR Technician")] CDRTech,
+        [StringValue("AT_Cdr Tech")] CDRTech,
         [StringValue("AT_Dir Mgr")] DIRMgrQA,
         [StringValue("AT_Dir Tech")] DIRTechQA,
         [StringValue("AT_Dir Mgr QC")] DIRMgrQC,
-        [StringValue("AT_Dir Tech QC")] DIRTechQC
+        [StringValue("AT_Dir Tech QC")] DIRTechQC,
+        [StringValue("AT_CR Create")] CR_Create,
+        [StringValue("AT_CR Comment")] CR_Comment,
+        [StringValue("AT_CR Comment Admin")] CR_CommentAdmin,
+        [StringValue("AT_CR Response")] CR_Response,
+        [StringValue("AT_CR Response Admin")] CR_ResponseAdmin,
+        [StringValue("AT_CR Verify")] CR_Verify,
+        [StringValue("AT_CR Verify Admin")] CR_VerifyAdmin
     }
 
     public enum UserGroup

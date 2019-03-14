@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Page.Workflows;
 using RKCIUIAutomation.Test;
@@ -16,9 +17,10 @@ namespace RKCIUIAutomation.Page
 
         public TableHelper(IWebDriver driver) => this.Driver = driver;
 
-        private KendoGrid kendo;
+        [ThreadStatic]
+        private KendoGrid _kendo;
 
-        private KendoGrid Kendo => kendo = new KendoGrid(Driver);
+        internal KendoGrid Kendo => _kendo = new KendoGrid();
 
         #region Kendo Grid Public Methods
 
@@ -223,34 +225,11 @@ namespace RKCIUIAutomation.Page
             else if (argType == typeof(string))
             {
                 argObj = baseUtils.ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
-                xpath = string.IsNullOrWhiteSpace((string)argObj)
-                    ? "//tr[1]/td"
-                    : useContainsOperator
+                xpath = ((string)argObj).HasValue()
+                    ? useContainsOperator
                         ? $"//td[text()='{argObj}']/parent::tr/td"
-                        : $"//td[contains(text(),'{argObj}')]/parent::tr/td";
-            }
-
-            return xpath;
-        }
-
-        private string SetXPath_TableRowBasedOnTextInRowOrRowIndex<T>(T textInRowForAnyColumnOrRowIndex)
-        {
-            object argObj = null;
-            string xpath = string.Empty;
-            Type argType = textInRowForAnyColumnOrRowIndex.GetType();
-            BaseUtils baseUtils = new BaseUtils();
-
-            if (argType == typeof(int))
-            {
-                argObj = baseUtils.ConvertToType<int>(textInRowForAnyColumnOrRowIndex);
-                xpath = $"//tr[{argObj}]/td";
-            }
-            else if (argType == typeof(string))
-            {
-                argObj = baseUtils.ConvertToType<string>(textInRowForAnyColumnOrRowIndex);
-                xpath = argObj.Equals("")
-                    ? "//tr[1]/td"
-                    : $"{GetXPathForTblRowBasedOnTextInRowOrRowIndex(argObj)}";
+                        : $"//td[contains(text(),'{argObj}')]/parent::tr/td"
+                    : "//tr[1]/td";
             }
 
             return xpath;
@@ -356,7 +335,10 @@ namespace RKCIUIAutomation.Page
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
         public void ClickEnterBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
-            => ClickButtonForRow(TableButton.Action_Enter, textInRowForAnyColumn, isMultiTabGrid);
+        {
+            ClickButtonForRow(TableButton.Action_Enter, textInRowForAnyColumn, isMultiTabGrid);
+            WaitForPageReady();
+        }
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
@@ -429,7 +411,7 @@ namespace RKCIUIAutomation.Page
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
 
-                string gridId = kendo.GetGridID(tableType);
+                string gridId = _kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = GetAttribute(gridParentDivLocator, "class");
 
@@ -466,6 +448,7 @@ namespace RKCIUIAutomation.Page
                     if (noRecordsMsgDisplayed)
                     {
                         logMsg = "'No Records Located' message is displayed as expected";
+                        isDisplayedAsExpected = true;
                     }
                     else
                     {
@@ -516,11 +499,7 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
             }
 
-            LogInfo(logMsg, noRecordsExpected
-                ? isDisplayedAsExpected
-                    ? false : true
-                : isDisplayedAsExpected
-                    ? true : false);
+            LogInfo(logMsg, isDisplayedAsExpected);
 
             return isDisplayedAsExpected;
         }

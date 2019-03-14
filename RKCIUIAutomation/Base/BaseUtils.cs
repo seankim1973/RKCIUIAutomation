@@ -6,6 +6,7 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using System;
@@ -81,6 +82,7 @@ namespace RKCIUIAutomation.Base
 
             try
             {
+                driver = Driver;
                 Directory.CreateDirectory(screenshotSavePath);
                 uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
                 fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
@@ -91,39 +93,22 @@ namespace RKCIUIAutomation.Base
                     {
                         klovPath = @"\\10.1.1.207\errorscreenshots\";
 
-                        ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
+                        ImpersonateUser impersonateUser = new ImpersonateUser(driver);
                         impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
                     }
                     else if (testPlatform == TestPlatform.GridLocal)
                     {
                         klovPath = @"C:\Automation\klov\errorscreenshots\";
-                        var screenshot = Driver.TakeScreenshot();
+                        var screenshot = driver.TakeScreenshot();
                         screenshot.SaveAsFile($"{klovPath}{uniqueFileName}");
                     }
                 }
                 else
                 {
-                    var screenshot = Driver.TakeScreenshot();
+                    var screenshot = driver.TakeScreenshot();
                     screenshot.SaveAsFile(fullFilePath);
 
                 }
-
-                //if (testPlatform == TestPlatform.GridLocal || testPlatform == TestPlatform.Grid)
-                //{
-                //    if (reporter == Reporter.Klov)
-                //    {
-                //        klovPath = testPlatform == TestPlatform.Grid 
-                //            ? @"\\10.1.1.207"
-                //            : @"\\127.0.0.1";
-                //        ImpersonateUser impersonateUser = new ImpersonateUser(Driver);
-                //        impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}\\errorscreenshots\\{uniqueFileName}");
-                //    }
-                //}
-                //else
-                //{
-                //    var screenshot = Driver.TakeScreenshot();
-                //    screenshot.SaveAsFile(fullFilePath);
-                //}
             }
             catch (Exception e)
             {
@@ -136,7 +121,7 @@ namespace RKCIUIAutomation.Base
         public string SetGridAddress(TestPlatform platform, string gridIPv4Hostname = "")
         {
             string gridIPv4 = gridIPv4Hostname.Equals("")
-                ? platform == TestPlatform.GridLocal
+                ? platform == TestPlatform.GridLocal || platform == TestPlatform.Local
                     ? "127.0.0.1"
                     : "10.1.1.207"
                 : gridIPv4Hostname;
@@ -241,10 +226,6 @@ namespace RKCIUIAutomation.Base
                 : $"{localScreenshotPath}{screenshotName}";
             var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRefPath}\" class=\"step-img\" src=\"{screenshotRefPath}\" data-src=\"{screenshotRefPath}\" width=\"200\">";
 
-            //testInstance = color.Equals(ExtentColor.Red)
-            //    ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
-            //    : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color));
-
             testInstance = reporter == Reporter.Klov
                 ? color.Equals(ExtentColor.Red)
                     ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
@@ -290,11 +271,34 @@ namespace RKCIUIAutomation.Base
                 : testInstance.Fail(markupTable);
         }
 
+
+        [ThreadStatic]
+        private static Cookie cookie;
+
         public void LogStep(string testStep)
         {
-            string logMsg = $"TestStep: {testStep}";
-            testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
-            CheckForLineBreaksInLogMsg(Level.Info, logMsg);
+            try
+            {
+                string logMsg = $"TestStep: {testStep}";
+                testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
+                CheckForLineBreaksInLogMsg(Level.Info, logMsg);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+            finally
+            {
+                try
+                {
+                    driver = Driver;
+                    cookie = new Cookie("zaleniumMessage", testStep);
+                    driver.Manage().Cookies.AddCookie(cookie);
+                }
+                catch (UnableToSetCookieException)
+                {
+                }
+            }
         }
 
         public void LogInfo<T>(string details, T assertion, Exception e = null)
@@ -530,21 +534,24 @@ namespace RKCIUIAutomation.Base
                 StreamWriter streamWriter = File.Exists(path) ? File.AppendText(path) : File.CreateText(path);
                 using (StreamWriter sw = streamWriter)
                 {
-                    if (!string.IsNullOrEmpty(msg) && msg.Contains("<br>"))
+                    if (msg.HasValue())
                     {
-                        string[] message = Regex.Split(msg, "<br>");
-                        sw.WriteLine(message[0]);
-                        sw.WriteLine(message[1]);
-                    }
-                    else
-                    {
-                        sw.WriteLine(msg);
+                        if (msg.Contains("<br>"))
+                        {
+                            string[] message = Regex.Split(msg, "<br>");
+                            sw.WriteLine(message[0]);
+                            sw.WriteLine(message[1]);
+                        }
+                        else
+                        {
+                            sw.WriteLine(msg);
+                        }
                     }
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                log.Error(e.Message);
             }
         }
 

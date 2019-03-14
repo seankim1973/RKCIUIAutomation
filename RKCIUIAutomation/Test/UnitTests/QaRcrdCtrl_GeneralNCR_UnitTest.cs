@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page.Workflows;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -63,18 +64,21 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Property(TestCaseNumber, 123456)]
         [Property(Priority, "High")]
         [Description("NCR UserAccts")]
-        public void NCR_UserAccts()
+        public void UserName()
         {
             LogInfo($"Testing, UserAccts for {tenantName}");
-            LoginAs(UserType.NCRMgr);
+            //LoginAs(UserType.IQFRecordsMgr);
+            DesignDocumentWF ddwf = new DesignDocumentWF();
+            ddwf.LoginToDesignDocuments(DesignDocumentWF.CR_Workflow.CreateComment);
+
             string CurrentUser = GetCurrentUser();
-            AddAssertionToList(CurrentUser == "NCR Manager");
-            ClickLogoutLink();
-            ClickLoginLink();
-            LoginAs(UserType.NCRTech);
-            CurrentUser = GetCurrentUser();
-            AddAssertionToList(CurrentUser == "NCR Technician");
-            AssertAll();
+            Assert.True(CurrentUser == "AT_CR Comment");
+
+            //LogoutToLoginPage();
+            //driver.Navigate().GoToUrl("http://stage.sh249.elvispmc.com/Account/Login");
+            //LoginAs(UserType.IQFRecordsMgr);
+            //CurrentUser = GetCurrentUser();
+            //Assert.True(CurrentUser == "IQF Records Manager");
         }
     }
 
@@ -85,7 +89,7 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Category(Component.NCR)]
         [Property(TestCaseNumber, 123456)]
         [Property(Priority, "High")]
-        [Description("NCR UserAccts")]
+        [Description("NCR FilterAndSort")]
         public void NCR_FilterAndSort()
         {
             LogInfo($"Testing, UserAccts for {tenantName}");

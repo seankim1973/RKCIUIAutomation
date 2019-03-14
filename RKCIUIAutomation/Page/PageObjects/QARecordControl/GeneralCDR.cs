@@ -1,7 +1,8 @@
 ﻿using MiniGuids;
-using NUnit.Framework;
 using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralCDR;
@@ -11,7 +12,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     #region CDR/DN Generic Class
     public class GeneralCDR : GeneralCDR_Impl
     {
-
         public GeneralCDR()
         {
         }
@@ -155,8 +155,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRDescription = "");
 
         string GetCDRDocDescription(bool tempDescription = false);
-        
-      
 
         IList<string> GetRequiredFieldIDs();
     }
@@ -214,46 +212,61 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return instance;
         }
 
-        internal GeneralCDR GeneralCDR_Base => new GeneralCDR(Driver);
+        internal GeneralCDR GeneralCDR_Base => new GeneralCDR();
 
-        public virtual void ClickBtn_Cancel() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Cancel));
+        public virtual void ClickBtn_Cancel()
+            => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Cancel));
 
-        public virtual void ClickBtn_SaveOnly() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.SaveOnly));
+        public virtual void ClickBtn_SaveOnly()
+            => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.SaveOnly));
 
-        public virtual void ClickBtn_SaveForward() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.SaveForward));
+        public virtual void ClickBtn_SaveForward()
+            => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.SaveForward));
 
-        public virtual void ClickBtn_CloseCDR() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Close_CDR));
+        public virtual void ClickBtn_CloseCDR()
+            => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Close_CDR));
 
-        public virtual void ClickBtn_Revise() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Revise));
+        public virtual void ClickBtn_Revise()
+            => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Revise));
 
-        public virtual void ClickBtn_Back_To_Disposition() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Back_To_Disposition));
+        public virtual void ClickBtn_Back_To_Disposition()
+            => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Back_To_Disposition));
 
-        public virtual void ClickBtn_Back_To_QC_Review() => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Back_To_QC_Review));
+        public virtual void ClickBtn_Back_To_QC_Review()
+            => JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Back_To_QC_Review));
 
+        public virtual void ClickBtn_New()
+            => JsClickElement(GeneralCDR_Base.newBtn_ByLocator);
 
-        public virtual void ClickBtn_New() => JsClickElement(GeneralCDR_Base.newBtn_ByLocator);
+        public virtual void ClickTab_All()
+            => ClickTab(TableTab.All);
 
-        public virtual void ClickTab_All() => ClickTab(TableTab.All);
-        public virtual void ClickTab_Closed_DN() => ClickTab(TableTab.Closed_DN);
+        public virtual void ClickTab_Closed_DN()
+            => ClickTab(TableTab.Closed_DN);
 
-       
-        public virtual void ClickTab_QC_Review() => ClickTab(TableTab.QC_Review);
+        public virtual void ClickTab_QC_Review()
+            => ClickTab(TableTab.QC_Review);
 
-        public virtual void ClickTab_Disposition() => ClickTab(TableTab.Disposition);
+        public virtual void ClickTab_Disposition()
+            => ClickTab(TableTab.Disposition);
 
-       
+        public virtual void ClickTab_Revise()
+            => ClickTab(TableTab.Revise);
 
-        public virtual void ClickTab_Revise() => ClickTab(TableTab.Revise);
+        public virtual void ClickTab_To_Be_Closed()
+            => ClickTab(TableTab.To_Be_Closed);
 
-        public virtual void ClickTab_To_Be_Closed() => ClickTab(TableTab.To_Be_Closed);
+        public virtual void SortTable_Descending()
+            => SortColumnDescending(ColumnName.Action);
 
-        public virtual void SortTable_Descending() => SortColumnDescending(ColumnName.Action);
+        public virtual void SortTable_Ascending()
+            => SortColumnAscending(ColumnName.Action);
 
-        public virtual void SortTable_Ascending() => SortColumnAscending(ColumnName.Action);
+        public virtual void SortTable_ToDefault()
+            => SortColumnToDefault(ColumnName.Action);
 
-        public virtual void SortTable_ToDefault() => SortColumnToDefault(ColumnName.Action);
-
-        public virtual void SelectDDL_Originator(int selectionIndex = 1) => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
+        public virtual void SelectDDL_Originator(int selectionIndex = 1)
+            => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
 
         public virtual void EnterIssuedDate(string shortDate = "1/1/9999")
            => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
@@ -285,19 +298,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
 
             log.Debug($"#####Created a {logMsg}CDR Description: KEY: {descKey} VALUE: {descValue}");
-
-
-            //guid = MiniGuid.NewGuid();
-
-            //string descKey = $"{tenantName}{GetTestName()}";
-            //cdrDescKey = $"{descKey}_CdrDescription";
-            //CreateVar(cdrDescKey, guid);
-            //cdrDescription = GetVar(cdrDescKey);
-            //Console.WriteLine($"#####NCR Description: {cdrDescription}");
         }
 
         public virtual string GetCDRDocDescription(bool tempDescription = false)
-                   => GetVar(tempDescription ? cdrNewDescKey : cdrDescKey);
+            => GetVar(tempDescription ? cdrNewDescKey : cdrDescKey);
 
         public virtual string EnterDescription(string description = "", bool tempDescription = false)
             => EnterDesc(description, InputFields.DeficiencyDescription);
@@ -306,7 +310,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             By descLocator = GetTextAreaFieldByLocator(descField);
             CreateCdrDescription(tempDescription);
-            desc = desc.Equals("") || string.IsNullOrEmpty(desc) ? GetCDRDocDescription(tempDescription) : desc;
+            desc = desc.HasValue()
+                ? desc
+                : GetCDRDocDescription(tempDescription);
             EnterText(descLocator, desc);
             return desc;
         }
@@ -321,13 +327,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-                string _cdrDesc = description.Equals("") ? GetCDRDocDescription() : description;
+                string _cdrDesc = description.HasValue()
+                    ? description
+                    : GetCDRDocDescription();
                 bool isDisplayed = VerifyCDRDocIsDisplayed(closedTab, _cdrDesc);
 
                 if (isDisplayed)
                 {
                     string docStatus = GetColumnValueForRow(_cdrDesc, "Workflow location");
-                    cdrIsClosed = docStatus.Equals("Closed") ? true : false;
+                    cdrIsClosed = docStatus.Equals("Closed")
+                        ? true
+                        : false;
                     logMsg = $"Workflow Location displayed as: {docStatus}";
                 }
 
@@ -341,22 +351,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return cdrIsClosed;
         }
 
-
-        //public virtual void EnterDescription(string description = "")
-        //{
-        //    CreateCdrDescription();
-        //    description = cdrDescription;
-        //    ScrollToElement(By.Id($"{InputFields.DeficiencyDescription.GetString()}"));
-        //    EnterText(GetTextAreaFieldByLocator(InputFields.DeficiencyDescription), description);
-        //}
-
         private bool VerifyReqFieldsErrorLabelsForNewDoc()
         {
+            bool errorLabelsDisplayed = false;
+
             try
             {
-                bool errorLabelsDisplayed = false;
+                driver = Driver;
 
-                IList<IWebElement> ReqFieldErrorLabelElements = Driver.FindElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')]"));
+                IList<IWebElement> ReqFieldErrorLabelElements = driver.FindElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')]"));
 
                 IList<string> RequiredFieldIDs = GetRequiredFieldIDs();
 
@@ -373,22 +376,25 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 }
 
                 Console.WriteLine($"REQUIRED FIELD COUNT: {results.Count}");
-                errorLabelsDisplayed = results.Contains(false) ? false : true;
-
-                return errorLabelsDisplayed;
+                errorLabelsDisplayed = results.Contains(false)
+                    ? false
+                    : true;
             }
             catch (Exception e)
             {
-                LogError(e.Message);
-                return false;
+                log.Error(e.StackTrace);
             }
+
+            return errorLabelsDisplayed;
         }
 
 
         public void PopulateRequiredFieldsAndSaveForward()
         {
+            TestUtils testUtils = new TestUtils();
+
             ClickBtn_SaveForward(); 
-            Assert.True(VerifyReqFieldsErrorLabelsForNewDoc());
+            testUtils.AddAssertionToList(VerifyReqFieldsErrorLabelsForNewDoc(), "VerifyReqFieldsErrorLabelsForNewDoc()");
             EnterIssuedDate();
             SelectDDL_Originator();
             EnterDescription();
@@ -401,8 +407,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             List<string> RequiredFieldIDs = new List<string>
             {
                 InputFields.IssuedDate.GetString(),
-                InputFields.Originator.GetString(),
-              
+                InputFields.Originator.GetString(),             
             };
 
             return RequiredFieldIDs;
@@ -411,18 +416,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRDescription = "")
         {
             ClickTab(tableTab);
-            cdrDescription = string.IsNullOrWhiteSpace(CDRDescription) ? cdrDescription : CDRDescription;
+            cdrDescription = CDRDescription.HasValue()
+                ? CDRDescription
+                : cdrDescription;
             return VerifyRecordIsDisplayed(ColumnName.Description, cdrDescription);
         }
 
         public virtual void FilterDescription(string description = "")
         {
-            cdrDescription = !string.IsNullOrWhiteSpace(description) ? description : cdrDescription;
+            cdrDescription = description.HasValue()
+                ? description
+                : cdrDescription;
             FilterTableColumnByValue(ColumnName.Description, cdrDescription);
         }
-
-
-
     }
 
     #endregion Common Workflow Implementation class
