@@ -102,7 +102,7 @@ namespace RKCIUIAutomation.Page
                 WaitForPageReady();
 
                 driver = Driver;
-                LogStep($"...waiting for element: - {elementByLocator}");
+                log.Debug($"...waiting for element: - {elementByLocator}");
                 WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
@@ -167,7 +167,7 @@ namespace RKCIUIAutomation.Page
                 {
                     if (!pageIsReady)
                     {
-                        LogStep("...waiting for page to be in Ready state");
+                        log.Debug("...waiting for page to be in Ready state");
 
                         try
                         {
@@ -363,7 +363,7 @@ namespace RKCIUIAutomation.Page
                 {
                     try
                     {
-                        log.Info($"...waiting for page title");
+                        log.Debug($"...waiting for page title");
                         WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                         {
                             PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
@@ -393,7 +393,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 driver = Driver;
-                log.Info($"...waiting for page title");
+                log.Debug($"...waiting for page title");
                 WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
@@ -536,8 +536,13 @@ namespace RKCIUIAutomation.Page
 
         public string UploadFile(string fileName = "")
         {
-            fileName = fileName.Equals("") ? "test.xlsx" : fileName;
-            string filePath = (testPlatform == TestPlatform.Local) ? $"{GetCodeBasePath()}\\UploadFiles\\{fileName}" : $"/home/seluser/UploadFiles/{fileName}";
+            fileName = fileName.HasValue()
+                ? fileName
+                :"test.xlsx";
+
+            string filePath = (testPlatform == TestPlatform.Local)
+                ? $"{GetCodeBasePath()}\\UploadFiles\\{fileName}"
+                : $"/home/seluser/UploadFiles/{fileName}";
 
             try
             {
@@ -595,7 +600,7 @@ namespace RKCIUIAutomation.Page
                 {
                     string xpath = beforeSubmitBtnAction
                         ? "//ul[@class='k-upload-files k-reset']/li/div/span[@class='k-file-name']"
-                        : "//div[contains(@class,'fileList')]";
+                        : "//div[contains(@class,'uploadedFileList')]";
 
                     By actualFileNameLocator = By.XPath(xpath);
 
@@ -603,6 +608,7 @@ namespace RKCIUIAutomation.Page
                     actualFileNameList = GetElements(actualFileNameLocator);
                     actualCount = actualFileNameList.Count;
                     assertList = new List<bool>();
+
                     bool fileNameIsExpected = false;
 
                     if (argType == typeof(string))

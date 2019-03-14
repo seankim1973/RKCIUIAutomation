@@ -180,7 +180,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void SaveForward_FromResolutionDisposition_ToVerificationClosure_ReturnToConformance(string ncrDescription)
         {
             LogDebug("------------WF TraverseNCR_FromReview_ToVerificationClosure_ReturnToConformance-------------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
             ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown for Concession Request DDList
             QaRcrdCtrl_GeneralNCR.PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ReturnToConformance();
@@ -190,13 +190,13 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(string ncrDescription)
         {
             LogDebug("------------WF Return_ToRevise_FromVerificationClosure-------------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
         }
@@ -204,7 +204,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription)
         {
             LogDebug("------------WF SaveForward_FromResolutionDisposition_ToDeveloperConcurrence-------------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
             ClickEditBtnForRow();
 
             //todo: click Save&Fwd button and verify required field error label is shown for Concession Request DDList
@@ -215,7 +215,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public void SaveForward_FromDeveloperConcurrence_ToDOTApproval(string ncrDescription, bool approveNCR = true)
         {
             LogDebug("------------WF SaveForward_FromDeveloperConcurrence_ToDOTApproval-------------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown (RecordEngineer_SignBtn, EngOfRecord, EngApprovalDate, ApprovalRadioBtn)
 
@@ -234,7 +234,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public void SaveForward_FromDOTApproval_ToVerificationClosure(string ncrDescription, bool approveNCR = true)
         {
             LogDebug("------------WF SaveForward_FromDOTApproval_ToVerificationClosure-------------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.DOT_Approval)");
             ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown(Owner_SignBtn, DOTReview, OwnerApprovalDate, OwnerApprovalRdoBtn)
 
@@ -255,11 +255,11 @@ namespace RKCIUIAutomation.Page.Workflows
             LogDebug("------------WF Return_ToRevise_FromVerificationClosure_ForConcessionDiviation-------------");
 
             SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription);
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
             SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription);
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
         }
@@ -267,7 +267,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void CloseNCR_in_VerificationAndClosure(string ncrDescription)
         {
             LogDebug("------------WF CloseNCR_in_VerificationAndClosure-------------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
             Thread.Sleep(1000);
@@ -334,6 +334,9 @@ namespace RKCIUIAutomation.Page.Workflows
         public QaRcrdCtrl_GeneralNCR_WF_SGWay(IWebDriver driver) : base(driver)
         {
         }
+
+        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
+            => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription);
     }
 
     internal class QaRcrdCtrl_GeneralNCR_WF_LAX : QaRcrdCtrl_GeneralNCR_WF

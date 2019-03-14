@@ -804,7 +804,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.No_Error));
 
         public virtual void ClickBtn_Back_To_QC_Review()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review));
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review, false));
 
         public virtual void ClickBtn_Back_To_Field()
             => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_Field, false));
