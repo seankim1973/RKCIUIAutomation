@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page.Workflows;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -66,7 +67,10 @@ namespace RKCIUIAutomation.Test.UnitTests
         public void UserName()
         {
             LogInfo($"Testing, UserAccts for {tenantName}");
-            LoginAs(UserType.CR_Comment);
+            //LoginAs(UserType.IQFRecordsMgr);
+            DesignDocumentWF ddwf = new DesignDocumentWF();
+            ddwf.LoginToDesignDocuments(DesignDocumentWF.CR_Workflow.CreateComment);
+
             string CurrentUser = GetCurrentUser();
             Assert.True(CurrentUser == "AT_CR Comment");
 

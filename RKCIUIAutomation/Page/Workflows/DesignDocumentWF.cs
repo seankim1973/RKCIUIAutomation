@@ -34,8 +34,11 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         private bool AlreadyInDesignDocumentPage()
-            => VerifyPageTitle("Design Document");
-
+        {
+            bool inDesignDocPage = VerifyPageTitle("Design Document");
+            return inDesignDocPage;
+        }
+        
         internal void LoginToDesignDocuments(CR_Workflow workflow)
         {
             /**
@@ -177,15 +180,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
             LoginAs(cdrUserAcct);
 
-            try
+            if (!AlreadyInDesignDocumentPage())
             {
-                if (!AlreadyInDesignDocumentPage())
-                {
-                    NavigateToPage.RMCenter_Design_Documents();
-                }
-            }
-            catch (Exception)
-            {
+                NavigateToPage.RMCenter_Design_Documents();
             }
         }
 
@@ -489,7 +486,6 @@ namespace RKCIUIAutomation.Page.Workflows
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
 
-        #region
         public override void TCWF_CommentReviewNoComment()
         {
             LogInfo("--------------------------1. Log in as IQF RecordsManager'----------------------");
@@ -504,7 +500,7 @@ namespace RKCIUIAutomation.Page.Workflows
             ForwardComment();//UserType.IQFRecordsMgr  //Workaround: using IQF Rcrds Mgr, instead of IQF Admin
 
             LogInfo("-------------------------4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode----------------------");
-            EnterResponseCommentAndDisagreeResponseCode();
+            //EnterResponseCommentAndDisagreeResponseCode();
 
             LogInfo("--------------------------5. Log in as IQF Admin, Enters,forwards closing comment----------------------");
             EnterClosingCommentAndCode();
@@ -543,7 +539,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
-            DesignDocWF.LoginToDesignDocuments(CR_Workflow.EnterResponse);
+            //DesignDocWF.LoginToDesignDocuments(CR_Workflow.EnterResponse);
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
@@ -557,7 +553,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterClosingCommentAndCode()
         {
-            DesignDocWF.LoginToDesignDocuments(CR_Workflow.ClosingComment);
+            //DesignDocWF.LoginToDesignDocuments(CR_Workflow.ClosingComment);
             DesignDocCommentReview.ClickTab_Requires_Closing();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
@@ -565,6 +561,9 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.SelectDDL_ClosingStamp();
             DesignDocCommentReview.ClickBtn_Update();
             DesignDocCommentReview.ClickBtn_SaveForward();
+
+            log.Warn("!!!Clicked BackToList button - workaround for bug EPA-2887!!!");
+            DesignDocCommentReview.ClickBtn_BackToList();
         }
 
         public override void FilterTableAndEditDoc(string docNumber = "")
@@ -700,7 +699,7 @@ namespace RKCIUIAutomation.Page.Workflows
             EnterResponseCommentAndDisagreeResponseCode();
         }
 
-        public override void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResponse)
+        public override void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResolution)
         {
             DesignDocWF.LoginToDesignDocuments(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Resolution();
@@ -846,7 +845,6 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
-        #endregion
         public override void TCWF_CommentReviewRegularComment()
         {
             LogInfo("--------------------------1. Log in as ATCRCreate User, upload and forward to comment'----------------------");
