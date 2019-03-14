@@ -155,7 +155,9 @@ namespace RKCIUIAutomation.Page
 
         public By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true)
         {
-            string submitTypeXPath = submitType ? "[@type='submit']" : "";
+            string submitTypeXPath = submitType 
+                ? "[@type='submit']"
+                : "";
             By locator = By.XPath($"//input{submitTypeXPath}[@value='{buttonValue.GetString()}']");
             return locator;
         }
@@ -199,8 +201,22 @@ namespace RKCIUIAutomation.Page
         public By GetButtonByLocator(string buttonName)
             => By.XPath(SetButtonXpath(buttonName));
 
-        public By GetInputButtonByLocator(string buttonName)
-            => By.XPath(SetInputButtonXpath(buttonName));
+        public By GetInputButtonByLocator<T>(T buttonName)
+        {
+            Type argType = buttonName.GetType();
+            string buttonVal = string.Empty;
+
+            if (argType == typeof(string))
+            {
+                buttonVal = ConvertToType<string>(buttonName);
+            }
+            else if (argType == typeof(Enum))
+            {
+                buttonVal = ConvertToType<Enum>(buttonName).GetString();
+            }
+
+            return By.XPath(SetInputButtonXpath(buttonVal));
+        }
     }
 
     public static class EnumHelper
