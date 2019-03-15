@@ -94,6 +94,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
         void ClickBtn_Clear();
 
         void EnterText_DIR_Number(string dirNumber);
+
     }
 
     public abstract class DailyInspectionReport_Impl : TestBase, IDailyInspectionReport

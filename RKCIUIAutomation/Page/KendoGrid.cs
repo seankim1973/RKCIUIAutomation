@@ -265,14 +265,14 @@ namespace RKCIUIAutomation.Page
                 By tabStripLocator = By.XPath("//div[contains(@class,'k-tabstrip-top')]");
                 tabStripId = GetElement(tabStripLocator).GetAttribute("id");
                 logMsg = tabStripId.HasValue()
-                    ? $"Found Kendo Grid TabStrip ID: {tabStripId}"
-                    : "NULL Kendo Grid TabStrip ID";
+                    ? $"...Found Kendo Grid TabStrip ID: {tabStripId}"
+                    : "!!!NULL Kendo Grid TabStrip ID";
                 log.Debug(logMsg);
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw;
+                throw e;
             }
 
             return $"var tab = $('#{tabStripId}').data('kendoTabStrip');";
@@ -287,14 +287,14 @@ namespace RKCIUIAutomation.Page
             {
                 gridId = GetGridID(tableType);
                 logMsg = gridId.HasValue()
-                    ? $"Found Kendo Grid ID: {gridId}"
-                    : $"NULL Kendo Grid ID";
+                    ? $"...Found Kendo Grid ID: {gridId}"
+                    : "!!!NULL Kendo Grid ID";
                 log.Debug(logMsg);
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw;
+                throw e;
             }
 
             return $"var grid = $('#{gridId}').data('kendoGrid');";
