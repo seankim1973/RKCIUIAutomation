@@ -23,6 +23,11 @@ namespace RKCIUIAutomation.Page.Workflows
             LogDebug($"-->---> CreateNew_and_PopulateRequiredFields <---<--");
 
             QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
+            QaRcrdCtrl_QaDIR.SetDirNumber();
+            QaRcrdCtrl_QaDIR.ClickBtn_Save();            
+            string dirNumber = QaRcrdCtrl_QaDIR.GetDirNumber();
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInCreate(dirNumber), "VerifyDirIsDisplayedInCreate as DIRTech");
+            ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(), "VerifyReqFieldErrorsForNewDir");
             QaRcrdCtrl_QaDIR.PopulateRequiredFields();

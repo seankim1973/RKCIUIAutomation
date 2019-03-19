@@ -1626,7 +1626,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_ReadyDateTime();
             Enter_CompletedDateTime("", TimeBlock.PM_12_00);
             Enter_TotalInspectionTime();
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1699,8 +1698,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_HoldPointType();
-
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1758,7 +1755,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             SelectDDL_Feature();
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1809,7 +1805,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             SelectDDL_Feature();
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1861,7 +1856,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //ClickBtn_Save_Forward();
             //AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             //SelectDDL_ControlPointNumber(2);
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1925,8 +1919,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             //AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             //SelectDDL_ControlPointNumber(); 
-
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
