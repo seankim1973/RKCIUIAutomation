@@ -223,12 +223,12 @@ namespace RKCIUIAutomation.Test.NCR
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
             AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
             ClickEditBtnForRow();
-            LogInfo("------------send to revise from Review------------");
+            log.Debug("------------send to revise from Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Revise)");
             ClickEditBtnForRow();
 
-            LogInfo("------------cancel, edit/saveonly in Revise------------");
+            log.Debug("------------cancel, edit/saveonly in Revise------------");
             QaRcrdCtrl_GeneralNCR.EnterDescription("New NCR Description", true);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Revise)");
@@ -238,27 +238,27 @@ namespace RKCIUIAutomation.Test.NCR
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Revise)");
             ClickEditBtnForRow();
 
-            LogInfo("------------save&fwd in Review------------");
+            log.Debug("------------save&fwd in Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
             ClickEditBtnForRow();
 
-            LogInfo("------------save&fwd in ToBeClosed------------");
+            log.Debug("------------save&fwd in ToBeClosed------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed)");
             ClickEditBtnForRow();
 
-            LogInfo("------------send to revise from ToBeClosed------------");
+            log.Debug("------------send to revise from ToBeClosed------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Revise, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Revise)");
             ClickEditBtnForRow();
 
-            LogInfo("------------save&fwd from Revise to Review------------");
+            log.Debug("------------save&fwd from Revise to Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
             ClickEditBtnForRow();
 
-            LogInfo("------------save&fwd in Review------------");
+            log.Debug("------------save&fwd in Review------------");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.To_Be_Closed)");
             ClickEditBtnForRow();
