@@ -593,6 +593,8 @@ namespace RKCIUIAutomation.Page.Navigation
 
             public enum Menu
             {
+                [StringValue("NCR")] NCR,
+                [StringValue("Deficiency Notice")] Deficiency_Notice,
                 [StringValue("Test Count")] Test_Count,
                 [StringValue("DIR Count")] DIR_Count,
                 [StringValue("Retaining Wall Backfill Quantity Tracker")] Retaining_Wall_Backfill_Quantity_Tracker,

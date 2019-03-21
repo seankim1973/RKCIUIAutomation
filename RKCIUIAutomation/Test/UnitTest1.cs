@@ -663,7 +663,7 @@ namespace RKCIUIAutomation.UnitTest
             NavigateToPage.QARecordControl_General_NCR();
             string ncrDesc = "DlEamxKSEhxuBTbyRKGQtuoiDO";
 
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(GeneralNCR.TableTab.CQM_Review, ncrDesc));
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDesc), "UNIT TEST VerifyNCRDocIsDisplayedInReview");
         }
     }
 

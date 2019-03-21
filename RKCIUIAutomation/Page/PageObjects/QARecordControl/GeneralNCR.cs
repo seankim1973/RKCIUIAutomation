@@ -72,10 +72,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Closed NCR")] Closed_NCR,
             [StringValue("CQM Review")] CQM_Review,
             [StringValue("QM Review")] QM_Review,
+            [StringValue("Review")] Review,
             [StringValue("Create/Revise")] Create_Revise,
             [StringValue("Creating/Revise")] Creating_Revise,
             [StringValue("Developer Concurrence")] Developer_Concurrence,
             [StringValue("DOT Approval")] DOT_Approval,
+            [StringValue("LAWA Concurrence")] LAWA_Concurrence,
             [StringValue("Engineer Concurrence")] Engineer_Concurrence,
             [StringValue("Originator Concurrence")] Originator_Concurrence,
             [StringValue("Owner Concurrence")] Owner_Concurrence,
@@ -315,11 +317,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void ClickTab_CQM_Review();
 
+        void ClickTab_Review();
+
         void ClickTab_Creating_Revise();
 
         void ClickTab_Developer_Concurrence();
 
         void ClickTab_DOT_Approval();
+
+        void ClickTab_LAWA_Concurrence();
 
         void ClickTab_Engineer_Concurrence();
 
@@ -638,6 +644,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickTab_CQM_Review()
             => ClickTab(TableTab.CQM_Review);
 
+        public virtual void ClickTab_Review()
+            => ClickTab(TableTab.Review);
+
         public virtual void ClickTab_Creating_Revise()
             => ClickTab(TableTab.Creating_Revise);
 
@@ -646,6 +655,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickTab_DOT_Approval()
             => ClickTab(TableTab.DOT_Approval);
+
+        public virtual void ClickTab_LAWA_Concurrence()
+            => ClickTab(TableTab.LAWA_Concurrence);
 
         public virtual void ClickTab_Engineer_Concurrence()
             => ClickTab(TableTab.Engineer_Concurrence);
