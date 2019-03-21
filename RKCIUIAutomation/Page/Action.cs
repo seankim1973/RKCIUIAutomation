@@ -95,15 +95,13 @@ namespace RKCIUIAutomation.Page
             Thread.Sleep(1000);
         }
 
-        internal void WaitForElement(By elementByLocator, int timeOutInSeconds = 5, int pollingInterval = 500)
+        private WebDriverWait GetStandardWait(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500)
         {
+            WebDriverWait wait = null;
+
             try
             {
-                WaitForPageReady();
-
-                driver = Driver;
-                log.Debug($"...waiting for element: - {elementByLocator}");
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
                 {
                     PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
                 };
@@ -111,30 +109,98 @@ namespace RKCIUIAutomation.Page
                 wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
                 wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                wait.Until(x => x.FindElement(elementByLocator));
+                wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
+            }
+            catch (Exception e)
+            {
+                log.Error($"Error occured in method GetStandardWait : {e.Message}");
+            }
+
+            return wait;
+        }
+
+        internal void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500)
+        {
+            try
+            {
+                WaitForPageReady();
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+            }
+            finally
+            {
+                try
+                {
+                    driver = Driver;
+                    log.Debug($"...waiting for element: - {elementByLocator}");
+                    WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+                    //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                    //{
+                    //    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
+                    //};
+                    //wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                    //wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                    //wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
+                    //wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
+                    //wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
+                    wait.Until(x => driver.FindElement(elementByLocator));
+                }
+                catch (Exception e)
+                {
+                    log.Error(e.Message);
+                    throw e;
+                }
             }
         }
 
-        internal void WaitForLoading(int timeOutInSeconds = 20, int pollingInterval = 500)
+        internal void WaitForOverlayToClear(IWebDriver driver, int timeOutInSeconds = 20, int pollingInterval = 500)
+        {
+            By overlay_Locator = By.ClassName("k-overlay");
+
+            try
+            {
+                //driver = Driver;
+
+                WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+
+                //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                //{
+                //    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
+                //};
+                //wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                //wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                //wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
+                //wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
+                //wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
+                wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(overlay_Locator));
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
+
+        internal void WaitForLoading(IWebDriver driver, int timeOutInSeconds = 20, int pollingInterval = 500)
         {
             By loadingImg_Locator = By.ClassName("k-loading-image");
 
             try
             {
-                driver = Driver;
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
-                {
-                    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-                };
-                wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
-                wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
+                //driver = Driver;
+
+                WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+
+                //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
+                //{
+                //    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
+                //};
+                //wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                //wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                //wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
+                //wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
+                //wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
                 wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(loadingImg_Locator));
             }
             catch (Exception e)
@@ -149,9 +215,11 @@ namespace RKCIUIAutomation.Page
                         
             try
             {
-                WaitForLoading();
+                driver = Driver;
 
-                driver = Driver;                
+                WaitForOverlayToClear(driver);
+                WaitForLoading(driver);
+                             
                 javaScriptExecutor = driver as IJavaScriptExecutor;
                 bool pageIsReady = false;
 

@@ -266,7 +266,8 @@ namespace RKCIUIAutomation.Sandbox
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
             [StringValue("last")] Last,
-            [StringValue("KENDOUItabStripID")] KendoTabStripId
+            [StringValue("KENDOUItabStripID")] KendoTabStripId,
+            NoStringValueEnum
         }
 
         [TestMethod]
@@ -294,6 +295,8 @@ namespace RKCIUIAutomation.Sandbox
             string actual = tabStripEnum.GetString();
             Console.WriteLine($"EXPECTED VALUE: {expected}\nACTUAL VALUE: {actual}");
             Assert.AreEqual(expected, actual);
+            bool nostringEnumVal =TableButton.NoStringValueEnum.Equals("NoStringValueEnum");
+            Console.WriteLine($"nostringEnumVal : {nostringEnumVal}");
         }
 
         [TestMethod]

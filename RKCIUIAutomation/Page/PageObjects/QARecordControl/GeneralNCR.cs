@@ -5,6 +5,7 @@ using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
@@ -624,7 +625,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     break;
             }
 
-            EnterText(GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer}");
+            Thread.Sleep(5000);
+            EnterText(GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer.ToString()}");
 
             GeneralNCR_Base.ClickBtn_Sign(signBtn);
             ClickBtn_SignaturePanel_OK();
@@ -1089,7 +1091,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     ? "Found"
                     : "Unable to find";
 
-                LogInfo($"{logMsg} record under {tableTab.GetString()} tab with description: {_ncrDesc}.", isDisplayed);
+                LogInfo($"{logMsg} record under '{tableTab.GetString()}' tab with description: {_ncrDesc}.", isDisplayed);
             }
             catch (Exception e)
             {
