@@ -46,9 +46,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
         void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription);
 
-        void SaveForward_FromDeveloperConcurrence_ToDOTApproval(string ncrDescription, bool approveNCR = true);
+        void SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(string ncrDescription, bool approveNCR = true);
 
-        void SaveForward_FromDOTApproval_ToVerificationClosure(string ncrDescription, bool approveNCR = true);
+        void SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(string ncrDescription, bool approveNCR = true);
 
         void CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(string ncrDescription);
 
@@ -56,7 +56,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
         void CloseNCR_in_VerificationAndClosure(string ncrDescription);
 
-        bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "");
+        bool VerifyNCRDocIsDisplayedInReview(string ncrDescription);
+
+        bool VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(string ncrDescription);
     }
 
     public abstract class QaRcrdCtrl_GeneralNCR_WF_Impl : TestBase, IQaRcrdCtrl_GeneralNCR_WF
@@ -107,7 +109,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
         internal void NavigateToGeneralNcrPage()
         {
-            if (!Driver.Title.Contains("NCR List"))
+            driver = Driver;
+
+            if (!driver.Title.Contains("NCR List"))
             {
                 NavigateToPage.QARecordControl_General_NCR();
                 QaRcrdCtrl_GeneralNCR.ClickTab_Creating_Revise();
@@ -138,7 +142,6 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveOnly();
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
-
 
         public virtual void Review_and_Approve_NCR(UserType user, string ncrDescription)
         {
@@ -201,7 +204,7 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
         }
 
-        public void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription)
+        public virtual void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription)
         {
             LogDebug("------------WF SaveForward_FromResolutionDisposition_ToDeveloperConcurrence-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
@@ -212,7 +215,7 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }
 
-        public void SaveForward_FromDeveloperConcurrence_ToDOTApproval(string ncrDescription, bool approveNCR = true)
+        public virtual void SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(string ncrDescription, bool approveNCR = true)
         {
             LogDebug("------------WF SaveForward_FromDeveloperConcurrence_ToDOTApproval-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
@@ -231,10 +234,10 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }
 
-        public void SaveForward_FromDOTApproval_ToVerificationClosure(string ncrDescription, bool approveNCR = true)
+        public virtual void SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(string ncrDescription, bool approveNCR = true)
         {
             LogDebug("------------WF SaveForward_FromDOTApproval_ToVerificationClosure-------------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.DOT_Approval)");
+            AddAssertionToList(VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(ncrDescription), "VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence");
             ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown(Owner_SignBtn, DOTReview, OwnerApprovalDate, OwnerApprovalRdoBtn)
 
@@ -254,11 +257,11 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogDebug("------------WF Return_ToRevise_FromVerificationClosure_ForConcessionDiviation-------------");
 
-            SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription);
+            SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
-            SaveForward_FromDOTApproval_ToVerificationClosure(ncrDescription);
+            SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
@@ -277,6 +280,10 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
             => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription);
+
+        public virtual bool VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(string ncrDescription)
+            => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription);
+
     }
 
 
@@ -344,5 +351,11 @@ namespace RKCIUIAutomation.Page.Workflows
         public QaRcrdCtrl_GeneralNCR_WF_LAX(IWebDriver driver) : base(driver)
         {
         }
+
+        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
+            => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Review, ncrDescription);
+
+        //public override bool VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(string ncrDescription)
+        //    => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.LAWA_Concurrence, ncrDescription);
     }
 }

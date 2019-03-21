@@ -779,9 +779,9 @@ namespace RKCIUIAutomation.Page.Navigation
         public PageNavigation_LAX(IWebDriver driver) : base(driver)
         { }
 
-        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Deficiency_Notice);
+        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.RecordControl.Menu.Deficiency_Notice);
 
-        public override void QARecordControl_General_NCR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_NCR);
+        public override void QARecordControl_General_NCR() => Navigate.Menu(NavMenu.RecordControl.Menu.NCR);
 
         public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIR);
 
