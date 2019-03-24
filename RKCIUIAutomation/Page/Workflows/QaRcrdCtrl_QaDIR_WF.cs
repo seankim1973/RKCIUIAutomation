@@ -29,6 +29,7 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInCreate(dirNumber), "VerifyDirIsDisplayedInCreate as DIRTech");
             ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
+            WaitForPageReady();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(), "VerifyReqFieldErrorsForNewDir");
             QaRcrdCtrl_QaDIR.PopulateRequiredFields();
         }
@@ -686,6 +687,7 @@ namespace RKCIUIAutomation.Page.Workflows
             ClickBtn_KickBackOrRevise();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
+            WaitForPageReady();
             AddAssertionToList(VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
             ClickEditBtnForRow();
         }
@@ -941,23 +943,33 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual bool VerifyDbCleanupForDIR(string dirNumber, string dirRevision = "A", bool setAsDeleted = true)
         {
-            DirDbAccess db = new DirDbAccess();
-            db.SetDIR_DIRNO_IsDeleted(dirNumber, dirRevision, setAsDeleted);
+            bool cleanupSuccessful = false;
 
-            DirDbData data = new DirDbData();
-            data = db.GetDirData(dirNumber, dirRevision);
-            int isDeleted = data.IsDeleted;
+            try
+            {
+                DirDbAccess db = new DirDbAccess();
+                db.SetDIR_DIRNO_IsDeleted(dirNumber, dirRevision, setAsDeleted);
 
-            //if isDeleted = 1 && setAsDeleted = true --> success
-            //if isDeleted = 0 && setAsDeleted = false --> success
-            //if isDeleted = 0 && setAsDeleted = true --> fail
-            //if isDeleted = 1 && setAsDeleted = false --> fail
-            bool cleanupSuccessful = setAsDeleted
-                ? isDeleted == 1
-                    ? true : false
-                : isDeleted == 0
-                    ? true : false;
-            LogStep($"Performed DB Cleanup for DIR# {dirNumber}");
+                DirDbData data = new DirDbData();
+                data = db.GetDirData(dirNumber, dirRevision);
+                int isDeleted = data.IsDeleted;
+
+                //if isDeleted = 1 && setAsDeleted = true --> success
+                //if isDeleted = 0 && setAsDeleted = false --> success
+                //if isDeleted = 0 && setAsDeleted = true --> fail
+                //if isDeleted = 1 && setAsDeleted = false --> fail
+                cleanupSuccessful = setAsDeleted
+                    ? isDeleted == 1
+                        ? true : false
+                    : isDeleted == 0
+                        ? true : false;
+                LogStep($"Performed DB Cleanup for DIR# {dirNumber}");
+            }
+            catch (Exception e)
+            {
+                log.Error($"Error occured during VerifyDbCleanupForDIR : {e.Message}");
+            }
+
             return cleanupSuccessful;
         }
 
@@ -1079,7 +1091,7 @@ namespace RKCIUIAutomation.Page.Workflows
             => LogStep("---> KickBack_DIR_ForRevise_FromAuthorization_then_Edit <---<br>Step skipped for Tenant SH249");
 
         public override void Verify_DIR_then_Approve_inAuthorization(string dirNumber)
-            => LogStep("---> Verify_DIR_then_Approve_inAuthorization <---<br>Step skipped for Tenant SH249");
+            => LogStep("Step skipped for Tenant SH249: Verify_DIR_then_Approve_inAuthorization");
 
         public override bool Verify_DirRevision_inTblRow_then_Approve_inAuthorization(string dirNumber, string expectedDirRev)
         {

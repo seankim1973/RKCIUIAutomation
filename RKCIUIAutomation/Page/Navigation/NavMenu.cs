@@ -177,24 +177,26 @@ namespace RKCIUIAutomation.Page.Navigation
                 }
 
                 JsHover(GetMainNavMenuByLocator(mainNavEnum));
-                builder = new Actions(Driver);
+
+                driver = Driver;
+                builder = new Actions(driver);
 
                 if (subOfMainNavEnum != null)
                 {
                     By subOfMainNavLocator = GetNavMenuByLocator(subOfMainNavEnum, mainNavEnum);
-                    element = Driver.FindElement(subOfMainNavLocator);
+                    element = driver.FindElement(subOfMainNavLocator);
                     builder.MoveToElement(element).Perform();
 
                     if (childOfSubMenuEnum != null)
                     {
                         By childOfSubMenuLocator = GetNavMenuByLocator(childOfSubMenuEnum, subOfMainNavEnum);
-                        element = Driver.FindElement(childOfSubMenuLocator);
+                        element = driver.FindElement(childOfSubMenuLocator);
                         builder.MoveToElement(element).Perform();
 
                         if (subOfChildMenuEnum != null)
                         {
                             By subOfChildMenuLocator = GetNavMenuByLocator(subOfChildMenuEnum, childOfSubMenuEnum);
-                            element = Driver.FindElement(subOfChildMenuLocator);
+                            element = driver.FindElement(subOfChildMenuLocator);
                             builder.MoveToElement(element).Perform();
                         }
                     }

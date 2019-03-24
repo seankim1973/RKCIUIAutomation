@@ -56,23 +56,28 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Get SubMenu Names")]
         public void GetSubMenuNames()
         {
-            LoginAs(UserType.Bhoomi);
-            try
-            {
-                JsHover(By.XPath("//a[text()='Quality Search']"));
-                IList<IWebElement> elements = Driver.FindElements(By.XPath("//a[text()='Quality Search']/following-sibling::ul/li/a"));
+            LoginAs(UserType.DIRMgrQA);
+            NavigateToPage.QARecordControl_QA_DIRs();
+            VerifyPageTitle("Test");
+            NavigateToPage.QASearch_Daily_Inspection_Report();
+            VerifyPageTitle("Test");
 
-                foreach (IWebElement elem in elements)
-                {
-                    string subMenu = elem.Text;
-                    Console.WriteLine(subMenu);
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-                throw;
-            }
+            //try
+            //{
+            //    JsHover(By.XPath("//a[text()='Quality Search']"));
+            //    IList<IWebElement> elements = Driver.FindElements(By.XPath("//a[text()='Quality Search']/following-sibling::ul/li/a"));
+
+            //    foreach (IWebElement elem in elements)
+            //    {
+            //        string subMenu = elem.Text;
+            //        Console.WriteLine(subMenu);
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    log.Error(e.Message);
+            //    throw;
+            //}
 
         }
     }

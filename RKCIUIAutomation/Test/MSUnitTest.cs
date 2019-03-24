@@ -398,6 +398,10 @@ namespace RKCIUIAutomation.Sandbox
             //int testCaseNumber = 1234;
             //HipTestApi hipTest = new HipTestApi();
             //hipTest.BuildTestRunSnapshotData(195019);
+
+            string test = "    12345   ";
+            test = test.Trim();
+            Console.WriteLine(test);
         }
 
         [TestMethod]
@@ -782,11 +786,17 @@ namespace RKCIUIAutomation.Sandbox
             //string packageNumber = "IQF-DIR-20181209-2";
             //Console.WriteLine(packageNumber.TrimEnd('1', '2'));
 
-            string test = "";
-            bool hasValue = test.HasValue();
-            bool isNullOrEmpty = string.IsNullOrEmpty(test);
-            Console.WriteLine($"HAS VALUE: {hasValue}");
-            Console.WriteLine($"ISNULLOREMPTY: {isNullOrEmpty}");
+            //string test = "";
+            //bool hasValue = test.HasValue();
+            //bool isNullOrEmpty = string.IsNullOrEmpty(test);
+            //Console.WriteLine($"HAS VALUE: {hasValue}");
+            //Console.WriteLine($"ISNULLOREMPTY: {isNullOrEmpty}");
+
+            IList<string> stringList = new List<string> { };
+
+            Type argType = stringList.GetType();
+            Console.WriteLine($"== eval : {argType == typeof(List<string>)}");
+            Console.WriteLine($".equal eval : {argType.Equals(typeof(List<string>))}");
         }
     }
 }
