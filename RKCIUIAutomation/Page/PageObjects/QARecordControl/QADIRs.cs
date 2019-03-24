@@ -323,6 +323,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return reqFieldsMatch;
         }
 
+        internal void CloseErrorSummaryPopupMsg()
+            => JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
+
         internal IList<string> GetErrorSummaryIDs()
         {
             IList<string> errorElements = null;
@@ -335,7 +338,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 foreach (string error in errorElements)
                 {
-                    string[] splitType = new string[2];
+                    string[] splitType = new string[] { };
 
                     if (error.Contains("DIR:"))
                     {
@@ -346,7 +349,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         splitType = Regex.Split(error, "1: ");
                     }
 
-                    string[] splitReq = Regex.Split(splitType[1], " Required");
+                    string[] splitReq = new string[] { };
+                    splitReq = Regex.Split(splitType[1], " Required");
                     string fieldName = splitReq[0];
                     extractedFieldNames.Add(fieldName);
                     log.Debug($"Adding Required Field Error Summary ID to Actuals list: {fieldName}");
@@ -355,10 +359,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-            }
-            finally
-            {
-                JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
             }
 
             return extractedFieldNames;
@@ -1146,7 +1146,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     }
                 }
 
-                alertMsgExpected = assertList.Contains(false) ? false : true;
+                alertMsgExpected = assertList.Contains(false)
+                    ? false
+                    : true;
             }
             catch (Exception e)
             {
@@ -1328,6 +1330,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+            }
+            finally
+            {
+                QaDIRs_Base.CloseErrorSummaryPopupMsg();
             }
 
             return requiredFieldsMatch;
@@ -1647,6 +1653,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             };
 
             return RequiredFieldIDs;
+        }
+
+        public override IList<Enum> GetDeficienciesRdoBtnIDsList()
+        {
+            IList<Enum> deficienciesRdoBtnIDs = new List<Enum>()
+            {
+                RadioBtnsAndCheckboxes.Deficiencies_Yes,
+                //RadioBtnsAndCheckboxes.Deficiencies_CIF,
+                RadioBtnsAndCheckboxes.Deficiencies_CDR,
+                RadioBtnsAndCheckboxes.Deficiencies_NCR
+            };
+
+            return deficienciesRdoBtnIDs;
         }
     }
 

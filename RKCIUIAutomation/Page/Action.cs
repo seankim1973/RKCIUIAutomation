@@ -9,6 +9,7 @@ using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
@@ -87,6 +88,8 @@ namespace RKCIUIAutomation.Page
             {
                 log.Error(e.StackTrace);
             }
+
+            WaitForPageReady();
         }
 
         public void JsHover(By elementByLocator)
@@ -136,15 +139,6 @@ namespace RKCIUIAutomation.Page
                     driver = Driver;
                     log.Debug($"...waiting for element: - {elementByLocator}");
                     WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                    //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
-                    //{
-                    //    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-                    //};
-                    //wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                    //wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                    //wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
-                    //wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                    //wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
                     wait.Until(x => driver.FindElement(elementByLocator));
                 }
                 catch (Exception e)
@@ -161,19 +155,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                //driver = Driver;
-
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-
-                //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
-                //{
-                //    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-                //};
-                //wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                //wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                //wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
-                //wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                //wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
                 wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(overlay_Locator));
             }
             catch (Exception e)
@@ -188,19 +170,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                //driver = Driver;
-
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-
-                //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
-                //{
-                //    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-                //};
-                //wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                //wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                //wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
-                //wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                //wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
                 wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(loadingImg_Locator));
             }
             catch (Exception e)
@@ -242,11 +212,14 @@ namespace RKCIUIAutomation.Page
                             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
                             wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
                         }
-                        catch (InvalidOperationException oe)
+                        catch (InvalidOperationException e)
                         {
-                            log.Error(oe.Message);
+                            log.Debug(e.Message);
                             WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
                             wait?.Until(wd => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
+                        }
+                        catch (UnhandledAlertException)
+                        {
                         }
                     }
                 }
@@ -621,6 +594,7 @@ namespace RKCIUIAutomation.Page
 
                 By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
                 WaitForElement(uploadStatusLabel);
+                WaitForPageReady();
             }
             catch (Exception e)
             {
@@ -636,115 +610,157 @@ namespace RKCIUIAutomation.Page
         /// <typeparam name="T"></typeparam>
         /// <param name="expectedFileName"></param>
         /// <returns></returns>
-        public bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false)
+        public bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false, bool forDIR = true, int dirEntryNumber = 1)
         {
-            By testListDIV = By.XPath("//h5/b[contains(text(),'Test List')]");
-            ScrollToElement(testListDIV);
-
-            bool fileNamesMatch = false;
-
-            IList<IWebElement> actualFileNameList = null;
-
-            IList<string> expectedNamesList = null;
-
-            IList<bool> assertList = null;
-
-            string expectedName = string.Empty;
-
-            string logMsg = string.Empty;
-
             int actualCount = 0;
+            bool fileNamesMatch = false;
+            string logMsg = string.Empty;
+            string actualName = string.Empty;
+            string expectedName = string.Empty;
+            string actualFileNameLocatorXPath = string.Empty;
+            IList<bool> assertList = null;
+            IList<string> expectedNames = null;
+            IList<IWebElement> actualFileNameList = null;
 
             Type argType = expectedFileName.GetType();
             BaseUtils baseUtils = new BaseUtils();
 
             try
             {
-                if (argType != typeof(string) && argType != typeof(IList<string>))
-                {
-                    LogError($"Arg type should be string or IList<string> - Unexpected expectedFileName type: {argType}");
-                }
-                else
-                {
-                    string xpath = beforeSubmitBtnAction
-                        ? "//ul[@class='k-upload-files k-reset']/li/div/span[@class='k-file-name']"
-                        : "//div[contains(@class,'uploadedFileList')]";
+                By testListDIV = By.XPath("//h5/b[contains(text(),'Test List')]");
+                ScrollToElement(testListDIV);
 
-                    By actualFileNameLocator = By.XPath(xpath);
-
-                    actualFileNameList = new List<IWebElement>();
-                    actualFileNameList = GetElements(actualFileNameLocator);
-                    actualCount = actualFileNameList.Count;
-                    assertList = new List<bool>();
-
-                    bool fileNameIsExpected = false;
+                if (argType == typeof(string) || argType == typeof(List<string>))
+                {                    
+                    bool uploadedFileExpected = false;
 
                     if (argType == typeof(string))
                     {
                         expectedName = baseUtils.ConvertToType<string>(expectedFileName);
+                        uploadedFileExpected = expectedName.HasValue();
                     }
-                    else if (argType == typeof(IList<string>))
+                    else if (argType == typeof(List<string>))
                     {
-                        expectedNamesList = new List<string>();
-                        expectedNamesList = baseUtils.ConvertToType<IList<string>>(expectedFileName);
+                        expectedNames = new List<string>();
+                        expectedNames = baseUtils.ConvertToType<IList<string>>(expectedFileName);
+                        uploadedFileExpected = expectedNames != null;
                     }
 
-                    if (actualCount > 0)
+                    bool fileNameIsAsExpected = false;
+                    assertList = new List<bool>();
+                    actualFileNameList = new List<IWebElement>();
+
+                    string entryNumberXPath = string.Empty;
+
+                    if (forDIR)
                     {
-                        for (int i = 0; i < actualCount; i++)
+                        entryNumberXPath = beforeSubmitBtnAction
+                            ? $"//div[@id='FileManagerDiv_{dirEntryNumber - 1}']"
+                            : $"//div[@id='FilesListDiv_{dirEntryNumber - 1}']";
+                    }
+
+                    actualFileNameLocatorXPath = beforeSubmitBtnAction
+                        ? "//ul[@class='k-upload-files k-reset']/li/div/span[@class='k-file-name']"
+                        : "//div[contains(@class,'fileList')]//div[contains(@class,'file-name-and-size')]";
+
+                    By actualFileNameLocator = By.XPath($"{entryNumberXPath}{actualFileNameLocatorXPath}");
+
+                    if (uploadedFileExpected)
+                    {
+                        actualFileNameList = GetElements(actualFileNameLocator);
+
+                        if (actualFileNameList.Any())
                         {
-                            IWebElement actualElem = actualFileNameList[i];
-                            string actualName = string.Empty;
-                            int afterSaveIndex = i + 1;
+                            actualCount = actualFileNameList.Count;
+                        }
 
-                            if (beforeSubmitBtnAction)
+                        if (actualCount > 0)
+                        {
+                            foreach (IWebElement actualNameElem in actualFileNameList)
                             {
-                                actualName = actualElem.Text;
-                            }
-                            else
-                            {
-                                actualElem = actualElem.FindElement(By.XPath($"{xpath}[{afterSaveIndex}]/descendant::span[1]"));
-                                actualName = actualElem.Text;
-                                string[] splitName = Regex.Split(actualName, " \\(");
-                                actualName = splitName[0];
-                            }
+                                actualName = actualNameElem.Text.Trim();
 
-                            if (argType == typeof(string))
-                            {
-                                fileNameIsExpected = actualName.Equals(expectedName);
-                                logMsg = $"Expected and Uploaded File Names Matched: {actualName} - {fileNameIsExpected}";
-                            }
-                            else if (argType == typeof(IList<string>))
-                            {
-                                fileNameIsExpected = expectedNamesList.Contains(actualName);
-                                logMsg = $"Uploaded File Name: {actualName} in Expected File Names List - {fileNameIsExpected}";
-                            }
+                                LogStep($"Found file name : {actualName}");
 
-                            assertList.Add(fileNameIsExpected);
-                            LogInfo($"{logMsg}", fileNameIsExpected);
+                                fileNameIsAsExpected = argType == typeof(string)
+                                    ? actualName.Contains(expectedName)
+                                    : expectedNames.Contains(actualName);
+
+                                string actualExpected = fileNameIsAsExpected
+                                    ? ""
+                                    : "DID NOT ";
+
+                                logMsg = argType == typeof(string)
+                                    ? $"Expected and Uploaded file names {actualExpected}match<br>EXPECTED: {expectedName}<br>ACTUAL: {actualName}"
+                                    : $"Expected File Names List {actualExpected}contain {actualName}";
+
+                                assertList.Add(fileNameIsAsExpected);
+                                LogInfo($"{logMsg}", fileNameIsAsExpected);
+                            }
+                        }
+                        else
+                        {
+                            assertList.Add(false);
+                            LogInfo($"Expected uploaded file(s), but no uploaded file names are seen on the page", fileNameIsAsExpected);
                         }
                     }
                     else
                     {
-                        fileNameIsExpected = expectedFileName.Equals("") ? true : false;
-                        assertList.Add(fileNameIsExpected);
-                        LogInfo($"No uploaded file names are seen on the page<br>{actualFileNameLocator}", fileNameIsExpected);
+                        bool result = false;
+
+                        try
+                        {
+                            result = GetElements(actualFileNameLocator).Any() == false;
+                            logMsg = result
+                                ? ""
+                                : " but found uploaded file(s)";
+                        }
+                        catch (Exception)
+                        {
+                            log.Debug($"Checking for unexpected uploaded file names");
+                        }
+
+                        assertList.Add(result);
+                        LogInfo($"No uploaded file(s) are expected on the page{logMsg}", result);
                     }
+                }
+                else
+                {
+                    assertList.Add(false);
+                    LogError($"Arg type should be string or IList<string> - Unexpected expectedFileName type: {argType}");
                 }
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"Exception occured at VerifyUploadedFileNames : {e.StackTrace}");
             }
             finally
             {
-                if (expectedNamesList != null)
+                if (expectedName.HasValue() || expectedNames != null)
                 {
-                    bool countsMatch = expectedNamesList.Count == actualCount ? true : false;
+                    bool countsMatch = false;
+
+                    if (argType == typeof(List<string>))
+                    {
+                        countsMatch = expectedNames.Count.Equals(actualCount)
+                            ? true
+                            : false;
+
+                        assertList.Add(countsMatch);
+                    }
+                    else if (argType == typeof(string))
+                    {
+                        countsMatch = actualCount.Equals(1)
+                            ? true
+                            : false;
+                    }
+
                     assertList.Add(countsMatch);
                 }
 
-                fileNamesMatch = assertList.Contains(false) ? false : true;
+                fileNamesMatch = assertList.Contains(false)
+                    ? false
+                    : true;
             }
 
             return fileNamesMatch;
@@ -752,31 +768,33 @@ namespace RKCIUIAutomation.Page
 
         public void ConfirmActionDialog(bool confirmYes = true)
         {
-            string alertMsg = string.Empty;
             string actionMsg = string.Empty;
             WaitForPageReady();
 
             try
             {
                 driver = Driver;
-                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(2)).Until(SeleniumExtras.WaitHelpers.ExpectedConditions.AlertIsPresent());
+                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 alert = driver.SwitchTo().Alert();
-                alertMsg = alert.Text;
 
                 if (confirmYes)
                 {
                     alert.Accept();
+                    actionMsg = "Accepted";
                 }
                 else
                 {
                     alert.Dismiss();
+                    actionMsg = "Dismissed";
                 }
 
-                LogStep($"{actionMsg} Confirmation Dialog: {(confirmYes? "Accepted" : "Dismissed")}");
+                LogStep($"Confirmation Dialog: {actionMsg}");
             }
             catch (UnhandledAlertException)
+            { }
+            catch (Exception e)
             {
-                //log.Debug($"Alert Message: {e.AlertText}");
+                log.Debug(e.Message);
             }
         }
 
@@ -788,13 +806,17 @@ namespace RKCIUIAutomation.Page
             try
             {
                 driver = Driver;
-                IAlert alert = driver.SwitchTo().Alert();
+                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
+                alert = driver.SwitchTo().Alert();
                 alertMsg = alert.Text;
                 alert.Accept();
                 LogStep($"Accepted browser alert: '{alertMsg}'");
             }
             catch (UnhandledAlertException)
+            { }
+            catch (Exception e)
             {
+                log.Debug(e.Message);
             }
 
             return alertMsg;
@@ -808,13 +830,17 @@ namespace RKCIUIAutomation.Page
             try
             {
                 driver = Driver;
-                IAlert alert = driver.SwitchTo().Alert();
+                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
+                alert = driver.SwitchTo().Alert();
                 alertMsg = alert.Text;
                 alert.Dismiss();
                 LogStep($"Dismissed browser alert: '{alertMsg}'");
             }
             catch (UnhandledAlertException)
+            { }
+            catch (Exception e)
             {
+                log.Debug(e.Message);
             }
 
             return alertMsg;
@@ -827,15 +853,19 @@ namespace RKCIUIAutomation.Page
             try
             {
                 driver = Driver;
+                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 string actualAlertMsg = driver.SwitchTo().Alert().Text;
-                msgMatch = (actualAlertMsg).Contains(expectedMessage) ? true : false;
+                msgMatch = (actualAlertMsg).Contains(expectedMessage)
+                    ? true
+                    : false;
+
                 LogInfo($"## Expected Alert Message: {expectedMessage}<br>## Actual Alert Message: {actualAlertMsg}", msgMatch);
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Debug(e.Message);
             }
-            
+
             return msgMatch;
         }
 
@@ -1254,6 +1284,11 @@ namespace RKCIUIAutomation.Page
                 else if (argType == typeof(IWebElement))
                 {
                     elem = ConvertToType<IWebElement>(elementOrLocator);
+                }
+                else if (argType == typeof(string))
+                {
+                    string xPath = ConvertToType<string>(elementOrLocator);
+                    elem = GetElement(By.XPath(xPath));
                 }
 
                 driver = Driver;

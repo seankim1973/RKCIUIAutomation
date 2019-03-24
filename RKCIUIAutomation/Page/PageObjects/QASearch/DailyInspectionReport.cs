@@ -178,7 +178,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
             try
             {
-                dirNumber = dirNumber.Equals("") ? QaRcrdCtrl_QaDIR.GetDirNumber() : dirNumber;
+                dirNumber = dirNumber.Equals("")
+                    ? QaRcrdCtrl_QaDIR.GetDirNumber()
+                    : dirNumber;
 
                 if (usingSearch)
                 {

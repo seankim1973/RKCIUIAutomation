@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using RKCIUIAutomation.Base;
+using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -15,8 +16,22 @@ namespace RKCIUIAutomation.Tools
     {
         internal static IDbConnection GetSqlConnection()
         {
-            string connectVal = ConfigurationManager.ConnectionStrings["StageDB"].ConnectionString;
-            IDbConnection connection = new SqlConnection(connectVal);
+            string connectVal = string.Empty;
+            IDbConnection connection = null;
+
+            try
+            {
+                connectVal = BaseClass.testPlatform.Equals(TestPlatform.Grid)
+                    ? ConfigurationManager.ConnectionStrings["StageDB"].ConnectionString
+                    : ConfigurationManager.ConnectionStrings["StageDB_VPN"].ConnectionString;
+
+                connection = new SqlConnection(connectVal);
+            }
+            catch (Exception e)
+            {
+                BaseUtils.log.Error(e.Message);
+            }
+
             return connection;
         }
     }

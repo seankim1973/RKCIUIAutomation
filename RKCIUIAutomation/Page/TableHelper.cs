@@ -281,6 +281,8 @@ namespace RKCIUIAutomation.Page
             {
                 log.Error(e.StackTrace);
             }
+
+            WaitForPageReady();
         }
 
         internal By GetTableBtnLocator<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
