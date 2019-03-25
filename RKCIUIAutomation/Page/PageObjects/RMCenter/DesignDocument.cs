@@ -400,8 +400,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal DesignDocument DesignDoc_Base => new DesignDocument();
 
-        //internal KendoGrid Kendo => new KendoGrid();
-
         public virtual void SelectDDL_ReviewType(int selectionIndex)
             => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, selectionIndex);
 

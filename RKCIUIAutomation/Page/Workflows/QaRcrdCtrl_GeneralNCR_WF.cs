@@ -279,7 +279,7 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         public virtual bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
-            => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.CQM_Review, ncrDescription);
+            => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Review, ncrDescription);
 
         public virtual bool VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(string ncrDescription)
             => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription);
@@ -334,6 +334,9 @@ namespace RKCIUIAutomation.Page.Workflows
         public QaRcrdCtrl_GeneralNCR_WF_SH249(IWebDriver driver) : base(driver)
         {
         }
+
+        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
+            => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription);
     }
 
     internal class QaRcrdCtrl_GeneralNCR_WF_SGWay : QaRcrdCtrl_GeneralNCR_WF
@@ -351,9 +354,6 @@ namespace RKCIUIAutomation.Page.Workflows
         public QaRcrdCtrl_GeneralNCR_WF_LAX(IWebDriver driver) : base(driver)
         {
         }
-
-        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
-            => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Review, ncrDescription);
 
         //public override bool VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(string ncrDescription)
         //    => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.LAWA_Concurrence, ncrDescription);
