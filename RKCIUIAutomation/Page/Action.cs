@@ -1252,14 +1252,20 @@ namespace RKCIUIAutomation.Page
             => ClickElement(By.Id("btnCreate"));
 
 
-        public void ClickNew()
+        public void ClickNew(bool multipleBtnInstances = false)
         {
             try
             {
-                (GetElement(GetButtonByLocator("New"))
-                    ?? GetElement(GetInputButtonByLocator("Create New"))
-                    ).Click();
-
+                if (multipleBtnInstances)
+                {
+                    ClickElement(By.XPath("//div[@class='k-content k-state-active']//a[text()='New']"));
+                }
+                else
+                {
+                    (GetElement(GetButtonByLocator("New"))
+                        ?? GetElement(GetInputButtonByLocator("Create New"))
+                        ).Click();
+                }
                 LogStep("Clicked New");
             }
             catch (Exception e)
@@ -1268,6 +1274,9 @@ namespace RKCIUIAutomation.Page
                 throw e;
             }
         }
+
+        public void ClickSaveForward()
+            => ClickElement(By.Id("SaveForwardItem"));
 
         public IWebElement ScrollToElement<T>(T elementOrLocator)
         {

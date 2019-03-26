@@ -21,7 +21,7 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
         public void CorresondenceLog_End_To_End()
         {
             ProjCorrespondenceLog.LogintoCorrespondenceLogPage(UserType.TransmissionsGeneral);
-            ClickNew();
+            ProjCorrespondenceLog.CreateNewAndPopulateFields();
         }
     }
 }

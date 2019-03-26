@@ -792,11 +792,21 @@ namespace RKCIUIAutomation.Sandbox
             //Console.WriteLine($"HAS VALUE: {hasValue}");
             //Console.WriteLine($"ISNULLOREMPTY: {isNullOrEmpty}");
 
-            IList<string> stringList = new List<string> { };
+            IList<string> stringList = new List<string>
+            {
+                "test1",
+                "test2"
+            };
 
-            Type argType = stringList.GetType();
-            Console.WriteLine($"== eval : {argType == typeof(List<string>)}");
-            Console.WriteLine($".equal eval : {argType.Equals(typeof(List<string>))}");
+            IList<string> stringList2 = new List<string>
+            {
+                "test1",
+                "test2"
+            };
+
+            Console.WriteLine($"== eval : {stringList == stringList2}");
+            Console.WriteLine($".equal eval : {stringList.Equals(stringList2)}");
+            Console.WriteLine($".SequenceEqual eval : {stringList.SequenceEqual(stringList2)}");
         }
     }
 }
