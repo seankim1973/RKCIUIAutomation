@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +20,8 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
         [Description("To keep track of Correspondence info (incoming/outgoing) shared by RK technician to client.")]
         public void CorresondenceLog_End_To_End()
         {
-
-
+            ProjCorrespondenceLog.LogintoCorrespondenceLogPage(UserType.TransmissionsGeneral);
+            ClickNew();
         }
     }
 }

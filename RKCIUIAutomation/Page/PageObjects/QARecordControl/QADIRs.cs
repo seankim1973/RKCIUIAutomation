@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
@@ -1046,7 +1047,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 ClickTab(tableTab);
-                string _dirNum = dirNumber.Equals("") ? GetDirNumber() : dirNumber;
+                string _dirNum = dirNumber.HasValue()
+                    ? dirNumber
+                    : GetDirNumber();
+
                 isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, TableType.MultiTab, noRecordsExpected);
 
                 string logMsg = isDisplayed ? "Found" : "Unable to find";

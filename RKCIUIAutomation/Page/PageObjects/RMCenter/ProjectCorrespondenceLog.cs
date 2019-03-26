@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Test;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -55,14 +56,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public interface IProjectCorrespondenceLog
     {
-
+        void LogintoCorrespondenceLogPage(UserType userType);
 
         bool VerifyTransmittalLogIsDisplayed();
     }
 
     #region Common Workflow Implementation class
 
-    public abstract class ProjectCorrespondenceLog_Impl : PageBase, IProjectCorrespondenceLog
+    public abstract class ProjectCorrespondenceLog_Impl : TestBase, IProjectCorrespondenceLog
     {
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
@@ -115,6 +116,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             return true;
         }
+
+        public virtual void LogintoCorrespondenceLogPage(UserType userType)
+        {
+            LoginAs(userType);
+            WaitForPageReady();
+            NavigateToPage.RMCenter_Project_Correspondence_Log();
+        }
     }
 
     #endregion Common Workflow Implementation class
@@ -152,6 +160,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public ProjectCorrespondenceLog_SH249(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void LogintoCorrespondenceLogPage(UserType userType)
+        {
+            LoginAs(userType);
+            WaitForPageReady();
+            NavigateToPage.RMCenter_Project_Transmittal_Log();
+        }
+
     }
 
     #endregion Implementation specific to SH249
@@ -162,6 +178,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public ProjectCorrespondenceLog_SGWay(IWebDriver driver) : base(driver)
         {
+        }
+
+        public override void LogintoCorrespondenceLogPage(UserType userType)
+        {
+            LoginAs(userType);
+            WaitForPageReady();
+            NavigateToPage.RMCenter_Project_Transmittal_Log();
         }
     }
 

@@ -221,7 +221,8 @@ namespace RKCIUIAutomation.Config
             Component.Other,
             Component.Project_Configuration,
             Component.Search,
-            Component.Submittals
+            Component.Submittals,
+            Component.Correspondence_Log
         };
     }
 }
