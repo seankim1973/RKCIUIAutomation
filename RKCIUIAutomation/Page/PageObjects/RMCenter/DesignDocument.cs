@@ -18,7 +18,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public DesignDocument(IWebDriver driver) => driver = Driver;
+        public DesignDocument(IWebDriver driver) => this.Driver = driver;
 
         internal void ScrollToLastColumn()
         {
@@ -200,7 +200,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal void StoreDesignDocTitleAndNumber()
         {
-            MiniGuid guid = MiniGuid.NewGuid();
+            MiniGuid guid = GenerateRandomGuid();
 
             string docKey = $"{tenantName}{GetTestName()}";
             docTitleKey = $"{docKey}_DsgnDocTtl";

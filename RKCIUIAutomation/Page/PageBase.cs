@@ -1,4 +1,6 @@
-﻿using OpenQA.Selenium;
+﻿using MiniGuids;
+using OpenQA.Selenium;
+using RestSharp.Extensions;
 using System;
 using System.Collections;
 
@@ -28,9 +30,19 @@ namespace RKCIUIAutomation.Page
 
         internal Hashtable GetHashTable() => Hashtable ?? new Hashtable();
 
-        public void CreateVar<T>(string key, T value)
+        public string GenerateRandomGuid()
+        {
+            MiniGuid guid = MiniGuid.NewGuid();
+            return guid;
+        }
+
+        public void CreateVar(string key, string value = "")
         {
             string logMsg;
+
+            value = value.HasValue()
+                ? value
+                : GenerateRandomGuid();
 
             try
             {
@@ -38,12 +50,12 @@ namespace RKCIUIAutomation.Page
                 if (!HashKeyExists(key))
                 {
                     Hashtable.Add(key, value);
-                    logMsg = "Added to";
+                    logMsg = "Created";
                 }
                 else
                 {
                     Hashtable[key] = value;
-                    logMsg = "Updated value for existing key in";
+                    logMsg = "Updated";
                 }
 
                 log.Debug($"{logMsg} HashTable - Key: {key.ToString()} : Value: {value.ToString()}");
@@ -60,16 +72,14 @@ namespace RKCIUIAutomation.Page
             Hashtable = GetHashTable();
             var varValue = string.Empty;
 
-            if (Hashtable.ContainsKey(key))
+            if (!Hashtable.ContainsKey(key))
             {
-                varValue = Hashtable[key].ToString();
-                log.Debug($"Found GetVar Key: {key} with Value: {varValue}");
-            }
-            else
-            {
-                log.Debug($"GetVar Key does not exist: {key}");
+                CreateVar(key);
             }
 
+            varValue = Hashtable[key].ToString();
+            log.Debug($"#####GetVar Key: {key} has Value: {varValue}");
+            
             return varValue;
         }
 

@@ -501,9 +501,10 @@ namespace RKCIUIAutomation.Page
         public string GetTextFromDDL(Enum ddListID)
             => GetText(pgHelper.GetDDListCurrentSelectionByLocator(ddListID));
 
-        public void ExpandDDL<E>(E ddListID)
+        public void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false)
         {
-            By locator = pgHelper.GetExpandDDListButtonByLocator(ddListID);
+            By locator = pgHelper.GetExpandDDListButtonByLocator(ddListID, isMultiSelectDDList);
+
             try
             {
                 JsClickElement(locator);
@@ -517,18 +518,36 @@ namespace RKCIUIAutomation.Page
         }
 
         /// <summary>
-        /// Use [bool] useContains arg when selecting a DDList item with partial value for [T](string)itemIndexOrName
-        /// <para>[bool] useContains arg defaults to false and is ignored if arg [I]itemIndexOrName is int type</para>
+        /// Use (bool)useContains arg when selecting a DDList item with partial value for [T](string)itemIndexOrName
+        /// <para>
+        /// (bool)useContains arg defaults to false and is ignored if arg [T]itemIndexOrName is an Integer
+        /// </para>
         /// </summary>
+        /// <typeparam name="E"></typeparam>
         /// <typeparam name="T"></typeparam>
-        /// <typeparam name="I"></typeparam>
         /// <param name="ddListID"></param>
         /// <param name="itemIndexOrName"></param>
         /// <param name="useContains"></param>
-        /// <returns></returns>
-        public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false)
+        public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false, bool isMultiSelectDDList = false)
         {
-            ExpandDDL(ddListID);
+            ExpandDDL(ddListID, isMultiSelectDDList);
+            ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName, useContains));
+        }
+
+        /// <summary>
+        /// Use (bool)useContains arg when selecting a DDList item with partial value for [T](string)itemIndexOrName
+        /// <para>
+        /// (bool)useContains arg defaults to false and is ignored if arg [T]itemIndexOrName is an Integer
+        /// </para>
+        /// </summary>
+        /// <typeparam name="E"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ddListID"></param>
+        /// <param name="itemIndexOrName"></param>
+        /// <param name="useContains"></param>
+        public void ExpandAndSelectFromMultiSelectDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false)
+        {
+            ExpandDDL(ddListID, true);
             ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName, useContains));
         }
 

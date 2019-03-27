@@ -61,7 +61,7 @@ namespace RKCIUIAutomation.Page
             return _ddFieldXpath;
         }
 
-        private string SetDDListFieldExpandArrowXpath<T>(T ddListID)
+        private string SetDDListFieldExpandArrowXpath<T>(T ddListID, bool isMultiSelectDDList = false)
         {
             BaseUtils baseUtils = new BaseUtils();
 
@@ -69,9 +69,11 @@ namespace RKCIUIAutomation.Page
                 ? baseUtils.ConvertToType<string>(ddListID)
                 : baseUtils.ConvertToType<Enum>(ddListID).GetString();
 
-            string _ddArrowXpath = _ddListID.Contains("Time")
-                ? $"{SetDDListFieldXpath(_ddListID)}/parent::span/span"
-                : $"{SetDDListFieldXpath(_ddListID)}//span[@class='k-select']/span";
+            string _ddArrowXpath = isMultiSelectDDList
+                ? $"//select[@id='{_ddListID}']/parent::div"
+                :_ddListID.Contains("Time")
+                    ? $"{SetDDListFieldXpath(_ddListID)}/parent::span/span"
+                    : $"{SetDDListFieldXpath(_ddListID)}//span[@class='k-select']/span";
 
             return _ddArrowXpath;
         }
@@ -177,8 +179,10 @@ namespace RKCIUIAutomation.Page
         public By GetDDListCurrentSelectionByLocator(Enum ddListID)
             => By.XPath(SetDDListCurrentSelectionXpath(ddListID));
 
-        public By GetExpandDDListButtonByLocator<T>(T ddListID)
-            => By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
+        public By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
+            => isMultiSelectDDList
+                ? By.XPath(SetDDListFieldExpandArrowXpath(ddListID))
+                : By.XPath("");
 
         /// <summary>
         /// [bool] useContains arg defaults to false and is ignored if arg [I]itemIndexOrName is int type

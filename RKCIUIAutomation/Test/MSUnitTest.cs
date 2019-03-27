@@ -222,8 +222,7 @@ namespace RKCIUIAutomation.Sandbox
         //[TestMethod]
         public void TestMiniGuid()
         {
-            MiniGuid guid;
-            guid = MiniGuid.NewGuid();
+            MiniGuid guid = GenerateRandomGuid();
 
             string key = "GUID";
             CreateVar(key, guid);
@@ -235,7 +234,7 @@ namespace RKCIUIAutomation.Sandbox
         [TestMethod]
         public void TestCreateGetVar()
         {
-            CreateVar("Int", 1500000);
+            CreateVar("Int", "12345");
             CreateVar("String", "BlahBlahTestName1234654789654321");
 
             Console.WriteLine(GetVar("Int"));

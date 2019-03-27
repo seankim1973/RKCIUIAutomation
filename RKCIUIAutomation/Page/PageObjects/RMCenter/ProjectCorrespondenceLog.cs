@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using MiniGuids;
+using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
@@ -15,7 +16,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public ProjectCorrespondenceLog(IWebDriver driver) => driver = Driver;
+        public ProjectCorrespondenceLog(IWebDriver driver) => this.Driver = driver;
 
         //GLX and LAX - StringValue[0] = table tab name, StringValue[1] = Table content reference id
         public enum TableTab
@@ -27,34 +28,34 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public enum EntryField
         {
-            [StringValue("DocumentDate")] Date,
-            [StringValue("TransmittalNo")] TransmittalNumber,
-            [StringValue("SecurityClassificationId")] SecurityClassification,
-            [StringValue("Title")] Title,
-            [StringValue("From")] From,
-            [StringValue("AgencyFromId")] AgencyFrom,
-            [StringValue("Attention")] Attention,
-            [StringValue("AgencyToId")] AgencyAttention,
-            [StringValue("DocumentTypeCatogoryId")] DocumentCategory,
-            [StringValue("DocumentTypeId")] DocumentType,
-            [StringValue("OriginatorDocumentRef")] OriginatorDocumentRef,
-            [StringValue("Revision")] Revision,
-            [StringValue("SelectedTransmittedIds")] Transmitted,
-            [StringValue("SegmentId")] Segment_Area,
-            [StringValue("DesignPackagesIdsNcr")] DesignPackages,
-            [StringValue("CdrlNumber")] CDRL,
-            [StringValue("ResponseRequiredRadioButton_True")] ResponseRequired_Yes,
-            [StringValue("ResponseRequiredRadioButton_False")] ResponseRequired_No,
-            [StringValue("ResponseRequiredDate")] ResponseRequiredBy_Date,
-            [StringValue("OwnerReponseId")] OwnerResponse,
-            [StringValue("OwnerResponseBy")] OwnerResponseBy,
-            [StringValue("OwnerResponseDate")] OwnerResponseDate,
-            [StringValue("SectionId")] SpecSection,
-            [StringValue("MSLNo")] MSLNumber,
-            [StringValue("AvailableAccessItems")] Access,
-            [StringValue("AllowReshare")] AllowResharing,
-            [StringValue("TransmissionFiles")] Attachments
-
+            [StringValue("DocumentDate", "DATE")] Date,
+            [StringValue("TransmittalNo", "TXT")] TransmittalNumber,
+            [StringValue("SecurityClassificationId", "DDL")] SecurityClassification,
+            [StringValue("Title", "TXT")] Title,
+            [StringValue("From", "TXT")] From,
+            [StringValue("AgencyFromId", "DDL")] AgencyFrom,
+            [StringValue("Attention", "TXT")] Attention,
+            [StringValue("AgencyToId", "DDL")] AgencyAttention,
+            [StringValue("DocumentTypeCatogoryId", "DDL")] DocumentCategory,
+            [StringValue("DocumentTypeId", "DDL")] DocumentType,
+            [StringValue("OriginatorDocumentRef", "TXT")] OriginatorDocumentRef,
+            [StringValue("Revision", "TXT")] Revision,
+            [StringValue("SelectedTransmittedIds", "MULTIDDL")] Transmitted,
+            [StringValue("SegmentId", "DDL")] Segment_Area,
+            [StringValue("DesignPackagesIdsNcr", "MULTIDDL")] DesignPackages,
+            [StringValue("CdrlNumber", "TXT")] CDRL,
+            [StringValue("ResponseRequiredRadioButton_True", "RDOBTN")] ResponseRequired_Yes,
+            [StringValue("ResponseRequiredRadioButton_False", "RDOBTN")] ResponseRequired_No,
+            [StringValue("ResponseRequiredDate", "DATE")] ResponseRequiredBy_Date,
+            [StringValue("OwnerReponseId", "DDL")] OwnerResponse,
+            [StringValue("OwnerResponseBy", "TXT")] OwnerResponseBy,
+            [StringValue("OwnerResponseDate", "DATE")] OwnerResponseDate,
+            [StringValue("SectionId", "DDL")] SpecSection,
+            [StringValue("MSLNo", "TXT")] MSLNumber,
+            [StringValue("AvailableAccessItems", "DDL")] Access,
+            [StringValue("ViaId", "DDL")] Via,
+            [StringValue("AllowReshare", "CHKBOX")] AllowResharing,
+            [StringValue("TransmissionFiles", "UPLOAD")] Attachments
         }
 
         public enum ColumnName
@@ -69,14 +70,109 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("DocumentType.Key")] DocumentType,
             [StringValue("OriginatorDocumentRef")] OriginatorRef,
             [StringValue("Revision")] Revision,
-            [StringValue("TransmittedTypeNames")] TransmittedType
+            [StringValue("TransmittedTypeNames")] TransmittedType,
+            [StringValue("ViaId")] Via,
         }
 
         [ThreadStatic]
-        internal static IList<string> expectedRequiredFields;
+        internal static IList<EntryField> expectedRequiredFields;
 
         [ThreadStatic]
-        internal static IList<string> allEntryFields;
+        internal static IList<EntryField> allEntryFields;
+
+        [ThreadStatic]
+        internal static IList<EntryField> expectedEntryFieldsForTablColumns;
+
+        internal void CreateAndStoreRandomValueForField(Enum fieldEnum)
+        {
+            string fieldName = fieldEnum.GetString();
+            MiniGuid guid = GenerateRandomGuid();
+            string key = $"{tenantName}{GetTestName()}_{fieldName}";
+            CreateVar(key, guid);
+            log.Debug($"##### Created random variable for field {fieldName}\nKEY: {key} || VALUE: {GetVar(key)}");
+        }
+
+        internal string GetVarForEntryField(Enum fieldEnum)
+            => GetVar($"{tenantName}{GetTestName()}_{fieldEnum.GetString()}");
+
+        /// <summary>
+        /// For &lt;T&gt;indexOrText argument, provide 1 indexed value or text value of a DDList selection OR text value to enter in a text field
+        /// <para>
+        /// Use (bool)useContains arg when selecting a DDList item with partial value for [T](string)indexOrText
+        /// </para>
+        /// <para>
+        /// (bool)useContains arg defaults to false and is ignored if arg indexOrText is an Integer
+        /// </para>
+        /// <para>
+        /// When a field is a DATE field, the current short date will be entered by default.  Set futureDate boolean argument to true to set the Date field for the next day
+        /// </para>
+        ///</summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entryField"></param>
+        /// <param name="indexOrText"></param>
+        internal void PopulateFieldValue<T>(EntryField entryField, T indexOrText = default(T), bool useContains = false, bool futureDate = false)
+        {
+            const string TEXT = "TXT";
+            const string DLL = "DDL";
+            const string DATE = "DATE";
+            const string MULTIDDL = "MULTIDDL";
+            const string RDOBTN = "RDOBTN";
+            const string CHKBOX = "CHKBOX";
+            const string UPLOAD = "UPLOAD";
+
+            string fieldType = entryField.GetString(true);
+            Type argType = indexOrText.GetType();
+            object argValue = null;
+            bool isValidArg = false;
+
+            if (argType == typeof(string))
+            {
+                isValidArg = true;
+                argValue = ConvertToType<string>(indexOrText);
+                argValue = ((string)argValue).HasValue()
+                        ? argValue
+                        : fieldType.Equals(DATE)
+                            ? GetShortDate()
+                            : GetVarForEntryField(entryField);
+            }
+            else if (argType == typeof(int))
+            {
+                isValidArg = true;
+                argValue = ConvertToType<int>(indexOrText);
+                argValue = argValue != null || ((int)argValue == 0)
+                    ? argValue
+                    : 1;
+            }
+            else
+            {
+                LogError($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
+            }
+
+
+            if (isValidArg)
+            {
+                if (fieldType.Equals(TEXT) || fieldType.Equals(DATE))
+                {
+                    EnterText(By.Id(entryField.GetString()), (string)argValue);
+                }
+                else if (fieldType.Equals(DLL) || fieldType.Equals(MULTIDDL))
+                {
+                    bool isMultiSelectDDL = fieldType.Equals(MULTIDDL)
+                        ? true
+                        : false;
+
+                    ExpandAndSelectFromDDList(entryField, argValue, useContains, isMultiSelectDDL);
+                }
+                else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
+                {
+                    SelectRadioBtnOrChkbox(entryField);
+                }
+                else if (fieldType.Equals(UPLOAD))
+                {
+                    UploadFile();
+                }
+            }
+        }
 
         internal bool VerifyRequiredFields()
         {
@@ -84,145 +180,104 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             IList<string> actualReqFields = new List<string>();
             actualReqFields = GetAttributes(reqFieldLocator, "data-valmsg-for");
 
-            return GetRequiredFieldsList().SequenceEqual(actualReqFields);
+            IList<string> expectedReqFields = new List<string>();
+
+            foreach (EntryField field in GetRequiredFieldsList())
+            {
+                expectedReqFields.Add(field.GetString());
+            }
+
+            return expectedReqFields.SequenceEqual(actualReqFields);
         }
 
         public override void EnterDate(string shortDate = "")
-            => EnterText(By.Id(EntryField.Date.GetString()), shortDate.HasValue()?shortDate:GetShortDate());
+            => PopulateFieldValue(EntryField.Date, shortDate);
 
         public override void EnterTransmittalNumber(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.TransmittalNumber, value);
 
         public override void EnterTitle(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.Title, value);
 
         public override void EnterFrom(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.From, value);
 
         public override void EnterAttention(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.Attention, value);
 
         public override void EnterOriginatorDocumentRef(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.OriginatorDocumentRef, value);
 
         public override void EnterRevision(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.Revision, value);
 
         public override void EnterCDRL(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.CDRL, value);
 
         public override void EnterResponseRequiredByDate(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.ResponseRequiredBy_Date, value);
 
         public override void EnterOwnerResponseBy(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.OwnerResponseBy, value);
 
         public override void EnterOwnerResponseDate(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.OwnerResponseDate, value);
 
         public override void EnterMSLNumber(string value = "")
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.MSLNumber, value);
 
         public override void SelectDDL_Access<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.Access, indexOrName);
 
         public override void SelectDDL_SpecSection<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.SpecSection, indexOrName);
 
         public override void SelectDDL_OwnerResponse<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.OwnerResponse, indexOrName);
 
         public override void SelectDDL_DesignPackages<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.DesignPackages, indexOrName);
 
         public override void SelectDDL_SegmentArea<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.Segment_Area, indexOrName);
 
         public override void SelectDDL_Transmitted<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.Transmitted, indexOrName);
 
         public override void SelectDDL_DocumentCategory<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.DocumentCategory, indexOrName);
 
         public override void SelectDDL_DocumentType<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.DocumentType, indexOrName);
 
         public override void SelectDDL_AgencyAttention<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.AgencyAttention, indexOrName);
 
         public override void SelectDDL_AgencyFrom<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.AgencyFrom, indexOrName);
 
         public override void SelectDDL_SecurityClassification<T>(T indexOrName = default(T))
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.SecurityClassification, indexOrName);
 
         public override void SelectRdoBtn_ResponseRequired_Yes()
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.ResponseRequired_Yes, "");
 
         public override void SelectRdoBtn_ResponseRequired_No()
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.ResponseRequired_No, "");
 
         public override void SelectChkbox_AllowResharing()
-        {
-            throw new NotImplementedException();
-        }
+            => PopulateFieldValue(EntryField.AllowResharing, "");
     }
 
     public interface IProjectCorrespondenceLog
     {
         void CreateNewAndPopulateFields();
 
-        IList<string> GetRequiredFieldsList();
+        IList<EntryField> GetRequiredFieldsList();
 
-        void EnterAllFields();
+        IList<EntryField> GetAllEntryFields();
+
+        IList<EntryField> GetExpectedEntryFieldsForTableColumns();
 
         void LogintoCorrespondenceLogPage(UserType userType);
 
@@ -324,11 +379,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public virtual IList<string> GetRequiredFieldsList()
+        public virtual IList<EntryField> GetRequiredFieldsList()
             => expectedRequiredFields;
 
-        public virtual void EnterAllFields()
-        { }
+        public virtual IList<EntryField> GetAllEntryFields()
+            => allEntryFields;
+
+        public virtual IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+            => expectedEntryFieldsForTablColumns;
 
         public virtual void CreateNewAndPopulateFields()
         {
@@ -337,7 +395,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickSaveForward();
             AddAssertionToList(PCLogBase.VerifyRequiredFields());
             //requiredFields = new List<string>();
-            
 
         }
 
@@ -394,22 +451,69 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override IList<string> GetRequiredFieldsList()
+        public override IList<EntryField> GetRequiredFieldsList()
         {
-            expectedRequiredFields = new List<string>()
+            expectedRequiredFields = new List<EntryField>()
             {
-                EntryField.Date.GetString(),
-                EntryField.SecurityClassification.GetString(),
-                EntryField.Title.GetString(),
-                EntryField.DocumentType.GetString(),
-                EntryField.Transmitted.GetString(),
-                EntryField.Attachments.GetString()
+                EntryField.Date,
+                EntryField.SecurityClassification,
+                EntryField.Title,
+                EntryField.DocumentType,
+                EntryField.Transmitted,
+                EntryField.Attachments
             };
 
             return expectedRequiredFields;
         }
 
+        public override IList<EntryField> GetAllEntryFields()
+        {
+            allEntryFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.SecurityClassification,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.AgencyFrom,
+                EntryField.Attention,
+                EntryField.AgencyAttention,
+                EntryField.DocumentCategory,
+                EntryField.DocumentType,
+                EntryField.OriginatorDocumentRef,
+                EntryField.Revision,
+                EntryField.Transmitted,
+                EntryField.Segment_Area,
+                EntryField.DesignPackages,
+                EntryField.CDRL,
+                EntryField.ResponseRequired_Yes,
+                EntryField.ResponseRequiredBy_Date,
+                EntryField.SpecSection,
+                EntryField.MSLNumber,
+                EntryField.Access
+            };
 
+            return allEntryFields;
+        }
+
+        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        {
+            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentType,
+                EntryField.OriginatorDocumentRef,
+                EntryField.Revision,
+                EntryField.Transmitted,
+                EntryField.MSLNumber
+            };
+
+            return expectedEntryFieldsForTablColumns;
+        }
 
     }
 
@@ -430,6 +534,54 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             NavigateToPage.RMCenter_Project_Transmittal_Log();
         }
 
+
+        public override IList<EntryField> GetRequiredFieldsList()
+        {
+            expectedRequiredFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.DocumentType,
+                EntryField.Via,
+                EntryField.Attachments
+            };
+
+            return expectedRequiredFields;
+        }
+
+        public override IList<EntryField> GetAllEntryFields()
+        {
+            allEntryFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentType,
+                EntryField.Via
+            };
+
+            return allEntryFields;
+        }
+
+        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        {
+            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentType,
+                EntryField.Via
+            };
+
+            return expectedEntryFieldsForTablColumns;
+        }
+
     }
 
     #endregion Implementation specific to SH249
@@ -448,6 +600,59 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForPageReady();
             NavigateToPage.RMCenter_Project_Transmittal_Log();
         }
+
+
+        public override IList<EntryField> GetRequiredFieldsList()
+        {
+            expectedRequiredFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentType,
+                EntryField.Attachments
+            };
+
+            return expectedRequiredFields;
+        }
+
+        public override IList<EntryField> GetAllEntryFields()
+        {
+            allEntryFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentType,
+                EntryField.MSLNumber,
+                EntryField.Via
+            };
+
+            return allEntryFields;
+        }
+
+        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        {
+            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentType,
+                EntryField.MSLNumber,
+                EntryField.Via
+            };
+
+            return expectedEntryFieldsForTablColumns;
+        }
+
+
+
     }
 
     #endregion Implementation specific to SGWay
@@ -459,6 +664,57 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public ProjectCorrespondenceLog_I15South(IWebDriver driver) : base(driver)
         {
         }
+
+
+        public override IList<EntryField> GetRequiredFieldsList()
+        {
+            expectedRequiredFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentCategory,
+                EntryField.DocumentType,
+                EntryField.Attachments
+            };
+
+            return expectedRequiredFields;
+        }
+
+        public override IList<EntryField> GetAllEntryFields()
+        {
+            allEntryFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentCategory,
+                EntryField.DocumentType
+            };
+
+            return allEntryFields;
+        }
+
+        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        {
+            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentType
+            };
+
+            return expectedEntryFieldsForTablColumns;
+        }
+
+
+
     }
 
     #endregion Implementation specific to I15South
@@ -470,6 +726,59 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public ProjectCorrespondenceLog_I15Tech(IWebDriver driver) : base(driver)
         {
         }
+
+
+        public override IList<EntryField> GetRequiredFieldsList()
+        {
+            expectedRequiredFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentCategory,
+                EntryField.DocumentType,
+                EntryField.Attachments,
+                EntryField.Transmitted
+            };
+
+            return expectedRequiredFields;
+        }
+
+        public override IList<EntryField> GetAllEntryFields()
+        {
+            allEntryFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentCategory,
+                EntryField.DocumentType,
+                EntryField.Transmitted
+            };
+
+            return allEntryFields;
+        }
+
+        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        {
+            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentType,
+                EntryField.Transmitted
+            };
+
+            return expectedEntryFieldsForTablColumns;
+        }
+
+
     }
 
     #endregion Implementation specific to I15Tech
@@ -481,6 +790,67 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public ProjectCorrespondenceLog_LAX(IWebDriver driver) : base(driver)
         {
         }
+
+
+        public override IList<EntryField> GetRequiredFieldsList()
+        {
+            expectedRequiredFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.SecurityClassification,
+                EntryField.Title,
+                EntryField.DocumentType,
+                EntryField.Transmitted,
+                EntryField.Attachments
+            };
+
+            return expectedRequiredFields;
+        }
+
+        public override IList<EntryField> GetAllEntryFields()
+        {
+            allEntryFields = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.SecurityClassification,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.AgencyFrom,
+                EntryField.Attention,
+                EntryField.AgencyAttention,
+                EntryField.DocumentCategory,
+                EntryField.DocumentType,
+                EntryField.OriginatorDocumentRef,
+                EntryField.Revision,
+                EntryField.Transmitted,
+                EntryField.Segment_Area,
+                EntryField.Access
+            };
+
+            return allEntryFields;
+        }
+
+        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        {
+            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            {
+                EntryField.Date,
+                EntryField.TransmittalNumber,
+                EntryField.Title,
+                EntryField.From,
+                EntryField.Attention,
+                EntryField.DocumentType,
+                EntryField.OriginatorDocumentRef,
+                EntryField.Revision,
+                EntryField.Transmitted,
+            };
+
+            return expectedEntryFieldsForTablColumns;
+        }
+
+
+
     }
 
     #endregion Implementation specific to LAX

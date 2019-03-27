@@ -273,7 +273,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         private void CreateCdrDescription(bool tempDescription = false)
         {
-            MiniGuid guid = MiniGuid.NewGuid();
+            MiniGuid guid = GenerateRandomGuid();
             string descKey = $"{tenantName}{GetTestName()}";
             string logMsg = string.Empty;
             string descValue = string.Empty;

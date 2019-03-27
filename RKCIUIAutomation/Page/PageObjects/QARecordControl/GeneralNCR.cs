@@ -159,8 +159,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         [ThreadStatic]
         internal static string ncrNewDescKey;
 
-        internal MiniGuid guid;
-
         internal static readonly By newBtn_ByLocator = By.XPath("//div[@id='NcrGrid_Revise']/div/a[contains(@class, 'k-button')]");
 
         internal static readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
@@ -207,7 +205,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         internal void CreateNcrDescription(bool tempDescription = false)
         {
-            guid = MiniGuid.NewGuid();
+            MiniGuid guid = GenerateRandomGuid();
             string descKey = $"{tenantName}{GetTestName()}";
             string logMsg = string.Empty;
             string descValue = string.Empty;
