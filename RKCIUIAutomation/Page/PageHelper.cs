@@ -24,6 +24,31 @@ namespace RKCIUIAutomation.Page
         public static string GetShortDate()
             => DateTime.Now.ToShortDateString();
 
+        public static string GetFutureShortDate()
+        {
+            string currentDate = GetShortDate();
+            string[] splitShortDate = Regex.Split(currentDate, "/");
+            int mm = int.Parse(splitShortDate[0]);
+            int dd = int.Parse(splitShortDate[1]);
+            int yyyy = int.Parse(splitShortDate[2]);
+
+            yyyy = dd > 27 && mm == 12
+                ? yyyy + 1
+                : yyyy;
+
+            mm = dd > 27
+                ? mm == 12
+                    ? 1
+                    : mm + 1
+                : mm;
+
+            dd = dd > 27
+                ? 1
+                : dd + 1;
+
+            return $"{mm}/{dd}/{yyyy}";
+        }
+
         public static string GetShortTime()
             => DateTime.Now.ToShortTimeString();
 
@@ -181,8 +206,8 @@ namespace RKCIUIAutomation.Page
 
         public By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
             => isMultiSelectDDList
-                ? By.XPath(SetDDListFieldExpandArrowXpath(ddListID))
-                : By.XPath("");
+                ? By.XPath($"//select[@id='{ConvertToType<Enum>(ddListID).GetString()}']/parent::div")
+                : By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
 
         /// <summary>
         /// [bool] useContains arg defaults to false and is ignored if arg [I]itemIndexOrName is int type

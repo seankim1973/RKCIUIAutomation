@@ -564,7 +564,7 @@ namespace RKCIUIAutomation.Base
             }
             catch (Exception e)
             {
-                log.Error($"Error occured in ConvertToType method:\n{e.Message}");
+                log.Error($"Error occurred in ConvertToType method:\n{e.Message}");
                 throw;
             }
         }

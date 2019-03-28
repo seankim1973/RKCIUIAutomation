@@ -46,7 +46,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("CdrlNumber", "TXT")] CDRL,
             [StringValue("ResponseRequiredRadioButton_True", "RDOBTN")] ResponseRequired_Yes,
             [StringValue("ResponseRequiredRadioButton_False", "RDOBTN")] ResponseRequired_No,
-            [StringValue("ResponseRequiredDate", "DATE")] ResponseRequiredBy_Date,
+            [StringValue("ResponseRequiredDate", "FUTUREDATE")] ResponseRequiredBy_Date,
             [StringValue("OwnerReponseId", "DDL")] OwnerResponse,
             [StringValue("OwnerResponseBy", "TXT")] OwnerResponseBy,
             [StringValue("OwnerResponseDate", "DATE")] OwnerResponseDate,
@@ -75,15 +75,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         [ThreadStatic]
-        internal static IList<EntryField> expectedRequiredFields;
+        internal static IList<EntryField> tenantExpectedRequiredFields;
 
         [ThreadStatic]
-        internal static IList<EntryField> allEntryFields;
+        internal static IList<EntryField> tenantAllEntryFields;
 
         [ThreadStatic]
         internal static IList<EntryField> expectedEntryFieldsForTablColumns;
 
-        internal void CreateAndStoreRandomValueForField(Enum fieldEnum)
+        private void CreateAndStoreRandomValueForField(Enum fieldEnum)
         {
             string fieldName = fieldEnum.GetString();
             MiniGuid guid = GenerateRandomGuid();
@@ -92,7 +92,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             log.Debug($"##### Created random variable for field {fieldName}\nKEY: {key} || VALUE: {GetVar(key)}");
         }
 
-        internal string GetVarForEntryField(Enum fieldEnum)
+        private string GetVarForEntryField(Enum fieldEnum)
             => GetVar($"{tenantName}{GetTestName()}_{fieldEnum.GetString()}");
 
         /// <summary>
@@ -104,17 +104,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// (bool)useContains arg defaults to false and is ignored if arg indexOrText is an Integer
         /// </para>
         /// <para>
-        /// When a field is a DATE field, the current short date will be entered by default.  Set futureDate boolean argument to true to set the Date field for the next day
+        /// When a field is a DATE or FUTUREDATE type, the current short date will be entered by default.  Set futureDate boolean argument to true to set the Date field for the next day
         /// </para>
         ///</summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="entryField"></param>
         /// <param name="indexOrText"></param>
-        internal void PopulateFieldValue<T>(EntryField entryField, T indexOrText = default(T), bool useContains = false, bool futureDate = false)
+        private void PopulateFieldValue<T>(EntryField entryField, T indexOrText, bool useContains = false)
         {
             const string TEXT = "TXT";
             const string DLL = "DDL";
             const string DATE = "DATE";
+            const string FUTUREDATE = "FUTUREDATE";
             const string MULTIDDL = "MULTIDDL";
             const string RDOBTN = "RDOBTN";
             const string CHKBOX = "CHKBOX";
@@ -129,48 +130,60 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             {
                 isValidArg = true;
                 argValue = ConvertToType<string>(indexOrText);
-                argValue = ((string)argValue).HasValue()
-                        ? argValue
-                        : fieldType.Equals(DATE)
-                            ? GetShortDate()
-                            : GetVarForEntryField(entryField);
             }
             else if (argType == typeof(int))
             {
                 isValidArg = true;
                 argValue = ConvertToType<int>(indexOrText);
-                argValue = argValue != null || ((int)argValue == 0)
-                    ? argValue
-                    : 1;
             }
-            else
-            {
-                LogError($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
-            }
-
 
             if (isValidArg)
             {
-                if (fieldType.Equals(TEXT) || fieldType.Equals(DATE))
+                if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
                 {
+                    if (!((string)argValue).HasValue())
+                    {
+                        if (fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+                        {
+                            argValue = fieldType.Equals(DATE)
+                                ? GetShortDate()
+                                : GetFutureShortDate();
+                        }
+                        else
+                        {
+                            argValue = GetVarForEntryField(entryField);
+                        }
+                    }
+
                     EnterText(By.Id(entryField.GetString()), (string)argValue);
                 }
                 else if (fieldType.Equals(DLL) || fieldType.Equals(MULTIDDL))
                 {
+                    if ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
+                    {
+                        argValue = 1;
+                    }
+
                     bool isMultiSelectDDL = fieldType.Equals(MULTIDDL)
                         ? true
                         : false;
 
                     ExpandAndSelectFromDDList(entryField, argValue, useContains, isMultiSelectDDL);
+
+                    if (fieldType.Equals(DLL) && entryField.Equals(EntryField.Access))
+                    {
+                        SelectRadioBtnOrChkbox(EntryField.AllowResharing);
+                        ClickBtn_AddAccessItem();
+                    }
                 }
                 else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
                 {
                     SelectRadioBtnOrChkbox(entryField);
                 }
-                else if (fieldType.Equals(UPLOAD))
-                {
-                    UploadFile();
-                }
+            }
+            else
+            {
+                LogError($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
             }
         }
 
@@ -180,9 +193,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             IList<string> actualReqFields = new List<string>();
             actualReqFields = GetAttributes(reqFieldLocator, "data-valmsg-for");
 
+            tenantExpectedRequiredFields = new List<EntryField>(){ };
+            SetTenantRequiredFields();
+
             IList<string> expectedReqFields = new List<string>();
 
-            foreach (EntryField field in GetRequiredFieldsList())
+            foreach (EntryField field in tenantExpectedRequiredFields)
             {
                 expectedReqFields.Add(field.GetString());
             }
@@ -190,73 +206,84 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return expectedReqFields.SequenceEqual(actualReqFields);
         }
 
-        public override void EnterDate(string shortDate = "")
+        public override void PopulateAllFields()
+        {
+            tenantAllEntryFields = new List<EntryField>() { };
+            SetTenantAllEntryFields();
+
+            foreach (EntryField field in tenantAllEntryFields)
+            {
+                PopulateFieldValue(field, "");
+            }
+        }
+
+        public override void EnterText_Date(string shortDate = "")
             => PopulateFieldValue(EntryField.Date, shortDate);
 
-        public override void EnterTransmittalNumber(string value = "")
+        public override void EnterText_TransmittalNumber(string value = "")
             => PopulateFieldValue(EntryField.TransmittalNumber, value);
 
-        public override void EnterTitle(string value = "")
+        public override void EnterText_Title(string value = "")
             => PopulateFieldValue(EntryField.Title, value);
 
-        public override void EnterFrom(string value = "")
+        public override void EnterText_From(string value = "")
             => PopulateFieldValue(EntryField.From, value);
 
-        public override void EnterAttention(string value = "")
+        public override void EnterText_Attention(string value = "")
             => PopulateFieldValue(EntryField.Attention, value);
 
-        public override void EnterOriginatorDocumentRef(string value = "")
+        public override void EnterText_OriginatorDocumentRef(string value = "")
             => PopulateFieldValue(EntryField.OriginatorDocumentRef, value);
 
-        public override void EnterRevision(string value = "")
+        public override void EnterText_Revision(string value = "")
             => PopulateFieldValue(EntryField.Revision, value);
 
-        public override void EnterCDRL(string value = "")
+        public override void EnterText_CDRL(string value = "")
             => PopulateFieldValue(EntryField.CDRL, value);
 
-        public override void EnterResponseRequiredByDate(string value = "")
+        public override void EnterText_ResponseRequiredByDate(string value = "")
             => PopulateFieldValue(EntryField.ResponseRequiredBy_Date, value);
 
-        public override void EnterOwnerResponseBy(string value = "")
+        public override void EnterText_OwnerResponseBy(string value = "")
             => PopulateFieldValue(EntryField.OwnerResponseBy, value);
 
-        public override void EnterOwnerResponseDate(string value = "")
+        public override void EnterText_OwnerResponseDate(string value = "")
             => PopulateFieldValue(EntryField.OwnerResponseDate, value);
 
-        public override void EnterMSLNumber(string value = "")
+        public override void EnterText_MSLNumber(string value = "")
             => PopulateFieldValue(EntryField.MSLNumber, value);
 
-        public override void SelectDDL_Access<T>(T indexOrName = default(T))
+        public override void SelectDDL_Access<T>(T indexOrName)
             => PopulateFieldValue(EntryField.Access, indexOrName);
 
-        public override void SelectDDL_SpecSection<T>(T indexOrName = default(T))
+        public override void SelectDDL_SpecSection<T>(T indexOrName)
             => PopulateFieldValue(EntryField.SpecSection, indexOrName);
 
-        public override void SelectDDL_OwnerResponse<T>(T indexOrName = default(T))
+        public override void SelectDDL_OwnerResponse<T>(T indexOrName)
             => PopulateFieldValue(EntryField.OwnerResponse, indexOrName);
 
-        public override void SelectDDL_DesignPackages<T>(T indexOrName = default(T))
+        public override void SelectDDL_DesignPackages<T>(T indexOrName)
             => PopulateFieldValue(EntryField.DesignPackages, indexOrName);
 
-        public override void SelectDDL_SegmentArea<T>(T indexOrName = default(T))
+        public override void SelectDDL_SegmentArea<T>(T indexOrName)
             => PopulateFieldValue(EntryField.Segment_Area, indexOrName);
 
-        public override void SelectDDL_Transmitted<T>(T indexOrName = default(T))
+        public override void SelectDDL_Transmitted<T>(T indexOrName)
             => PopulateFieldValue(EntryField.Transmitted, indexOrName);
 
-        public override void SelectDDL_DocumentCategory<T>(T indexOrName = default(T))
+        public override void SelectDDL_DocumentCategory<T>(T indexOrName)
             => PopulateFieldValue(EntryField.DocumentCategory, indexOrName);
 
-        public override void SelectDDL_DocumentType<T>(T indexOrName = default(T))
+        public override void SelectDDL_DocumentType<T>(T indexOrName)
             => PopulateFieldValue(EntryField.DocumentType, indexOrName);
 
-        public override void SelectDDL_AgencyAttention<T>(T indexOrName = default(T))
+        public override void SelectDDL_AgencyAttention<T>(T indexOrName)
             => PopulateFieldValue(EntryField.AgencyAttention, indexOrName);
 
-        public override void SelectDDL_AgencyFrom<T>(T indexOrName = default(T))
+        public override void SelectDDL_AgencyFrom<T>(T indexOrName)
             => PopulateFieldValue(EntryField.AgencyFrom, indexOrName);
 
-        public override void SelectDDL_SecurityClassification<T>(T indexOrName = default(T))
+        public override void SelectDDL_SecurityClassification<T>(T indexOrName)
             => PopulateFieldValue(EntryField.SecurityClassification, indexOrName);
 
         public override void SelectRdoBtn_ResponseRequired_Yes()
@@ -267,34 +294,39 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void SelectChkbox_AllowResharing()
             => PopulateFieldValue(EntryField.AllowResharing, "");
+
+        public override void ClickBtn_AddAccessItem()
+            => ClickElement(By.Id("AddAccessItem"));
     }
 
     public interface IProjectCorrespondenceLog
     {
         void CreateNewAndPopulateFields();
 
-        IList<EntryField> GetRequiredFieldsList();
+        IList<EntryField> SetTenantRequiredFields();
 
-        IList<EntryField> GetAllEntryFields();
+        IList<EntryField> SetTenantAllEntryFields();
 
-        IList<EntryField> GetExpectedEntryFieldsForTableColumns();
+        IList<EntryField> SetExpectedEntryFieldsForTableColumns();
 
         void LogintoCorrespondenceLogPage(UserType userType);
 
         bool VerifyTransmittalLogIsDisplayed();
 
-        void EnterDate(string shortDate = "");
-        void EnterTransmittalNumber(string value = "");
-        void EnterTitle(string value = "");
-        void EnterFrom(string value = "");
-        void EnterAttention(string value = "");
-        void EnterOriginatorDocumentRef(string value = "");
-        void EnterRevision(string value = "");
-        void EnterCDRL(string value = "");
-        void EnterResponseRequiredByDate(string value = "");
-        void EnterOwnerResponseBy(string value = "");
-        void EnterOwnerResponseDate(string value = "");
-        void EnterMSLNumber(string value = "");
+        void PopulateAllFields();
+
+        void EnterText_Date(string shortDate = "");
+        void EnterText_TransmittalNumber(string value = "");
+        void EnterText_Title(string value = "");
+        void EnterText_From(string value = "");
+        void EnterText_Attention(string value = "");
+        void EnterText_OriginatorDocumentRef(string value = "");
+        void EnterText_Revision(string value = "");
+        void EnterText_CDRL(string value = "");
+        void EnterText_ResponseRequiredByDate(string value = "");
+        void EnterText_OwnerResponseBy(string value = "");
+        void EnterText_OwnerResponseDate(string value = "");
+        void EnterText_MSLNumber(string value = "");
 
         void SelectDDL_Access<T>(T indexOrName = default(T));
         void SelectDDL_SpecSection<T>(T indexOrName = default(T));
@@ -311,6 +343,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void SelectRdoBtn_ResponseRequired_Yes();
         void SelectRdoBtn_ResponseRequired_No();
         void SelectChkbox_AllowResharing();
+
+        void ClickBtn_AddAccessItem();
     }
 
     #region Common Workflow Implementation class
@@ -378,14 +412,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             NavigateToPage.RMCenter_Project_Correspondence_Log();
         }
 
+        public virtual IList<EntryField> SetTenantRequiredFields()
+            => tenantExpectedRequiredFields;
 
-        public virtual IList<EntryField> GetRequiredFieldsList()
-            => expectedRequiredFields;
+        public virtual IList<EntryField> SetTenantAllEntryFields()
+            => tenantAllEntryFields;
 
-        public virtual IList<EntryField> GetAllEntryFields()
-            => allEntryFields;
-
-        public virtual IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        public virtual IList<EntryField> SetExpectedEntryFieldsForTableColumns()
             => expectedEntryFieldsForTablColumns;
 
         public virtual void CreateNewAndPopulateFields()
@@ -394,22 +427,25 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForPageReady();
             ClickSaveForward();
             AddAssertionToList(PCLogBase.VerifyRequiredFields());
-            //requiredFields = new List<string>();
-
+            PopulateAllFields();
+            UploadFile();
+            ClickSave();
         }
 
-        public abstract void EnterDate(string shortDate = "");
-        public abstract void EnterTransmittalNumber(string value = "");
-        public abstract void EnterTitle(string value = "");
-        public abstract void EnterFrom(string value = "");
-        public abstract void EnterAttention(string value = "");
-        public abstract void EnterOriginatorDocumentRef(string value = "");
-        public abstract void EnterRevision(string value = "");
-        public abstract void EnterCDRL(string value = "");
-        public abstract void EnterResponseRequiredByDate(string value = "");
-        public abstract void EnterOwnerResponseBy(string value = "");
-        public abstract void EnterOwnerResponseDate(string value = "");
-        public abstract void EnterMSLNumber(string value = "");
+        public abstract void PopulateAllFields();
+
+        public abstract void EnterText_Date(string shortDate = "");
+        public abstract void EnterText_TransmittalNumber(string value = "");
+        public abstract void EnterText_Title(string value = "");
+        public abstract void EnterText_From(string value = "");
+        public abstract void EnterText_Attention(string value = "");
+        public abstract void EnterText_OriginatorDocumentRef(string value = "");
+        public abstract void EnterText_Revision(string value = "");
+        public abstract void EnterText_CDRL(string value = "");
+        public abstract void EnterText_ResponseRequiredByDate(string value = "");
+        public abstract void EnterText_OwnerResponseBy(string value = "");
+        public abstract void EnterText_OwnerResponseDate(string value = "");
+        public abstract void EnterText_MSLNumber(string value = "");
         public abstract void SelectDDL_Access<T>(T indexOrName = default(T));
         public abstract void SelectDDL_SpecSection<T>(T indexOrName = default(T));
         public abstract void SelectDDL_OwnerResponse<T>(T indexOrName = default(T));
@@ -424,6 +460,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void SelectRdoBtn_ResponseRequired_Yes();
         public abstract void SelectRdoBtn_ResponseRequired_No();
         public abstract void SelectChkbox_AllowResharing();
+        public abstract void ClickBtn_AddAccessItem();
     }
 
     #endregion Common Workflow Implementation class
@@ -451,9 +488,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override IList<EntryField> GetRequiredFieldsList()
+        public override IList<EntryField> SetTenantRequiredFields()
         {
-            expectedRequiredFields = new List<EntryField>()
+            tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.SecurityClassification,
@@ -463,12 +500,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Attachments
             };
 
-            return expectedRequiredFields;
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> GetAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFields()
         {
-            allEntryFields = new List<EntryField>()
+            tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -481,7 +518,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.DocumentCategory,
                 EntryField.DocumentType,
                 EntryField.OriginatorDocumentRef,
-                EntryField.Revision,
+                //EntryField.Revision,
                 EntryField.Transmitted,
                 EntryField.Segment_Area,
                 EntryField.DesignPackages,
@@ -493,10 +530,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Access
             };
 
-            return allEntryFields;
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
@@ -535,9 +572,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> GetRequiredFieldsList()
+        public override IList<EntryField> SetTenantRequiredFields()
         {
-            expectedRequiredFields = new List<EntryField>()
+            tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.Title,
@@ -547,12 +584,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Attachments
             };
 
-            return expectedRequiredFields;
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> GetAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFields()
         {
-            allEntryFields = new List<EntryField>()
+            tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -563,10 +600,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Via
             };
 
-            return allEntryFields;
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
@@ -602,9 +639,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> GetRequiredFieldsList()
+        public override IList<EntryField> SetTenantRequiredFields()
         {
-            expectedRequiredFields = new List<EntryField>()
+            tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.Title,
@@ -614,12 +651,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Attachments
             };
 
-            return expectedRequiredFields;
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> GetAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFields()
         {
-            allEntryFields = new List<EntryField>()
+            tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -631,10 +668,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Via
             };
 
-            return allEntryFields;
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
@@ -666,9 +703,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> GetRequiredFieldsList()
+        public override IList<EntryField> SetTenantRequiredFields()
         {
-            expectedRequiredFields = new List<EntryField>()
+            tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.Title,
@@ -679,12 +716,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Attachments
             };
 
-            return expectedRequiredFields;
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> GetAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFields()
         {
-            allEntryFields = new List<EntryField>()
+            tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -695,10 +732,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.DocumentType
             };
 
-            return allEntryFields;
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
@@ -728,9 +765,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> GetRequiredFieldsList()
+        public override IList<EntryField> SetTenantRequiredFields()
         {
-            expectedRequiredFields = new List<EntryField>()
+            tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.Title,
@@ -742,12 +779,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Transmitted
             };
 
-            return expectedRequiredFields;
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> GetAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFields()
         {
-            allEntryFields = new List<EntryField>()
+            tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -759,10 +796,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Transmitted
             };
 
-            return allEntryFields;
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
@@ -792,9 +829,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> GetRequiredFieldsList()
+        public override IList<EntryField> SetTenantRequiredFields()
         {
-            expectedRequiredFields = new List<EntryField>()
+            tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.SecurityClassification,
@@ -804,12 +841,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Attachments
             };
 
-            return expectedRequiredFields;
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> GetAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFields()
         {
-            allEntryFields = new List<EntryField>()
+            tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -822,16 +859,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.DocumentCategory,
                 EntryField.DocumentType,
                 EntryField.OriginatorDocumentRef,
-                EntryField.Revision,
+                //EntryField.Revision,
                 EntryField.Transmitted,
                 EntryField.Segment_Area,
                 EntryField.Access
             };
 
-            return allEntryFields;
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> GetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {

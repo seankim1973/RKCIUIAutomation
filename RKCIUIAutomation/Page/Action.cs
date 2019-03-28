@@ -507,13 +507,22 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                JsClickElement(locator);
+                if (isMultiSelectDDList)
+                {
+                    ClickElement(locator);
+                }
+                else
+                {
+                    JsClickElement(locator);
+                }
+
                 Thread.Sleep(1000);
                 log.Info($"Expanded DDList - {ddListID.ToString()}");
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw e;
             }
         }
 
@@ -531,23 +540,6 @@ namespace RKCIUIAutomation.Page
         public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false, bool isMultiSelectDDList = false)
         {
             ExpandDDL(ddListID, isMultiSelectDDList);
-            ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName, useContains));
-        }
-
-        /// <summary>
-        /// Use (bool)useContains arg when selecting a DDList item with partial value for [T](string)itemIndexOrName
-        /// <para>
-        /// (bool)useContains arg defaults to false and is ignored if arg [T]itemIndexOrName is an Integer
-        /// </para>
-        /// </summary>
-        /// <typeparam name="E"></typeparam>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="ddListID"></param>
-        /// <param name="itemIndexOrName"></param>
-        /// <param name="useContains"></param>
-        public void ExpandAndSelectFromMultiSelectDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false)
-        {
-            ExpandDDL(ddListID, true);
             ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName, useContains));
         }
 
@@ -606,9 +598,8 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 By uploadInput_ByLocator = By.XPath("//input[@id='UploadFiles_0_']");
-                driver.FindElement(uploadInput_ByLocator).SendKeys(filePath);
+                GetElement(uploadInput_ByLocator).SendKeys(filePath);
                 log.Info($"Entered {filePath}' for file upload");
 
                 By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
@@ -1262,10 +1253,36 @@ namespace RKCIUIAutomation.Page
         }
 
         public void ClickSave()
-            => ClickElement(By.Id("SaveSubmittal"));
+        {
+            try
+            {
+                (GetElement(By.XPath("//button[text()='Save']"))
+                    ?? GetElement(By.Id("SaveSubmittal"))
+                    ?? GetElement(By.Id("SaveItem"))
+                    ).Click();
+
+                LogStep("Clicked Save");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            } 
+        }
 
         public void ClickSubmitForward()
-            => ClickElement(By.Id("SaveForwardSubmittal"));
+        {
+            try
+            {
+                (GetElement(By.XPath("//button[text()='Save & Forward']"))
+                    ?? GetElement(By.Id("SaveForwardSubmittal"))
+                    ?? GetElement(By.Id("SaveForwardItem"))
+                    ).Click();
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+            }
+        }
 
         public void ClickCreate()
             => ClickElement(By.Id("btnCreate"));

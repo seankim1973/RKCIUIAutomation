@@ -772,11 +772,35 @@ namespace RKCIUIAutomation.Sandbox
         [TestMethod]
         public void DateTimeParse()
         {
-            string filterValue = "04/22/2018";
-            DateTime.TryParse(filterValue, out DateTime filterDateTime);
-            Console.WriteLine($"MM: {filterDateTime.Month}");
-            Console.WriteLine($"DD: {filterDateTime.Day}");
-            Console.WriteLine($"YYYY: {filterDateTime.Year}");
+            //string filterValue = "04/22/2018";
+            //DateTime.TryParse(filterValue, out DateTime filterDateTime);
+            //Console.WriteLine($"MM: {filterDateTime.Month}");
+            //Console.WriteLine($"DD: {filterDateTime.Day}");
+            //Console.WriteLine($"YYYY: {filterDateTime.Year}");
+
+            string currentDate = "12/28/2019"; //DateTime.Now.ToShortDateString();
+            string[] splitShortDate = Regex.Split(currentDate, "/");
+            int mm = int.Parse(splitShortDate[0]);
+            int dd = int.Parse(splitShortDate[1]);
+            int yyyy = int.Parse(splitShortDate[2]);
+
+            yyyy = dd > 27 && mm == 12
+                ? yyyy + 1
+                :yyyy;
+
+            mm = dd > 27
+                ? mm == 12
+                    ? 1
+                    : mm + 1
+                : mm;
+
+            dd = dd > 27
+                ? 1
+                : dd + 1;
+
+            string futureDate = $"{mm}/{dd}/{yyyy}";
+            Console.WriteLine("CURRENT DATE: " + currentDate);
+            Console.WriteLine("FUTURE DATE: " + futureDate);
         }
 
         [TestMethod]
