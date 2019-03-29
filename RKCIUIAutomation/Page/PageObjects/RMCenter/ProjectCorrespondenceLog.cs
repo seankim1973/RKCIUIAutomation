@@ -6,6 +6,7 @@ using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.ProjectCorrespondenceLog;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
@@ -119,7 +120,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             const string MULTIDDL = "MULTIDDL";
             const string RDOBTN = "RDOBTN";
             const string CHKBOX = "CHKBOX";
-            const string UPLOAD = "UPLOAD";
 
             string fieldType = entryField.GetString(true);
             Type argType = indexOrText.GetType();
@@ -152,6 +152,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         else
                         {
                             argValue = GetVarForEntryField(entryField);
+                            argValue = entryField.Equals(EntryField.MSLNumber)
+                                ? $"{((string)argValue).Substring(0, 7)}" //workaround for EPA-3001
+                                : argValue;
                         }
                     }
 
@@ -194,7 +197,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             actualReqFields = GetAttributes(reqFieldLocator, "data-valmsg-for");
 
             tenantExpectedRequiredFields = new List<EntryField>(){ };
-            SetTenantRequiredFields();
+            SetTenantRequiredFieldsList();
 
             IList<string> expectedReqFields = new List<string>();
 
@@ -209,7 +212,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void PopulateAllFields()
         {
             tenantAllEntryFields = new List<EntryField>() { };
-            SetTenantAllEntryFields();
+            SetTenantAllEntryFieldsList();
 
             foreach (EntryField field in tenantAllEntryFields)
             {
@@ -303,9 +306,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         void CreateNewAndPopulateFields();
 
-        IList<EntryField> SetTenantRequiredFields();
+        IList<EntryField> SetTenantRequiredFieldsList();
 
-        IList<EntryField> SetTenantAllEntryFields();
+        IList<EntryField> SetTenantAllEntryFieldsList();
 
         IList<EntryField> SetExpectedEntryFieldsForTableColumns();
 
@@ -412,10 +415,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             NavigateToPage.RMCenter_Project_Correspondence_Log();
         }
 
-        public virtual IList<EntryField> SetTenantRequiredFields()
+        public virtual IList<EntryField> SetTenantRequiredFieldsList()
             => tenantExpectedRequiredFields;
 
-        public virtual IList<EntryField> SetTenantAllEntryFields()
+        public virtual IList<EntryField> SetTenantAllEntryFieldsList()
             => tenantAllEntryFields;
 
         public virtual IList<EntryField> SetExpectedEntryFieldsForTableColumns()
@@ -430,6 +433,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             PopulateAllFields();
             UploadFile();
             ClickSave();
+            AddAssertionToList(VerifyPageTitle("Transmission Details"), "VerifyPageTitle('Transmission Details')");
+            VerifyPageIsLoaded(false, false);
         }
 
         public abstract void PopulateAllFields();
@@ -488,7 +493,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override IList<EntryField> SetTenantRequiredFields()
+        public override IList<EntryField> SetTenantRequiredFieldsList()
         {
             tenantExpectedRequiredFields = new List<EntryField>()
             {
@@ -503,7 +508,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
             tenantAllEntryFields = new List<EntryField>()
             {
@@ -572,7 +577,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> SetTenantRequiredFields()
+        public override IList<EntryField> SetTenantRequiredFieldsList()
         {
             tenantExpectedRequiredFields = new List<EntryField>()
             {
@@ -587,7 +592,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
             tenantAllEntryFields = new List<EntryField>()
             {
@@ -639,7 +644,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> SetTenantRequiredFields()
+        public override IList<EntryField> SetTenantRequiredFieldsList()
         {
             tenantExpectedRequiredFields = new List<EntryField>()
             {
@@ -654,7 +659,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
             tenantAllEntryFields = new List<EntryField>()
             {
@@ -703,7 +708,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> SetTenantRequiredFields()
+        public override IList<EntryField> SetTenantRequiredFieldsList()
         {
             tenantExpectedRequiredFields = new List<EntryField>()
             {
@@ -719,7 +724,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
             tenantAllEntryFields = new List<EntryField>()
             {
@@ -765,7 +770,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> SetTenantRequiredFields()
+        public override IList<EntryField> SetTenantRequiredFieldsList()
         {
             tenantExpectedRequiredFields = new List<EntryField>()
             {
@@ -782,7 +787,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
             tenantAllEntryFields = new List<EntryField>()
             {
@@ -829,7 +834,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> SetTenantRequiredFields()
+        public override IList<EntryField> SetTenantRequiredFieldsList()
         {
             tenantExpectedRequiredFields = new List<EntryField>()
             {
@@ -844,7 +849,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFields()
+        public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
             tenantAllEntryFields = new List<EntryField>()
             {

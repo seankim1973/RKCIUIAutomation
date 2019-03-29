@@ -778,6 +778,9 @@ namespace RKCIUIAutomation.Sandbox
             //Console.WriteLine($"DD: {filterDateTime.Day}");
             //Console.WriteLine($"YYYY: {filterDateTime.Year}");
 
+            #region
+            /*
+            // Test to return future short date
             string currentDate = "12/28/2019"; //DateTime.Now.ToShortDateString();
             string[] splitShortDate = Regex.Split(currentDate, "/");
             int mm = int.Parse(splitShortDate[0]);
@@ -801,6 +804,9 @@ namespace RKCIUIAutomation.Sandbox
             string futureDate = $"{mm}/{dd}/{yyyy}";
             Console.WriteLine("CURRENT DATE: " + currentDate);
             Console.WriteLine("FUTURE DATE: " + futureDate);
+            */
+            #endregion
+
         }
 
         [TestMethod]
@@ -815,6 +821,8 @@ namespace RKCIUIAutomation.Sandbox
             //Console.WriteLine($"HAS VALUE: {hasValue}");
             //Console.WriteLine($"ISNULLOREMPTY: {isNullOrEmpty}");
 
+            /*
+            //test for comparisons of List Array
             IList<string> stringList = new List<string>
             {
                 "test1",
@@ -826,10 +834,19 @@ namespace RKCIUIAutomation.Sandbox
                 "test1",
                 "test2"
             };
-
+            
             Console.WriteLine($"== eval : {stringList == stringList2}");
             Console.WriteLine($".equal eval : {stringList.Equals(stringList2)}");
             Console.WriteLine($".SequenceEqual eval : {stringList.SequenceEqual(stringList2)}");
+            */
+
+            //test for limiting length of string
+            string testString = "abcdefghijklmnopqrstuvwxyz";
+            testString = testString.Substring(0, 20);
+            Console.WriteLine(testString);
+            Console.WriteLine(testString.Length);
+            testString = "abcdefghijklmnop";
+            Console.WriteLine(testString + " length : " + testString.Length);
         }
     }
 }

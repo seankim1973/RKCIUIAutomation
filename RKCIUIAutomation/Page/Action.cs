@@ -179,7 +179,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 500)
+        internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 1000)
         {
             IJavaScriptExecutor javaScriptExecutor = null;
                         
@@ -195,11 +195,11 @@ namespace RKCIUIAutomation.Page
 
                 try
                 {
-                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0");
+                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'");
                 }
                 catch (InvalidOperationException)
                 {
-                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'");
+                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0");
                 }
                 finally
                 {
@@ -209,13 +209,13 @@ namespace RKCIUIAutomation.Page
 
                         try
                         {
-                            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
+                            WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                             wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
                         }
                         catch (InvalidOperationException e)
                         {
                             log.Debug(e.Message);
-                            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds)) { };
+                            WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                             wait?.Until(wd => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
                         }
                         catch (UnhandledAlertException)
@@ -517,7 +517,7 @@ namespace RKCIUIAutomation.Page
                 }
 
                 Thread.Sleep(1000);
-                log.Info($"Expanded DDList - {ddListID.ToString()}");
+                LogStep($"Expanded DDList - {ddListID.ToString()}");
             }
             catch (Exception e)
             {
@@ -909,16 +909,23 @@ namespace RKCIUIAutomation.Page
 
         public bool ElementIsDisplayed(By elementByLocator)
         {
+            bool isDisplayed = false;
+
             try
             {
                 driver = Driver;
                 driver.FindElement(elementByLocator);
-                return true;
+                isDisplayed = true;
             }
             catch (NoSuchElementException)
             {
-                return false;
             }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return isDisplayed;
         }
 
         public bool VerifyPageTitle(string expectedPageTitle)
@@ -989,12 +996,17 @@ namespace RKCIUIAutomation.Page
 
                 IWebElement pageErrElement = null;
                 pageErrElement = GetElement(serverErrorH1Tag)
-                    ?? GetElement(stackTraceTagByLocator)
                     ?? GetElement(resourceNotFoundH2Tag);
 
                 isPageLoaded = pageErrElement.Displayed
                     ? false
                     : true;
+
+                if (!isPageLoaded)
+                {
+                    LogError(GetText(stackTraceTagByLocator));
+                }
+
                 //Console.WriteLine($"##### IsPageLoadedSuccessfully - IsPageLoaded: {isPageLoaded}");
 
                 string logMsg = isPageLoaded 
@@ -1103,7 +1115,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error(e.StackTrace);
                 throw e;
             }
         }
@@ -1244,6 +1256,7 @@ namespace RKCIUIAutomation.Page
                     ).Click();
 
                 LogStep("Clicked Cancel");
+                WaitForPageReady();
             }
             catch (Exception e)
             {
@@ -1262,11 +1275,12 @@ namespace RKCIUIAutomation.Page
                     ).Click();
 
                 LogStep("Clicked Save");
+                WaitForPageReady();
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
-            } 
+            }
         }
 
         public void ClickSubmitForward()
@@ -1277,6 +1291,8 @@ namespace RKCIUIAutomation.Page
                     ?? GetElement(By.Id("SaveForwardSubmittal"))
                     ?? GetElement(By.Id("SaveForwardItem"))
                     ).Click();
+
+                WaitForPageReady();
             }
             catch (Exception e)
             {
@@ -1303,6 +1319,7 @@ namespace RKCIUIAutomation.Page
                         ).Click();
                 }
                 LogStep("Clicked New");
+                WaitForPageReady();
             }
             catch (Exception e)
             {
