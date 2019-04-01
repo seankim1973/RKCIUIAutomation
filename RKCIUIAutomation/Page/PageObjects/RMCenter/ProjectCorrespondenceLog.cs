@@ -190,7 +190,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
         }
 
-        internal bool VerifyRequiredFields()
+        internal bool VerifyTransmissionDetailsRequiredFields()
         {
             By reqFieldLocator = By.XPath("//span[contains(text(),'Required')]");
             IList<string> actualReqFields = new List<string>();
@@ -207,6 +207,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
 
             return expectedReqFields.SequenceEqual(actualReqFields);
+            //return VerifyRequiredFields(actualReqFields, expectedReqFields);
         }
 
         public override void PopulateAllFields()
@@ -429,12 +430,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickNew();
             WaitForPageReady();
             ClickSaveForward();
-            AddAssertionToList(PCLogBase.VerifyRequiredFields());
+            AddAssertionToList(PCLogBase.VerifyTransmissionDetailsRequiredFields(), "VerifyTransmissionDetailsRequiredFields");
             PopulateAllFields();
             UploadFile();
             ClickSave();
-            AddAssertionToList(VerifyPageTitle("Transmission Details"), "VerifyPageTitle('Transmission Details')");
-            VerifyPageIsLoaded(false, false);
+            AddAssertionToList(VerifyPageHeader("Transmissions"), "VerifyPageTitle('Transmissions')");
         }
 
         public abstract void PopulateAllFields();

@@ -597,7 +597,7 @@ namespace RKCIUIAutomation.Page.Workflows
                     NavigateToPage.QCRecordControl_QC_DIRs();
                 }
 
-                AddAssertionToList(VerifyPageTitle(expectedPageTitle), $"VerifyPageTitle - Expected Page Title: {expectedPageTitle}");
+                AddAssertionToList(VerifyPageHeader(expectedPageTitle), $"VerifyPageTitle - Expected Page Title: {expectedPageTitle}");
             }
         }
 

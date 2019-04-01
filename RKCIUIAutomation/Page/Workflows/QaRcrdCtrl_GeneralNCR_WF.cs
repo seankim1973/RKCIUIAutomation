@@ -115,7 +115,7 @@ namespace RKCIUIAutomation.Page.Workflows
             {
                 NavigateToPage.QARecordControl_General_NCR();
                 QaRcrdCtrl_GeneralNCR.ClickTab_Creating_Revise();
-                Assert.True(VerifyPageTitle("List of NCR Reports"));
+                Assert.True(VerifyPageHeader("List of NCR Reports"));
             }
         }
 

@@ -21,6 +21,7 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
         {
             ProjCorrespondenceLog.LogintoCorrespondenceLogPage(UserType.TransmissionsGeneral);
             ProjCorrespondenceLog.CreateNewAndPopulateFields();
+            
 
             AssertAll();
         }

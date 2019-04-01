@@ -840,6 +840,7 @@ namespace RKCIUIAutomation.Sandbox
             Console.WriteLine($".SequenceEqual eval : {stringList.SequenceEqual(stringList2)}");
             */
 
+            /*
             //test for limiting length of string
             string testString = "abcdefghijklmnopqrstuvwxyz";
             testString = testString.Substring(0, 20);
@@ -847,6 +848,42 @@ namespace RKCIUIAutomation.Sandbox
             Console.WriteLine(testString.Length);
             testString = "abcdefghijklmnop";
             Console.WriteLine(testString + " length : " + testString.Length);
+            */
+
+            IList<string> actual = new List<string>()
+            {
+                "123ABC456",
+                "78910"
+            };
+
+            IList<string> expected = new List<string>()
+            {
+                "123",
+                "ABC",
+                "456",
+                "789",
+                "11"
+            };
+
+            for (int i = 0; i < expected.Count; i++)
+            {
+                string e = expected[i];
+
+                IList<bool> compareList = new List<bool>();
+
+                foreach (string a in actual)
+                {
+                    bool aContainsE = a.Contains(e);
+                    Console.WriteLine($"Actual {a} contains Expected {e} : {aContainsE}");
+                    compareList.Add(aContainsE);
+                }
+
+                bool result = compareList.Contains(true)
+                    ? true
+                    : false;
+
+                Console.WriteLine($"RESULT : {result}");
+            }
         }
     }
 }

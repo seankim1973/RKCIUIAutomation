@@ -386,42 +386,21 @@ namespace RKCIUIAutomation.Page
         public string GetPageTitle(int timeOutInSeconds = 10, int pollingInterval = 500)
         {
             string pageTitle = string.Empty;
-            bool pageTitleHasValue = false;
 
             try
             {
                 driver = Driver;
-                pageTitle = driver.Title;
-                pageTitleHasValue = pageTitle.HasValue();
+                log.Debug($"...waiting for page title");
+                WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+                wait.Until(x => driver.Title.HasValue());
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error($"timed out while waiting for page title\n{e.Message}");
             }
             finally
             {
-                if (!pageTitleHasValue)
-                {
-                    try
-                    {
-                        log.Debug($"...waiting for page title");
-                        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
-                        {
-                            PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-                        };
-                        wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                        wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                        wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
-                        wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                        wait.Until(x => driver.Title.HasValue());
-                    }
-                    catch (Exception toE)
-                    {
-                        log.Error($"timed out while waiting for page title\n{toE.Message}");
-                    }
-
-                    pageTitle = driver.Title;
-                }
+                pageTitle = driver.Title;
             }
 
             return pageTitle;
@@ -435,14 +414,7 @@ namespace RKCIUIAutomation.Page
             {
                 driver = Driver;
                 log.Debug($"...waiting for page title");
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeOutInSeconds))
-                {
-                    PollingInterval = TimeSpan.FromMilliseconds(pollingInterval)
-                };
-                wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                wait.IgnoreExceptionTypes(typeof(ElementClickInterceptedException));
-                wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
+                WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                 wait.Until(x => driver.Url.HasValue());
             }
             catch (Exception e)
@@ -928,9 +900,9 @@ namespace RKCIUIAutomation.Page
             return isDisplayed;
         }
 
-        public bool VerifyPageTitle(string expectedPageTitle)
+        public bool VerifyPageHeader(string expectedPageHeading)
         {
-            bool isMatchingTitle = false;
+            bool pageHeadingsMatch = false;
             bool isDisplayed = false;
             string actualHeading = string.Empty;
             string logMsg = string.Empty;
@@ -940,44 +912,51 @@ namespace RKCIUIAutomation.Page
             {
                 driver = Driver;
 
-                if (!GetPageTitle().Contains("Home Page"))
+                if (GetPageTitle().Contains("ELVIS PMC"))
                 {
-                    headingElem = driver.FindElement(By.XPath("//h3"))
-                        ?? driver.FindElement(By.XPath("//h2"))
-                        ?? driver.FindElement(By.XPath("//h4"));
-
-                    isDisplayed = headingElem?.Displayed == true
-                        ? true
-                        : false;
-
-                    if (isDisplayed)
+                    if (!GetPageTitle().Contains("Home Page"))
                     {
-                        actualHeading = headingElem.Text;
-                        isMatchingTitle = actualHeading.Equals(expectedPageTitle);
+                        headingElem = driver.FindElement(By.XPath("//h3"))
+                            ?? driver.FindElement(By.XPath("//h2"))
+                            ?? driver.FindElement(By.XPath("//h4"));
 
-                        logMsg = isMatchingTitle
-                            ? $"## Page Title is as expected: {actualHeading}"
-                            : $"Page titles did not match: Expected: {expectedPageTitle}, Actual: {actualHeading}";
+                        isDisplayed = headingElem?.Displayed == true
+                            ? true
+                            : false;
 
-                        if (!isMatchingTitle)
+                        if (isDisplayed)
                         {
+                            actualHeading = headingElem.Text;
+                            pageHeadingsMatch = actualHeading.Equals(expectedPageHeading);
+
+                            logMsg = pageHeadingsMatch
+                                ? $"## Page Heading is as expected: {actualHeading}"
+                                : $"Page Headings did not match: Expected: {expectedPageHeading}, Actual: {actualHeading}";
+
+                            if (!pageHeadingsMatch)
+                            {
+                                BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
+                            }
+                        }
+                        else
+                        {
+                            logMsg = $"Could not find page heading with h2, h3 or h4 tag";
                             BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                         }
                     }
-                    else
-                    {
-                        logMsg = $"Could not find page title with h2, h3 or h4 tag";
-                        BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
-                    }
+                }
+                else
+                {
+                    VerifyPageIsLoaded(false, false);
                 }
             }
             catch (Exception)
             {
             }
 
-            LogInfo(logMsg, isMatchingTitle);
+            LogInfo(logMsg, pageHeadingsMatch);
 
-            return isMatchingTitle;
+            return pageHeadingsMatch;
         }
 
         [ThreadStatic]
@@ -1226,6 +1205,76 @@ namespace RKCIUIAutomation.Page
             }
 
             return result;
+        }
+
+        public bool VerifyRequiredFields(IList<string> actualReqFieldNames, IList<string> expectedReqFieldNames)
+        {
+            int expectedCount = 0;
+            int actualCount = 0;
+            bool countsMatch = false;
+            bool reqFieldsMatch = false;
+
+            try
+            {
+                IList<bool> results = new List<bool>();
+                expectedCount = expectedReqFieldNames.Count;
+                actualCount = actualReqFieldNames.Count;
+                countsMatch = expectedCount.Equals(actualCount);
+
+                int logTblRowIndex = 0;
+                string[][] logTable = new string[expectedCount + 2][];
+                logTable[logTblRowIndex] = new string[2] { $"|  Expected ID  | ", $" |  Found Matching Actual ID  | " };
+
+                if (countsMatch)
+                {
+                    for (int i = 0; i < expectedCount; i++)
+                    {
+                        logTblRowIndex++;
+                        string expected = expectedReqFieldNames[i];
+
+                        IList<bool> compareResults = new List<bool>();
+
+                        foreach (string actual in actualReqFieldNames)
+                        {
+                            bool actContainsExp = actual.Contains(expected);
+                            compareResults.Add(actContainsExp);
+                        }
+
+                        reqFieldsMatch = compareResults.Contains(true)
+                            ? true
+                            : false;
+
+                        results.Add(reqFieldsMatch);
+
+                        string logTblRowNumber = logTblRowIndex.ToString();
+                        logTblRowNumber = logTblRowNumber.Length == 1
+                            ? $"0{logTblRowNumber}"
+                            : logTblRowNumber;
+
+                        logTable[logTblRowIndex] = new string[2] { $"{logTblRowNumber}: {expected} : ", $"{reqFieldsMatch.ToString()}" };
+                    }
+                }
+                else
+                {
+                    LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
+                        $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
+                }
+
+                reqFieldsMatch = results.Contains(false)
+                    ? false
+                    : true;
+
+                logTable[logTblRowIndex + 1] = new string[2] { "Total Required Fields:", (results.Count).ToString() };
+                LogInfo(logTable, reqFieldsMatch);
+
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw e;
+            }
+
+            return reqFieldsMatch;
         }
 
         private static string ActiveModalXpath => "//div[contains(@style,'opacity: 1')]";
