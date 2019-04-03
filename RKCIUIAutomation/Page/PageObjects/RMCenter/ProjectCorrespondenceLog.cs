@@ -84,6 +84,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         [ThreadStatic]
         internal static IList<EntryField> expectedEntryFieldsForTablColumns;
 
+        [ThreadStatic]
+        internal static IList<KeyValuePair<EntryField, string>> expectedTableColumnValues;
+
+
         private void CreateAndStoreRandomValueForField(Enum fieldEnum)
         {
             string fieldName = fieldEnum.GetString();
@@ -111,7 +115,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// <typeparam name="T"></typeparam>
         /// <param name="entryField"></param>
         /// <param name="indexOrText"></param>
-        private void PopulateFieldValue<T>(EntryField entryField, T indexOrText, bool useContains = false)
+        private KeyValuePair<EntryField, string> PopulateFieldValue<T>(EntryField entryField, T indexOrText, bool useContains = false)
         {
             const string TEXT = "TXT";
             const string DLL = "DDL";
@@ -125,6 +129,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             Type argType = indexOrText.GetType();
             object argValue = null;
             bool isValidArg = false;
+
+            KeyValuePair<EntryField, string> fieldValuePair;
+            string fieldValue = string.Empty;
 
             if (argType == typeof(string))
             {
@@ -156,6 +163,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 ? $"{((string)argValue).Substring(0, 7)}" //workaround for EPA-3001
                                 : argValue;
                         }
+
+                        fieldValue = (string)argValue;
                     }
 
                     EnterText(By.Id(entryField.GetString()), (string)argValue);
@@ -173,6 +182,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
                     ExpandAndSelectFromDDList(entryField, argValue, useContains, isMultiSelectDDL);
 
+                    fieldValue = GetTextFromDDL(entryField);
+
                     if (fieldType.Equals(DLL) && entryField.Equals(EntryField.Access))
                     {
                         SelectRadioBtnOrChkbox(EntryField.AllowResharing);
@@ -188,6 +199,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             {
                 LogError($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
             }
+
+            return fieldValuePair = new KeyValuePair<EntryField, string>(entryField, fieldValue);
         }
 
         internal bool VerifyTransmissionDetailsRequiredFields()
@@ -196,8 +209,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             IList<string> actualReqFields = new List<string>();
             actualReqFields = GetAttributes(reqFieldLocator, "data-valmsg-for");
 
-            tenantExpectedRequiredFields = new List<EntryField>(){ };
-            SetTenantRequiredFieldsList();
+            ProjCorrespondenceLog.SetTenantRequiredFieldsList();
 
             IList<string> expectedReqFields = new List<string>();
 
@@ -206,18 +218,37 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 expectedReqFields.Add(field.GetString());
             }
 
-            return expectedReqFields.SequenceEqual(actualReqFields);
-            //return VerifyRequiredFields(actualReqFields, expectedReqFields);
+            //return expectedReqFields.SequenceEqual(actualReqFields);
+            return VerifyRequiredFields(actualReqFields, expectedReqFields);
+        }
+
+        internal bool VerifyTableColumnValues()
+        {
+            bool result = false;
+
+            //GetColumnValueForRow();
+
+
+            return result;
         }
 
         public override void PopulateAllFields()
         {
-            tenantAllEntryFields = new List<EntryField>() { };
-            SetTenantAllEntryFieldsList();
+            ProjCorrespondenceLog.SetTenantAllEntryFieldsList();
+            ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
+
+            expectedTableColumnValues = new List<KeyValuePair<EntryField, string>>();
 
             foreach (EntryField field in tenantAllEntryFields)
             {
-                PopulateFieldValue(field, "");
+                if (expectedEntryFieldsForTablColumns.Contains(field))
+                {
+                    expectedTableColumnValues.Add(PopulateFieldValue(field, ""));
+                }
+                else
+                {
+                    PopulateFieldValue(field, "");
+                }
             }
         }
 
@@ -311,7 +342,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         IList<EntryField> SetTenantAllEntryFieldsList();
 
-        IList<EntryField> SetExpectedEntryFieldsForTableColumns();
+        IList<EntryField> SetTenantEntryFieldsForTableColumns();
 
         void LogintoCorrespondenceLogPage(UserType userType);
 
@@ -422,7 +453,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual IList<EntryField> SetTenantAllEntryFieldsList()
             => tenantAllEntryFields;
 
-        public virtual IList<EntryField> SetExpectedEntryFieldsForTableColumns()
+        public virtual IList<EntryField> SetTenantEntryFieldsForTableColumns()
             => expectedEntryFieldsForTablColumns;
 
         public virtual void CreateNewAndPopulateFields()
@@ -434,6 +465,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             PopulateAllFields();
             UploadFile();
             ClickSave();
+            AddAssertionToList(PCLogBase.VerifyTableColumnValues(), "VerifyTableColumnValues");
             AddAssertionToList(VerifyPageHeader("Transmissions"), "VerifyPageTitle('Transmissions')");
         }
 
@@ -538,7 +570,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
@@ -608,7 +640,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
@@ -676,7 +708,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
@@ -740,7 +772,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
@@ -804,7 +836,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
@@ -873,7 +905,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetExpectedEntryFieldsForTableColumns()
+        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
             expectedEntryFieldsForTablColumns = new List<EntryField>()
             {
