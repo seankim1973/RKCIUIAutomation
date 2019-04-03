@@ -82,10 +82,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         internal static IList<EntryField> tenantAllEntryFields;
 
         [ThreadStatic]
-        internal static IList<EntryField> expectedEntryFieldsForTablColumns;
+        internal static IList<EntryField> expectedEntryFieldsForTblColumns;
 
         [ThreadStatic]
-        internal static IList<KeyValuePair<EntryField, string>> expectedTableColumnValues;
+        internal static IList<KeyValuePair<EntryField, string>> expectedTblColumnValues;
 
 
         private void CreateAndStoreRandomValueForField(Enum fieldEnum)
@@ -219,15 +219,73 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
 
             //return expectedReqFields.SequenceEqual(actualReqFields);
-            return VerifyRequiredFields(actualReqFields, expectedReqFields);
+            return VerifyExpectedList(actualReqFields, expectedReqFields);
+        }
+
+        private ColumnName GetMatchingColumnNameForEntryField(EntryField entryField)
+        {
+            ColumnName columnName = ColumnName.ID;
+
+            switch (entryField)
+            {
+                case EntryField.Attention:
+                    columnName = ColumnName.Attention;
+                    break;
+                case EntryField.Date:
+                    columnName = ColumnName.Date;
+                    break;
+                case EntryField.DocumentType:
+                    columnName = ColumnName.DocumentType;
+                    break;
+                case EntryField.From:
+                    columnName = ColumnName.From;
+                    break;
+                case EntryField.MSLNumber:
+                    columnName = ColumnName.MSLNumber;
+                    break;
+                case EntryField.OriginatorDocumentRef:
+                    columnName = ColumnName.OriginatorRef;
+                    break;
+                case EntryField.Revision:
+                    columnName = ColumnName.Revision;
+                    break;
+                case EntryField.Title:
+                    columnName = ColumnName.Title;
+                    break;
+                case EntryField.TransmittalNumber:
+                    columnName = ColumnName.TransmittalNumber;
+                    break;
+                case EntryField.Transmitted:
+                    columnName = ColumnName.TransmittedType;
+                    break;
+                case EntryField.Via:
+                    columnName = ColumnName.Via;
+                    break;
+            }
+
+            return columnName;
         }
 
         internal bool VerifyTableColumnValues()
         {
             bool result = false;
+            string actualValue = string.Empty;
+            string expectedValue = string.Empty;
 
-            //GetColumnValueForRow();
+            IList<string> expectedValuesList = new List<string>();
+            IList<string> actualValuesList = new List<string>();
 
+            foreach (EntryField colEntryField in expectedEntryFieldsForTblColumns)
+            {
+                ColumnName columnName = GetMatchingColumnNameForEntryField(colEntryField);
+                expectedValue = (from kvp in expectedTblColumnValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
+                actualValue = GetColumnValueForRow(expectedValue, columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
+
+                expectedValuesList.Add(expectedValue);
+                actualValuesList.Add(actualValue);
+            }
+            
+            result = VerifyExpectedList(actualValuesList, expectedValuesList);
 
             return result;
         }
@@ -237,13 +295,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ProjCorrespondenceLog.SetTenantAllEntryFieldsList();
             ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
 
-            expectedTableColumnValues = new List<KeyValuePair<EntryField, string>>();
+            expectedTblColumnValues = new List<KeyValuePair<EntryField, string>>();
 
             foreach (EntryField field in tenantAllEntryFields)
             {
-                if (expectedEntryFieldsForTablColumns.Contains(field))
+                if (expectedEntryFieldsForTblColumns.Contains(field))
                 {
-                    expectedTableColumnValues.Add(PopulateFieldValue(field, ""));
+                    expectedTblColumnValues.Add(PopulateFieldValue(field, ""));
                 }
                 else
                 {
@@ -251,6 +309,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 }
             }
         }
+
+        #region //Entry field override Action methods
 
         public override void EnterText_Date(string shortDate = "")
             => PopulateFieldValue(EntryField.Date, shortDate);
@@ -332,10 +392,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void ClickBtn_AddAccessItem()
             => ClickElement(By.Id("AddAccessItem"));
+
+        #endregion //Entry field override Action methods
+
     }
 
     public interface IProjectCorrespondenceLog
     {
+        bool VerifyIsMultiTabGrid();
+
         void CreateNewAndPopulateFields();
 
         IList<EntryField> SetTenantRequiredFieldsList();
@@ -435,6 +500,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal ProjectCorrespondenceLog PCLogBase => new ProjectCorrespondenceLog();
 
+        //Table Grid Type - returns true if table has multiple tabs
+        //Returns false valid for I15SB, I15Tech, SH249, & SG
+        public virtual bool VerifyIsMultiTabGrid() => false;
+
+        //TODO
         public bool VerifyTransmittalLogIsDisplayed()
         {
             return true;
@@ -454,7 +524,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             => tenantAllEntryFields;
 
         public virtual IList<EntryField> SetTenantEntryFieldsForTableColumns()
-            => expectedEntryFieldsForTablColumns;
+            => expectedEntryFieldsForTblColumns;
 
         public virtual void CreateNewAndPopulateFields()
         {
@@ -470,6 +540,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public abstract void PopulateAllFields();
+
+        #region //Entry field abstract Actions
 
         public abstract void EnterText_Date(string shortDate = "");
         public abstract void EnterText_TransmittalNumber(string value = "");
@@ -498,6 +570,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void SelectRdoBtn_ResponseRequired_No();
         public abstract void SelectChkbox_AllowResharing();
         public abstract void ClickBtn_AddAccessItem();
+
+        #endregion //Entry field abstract Actions
+
     }
 
     #endregion Common Workflow Implementation class
@@ -525,9 +600,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
+        public override bool VerifyIsMultiTabGrid() => true;
+
         public override IList<EntryField> SetTenantRequiredFieldsList()
         {
-            tenantExpectedRequiredFields = new List<EntryField>()
+            return tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.SecurityClassification,
@@ -536,13 +613,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Transmitted,
                 EntryField.Attachments
             };
-
-            return tenantExpectedRequiredFields;
         }
 
         public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
-            tenantAllEntryFields = new List<EntryField>()
+            return tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -566,13 +641,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.MSLNumber,
                 EntryField.Access
             };
-
-            return tenantAllEntryFields;
         }
 
         public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
-            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            return expectedEntryFieldsForTblColumns = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -585,13 +658,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Transmitted,
                 EntryField.MSLNumber
             };
-
-            return expectedEntryFieldsForTablColumns;
         }
 
     }
 
     #endregion Implementation specific to GLX
+
 
     #region Implementation specific to SH249
 
@@ -611,7 +683,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override IList<EntryField> SetTenantRequiredFieldsList()
         {
-            tenantExpectedRequiredFields = new List<EntryField>()
+            return tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.Title,
@@ -620,13 +692,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Via,
                 EntryField.Attachments
             };
-
-            return tenantExpectedRequiredFields;
         }
 
         public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
-            tenantAllEntryFields = new List<EntryField>()
+            return tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -636,13 +706,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.DocumentType,
                 EntryField.Via
             };
-
-            return tenantAllEntryFields;
         }
 
         public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
-            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            return expectedEntryFieldsForTblColumns = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -652,13 +720,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.DocumentType,
                 EntryField.Via
             };
-
-            return expectedEntryFieldsForTablColumns;
         }
 
     }
 
     #endregion Implementation specific to SH249
+
 
     #region Implementation specific to SGWay
 
@@ -678,7 +745,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override IList<EntryField> SetTenantRequiredFieldsList()
         {
-            tenantExpectedRequiredFields = new List<EntryField>()
+            return tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.Title,
@@ -687,13 +754,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.DocumentType,
                 EntryField.Attachments
             };
-
-            return tenantExpectedRequiredFields;
         }
 
         public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
-            tenantAllEntryFields = new List<EntryField>()
+            return tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -704,13 +769,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.MSLNumber,
                 EntryField.Via
             };
-
-            return tenantAllEntryFields;
         }
 
         public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
-            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            return expectedEntryFieldsForTblColumns = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -721,15 +784,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.MSLNumber,
                 EntryField.Via
             };
-
-            return expectedEntryFieldsForTablColumns;
         }
-
-
 
     }
 
     #endregion Implementation specific to SGWay
+
 
     #region Implementation specific to I15South
 
@@ -739,10 +799,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-
         public override IList<EntryField> SetTenantRequiredFieldsList()
         {
-            tenantExpectedRequiredFields = new List<EntryField>()
+            return tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.Title,
@@ -752,13 +811,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.DocumentType,
                 EntryField.Attachments
             };
-
-            return tenantExpectedRequiredFields;
         }
 
         public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
-            tenantAllEntryFields = new List<EntryField>()
+            return tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -768,13 +825,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.DocumentCategory,
                 EntryField.DocumentType
             };
-
-            return tenantAllEntryFields;
         }
 
         public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
-            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            return expectedEntryFieldsForTblColumns = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -783,15 +838,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Attention,
                 EntryField.DocumentType
             };
-
-            return expectedEntryFieldsForTablColumns;
         }
-
-
 
     }
 
     #endregion Implementation specific to I15South
+
 
     #region Implementation specific to I15Tech
 
@@ -804,7 +856,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override IList<EntryField> SetTenantRequiredFieldsList()
         {
-            tenantExpectedRequiredFields = new List<EntryField>()
+            return tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.Title,
@@ -815,13 +867,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Attachments,
                 EntryField.Transmitted
             };
-
-            return tenantExpectedRequiredFields;
         }
 
         public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
-            tenantAllEntryFields = new List<EntryField>()
+            return tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -832,13 +882,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.DocumentType,
                 EntryField.Transmitted
             };
-
-            return tenantAllEntryFields;
         }
 
         public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
-            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            return expectedEntryFieldsForTblColumns = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -848,14 +896,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.DocumentType,
                 EntryField.Transmitted
             };
-
-            return expectedEntryFieldsForTablColumns;
         }
-
 
     }
 
     #endregion Implementation specific to I15Tech
+
 
     #region Implementation specific to LAX
 
@@ -865,10 +911,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
+        public override bool VerifyIsMultiTabGrid() => true;
 
         public override IList<EntryField> SetTenantRequiredFieldsList()
         {
-            tenantExpectedRequiredFields = new List<EntryField>()
+            return tenantExpectedRequiredFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.SecurityClassification,
@@ -877,13 +924,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Transmitted,
                 EntryField.Attachments
             };
-
-            return tenantExpectedRequiredFields;
         }
 
         public override IList<EntryField> SetTenantAllEntryFieldsList()
         {
-            tenantAllEntryFields = new List<EntryField>()
+            return tenantAllEntryFields = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -901,13 +946,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Segment_Area,
                 EntryField.Access
             };
-
-            return tenantAllEntryFields;
         }
 
         public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
         {
-            expectedEntryFieldsForTablColumns = new List<EntryField>()
+            return expectedEntryFieldsForTblColumns = new List<EntryField>()
             {
                 EntryField.Date,
                 EntryField.TransmittalNumber,
@@ -919,8 +962,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Revision,
                 EntryField.Transmitted,
             };
-
-            return expectedEntryFieldsForTablColumns;
         }
 
 

@@ -1207,18 +1207,18 @@ namespace RKCIUIAutomation.Page
             return result;
         }
 
-        public bool VerifyRequiredFields(IList<string> actualReqFieldNames, IList<string> expectedReqFieldNames)
+        public bool VerifyExpectedList(IList<string> actualList, IList<string> expectedList)
         {
             int expectedCount = 0;
             int actualCount = 0;
             bool countsMatch = false;
-            bool reqFieldsMatch = false;
+            bool fieldsMatch = false;
 
             try
             {
                 IList<bool> results = new List<bool>();
-                expectedCount = expectedReqFieldNames.Count;
-                actualCount = actualReqFieldNames.Count;
+                expectedCount = expectedList.Count;
+                actualCount = actualList.Count;
                 countsMatch = expectedCount.Equals(actualCount);
 
                 int logTblRowIndex = 0;
@@ -1230,28 +1230,28 @@ namespace RKCIUIAutomation.Page
                     for (int i = 0; i < expectedCount; i++)
                     {
                         logTblRowIndex++;
-                        string expected = expectedReqFieldNames[i];
+                        string expected = expectedList[i];
 
                         IList<bool> compareResults = new List<bool>();
 
-                        foreach (string actual in actualReqFieldNames)
+                        foreach (string actual in actualList)
                         {
                             bool actContainsExp = actual.Contains(expected);
                             compareResults.Add(actContainsExp);
                         }
 
-                        reqFieldsMatch = compareResults.Contains(true)
+                        fieldsMatch = compareResults.Contains(true)
                             ? true
                             : false;
 
-                        results.Add(reqFieldsMatch);
+                        results.Add(fieldsMatch);
 
                         string logTblRowNumber = logTblRowIndex.ToString();
                         logTblRowNumber = logTblRowNumber.Length == 1
                             ? $"0{logTblRowNumber}"
                             : logTblRowNumber;
 
-                        logTable[logTblRowIndex] = new string[2] { $"{logTblRowNumber}: {expected} : ", $"{reqFieldsMatch.ToString()}" };
+                        logTable[logTblRowIndex] = new string[2] { $"{logTblRowNumber}: {expected} : ", $"{fieldsMatch.ToString()}" };
                     }
                 }
                 else
@@ -1260,12 +1260,12 @@ namespace RKCIUIAutomation.Page
                         $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
                 }
 
-                reqFieldsMatch = results.Contains(false)
+                fieldsMatch = results.Contains(false)
                     ? false
                     : true;
 
                 logTable[logTblRowIndex + 1] = new string[2] { "Total Required Fields:", (results.Count).ToString() };
-                LogInfo(logTable, reqFieldsMatch);
+                LogInfo(logTable, fieldsMatch);
 
             }
             catch (Exception e)
@@ -1274,7 +1274,7 @@ namespace RKCIUIAutomation.Page
                 throw e;
             }
 
-            return reqFieldsMatch;
+            return fieldsMatch;
         }
 
         private static string ActiveModalXpath => "//div[contains(@style,'opacity: 1')]";

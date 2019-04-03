@@ -617,7 +617,7 @@ namespace RKCIUIAutomation.Sandbox
                 "span_0_InspectionType",
                 "span_0_InspectionPassFail"
             };
-            
+
             IList<string> trimmedIDs = qaDirs.TrimInputFieldIDs(errorIDs, "0_");
 
             Console.WriteLine("##################### \nTrimmed Error Field IDs List");
@@ -884,6 +884,28 @@ namespace RKCIUIAutomation.Sandbox
 
                 Console.WriteLine($"RESULT : {result}");
             }
+        }
+
+        enum TestEnum
+        {
+            Test1,
+            Test2
+        }
+
+        [TestMethod]
+        public void KeyValueTest()
+        {
+            IList<KeyValuePair<TestEnum, string>> kvPairs = new List<KeyValuePair<TestEnum, string>>();
+
+            KeyValuePair<TestEnum, string> pair1 = new KeyValuePair<TestEnum, string>(TestEnum.Test1, "test1Value");
+            KeyValuePair<TestEnum, string> pair2 = new KeyValuePair<TestEnum, string>(TestEnum.Test2, "test2Value");
+
+            kvPairs.Add(pair1);
+            kvPairs.Add(pair2);
+
+            var key = (from kvp in kvPairs where kvp.Key == TestEnum.Test1 select kvp.Value).FirstOrDefault();
+            Console.WriteLine(key);
+
         }
     }
 }
