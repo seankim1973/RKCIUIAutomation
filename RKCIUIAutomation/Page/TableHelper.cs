@@ -252,15 +252,16 @@ namespace RKCIUIAutomation.Page
             {
                 string gridTypeXPath = $"{GetGridTypeXPath(isMultiTabGrid)}";
 
-                if (cArgType.Equals(typeof(string)))
+                if (getValueFromColumnName is string)
                 {
                     cArgObj = ConvertToType<string>(getValueFromColumnName);
                     columnDataTypeXPath = $"//th[@data-title='{(string)cArgObj}']";
                 }
-                else if (cArgType.Equals(typeof(Enum)))
+                else if (getValueFromColumnName is Enum)
                 {
                     cArgObj = ConvertToType<Enum>(getValueFromColumnName);
-                    columnDataTypeXPath = $"//th[@data-field='{((Enum)cArgObj).GetString()}']";
+                    string columnId = ((Enum)cArgObj).GetString();
+                    columnDataTypeXPath = $"//th[@data-field='{columnId}']";
                 }
           
                 By headerLocator = By.XPath($"{gridTypeXPath}{columnDataTypeXPath}");

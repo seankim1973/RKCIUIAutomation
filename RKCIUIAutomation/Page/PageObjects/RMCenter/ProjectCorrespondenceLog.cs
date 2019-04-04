@@ -100,6 +100,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         private string GetVarForEntryField(Enum fieldEnum)
             => GetVar($"{tenantName}{GetTestName()}_{fieldEnum.GetString()}");
 
+        private IList<string> GetAccessGroupsList()
+            => GetTextForElements(By.XPath("//div[@id='AccessGroups']//ul/li/span[2]"));
+
         /// <summary>
         /// For &lt;T&gt;indexOrText argument, provide 1 indexed value or text value of a DDList selection OR text value to enter in a text field
         /// <para>
@@ -133,71 +136,85 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             KeyValuePair<EntryField, string> fieldValuePair;
             string fieldValue = string.Empty;
 
-            if (argType == typeof(string))
+            try
             {
-                isValidArg = true;
-                argValue = ConvertToType<string>(indexOrText);
-            }
-            else if (argType == typeof(int))
-            {
-                isValidArg = true;
-                argValue = ConvertToType<int>(indexOrText);
-            }
-
-            if (isValidArg)
-            {
-                if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+                if (argType == typeof(string))
                 {
-                    if (!((string)argValue).HasValue())
+                    isValidArg = true;
+                    argValue = ConvertToType<string>(indexOrText);
+                }
+                else if (argType == typeof(int))
+                {
+                    isValidArg = true;
+                    argValue = ConvertToType<int>(indexOrText);
+                }
+
+                if (isValidArg)
+                {
+                    if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
                     {
-                        if (fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+                        if (!((string)argValue).HasValue())
                         {
-                            argValue = fieldType.Equals(DATE)
-                                ? GetShortDate()
-                                : GetFutureShortDate();
+                            if (fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+                            {
+                                argValue = fieldType.Equals(DATE)
+                                    ? GetShortDate()
+                                    : GetFutureShortDate();
+
+                                fieldValue = GetShortDate((string)argValue, true);
+                            }
+                            else
+                            {
+                                argValue = GetVarForEntryField(entryField);
+                                argValue = entryField.Equals(EntryField.MSLNumber)
+                                    ? $"{((string)argValue).Substring(0, 7)}" //workaround for EPA-3001
+                                    : argValue;
+
+                                fieldValue = (string)argValue;
+                            }
+                        }
+
+                        EnterText(By.Id(entryField.GetString()), fieldValue);
+                    }
+                    else if (fieldType.Equals(DLL) || fieldType.Equals(MULTIDDL))
+                    {
+                        argValue = ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
+                            ? 1
+                            : argValue;
+
+                        ExpandAndSelectFromDDList(entryField, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
+
+                        if (fieldType.Equals(DLL))
+                        {
+                            if (entryField.Equals(EntryField.Access))
+                            {
+                                SelectRadioBtnOrChkbox(EntryField.AllowResharing);
+                                ClickBtn_AddAccessItem();
+                                fieldValue = string.Join("::", GetAccessGroupsList().ToArray());
+                            }
+                            else
+                            {
+                                fieldValue = GetTextFromDDL(entryField);
+                            }
                         }
                         else
                         {
-                            argValue = GetVarForEntryField(entryField);
-                            argValue = entryField.Equals(EntryField.MSLNumber)
-                                ? $"{((string)argValue).Substring(0, 7)}" //workaround for EPA-3001
-                                : argValue;
+                            fieldValue = string.Join("::", GetTextFromMultiSelectDDL(entryField).ToArray());
                         }
-
-                        fieldValue = (string)argValue;
                     }
-
-                    EnterText(By.Id(entryField.GetString()), (string)argValue);
-                }
-                else if (fieldType.Equals(DLL) || fieldType.Equals(MULTIDDL))
-                {
-                    if ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
+                    else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
                     {
-                        argValue = 1;
-                    }
-
-                    bool isMultiSelectDDL = fieldType.Equals(MULTIDDL)
-                        ? true
-                        : false;
-
-                    ExpandAndSelectFromDDList(entryField, argValue, useContains, isMultiSelectDDL);
-
-                    fieldValue = GetTextFromDDL(entryField);
-
-                    if (fieldType.Equals(DLL) && entryField.Equals(EntryField.Access))
-                    {
-                        SelectRadioBtnOrChkbox(EntryField.AllowResharing);
-                        ClickBtn_AddAccessItem();
+                        SelectRadioBtnOrChkbox(entryField);
                     }
                 }
-                else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
+                else
                 {
-                    SelectRadioBtnOrChkbox(entryField);
+                    LogError($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
                 }
             }
-            else
+            catch (Exception e)
             {
-                LogError($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
+                log.Error(e.StackTrace);
             }
 
             return fieldValuePair = new KeyValuePair<EntryField, string>(entryField, fieldValue);
@@ -270,28 +287,37 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             bool result = false;
             string actualValue = string.Empty;
-            string expectedValue = string.Empty;
+            object expectedValue = null;
 
             IList<string> expectedValuesList = new List<string>();
             IList<string> actualValuesList = new List<string>();
-
-            foreach (EntryField colEntryField in expectedEntryFieldsForTblColumns)
+            try
             {
-                ColumnName columnName = GetMatchingColumnNameForEntryField(colEntryField);
-                expectedValue = (from kvp in expectedTblColumnValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
-                actualValue = GetColumnValueForRow(expectedValue, columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
-
-                expectedValuesList.Add(expectedValue);
-                actualValuesList.Add(actualValue);
+                foreach (EntryField colEntryField in expectedEntryFieldsForTblColumns)
+                {
+                    ColumnName columnName = GetMatchingColumnNameForEntryField(colEntryField);
+                    expectedValue = (from kvp in expectedTblColumnValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
+                    actualValue = GetColumnValueForRow("", columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
+                    Console.WriteLine($"COLUMN NAME: {columnName.ToString()} :: ACTUAL VALUE: {actualValue}");
+                    expectedValue = ConvertToType<string>(expectedValue);
+                    expectedValuesList.Add((string)expectedValue);
+                    actualValuesList.Add(actualValue);
+                }
             }
-            
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
             result = VerifyExpectedList(actualValuesList, expectedValuesList);
 
             return result;
         }
 
-        public override void PopulateAllFields()
+        public override string PopulateAllFields()
         {
+            string transmittalNumber = string.Empty;
+
             ProjCorrespondenceLog.SetTenantAllEntryFieldsList();
             ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
 
@@ -308,7 +334,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     PopulateFieldValue(field, "");
                 }
             }
+
+            transmittalNumber = (from kvp in expectedTblColumnValues where kvp.Key == EntryField.TransmittalNumber select kvp.Value).FirstOrDefault();
+            return transmittalNumber;
         }
+
+        public override bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false)
+            => VerifyRecordIsDisplayed(
+                ColumnName.TransmittalNumber,
+                transmittalNumber,
+                ProjCorrespondenceLog.VerifyIsMultiTabGrid()
+                    ? TableType.MultiTab
+                    : TableType.Single,
+                noRecordExpected);
+
 
         #region //Entry field override Action methods
 
@@ -411,9 +450,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         void LogintoCorrespondenceLogPage(UserType userType);
 
-        bool VerifyTransmittalLogIsDisplayed();
+        bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false);
 
-        void PopulateAllFields();
+        string PopulateAllFields();
 
         void EnterText_Date(string shortDate = "");
         void EnterText_TransmittalNumber(string value = "");
@@ -504,12 +543,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         //Returns false valid for I15SB, I15Tech, SH249, & SG
         public virtual bool VerifyIsMultiTabGrid() => false;
 
-        //TODO
-        public bool VerifyTransmittalLogIsDisplayed()
-        {
-            return true;
-        }
-
         public virtual void LogintoCorrespondenceLogPage(UserType userType)
         {
             LoginAs(userType);
@@ -532,17 +565,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForPageReady();
             ClickSaveForward();
             AddAssertionToList(PCLogBase.VerifyTransmissionDetailsRequiredFields(), "VerifyTransmissionDetailsRequiredFields");
-            PopulateAllFields();
+            string transmittalNumber = PopulateAllFields();
             UploadFile();
             ClickSave();
+            AddAssertionToList(VerifyTransmittalLogIsDisplayed(transmittalNumber), "VerifyTransmittalLogIsDisplayed");
             AddAssertionToList(PCLogBase.VerifyTableColumnValues(), "VerifyTableColumnValues");
             AddAssertionToList(VerifyPageHeader("Transmissions"), "VerifyPageTitle('Transmissions')");
         }
 
-        public abstract void PopulateAllFields();
 
         #region //Entry field abstract Actions
-
+        public abstract bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false);
+        public abstract string PopulateAllFields();
         public abstract void EnterText_Date(string shortDate = "");
         public abstract void EnterText_TransmittalNumber(string value = "");
         public abstract void EnterText_Title(string value = "");

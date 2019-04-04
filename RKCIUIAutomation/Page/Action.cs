@@ -195,11 +195,11 @@ namespace RKCIUIAutomation.Page
 
                 try
                 {
-                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'");
+                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0");
                 }
                 catch (InvalidOperationException)
                 {
-                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0");
+                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'");
                 }
                 finally
                 {
@@ -210,13 +210,13 @@ namespace RKCIUIAutomation.Page
                         try
                         {
                             WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                            wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
+                            wait.Until(wd => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
                         }
                         catch (InvalidOperationException e)
                         {
                             log.Debug(e.Message);
                             WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                            wait?.Until(wd => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
+                            wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
                         }
                         catch (UnhandledAlertException)
                         {
@@ -226,7 +226,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error($"Error in WaitForPageReady method : {e.Message}");
             }
         }
 
@@ -383,27 +383,23 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public string GetPageTitle(int timeOutInSeconds = 10, int pollingInterval = 500)
+        public void SetPageTitleVar(int timeOutInSeconds = 10, int pollingInterval = 500)
         {
-            string pageTitle = string.Empty;
-
             try
             {
+                WaitForPageReady();
+
                 driver = Driver;
                 log.Debug($"...waiting for page title");
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                wait.Until(x => driver.Title.HasValue());
+                wait.Until(x => x.Title.HasValue());
+                pageTitle = driver.Title;
+                LogInfo($"...Page Title displayed as : {pageTitle}", pageTitle.HasValue());
             }
             catch (Exception e)
             {
                 log.Error($"timed out while waiting for page title\n{e.Message}");
             }
-            finally
-            {
-                pageTitle = driver.Title;
-            }
-
-            return pageTitle;
         }
 
         public string GetPageUrl(int timeOutInSeconds = 10, int pollingInterval = 500)
@@ -472,6 +468,9 @@ namespace RKCIUIAutomation.Page
 
         public string GetTextFromDDL(Enum ddListID)
             => GetText(pgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+
+        public IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID)
+            => GetTextForElements(pgHelper.GetMultiSelectDDListCurrentSelectionByLocator(multiSelectDDListID));
 
         public void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false)
         {
@@ -911,10 +910,11 @@ namespace RKCIUIAutomation.Page
             try
             {
                 driver = Driver;
+                SetPageTitleVar();
 
-                if (GetPageTitle().Contains("ELVIS PMC"))
+                if (pageTitle.Contains("ELVIS PMC"))
                 {
-                    if (!GetPageTitle().Contains("Home Page"))
+                    if (!pageTitle.Contains("Home Page"))
                     {
                         headingElem = driver.FindElement(By.XPath("//h3"))
                             ?? driver.FindElement(By.XPath("//h2"))
@@ -1010,14 +1010,13 @@ namespace RKCIUIAutomation.Page
         {
             bool isLoaded = false;
             string logMsg = string.Empty;
-            string pageTitle = string.Empty;
 
             try
             {
                 driver = Driver;
                 driver.Navigate().GoToUrl(pageUrl);
                 WaitForPageReady();
-                pageTitle = GetPageTitle();
+                SetPageTitleVar();
                 isLoaded = pageTitle.Contains("ELVIS PMC")
                     ? true
                     : IsPageLoadedSuccessfully();
@@ -1041,7 +1040,6 @@ namespace RKCIUIAutomation.Page
         public void VerifyPageIsLoaded(bool checkingLoginPage = false, bool continueTestIfPageNotLoaded = true)
         {
             bool isLoaded = false;
-            string pageTitle = string.Empty;
             string logMsg = string.Empty;
 
             string expectedPageTitle = checkingLoginPage
@@ -1050,7 +1048,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                pageTitle = GetPageTitle();
+                SetPageTitleVar();
                 isLoaded = pageTitle.Contains(expectedPageTitle)
                     ? true 
                     : IsPageLoadedSuccessfully();
@@ -1069,7 +1067,7 @@ namespace RKCIUIAutomation.Page
                         LogInfo(">>> Attempting to navigate back to previous page to continue testing <<<");
                         driver.Navigate().Back();
                         WaitForPageReady();
-                        pageTitle = GetPageTitle();
+                        SetPageTitleVar();
                         isLoaded = pageTitle.Contains("ELVIS PMC")
                             ? true
                             : IsPageLoadedSuccessfully();
@@ -1233,11 +1231,12 @@ namespace RKCIUIAutomation.Page
                         string expected = expectedList[i];
 
                         IList<bool> compareResults = new List<bool>();
+                        bool actualContainsExpected = false;
 
                         foreach (string actual in actualList)
                         {
-                            bool actContainsExp = actual.Contains(expected);
-                            compareResults.Add(actContainsExp);
+                            actualContainsExpected = actual.Contains(expected);
+                            compareResults.Add(actualContainsExpected);
                         }
 
                         fieldsMatch = compareResults.Contains(true)
@@ -1271,7 +1270,6 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
             }
 
             return fieldsMatch;
@@ -1422,15 +1420,17 @@ namespace RKCIUIAutomation.Page
 
         public void LogoutToLoginPage()
         {
+            Thread.Sleep(3000);
             ClickLogoutLink();
+            WaitForPageReady();
             ClickLoginLink();
         }
 
         public void ClickLoginLink()
-            => GetElement(By.XPath("//a[contains(text(),'Login')]")).Click();
+            => JsClickElement(By.XPath("//header//a[contains(text(),'Login')]"));
 
         public void ClickLogoutLink()
-            => GetElement(By.XPath("//a[contains(text(),'Log out')]")).Click();
+            => JsClickElement(By.XPath("//header//a[contains(text(),'Log out')]"));
 
         public string GetCurrentUser()
         {

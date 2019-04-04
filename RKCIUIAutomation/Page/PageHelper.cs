@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using System;
 using System.Reflection;
@@ -21,12 +22,30 @@ namespace RKCIUIAutomation.Page
         public static string GetMaxShortDate()
             => DateTime.MaxValue.Date.ToShortDateString();
 
-        public static string GetShortDate()
-            => DateTime.Now.ToShortDateString();
+        public static string GetShortDate(string shortDate = "", bool formatWithZero = false)
+        {
+            string date = shortDate.HasValue()
+                ? shortDate
+                : DateTime.Now.ToShortDateString();
+
+            if (formatWithZero)
+            {
+                string[] splitShortDate = Regex.Split(date, "/");
+                string mm = splitShortDate[0];
+                string dd = splitShortDate[1];
+                string yyyy = splitShortDate[2];
+
+                mm = mm.Length == 1 ? $"0{mm}" : mm;
+                dd = dd.Length == 1 ? $"0{dd}" : dd;
+                date = $"{mm}/{dd}/{yyyy}";
+            }
+
+            return date;
+        }
 
         public static string GetFutureShortDate()
         {
-            string currentDate = GetShortDate();
+            string currentDate = DateTime.Now.ToShortDateString();
             string[] splitShortDate = Regex.Split(currentDate, "/");
             int mm = int.Parse(splitShortDate[0]);
             int dd = int.Parse(splitShortDate[1]);
@@ -62,9 +81,9 @@ namespace RKCIUIAutomation.Page
 
         public static string GetShortDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
         {
-            string date = shortDate.Equals("")
-                ? GetShortDate()
-                : shortDate;
+            string date = shortDate.HasValue()
+                ? shortDate
+                : DateTime.Now.ToShortDateString();
             string time = shortTime.Equals(TimeBlock.AM_12_00)
                 ? GetShortTime()
                 : FormatTimeBlock(shortTime);
@@ -105,6 +124,9 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListCurrentSelectionXpath(Enum ddListID)
             => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-input']";
+
+        private string SetMultiSelectDDListCurrentSelectionXpath(Enum multiSelectDDListID)
+            => $"//ul[@id='{multiSelectDDListID.GetString()}_taglist']/li/span[1]";
 
         private string SetMainNavMenuXpath(Enum navEnum)
             => $"//li[@class='dropdown']/a[contains(text(),'{navEnum.GetString()}')]";
@@ -203,6 +225,9 @@ namespace RKCIUIAutomation.Page
 
         public By GetDDListCurrentSelectionByLocator(Enum ddListID)
             => By.XPath(SetDDListCurrentSelectionXpath(ddListID));
+
+        public By GetMultiSelectDDListCurrentSelectionByLocator(Enum multiSelectDDListID)
+            => By.XPath(SetMultiSelectDDListCurrentSelectionXpath(multiSelectDDListID));
 
         public By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
             => isMultiSelectDDList

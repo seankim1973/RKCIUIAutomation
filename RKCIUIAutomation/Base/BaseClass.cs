@@ -22,6 +22,9 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         public static IWebDriver driver;
 
+        [ThreadStatic]
+        public static string pageTitle;
+
         #region ExtentReports Details
 
         [ThreadStatic]
@@ -129,7 +132,7 @@ namespace RKCIUIAutomation.Base
         {
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Staging}");
+            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Testing}");
             string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
@@ -239,19 +242,26 @@ namespace RKCIUIAutomation.Base
 
         private void SkipTest(string testComponent = "", string[] reportCategories = null)
         {
-            //string component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
-            reportCategories = reportCategories ?? testRunDetails;
-            var component = !testComponent2.HasValue()
-                ? testComponent1
-                : testComponent2;
-            testComponent = testComponent.Equals("")
-                ? component
-                : testComponent;
-            testInstance.AssignReportCategories(reportCategories);
-            string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
-            LogAssertIgnore(msg);
-            BaseHelper.InjectTestStatus(TestStatus.Skipped, msg);
-            Assert.Ignore(msg);
+            try
+            {
+                //string component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
+                reportCategories = reportCategories ?? testRunDetails;
+                var component = !testComponent2.HasValue()
+                    ? testComponent1
+                    : testComponent2;
+                testComponent = testComponent.Equals("")
+                    ? component
+                    : testComponent;
+                testInstance.AssignReportCategories(reportCategories);
+                string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
+                LogAssertIgnore(msg);
+                BaseHelper.InjectTestStatus(TestStatus.Skipped, msg);
+                Assert.Ignore(msg);
+            }
+            catch (Exception e)
+            {
+                log.Debug(e.StackTrace);
+            }
         }
 
         private void LogTestDetails(string[] testDetails)

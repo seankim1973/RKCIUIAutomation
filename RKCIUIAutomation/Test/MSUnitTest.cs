@@ -895,16 +895,23 @@ namespace RKCIUIAutomation.Sandbox
         [TestMethod]
         public void KeyValueTest()
         {
-            IList<KeyValuePair<TestEnum, string>> kvPairs = new List<KeyValuePair<TestEnum, string>>();
+            //IList<KeyValuePair<TestEnum, string>> kvPairs = new List<KeyValuePair<TestEnum, string>>();
 
-            KeyValuePair<TestEnum, string> pair1 = new KeyValuePair<TestEnum, string>(TestEnum.Test1, "test1Value");
-            KeyValuePair<TestEnum, string> pair2 = new KeyValuePair<TestEnum, string>(TestEnum.Test2, "test2Value");
+            //KeyValuePair<TestEnum, string> pair1 = new KeyValuePair<TestEnum, string>(TestEnum.Test1, "test1Value");
+            //KeyValuePair<TestEnum, string> pair2 = new KeyValuePair<TestEnum, string>(TestEnum.Test2, "test2Value");
 
-            kvPairs.Add(pair1);
-            kvPairs.Add(pair2);
+            //kvPairs.Add(pair1);
+            //kvPairs.Add(pair2);
 
-            var key = (from kvp in kvPairs where kvp.Key == TestEnum.Test1 select kvp.Value).FirstOrDefault();
-            Console.WriteLine(key);
+            //var key = (from kvp in kvPairs where kvp.Key == TestEnum.Test1 select kvp.Value).FirstOrDefault();
+            //Console.WriteLine(key);
+            object arg = TestEnum.Test1;
+            object argString = "";
+            Type argType = arg.GetType();
+            Type argStringType = argString.GetType();
+
+            Console.WriteLine($"TYPE is Enum: {(arg is Enum).ToString()} - {argType.ToString()}");
+            Console.WriteLine($"TYPE is String: {(argString is string).ToString()} - {argStringType.ToString()}");
 
         }
     }
