@@ -143,7 +143,24 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        private string SetInputFieldXpath(string inputFieldLabel) => $"//label[contains(text(),'{inputFieldLabel}')]/following::input[1]";
+        private string SetInputFieldXpath<T>(T inputFieldLabelOrID)
+        {
+            Type argType = inputFieldLabelOrID.GetType();
+            object argValue = null;
+
+            if (inputFieldLabelOrID is string)
+            {
+                argValue = ConvertToType<string>(inputFieldLabelOrID);
+                argValue = $"//label[contains(text(),'{(string)argValue}')]/following::input[1]";
+            }
+            else if(inputFieldLabelOrID is Enum)
+            {
+                argValue = ConvertToType<Enum>(inputFieldLabelOrID);               
+                argValue = $"//input[@id='{((Enum)argValue).GetString()}']";
+            }
+
+            return (string)argValue;
+        }
 
         /// <summary>
         /// [bool] useContains arg defaults to false and is ignored if arg [I]itemIndexOrName is int type
@@ -217,8 +234,8 @@ namespace RKCIUIAutomation.Page
         public By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null)
             => By.XPath(SetNavMenuXpath(navEnum, parentNavEnum));
 
-        public By GetInputFieldByLocator(string inputFieldLabel)
-            => By.XPath(SetInputFieldXpath(inputFieldLabel));
+        public By GetInputFieldByLocator<T>(T inputFieldLabelOrID)
+            => By.XPath(SetInputFieldXpath(inputFieldLabelOrID));
 
         public By GetDDListByLocator(Enum ddListID)
             => By.XPath(SetDDListFieldXpath(ddListID));

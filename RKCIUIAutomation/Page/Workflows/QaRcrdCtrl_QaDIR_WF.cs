@@ -663,7 +663,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual string Create_DirRevision_For_Package_Recreate_ComplexWF_EndToEnd(string weekStartDate, string packageNumber, string[] dirNumbers)
         {
             //TODO - can't use weekStartDate as inspectDate - DIRs in package may not always be on weekStart date
-            //need to arg needs to be an existing DIR for TechID of DIRQA user
+            //TODO arg needs to be an existing DIR for TechID of DIRQA user
             QaRcrdCtrl_QaDIR.EnterText_InspectionDate(weekStartDate);
             QaRcrdCtrl_QaDIR.ClickBtn_CreateRevision();
             QaRcrdCtrl_QaDIR.SetDirNumber();
