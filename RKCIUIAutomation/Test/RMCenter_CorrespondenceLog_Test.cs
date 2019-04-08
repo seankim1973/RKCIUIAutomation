@@ -20,9 +20,11 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
         public void CorresondenceLog_End_To_End()
         {
             ProjCorrespondenceLog.LogintoCorrespondenceLogPage(UserType.TransmissionsGeneral);
-            ProjCorrespondenceLog.CreateNewAndPopulateFields();
-            
-
+            string transmittalNumber = ProjCorrespondenceLog.CreateNewAndPopulateFields();
+            AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), "VerifyTransmittalLogIsDisplayed");
+            AddAssertionToList(ProjCorrespondenceLog.VerifyTableColumnValues(), "VerifyTableColumnValues");
+            ClickViewBtnForRow();
+            AddAssertionToList(ProjCorrespondenceLog.VerifyTransmissionDetailsPageValues(), "VerifyTransmissionDetailsPageValues");
             AssertAll();
         }
     }

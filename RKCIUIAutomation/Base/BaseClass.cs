@@ -133,7 +133,7 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Testing}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.SGWay}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
@@ -189,8 +189,8 @@ namespace RKCIUIAutomation.Base
         private void InitExtentTestInstance()
         {
             reportInstance = ExtentManager.GetReportInstance();
-            parentTest = reportInstance.CreateTest($"{testSuite} {tenantName} {testEnv}");
-            testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
+            testInstance = reportInstance.CreateTest($"Suite: {testSuite} | Tenant: {tenantName} | Env: {testEnv}");
+            //testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
         }
 
         private IWebDriver InitWebDriverInstance()

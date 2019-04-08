@@ -85,6 +85,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         internal static IList<EntryField> expectedEntryFieldsForTblColumns;
 
         [ThreadStatic]
+        internal static IList<KeyValuePair<EntryField, string>> tenantAllEntryFieldValues;
+
+        [ThreadStatic]
         internal static IList<KeyValuePair<EntryField, string>> expectedTblColumnValues;
 
 
@@ -102,6 +105,47 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         private IList<string> GetAccessGroupsList()
             => GetTextForElements(By.XPath("//div[@id='AccessGroups']//ul/li/span[2]"));
+
+        private string GetValueFromField(EntryField entryField)
+        {
+            const string TEXT = "TXT";
+            const string DLL = "DDL";
+            const string DATE = "DATE";
+            const string FUTUREDATE = "FUTUREDATE";
+            const string MULTIDDL = "MULTIDDL";
+
+            string fieldType = entryField.GetString(true);
+
+            string fieldValue = string.Empty;
+
+            if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+            {
+                if (fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+                {
+                    fieldValue = GetAttribute(By.Id($"{entryField.GetString()}"), "value");
+                }
+            }
+            else if (fieldType.Equals(DLL) || fieldType.Equals(MULTIDDL))
+            {
+                if (fieldType.Equals(DLL))
+                {
+                    if (entryField.Equals(EntryField.Access))
+                    {
+                        fieldValue = string.Join("::", GetAccessGroupsList().ToArray());
+                    }
+                    else
+                    {
+                        fieldValue = GetTextFromDDL(entryField);
+                    }
+                }
+                else
+                {
+                    fieldValue = string.Join("::", GetTextFromMultiSelectDDL(entryField).ToArray());
+                }
+            }
+
+            return fieldValue;
+        }
 
         /// <summary>
         /// For &lt;T&gt;indexOrText argument, provide a (one-based index) integer value or a string value of a drop-down list item to be selected, OR a string value to be entered in a text field
@@ -233,7 +277,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return fieldValuePair = new KeyValuePair<EntryField, string>(entryField, fieldValue);
         }
 
-        internal bool VerifyTransmissionDetailsRequiredFields()
+        public override bool VerifyTransmissionDetailsRequiredFields()
         {
             By reqFieldLocator = By.XPath("//span[contains(text(),'Required')]");
             IList<string> actualReqFields = new List<string>();
@@ -309,7 +353,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 foreach (EntryField colEntryField in expectedEntryFieldsForTblColumns)
                 {
                     ColumnName columnName = GetMatchingColumnNameForEntryField(colEntryField);
-                    expectedValue = (from kvp in expectedTblColumnValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
+                    //expectedValue = (from kvp in expectedTblColumnValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
+                    expectedValue = (from kvp in tenantAllEntryFieldValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
                     actualValue = GetColumnValueForRow("", columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
                     Console.WriteLine($"COLUMN NAME: {columnName.ToString()} :: ACTUAL VALUE: {actualValue}");
                     string exptedFieldName = $"Field Name : [{colEntryField.ToString()}]";
@@ -335,6 +380,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
 
             expectedTblColumnValues = new List<KeyValuePair<EntryField, string>>();
+            tenantAllEntryFieldValues = new List<KeyValuePair<EntryField, string>>();
 
             foreach (EntryField field in tenantAllEntryFields)
             {
@@ -344,7 +390,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 if (expectedEntryFieldsForTblColumns.Contains(field))
                 {
                     expectedTblColumnValues.Add(kvpFromEntry);
+                    tenantAllEntryFieldValues.Add(kvpFromEntry);
                     LogStep($"Added KeyValPair to expected table column values<br>Entry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
+                }
+                else
+                {
+                    tenantAllEntryFieldValues.Add(kvpFromEntry);
                 }
             }
 
@@ -359,6 +410,45 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     : TableType.Single,
                 noRecordExpected);
 
+        public override bool VerifyTransmissionDetailsPageValues()
+        {
+            bool result = false;
+            string actualValue = string.Empty;
+            string expectedValue = string.Empty;
+
+            IList<string> expectedValuesList = new List<string>();
+            IList<string> actualValuesList = new List<string>();
+
+            try
+            {
+                foreach (EntryField entryField in tenantAllEntryFields)
+                {
+                    string fieldType = entryField.GetString(true);
+
+                    if (fieldType.Equals("RDOBTN") || fieldType.Equals("CHKBOX"))
+                    {
+                        expectedValue = "selected";
+                        actualValue = VerifyChkBoxRdoBtnSelection(entryField) ? "selected" : "not selected";
+                    }
+                    else
+                    {
+                        expectedValue = (from kvp in expectedTblColumnValues where kvp.Key == entryField select kvp.Value).FirstOrDefault();
+                        actualValue = GetValueFromField(entryField);
+                    }
+
+                    string exptedFieldName = $"Field Name : [{entryField.ToString()}]";
+                    expectedValuesList.Add($"{exptedFieldName}::{expectedValue}");
+                    actualValuesList.Add(actualValue);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            result = VerifyExpectedList(actualValuesList, expectedValuesList);
+            return result;
+        }
 
         #region //Entry field override Action methods
 
@@ -449,11 +539,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public interface IProjectCorrespondenceLog
     {
+        bool VerifyTransmissionDetailsPageValues();
+
         bool VerifyTableColumnValues();
 
         bool VerifyIsMultiTabGrid();
 
-        void CreateNewAndPopulateFields();
+        string CreateNewAndPopulateFields();
 
         IList<EntryField> SetTenantRequiredFieldsList();
 
@@ -462,6 +554,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         IList<EntryField> SetTenantEntryFieldsForTableColumns();
 
         void LogintoCorrespondenceLogPage(UserType userType);
+
+        bool VerifyTransmissionDetailsRequiredFields();
 
         bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false);
 
@@ -572,19 +666,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual IList<EntryField> SetTenantEntryFieldsForTableColumns()
             => expectedEntryFieldsForTblColumns;
 
-        public virtual void CreateNewAndPopulateFields()
+        public virtual string CreateNewAndPopulateFields()
         {
             ClickNew();
             WaitForPageReady();
             ClickSaveForward();
-            AddAssertionToList(PCLogBase.VerifyTransmissionDetailsRequiredFields(), "VerifyTransmissionDetailsRequiredFields");
+            AddAssertionToList(VerifyTransmissionDetailsRequiredFields(), "VerifyTransmissionDetailsRequiredFields");
             string transmittalNumber = PopulateAllFields();
             UploadFile();
             ClickSave();
-            AddAssertionToList(VerifyTransmittalLogIsDisplayed(transmittalNumber), "VerifyTransmittalLogIsDisplayed");
-            AddAssertionToList(VerifyTableColumnValues(), "VerifyTableColumnValues");
             AddAssertionToList(VerifyPageHeader("Transmissions"), "VerifyPageTitle('Transmissions')");
+            return transmittalNumber;
         }
+
+
 
 
         #region //Entry field abstract Actions
@@ -618,6 +713,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void SelectChkbox_AllowResharing();
         public abstract void ClickBtn_AddAccessItem();
         public abstract bool VerifyTableColumnValues();
+        public abstract bool VerifyTransmissionDetailsRequiredFields();
+        public abstract bool VerifyTransmissionDetailsPageValues();
 
         #endregion //Entry field abstract Actions
 

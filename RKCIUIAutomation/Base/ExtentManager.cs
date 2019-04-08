@@ -15,6 +15,7 @@ namespace RKCIUIAutomation.Base
 
         public static ExtentReports GetReportInstance()
         { return _lazy.Value; }
+
         public static ExtentKlovReporter Klov { get; set; }
         public static ExtentHtmlReporter HtmlReporter { get; set; }
 
