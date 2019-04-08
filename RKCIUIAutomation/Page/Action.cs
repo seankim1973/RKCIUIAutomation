@@ -1211,7 +1211,7 @@ namespace RKCIUIAutomation.Page
             int actualCount = 0;
             bool countsMatch = false;
             bool fieldsMatch = false;
-
+            
             try
             {
                 IList<bool> results = new List<bool>();
@@ -1221,14 +1221,23 @@ namespace RKCIUIAutomation.Page
 
                 int logTblRowIndex = 0;
                 string[][] logTable = new string[expectedCount + 2][];
-                logTable[logTblRowIndex] = new string[2] { $"|  Expected ID  | ", $" |  Found Matching Actual ID  | " };
+                logTable[logTblRowIndex] = new string[2] { $"|  Expected  | ", $" |  Found Matching Actual  | " };
 
                 if (countsMatch)
                 {
+                    string expectedLabel = string.Empty;
+
                     for (int i = 0; i < expectedCount; i++)
                     {
                         logTblRowIndex++;
                         string expected = expectedList[i];
+
+                        if (expected.Contains("::"))
+                        {
+                            string[] splitExpected = Regex.Split(expected, "::");
+                            expectedLabel = splitExpected[0] + "<br>Expected Value : ";
+                            expected = splitExpected[1];
+                        }
 
                         IList<bool> compareResults = new List<bool>();
                         bool actualContainsExpected = false;
@@ -1250,7 +1259,7 @@ namespace RKCIUIAutomation.Page
                             ? $"0{logTblRowNumber}"
                             : logTblRowNumber;
 
-                        logTable[logTblRowIndex] = new string[2] { $"{logTblRowNumber}: {expected} : ", $"{fieldsMatch.ToString()}" };
+                        logTable[logTblRowIndex] = new string[2] { $"{logTblRowNumber}: {expectedLabel}{expected}", $"{fieldsMatch.ToString()}" };
                     }
                 }
                 else

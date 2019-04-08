@@ -850,40 +850,49 @@ namespace RKCIUIAutomation.Sandbox
             Console.WriteLine(testString + " length : " + testString.Length);
             */
 
-            IList<string> actual = new List<string>()
-            {
-                "123ABC456",
-                "78910"
-            };
+            //IList<string> actual = new List<string>()
+            //{
+            //    "123ABC456",
+            //    "78910"
+            //};
 
-            IList<string> expected = new List<string>()
-            {
-                "123",
-                "ABC",
-                "456",
-                "789",
-                "11"
-            };
+            //IList<string> expected = new List<string>()
+            //{
+            //    "123",
+            //    "ABC",
+            //    "456",
+            //    "789",
+            //    "11"
+            //};
 
-            for (int i = 0; i < expected.Count; i++)
-            {
-                string e = expected[i];
+            //for (int i = 0; i < expected.Count; i++)
+            //{
+            //    string e = expected[i];
 
-                IList<bool> compareList = new List<bool>();
+            //    IList<bool> compareList = new List<bool>();
 
-                foreach (string a in actual)
-                {
-                    bool aContainsE = a.Contains(e);
-                    Console.WriteLine($"Actual {a} contains Expected {e} : {aContainsE}");
-                    compareList.Add(aContainsE);
-                }
+            //    foreach (string a in actual)
+            //    {
+            //        bool aContainsE = a.Contains(e);
+            //        Console.WriteLine($"Actual {a} contains Expected {e} : {aContainsE}");
+            //        compareList.Add(aContainsE);
+            //    }
 
-                bool result = compareList.Contains(true)
-                    ? true
-                    : false;
+            //    bool result = compareList.Contains(true)
+            //        ? true
+            //        : false;
 
-                Console.WriteLine($"RESULT : {result}");
-            }
+            //    Console.WriteLine($"RESULT : {result}");
+            //}
+
+            string val = "Label::Value";
+            string[] splitVal = new string[] { };
+            splitVal = Regex.Split(val, "::");
+
+            string label = splitVal[0] + " : ";
+            string value = splitVal[1];
+
+            Console.WriteLine($"{label}{value}");
         }
 
         enum TestEnum

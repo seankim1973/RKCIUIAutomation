@@ -312,7 +312,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     expectedValue = (from kvp in expectedTblColumnValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
                     actualValue = GetColumnValueForRow("", columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
                     Console.WriteLine($"COLUMN NAME: {columnName.ToString()} :: ACTUAL VALUE: {actualValue}");
-                    expectedValuesList.Add(expectedValue);
+                    string exptedFieldName = $"Field Name : [{colEntryField.ToString()}]";
+                    expectedValuesList.Add($"{exptedFieldName}::{expectedValue}");
                     actualValuesList.Add(actualValue);
                 }
             }
@@ -352,9 +353,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false)
-            => VerifyRecordIsDisplayed(
-                ColumnName.TransmittalNumber,
-                transmittalNumber,
+            => VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber,
                 ProjCorrespondenceLog.VerifyIsMultiTabGrid()
                     ? TableType.MultiTab
                     : TableType.Single,
