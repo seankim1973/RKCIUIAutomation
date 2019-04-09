@@ -24,21 +24,45 @@ namespace RKCIUIAutomation.Page
 
         public static string GetShortDate(string shortDate = "", bool formatWithZero = false)
         {
-            string date = shortDate.HasValue()
+            string mm = string.Empty;
+            string dd = string.Empty;
+            string yyyy = string.Empty;
+            bool argHasValue = shortDate.HasValue();
+
+            string date = argHasValue
                 ? shortDate
                 : DateTime.Now.ToShortDateString();
 
-            if (formatWithZero)
+            if (argHasValue)
             {
                 string[] splitShortDate = Regex.Split(date, "/");
-                string mm = splitShortDate[0];
-                string dd = splitShortDate[1];
-                string yyyy = splitShortDate[2];
+                mm = splitShortDate[0];
+                dd = splitShortDate[1];
+                yyyy = splitShortDate[2];
 
-                mm = mm.Length == 1 ? $"0{mm}" : mm;
-                dd = dd.Length == 1 ? $"0{dd}" : dd;
-                date = $"{mm}/{dd}/{yyyy}";
+                if (formatWithZero)
+                {
+                    mm = mm.Length == 1
+                        ? $"0{mm}"
+                        : mm;
+                    dd = dd.Length == 1
+                        ? $"0{dd}"
+                        : dd;
+                }
+                else
+                {
+                    mm = mm.StartsWith("0")
+                        ? Regex.Replace(mm, "0", "")
+                        : mm;
+                    dd = dd.StartsWith("0")
+                        ? Regex.Replace(dd, "0", "")
+                        : dd;
+                }
             }
+
+            date = argHasValue
+                ? $"{mm}/{dd}/{yyyy}"
+                : date;
 
             return date;
         }

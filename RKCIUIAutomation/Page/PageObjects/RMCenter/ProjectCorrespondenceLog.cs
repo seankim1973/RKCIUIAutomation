@@ -120,10 +120,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
             {
-                if (fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
-                {
-                    fieldValue = GetAttribute(By.Id($"{entryField.GetString()}"), "value");
-                }
+                fieldValue = GetAttribute(By.Id($"{entryField.GetString()}"), "value");
             }
             else if (fieldType.Equals(DLL) || fieldType.Equals(MULTIDDL))
             {
@@ -293,7 +290,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
 
             //return expectedReqFields.SequenceEqual(actualReqFields);
-            return VerifyExpectedList(actualReqFields, expectedReqFields);
+            return VerifyExpectedList(actualReqFields, expectedReqFields, "VerifyTransmissionDetailsRequiredFields");
         }
 
         private ColumnName GetMatchingColumnNameForEntryField(EntryField entryField)
@@ -367,7 +364,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            result = VerifyExpectedList(actualValuesList, expectedValuesList);
+            result = VerifyExpectedList(actualValuesList, expectedValuesList, "VerifyTableColumnValues");
 
             return result;
         }
@@ -387,16 +384,22 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 KeyValuePair<EntryField, string> kvpFromEntry = new KeyValuePair<EntryField, string>();
                 kvpFromEntry = PopulateFieldValue(field, "");
 
+                string fieldType = field.GetString(true);
+
+                if (fieldType.Equals("DATE") || fieldType.Equals("FUTUREDATE"))
+                {
+                    string expectedDateValue = (from kvp in expectedTblColumnValues where kvp.Key == field select kvp.Value).FirstOrDefault();
+                    expectedDateValue = GetShortDate(expectedDateValue);
+                    kvpFromEntry = new KeyValuePair<EntryField, string>(field, expectedDateValue);
+                }
+
                 if (expectedEntryFieldsForTblColumns.Contains(field))
                 {
                     expectedTblColumnValues.Add(kvpFromEntry);
-                    tenantAllEntryFieldValues.Add(kvpFromEntry);
-                    LogStep($"Added KeyValPair to expected table column values<br>Entry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
                 }
-                else
-                {
-                    tenantAllEntryFieldValues.Add(kvpFromEntry);
-                }
+
+                LogStep($"Added KeyValPair to expected table column values<br>Entry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
+                tenantAllEntryFieldValues.Add(kvpFromEntry);
             }
 
             transmittalNumber = (from kvp in expectedTblColumnValues where kvp.Key == EntryField.TransmittalNumber select kvp.Value).FirstOrDefault();
@@ -421,6 +424,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             try
             {
+                WaitForPageReady();
+
                 foreach (EntryField entryField in tenantAllEntryFields)
                 {
                     string fieldType = entryField.GetString(true);
@@ -428,11 +433,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     if (fieldType.Equals("RDOBTN") || fieldType.Equals("CHKBOX"))
                     {
                         expectedValue = "selected";
-                        actualValue = VerifyChkBoxRdoBtnSelection(entryField) ? "selected" : "not selected";
+                        actualValue = VerifyChkBoxRdoBtnSelection(entryField) ? "selected" : "Not Selected";
                     }
                     else
                     {
-                        expectedValue = (from kvp in expectedTblColumnValues where kvp.Key == entryField select kvp.Value).FirstOrDefault();
+                        expectedValue = (from kvp in tenantAllEntryFieldValues where kvp.Key == entryField select kvp.Value).FirstOrDefault();
                         actualValue = GetValueFromField(entryField);
                     }
 
@@ -446,7 +451,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            result = VerifyExpectedList(actualValuesList, expectedValuesList);
+            result = VerifyExpectedList(actualValuesList, expectedValuesList, "VerifyTransmissionDetailsPageValues");
             return result;
         }
 
