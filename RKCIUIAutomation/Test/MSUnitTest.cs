@@ -885,14 +885,27 @@ namespace RKCIUIAutomation.Sandbox
             //    Console.WriteLine($"RESULT : {result}");
             //}
 
-            string val = "Label::Value";
-            string[] splitVal = new string[] { };
-            splitVal = Regex.Split(val, "::");
+            //string val = "Label::Value";
+            //string[] splitVal = new string[] { };
+            //splitVal = Regex.Split(val, "::");
 
-            string label = splitVal[0] + " : ";
-            string value = splitVal[1];
+            //string label = splitVal[0] + " : ";
+            //string value = splitVal[1];
 
-            Console.WriteLine($"{label}{value}");
+            //Console.WriteLine($"{label}{value}");
+
+            string str1 = "Value Of String";
+            string str2 = "Value Of";
+
+            bool str1ContainsStr2 = str1.Contains(str2);
+            bool str2ContainsStr1 = str2.Contains(str1);
+            bool str1Equals2 = str1.Equals(str2);
+
+             bool valuesMatch = (str1ContainsStr2 || str2ContainsStr1 || str1Equals2)
+                ? true
+                : false;
+
+            Console.WriteLine($"VALUES MATCH : {valuesMatch}");
         }
 
         enum TestEnum

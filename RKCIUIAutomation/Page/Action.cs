@@ -1221,61 +1221,68 @@ namespace RKCIUIAutomation.Page
                 IList<bool> results = new List<bool>();
                 expectedCount = expectedList.Count;
                 actualCount = actualList.Count;
-                countsMatch = expectedCount.Equals(actualCount);
+                countsMatch = expectedCount == actualCount;
+
+                string logMsg = countsMatch
+                    ? $"do NOT match :<br>Actual Count: {actualCount}<br>"
+                    : $"match - ";
+
+                LogInfo($"Expected and Actual Required Field counts {logMsg}Expected Count: {expectedCount}", countsMatch);
 
                 int logTblRowIndex = 0;
                 string[][] logTable = new string[expectedCount + 2][];
                 logTable[logTblRowIndex] = new string[2] { $"{verificationMethodName}<br>|  Expected  | ", $"<br> |  Found Matching Actual  | " };
 
-                if (countsMatch)
+                for (int i = 0; i < expectedCount; i++)
                 {
                     string expectedLabel = string.Empty;
-                    string actualValue = "Matching Actual Value NOT Found";
+                    string actualValue = string.Empty;
 
-                    for (int i = 0; i < expectedCount; i++)
+                    logTblRowIndex++;
+                    string expected = expectedList[i];
+
+                    if (expected.Contains("::"))
                     {
-                        logTblRowIndex++;
-                        string expected = expectedList[i];
+                        string[] splitExpected = Regex.Split(expected, "::");
+                        expectedLabel = $"{splitExpected[0]}<br>";
+                        expected = splitExpected[1];
+                    }
 
-                        if (expected.Contains("::"))
-                        {
-                            string[] splitExpected = Regex.Split(expected, "::");
-                            expectedLabel = splitExpected[0] + "<br>Expected Value : ";
-                            expected = splitExpected[1];
-                        }
+                    IList<bool> compareResults = new List<bool>();
 
-                        IList<bool> compareResults = new List<bool>();
-                        bool actualAndExpectedMatch = false;
+                    bool actualAndExpectedMatch = false;
 
-                        foreach (string actual in actualList)
-                        {
-                            actualAndExpectedMatch = actual.Contains(expected) || expected.Contains(actual) || actual.Equals(expected);
-                            compareResults.Add(actualAndExpectedMatch);
-                            if (actualAndExpectedMatch)
-                            {
-                                actualValue = actual;
-                                break;
-                            }
-                        }
-
-                        fieldsMatch = compareResults.Contains(true)
+                    foreach (string actual in actualList)
+                    {
+                        actualAndExpectedMatch = actual.Contains(expected) || expected.Contains(actual) || actual.Equals(expected)
                             ? true
                             : false;
 
-                        results.Add(fieldsMatch);
+                        compareResults.Add(actualAndExpectedMatch);
 
-                        string logTblRowNumber = logTblRowIndex.ToString();
-                        logTblRowNumber = logTblRowNumber.Length == 1
-                            ? $"0{logTblRowNumber}"
-                            : logTblRowNumber;
-
-                        logTable[logTblRowIndex] = new string[2] { $"{logTblRowNumber}: {expectedLabel}{expected}<br>Actual Value: {actualValue}", $"{fieldsMatch.ToString()}" };
+                        if (actualAndExpectedMatch)
+                        {
+                            actualValue = string.Empty;
+                            break;
+                        }
+                        else
+                        {
+                            actualValue = $"<br>Values Do Not Match - Actual Value : {actual}";
+                        }
                     }
-                }
-                else
-                {
-                    LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
-                        $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
+
+                    fieldsMatch = compareResults.Contains(true)
+                        ? true
+                        : false;
+
+                    results.Add(fieldsMatch);
+
+                    string logTblRowNumber = logTblRowIndex.ToString();
+                    logTblRowNumber = logTblRowNumber.Length == 1
+                        ? $"0{logTblRowNumber}"
+                        : logTblRowNumber;
+
+                    logTable[logTblRowIndex] = new string[2] { $"{logTblRowNumber}: {expectedLabel}Expected Value : {expected}{actualValue}", $"{fieldsMatch.ToString()}" };
                 }
 
                 fieldsMatch = results.Contains(false)
@@ -1284,7 +1291,6 @@ namespace RKCIUIAutomation.Page
 
                 logTable[logTblRowIndex + 1] = new string[2] { "Total Required Fields:", (results.Count).ToString() };
                 LogInfo(logTable, fieldsMatch);
-
             }
             catch (Exception e)
             {

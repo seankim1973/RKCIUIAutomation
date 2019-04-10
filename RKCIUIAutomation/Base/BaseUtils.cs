@@ -279,25 +279,19 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
+                driver = Driver;
                 string logMsg = $"TestStep: {testStep}";
-                testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
+                testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Grey));
                 CheckForLineBreaksInLogMsg(Level.Info, logMsg);
+                cookie = new Cookie("zaleniumMessage", testStep);
+                driver.Manage().Cookies.AddCookie(cookie);
+            }
+            catch (UnableToSetCookieException)
+            {
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
-            }
-            finally
-            {
-                try
-                {
-                    driver = Driver;
-                    cookie = new Cookie("zaleniumMessage", testStep);
-                    driver.Manage().Cookies.AddCookie(cookie);
-                }
-                catch (UnableToSetCookieException)
-                {
-                }
             }
         }
 

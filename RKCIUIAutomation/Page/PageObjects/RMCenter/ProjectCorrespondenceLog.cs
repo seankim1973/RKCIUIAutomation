@@ -90,6 +90,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         [ThreadStatic]
         internal static IList<KeyValuePair<EntryField, string>> expectedTblColumnValues;
 
+        const string TEXT = "TXT";
+        const string DLL = "DDL";
+        const string DATE = "DATE";
+        const string FUTUREDATE = "FUTUREDATE";
+        const string MULTIDDL = "MULTIDDL";
+        const string RDOBTN = "RDOBTN";
+        const string CHKBOX = "CHKBOX";
 
         private void CreateAndStoreRandomValueForField(Enum fieldEnum)
         {
@@ -108,12 +115,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         private string GetValueFromField(EntryField entryField)
         {
-            const string TEXT = "TXT";
-            const string DLL = "DDL";
-            const string DATE = "DATE";
-            const string FUTUREDATE = "FUTUREDATE";
-            const string MULTIDDL = "MULTIDDL";
-
             string fieldType = entryField.GetString(true);
 
             string fieldValue = string.Empty;
@@ -161,14 +162,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// <param name="indexOrText"></param>
         private KeyValuePair<EntryField, string> PopulateFieldValue<T>(EntryField entryField, T indexOrText, bool useContains = false)
         {
-            const string TEXT = "TXT";
-            const string DLL = "DDL";
-            const string DATE = "DATE";
-            const string FUTUREDATE = "FUTUREDATE";
-            const string MULTIDDL = "MULTIDDL";
-            const string RDOBTN = "RDOBTN";
-            const string CHKBOX = "CHKBOX";
-
             string fieldType = entryField.GetString(true);
             Type argType = indexOrText.GetType();
             object argValue = null;
@@ -202,7 +195,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                     ? GetShortDate()
                                     : GetFutureShortDate();
 
-                                fieldValue = GetShortDate((string)argValue, true);
+                                //fieldValue = GetShortDate((string)argValue, true);
                             }
                             else
                             {
@@ -223,9 +216,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                         ? ((string)argValue).Substring(0, elemMaxLength)
                                         : argValue;
                                 }
-
-                                fieldValue = (string)argValue;
                             }
+
+                            fieldValue = (string)argValue;
                         }
 
                         EnterText(By.Id(entryField.GetString()), fieldValue);
@@ -276,6 +269,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override bool VerifyTransmissionDetailsRequiredFields()
         {
+            WaitForPageReady();
             By reqFieldLocator = By.XPath("//span[contains(text(),'Required')]");
             IList<string> actualReqFields = new List<string>();
             actualReqFields = GetAttributes(reqFieldLocator, "data-valmsg-for");
@@ -340,23 +334,33 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override bool VerifyTableColumnValues()
         {
             bool result = false;
-            string actualValue = string.Empty;
-            string expectedValue = string.Empty;
+            string actualValueInTable = string.Empty;
+            string expectedValueInTable = string.Empty;
 
-            IList<string> expectedValuesList = new List<string>();
-            IList<string> actualValuesList = new List<string>();
+            IList<string> expectedValuesInTableList = new List<string>();
+            IList<string> actualValuesInTableList = new List<string>();
+
+            ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
+
             try
             {
                 foreach (EntryField colEntryField in expectedEntryFieldsForTblColumns)
                 {
+                    var expectedType = colEntryField.GetType();
+                    var entryFieldType = colEntryField.GetString(true);
+
                     ColumnName columnName = GetMatchingColumnNameForEntryField(colEntryField);
                     //expectedValue = (from kvp in expectedTblColumnValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
-                    expectedValue = (from kvp in tenantAllEntryFieldValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
-                    actualValue = GetColumnValueForRow("", columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
-                    Console.WriteLine($"COLUMN NAME: {columnName.ToString()} :: ACTUAL VALUE: {actualValue}");
+                    var expectedValue = (from kvp in tenantAllEntryFieldValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
+                    expectedValueInTable = expectedType.Equals(entryFieldType == DATE) || expectedType.Equals(entryFieldType == FUTUREDATE)
+                        ? GetShortDate(expectedValue, true)
+                        : expectedValue;
+
+                    actualValueInTable = GetColumnValueForRow("", columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
+                    Console.WriteLine($"COLUMN NAME: {columnName.ToString()} :: ACTUAL VALUE: {actualValueInTable}");
                     string exptedFieldName = $"Field Name : [{colEntryField.ToString()}]";
-                    expectedValuesList.Add($"{exptedFieldName}::{expectedValue}");
-                    actualValuesList.Add(actualValue);
+                    expectedValuesInTableList.Add($"{exptedFieldName}::{expectedValueInTable}");
+                    actualValuesInTableList.Add(actualValueInTable);
                 }
             }
             catch (Exception e)
@@ -364,7 +368,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            result = VerifyExpectedList(actualValuesList, expectedValuesList, "VerifyTableColumnValues");
+            result = VerifyExpectedList(actualValuesInTableList, expectedValuesInTableList, "VerifyTableColumnValues");
 
             return result;
         }
@@ -374,9 +378,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             string transmittalNumber = string.Empty;
 
             ProjCorrespondenceLog.SetTenantAllEntryFieldsList();
-            ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
+            //ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
 
-            expectedTblColumnValues = new List<KeyValuePair<EntryField, string>>();
+            //expectedTblColumnValues = new List<KeyValuePair<EntryField, string>>();
             tenantAllEntryFieldValues = new List<KeyValuePair<EntryField, string>>();
 
             foreach (EntryField field in tenantAllEntryFields)
@@ -384,25 +388,25 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 KeyValuePair<EntryField, string> kvpFromEntry = new KeyValuePair<EntryField, string>();
                 kvpFromEntry = PopulateFieldValue(field, "");
 
-                string fieldType = field.GetString(true);
+                //string fieldType = field.GetString(true);
 
-                if (fieldType.Equals("DATE") || fieldType.Equals("FUTUREDATE"))
-                {
-                    string expectedDateValue = (from kvp in expectedTblColumnValues where kvp.Key == field select kvp.Value).FirstOrDefault();
-                    expectedDateValue = GetShortDate(expectedDateValue);
-                    kvpFromEntry = new KeyValuePair<EntryField, string>(field, expectedDateValue);
-                }
+                //if (fieldType.Equals("DATE") || fieldType.Equals("FUTUREDATE"))
+                //{
+                //    string expectedDateValue = (from kvp in expectedTblColumnValues where kvp.Key == field select kvp.Value).FirstOrDefault();
+                //    expectedDateValue = GetShortDate(expectedDateValue);
+                //    kvpFromEntry = new KeyValuePair<EntryField, string>(field, expectedDateValue);
+                //}
 
-                if (expectedEntryFieldsForTblColumns.Contains(field))
-                {
-                    expectedTblColumnValues.Add(kvpFromEntry);
-                }
+                //if (expectedEntryFieldsForTblColumns.Contains(field))
+                //{
+                //    expectedTblColumnValues.Add(kvpFromEntry);
+                //}
 
-                LogStep($"Added KeyValPair to expected table column values<br>Entry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
+                log.Debug($"Added KeyValPair to expected table column values./nEntry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
                 tenantAllEntryFieldValues.Add(kvpFromEntry);
             }
 
-            transmittalNumber = (from kvp in expectedTblColumnValues where kvp.Key == EntryField.TransmittalNumber select kvp.Value).FirstOrDefault();
+            transmittalNumber = (from kvp in tenantAllEntryFieldValues where kvp.Key == EntryField.TransmittalNumber select kvp.Value).FirstOrDefault();
             return transmittalNumber;
         }
 
@@ -430,7 +434,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 {
                     string fieldType = entryField.GetString(true);
 
-                    if (fieldType.Equals("RDOBTN") || fieldType.Equals("CHKBOX"))
+                    if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
                     {
                         expectedValue = "selected";
                         actualValue = VerifyChkBoxRdoBtnSelection(entryField) ? "selected" : "Not Selected";
@@ -441,7 +445,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         actualValue = GetValueFromField(entryField);
                     }
 
-                    string exptedFieldName = $"Field Name : [{entryField.ToString()}]";
+                    string exptedFieldName = $"Field Name : {entryField.ToString()}";
                     expectedValuesList.Add($"{exptedFieldName}::{expectedValue}");
                     actualValuesList.Add(actualValue);
                 }
