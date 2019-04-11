@@ -129,6 +129,7 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelsForNewDoc(), "VerifyReqFieldErrorLabelsForNewDoc");
             QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveForward();
+            AddAssertionToList(VerifyPageHeader("List of NCR Reports"), "VerifyPageHeader('List of NCR Reports')");
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
 
@@ -140,6 +141,7 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToGeneralNcrPage();
             QaRcrdCtrl_GeneralNCR.ClickBtn_New();
             QaRcrdCtrl_GeneralNCR.PopulateRequiredFieldsAndSaveOnly();
+            AddAssertionToList(VerifyPageHeader("List of NCR Reports"), "VerifyPageHeader('List of NCR Reports')");
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
 

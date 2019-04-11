@@ -18,7 +18,7 @@ namespace RKCIUIAutomation.Page
 {
     public class Action : PageHelper
     {
-        private PageHelper pgHelper => new PageHelper();
+        private PageHelper PgHelper => new PageHelper();
 
         public Action() { }
 
@@ -467,14 +467,14 @@ namespace RKCIUIAutomation.Page
         }
 
         public string GetTextFromDDL(Enum ddListID)
-            => GetText(pgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+            => GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
 
         public IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID)
-            => GetTextForElements(pgHelper.GetMultiSelectDDListCurrentSelectionByLocator(multiSelectDDListID));
+            => GetTextForElements(PgHelper.GetMultiSelectDDListCurrentSelectionByLocator(multiSelectDDListID));
 
         public void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false)
         {
-            By locator = pgHelper.GetExpandDDListButtonByLocator(ddListID, isMultiSelectDDList);
+            By locator = PgHelper.GetExpandDDListButtonByLocator(ddListID, isMultiSelectDDList);
 
             try
             {
@@ -511,7 +511,7 @@ namespace RKCIUIAutomation.Page
         public void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false, bool isMultiSelectDDList = false)
         {
             ExpandDDL(ddListID, isMultiSelectDDList);
-            ClickElement(pgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName, useContains));
+            ClickElement(PgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName, useContains));
         }
 
         public void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true)
@@ -569,6 +569,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
+                ScrollToElement(By.XPath("//h4[text()='Attachments']"));
                 By uploadInput_ByLocator = By.XPath("//input[@id='UploadFiles_0_']");
                 GetElement(uploadInput_ByLocator).SendKeys(filePath);
                 log.Info($"Entered {filePath}' for file upload");
@@ -993,7 +994,7 @@ namespace RKCIUIAutomation.Page
                     : $"!!! Error at {pageUrl}";
                 //Console.WriteLine($"##### IsPageLoadedSuccessfully - LogMsg: {logMsg}");
 
-                logMsgKey = $"{testEnv}{tenantName}{GetTestName()}";
+                logMsgKey = "logMsgKey";
                 PgBaseHelper.CreateVar(logMsgKey, logMsg);
             }
             catch (Exception e)
@@ -1004,7 +1005,7 @@ namespace RKCIUIAutomation.Page
             return isPageLoaded;
         }
 
-        private string GetPageErrorLogMsg() => PgBaseHelper.GetVar(logMsgKey);
+        private string GetPageErrorLogMsg() => PgBaseHelper.GetVar(testEnv);
 
         public bool VerifyUrlIsLoaded(string pageUrl)
         {

@@ -132,7 +132,7 @@ namespace RKCIUIAutomation.Base
         {
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Staging}");
+            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Testing}");
             string _tenantName = Parameters.Get("Tenant", $"{TenantName.GLX}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
@@ -193,7 +193,7 @@ namespace RKCIUIAutomation.Base
             //testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
         }
 
-        private IWebDriver InitWebDriverInstance()
+        private void InitWebDriverInstance()
         {
             List<string> tenantComponents = new List<string>();
             ProjectProperties props = new ProjectProperties();
@@ -222,7 +222,7 @@ namespace RKCIUIAutomation.Base
                 SkipTest(testComponent1, testRunDetails);
             }
 
-            return this.Driver;
+            driver = Driver;
         }
 
         [SetUp]
@@ -237,7 +237,7 @@ namespace RKCIUIAutomation.Base
 
             InitExtentTestInstance();
 
-            driver = InitWebDriverInstance();
+            InitWebDriverInstance();
         }
 
         private void SkipTest(string testComponent = "", string[] reportCategories = null)
@@ -249,9 +249,10 @@ namespace RKCIUIAutomation.Base
                 var component = !testComponent2.HasValue()
                     ? testComponent1
                     : testComponent2;
-                testComponent = testComponent.Equals("")
-                    ? component
-                    : testComponent;
+                testComponent = testComponent.HasValue()
+                    ? testComponent
+                    : component;
+
                 testInstance.AssignReportCategories(reportCategories);
                 string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
                 LogAssertIgnore(msg);
@@ -261,6 +262,7 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 log.Debug(e.StackTrace);
+                throw e;
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using MiniGuids;
 using OpenQA.Selenium;
 using RestSharp.Extensions;
+using RKCIUIAutomation.Base;
 using System;
 using System.Collections;
 
@@ -36,49 +37,87 @@ namespace RKCIUIAutomation.Page
             return guid;
         }
 
-        public void CreateVar(string key, string value = "")
+        public void CreateVar<T>(T key, string value = "", bool withPrefix = true)
         {
-            string logMsg;
-
-            value = value.HasValue()
-                ? value
-                : GenerateRandomGuid();
-
             try
             {
-                Hashtable = GetHashTable();
-                if (!HashKeyExists(key))
+                string logMsg = string.Empty;
+                object argKey = null;
+
+                Type argType = key.GetType();
+
+                if (argType.Equals(typeof(Enum)))
                 {
-                    Hashtable.Add(key, value);
+                    argKey = ConvertToType<Enum>(key);
+                    argKey.ToString();
+                }
+                else
+                {
+                    argKey = ConvertToType<string>(key);
+                }
+
+                argKey = withPrefix
+                    ? BaseHelper.GetEnvVarPrefix((string)argKey)
+                    : argKey;
+
+                value = value.HasValue()
+                    ? value
+                    : GenerateRandomGuid();
+
+                Hashtable = GetHashTable();
+
+                if (!HashKeyExists((string)argKey))
+                {
+                    Hashtable.Add(argKey, value);
                     logMsg = "Created";
                 }
                 else
                 {
-                    Hashtable[key] = value;
+                    Hashtable[argKey] = value;
                     logMsg = "Updated";
                 }
 
-                log.Debug($"{logMsg} HashTable - Key: {key.ToString()} : Value: {value.ToString()}");
+                log.Debug($"{logMsg} HashTable - Key: {argKey.ToString()} : Value: {value.ToString()}");
             }
             catch (Exception e)
             {
                 log.Error($"Error occured while adding to HashTable \n{e.Message}");
-                throw;
+                throw e;
             }
         }
 
-        public string GetVar(string key)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string GetVar<T>(T key, bool keyIncludesPrefix = false)
         {
-            Hashtable = GetHashTable();
-            var varValue = string.Empty;
+            Type argType = key.GetType();
+            string argKey = string.Empty;
 
-            if (!Hashtable.ContainsKey(key))
+            if (argType.Equals(typeof(Enum)))
             {
-                CreateVar(key);
+                argKey = (ConvertToType<Enum>(key)).ToString();
+            }
+            else
+            {
+                argKey = ConvertToType<string>(key);
             }
 
-            varValue = Hashtable[key].ToString();
-            log.Debug($"#####GetVar Key: {key} has Value: {varValue}");
+            argKey = keyIncludesPrefix
+                ? argKey
+                : BaseHelper.GetEnvVarPrefix(argKey);
+
+            if (!HashKeyExists(argKey))
+            {
+                CreateVar(argKey, "", false);
+            }
+
+            Hashtable = GetHashTable();
+            var varValue = Hashtable[argKey].ToString();
+            log.Debug($"#####GetVar Key: {argKey} has Value: {varValue}");
             
             return varValue;
         }

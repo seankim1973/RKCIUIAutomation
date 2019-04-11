@@ -76,6 +76,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         [ThreadStatic]
+        internal static IList<TableTab> tenantTableTabs;
+
+        [ThreadStatic]
         internal static IList<EntryField> tenantExpectedRequiredFields;
 
         [ThreadStatic]
@@ -87,9 +90,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         [ThreadStatic]
         internal static IList<KeyValuePair<EntryField, string>> tenantAllEntryFieldValues;
 
-        [ThreadStatic]
-        internal static IList<KeyValuePair<EntryField, string>> expectedTblColumnValues;
-
         const string TEXT = "TXT";
         const string DLL = "DDL";
         const string DATE = "DATE";
@@ -98,22 +98,108 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         const string RDOBTN = "RDOBTN";
         const string CHKBOX = "CHKBOX";
 
-        private void CreateAndStoreRandomValueForField(Enum fieldEnum)
-        {
-            string fieldName = fieldEnum.GetString();
-            MiniGuid guid = GenerateRandomGuid();
-            string key = $"{tenantName}{GetTestName()}_{fieldName}";
-            CreateVar(key, guid);
-            log.Debug($"##### Created random variable for field {fieldName}\nKEY: {key} || VALUE: {GetVar(key)}");
-        }
+        #region //Entry field override Action methods
+
+        public override void EnterText_Date(string shortDate = "")
+            => PopulateFieldValue(EntryField.Date, shortDate);
+
+        public override void EnterText_TransmittalNumber(string value = "")
+            => PopulateFieldValue(EntryField.TransmittalNumber, value);
+
+        public override void EnterText_Title(string value = "")
+            => PopulateFieldValue(EntryField.Title, value);
+
+        public override void EnterText_From(string value = "")
+            => PopulateFieldValue(EntryField.From, value);
+
+        public override void EnterText_Attention(string value = "")
+            => PopulateFieldValue(EntryField.Attention, value);
+
+        public override void EnterText_OriginatorDocumentRef(string value = "")
+            => PopulateFieldValue(EntryField.OriginatorDocumentRef, value);
+
+        public override void EnterText_Revision(string value = "")
+            => PopulateFieldValue(EntryField.Revision, value);
+
+        public override void EnterText_CDRL(string value = "")
+            => PopulateFieldValue(EntryField.CDRL, value);
+
+        public override void EnterText_ResponseRequiredByDate(string value = "")
+            => PopulateFieldValue(EntryField.ResponseRequiredBy_Date, value);
+
+        public override void EnterText_OwnerResponseBy(string value = "")
+            => PopulateFieldValue(EntryField.OwnerResponseBy, value);
+
+        public override void EnterText_OwnerResponseDate(string value = "")
+            => PopulateFieldValue(EntryField.OwnerResponseDate, value);
+
+        public override void EnterText_MSLNumber(string value = "")
+            => PopulateFieldValue(EntryField.MSLNumber, value);
+
+        public override void SelectDDL_Access<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.Access, indexOrName);
+
+        public override void SelectDDL_SpecSection<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.SpecSection, indexOrName);
+
+        public override void SelectDDL_OwnerResponse<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.OwnerResponse, indexOrName);
+
+        public override void SelectDDL_DesignPackages<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.DesignPackages, indexOrName);
+
+        public override void SelectDDL_SegmentArea<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.Segment_Area, indexOrName);
+
+        public override void SelectDDL_Transmitted<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.Transmitted, indexOrName);
+
+        public override void SelectDDL_DocumentCategory<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.DocumentCategory, indexOrName);
+
+        public override void SelectDDL_DocumentType<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.DocumentType, indexOrName);
+
+        public override void SelectDDL_AgencyAttention<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.AgencyAttention, indexOrName);
+
+        public override void SelectDDL_AgencyFrom<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.AgencyFrom, indexOrName);
+
+        public override void SelectDDL_SecurityClassification<T>(T indexOrName)
+            => PopulateFieldValue(EntryField.SecurityClassification, indexOrName);
+
+        public override void SelectRdoBtn_ResponseRequired_Yes()
+            => PopulateFieldValue(EntryField.ResponseRequired_Yes, "");
+
+        public override void SelectRdoBtn_ResponseRequired_No()
+            => PopulateFieldValue(EntryField.ResponseRequired_No, "");
+
+        public override void SelectChkbox_AllowResharing()
+            => PopulateFieldValue(EntryField.AllowResharing, "");
+
+        public override void ClickBtn_AddAccessItem()
+            => ClickElement(By.Id("AddAccessItem"));
+
+        #endregion //Entry field override Action methods
+
+
+        //private void CreateAndStoreRandomValueForField(Enum fieldEnum)
+        //{
+        //    string fieldName = fieldEnum.GetString();
+        //    MiniGuid guid = GenerateRandomGuid();
+        //    string key = $"{tenantName}{GetTestName()}_{fieldName}";
+        //    CreateVar(key, guid);
+        //    log.Debug($"##### Created random variable for field {fieldName}\nKEY: {key} || VALUE: {GetVar(key)}");
+        //}
 
         private string GetVarForEntryField(Enum fieldEnum)
-            => GetVar($"{tenantName}{GetTestName()}_{fieldEnum.GetString()}");
+            => GetVar(fieldEnum);
 
         private IList<string> GetAccessGroupsList()
             => GetTextForElements(By.XPath("//div[@id='AccessGroups']//ul/li/span[2]"));
 
-        private string GetValueFromField(EntryField entryField)
+        public string GetValueFromEntryField(EntryField entryField)
         {
             string fieldType = entryField.GetString(true);
 
@@ -378,30 +464,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             string transmittalNumber = string.Empty;
 
             ProjCorrespondenceLog.SetTenantAllEntryFieldsList();
-            //ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
-
-            //expectedTblColumnValues = new List<KeyValuePair<EntryField, string>>();
             tenantAllEntryFieldValues = new List<KeyValuePair<EntryField, string>>();
 
             foreach (EntryField field in tenantAllEntryFields)
             {
                 KeyValuePair<EntryField, string> kvpFromEntry = new KeyValuePair<EntryField, string>();
                 kvpFromEntry = PopulateFieldValue(field, "");
-
-                //string fieldType = field.GetString(true);
-
-                //if (fieldType.Equals("DATE") || fieldType.Equals("FUTUREDATE"))
-                //{
-                //    string expectedDateValue = (from kvp in expectedTblColumnValues where kvp.Key == field select kvp.Value).FirstOrDefault();
-                //    expectedDateValue = GetShortDate(expectedDateValue);
-                //    kvpFromEntry = new KeyValuePair<EntryField, string>(field, expectedDateValue);
-                //}
-
-                //if (expectedEntryFieldsForTblColumns.Contains(field))
-                //{
-                //    expectedTblColumnValues.Add(kvpFromEntry);
-                //}
-
                 log.Debug($"Added KeyValPair to expected table column values./nEntry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
                 tenantAllEntryFieldValues.Add(kvpFromEntry);
             }
@@ -442,7 +510,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     else
                     {
                         expectedValue = (from kvp in tenantAllEntryFieldValues where kvp.Key == entryField select kvp.Value).FirstOrDefault();
-                        actualValue = GetValueFromField(entryField);
+                        actualValue = GetValueFromEntryField(entryField);
                     }
 
                     string exptedFieldName = $"Field Name : {entryField.ToString()}";
@@ -459,91 +527,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return result;
         }
 
-        #region //Entry field override Action methods
-
-        public override void EnterText_Date(string shortDate = "")
-            => PopulateFieldValue(EntryField.Date, shortDate);
-
-        public override void EnterText_TransmittalNumber(string value = "")
-            => PopulateFieldValue(EntryField.TransmittalNumber, value);
-
-        public override void EnterText_Title(string value = "")
-            => PopulateFieldValue(EntryField.Title, value);
-
-        public override void EnterText_From(string value = "")
-            => PopulateFieldValue(EntryField.From, value);
-
-        public override void EnterText_Attention(string value = "")
-            => PopulateFieldValue(EntryField.Attention, value);
-
-        public override void EnterText_OriginatorDocumentRef(string value = "")
-            => PopulateFieldValue(EntryField.OriginatorDocumentRef, value);
-
-        public override void EnterText_Revision(string value = "")
-            => PopulateFieldValue(EntryField.Revision, value);
-
-        public override void EnterText_CDRL(string value = "")
-            => PopulateFieldValue(EntryField.CDRL, value);
-
-        public override void EnterText_ResponseRequiredByDate(string value = "")
-            => PopulateFieldValue(EntryField.ResponseRequiredBy_Date, value);
-
-        public override void EnterText_OwnerResponseBy(string value = "")
-            => PopulateFieldValue(EntryField.OwnerResponseBy, value);
-
-        public override void EnterText_OwnerResponseDate(string value = "")
-            => PopulateFieldValue(EntryField.OwnerResponseDate, value);
-
-        public override void EnterText_MSLNumber(string value = "")
-            => PopulateFieldValue(EntryField.MSLNumber, value);
-
-        public override void SelectDDL_Access<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.Access, indexOrName);
-
-        public override void SelectDDL_SpecSection<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.SpecSection, indexOrName);
-
-        public override void SelectDDL_OwnerResponse<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.OwnerResponse, indexOrName);
-
-        public override void SelectDDL_DesignPackages<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.DesignPackages, indexOrName);
-
-        public override void SelectDDL_SegmentArea<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.Segment_Area, indexOrName);
-
-        public override void SelectDDL_Transmitted<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.Transmitted, indexOrName);
-
-        public override void SelectDDL_DocumentCategory<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.DocumentCategory, indexOrName);
-
-        public override void SelectDDL_DocumentType<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.DocumentType, indexOrName);
-
-        public override void SelectDDL_AgencyAttention<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.AgencyAttention, indexOrName);
-
-        public override void SelectDDL_AgencyFrom<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.AgencyFrom, indexOrName);
-
-        public override void SelectDDL_SecurityClassification<T>(T indexOrName)
-            => PopulateFieldValue(EntryField.SecurityClassification, indexOrName);
-
-        public override void SelectRdoBtn_ResponseRequired_Yes()
-            => PopulateFieldValue(EntryField.ResponseRequired_Yes, "");
-
-        public override void SelectRdoBtn_ResponseRequired_No()
-            => PopulateFieldValue(EntryField.ResponseRequired_No, "");
-
-        public override void SelectChkbox_AllowResharing()
-            => PopulateFieldValue(EntryField.AllowResharing, "");
-
-        public override void ClickBtn_AddAccessItem()
-            => ClickElement(By.Id("AddAccessItem"));
-
-        #endregion //Entry field override Action methods
-
+        public override IList<TableTab> SetTenantTableTabs()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public interface IProjectCorrespondenceLog
@@ -555,6 +542,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         bool VerifyIsMultiTabGrid();
 
         string CreateNewAndPopulateFields();
+
+        IList<TableTab> SetTenantTableTabs();
 
         IList<EntryField> SetTenantRequiredFieldsList();
 
@@ -688,9 +677,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return transmittalNumber;
         }
 
-
-
-
         #region //Entry field abstract Actions
         public abstract bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false);
         public abstract string PopulateAllFields();
@@ -724,6 +710,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract bool VerifyTableColumnValues();
         public abstract bool VerifyTransmissionDetailsRequiredFields();
         public abstract bool VerifyTransmissionDetailsPageValues();
+        public abstract IList<TableTab> SetTenantTableTabs();
 
         #endregion //Entry field abstract Actions
 

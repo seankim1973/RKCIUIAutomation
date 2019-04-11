@@ -197,34 +197,28 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             desc = desc.HasValue()
                 ? desc
                 : GetVar(tempDescription
-                    ? ncrNewDescKey
-                    : ncrDescKey);
+                    ? "NewNcrDescription"
+                    : "NcrDescription");
             EnterText(descLocator, desc);
             return desc;
         }
 
         internal void CreateNcrDescription(bool tempDescription = false)
         {
-            MiniGuid guid = GenerateRandomGuid();
-            string descKey = $"{tenantName}{GetTestName()}";
             string logMsg = string.Empty;
             string descValue = string.Empty;
+            string descKey = tempDescription
+                ? "NewNcrDescription"
+                : "NcrDescription";
 
             if (tempDescription)
             {
-                ncrNewDescKey = $"{descKey}_NcrNewDescription";
-                CreateVar(ncrNewDescKey, guid);
-                ncrNewDescription = GetVar(ncrNewDescKey);
-                descKey = ncrNewDescKey;
-                descValue = ncrNewDescription;
+                descValue = GetVar(descKey);
                 logMsg = "new temp ";
             }
             else
             {
-                ncrDescKey = $"{descKey}_NcrDescription";
-                CreateVar(ncrDescKey, guid);
-                ncrDescription = GetVar(ncrDescKey);
-                descKey = ncrDescKey;
+                ncrDescription = GetVar(descKey);
                 descValue = ncrDescription;
                 logMsg = "";
             }
@@ -890,10 +884,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual string GetNCRDocDescription(bool tempDescription = false)
             => GetVar(tempDescription
-                ? ncrNewDescKey
-                : ncrDescKey);
+                ? "NewNcrDescription"
+                : "NcrDescription");
 
-        public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);
+        //public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);
 
         public virtual bool VerifyReqFieldErrorLabelsForNewDoc()
         {
@@ -1077,6 +1071,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
+                WaitForPageReady();
+
                 ClickTab(tableTab);
 
                 string _ncrDesc = description.HasValue()
@@ -1115,6 +1111,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 ClickBtn_SaveOnly();
             }
+
+            WaitForPageReady();
         }
 
     }

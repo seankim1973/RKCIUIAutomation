@@ -222,12 +222,7 @@ namespace RKCIUIAutomation.Sandbox
         //[TestMethod]
         public void TestMiniGuid()
         {
-            MiniGuid guid = GenerateRandomGuid();
-
-            string key = "GUID";
-            CreateVar(key, guid);
-
-            var value = GetVar(key);
+            var value = GetVar("GUID");
             Console.WriteLine(value);
         }
 

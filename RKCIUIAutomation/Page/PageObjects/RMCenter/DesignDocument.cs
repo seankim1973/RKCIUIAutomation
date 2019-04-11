@@ -200,15 +200,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal void StoreDesignDocTitleAndNumber()
         {
-            MiniGuid guid = GenerateRandomGuid();
+            //MiniGuid guid = GenerateRandomGuid();
 
-            string docKey = $"{tenantName}{GetTestName()}";
-            docTitleKey = $"{docKey}_DsgnDocTtl";
-            docNumberKey = $"{docKey}_DsgnDocNumb";
-            CreateVar(docTitleKey, docTitleKey);
-            CreateVar(docNumberKey, guid);
-            designDocTitle = GetVar(docTitleKey).ToString();
-            designDocNumber = GetVar(docNumberKey).ToString();
+            //string docKey = $"{tenantName}{GetTestName()}";
+            //docTitleKey = $"{docKey}_DsgnDocTtl";
+            //docNumberKey = $"{docKey}_DsgnDocNumb";
+            //docTitleKey = $"DsgnDocTtl";
+            //docNumberKey = $"DsgnDocNumb";
+
+            //CreateVar(docTitleKey, docTitleKey);
+            //CreateVar(docNumberKey, guid);
+            designDocTitle = GetVar("DsgnDocTtl");
+            designDocNumber = GetVar("DsgnDocNumb");
             Console.WriteLine($"#####Title: {designDocTitle}\nNumber: {designDocNumber}");
         }
 

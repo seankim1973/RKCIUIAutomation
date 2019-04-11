@@ -273,26 +273,20 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         private void CreateCdrDescription(bool tempDescription = false)
         {
-            MiniGuid guid = GenerateRandomGuid();
-            string descKey = $"{tenantName}{GetTestName()}";
             string logMsg = string.Empty;
             string descValue = string.Empty;
-
+            string descKey = tempDescription
+                ? "NewCdrDescription"
+                : "CdrDescription";
+            
             if (tempDescription)
             {
-                cdrNewDescKey = $"{descKey}_CdrNewDescription";
-                CreateVar(cdrNewDescKey, guid);
-                cdrNewDescription = GetVar(cdrNewDescKey);
-                descKey = cdrNewDescKey;
-                descValue = cdrNewDescription;
+                descValue = GetVar(descKey);
                 logMsg = "new temp ";
             }
             else
             {
-                cdrDescKey = $"{descKey}_CdrDescription";
-                CreateVar(cdrDescKey, guid);
-                cdrDescription = GetVar(cdrDescKey);
-                descKey = cdrDescKey;
+                cdrDescription = GetVar(descKey);
                 descValue = cdrDescription;
                 logMsg = "";
             }
@@ -301,7 +295,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public virtual string GetCDRDocDescription(bool tempDescription = false)
-            => GetVar(tempDescription ? cdrNewDescKey : cdrDescKey);
+            => GetVar(tempDescription ? "NewCdrDescription" : "CdrDescription");
 
         public virtual string EnterDescription(string description = "", bool tempDescription = false)
             => EnterDesc(description, InputFields.DeficiencyDescription);
@@ -416,18 +410,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRDescription = "")
         {
             ClickTab(tableTab);
-            cdrDescription = CDRDescription.HasValue()
+            //cdrDescription = CDRDescription.HasValue()
+            //    ? CDRDescription
+            //    : cdrDescription;
+            return VerifyRecordIsDisplayed(ColumnName.Description, CDRDescription.HasValue()
                 ? CDRDescription
-                : cdrDescription;
-            return VerifyRecordIsDisplayed(ColumnName.Description, cdrDescription);
+                : cdrDescription);
         }
 
         public virtual void FilterDescription(string description = "")
         {
-            cdrDescription = description.HasValue()
+            //cdrDescription = description.HasValue()
+            //    ? description
+            //    : cdrDescription;
+            FilterTableColumnByValue(ColumnName.Description, description.HasValue()
                 ? description
-                : cdrDescription;
-            FilterTableColumnByValue(ColumnName.Description, cdrDescription);
+                : cdrDescription);
         }
     }
 
