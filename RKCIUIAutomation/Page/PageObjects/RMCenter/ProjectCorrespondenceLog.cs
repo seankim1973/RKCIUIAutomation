@@ -184,15 +184,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         #endregion //Entry field override Action methods
 
 
-        //private void CreateAndStoreRandomValueForField(Enum fieldEnum)
-        //{
-        //    string fieldName = fieldEnum.GetString();
-        //    MiniGuid guid = GenerateRandomGuid();
-        //    string key = $"{tenantName}{GetTestName()}_{fieldName}";
-        //    CreateVar(key, guid);
-        //    log.Debug($"##### Created random variable for field {fieldName}\nKEY: {key} || VALUE: {GetVar(key)}");
-        //}
-
         private string GetVarForEntryField(Enum fieldEnum)
             => GetVar(fieldEnum);
 
@@ -280,8 +271,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 argValue = fieldType.Equals(DATE)
                                     ? GetShortDate()
                                     : GetFutureShortDate();
-
-                                //fieldValue = GetShortDate((string)argValue, true);
                             }
                             else
                             {
@@ -369,7 +358,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 expectedReqFields.Add(field.GetString());
             }
 
-            //return expectedReqFields.SequenceEqual(actualReqFields);
             return VerifyExpectedList(actualReqFields, expectedReqFields, "VerifyTransmissionDetailsRequiredFields");
         }
 
@@ -436,7 +424,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     var entryFieldType = colEntryField.GetString(true);
 
                     ColumnName columnName = GetMatchingColumnNameForEntryField(colEntryField);
-                    //expectedValue = (from kvp in expectedTblColumnValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
                     var expectedValue = (from kvp in tenantAllEntryFieldValues where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
                     expectedValueInTable = expectedType.Equals(entryFieldType == DATE) || expectedType.Equals(entryFieldType == FUTUREDATE)
                         ? GetShortDate(expectedValue, true)
@@ -732,6 +719,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
 
     #endregion Implementation specific to Garnet
+
 
     #region Implementation specific to GLX
 

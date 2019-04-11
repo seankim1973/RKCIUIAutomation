@@ -1,10 +1,7 @@
-﻿using MiniGuids;
-using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 
@@ -131,12 +128,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         [ThreadStatic]
         internal static string designDocNumber;
-
-        [ThreadStatic]
-        internal static string docTitleKey;
-
-        [ThreadStatic]
-        internal static string docNumberKey;
 
         internal By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
 

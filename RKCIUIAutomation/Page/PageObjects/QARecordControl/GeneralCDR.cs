@@ -1,5 +1,4 @@
-﻿using MiniGuids;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
@@ -80,15 +79,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         [ThreadStatic]
         internal static string cdrDescription;
-
-        [ThreadStatic]
-        internal static string cdrNewDescription;
-
-        [ThreadStatic]
-        internal static string cdrDescKey;
-
-        [ThreadStatic]
-        internal static string cdrNewDescKey;
 
         internal readonly By newBtn_ByLocator = By.XPath("//div[@id='CdrGrid_Revise']/div/a[contains(@class, 'k-button')]");
 

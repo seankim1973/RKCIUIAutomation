@@ -1,6 +1,4 @@
-﻿using MiniGuids;
-using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
@@ -149,15 +147,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         [ThreadStatic]
         internal static string ncrDescription;
-
-        [ThreadStatic]
-        internal static string ncrNewDescription;
-
-        [ThreadStatic]
-        internal static string ncrDescKey;
-
-        [ThreadStatic]
-        internal static string ncrNewDescKey;
 
         internal static readonly By newBtn_ByLocator = By.XPath("//div[@id='NcrGrid_Revise']/div/a[contains(@class, 'k-button')]");
 
