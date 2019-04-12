@@ -21,10 +21,12 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
         {
             ProjCorrespondenceLog.LogintoCorrespondenceLogPage(UserType.TransmissionsGeneral);
             string transmittalNumber = ProjCorrespondenceLog.CreateNewAndPopulateFields();
+
             AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), "VerifyTransmittalLogIsDisplayed");
             AddAssertionToList(ProjCorrespondenceLog.VerifyTableColumnValues(), "VerifyTableColumnValues");
             ClickViewBtnForRow();
             AddAssertionToList(ProjCorrespondenceLog.VerifyTransmissionDetailsPageValues(), "VerifyTransmissionDetailsPageValues");
+            ProjCorrespondenceLog.VerifyTransmissionDetailsPageValuesInRemainingTableTabs(transmittalNumber);
             AssertAll();
         }
     }

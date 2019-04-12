@@ -98,6 +98,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         const string RDOBTN = "RDOBTN";
         const string CHKBOX = "CHKBOX";
 
+
         #region //Entry field override Action methods
 
         public override void EnterText_Date(string shortDate = "")
@@ -472,6 +473,21 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     : TableType.Single,
                 noRecordExpected);
 
+        public override bool VerifyTransmittalLogIsDisplayed(TableTab tableTab, string transmittalNumber, bool noRecordExpected = false)
+        {
+            bool isDisplayed = false;
+
+            ClickTab(tableTab);
+            WaitForPageReady();
+            isDisplayed = VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, 
+                ProjCorrespondenceLog.VerifyIsMultiTabGrid()
+                    ? TableType.MultiTab
+                    : TableType.Single,
+                noRecordExpected);
+
+            return isDisplayed;
+        }
+
         public override bool VerifyTransmissionDetailsPageValues()
         {
             bool result = false;
@@ -514,14 +530,25 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return result;
         }
 
-        public override IList<TableTab> SetTenantTableTabs()
+        public override void IterrateOverRemainingTableTabs(string transmittalNumber, IList<TableTab> remainingTblTabs)
         {
-            throw new NotImplementedException();
+            ClickSaveForward();
+            AssertToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs()");
+            foreach (TableTab tab in remainingTblTabs)
+            {
+                AddAssertionToList(VerifyTransmittalLogIsDisplayed(tab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed in table tab {tab}");
+                AddAssertionToList(ProjCorrespondenceLog.VerifyTableColumnValues(), "VerifyTableColumnValues");
+                ClickViewBtnForRow();
+            }
         }
     }
 
     public interface IProjectCorrespondenceLog
     {
+        void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber);
+
+        void IterrateOverRemainingTableTabs(string transmittalNumber, IList<TableTab> remainingTblTabs);
+
         bool VerifyTransmissionDetailsPageValues();
 
         bool VerifyTableColumnValues();
@@ -530,19 +557,21 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         string CreateNewAndPopulateFields();
 
-        IList<TableTab> SetTenantTableTabs();
-
         IList<EntryField> SetTenantRequiredFieldsList();
 
         IList<EntryField> SetTenantAllEntryFieldsList();
 
         IList<EntryField> SetTenantEntryFieldsForTableColumns();
 
+        IList<TableTab> SetTenantTableTabsList();
+
         void LogintoCorrespondenceLogPage(UserType userType);
 
         bool VerifyTransmissionDetailsRequiredFields();
 
         bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false);
+
+        bool VerifyTransmittalLogIsDisplayed(TableTab tableTab, string transmittalNumber, bool noRecordExpected = false);
 
         string PopulateAllFields();
 
@@ -629,43 +658,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return instance;
         }
 
-        internal ProjectCorrespondenceLog PCLogBase => new ProjectCorrespondenceLog();
-
-        //Table Grid Type - returns true if table has multiple tabs
-        //Returns false valid for I15SB, I15Tech, SH249, & SG
-        public virtual bool VerifyIsMultiTabGrid() => false;
-
-        public virtual void LogintoCorrespondenceLogPage(UserType userType)
-        {
-            LoginAs(userType);
-            WaitForPageReady();
-            NavigateToPage.RMCenter_Project_Correspondence_Log();
-        }
-
-        public virtual IList<EntryField> SetTenantRequiredFieldsList()
-            => tenantExpectedRequiredFields;
-
-        public virtual IList<EntryField> SetTenantAllEntryFieldsList()
-            => tenantAllEntryFields;
-
-        public virtual IList<EntryField> SetTenantEntryFieldsForTableColumns()
-            => expectedEntryFieldsForTblColumns;
-
-        public virtual string CreateNewAndPopulateFields()
-        {
-            ClickNew();
-            WaitForPageReady();
-            ClickSaveForward();
-            AddAssertionToList(VerifyTransmissionDetailsRequiredFields(), "VerifyTransmissionDetailsRequiredFields");
-            string transmittalNumber = PopulateAllFields();
-            UploadFile();
-            ClickSave();
-            AddAssertionToList(VerifyPageHeader("Transmissions"), "VerifyPageTitle('Transmissions')");
-            return transmittalNumber;
-        }
 
         #region //Entry field abstract Actions
+        public abstract void IterrateOverRemainingTableTabs(string transmittalNumber, IList<TableTab> remainingTblTabs);
         public abstract bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false);
+        public abstract bool VerifyTransmittalLogIsDisplayed(TableTab tableTab, string transmittalNumber, bool noRecordExpected = false);
         public abstract string PopulateAllFields();
         public abstract void EnterText_Date(string shortDate = "");
         public abstract void EnterText_TransmittalNumber(string value = "");
@@ -697,10 +694,50 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract bool VerifyTableColumnValues();
         public abstract bool VerifyTransmissionDetailsRequiredFields();
         public abstract bool VerifyTransmissionDetailsPageValues();
-        public abstract IList<TableTab> SetTenantTableTabs();
-
         #endregion //Entry field abstract Actions
 
+
+        //Table Grid Type - returns true if table has multiple tabs
+        //Returns false valid for I15SB, I15Tech, SH249, & SG
+        public virtual bool VerifyIsMultiTabGrid() => false;
+
+        public virtual void LogintoCorrespondenceLogPage(UserType userType)
+        {
+            LoginAs(userType);
+            WaitForPageReady();
+            NavigateToPage.RMCenter_Project_Correspondence_Log();
+            AssertToList_VerifyPageHeader("Transmissions", "LogintoCorrespondenceLogPage()");
+        }
+
+        public virtual IList<EntryField> SetTenantRequiredFieldsList()
+            => tenantExpectedRequiredFields;
+
+        public virtual IList<EntryField> SetTenantAllEntryFieldsList()
+            => tenantAllEntryFields;
+
+        public virtual IList<EntryField> SetTenantEntryFieldsForTableColumns()
+            => expectedEntryFieldsForTblColumns;
+
+        public virtual string CreateNewAndPopulateFields()
+        {
+            ClickNew();
+            WaitForPageReady();
+            ClickSaveForward();
+            AddAssertionToList(VerifyTransmissionDetailsRequiredFields(), "VerifyTransmissionDetailsRequiredFields");
+            string transmittalNumber = PopulateAllFields();
+            UploadFile();
+            ClickSave();
+            AssertToList_VerifyPageHeader("Transmissions", "CreateNewAndPopulateFields()");
+            return transmittalNumber;
+        }
+
+        public virtual void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber)
+        {
+            LogInfo($"Test step skipped for {tenantName} - tenant does not have tabbed table grid");
+        }
+
+        public virtual IList<TableTab> SetTenantTableTabsList()
+            => tenantTableTabs = new List<TableTab>() { };
     }
 
     #endregion Common Workflow Implementation class
@@ -787,6 +824,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Transmitted,
                 EntryField.MSLNumber
             };
+        }
+
+        public override IList<TableTab> SetTenantTableTabsList()
+            => tenantTableTabs = new List<TableTab>()
+            {
+                TableTab.PendingTransmissions,
+                TableTab.TransmittedRecords
+            };
+
+        public override void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber)
+        {
+            
+
         }
 
     }
@@ -1093,7 +1143,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             };
         }
 
+        public override IList<TableTab> SetTenantTableTabsList()
+            => tenantTableTabs = new List<TableTab>()
+            {
+                TableTab.PendingTransmissions,
+                TableTab.TransmittedRecords
+            };
 
+        public override void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber)
+        {
+
+        }
 
     }
 
