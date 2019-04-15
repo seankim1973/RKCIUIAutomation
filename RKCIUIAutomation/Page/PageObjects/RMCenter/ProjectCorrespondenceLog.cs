@@ -79,6 +79,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         internal static IList<TableTab> tenantTableTabs;
 
         [ThreadStatic]
+        internal static IList<By> reqFieldLocators;
+
+        [ThreadStatic]
         internal static IList<EntryField> tenantExpectedRequiredFields;
 
         [ThreadStatic]
@@ -346,11 +349,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override bool VerifyTransmissionDetailsRequiredFields()
         {
             WaitForPageReady();
-            By reqFieldLocator = By.XPath("//span[contains(text(),'Required')]");
-            IList<string> actualReqFields = new List<string>();
-            actualReqFields = GetAttributes(reqFieldLocator, "data-valmsg-for");
+            //By mainReqFieldLocator = By.XPath("//span[contains(text(),'Required')]");
+            //By altReqFieldLocator = By.XPath("//span[contains(text(),'Required')]");
 
-            ProjCorrespondenceLog.SetTenantRequiredFieldsList();
+            reqFieldLocators = ProjCorrespondenceLog.SetTenantRequiredFieldLocators();
+            IList<string> actualReqFields = new List<string>();
+            actualReqFields = GetAttributes(reqFieldLocators, "data-valmsg-for");
+
+            tenantExpectedRequiredFields = ProjCorrespondenceLog.SetTenantRequiredFieldsList();
 
             IList<string> expectedReqFields = new List<string>();
 
@@ -415,7 +421,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             IList<string> expectedValuesInTableList = new List<string>();
             IList<string> actualValuesInTableList = new List<string>();
 
-            ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
+            expectedEntryFieldsForTblColumns = ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
 
             try
             {
@@ -451,7 +457,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             string transmittalNumber = string.Empty;
 
-            ProjCorrespondenceLog.SetTenantAllEntryFieldsList();
+            tenantAllEntryFields = ProjCorrespondenceLog.SetTenantAllEntryFieldsList();
             tenantAllEntryFieldValues = new List<KeyValuePair<EntryField, string>>();
 
             foreach (EntryField field in tenantAllEntryFields)
@@ -536,15 +542,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             AssertToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs()");
             foreach (TableTab tab in remainingTblTabs)
             {
-                AddAssertionToList(VerifyTransmittalLogIsDisplayed(tab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed in table tab {tab}");
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTableColumnValues(), "VerifyTableColumnValues");
-                ClickViewBtnForRow();
+                AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(tab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed under table ({tab})");
+                AddAssertionToList(ProjCorrespondenceLog.VerifyTableColumnValues(), $"VerifyTableColumnValues under table {tab}");
+                ProjCorrespondenceLog.ClickViewBtnForTransmissionsRow();
+                AddAssertionToList(ProjCorrespondenceLog.VerifyTransmissionDetailsPageValues(), $"VerifyTransmissionDetailsPageValues under table ({tab})");
+                ClickSaveForward();
             }
         }
     }
 
     public interface IProjectCorrespondenceLog
     {
+        void ClickViewBtnForTransmissionsRow();
+
         void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber);
 
         void IterrateOverRemainingTableTabs(string transmittalNumber, IList<TableTab> remainingTblTabs);
@@ -556,6 +566,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         bool VerifyIsMultiTabGrid();
 
         string CreateNewAndPopulateFields();
+
+        IList<By> SetTenantRequiredFieldLocators();
 
         IList<EntryField> SetTenantRequiredFieldsList();
 
@@ -718,6 +730,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual IList<EntryField> SetTenantEntryFieldsForTableColumns()
             => expectedEntryFieldsForTblColumns;
 
+        public virtual IList<TableTab> SetTenantTableTabsList()
+            => tenantTableTabs = new List<TableTab>() { };
+
         public virtual string CreateNewAndPopulateFields()
         {
             ClickNew();
@@ -736,8 +751,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             LogInfo($"Test step skipped for {tenantName} - tenant does not have tabbed table grid");
         }
 
-        public virtual IList<TableTab> SetTenantTableTabsList()
-            => tenantTableTabs = new List<TableTab>() { };
+        //For tenants I15SB, I15Tech, SG, SH249
+        public virtual void ClickViewBtnForTransmissionsRow()
+            => ClickViewBtnForRow("", false, false);
+
+        public virtual IList<By> SetTenantRequiredFieldLocators()
+        {
+            return reqFieldLocators = new List<By>()
+            {
+                By.XPath("//span[contains(text(),'Required')]"),
+            };
+        }
     }
 
     #endregion Common Workflow Implementation class
@@ -767,6 +791,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override bool VerifyIsMultiTabGrid() => true;
+
+        public override void ClickViewBtnForTransmissionsRow()
+            => ClickViewBtnForRow("", true, false);
 
         public override IList<EntryField> SetTenantRequiredFieldsList()
         {
@@ -835,8 +862,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber)
         {
-            
-
+            tenantTableTabs = SetTenantTableTabsList();
+            IterrateOverRemainingTableTabs(transmittalNumber, tenantTableTabs);
         }
 
     }
@@ -859,6 +886,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             NavigateToPage.RMCenter_Project_Transmittal_Log();
         }
 
+        public override IList<By> SetTenantRequiredFieldLocators()
+        {
+            return reqFieldLocators = new List<By>()
+            {
+                By.XPath("//span[contains(text(),'Required')]"),
+                By.XPath("//span[contains(text(),'required')]")
+            };
+        }
 
         public override IList<EntryField> SetTenantRequiredFieldsList()
         {
@@ -921,6 +956,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             NavigateToPage.RMCenter_Project_Transmittal_Log();
         }
 
+        public override IList<By> SetTenantRequiredFieldLocators()
+        {
+            return reqFieldLocators = new List<By>()
+            {
+                By.XPath("//span[contains(text(),'Required')]"),
+                By.XPath("//span[contains(text(),'required')]")
+            };
+        }
 
         public override IList<EntryField> SetTenantRequiredFieldsList()
         {
@@ -986,7 +1029,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Title,
                 EntryField.From,
                 EntryField.Attention,
-                EntryField.DocumentCategory,
+                //EntryField.DocumentCategory,
                 EntryField.DocumentType,
                 EntryField.Attachments
             };
@@ -1041,7 +1084,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.Title,
                 EntryField.From,
                 EntryField.Attention,
-                EntryField.DocumentCategory,
+                //EntryField.DocumentCategory,
                 EntryField.DocumentType,
                 EntryField.Attachments,
                 EntryField.Transmitted
@@ -1091,6 +1134,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override bool VerifyIsMultiTabGrid() => true;
+
+        public override void ClickViewBtnForTransmissionsRow()
+            => ClickViewBtnForRow("", true, false);
 
         public override IList<EntryField> SetTenantRequiredFieldsList()
         {
@@ -1146,13 +1192,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override IList<TableTab> SetTenantTableTabsList()
             => tenantTableTabs = new List<TableTab>()
             {
-                TableTab.PendingTransmissions,
                 TableTab.TransmittedRecords
             };
 
         public override void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber)
         {
-
+            tenantTableTabs = SetTenantTableTabsList();
+            IterrateOverRemainingTableTabs(transmittalNumber, tenantTableTabs);
         }
 
     }

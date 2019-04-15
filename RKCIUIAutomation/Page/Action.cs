@@ -316,15 +316,66 @@ namespace RKCIUIAutomation.Page
         public string GetAttribute(By elementByLocator, string attributeName)
             => GetElement(elementByLocator)?.GetAttribute(attributeName);
 
-        public IList<string> GetAttributes(By elementByLocator, string attributeName)
-        {
-            IList<IWebElement> elements = GetElements(elementByLocator);
-            IList<string> attributes = new List<string>();
+        //public IList<string> GetAttributes(By elementByLocator, string attributeName)
+        //{
+        //    IList<IWebElement> elements = GetElements(elementByLocator);
+        //    IList<string> attributes = new List<string>();
 
-            foreach (IWebElement elem in elements)
+        //    foreach (IWebElement elem in elements)
+        //    {
+        //        string attrib = elem.GetAttribute(attributeName);
+        //        attributes.Add(attrib);
+        //    }
+
+        //    return attributes;
+        //}
+
+        public IList<string> GetAttributes<T>(T elementByLocator, string attributeName)
+        {
+            object argObject = null;
+            Type argType = elementByLocator.GetType();
+            IList<string> attributes = new List<string>();
+            IList<IWebElement> elements = new List<IWebElement>();
+
+            try
             {
-                string attrib = elem.GetAttribute(attributeName);
-                attributes.Add(attrib);
+                if (argType.Equals(typeof(By)))
+                {
+                    argObject = ConvertToType<By>(elementByLocator);
+                    elements = GetElements((By)argObject);
+                }
+                else if (argType.Equals(typeof(List<By>)))
+                {
+                    argObject = ConvertToType<List<By>>(elementByLocator);
+
+                    foreach (By locator in (List<By>)argObject)
+                    {
+                        IList<IWebElement> tmpElements = GetElements(locator);
+
+                        foreach (IWebElement tmpElem in tmpElements)
+                        {
+                            elements.Add(tmpElem);
+                        }
+                    }
+                }
+                else
+                {
+                    log.Error($"Unsupported argument type {argType}");
+                }
+
+                foreach (IWebElement elem in elements)
+                {
+                    string attrib = elem.GetAttribute(attributeName);
+                    attributes.Add(attrib);
+                }
+            }
+            catch (NoSuchElementException e)
+            {
+                log.Debug(e.Message);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
             }
 
             return attributes;
@@ -1225,10 +1276,10 @@ namespace RKCIUIAutomation.Page
                 countsMatch = expectedCount == actualCount;
 
                 string logMsg = countsMatch
-                    ? $"do NOT match :<br>Actual Count: {actualCount}<br>"
-                    : $"match - ";
+                    ? ""
+                    : "NOT ";
 
-                LogInfo($"Expected and Actual Required Field counts {logMsg}Expected Count: {expectedCount}", countsMatch);
+                LogInfo($"Expected and Actual Required Fields count are {logMsg}equal.<br>Actual Count: {actualCount}<br>Expected Count: {expectedCount}", countsMatch);
 
                 int logTblRowIndex = 0;
                 string[][] logTable = new string[expectedCount + 2][];

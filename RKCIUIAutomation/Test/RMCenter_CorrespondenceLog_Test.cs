@@ -24,7 +24,7 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
 
             AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), "VerifyTransmittalLogIsDisplayed");
             AddAssertionToList(ProjCorrespondenceLog.VerifyTableColumnValues(), "VerifyTableColumnValues");
-            ClickViewBtnForRow();
+            ProjCorrespondenceLog.ClickViewBtnForTransmissionsRow();
             AddAssertionToList(ProjCorrespondenceLog.VerifyTransmissionDetailsPageValues(), "VerifyTransmissionDetailsPageValues");
             ProjCorrespondenceLog.VerifyTransmissionDetailsPageValuesInRemainingTableTabs(transmittalNumber);
             AssertAll();
