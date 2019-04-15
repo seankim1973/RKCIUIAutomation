@@ -22,6 +22,9 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         public static IWebDriver driver;
 
+        [ThreadStatic]
+        public static string pageTitle;
+
         #region ExtentReports Details
 
         [ThreadStatic]
@@ -129,8 +132,8 @@ namespace RKCIUIAutomation.Base
         {
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Staging}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.SH249}");
+            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Testing}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.I15Tech}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
@@ -186,11 +189,11 @@ namespace RKCIUIAutomation.Base
         private void InitExtentTestInstance()
         {
             reportInstance = ExtentManager.GetReportInstance();
-            parentTest = reportInstance.CreateTest($"{testSuite} {tenantName} {testEnv}");
-            testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
+            testInstance = reportInstance.CreateTest($"Suite: {testSuite} | Tenant: {tenantName} | Env: {testEnv}");
+            //testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
         }
 
-        private IWebDriver InitWebDriverInstance()
+        private void InitWebDriverInstance()
         {
             List<string> tenantComponents = new List<string>();
             ProjectProperties props = new ProjectProperties();
@@ -202,7 +205,7 @@ namespace RKCIUIAutomation.Base
                 {
                     testDetails = $"({testEnv}){tenantName} - {testName}";
                     Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
+                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(180);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 
@@ -219,7 +222,7 @@ namespace RKCIUIAutomation.Base
                 SkipTest(testComponent1, testRunDetails);
             }
 
-            return this.Driver;
+            driver = Driver;
         }
 
         [SetUp]
@@ -234,24 +237,33 @@ namespace RKCIUIAutomation.Base
 
             InitExtentTestInstance();
 
-            driver = InitWebDriverInstance();
+            InitWebDriverInstance();
         }
 
         private void SkipTest(string testComponent = "", string[] reportCategories = null)
         {
-            //string component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
-            reportCategories = reportCategories ?? testRunDetails;
-            var component = !testComponent2.HasValue()
-                ? testComponent1
-                : testComponent2;
-            testComponent = testComponent.Equals("")
-                ? component
-                : testComponent;
-            testInstance.AssignReportCategories(reportCategories);
-            string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
-            LogAssertIgnore(msg);
-            BaseHelper.InjectTestStatus(TestStatus.Skipped, msg);
-            Assert.Ignore(msg);
+            try
+            {
+                //string component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
+                reportCategories = reportCategories ?? testRunDetails;
+                var component = !testComponent2.HasValue()
+                    ? testComponent1
+                    : testComponent2;
+                testComponent = testComponent.HasValue()
+                    ? testComponent
+                    : component;
+
+                testInstance.AssignReportCategories(reportCategories);
+                string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
+                LogAssertIgnore(msg);
+                BaseHelper.InjectTestStatus(TestStatus.Skipped, msg);
+                Assert.Ignore(msg);
+            }
+            catch (Exception e)
+            {
+                log.Debug(e.StackTrace);
+                throw e;
+            }
         }
 
         private void LogTestDetails(string[] testDetails)

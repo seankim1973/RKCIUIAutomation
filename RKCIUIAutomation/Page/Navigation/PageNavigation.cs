@@ -698,6 +698,7 @@ namespace RKCIUIAutomation.Page.Navigation
         }
 
         public override void Qms_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.QMS_Document);
+
     }
 
     #endregion Implementation specific to SGWay

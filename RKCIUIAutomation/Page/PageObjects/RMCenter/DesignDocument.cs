@@ -1,10 +1,7 @@
-﻿using MiniGuids;
-using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 
@@ -18,7 +15,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public DesignDocument(IWebDriver driver) => driver = Driver;
+        public DesignDocument(IWebDriver driver) => this.Driver = driver;
 
         internal void ScrollToLastColumn()
         {
@@ -132,12 +129,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         [ThreadStatic]
         internal static string designDocNumber;
 
-        [ThreadStatic]
-        internal static string docTitleKey;
-
-        [ThreadStatic]
-        internal static string docNumberKey;
-
         internal By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
 
         internal By CancelBtnUploadPage_ByLocator => By.Id("btnCancel");
@@ -200,15 +191,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal void StoreDesignDocTitleAndNumber()
         {
-            MiniGuid guid = MiniGuid.NewGuid();
+            //MiniGuid guid = GenerateRandomGuid();
 
-            string docKey = $"{tenantName}{GetTestName()}";
-            docTitleKey = $"{docKey}_DsgnDocTtl";
-            docNumberKey = $"{docKey}_DsgnDocNumb";
-            CreateVar(docTitleKey, docTitleKey);
-            CreateVar(docNumberKey, guid);
-            designDocTitle = GetVar(docTitleKey).ToString();
-            designDocNumber = GetVar(docNumberKey).ToString();
+            //string docKey = $"{tenantName}{GetTestName()}";
+            //docTitleKey = $"{docKey}_DsgnDocTtl";
+            //docNumberKey = $"{docKey}_DsgnDocNumb";
+            //docTitleKey = $"DsgnDocTtl";
+            //docNumberKey = $"DsgnDocNumb";
+
+            //CreateVar(docTitleKey, docTitleKey);
+            //CreateVar(docNumberKey, guid);
+            designDocTitle = GetVar("DsgnDocTtl");
+            designDocNumber = GetVar("DsgnDocNumb");
             Console.WriteLine($"#####Title: {designDocTitle}\nNumber: {designDocNumber}");
         }
 
@@ -399,8 +393,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         internal DesignDocument DesignDoc_Base => new DesignDocument();
-
-        //internal KendoGrid Kendo => new KendoGrid();
 
         public virtual void SelectDDL_ReviewType(int selectionIndex)
             => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, selectionIndex);

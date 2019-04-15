@@ -52,6 +52,9 @@ namespace RKCIUIAutomation.Test
         public IInspectionDeficiencyLogReport QaSearch_InspctDefncyLogRprt
             => new InspectionDeficiencyLogReport().SetClass<IInspectionDeficiencyLogReport>(Driver);
 
+        public IProjectCorrespondenceLog ProjCorrespondenceLog
+            => new ProjectCorrespondenceLog().SetClass<IProjectCorrespondenceLog>(Driver);
+
         #region Workflow SetClass method calls
 
         public ILinkCoverageWF WF_LinkCoverage => new LinkCoverageWF().SetClass<ILinkCoverageWF>(Driver);

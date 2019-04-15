@@ -126,6 +126,7 @@ namespace RKCIUIAutomation.Page
             [StringValue("Create", BtnCategory.Packages)] Create_Package,
             [StringValue("Recreate", BtnCategory.Packages)] Recreate_Package,
             [StringValue("/a[contains(@onclick, 'download')]", BtnCategory.Download)] Download,
+            [StringValue("/a", BtnCategory.LastOrOnlyInRow)] View,
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
@@ -241,20 +242,32 @@ namespace RKCIUIAutomation.Page
         public By GetTblRow_ByLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumn)}");
 
-        private string TableColumnIndex(string columnName)
-            => $"//th[@data-title='{columnName}']";
-
-        public string GetColumnValueForRow<T>(T textInRowForAnyColumnOrRowIndex, string getValueFromColumnName, bool isMultiTabGrid = true)
+        public string GetColumnValueForRow<T, C>(T textInRowForAnyColumnOrRowIndex, C getValueFromColumnName, bool isMultiTabGrid = true)
         {
-            string rowXPath = string.Empty;
+            Type cArgType = getValueFromColumnName.GetType();
+            string columnDataTypeXPath = string.Empty;
+            string rowXPath = string.Empty;           
+            object cArgObj = null;
 
             try
             {
                 string gridTypeXPath = $"{GetGridTypeXPath(isMultiTabGrid)}";
 
-                By headerLocator = By.XPath($"{gridTypeXPath}{TableColumnIndex(getValueFromColumnName)}");
-                string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
-                int xPathIndex = int.Parse(dataIndexAttribute) + 1;
+                if (getValueFromColumnName is string)
+                {
+                    cArgObj = ConvertToType<string>(getValueFromColumnName);
+                    columnDataTypeXPath = $"//th[@data-title='{(string)cArgObj}']";
+                }
+                else if (getValueFromColumnName is Enum)
+                {
+                    cArgObj = ConvertToType<Enum>(getValueFromColumnName);
+                    string columnId = ((Enum)cArgObj).GetString();
+                    columnDataTypeXPath = $"//th[@data-field='{columnId}']";
+                }
+          
+                By headerLocator = By.XPath($"{gridTypeXPath}{columnDataTypeXPath}");
+                string dataIndex = GetAttribute(headerLocator, "data-index");
+                int xPathIndex = int.Parse(dataIndex) + 1;
 
                 rowXPath = $"{gridTypeXPath}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
             }
@@ -309,6 +322,9 @@ namespace RKCIUIAutomation.Page
         /// <param name="textInRowForAnyColumn"></param>
         public void ClickEditBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
             => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
+
+        public void ClickViewBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
+            => ClickButtonForRow(TableButton.View, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
 
         public void ClickCreateBtnForRow(int textInRowForAnyColumn = 1, bool isMultiTabGrid = true)
             => ClickButtonForRow(TableButton.Create_Package, textInRowForAnyColumn, isMultiTabGrid, true);

@@ -279,25 +279,19 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
+                driver = Driver;
                 string logMsg = $"TestStep: {testStep}";
-                testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Brown));
+                testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Grey));
                 CheckForLineBreaksInLogMsg(Level.Info, logMsg);
+                cookie = new Cookie("zaleniumMessage", testStep);
+                driver.Manage().Cookies.AddCookie(cookie);
+            }
+            catch (UnableToSetCookieException)
+            {
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
-            }
-            finally
-            {
-                try
-                {
-                    driver = Driver;
-                    cookie = new Cookie("zaleniumMessage", testStep);
-                    driver.Manage().Cookies.AddCookie(cookie);
-                }
-                catch (UnableToSetCookieException)
-                {
-                }
             }
         }
 
@@ -564,7 +558,7 @@ namespace RKCIUIAutomation.Base
             }
             catch (Exception e)
             {
-                log.Error($"Error occured in ConvertToType method:\n{e.Message}");
+                log.Error($"Error occurred in ConvertToType method:\n{e.Message}");
                 throw;
             }
         }
@@ -573,6 +567,24 @@ namespace RKCIUIAutomation.Base
     public static class BaseHelper
     {
         private static PageBaseHelper pgbHelper = new PageBaseHelper();
+
+        /// <summary>
+        /// Returns string value [EnvPrefix_varKey] when varKey argument is provided, otherwise returns string value [EnvPrefix]
+        /// <para>[EnvPrefix] consists of [TestCase Number, Test Name, Test Env, Tenant Name]</para>
+        /// </summary>
+        /// <param name="varKey"></param>
+        /// <returns></returns>
+        public static string GetEnvVarPrefix(string varKey = "")
+        {
+            string testName = BaseUtils.GetTestName();
+            string tcNumber = BaseUtils.GetTestCaseNumber();
+            var prefix = $"{tcNumber}{testName}{testEnv}{tenantName}";
+            var key = varKey.HasValue()
+                ? $"{prefix}_{varKey}"
+                : prefix;
+
+            return key;
+        }
 
         public static string SplitCamelCase(this string str, bool removeUnderscore = true)
         {
@@ -597,11 +609,8 @@ namespace RKCIUIAutomation.Base
         /// <param name="logMsg"></param>
         public static void InjectTestStatus(TestStatus status, string logMsg)
         {
-            string testName = BaseUtils.GetTestName();
-            string tcNumber = BaseUtils.GetTestCaseNumber();
-            var prefix = $"{tcNumber}{testEnv}{tenantName}{testName}";
-            pgbHelper.CreateVar($"{prefix}_msgKey", logMsg);
-            pgbHelper.CreateVar($"{prefix}_statusKey", status.ToString());
+            pgbHelper.CreateVar($"_msgKey", logMsg);
+            pgbHelper.CreateVar($"_statusKey", status.ToString());
         }
 
         /// <summary>
@@ -614,49 +623,54 @@ namespace RKCIUIAutomation.Base
             PageHelper pageHelper = new PageHelper();
             List<object> testResults = new List<object>();
 
-            TestStatus _testStatus = TestStatus.Inconclusive;
-
-            string testName = BaseUtils.GetTestName();
-            string tcNumber = BaseUtils.GetTestCaseNumber();
-            var prefix = $"{tcNumber}{testEnv}{tenantName}{testName}";
-            var injStatusKey = $"{prefix}_statusKey";
-            var injMsgKey = $"{prefix}_msgKey";
-
-            string injStatus = string.Empty;
-            string injMsg = string.Empty;
-
-            if (pgbHelper.HashKeyExists(injStatusKey))
+            try
             {
-                injStatus = pgbHelper.GetVar(injStatusKey);
-                injMsg = pgbHelper.GetVar(injMsgKey);
+                TestStatus _testStatus = TestStatus.Inconclusive;
 
-                switch (injStatus)
+                //var prefix = GetEnvVarPrefix();
+                var injStatusKey = GetEnvVarPrefix("_statusKey");
+                var injMsgKey = GetEnvVarPrefix("_msgKey");
+
+                string injStatus = string.Empty;
+                string injMsg = string.Empty;
+
+                if (pgbHelper.HashKeyExists(injStatusKey))
                 {
-                    case "Warning":
-                        _testStatus = TestStatus.Warning;
-                        break;
+                    injStatus = pgbHelper.GetVar(injStatusKey, true);
+                    injMsg = pgbHelper.GetVar(injMsgKey, true);
 
-                    case "Failed":
-                        _testStatus = TestStatus.Failed;
-                        break;
+                    switch (injStatus)
+                    {
+                        case "Warning":
+                            _testStatus = TestStatus.Warning;
+                            break;
 
-                    case "Skipped":
-                        _testStatus = TestStatus.Skipped;
-                        break;
+                        case "Failed":
+                            _testStatus = TestStatus.Failed;
+                            break;
 
-                    default:
-                        _testStatus = TestStatus.Inconclusive;
-                        break;
+                        case "Skipped":
+                            _testStatus = TestStatus.Skipped;
+                            break;
+
+                        default:
+                            _testStatus = TestStatus.Inconclusive;
+                            break;
+                    }
                 }
+                else
+                {
+                    _testStatus = result.Outcome.Status;
+                }
+
+                testResults.Add(_testStatus);
+                testResults.Add(injMsg);
             }
-            else
+            catch (Exception e)
             {
-                _testStatus = result.Outcome.Status;
+                BaseUtils.log.Error(e.StackTrace);
             }
-
-            testResults.Add(_testStatus);
-            testResults.Add(injMsg);
-
+            
             return testResults;
         }
     }

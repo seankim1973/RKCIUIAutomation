@@ -96,7 +96,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
-            AddAssertionToList(VerifyPageTitle("List of CDR Reports"), "VerifyPageTitle");
+            AddAssertionToList(VerifyPageHeader("List of CDR Reports"), "VerifyPageTitle");
             QaRcrdCtrl_GeneralCDR.ClickBtn_New();
             QaRcrdCtrl_GeneralCDR.PopulateRequiredFieldsAndSaveForward();
             return QaRcrdCtrl_GeneralCDR.GetCDRDocDescription();
@@ -106,7 +106,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
@@ -117,7 +117,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_Disposition();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
@@ -128,7 +128,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
@@ -138,7 +138,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_Disposition();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
@@ -149,7 +149,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
@@ -165,7 +165,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();
@@ -179,7 +179,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(user);
             NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageTitle("List of CDR Reports"));
+            Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
             TableHelper.ClickEditBtnForRow();

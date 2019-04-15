@@ -1,6 +1,4 @@
-﻿using MiniGuids;
-using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
@@ -150,17 +148,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         [ThreadStatic]
         internal static string ncrDescription;
 
-        [ThreadStatic]
-        internal static string ncrNewDescription;
-
-        [ThreadStatic]
-        internal static string ncrDescKey;
-
-        [ThreadStatic]
-        internal static string ncrNewDescKey;
-
-        internal MiniGuid guid;
-
         internal static readonly By newBtn_ByLocator = By.XPath("//div[@id='NcrGrid_Revise']/div/a[contains(@class, 'k-button')]");
 
         internal static readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
@@ -199,34 +186,28 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             desc = desc.HasValue()
                 ? desc
                 : GetVar(tempDescription
-                    ? ncrNewDescKey
-                    : ncrDescKey);
+                    ? "NewNcrDescription"
+                    : "NcrDescription");
             EnterText(descLocator, desc);
             return desc;
         }
 
         internal void CreateNcrDescription(bool tempDescription = false)
         {
-            guid = MiniGuid.NewGuid();
-            string descKey = $"{tenantName}{GetTestName()}";
             string logMsg = string.Empty;
             string descValue = string.Empty;
+            string descKey = tempDescription
+                ? "NewNcrDescription"
+                : "NcrDescription";
 
             if (tempDescription)
             {
-                ncrNewDescKey = $"{descKey}_NcrNewDescription";
-                CreateVar(ncrNewDescKey, guid);
-                ncrNewDescription = GetVar(ncrNewDescKey);
-                descKey = ncrNewDescKey;
-                descValue = ncrNewDescription;
+                descValue = GetVar(descKey);
                 logMsg = "new temp ";
             }
             else
             {
-                ncrDescKey = $"{descKey}_NcrDescription";
-                CreateVar(ncrDescKey, guid);
-                ncrDescription = GetVar(ncrDescKey);
-                descKey = ncrDescKey;
+                ncrDescription = GetVar(descKey);
                 descValue = ncrDescription;
                 logMsg = "";
             }
@@ -892,10 +873,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual string GetNCRDocDescription(bool tempDescription = false)
             => GetVar(tempDescription
-                ? ncrNewDescKey
-                : ncrDescKey);
+                ? "NewNcrDescription"
+                : "NcrDescription");
 
-        public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);
+        //public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);
 
         public virtual bool VerifyReqFieldErrorLabelsForNewDoc()
         {
@@ -1079,6 +1060,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
+                WaitForPageReady();
+
                 ClickTab(tableTab);
 
                 string _ncrDesc = description.HasValue()
@@ -1117,6 +1100,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 ClickBtn_SaveOnly();
             }
+
+            WaitForPageReady();
         }
 
     }

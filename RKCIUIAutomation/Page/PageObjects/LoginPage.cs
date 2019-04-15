@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
@@ -90,30 +91,37 @@ namespace RKCIUIAutomation.Page.PageObjects
         public bool AlreadyLoggedIn()
         {
             driver = Driver;
+            bool result = false;
+            IWebElement elem = null;
 
             try
             {
-                driver.FindElement(By.XPath("//a[contains(text(), 'Login')]"));
-                return false;
+                elem = driver.FindElement(By.XPath("//a[contains(text(), 'Login')]"));
+                if (elem.Displayed)
+                {
+                    result = false;
+                }
             }
-            catch (NoSuchElementException)
+            catch (Exception)
             {
                 try
                 {
-                    driver.FindElement(By.XPath("//a[contains(text(), 'Log out')]"));
-                    return true;
+                    elem = driver.FindElement(By.XPath("//a[contains(text(), 'Log out')]"));
+                    if (elem.Displayed)
+                    {
+                        result = true;
+                    }
                 }
-                catch (NoSuchElementException)
+                catch (Exception)
                 {
-                    return false;
                 }
             }
+
+            return result;
         }
 
         public virtual void LoginUser(UserType userType)
         {
-            string pageTitle = string.Empty;
-
             WaitForPageReady();
 
             try
@@ -121,7 +129,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                 if (!AlreadyLoggedIn())
                 {
                     driver = Driver;
-                    pageTitle = GetPageTitle();
+                    SetPageTitleVar();
 
                     if (pageTitle.Contains("Log in"))
                     {
@@ -188,17 +196,21 @@ namespace RKCIUIAutomation.Page.PageObjects
             {
                 try
                 {
-                    WaitForPageReady();
-                    pageTitle = GetPageTitle();
+                    SetPageTitleVar();
 
                     if (pageTitle.Contains("Log in"))
                     {
-                        IWebElement invalidLoginError = GetElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+                        IWebElement invalidLoginError = null;
+                        bool invalidLoginErrorDisplayed = false;
 
-                        if (invalidLoginError.Displayed)
+                        invalidLoginError = GetElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+                        invalidLoginErrorDisplayed = invalidLoginError.Displayed;
+
+                        if (invalidLoginError != null && invalidLoginErrorDisplayed)
                         {
                             string logMsg = invalidLoginError.Text;
-                            var ex = new Exception(logMsg);
+
+                            var ex = new Exception(logMsg.HasValue() ? logMsg : "Invalid Login Error is Displayed!!!");
                             LogError(logMsg, true);
                             throw ex;
                         }
@@ -206,7 +218,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                 }
                 catch (Exception e)
                 {
-                    log.Error(e.Message);
+                    log.Error($"ERROR in LoginAs method : {e.StackTrace}");
                 }
             }
         }

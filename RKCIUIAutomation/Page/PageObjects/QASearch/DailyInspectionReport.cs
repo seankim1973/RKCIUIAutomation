@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System;
@@ -178,9 +179,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
             try
             {
-                dirNumber = dirNumber.Equals("")
-                    ? QaRcrdCtrl_QaDIR.GetDirNumber()
-                    : dirNumber;
+                dirNumber = dirNumber.HasValue()
+                    ? dirNumber
+                    : QaRcrdCtrl_QaDIR.GetDirNumber();
 
                 if (usingSearch)
                 {

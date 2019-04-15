@@ -125,68 +125,68 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.My_Details();
-            AddAssertionToList(VerifyPageTitle("Account Details"), "Verify Page Title : My_Details");
+            AddAssertionToList(VerifyPageHeader("Account Details"), "Verify Page Title : My_Details");
             //Qms Document - based on Tenant
             NavigateToPage.Qms_Document();
-            AddAssertionToList(VerifyPageTitle("QMS Documents"), "Verify Page Title : Qms_Document");
+            AddAssertionToList(VerifyPageHeader("QMS Documents"), "Verify Page Title : Qms_Document");
 
             //Project>Administration
             NavigateToPage.Admin_Project_Details();
-            AddAssertionToList(VerifyPageTitle("Project"), "Verify Page Title : Admin_Project_Details");
+            AddAssertionToList(VerifyPageHeader("Project"), "Verify Page Title : Admin_Project_Details");
             NavigateToPage.Admin_Companies();
-            AddAssertionToList(VerifyPageTitle("Companies"), "Verify Page Title : Admin_Companies");
+            AddAssertionToList(VerifyPageHeader("Companies"), "Verify Page Title : Admin_Companies");
             NavigateToPage.Admin_Contracts();
-            AddAssertionToList(VerifyPageTitle("Contracts"), "Verify Page Title : Admin_Contracts");
+            AddAssertionToList(VerifyPageHeader("Contracts"), "Verify Page Title : Admin_Contracts");
             NavigateToPage.Admin_Menu_Editor();
-            AddAssertionToList(VerifyPageTitle("Menu Editor"), "Verify Page Title : Admin_Menu_Editor");
+            AddAssertionToList(VerifyPageHeader("Menu Editor"), "Verify Page Title : Admin_Menu_Editor");
             NavigateToPage.Admin_Suport();
-            AddAssertionToList(VerifyPageTitle("Cache Management"), "Verify Page Title : Admin_Suport");
+            AddAssertionToList(VerifyPageHeader("Cache Management"), "Verify Page Title : Admin_Suport");
 
             //Project>Administration>User Management
             NavigateToPage.UserMgmt_Roles();
-            AddAssertionToList(VerifyPageTitle("Roles"), "Verify Page Title : UserMgmt_Roles");
+            AddAssertionToList(VerifyPageHeader("Roles"), "Verify Page Title : UserMgmt_Roles");
             NavigateToPage.UserMgmt_Users();
-            AddAssertionToList(VerifyPageTitle("Users"), "Verify Page Title : UserMgmt_Users");
+            AddAssertionToList(VerifyPageHeader("Users"), "Verify Page Title : UserMgmt_Users");
             NavigateToPage.UserMgmt_Access_Rights();
-            AddAssertionToList(VerifyPageTitle("Access Rights"), "Verify Page Title : UserMgmt_Access_Rights");
+            AddAssertionToList(VerifyPageHeader("Access Rights"), "Verify Page Title : UserMgmt_Access_Rights");
 
             //Project>Administration>System Configuration
             NavigateToPage.SysConfig_Disciplines();
-            AddAssertionToList(VerifyPageTitle("Disciplines"), "Verify Page Title : SysConfig_Disciplines");
+            AddAssertionToList(VerifyPageHeader("Disciplines"), "Verify Page Title : SysConfig_Disciplines");
             NavigateToPage.SysConfig_Submittal_Actions();
-            AddAssertionToList(VerifyPageTitle("SubmittalActions"), "Verify Page Title : SysConfig_Submittal_Actions");
+            AddAssertionToList(VerifyPageHeader("SubmittalActions"), "Verify Page Title : SysConfig_Submittal_Actions");
             NavigateToPage.SysConfig_Submittal_Requirements();
-            AddAssertionToList(VerifyPageTitle("Submittal Requirments"), "Verify Page Title : SysConfig_Submittal_Requirements");
+            AddAssertionToList(VerifyPageHeader("Submittal Requirments"), "Verify Page Title : SysConfig_Submittal_Requirements");
             NavigateToPage.SysConfig_Submittal_Types();
-            AddAssertionToList(VerifyPageTitle("SubmittalTypes"), "Verify Page Title : SysConfig_Submittal_Types");
+            AddAssertionToList(VerifyPageHeader("SubmittalTypes"), "Verify Page Title : SysConfig_Submittal_Types");
             NavigateToPage.SysConfig_CVL_Lists();
-            AddAssertionToList(VerifyPageTitle("CVL List"), "Verify Page Title : SysConfig_CVL_Lists");
+            AddAssertionToList(VerifyPageHeader("CVL List"), "Verify Page Title : SysConfig_CVL_Lists");
             NavigateToPage.SysConfig_CVL_List_Items();
-            AddAssertionToList(VerifyPageTitle("CVL List Items"), "Verify Page Title : SysConfig_CVL_List_Items");
+            AddAssertionToList(VerifyPageHeader("CVL List Items"), "Verify Page Title : SysConfig_CVL_List_Items");
             NavigateToPage.SysConfig_Notifications();
-            AddAssertionToList(VerifyPageTitle("Notifications"), "Verify Page Title : SysConfig_Notifications");
+            AddAssertionToList(VerifyPageHeader("Notifications"), "Verify Page Title : SysConfig_Notifications");
             NavigateToPage.SysConfig_Sieves();
-            AddAssertionToList(VerifyPageTitle("Sieves"), "Verify Page Title : SysConfig_Sieves");
+            AddAssertionToList(VerifyPageHeader("Sieves"), "Verify Page Title : SysConfig_Sieves");
             NavigateToPage.SysConfig_Gradations();
-            AddAssertionToList(VerifyPageTitle("Gradations"), "Verify Page Title : SysConfig_Gradations");
+            AddAssertionToList(VerifyPageHeader("Gradations"), "Verify Page Title : SysConfig_Gradations");
 
             //Project>Administration>System Configuration>Equipment
             NavigateToPage.SysConfig_Equipment_Makes();
-            AddAssertionToList(VerifyPageTitle("Makes"), "Verify Page Title : SysConfig_Equipment_Makes");
+            AddAssertionToList(VerifyPageHeader("Makes"), "Verify Page Title : SysConfig_Equipment_Makes");
             NavigateToPage.SysConfig_Equipment_Models();
-            AddAssertionToList(VerifyPageTitle("EquipmentModels"), "Verify Page Title : SysConfig_Equipment_Models");
+            AddAssertionToList(VerifyPageHeader("EquipmentModels"), "Verify Page Title : SysConfig_Equipment_Models");
             NavigateToPage.SysConfig_Equipment_Types();
-            AddAssertionToList(VerifyPageTitle("Equipment Types"), "Verify Page Title : SysConfig_Equipment_Types");
+            AddAssertionToList(VerifyPageHeader("Equipment Types"), "Verify Page Title : SysConfig_Equipment_Types");
 
             //Project>Administration>System Configuration>Grade Management
             NavigateToPage.SysConfig_Grade_Types();
-            AddAssertionToList(VerifyPageTitle("Grade Type"), "Verify Page Title : SysConfig_Grade_Types");
+            AddAssertionToList(VerifyPageHeader("Grade Type"), "Verify Page Title : SysConfig_Grade_Types");
             NavigateToPage.SysConfig_Grades();
-            AddAssertionToList(VerifyPageTitle("Grades"), "Verify Page Title : SysConfig_Grades");
+            AddAssertionToList(VerifyPageHeader("Grades"), "Verify Page Title : SysConfig_Grades");
 
             //Project>Administration>Admin Tools
             NavigateToPage.AdminTools_Locked_Records();
-            AddAssertionToList(VerifyPageTitle("Locked Records"), "Verify Page Title : AdminTools_Locked_Records");
+            AddAssertionToList(VerifyPageHeader("Locked Records"), "Verify Page Title : AdminTools_Locked_Records");
             AssertAll();
         }
 
@@ -198,17 +198,17 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QALab_Technician_Random();
-            AddAssertionToList(VerifyPageTitle("Technician Random"));
+            AddAssertionToList(VerifyPageHeader("Technician Random"));
             NavigateToPage.QALab_BreakSheet_Creation();
-            AddAssertionToList(VerifyPageTitle("Create Break Sheet"));
+            AddAssertionToList(VerifyPageHeader("Create Break Sheet"));
             NavigateToPage.QALab_BreakSheet_Legacy();
-            AddAssertionToList(VerifyPageTitle("Break Sheet Legacy"));
+            AddAssertionToList(VerifyPageHeader("Break Sheet Legacy"));
             NavigateToPage.QALab_Equipment_Management();
-            AddAssertionToList(VerifyPageTitle("Equipment"));
+            AddAssertionToList(VerifyPageHeader("Equipment"));
             ClickCreate();
             ClickCancel();
             NavigateToPage.QALab_BreakSheet_Forecast();
-            AddAssertionToList(VerifyPageTitle("Break Sheet Forecast"));
+            AddAssertionToList(VerifyPageHeader("Break Sheet Forecast"));
             NavigateToPage.QALab_Early_Break_Calendar();
             AddAssertionToList(VerifySchedulerIsDisplayed());
 
@@ -224,35 +224,35 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
             AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_All();
-            AddAssertionToList(VerifyPageTitle("Lab Tests"));
+            AddAssertionToList(VerifyPageHeader("Lab Tests"));
             NavigateToPage.QARecordControl_QA_Test_Retest_Report();
-            AddAssertionToList(VerifyPageTitle("Create Retest Report"));
+            AddAssertionToList(VerifyPageHeader("Create Retest Report"));
             NavigateToPage.QARecordControl_QA_DIRs();
-            AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports"));
+            AddAssertionToList(VerifyPageHeader("IQF Record Control > List of Daily Inspection Reports"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_General_NCR();
-            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of NCR Reports"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_General_CDR();
-            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of CDR Reports"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
-            AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
+            AddAssertionToList(VerifyPageHeader("Retaining Wall Backfill Quantity Tracker"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
-            AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
+            AddAssertionToList(VerifyPageHeader("Concrete Paving Quantity Tracker"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_MPL_Tracker();
-            AddAssertionToList(VerifyPageTitle("MPL Tracker"));
+            AddAssertionToList(VerifyPageHeader("MPL Tracker"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_Girder_Tracker();
-            AddAssertionToList(VerifyPageTitle("Girder Tracker"));
+            AddAssertionToList(VerifyPageHeader("Girder Tracker"));
             ClickNew();
             ClickCancel();
             AssertAll();
@@ -266,15 +266,15 @@ namespace RKCIUIAutomation.Page.Workflows
             LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QAEngineer_QA_Test_Lab_Supervisor_Review();
-            AddAssertionToList(VerifyPageTitle("Lab Supervisor Review"));
+            AddAssertionToList(VerifyPageHeader("Lab Supervisor Review"));
             NavigateToPage.QAEngineer_QA_Test_Field_Supervisor_Review(); //not in 249
-            AddAssertionToList(VerifyPageTitle(""));
+            AddAssertionToList(VerifyPageHeader(""));
             NavigateToPage.QAEngineer_QA_Test_Authorization();
-            AddAssertionToList(VerifyPageTitle("Authorizations"));
+            AddAssertionToList(VerifyPageHeader("Authorizations"));
             NavigateToPage.QAEngineer_DIR_QA_Review_Approval();
-            AddAssertionToList(VerifyPageTitle("IQF Engineer > List of Daily Inspection Reports"));
+            AddAssertionToList(VerifyPageHeader("IQF Engineer > List of Daily Inspection Reports"));
             NavigateToPage.QA_Test_Proctor_Curve_Controller();
-            AddAssertionToList(VerifyPageTitle("Proctor Curve Information"));
+            AddAssertionToList(VerifyPageHeader("Proctor Curve Information"));
             AssertAll();
         }
 
@@ -285,11 +285,11 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_General_NCR(); //TODO: Is this correct?
-            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of NCR Reports"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_General_CDR(); //TODO: Is this correct?
-            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of CDR Reports"));
             ClickNew();
             ClickCancel();
             AssertAll();
@@ -306,7 +306,7 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.OV_Create_OV_Test();
             AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.OV_OV_Test();
-            AddAssertionToList(VerifyPageTitle("OV Tests"));
+            AddAssertionToList(VerifyPageHeader("OV Tests"));
 
             AssertAll();
         }
@@ -318,27 +318,27 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QASearch_QA_Tests();
-            AddAssertionToList(VerifyPageTitle("Test Search"));
+            AddAssertionToList(VerifyPageHeader("Test Search"));
             NavigateToPage.QASearch_QA_Test_Summary_Search();
-            AddAssertionToList(VerifyPageTitle("Test Summary Report Search"));
+            AddAssertionToList(VerifyPageHeader("Test Summary Report Search"));
             NavigateToPage.QASearch_QA_Guide_Schedule_Summary_Report();
-            AddAssertionToList(VerifyPageTitle("Guide Schedule of Sampling and Testing"));
+            AddAssertionToList(VerifyPageHeader("Guide Schedule of Sampling and Testing"));
             NavigateToPage.QASearch_Inspection_Deficiency_Log_Report();
-            AddAssertionToList(VerifyPageTitle("Inspection Deficiency Log Search"));
+            AddAssertionToList(VerifyPageHeader("Inspection Deficiency Log Search"));
             NavigateToPage.QASearch_Daily_Inspection_Report();
-            AddAssertionToList(VerifyPageTitle("Daily Inspection Report Search"));
+            AddAssertionToList(VerifyPageHeader("Daily Inspection Report Search"));
             NavigateToPage.QASearch_DIR_Summary_Report();
-            AddAssertionToList(VerifyPageTitle("DIR Summary Report Search"));
+            AddAssertionToList(VerifyPageHeader("DIR Summary Report Search"));
             NavigateToPage.QASearch_DIR_Checklist_Search();
-            AddAssertionToList(VerifyPageTitle("DIR Checklist Search"));
+            AddAssertionToList(VerifyPageHeader("DIR Checklist Search"));
             NavigateToPage.QASearch_QMS_Document_Search();
-            AddAssertionToList(VerifyPageTitle("QMS Documents Search"));
+            AddAssertionToList(VerifyPageHeader("QMS Documents Search"));
             NavigateToPage.Environmental_Document_Search();//not in 249
-            AddAssertionToList(VerifyPageTitle(""));
+            AddAssertionToList(VerifyPageHeader(""));
             NavigateToPage.QAQO_Test_Proctor_Curve_Report();
-            AddAssertionToList(VerifyPageTitle("ProctorCurveSummary"));
+            AddAssertionToList(VerifyPageHeader("ProctorCurveSummary"));
             NavigateToPage.QAQO_Test_Proctor_Curve_Summary();
-            AddAssertionToList(VerifyPageTitle("ProctorCurveReport"));
+            AddAssertionToList(VerifyPageHeader("ProctorCurveReport"));
             AssertAll();
         }
 
@@ -350,12 +350,12 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QAField_QA_Test();
-            AddAssertionToList(VerifyPageTitle("Field Tests"));
+            AddAssertionToList(VerifyPageHeader("Field Tests"));
             //ClickCreate(); TODO - Create button is not present in page
             //ClickCancel();
 
             NavigateToPage.QAField_QA_DIRs();
-            AddAssertionToList(VerifyPageTitle("IQF Field > List of Daily Inspection Reports"));
+            AddAssertionToList(VerifyPageHeader("IQF Field > List of Daily Inspection Reports"));
             //ClickCreate(); //TODO - Error Msg - "Invalid Technician ID for DIR No."
             //ClickCancel();
 
@@ -363,7 +363,7 @@ namespace RKCIUIAutomation.Page.Workflows
             // AddAssertionToList(VerifyPageTitle("");
 
             NavigateToPage.QAField_Weekly_Environmental_Monitoring();
-            AddAssertionToList(VerifyPageTitle("Week Environmental Monitoring Reports"));
+            AddAssertionToList(VerifyPageHeader("Week Environmental Monitoring Reports"));
             ClickNew();
             AddAssertionToList(VerifyAlertMessage("Week Ending Date is required!"));
             AcceptAlertMessage();
@@ -372,13 +372,13 @@ namespace RKCIUIAutomation.Page.Workflows
             ClickCancel();
 
             NavigateToPage.QAField_Daily_Environmental_Inspection();
-            AddAssertionToList(VerifyPageTitle("List of Daily Environmental Inspection Reports"));
+            AddAssertionToList(VerifyPageHeader("List of Daily Environmental Inspection Reports"));
             ClickNew();
             AddAssertionToList(VerifyActiveModalTitle("DEI Creation"));
             CloseActiveModalWindow();
 
             NavigateToPage.QAField_Weekly_Environmental_Inspection();
-            AddAssertionToList(VerifyPageTitle("List of Weekly Environmental Inspection Reportse"));
+            AddAssertionToList(VerifyPageHeader("List of Weekly Environmental Inspection Reportse"));
             ClickNew();
             AddAssertionToList(VerifyActiveModalTitle("Weekly Environmental Inspection Creation"));
             CloseActiveModalWindow();
@@ -393,11 +393,11 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Control_Point_Scheduler();
-            AddAssertionToList(VerifyPageTitle("Control Point List"));
+            AddAssertionToList(VerifyPageHeader("Control Point List"));
             ClickNew();
             ClickCancel();
             NavigateToPage.Control_Point_Log();
-            AddAssertionToList(VerifyPageTitle("Control Point Log Search"));
+            AddAssertionToList(VerifyPageHeader("Control Point Log Search"));
             AssertAll();
         }
 
@@ -408,11 +408,11 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Owner_DIRs();
-            AddAssertionToList(VerifyPageTitle("DOT > List of Daily Inspection Reports"));
+            AddAssertionToList(VerifyPageHeader("DOT > List of Daily Inspection Reports"));
             ClickCreate();
             ClickCancel();
             NavigateToPage.Owner_NCRs();
-            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of NCR Reports"));
             ClickCreate();
             ClickCancel();
             AssertAll();
@@ -425,36 +425,36 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.MaterialMixCodes_Mix_Design_PCC();
-            AddAssertionToList(VerifyPageTitle("Pcc Mix Design"));
+            AddAssertionToList(VerifyPageHeader("Pcc Mix Design"));
             ClickNew();
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Mix_Design_HMA();
-            AddAssertionToList(VerifyPageTitle("Hma Mix Design"));
+            AddAssertionToList(VerifyPageHeader("Hma Mix Design"));
             VerifyPageIsLoaded();
             ClickNew();
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Sieve_Analyses_JMF();
-            AddAssertionToList(VerifyPageTitle("Sieve Analysis JMF"));
+            AddAssertionToList(VerifyPageHeader("Sieve Analysis JMF"));
             ClickNew();
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Sieve_Analyses_IOC();
-            AddAssertionToList(VerifyPageTitle("Sieve Analysis IOC"));
+            AddAssertionToList(VerifyPageHeader("Sieve Analysis IOC"));
             ClickNew();
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_Concrete_Aggregate();
-            AddAssertionToList(VerifyPageTitle("Aggregate A"));
+            AddAssertionToList(VerifyPageHeader("Aggregate A"));
             ClickNew();
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_Base_Aggregate();
-            AddAssertionToList(VerifyPageTitle("Aggregate E"));
+            AddAssertionToList(VerifyPageHeader("Aggregate E"));
             ClickNew();
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_HMA_Aggregate();
-            AddAssertionToList(VerifyPageTitle("Aggregate F"));
+            AddAssertionToList(VerifyPageHeader("Aggregate F"));
             ClickNew();
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Material_Code_Raw_Material();
-            AddAssertionToList(VerifyPageTitle("Raw Materials"));
+            AddAssertionToList(VerifyPageHeader("Raw Materials"));
             ClickNew();
             ClickCancel();
             AssertAll();
@@ -468,10 +468,10 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.RFI_Create();
-            AddAssertionToList(VerifyPageTitle("Request For Information"));
+            AddAssertionToList(VerifyPageHeader("Request For Information"));
             NavigateToPage.RFI_List();
             //TODO: verify if test should fail if no title is seen on the page
-            AddAssertionToList(VerifyPageTitle(""));//dont see title
+            AddAssertionToList(VerifyPageHeader(""));//dont see title
             AssertAll();
         }
 
@@ -483,11 +483,11 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QCLab_BreakSheet_Creation();
-            AddAssertionToList(VerifyPageTitle("Create Break Sheet"));
+            AddAssertionToList(VerifyPageHeader("Create Break Sheet"));
             NavigateToPage.QCLab_BreakSheet_Legacy();
-            AddAssertionToList(VerifyPageTitle("Break Sheet Legacy"));
+            AddAssertionToList(VerifyPageHeader("Break Sheet Legacy"));
             NavigateToPage.QCLab_Equipment_Management();
-            AddAssertionToList(VerifyPageTitle("Equipment"));
+            AddAssertionToList(VerifyPageHeader("Equipment"));
             ClickCreate();
             ClickCancel();
             AssertAll();
@@ -502,11 +502,11 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.QCRecordControl_QC_Test_Original_Report();
             AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QCRecordControl_QC_Test_All();
-            AddAssertionToList(VerifyPageTitle("Lab Tests"));
+            AddAssertionToList(VerifyPageHeader("Lab Tests"));
             NavigateToPage.QCRecordControl_QC_Test_Correction_Report();
-            AddAssertionToList(VerifyPageTitle("Create Correction Test Report"));
+            AddAssertionToList(VerifyPageHeader("Create Correction Test Report"));
             NavigateToPage.QCRecordControl_QC_DIRs();
-            AddAssertionToList(VerifyPageTitle("List of Inspector's Daily Report"));
+            AddAssertionToList(VerifyPageHeader("List of Inspector's Daily Report"));
             ClickNew();
             ClickCancel();
             AssertAll();
@@ -520,9 +520,9 @@ namespace RKCIUIAutomation.Page.Workflows
             LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QCEngineer_QC_Test_Lab_Supervisor_Review();
-            AddAssertionToList(VerifyPageTitle("Lab Supervisor Review"));
+            AddAssertionToList(VerifyPageHeader("Lab Supervisor Review"));
             NavigateToPage.QCEngineer_QC_Test_Authorization();
-            AddAssertionToList(VerifyPageTitle("Authorizations"));
+            AddAssertionToList(VerifyPageHeader("Authorizations"));
 
             AssertAll();
         }
@@ -534,13 +534,13 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QCSearch_QC_Tests_Search();
-            AddAssertionToList(VerifyPageTitle("Test Search"));
+            AddAssertionToList(VerifyPageHeader("Test Search"));
             NavigateToPage.QASearch_QA_Test_Summary_Search();
-            AddAssertionToList(VerifyPageTitle("Test Summary Report Search"));
+            AddAssertionToList(VerifyPageHeader("Test Summary Report Search"));
             NavigateToPage.QCSearch_Daily_Inspection_Report();
-            AddAssertionToList(VerifyPageTitle("Daily Inspection Report Search"));
+            AddAssertionToList(VerifyPageHeader("Daily Inspection Report Search"));
             NavigateToPage.QCSearch_DIR_Summary_Report();
-            AddAssertionToList(VerifyPageTitle("DIR Summary Report Search"));
+            AddAssertionToList(VerifyPageHeader("DIR Summary Report Search"));
 
             AssertAll();
         }
@@ -553,30 +553,30 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.RMCenter_Search();
-            AddAssertionToList(VerifyPageTitle("RM Center Search"));
+            AddAssertionToList(VerifyPageHeader("RM Center Search"));
             NavigateToPage.RMCenter_Design_Documents();
-            AddAssertionToList(VerifyPageTitle("Design Document"));
+            AddAssertionToList(VerifyPageHeader("Design Document"));
             // ClickCreate();
             //ClickCancel();
             NavigateToPage.RMCenter_Upload_QA_Submittal();
-            AddAssertionToList(VerifyPageTitle("Submittal Details"));
+            AddAssertionToList(VerifyPageHeader("Submittal Details"));
             ClickCancel();
             NavigateToPage.RMCenter_Upload_Owner_Submittal();
-            AddAssertionToList(VerifyPageTitle("New Submittal"));
+            AddAssertionToList(VerifyPageHeader("New Submittal"));
             ClickCancel();
             NavigateToPage.RMCenter_Upload_DEV_Submittal();
-            AddAssertionToList(VerifyPageTitle("Submittal Details"));
+            AddAssertionToList(VerifyPageHeader("Submittal Details"));
             ClickCancel();
             NavigateToPage.RMCenter_DOT_Project_Correspondence_Log();
-            AddAssertionToList(VerifyPageTitle("Transmissions"));
+            AddAssertionToList(VerifyPageHeader("Transmissions"));
             ClickNew();
             ClickCancel();
             NavigateToPage.RMCenter_Review_Revise_Submittal();
-            AddAssertionToList(VerifyPageTitle("Review / Revise Submittals"));
+            AddAssertionToList(VerifyPageHeader("Review / Revise Submittals"));
             NavigateToPage.RMCenter_RFC_Management();
-            AddAssertionToList(VerifyPageTitle("RFC List"));
+            AddAssertionToList(VerifyPageHeader("RFC List"));
             NavigateToPage.RMCenter_Project_Correspondence_Log();
-            AddAssertionToList(VerifyPageTitle("Transmissions"));
+            AddAssertionToList(VerifyPageHeader("Transmissions"));
             ClickNew();
             ClickCancel();
             AssertAll();
@@ -602,15 +602,15 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QALab_Technician_Random();
-            AddAssertionToList(VerifyPageTitle("Technician Random"));
+            AddAssertionToList(VerifyPageHeader("Technician Random"));
             NavigateToPage.QALab_BreakSheet_Creation();
-            AddAssertionToList(VerifyPageTitle("Create Break Sheet"));
+            AddAssertionToList(VerifyPageHeader("Create Break Sheet"));
             NavigateToPage.QALab_BreakSheet_Legacy();
-            AddAssertionToList(VerifyPageTitle("Break Sheet Legacy"));
+            AddAssertionToList(VerifyPageHeader("Break Sheet Legacy"));
             NavigateToPage.QALab_Equipment_Management();
-            AddAssertionToList(VerifyPageTitle("Equipment"));
+            AddAssertionToList(VerifyPageHeader("Equipment"));
             NavigateToPage.QALab_BreakSheet_Forecast();
-            AddAssertionToList(VerifyPageTitle("Break Sheet Forecast"));
+            AddAssertionToList(VerifyPageHeader("Break Sheet Forecast"));
 
             AssertAll();
         }
@@ -644,25 +644,25 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
             AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
-            AddAssertionToList(VerifyPageTitle("Create Correction Test Report"));
+            AddAssertionToList(VerifyPageHeader("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();
-            AddAssertionToList(VerifyPageTitle("Lab Tests"));
+            AddAssertionToList(VerifyPageHeader("Lab Tests"));
             NavigateToPage.QARecordControl_QA_Test_Retest_Report();
-            AddAssertionToList(VerifyPageTitle("Create Retest Report"));
+            AddAssertionToList(VerifyPageHeader("Create Retest Report"));
             NavigateToPage.QARecordControl_QA_DIRs();
-            AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports"));
+            AddAssertionToList(VerifyPageHeader("IQF Record Control > List of Daily Inspection Reports"));
             NavigateToPage.QARecordControl_General_NCR();
-            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of NCR Reports"));
             NavigateToPage.QARecordControl_General_CDR();
-            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of CDR Reports"));
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
-            AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
+            AddAssertionToList(VerifyPageHeader("Retaining Wall Backfill Quantity Tracker"));
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
-            AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
+            AddAssertionToList(VerifyPageHeader("Concrete Paving Quantity Tracker"));
             NavigateToPage.QARecordControl_MPL_Tracker();
-            AddAssertionToList(VerifyPageTitle("MPL Tracker"));
+            AddAssertionToList(VerifyPageHeader("MPL Tracker"));
             NavigateToPage.QARecordControl_Girder_Tracker();
-            AddAssertionToList(VerifyPageTitle("Girder Tracker"));
+            AddAssertionToList(VerifyPageHeader("Girder Tracker"));
 
             AssertAll();
         }
@@ -683,17 +683,17 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QALab_Technician_Random();
-            AddAssertionToList(VerifyPageTitle("Technician Random"));
+            AddAssertionToList(VerifyPageHeader("Technician Random"));
             NavigateToPage.QALab_BreakSheet_Creation();
-            AddAssertionToList(VerifyPageTitle("Create Break Sheet"));
+            AddAssertionToList(VerifyPageHeader("Create Break Sheet"));
             NavigateToPage.QALab_BreakSheet_Legacy();
-            AddAssertionToList(VerifyPageTitle("Break Sheet Legacy"));
+            AddAssertionToList(VerifyPageHeader("Break Sheet Legacy"));
             NavigateToPage.QALab_Equipment_Management();
-            AddAssertionToList(VerifyPageTitle("Equipment"));
+            AddAssertionToList(VerifyPageHeader("Equipment"));
             NavigateToPage.QALab_BreakSheet_Forecast();
-            AddAssertionToList(VerifyPageTitle("Break Sheet Forecast"));
+            AddAssertionToList(VerifyPageHeader("Break Sheet Forecast"));
             NavigateToPage.QALab_Cylinder_PickUp_List();
-            AddAssertionToList(VerifyPageTitle("Cylinder Pick-Up Status:"));
+            AddAssertionToList(VerifyPageHeader("Cylinder Pick-Up Status:"));
             NavigateToPage.QALab_Early_Break_Calendar();
             AddAssertionToList(VerifySchedulerIsDisplayed());
 
@@ -705,25 +705,25 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.RMCenter_Search();
-            AddAssertionToList(VerifyPageTitle("RM Center Search"));
+            AddAssertionToList(VerifyPageHeader("RM Center Search"));
             NavigateToPage.RMCenter_Design_Documents();
-            AddAssertionToList(VerifyPageTitle("Design Document"));
+            AddAssertionToList(VerifyPageHeader("Design Document"));
             NavigateToPage.RMCenter_Upload_QA_Submittal();
-            AddAssertionToList(VerifyPageTitle("Submittal Details"));
+            AddAssertionToList(VerifyPageHeader("Submittal Details"));
             NavigateToPage.RMCenter_Upload_Owner_Submittal();
-            AddAssertionToList(VerifyPageTitle("New Submittal"));
+            AddAssertionToList(VerifyPageHeader("New Submittal"));
             NavigateToPage.RMCenter_Upload_DEV_Submittal();
-            AddAssertionToList(VerifyPageTitle("Submittal Details"));
+            AddAssertionToList(VerifyPageHeader("Submittal Details"));
             NavigateToPage.RMCenter_DOT_Project_Correspondence_Log();
-            AddAssertionToList(VerifyPageTitle("Transmissions"));
+            AddAssertionToList(VerifyPageHeader("Transmissions"));
             NavigateToPage.RMCenter_Review_Revise_Submittal();
-            AddAssertionToList(VerifyPageTitle("Review / Revise Submittals"));
+            AddAssertionToList(VerifyPageHeader("Review / Revise Submittals"));
             NavigateToPage.RMCenter_RFC_Management();
-            AddAssertionToList(VerifyPageTitle("RFC List"));
+            AddAssertionToList(VerifyPageHeader("RFC List"));
             NavigateToPage.RMCenter_Project_Correspondence_Log();
-            AddAssertionToList(VerifyPageTitle("Transmissions"));
+            AddAssertionToList(VerifyPageHeader("Transmissions"));
             NavigateToPage.RMCenter_Comment_Summary();
-            AddAssertionToList(VerifyPageTitle("Comment Summary Search"));
+            AddAssertionToList(VerifyPageHeader("Comment Summary Search"));
 
             AssertAll();
         }
@@ -735,29 +735,29 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
             AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
-            AddAssertionToList(VerifyPageTitle("Create Correction Test Report"));
+            AddAssertionToList(VerifyPageHeader("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();
-            AddAssertionToList(VerifyPageTitle("Lab Tests"));
+            AddAssertionToList(VerifyPageHeader("Lab Tests"));
             NavigateToPage.QARecordControl_QA_Test_Retest_Report();
-            AddAssertionToList(VerifyPageTitle("Create Retest Report"));
+            AddAssertionToList(VerifyPageHeader("Create Retest Report"));
             NavigateToPage.QARecordControl_QA_DIRs();
-            AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports"));
+            AddAssertionToList(VerifyPageHeader("IQF Record Control > List of Daily Inspection Reports"));
             NavigateToPage.QARecordControl_General_NCR();
-            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of NCR Reports"));
             NavigateToPage.QARecordControl_General_CDR();
-            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of CDR Reports"));
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
-            AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
+            AddAssertionToList(VerifyPageHeader("Retaining Wall Backfill Quantity Tracker"));
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
-            AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
+            AddAssertionToList(VerifyPageHeader("Concrete Paving Quantity Tracker"));
             NavigateToPage.QARecordControl_MPL_Tracker();
-            AddAssertionToList(VerifyPageTitle("MPL Tracker"));
+            AddAssertionToList(VerifyPageHeader("MPL Tracker"));
             NavigateToPage.QARecordControl_Girder_Tracker();
-            AddAssertionToList(VerifyPageTitle("Girder Tracker"));
+            AddAssertionToList(VerifyPageHeader("Girder Tracker"));
             NavigateToPage.Qms_Document();
-            AddAssertionToList(VerifyPageTitle("QMS Documents"));
+            AddAssertionToList(VerifyPageHeader("QMS Documents"));
             NavigateToPage.QARecordControl_Environmental_Document();
-            AddAssertionToList(VerifyPageTitle("Environmental Documents"));
+            AddAssertionToList(VerifyPageHeader("Environmental Documents"));
 
             AssertAll();
         }
@@ -791,25 +791,25 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
             AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
-            AddAssertionToList(VerifyPageTitle("Create Correction Test Report"));
+            AddAssertionToList(VerifyPageHeader("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();
-            AddAssertionToList(VerifyPageTitle("Lab Tests"));
+            AddAssertionToList(VerifyPageHeader("Lab Tests"));
             NavigateToPage.QARecordControl_QA_Test_Retest_Report();
-            AddAssertionToList(VerifyPageTitle("Create Retest Report"));
+            AddAssertionToList(VerifyPageHeader("Create Retest Report"));
             NavigateToPage.QARecordControl_QA_DIRs();
-            AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Daily Inspection Reports"));
+            AddAssertionToList(VerifyPageHeader("IQF Record Control > List of Daily Inspection Reports"));
             NavigateToPage.QARecordControl_General_NCR();
-            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of NCR Reports"));
             NavigateToPage.QARecordControl_General_CDR();
-            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of CDR Reports"));
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
-            AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
+            AddAssertionToList(VerifyPageHeader("Retaining Wall Backfill Quantity Tracker"));
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
-            AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
+            AddAssertionToList(VerifyPageHeader("Concrete Paving Quantity Tracker"));
             NavigateToPage.QARecordControl_MPL_Tracker();
-            AddAssertionToList(VerifyPageTitle("MPL Tracker"));
+            AddAssertionToList(VerifyPageHeader("MPL Tracker"));
             NavigateToPage.QARecordControl_Girder_Tracker();
-            AddAssertionToList(VerifyPageTitle("Girder Tracker"));
+            AddAssertionToList(VerifyPageHeader("Girder Tracker"));
 
             AssertAll();
         }
@@ -832,31 +832,31 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_QA_DIRs();
-            AddAssertionToList(VerifyPageTitle("IQF Record Control > List of Inspector's Daily Report"));
+            AddAssertionToList(VerifyPageHeader("IQF Record Control > List of Inspector's Daily Report"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_General_NCR();
-            AddAssertionToList(VerifyPageTitle("List of NCR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of NCR Reports"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_General_CDR();
-            AddAssertionToList(VerifyPageTitle("List of CDR Reports"));
+            AddAssertionToList(VerifyPageHeader("List of CDR Reports"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_Retaining_Wall_BackFill_Quantity_Tracker();
-            AddAssertionToList(VerifyPageTitle("Retaining Wall Backfill Quantity Tracker"));
+            AddAssertionToList(VerifyPageHeader("Retaining Wall Backfill Quantity Tracker"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_Concrete_Paving_Quantity_Tracker();
-            AddAssertionToList(VerifyPageTitle("Concrete Paving Quantity Tracker"));
+            AddAssertionToList(VerifyPageHeader("Concrete Paving Quantity Tracker"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_MPL_Tracker();
-            AddAssertionToList(VerifyPageTitle("MPL Tracker"));
+            AddAssertionToList(VerifyPageHeader("MPL Tracker"));
             ClickNew();
             ClickCancel();
             NavigateToPage.QARecordControl_Girder_Tracker();
-            AddAssertionToList(VerifyPageTitle("Girder Tracker"));
+            AddAssertionToList(VerifyPageHeader("Girder Tracker"));
             ClickNew();
             ClickCancel();
             AssertAll();

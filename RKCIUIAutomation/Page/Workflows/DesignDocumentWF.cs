@@ -35,7 +35,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         private bool AlreadyInDesignDocumentPage()
         {
-            bool inDesignDocPage = VerifyPageTitle("Design Document");
+            bool inDesignDocPage = VerifyPageHeader("Design Document");
             return inDesignDocPage;
         }
         
@@ -278,7 +278,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void CreateDesignDocCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment)
         {
             DesignDocWF.LoginToDesignDocuments(workflowType);
-            AddAssertionToList(VerifyPageTitle("Design Document"), "VerifyPageTitle(\"Design Document\")");
+            AddAssertionToList(VerifyPageHeader("Design Document"), "VerifyPageTitle(\"Design Document\")");
             DesignDocCommentReview.CreateDocument();
         }
 

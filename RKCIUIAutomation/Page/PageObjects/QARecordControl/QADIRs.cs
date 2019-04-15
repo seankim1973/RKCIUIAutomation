@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
@@ -147,13 +148,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         [ThreadStatic]
         internal static string dirNumberKey;
 
-        internal void StoreDirNumber(string dirNum = "")
+        internal void StoreDirNumber()
         {
-            dirNumber = dirNum.Equals("")
-                ? GetAttribute(By.Id("DIRNO"), "value")
-                : dirNum;
-
-            dirNumberKey = $"{tenantName}{GetTestName()}_dirNumber";
+            dirNumber = GetAttribute(By.Id("DIRNO"), "value");
+            dirNumberKey = $"DIR_varKey";
             CreateVar(dirNumberKey, dirNumber);
             log.Debug($"#####Stored DIR Number - KEY: {dirNumberKey} || VALUE: {GetVar(dirNumberKey)}");
         }
@@ -495,6 +493,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     #endregion DIR/IDR/DWR Generic Class
 
+
     public interface IQADIRs
     {
         bool IsLoaded();
@@ -545,9 +544,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void PopulateRequiredFields();
 
-        string GetDirNumber(string DirNumberKey = "");
+        string GetDirNumber();
 
-        void SetDirNumber(string DirNumberKey = "");
+        void SetDirNumber();
 
         void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00);
 
@@ -752,11 +751,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         QADIRs QaDIRs_Base => new QADIRs(Driver);
 
-        public virtual string GetDirNumber(string dirNumKey = "")
-            => GetVar(dirNumKey.Equals("") ? dirNumberKey : dirNumKey);
+        public virtual string GetDirNumber()
+            => GetVar(dirNumberKey);
 
-        public virtual void SetDirNumber(string dirNum = "")
-            => QaDIRs_Base.StoreDirNumber(dirNum);
+        public virtual void SetDirNumber()
+            => QaDIRs_Base.StoreDirNumber();
 
         public virtual bool IsLoaded()
             => Driver.Title.Equals("DIR List - ELVIS PMC");
@@ -1046,7 +1045,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 ClickTab(tableTab);
-                string _dirNum = dirNumber.Equals("") ? GetDirNumber() : dirNumber;
+                string _dirNum = dirNumber.HasValue()
+                    ? dirNumber
+                    : GetDirNumber();
+
                 isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, TableType.MultiTab, noRecordsExpected);
 
                 string logMsg = isDisplayed ? "Found" : "Unable to find";

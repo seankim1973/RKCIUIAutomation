@@ -207,22 +207,13 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     clickLocator = GetNavMenuByLocator(baseUtils.ConvertToType<Enum>(navEnum), baseUtils.ConvertToType<Enum>(mainNavEnum));
                 }
+
+                JsClickElement(clickLocator);
+                WaitForPageReady();
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
-            }
-            finally
-            {
-                try
-                {
-                    JsClickElement(clickLocator);
-                    WaitForPageReady();
-                }
-                catch (Exception e)
-                {
-                    log.Error(e.Message);
-                }
             }
         }
 
