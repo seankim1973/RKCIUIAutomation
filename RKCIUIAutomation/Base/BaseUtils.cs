@@ -255,6 +255,10 @@ namespace RKCIUIAutomation.Base
             {
                 testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Green));
             }
+            else if (details.Contains("skipped"))
+            {
+                testInstance.Skip(CreateReportMarkupLabel(details, ExtentColor.Yellow));
+            }
             else
             {
                 testInstance.Info(details);

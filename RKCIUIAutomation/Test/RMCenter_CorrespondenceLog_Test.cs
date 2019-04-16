@@ -29,5 +29,19 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
             ProjCorrespondenceLog.VerifyTransmissionDetailsPageValuesInRemainingTableTabs(transmittalNumber);
             AssertAll();
         }
+
+        [Test]
+        [Category(Component.Correspondence_Log)]
+        [Property(TestCaseNumber, 2187525)]
+        [Property(Priority, "High")]
+        [Description("Verify filtering of 'Correspondence Log / Transmittal Log' documents table by column names.")]
+        public void CorresondenceLog_Filters()
+        {
+            ProjCorrespondenceLog.LogintoCorrespondenceLogPage(UserType.TransmissionsGeneral);
+            string transmittalNumber = ProjCorrespondenceLog.CreateNewAndPopulateFields();
+            ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayedByGridColumnFilter();
+            ProjCorrespondenceLog.VerifyTransmissionDetailsGridFilterInRemainingTableTabs(transmittalNumber);
+            AssertAll();
+        }
     }
 }
