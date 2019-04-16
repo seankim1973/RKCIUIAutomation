@@ -156,16 +156,19 @@ namespace RKCIUIAutomation.Page
             => $"//li[@class='dropdown']/a[contains(text(),'{navEnum.GetString()}')]";
 
         private string SetNavMenuXpath(Enum navEnum, Enum parentNavEnum = null)
-        {
-            if (parentNavEnum == null)
-            {
-                return $"//ul[@class='dropdown-menu']/li/a[contains(text(),'{navEnum.GetString()}')]";
-            }
-            else
-            {
-                return $"//a[contains(text(),'{parentNavEnum.GetString()}')]/following-sibling::ul[@class='dropdown-menu']/li/a[contains(text(),'{navEnum.GetString()}')]";
-            }
-        }
+            => parentNavEnum == null
+                ? $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']"
+                : $"//a[contains(text(),'{parentNavEnum.GetString()}')]/following-sibling::ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
+        //{
+        //    if (parentNavEnum == null)
+        //    {
+        //        return $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
+        //    }
+        //    else
+        //    {
+        //        return $"//a[contains(text(),'{parentNavEnum.GetString()}')]/following-sibling::ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
+        //    }
+        //}
 
         private string SetInputFieldXpath<T>(T inputFieldLabelOrID)
         {

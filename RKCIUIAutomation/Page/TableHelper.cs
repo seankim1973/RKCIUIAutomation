@@ -425,6 +425,8 @@ namespace RKCIUIAutomation.Page
             string activeTblTab = "";
             int tblRowCount = 0;
 
+            By noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
+
             try
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
@@ -456,7 +458,6 @@ namespace RKCIUIAutomation.Page
                     activeTblTab = "//div[@class='k-content k-state-active']";
                 }
 
-                By noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
                 By tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
 
                 if (noRecordsExpected)
@@ -511,6 +512,17 @@ namespace RKCIUIAutomation.Page
                         }
                     }
                 }
+            }
+            catch (NoSuchElementException)
+            {
+                noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
+                isDisplayedAsExpected = noRecordsExpected
+                    ? noRecordsMsgDisplayed
+                        ? true
+                        : false
+                    : noRecordsMsgDisplayed
+                        ? false
+                        : true;
             }
             catch (Exception e)
             {
