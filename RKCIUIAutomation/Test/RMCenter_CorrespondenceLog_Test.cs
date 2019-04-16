@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,6 +42,20 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
             string transmittalNumber = ProjCorrespondenceLog.CreateNewAndPopulateFields();
             ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayedByGridColumnFilter();
             ProjCorrespondenceLog.VerifyTransmissionDetailsGridFilterInRemainingTableTabs(transmittalNumber);
+            AssertAll();
+        }
+
+        [Test]
+        [Category(Component.Correspondence_Log)]
+        [Property(Priority, "High")]
+        [Description("Search behavior validation")]
+        public void CorrespondenceLog_Search()
+        {
+            ProjCorrespondenceLog.LogintoCorrespondenceLogPage(UserType.TransmissionsGeneral);
+            NavigateToPage.RMCenter_Search();
+
+            //Loop through fields to find Transmittal textbox, enter value and Search
+            AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLocationBySearch());
             AssertAll();
         }
     }
