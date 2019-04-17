@@ -628,7 +628,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override bool VerifyTransmittalLocationBySearch()
         {
-            throw new NotImplementedException();
+            ClickElement(By.Id("SearchButton"));
+            bool isDisplayed = VerifyRecordIsDisplayed(ColumnName.Title, "RFC A - MOT Segment 1 Phase 0", TableType.Single);
+
+            return isDisplayed;
         }
     }
 
