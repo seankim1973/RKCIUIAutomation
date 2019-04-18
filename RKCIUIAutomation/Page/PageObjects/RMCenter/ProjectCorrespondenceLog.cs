@@ -653,6 +653,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         bool VerifyIsMultiTabGrid();
 
+        /// <summary>
+        /// Navigates into RM Center Project Correspondence Log page and call PopulateAllFields() method to create Transmission report and generate a List of KeyValuePairs for validation [tenantAllEntryFieldKeyValuePairs]
+        /// </summary>
+        /// <returns></returns>
         string CreateNewAndPopulateFields();
 
         IList<By> SetTenantRequiredFieldLocators();
@@ -674,9 +678,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         bool VerifyTransmittalLogIsDisplayed(TableTab tableTab, string transmittalNumber, bool noRecordExpected = false);
 
         bool VerifyTransmittalLogIsDisplayedByGridColumnFilter();
-
         string PopulateAllFields();
-
         void EnterText_Date(string shortDate = "");
         void EnterText_TransmittalNumber(string value = "");
         void EnterText_Title(string value = "");
@@ -767,6 +769,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void IterrateOverRemainingTableTabs_DetailsPageValues(string transmittalNumber, IList<TableTab> remainingTblTabs);
         public abstract bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false);
         public abstract bool VerifyTransmittalLogIsDisplayed(TableTab tableTab, string transmittalNumber, bool noRecordExpected = false);
+
+        /// <summary>
+        /// This method will generate List of KeyValuePair for tenantAllEntryFieldKeyValuePairs field variable - (Key: EntryField enum and Value: entry field data in string format) to be used for validation.
+        /// </summary>
+        /// <returns></returns>
         public abstract string PopulateAllFields();
         public abstract void EnterText_Date(string shortDate = "");
         public abstract void EnterText_TransmittalNumber(string value = "");

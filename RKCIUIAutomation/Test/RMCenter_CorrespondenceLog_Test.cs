@@ -52,9 +52,13 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
         public void CorrespondenceLog_Search()
         {
             ProjCorrespondenceLog.LogintoCorrespondenceLogPage(UserType.TransmissionsGeneral);
+            //CreateNewAndPopulateFields() method will create a new Transmission entry and build data to be used in RM Center Search - refer to method summary
+            string transmittalNumber = ProjCorrespondenceLog.CreateNewAndPopulateFields();
+
             NavigateToPage.RMCenter_Search();
 
             //Loop through fields to find Transmittal textbox, enter value and Search
+            //Siri - this method belongs in the RMCenter.Search class
             AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLocationBySearch());
             AssertAll();
         }
