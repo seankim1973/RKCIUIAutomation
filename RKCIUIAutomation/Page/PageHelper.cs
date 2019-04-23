@@ -16,6 +16,14 @@ namespace RKCIUIAutomation.Page
 
         public PageHelper(IWebDriver driver) => this.Driver = driver;
 
+        public const string TEXT = "TXT";
+        public const string DDL = "DDL";
+        public const string DATE = "DATE";
+        public const string FUTUREDATE = "FUTUREDATE";
+        public const string MULTIDDL = "MULTIDDL";
+        public const string RDOBTN = "RDOBTN";
+        public const string CHKBOX = "CHKBOX";
+
         public static PageBaseHelper PgBaseHelper
             => new PageBaseHelper();
 
@@ -27,15 +35,11 @@ namespace RKCIUIAutomation.Page
             string mm = string.Empty;
             string dd = string.Empty;
             string yyyy = string.Empty;
-            bool argHasValue = shortDate.HasValue();
+            string date = DateTime.Now.ToShortDateString();
 
-            string date = argHasValue
-                ? shortDate
-                : DateTime.Now.ToShortDateString();
-
-            if (argHasValue)
+            if (shortDate.HasValue())
             {
-                string[] splitShortDate = Regex.Split(date, "/");
+                string[] splitShortDate = Regex.Split(shortDate, "/");
                 mm = splitShortDate[0];
                 dd = splitShortDate[1];
                 yyyy = splitShortDate[2];
@@ -58,18 +62,17 @@ namespace RKCIUIAutomation.Page
                         ? Regex.Replace(dd, "0", "")
                         : dd;
                 }
-            }
 
-            date = argHasValue
-                ? $"{mm}/{dd}/{yyyy}"
-                : date;
+                date = $"{mm}/{dd}/{yyyy}";
+            }
 
             return date;
         }
 
-        public static string GetFutureShortDate()
+        public static string GetFutureShortDate(string shortDate = "")
         {
-            string currentDate = DateTime.Now.ToShortDateString();
+            string currentDate = GetShortDate(shortDate);
+
             string[] splitShortDate = Regex.Split(currentDate, "/");
             int mm = int.Parse(splitShortDate[0]);
             int dd = int.Parse(splitShortDate[1]);
@@ -88,6 +91,32 @@ namespace RKCIUIAutomation.Page
             dd = dd > 27
                 ? 1
                 : dd + 1;
+
+            return $"{mm}/{dd}/{yyyy}";
+        }
+
+        public static string GetPastShortDate(string shortDate = "")
+        {
+            string currentDate = GetShortDate(shortDate);
+
+            string[] splitShortDate = Regex.Split(currentDate, "/");
+            int mm = int.Parse(splitShortDate[0]);
+            int dd = int.Parse(splitShortDate[1]);
+            int yyyy = int.Parse(splitShortDate[2]);
+
+            yyyy = dd == 1 && mm == 1
+                ? yyyy - 1
+                : yyyy;
+
+            mm = dd == 1
+                ? mm == 1
+                    ? 12
+                    : mm - 1
+                : mm;
+
+            dd = dd == 1
+                ? 27
+                : dd - 1;
 
             return $"{mm}/{dd}/{yyyy}";
         }

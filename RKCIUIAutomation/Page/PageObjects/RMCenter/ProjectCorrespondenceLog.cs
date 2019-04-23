@@ -93,15 +93,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         [ThreadStatic]
         internal static IList<KeyValuePair<EntryField, string>> tenantAllEntryFieldKeyValuePairs;
 
-        const string TEXT = "TXT";
-        const string DLL = "DDL";
-        const string DATE = "DATE";
-        const string FUTUREDATE = "FUTUREDATE";
-        const string MULTIDDL = "MULTIDDL";
-        const string RDOBTN = "RDOBTN";
-        const string CHKBOX = "CHKBOX";
-
-
         #region //Entry field override Action methods
 
         public override void EnterText_Date(string shortDate = "")
@@ -204,9 +195,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             {
                 fieldValue = GetAttribute(By.Id($"{entryField.GetString()}"), "value");
             }
-            else if (fieldType.Equals(DLL) || fieldType.Equals(MULTIDDL))
+            else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
             {
-                if (fieldType.Equals(DLL))
+                if (fieldType.Equals(DDL))
                 {
                     if (entryField.Equals(EntryField.Access))
                     {
@@ -302,7 +293,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
                         EnterText(By.Id(entryField.GetString()), fieldValue);
                     }
-                    else if (fieldType.Equals(DLL) || fieldType.Equals(MULTIDDL))
+                    else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
                     {
                         argValue = ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
                             ? 1
@@ -310,7 +301,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
                         ExpandAndSelectFromDDList(entryField, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
 
-                        if (fieldType.Equals(DLL))
+                        if (fieldType.Equals(DDL))
                         {
                             if (entryField.Equals(EntryField.Access))
                             {

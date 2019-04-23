@@ -31,7 +31,7 @@ namespace RKCIUIAutomation.Test
         public IPageNavigation NavigateToPage
             => new PageNavigation().SetClass<IPageNavigation>(Driver);
 
-        public ISearch RMCenter_SearchPage
+        public ISearch RMCenterSearch
             => new Search().SetClass<ISearch>(Driver);
 
         public IDesignDocument DesignDocCommentReview

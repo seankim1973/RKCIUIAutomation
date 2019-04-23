@@ -47,6 +47,7 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
 
         [Test]
         [Category(Component.Correspondence_Log)]
+        [Property(TestCaseNumber, 2187525)]
         [Property(Priority, "High")]
         [Description("Search behavior validation")]
         public void CorrespondenceLog_Search()
@@ -56,10 +57,10 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
             string transmittalNumber = ProjCorrespondenceLog.CreateNewAndPopulateFields();
 
             NavigateToPage.RMCenter_Search();
-
+            RMCenterSearch.VerifySearchResultByCriteria(transmittalNumber);
             //Loop through fields to find Transmittal textbox, enter value and Search
             //Siri - this method belongs in the RMCenter.Search class
-            AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLocationBySearch());
+            //AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLocationBySearch());
             AssertAll();
         }
     }

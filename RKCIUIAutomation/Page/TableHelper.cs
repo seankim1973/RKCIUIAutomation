@@ -430,7 +430,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
-
+                WaitForLoading();
                 string gridId = _kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = GetAttribute(gridParentDivLocator, "class");

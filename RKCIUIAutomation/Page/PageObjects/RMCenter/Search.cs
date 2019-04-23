@@ -1,7 +1,11 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
+using System.Collections.Generic;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
+using static RKCIUIAutomation.Page.PageObjects.RMCenter.ProjectCorrespondenceLog;
+using System;
+using ColumnName = RKCIUIAutomation.Page.PageObjects.RMCenter.Search.ColumnName;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -11,29 +15,39 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public Search()
         {
+            //tenantSearchCriteriaFields = RMCenterSearch.SetTenantSearchCriteriaFields();
+            //tenantSearchGridColumnNames = RMCenterSearch.SetTenantSearchGridColumnNames();
         }
 
         public Search(IWebDriver driver) => this.Driver = driver;
 
+        [ThreadStatic]
+        public static IList<SearchCriteria> tenantSearchCriteriaFields;
+
+        [ThreadStatic]
+        public static IList<ColumnName> tenantSearchGridColumnNames;
+
+
         public enum SearchCriteria
         {
-            [StringValue("SelectedType")] DocumentType,
-            [StringValue("SelectedStatus")] Status,
-            [StringValue("SelectedCategory")] Category,
-            [StringValue("SelectedSegmentArea")] SegmentArea,
-            [StringValue("Title")] Title,
-            [StringValue("OriginatorDocumentRef")] OriginatorDocumentRef,
-            [StringValue("Number")] Number,
-            [StringValue("TransmittalNumber")] TransmittalNumber,
-            [StringValue("From")] From,
-            [StringValue("MSLNo")] MSLNo, //GLX
-            [StringValue("OwnerNumber")] Owner_MSLNumber, //I15SB, SH249, SG
-            [StringValue("Attention")] Attention,
-            [StringValue("TransmittalFromDate")] TransmittalDate_From,
-            [StringValue("TransmittalToDate")] TransmittalDate_To,
-            [StringValue("SelectedSpecSection")] SpecSection,
-            [StringValue("SelectedTransmissionResponseOwner")] OwnerResponse,
-            [StringValue("DesignPackagesIdsNcr")] DesignPackages
+            [StringValue("", "")] NoSelection,
+            [StringValue("SelectedType", DDL)] DocumentType,
+            [StringValue("SelectedStatus", DDL)] Status,
+            [StringValue("SelectedCategory", DDL)] Category,
+            [StringValue("SelectedSegmentArea", DDL)] SegmentArea,
+            [StringValue("Title", TEXT)] Title,
+            [StringValue("OriginatorDocumentRef" , TEXT)] OriginatorDocumentRef,
+            [StringValue("Number", TEXT)] Number,
+            [StringValue("TransmittalNumber", TEXT)] TransmittalNumber,
+            [StringValue("From", TEXT)] From,
+            [StringValue("MSLNo", TEXT)] MSLNo, //GLX
+            [StringValue("OwnerNumber", TEXT)] Owner_MSLNumber, //I15SB, SH249, SG
+            [StringValue("Attention", TEXT)] Attention,
+            [StringValue("TransmittalFromDate", DATE)] TransmittalDate_From,
+            [StringValue("TransmittalToDate", DATE)] TransmittalDate_To,
+            [StringValue("SelectedSpecSection", DDL)] SpecSection,
+            [StringValue("SelectedTransmissionResponseOwner", DDL)] OwnerResponse,
+            [StringValue("DesignPackagesIdsNcr", MULTIDDL)] DesignPackages
         }
 
         public enum ColumnName
@@ -52,6 +66,106 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("OwnerResponseBy")] OwnerResponseBy
         }
 
+        public override void EnterDate_From(string fromDate)
+            => EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalDate_From), fromDate);
+
+        public override void EnterDate_To(string toDate)
+            => EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalDate_To), toDate);
+
+        public override void ClickBtn_Search()
+            => JsClickElement(By.Id("SearchButton"));
+
+        public override void ClickBtn_Clear()
+            => JsClickElement(By.Id("ClearButton"));
+
+        public override bool VerifySearchResultByCriteria(string transmittalNumber)
+        {
+            SearchCriteria criteria;
+            bool isDisplayed = false;
+            IList<bool> resultsList = new List<bool>();
+
+            foreach (KeyValuePair<EntryField, string> kvPair in tenantAllEntryFieldKeyValuePairs)
+            {
+                criteria = GetMatchingSearchCriteriaForEntryField(kvPair.Key);
+
+                if (criteria != SearchCriteria.NoSelection)
+                {
+                    PopulateCriteriaByType(criteria, kvPair.Value);
+                    ClickBtn_Search();
+                    WaitForLoading();
+                    bool searchResult = VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableType.Single);
+                    resultsList.Add(searchResult);
+
+                    string logMsg = $"Search by Criteria '{criteria}'";
+                    LogInfo($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
+                    AddAssertionToList(searchResult, logMsg);
+
+                    ClickBtn_Clear();
+                    WaitForLoading();
+                }
+            }
+
+            isDisplayed = resultsList.Contains(false)
+                ? false
+                : true;
+
+            return isDisplayed;
+        }
+
+        private SearchCriteria GetMatchingSearchCriteriaForEntryField(EntryField entryField)
+        {
+            SearchCriteria criteria;
+
+            switch (entryField)
+            {
+                case EntryField.Attention:
+                    criteria = SearchCriteria.Attention;
+                    break;
+                case EntryField.Date:
+                    criteria = SearchCriteria.TransmittalDate_From;
+                    break;
+                case EntryField.DocumentCategory:
+                    criteria = SearchCriteria.Category;
+                    break;
+                case EntryField.From:
+                    criteria = SearchCriteria.From;
+                    break;
+                case EntryField.MSLNumber:
+                    criteria = SearchCriteria.MSLNo;
+                    break;
+                case EntryField.OriginatorDocumentRef:
+                    criteria = SearchCriteria.OriginatorDocumentRef;
+                    break;
+                case EntryField.Title:
+                    criteria = SearchCriteria.Title;
+                    break;
+                default:
+                    criteria = SearchCriteria.NoSelection;
+                    break;
+            }
+
+            return criteria;
+        }
+
+        private void PopulateCriteriaByType(SearchCriteria criteria, string fieldValue)
+        {
+            string fieldType = criteria.GetString(true);
+
+            if (fieldType.Equals(TEXT))
+            {
+                EnterText(By.Id(criteria.GetString()), fieldValue);
+            }
+            else if (fieldType.Equals(DATE))
+            {
+                EnterDate_From(GetPastShortDate(fieldValue));
+                EnterDate_To(fieldValue);
+            }
+            else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
+            {
+                ExpandAndSelectFromDDList(criteria, fieldValue, true, fieldType.Equals(MULTIDDL) ? true : false);
+            }
+        }
+
     }
 
     #endregion Search Generic class
@@ -60,6 +174,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public interface ISearch
     {
+        IList<SearchCriteria> SetTenantSearchCriteriaFields();
+
+        IList<ColumnName> SetTenantSearchGridColumnNames();
+
+        bool VerifySearchResultByCriteria(string transmittalNumber);
+
+        void ClickBtn_Search();
+
+        void ClickBtn_Clear();
+
         void SelectDDL_DocumentType<T>(T itemIndexOrName);
 
         void SelectDDL_Status<T>(T itemIndexOrName);
@@ -148,7 +272,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return instance;
         }
 
-
         //Page workflow common to all tenants
         public virtual void SelectDDL_DocumentType<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.DocumentType, itemIndexOrName);
 
@@ -162,9 +285,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void EnterText_Attention(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.Attention), text);
 
-        public virtual void EnterDate_From(string fromDate) => EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalDate_From), fromDate);
+        public abstract void EnterDate_From(string fromDate);
 
-        public virtual void EnterDate_To(string toDate) => EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalDate_To), toDate);
+        public abstract void EnterDate_To(string toDate);
 
         public virtual void PopulateAllSearchCriteriaFields()
         {
@@ -190,6 +313,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void EnterText_OriginatorDocumentRef(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.OriginatorDocumentRef), text);
 
+
+        public abstract bool VerifySearchResultByCriteria(string transmittalNumber);
+
+        public abstract void ClickBtn_Search();
+
+        public abstract void ClickBtn_Clear();
+
+        public virtual IList<SearchCriteria> SetTenantSearchCriteriaFields()
+            => tenantSearchCriteriaFields;
+
+        public virtual IList<ColumnName> SetTenantSearchGridColumnNames()
+            => tenantSearchGridColumnNames;
     }
 
     #endregion Search Common Implementation class
@@ -197,6 +332,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     /// <summary>
     /// Tenant specific implementation of RMCenter Search
     /// </summary>
+    /// 
+    
+    #region Implementation specific to Garnet
+
+    public class Search_Garnet : Search
+    {
+        public Search_Garnet(IWebDriver driver) : base(driver)
+        {
+        }
+    }
+
+    #endregion Implementation specific to Garnet
 
     #region Implementation specific to SGWay
 
@@ -219,17 +366,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
 
     #endregion Implementation specific to SH249
-
-    #region Implementation specific to Garnet
-
-    public class Search_Garnet : Search
-    {
-        public Search_Garnet(IWebDriver driver) : base(driver)
-        {
-        }
-    }
-
-    #endregion Implementation specific to Garnet
 
     #region Implementation specific to GLX
 
@@ -254,6 +390,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             SelectDDL_Category(1);
             EnterText_OriginatorDocumentRef("GLX Test Originator Ref.");
         }
+
+        public override IList<SearchCriteria> SetTenantSearchCriteriaFields()
+            => tenantSearchCriteriaFields = new List<SearchCriteria>()
+            {
+                SearchCriteria.Category,
+
+            };
+        public override IList<ColumnName> SetTenantSearchGridColumnNames()
+            => tenantSearchGridColumnNames = new List<ColumnName>()
+            {
+
+            };
+        
     }
 
     #endregion Implementation specific to GLX
