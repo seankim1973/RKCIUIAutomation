@@ -124,74 +124,53 @@ namespace RKCIUIAutomation.Page
 
         internal void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500)
         {
-            try
-            {
-                WaitForPageReady();
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-            }
-            finally
-            {
-                try
-                {
-                    driver = Driver;
-                    log.Debug($"...waiting for element: - {elementByLocator}");
-                    WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                    wait.Until(x => driver.FindElement(elementByLocator));
-                }
-                catch (Exception e)
-                {
-                    log.Error(e.Message);
-                    throw e;
-                }
-            }
-        }
-
-        internal void WaitForOverlayToClear(int timeOutInSeconds = 20, int pollingInterval = 500)
-        {
-            By overlay_Locator = By.ClassName("k-overlay");
+            WaitForPageReady();
+            driver = Driver;
 
             try
             {
-                driver = Driver;
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(overlay_Locator));
+                wait.Until(x => driver.FindElement(elementByLocator));
+                log.Debug($"...waiting for element: - {elementByLocator}");
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                throw e;
+            }
+        }
+
+        internal void WaitForElementToClear(By locator, int timeOutInSeconds = 20, int pollingInterval = 500)
+        {
+            driver = Driver;
+
+            try
+            {
+                WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+                wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(locator));
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
             }
         }
+
+        internal void WaitForOverlayToClear()
+            => WaitForElementToClear(By.ClassName("k-overlay"));
 
         internal void WaitForLoading(int timeOutInSeconds = 20, int pollingInterval = 500)
-        {
-            By loadingMask_Locator = By.ClassName("k-loading-mask");
-
-            try
-            {
-                driver = Driver;
-                WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(loadingMask_Locator));
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-            }
-        }
+            => WaitForElementToClear(By.ClassName("k-loading-mask"));
 
         internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 1000)
         {
             IJavaScriptExecutor javaScriptExecutor = null;
-                        
-            try
-            {
-                driver = Driver;
+            WaitForOverlayToClear();
+            WaitForLoading();
 
-                WaitForOverlayToClear();
-                WaitForLoading();
-                             
+            driver = Driver;
+
+            try
+            {            
                 javaScriptExecutor = driver as IJavaScriptExecutor;
                 bool pageIsReady = false;
 
@@ -234,9 +213,10 @@ namespace RKCIUIAutomation.Page
 
         public void RefreshWebPage()
         {
+            driver = Driver;
+
             try
             {
-                driver = Driver;
                 driver.Navigate().Refresh();
                 log.Info("Refreshed Web Page");
             }

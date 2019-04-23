@@ -889,18 +889,22 @@ namespace RKCIUIAutomation.Sandbox
 
             //Console.WriteLine($"{label}{value}");
 
-            string str1 = "Value Of String";
-            string str2 = "Value Of";
+            //string str1 = "Value Of String";
+            //string str2 = "Value Of";
 
-            bool str1ContainsStr2 = str1.Contains(str2);
-            bool str2ContainsStr1 = str2.Contains(str1);
-            bool str1Equals2 = str1.Equals(str2);
+            //bool str1ContainsStr2 = str1.Contains(str2);
+            //bool str2ContainsStr1 = str2.Contains(str1);
+            //bool str1Equals2 = str1.Equals(str2);
 
-             bool valuesMatch = (str1ContainsStr2 || str2ContainsStr1 || str1Equals2)
-                ? true
-                : false;
+            // bool valuesMatch = (str1ContainsStr2 || str2ContainsStr1 || str1Equals2)
+            //    ? true
+            //    : false;
 
-            Console.WriteLine($"VALUES MATCH : {valuesMatch}");
+            //Console.WriteLine($"VALUES MATCH : {valuesMatch}");
+
+            string str = "Quality Management Service";
+            string value = Regex.Replace(str, @" ", "_");
+            Console.WriteLine(value);
         }
 
         enum TestEnum

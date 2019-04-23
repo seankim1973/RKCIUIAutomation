@@ -6,6 +6,7 @@ using static RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.ProjectCorrespondenceLog;
 using System;
 using ColumnName = RKCIUIAutomation.Page.PageObjects.RMCenter.Search.ColumnName;
+using RKCIUIAutomation.Base;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -80,34 +81,43 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override bool VerifySearchResultByCriteria(string transmittalNumber)
         {
-            SearchCriteria criteria;
             bool isDisplayed = false;
-            IList<bool> resultsList = new List<bool>();
+            string logMsg = string.Empty;
 
-            foreach (KeyValuePair<EntryField, string> kvPair in tenantAllEntryFieldKeyValuePairs)
+            try
             {
-                criteria = GetMatchingSearchCriteriaForEntryField(kvPair.Key);
+                SearchCriteria criteria;              
+                IList<bool> resultsList = new List<bool>();
 
-                if (criteria != SearchCriteria.NoSelection)
+                foreach (KeyValuePair<EntryField, string> kvPair in tenantAllEntryFieldKeyValuePairs)
                 {
-                    PopulateCriteriaByType(criteria, kvPair.Value);
-                    ClickBtn_Search();
-                    WaitForLoading();
-                    bool searchResult = VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableType.Single);
-                    resultsList.Add(searchResult);
+                    criteria = GetMatchingSearchCriteriaForEntryField(kvPair.Key);
 
-                    string logMsg = $"Search by Criteria '{criteria}'";
-                    LogInfo($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
-                    AddAssertionToList(searchResult, logMsg);
+                    if (criteria != SearchCriteria.NoSelection)
+                    {
+                        PopulateCriteriaByType(criteria, kvPair.Value);
+                        ClickBtn_Search();
+                        WaitForLoading();
+                        bool searchResult = VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableType.Single);
+                        resultsList.Add(searchResult);
 
-                    ClickBtn_Clear();
-                    WaitForLoading();
+                        logMsg = $"Search by Criteria '{criteria}'";
+                        LogInfo($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
+                        AddAssertionToList(searchResult, logMsg);
+
+                        ClickBtn_Clear();
+                        WaitForLoading();
+                    }
                 }
-            }
 
-            isDisplayed = resultsList.Contains(false)
-                ? false
-                : true;
+                isDisplayed = resultsList.Contains(false)
+                    ? false
+                    : true;
+            }
+            catch (Exception)
+            {
+                log.Error(logMsg);
+            }
 
             return isDisplayed;
         }
@@ -124,6 +134,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 case EntryField.Date:
                     criteria = SearchCriteria.TransmittalDate_From;
                     break;
+                case EntryField.DesignPackages:
+                    criteria = SearchCriteria.DesignPackages;
+                    break;
+                case EntryField.DocumentType:
+                    criteria = SearchCriteria.DocumentType;
+                    break;
                 case EntryField.DocumentCategory:
                     criteria = SearchCriteria.Category;
                     break;
@@ -136,8 +152,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 case EntryField.OriginatorDocumentRef:
                     criteria = SearchCriteria.OriginatorDocumentRef;
                     break;
+                case EntryField.Segment_Area:
+                    criteria = SearchCriteria.SegmentArea;
+                    break;
+                case EntryField.SpecSection:
+                    criteria = SearchCriteria.SpecSection;
+                    break;
                 case EntryField.Title:
                     criteria = SearchCriteria.Title;
+                    break;
+                case EntryField.TransmittalNumber:
+                    criteria = SearchCriteria.TransmittalNumber;
                     break;
                 default:
                     criteria = SearchCriteria.NoSelection;
@@ -153,7 +178,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             if (fieldType.Equals(TEXT))
             {
-                EnterText(By.Id(criteria.GetString()), fieldValue);
+                if (criteria.Equals(SearchCriteria.MSLNo))
+                {
+                    RMCenterSearch.EnterCriteria_MSLNumber(fieldValue);
+                }
+                else if (criteria.Equals(SearchCriteria.DocumentType))
+                {
+                    RMCenterSearch.SelectDDL_DocumentType(fieldValue);
+                    RMCenterSearch.EnterCriteria_Number(fieldValue);
+                }
+                else
+                {
+                    EnterText(By.Id(criteria.GetString()), fieldValue);
+                }
             }
             else if (fieldType.Equals(DATE))
             {
@@ -162,6 +199,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
             else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
             {
+                fieldValue = criteria.Equals(SearchCriteria.DocumentType)
+                    ? $"-- {fieldValue}"
+                    : fieldValue;
                 ExpandAndSelectFromDDList(criteria, fieldValue, true, fieldType.Equals(MULTIDDL) ? true : false);
             }
         }
@@ -202,9 +242,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         void EnterText_From(string text);
 
-        void EnterText_Number(string text);
+        void EnterCriteria_Number(string text);
 
-        void EnterText_MSLNumber(string text);
+        void EnterCriteria_MSLNumber(string text);
 
         /// <summary>
         /// Date value in string format (i.e. MM/DD/YYYY)
@@ -291,20 +331,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void PopulateAllSearchCriteriaFields()
         {
-            SelectDDL_DocumentType(1);
-            EnterText_Number("Common Test Number");
-            EnterText_TransmittalNumber("Common Test Transmittal Number");
-            EnterText_Title("Common Test Title");
-            EnterText_From("From Common Test");
-            EnterText_MSLNumber("Common Test MSL Number");
-            EnterText_Attention("Attention Common Test");
         }
 
-        //Not used in tenant(s): GLX
-        public virtual void EnterText_Number(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.Number), text);
+        //Not used in tenant(s): GLX & LAX
+        public virtual void EnterCriteria_Number(string text)
+            => EnterText(GetTextInputFieldByLocator(SearchCriteria.Number), $"{text.ReplaceSpacesWithUnderscores()}0000");
 
         //For I15SB, SH249, SG
-        public virtual void EnterText_MSLNumber(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.Owner_MSLNumber), text);
+        public virtual void EnterCriteria_MSLNumber(string text)
+            => EnterText(GetTextInputFieldByLocator(SearchCriteria.Owner_MSLNumber), text);
 
         //Used only in GLX
         public virtual void SelectDDL_Category<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.Category, itemIndexOrName);
@@ -375,20 +410,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override void EnterText_MSLNumber(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.MSLNo), text);
+        public override void EnterCriteria_Number(string text)
+            => log.Info("Search Criteria field 'Number' does not exist for Tenant GLX");
+
+        public override void EnterCriteria_MSLNumber(string text)
+            => EnterText(GetTextInputFieldByLocator(SearchCriteria.MSLNo), text);
 
         public override void PopulateAllSearchCriteriaFields()
         {
-            SelectDDL_DocumentType(1);
-            EnterText_Title("GLX Test Title");
-            EnterText_TransmittalNumber("GLX Test1234");
-            EnterText_From("GLX From Test");
-            EnterText_Attention("GLX Test Attention");
-            SelectDDL_SegmentArea(1);
-            EnterDate_From("1/1/2018");
-            EnterDate_To("6/6/2018");
-            SelectDDL_Category(1);
-            EnterText_OriginatorDocumentRef("GLX Test Originator Ref.");
+
         }
 
         public override IList<SearchCriteria> SetTenantSearchCriteriaFields()
@@ -428,12 +458,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void PopulateAllSearchCriteriaFields()
         {
-            SelectDDL_DocumentType(1);
-            EnterText_Number("I15Tech Test Number");
-            EnterText_From("From I15Tech Test");
-            EnterText_Title("I15Tech Test Title");
-            EnterText_Attention("I15Tech Attention");
-            EnterText_TransmittalNumber("I15Tech Transmittal Number");
         }
     }
 
@@ -446,6 +470,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public Search_LAX(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void EnterCriteria_Number(string text)
+            => log.Info("Search Criteria field 'Number' does not exist for Tenant LAX");
     }
 
     #endregion Implementation specific to LAX
