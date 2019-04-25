@@ -185,7 +185,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal void Click_UniqueTblBtn(string btnClass)
         {
-            JsClickElement(By.XPath($"//a[contains(@class, '{btnClass}')]"));
+            ClickElement(By.XPath($"//a[contains(@class, '{btnClass}')]"));
             WaitForPageReady();
         }
 
@@ -452,6 +452,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual void CreateDocument()
         {
+            WaitForPageReady();
             ClickElement(DesignDoc_Base.UploadNewDesignDoc_ByLocator);
             EnterDesignDocTitleAndNumber();
             UploadFile("test.xlsx");
@@ -858,9 +859,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void EnterNoComment()
         {
             WaitForPageReady();
+            //Thread.Sleep(5000);
             ClickBtn_AddComment();
+            Thread.Sleep(5000);
             SelectNoCommentReviewType();
+            Thread.Sleep(5000);
             ClickBtn_Update();
+            Thread.Sleep(5000);
         }
 
         public override void EnterRegularCommentAndDrawingPageNo()

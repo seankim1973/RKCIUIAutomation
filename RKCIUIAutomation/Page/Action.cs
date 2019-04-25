@@ -50,7 +50,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw;
+                throw e;
             }
         }
 
@@ -124,11 +124,10 @@ namespace RKCIUIAutomation.Page
 
         internal void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500)
         {
-            WaitForPageReady();
-            driver = Driver;
-
             try
             {
+                driver = Driver;
+                WaitForPageReady();
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                 wait.Until(x => driver.FindElement(elementByLocator));
                 log.Debug($"...waiting for element: - {elementByLocator}");
@@ -136,16 +135,14 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
             }
         }
 
         internal void WaitForElementToClear(By locator, int timeOutInSeconds = 20, int pollingInterval = 500)
         {
-            driver = Driver;
-
             try
             {
+                driver = Driver;
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                 wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(locator));
             }
@@ -155,60 +152,75 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForOverlayToClear()
-            => WaitForElementToClear(By.ClassName("k-overlay"));
-
         internal void WaitForLoading(int timeOutInSeconds = 20, int pollingInterval = 500)
-            => WaitForElementToClear(By.ClassName("k-loading-mask"));
+        {
+            try
+            {
+                string[] classNames = new string[] 
+                {
+                    "k-overlay",
+                    "k-loading-mask",
+                    "k-loading-image"
+                };
+
+                foreach (string className in classNames)
+                {
+                    WaitForElementToClear(By.ClassName(className));
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
 
         internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 1000)
         {
             IJavaScriptExecutor javaScriptExecutor = null;
-            WaitForOverlayToClear();
             WaitForLoading();
 
             driver = Driver;
+            javaScriptExecutor = driver as IJavaScriptExecutor;
+            bool pageIsReady = false;
 
             try
-            {            
-                javaScriptExecutor = driver as IJavaScriptExecutor;
-                bool pageIsReady = false;
-
-                try
-                {
-                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0");
-                }
-                catch (InvalidOperationException)
-                {
-                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'");
-                }
-                finally
-                {
-                    if (!pageIsReady)
-                    {
-                        log.Debug("...waiting for page to be in Ready state");
-
-                        try
-                        {
-                            WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                            wait.Until(wd => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
-                        }
-                        catch (InvalidOperationException e)
-                        {
-                            log.Debug(e.Message);
-                            WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                            wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
-                        }
-                        catch (UnhandledAlertException)
-                        {
-                        }
-                    }
-                }
+            {
+                pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0");
+            }
+            catch (InvalidOperationException)
+            {
+                pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'");
             }
             catch (Exception e)
             {
                 log.Error($"Error in WaitForPageReady method : {e.Message}");
             }
+            finally
+            {
+                if (!pageIsReady)
+                {
+                    log.Debug("...waiting for page to be in Ready state");
+
+                    try
+                    {
+                        WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+                        wait.Until(wd => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        log.Debug(e.Message);
+                        WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+                        wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
+                    }
+                    catch (UnhandledAlertException)
+                    {
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error($"Error in WaitForPageReady() : {e.StackTrace}");
+                    }
+                }
+            }
+
         }
 
         public void RefreshWebPage()
@@ -247,11 +259,11 @@ namespace RKCIUIAutomation.Page
         public IList<IWebElement> GetElements(By elementByLocator)
         {
             IList<IWebElement> elements = null;
-            WaitForElement(elementByLocator);
 
             try
             {
                 driver = Driver;
+                WaitForElement(elementByLocator);
                 elements = new List<IWebElement>();
                 elements = driver.FindElements(elementByLocator);
                 log.Info($"Getting list of WebElements: {elementByLocator}");
@@ -416,7 +428,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public void SetPageTitleVar(int timeOutInSeconds = 10, int pollingInterval = 500)
+        public string SetPageTitleVar(int timeOutInSeconds = 10, int pollingInterval = 500)
         {
             try
             {
@@ -427,12 +439,14 @@ namespace RKCIUIAutomation.Page
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                 wait.Until(x => x.Title.HasValue());
                 pageTitle = driver.Title;
-                LogInfo($"...Page Title displayed as : {pageTitle}", pageTitle.HasValue());
+                //LogInfo($"...Page Title displayed as : {pageTitle}", pageTitle.HasValue());
             }
             catch (Exception e)
             {
                 log.Error($"timed out while waiting for page title\n{e.Message}");
             }
+
+            return pageTitle;
         }
 
         public string GetPageUrl(int timeOutInSeconds = 10, int pollingInterval = 500)
@@ -927,7 +941,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"Error in ElementIsDisplayed(): {e.StackTrace}");
             }
 
             return isDisplayed;
@@ -1032,7 +1046,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"Error in IsPageLoadedSuccessfully() : {e.StackTrace}");
             }
 
             return isPageLoaded;
@@ -1050,13 +1064,13 @@ namespace RKCIUIAutomation.Page
                 driver = Driver;
                 driver.Navigate().GoToUrl(pageUrl);
                 WaitForPageReady();
-                SetPageTitleVar();
+                pageTitle = SetPageTitleVar();
                 isLoaded = pageTitle.Contains("ELVIS PMC")
                     ? true
                     : IsPageLoadedSuccessfully();
 
                 logMsg = isLoaded
-                    ? $">>> Page Loaded Successfully <<<<br>{pageUrl}"
+                    ? $">>> Page Loaded Successfully <<< <br>{pageUrl}"
                     : GetPageErrorLogMsg();
 
                 LogInfo(logMsg, isLoaded);
@@ -1065,7 +1079,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"Error in VerifyUrlIsLoaded() : {e.StackTrace}");
             }
 
             return isLoaded;
@@ -1082,13 +1096,13 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                SetPageTitleVar();
+                pageTitle = SetPageTitleVar();
                 isLoaded = pageTitle.Contains(expectedPageTitle)
                     ? true 
                     : IsPageLoadedSuccessfully();
 
                 logMsg = isLoaded 
-                    ? ">>> Page Loaded Successfully <<<"
+                    ? $">>> Page Loaded Successfully <<< <br>Page Title : {pageTitle}"
                     : GetPageErrorLogMsg();
 
                 LogInfo(logMsg, isLoaded);
@@ -1126,7 +1140,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"Error in VerifyPageIsLoaded() : {e.StackTrace}");
                 throw e;
             }
         }
@@ -1408,7 +1422,6 @@ namespace RKCIUIAutomation.Page
 
         public void ClickCreate()
             => ClickElement(By.Id("btnCreate"));
-
 
         public void ClickNew(bool multipleBtnInstances = false)
         {

@@ -866,6 +866,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public abstract bool VerifyTransmittalLogIsDisplayedByGridColumnFilter();
+
         public abstract bool VerifyTransmittalLocationBySearch();
     }
 
@@ -1058,6 +1059,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public ProjectCorrespondenceLog_SGWay(IWebDriver driver) : base(driver)
         {
+
         }
 
         public override void LogintoCorrespondenceLogPage(UserType userType)

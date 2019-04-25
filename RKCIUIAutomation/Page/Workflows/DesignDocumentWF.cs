@@ -34,10 +34,7 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         private bool AlreadyInDesignDocumentPage()
-        {
-            bool inDesignDocPage = VerifyPageHeader("Design Document");
-            return inDesignDocPage;
-        }
+            => VerifyPageHeader("Design Document");
         
         internal void LoginToDesignDocuments(CR_Workflow workflow)
         {
@@ -184,6 +181,8 @@ namespace RKCIUIAutomation.Page.Workflows
             {
                 NavigateToPage.RMCenter_Design_Documents();
             }
+
+            WaitForPageReady();
         }
 
     }
