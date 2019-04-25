@@ -432,6 +432,7 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
+                pageTitle = string.Empty;
                 WaitForPageReady();
 
                 driver = Driver;
@@ -990,6 +991,8 @@ namespace RKCIUIAutomation.Page
                             logMsg = $"Could not find page heading with h2, h3 or h4 tag";
                             BaseHelper.InjectTestStatus(TestStatus.Failed, logMsg);
                         }
+
+                        LogInfo(logMsg, pageHeadingsMatch);
                     }
                 }
                 else
@@ -1000,8 +1003,6 @@ namespace RKCIUIAutomation.Page
             catch (Exception)
             {
             }
-
-            LogInfo(logMsg, pageHeadingsMatch);
 
             return pageHeadingsMatch;
         }
