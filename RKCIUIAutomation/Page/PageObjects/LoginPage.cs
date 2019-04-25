@@ -123,13 +123,14 @@ namespace RKCIUIAutomation.Page.PageObjects
         public virtual void LoginUser(UserType userType)
         {
             WaitForPageReady();
+            bool alreadyLoggedIn = AlreadyLoggedIn();
 
             try
             {
-                if (!AlreadyLoggedIn())
+                if (!alreadyLoggedIn)
                 {
                     driver = Driver;
-                    SetPageTitleVar();
+                    pageTitle = SetPageTitleVar();
 
                     if (pageTitle.Contains("Log in"))
                     {
@@ -190,20 +191,19 @@ namespace RKCIUIAutomation.Page.PageObjects
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error($"Error occured in LogingUser() : {e.Message}");
             }
             finally
             {
                 try
                 {
-                    SetPageTitleVar();
+                    pageTitle = SetPageTitleVar();
 
                     if (pageTitle.Contains("Log in"))
                     {
-                        IWebElement invalidLoginError = null;
                         bool invalidLoginErrorDisplayed = false;
 
-                        invalidLoginError = GetElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+                        IWebElement invalidLoginError = GetElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
                         invalidLoginErrorDisplayed = invalidLoginError.Displayed;
 
                         if (invalidLoginError != null && invalidLoginErrorDisplayed)

@@ -50,7 +50,7 @@ namespace RKCIUIAutomation.Page.Workflows
             // *Dev Admin - ATCRVerifyAdmin@rkci.com
             */
             var currentTenant = tenantName;
-            UserType cdrUserAcct = UserType.Bhoomi;
+            UserType userAcct = UserType.Bhoomi;
 
             switch (currentTenant)
             {
@@ -58,25 +58,25 @@ namespace RKCIUIAutomation.Page.Workflows
                     switch (workflow)
                     {
                         case CR_Workflow.CreateComment:
-                            cdrUserAcct = UserType.CR_Create;
+                            userAcct = UserType.CR_Create;
                             break;
                         case CR_Workflow.EnterComment:
-                            cdrUserAcct = UserType.CR_Comment;
+                            userAcct = UserType.CR_Comment;
                             break;
                         case CR_Workflow.ForwardComment:
-                            cdrUserAcct = UserType.CR_CommentAdmin;
+                            userAcct = UserType.CR_CommentAdmin;
                             break;
                         case CR_Workflow.EnterResponse:
-                            cdrUserAcct = UserType.CR_Response;
+                            userAcct = UserType.CR_Response;
                             break;
                         case CR_Workflow.ForwardResponse:
-                            cdrUserAcct = UserType.CR_ResponseAdmin;
+                            userAcct = UserType.CR_ResponseAdmin;
                             break;
                         case CR_Workflow.ClosingComment:
-                            cdrUserAcct = UserType.CR_Verify;
+                            userAcct = UserType.CR_Verify;
                             break;
                         case CR_Workflow.ForwardClosingComment:
-                            cdrUserAcct = UserType.CR_VerifyAdmin;
+                            userAcct = UserType.CR_VerifyAdmin;
                             break;
                     }
                     break;
@@ -85,34 +85,34 @@ namespace RKCIUIAutomation.Page.Workflows
                     switch (workflow)
                     {
                         case CR_Workflow.CreateComment:
-                            cdrUserAcct = UserType.IQFRecordsMgr;
+                            userAcct = UserType.IQFRecordsMgr;
                             break;
                         case CR_Workflow.EnterComment:
-                            cdrUserAcct = UserType.IQFUser;
+                            userAcct = UserType.IQFUser;
                             break;
                         case CR_Workflow.ForwardComment:
-                            cdrUserAcct = UserType.IQFAdmin;
+                            userAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.EnterComment_DOT:
-                            cdrUserAcct = UserType.DOTUser;
+                            userAcct = UserType.DOTUser;
                             break;
                         case CR_Workflow.ForwardComment_DOT:
-                            cdrUserAcct = UserType.DOTAdmin;
+                            userAcct = UserType.DOTAdmin;
                             break;
                         case CR_Workflow.EnterResponse:
-                            cdrUserAcct = UserType.DEVUser;
+                            userAcct = UserType.DEVUser;
                             break;
                         case CR_Workflow.ForwardResponse:
-                            cdrUserAcct = UserType.DEVAdmin;
+                            userAcct = UserType.DEVAdmin;
                             break;
                         case CR_Workflow.EnterResolution:
-                            cdrUserAcct = UserType.IQFAdmin;
+                            userAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.ForwardResolution:
-                            cdrUserAcct = UserType.IQFAdmin;
+                            userAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.ClosingComment:
-                            cdrUserAcct = UserType.IQFAdmin;
+                            userAcct = UserType.IQFAdmin;
                             break;
                     }
                     break;
@@ -121,28 +121,28 @@ namespace RKCIUIAutomation.Page.Workflows
                     switch (workflow)
                     {
                         case CR_Workflow.CreateComment:
-                            cdrUserAcct = UserType.IQFRecordsMgr;
+                            userAcct = UserType.IQFRecordsMgr;
                             break;
                         case CR_Workflow.EnterComment:
-                            cdrUserAcct = UserType.IQFUser;
+                            userAcct = UserType.IQFUser;
                             break;
                         case CR_Workflow.ForwardComment:
-                            cdrUserAcct = UserType.IQFRecordsMgr;
+                            userAcct = UserType.IQFRecordsMgr;
                             break;
                         case CR_Workflow.EnterResponse:
-                            cdrUserAcct = UserType.IQFAdmin;
+                            userAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.ForwardResponse:
-                            cdrUserAcct = UserType.IQFAdmin;
+                            userAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.EnterResolution:
-                            cdrUserAcct = UserType.IQFAdmin;
+                            userAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.ForwardResolution:
-                            cdrUserAcct = UserType.IQFAdmin;
+                            userAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.ClosingComment:
-                            cdrUserAcct = UserType.IQFAdmin;
+                            userAcct = UserType.IQFAdmin;
                             break;
                     }
                     break;
@@ -151,31 +151,31 @@ namespace RKCIUIAutomation.Page.Workflows
                     switch (workflow)
                     {
                         case CR_Workflow.CreateComment:
-                            cdrUserAcct = UserType.IQFUser;
+                            userAcct = UserType.IQFUser;
                             break;
                         case CR_Workflow.EnterComment:
-                            cdrUserAcct = UserType.DOTUser;
+                            userAcct = UserType.DOTUser;
                             break;
                         case CR_Workflow.ForwardComment:
-                            cdrUserAcct = UserType.DOTAdmin;
+                            userAcct = UserType.DOTAdmin;
                             break;
                         case CR_Workflow.EnterResponse:
-                            cdrUserAcct = UserType.DEVUser;
+                            userAcct = UserType.DEVUser;
                             break;
                         case CR_Workflow.ForwardResponse:
-                            cdrUserAcct = UserType.DEVAdmin;
+                            userAcct = UserType.DEVAdmin;
                             break;
                         case CR_Workflow.EnterResolution:
-                            cdrUserAcct = UserType.DEVAdmin;
+                            userAcct = UserType.DEVAdmin;
                             break;
                         case CR_Workflow.ForwardResolution:
-                            cdrUserAcct = UserType.DEVAdmin;
+                            userAcct = UserType.DEVAdmin;
                             break;
                     }
                     break;
             }
 
-            LoginAs(cdrUserAcct);
+            LoginAs(userAcct);
 
             bool alreadyInDesignDocumentPage = AlreadyInDesignDocumentPage();
 
