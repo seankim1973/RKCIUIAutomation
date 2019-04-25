@@ -16,22 +16,22 @@ namespace RKCIUIAutomation.Test
         internal const string TestCaseNumber = "TC#";
         internal const string Priority = "Priority";
 
+        public TableHelper TableHelper
+            => new TableHelper(Driver);
+
         public TestDetails TestDetails
             => new TestDetails(Driver);
-
-        private ILoginPage LoginPage
-            => new LoginPage().SetClass<ILoginPage>(Driver);
 
         public void LoginAs(UserType user)
             => LoginPage.LoginUser(user);
 
-        public TableHelper TableHelper
-            => new TableHelper(Driver);
+        private ILoginPage LoginPage
+            => new LoginPage().SetClass<ILoginPage>(Driver);
 
         public IPageNavigation NavigateToPage
             => new PageNavigation().SetClass<IPageNavigation>(Driver);
 
-        public ISearch RMCenter_SearchPage
+        public ISearch RMCenterSearch
             => new Search().SetClass<ISearch>(Driver);
 
         public IDesignDocument DesignDocCommentReview

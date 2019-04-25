@@ -257,7 +257,7 @@ namespace RKCIUIAutomation.Base
             }
             else if (details.Contains("skipped"))
             {
-                testInstance.Skip(CreateReportMarkupLabel(details, ExtentColor.Yellow));
+                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Yellow));
             }
             else
             {
@@ -595,6 +595,9 @@ namespace RKCIUIAutomation.Base
             string value = (removeUnderscore == true) ? Regex.Replace(str, @"_", "") : str;
             return Regex.Replace(Regex.Replace(value, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
         }
+
+        public static string ReplaceSpacesWithUnderscores(this string str)
+            => Regex.Replace(str, @" ", "_");
 
         public static void AssignReportCategories(this ExtentTest testInstance, string[] category)
         {

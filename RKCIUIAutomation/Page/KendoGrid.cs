@@ -16,7 +16,7 @@ namespace RKCIUIAutomation.Page
         {
         }
 
-        public KendoGrid(IWebDriver driver) => this.Driver = driver;
+        //public KendoGrid(IWebDriver driver) => this.Driver = driver;
 
         public void ClickCommentTab(int commentNumber)
         {
@@ -40,12 +40,12 @@ namespace RKCIUIAutomation.Page
 
                 if (!tblTabName.Equals(currentTabName))
                 {
-                    string jsToBeExecuted = GetTabStripReference();
-
                     By locator = By.XPath("//ul[@class='k-reset k-tabstrip-items']/li/span[text()]");
                     int tabIndex = GetElementIndex(locator, tblTabName);
+
                     if (tabIndex >= 0)
                     {
+                        string jsToBeExecuted = GetTabStripReference();
                         string tabSelect = $"tab.select('{tabIndex.ToString()}');";
                         jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
                         ExecuteJsScript(jsToBeExecuted);
@@ -77,11 +77,12 @@ namespace RKCIUIAutomation.Page
         private int GetElementIndex(By findElementsLocator, string matchValue)
         {
             int index = -1;
+            IList<IWebElement> elements;
+
             try
             {
-                driver = Driver;
-                IList<IWebElement> elements = new List<IWebElement>();
-                elements = driver.FindElements(findElementsLocator);
+                elements = new List<IWebElement>();
+                elements = GetElements(findElementsLocator);
 
                 for (int i = 0; i < elements.Count; i++)
                 {
@@ -246,25 +247,37 @@ namespace RKCIUIAutomation.Page
 
         public int GetCurrentPageNumber(TableType tableType = TableType.Unknown)
         {
-            driver = Driver;
-            string jsToBeExecuted = this.GetGridReference(tableType);
-            jsToBeExecuted = $"{jsToBeExecuted} return grid.dataSource.page();";
-            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
-            var result = executor.ExecuteScript(jsToBeExecuted);
-            int pageNumber = int.Parse(result.ToString());
+            int pageNumber = 1;
+
+            try
+            {
+                driver = Driver;
+                string jsToBeExecuted = GetGridReference(tableType);
+                jsToBeExecuted = $"{jsToBeExecuted} return grid.dataSource.page();";
+                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
+                var result = executor.ExecuteScript(jsToBeExecuted);
+                pageNumber = int.Parse(result.ToString());
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
             return pageNumber;
         }
 
         private string GetTabStripReference()
         {
-            string tabStripId = string.Empty;
-            string logMsg = string.Empty;
+            string tabStripRef = string.Empty;
 
             try
             {
                 By tabStripLocator = By.XPath("//div[contains(@class,'k-tabstrip-top')]");
-                tabStripId = GetElement(tabStripLocator).GetAttribute("id");
-                logMsg = tabStripId.HasValue()
+                string tabStripId = GetElement(tabStripLocator).GetAttribute("id");
+                tabStripRef = $"var tab = $('#{tabStripId}').data('kendoTabStrip');";
+
+                string logMsg = tabStripId.HasValue()
                     ? $"...Found Kendo Grid TabStrip ID: {tabStripId}"
                     : "!!!NULL Kendo Grid TabStrip ID";
                 log.Debug(logMsg);
@@ -275,18 +288,19 @@ namespace RKCIUIAutomation.Page
                 throw e;
             }
 
-            return $"var tab = $('#{tabStripId}').data('kendoTabStrip');";
+            return tabStripRef;
         }
 
         private string GetGridReference(TableType tableType)
         {
-            string gridId = string.Empty;
-            string logMsg = string.Empty;
+            string gridRef = string.Empty;
 
             try
             {
-                gridId = GetGridID(tableType);
-                logMsg = gridId.HasValue()
+                string gridId = GetGridID(tableType);
+                gridRef = $"var grid = $('#{gridId}').data('kendoGrid');";
+
+                string logMsg = gridId.HasValue()
                     ? $"...Found Kendo Grid ID: {gridId}"
                     : "!!!NULL Kendo Grid ID";
                 log.Debug(logMsg);
@@ -297,7 +311,7 @@ namespace RKCIUIAutomation.Page
                 throw e;
             }
 
-            return $"var grid = $('#{gridId}').data('kendoGrid');";
+            return gridRef;
         }
 
         public string GetGridID(TableType tableType)

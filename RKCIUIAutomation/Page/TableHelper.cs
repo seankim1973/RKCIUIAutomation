@@ -5,6 +5,7 @@ using RKCIUIAutomation.Page.Workflows;
 using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace RKCIUIAutomation.Page
@@ -423,14 +424,14 @@ namespace RKCIUIAutomation.Page
             string currentTabName = string.Empty;
             string logMsg = string.Empty;
             string activeTblTab = "";
-            int tblRowCount = 0;
 
-            By noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
+            By noRecordsMsgLocator = By.XPath("//div[@class='k-grid-norecords']");
+            By tableRowsLocator = By.XPath("//tbody[@role='rowgroup']/tr");
 
             try
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
-
+                WaitForLoading();
                 string gridId = _kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = GetAttribute(gridParentDivLocator, "class");
@@ -440,25 +441,27 @@ namespace RKCIUIAutomation.Page
                     case TableType.Single:
                         isMultiTabGrid = false;
                         break;
-
                     case TableType.MultiTab:
                         isMultiTabGrid = true;
+                        currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
+                        activeTblTab = "//div[@class='k-content k-state-active']";
+                        noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
+                        tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
                         break;
-
                     case TableType.Unknown:
-                        isMultiTabGrid = gridType.Contains("active") ? true : false;
+                        isMultiTabGrid = gridType.Contains("active")
+                            ? true
+                            : false;
                         break;
                 }
 
-                By recordRowLocator = GetTblRow_ByLocator(recordNameOrNumber, isMultiTabGrid, filterOperator == FilterOperator.Contains ? true : false);
+                By recordRowLocator = GetTblRow_ByLocator(recordNameOrNumber, isMultiTabGrid,
+                    filterOperator == FilterOperator.Contains
+                    ? true
+                    : false
+                    );
 
-                if (isMultiTabGrid)
-                {
-                    currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
-                    activeTblTab = "//div[@class='k-content k-state-active']";
-                }
-
-                By tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
+                tblRowElems = GetElements(tableRowsLocator);
 
                 if (noRecordsExpected)
                 {
@@ -471,15 +474,12 @@ namespace RKCIUIAutomation.Page
                     }
                     else
                     {
-                        tblRowElems = GetElements(tableRowsLocator);
-                        tblRowCount = (int)tblRowElems?.Count;
-
-                        if (tblRowCount > 0)
+                        if (tblRowElems.Any())
                         {
                             var recordRowDisplayed = ElementIsDisplayed(recordRowLocator);
                             if (recordRowDisplayed)
                             {
-                                logMsg = $"No Records are Expected, but found {tblRowCount} record";
+                                logMsg = $"No Records are Expected, but found {tblRowElems.Count} record";
                             }
                         }
                         else
@@ -490,10 +490,7 @@ namespace RKCIUIAutomation.Page
                 }
                 else
                 {
-                    tblRowElems = GetElements(tableRowsLocator);
-                    tblRowCount = (int)tblRowElems?.Count;
-
-                    if (tblRowCount > 0)
+                    if (tblRowElems.Any())
                     {
                         LogStep($"Searching for record: {recordNameOrNumber}");
                         isDisplayedAsExpected = ElementIsDisplayed(recordRowLocator);
@@ -513,8 +510,10 @@ namespace RKCIUIAutomation.Page
                     }
                 }
             }
-            catch (NoSuchElementException)
+            catch (Exception e)
             {
+                log.Error(e.StackTrace);
+
                 noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
                 isDisplayedAsExpected = noRecordsExpected
                     ? noRecordsMsgDisplayed
@@ -523,10 +522,6 @@ namespace RKCIUIAutomation.Page
                     : noRecordsMsgDisplayed
                         ? false
                         : true;
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
             }
 
             LogInfo(logMsg, isDisplayedAsExpected);
