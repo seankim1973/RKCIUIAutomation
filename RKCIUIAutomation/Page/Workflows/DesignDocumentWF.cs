@@ -177,7 +177,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
             LoginAs(cdrUserAcct);
 
-            if (!AlreadyInDesignDocumentPage())
+            bool alreadyInDesignDocumentPage = AlreadyInDesignDocumentPage();
+
+            if (!alreadyInDesignDocumentPage)
             {
                 NavigateToPage.RMCenter_Design_Documents();
             }
@@ -498,13 +500,13 @@ namespace RKCIUIAutomation.Page.Workflows
             LogInfo("--------------------------3. Log in as IQF Admin, forwards Comments----------------------");
             ForwardComment();//UserType.IQFRecordsMgr  //Workaround: using IQF Rcrds Mgr, instead of IQF Admin
 
-            LogInfo("-------------------------4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode----------------------");
+            //LogInfo("-------------------------4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode----------------------");
             //EnterResponseCommentAndDisagreeResponseCode();
 
-            LogInfo("--------------------------5. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+            LogInfo("--------------------------4. Log in as IQF Admin, Enters,forwards closing comment----------------------");
             EnterClosingCommentAndCode();
 
-            LogInfo("--------------------------6. IQF Admin verifies if record in closed tab ----------------------");
+            LogInfo("--------------------------5. IQF Admin verifies if record in closed tab ----------------------");
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
 
@@ -529,16 +531,13 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocWF.LoginToDesignDocuments(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Comment();
             FilterTableAndEditDoc();
-
-            DesignDocument ddBase = new DesignDocument();
-            ddBase.ScrollToLastColumn();
-
+            DesignDocCommentReview.ScrollToLastColumn();
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
-            //DesignDocWF.LoginToDesignDocuments(CR_Workflow.EnterResponse);
+            WaitForPageReady();
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
@@ -552,7 +551,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterClosingCommentAndCode()
         {
-            //DesignDocWF.LoginToDesignDocuments(CR_Workflow.ClosingComment);
+            Thread.Sleep(10000); //workaround for delay after SaveForward from previous step
             DesignDocCommentReview.ClickTab_Requires_Closing();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();

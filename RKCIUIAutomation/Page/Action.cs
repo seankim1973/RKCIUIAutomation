@@ -144,7 +144,7 @@ namespace RKCIUIAutomation.Page
             {
                 driver = Driver;
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(locator));
+                wait.Until(driver => ExpectedConditions.InvisibilityOfElementLocated(locator));
             }
             catch (Exception e)
             {
@@ -156,7 +156,7 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                string[] classNames = new string[] 
+                string[] classNames = new string[]
                 {
                     "k-overlay",
                     "k-loading-mask",
@@ -957,8 +957,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
-                SetPageTitleVar();
+                pageTitle = SetPageTitleVar();
 
                 if (pageTitle.Contains("ELVIS PMC"))
                 {

@@ -293,13 +293,6 @@ namespace RKCIUIAutomation.Sandbox
             Console.WriteLine($"nostringEnumVal : {nostringEnumVal}");
         }
 
-        [TestMethod]
-        public void KendoGridClassTest()
-        {
-            KendoGrid kendo = new KendoGrid(Driver);
-            //kendo.Filter("SubmittalNumber", FilterOperator.EqualTo, "Oncor - Wedgemere Drive");
-            kendo.Sort("ColumnNameTest", SortType.Ascending);
-        }
 
         [TestMethod]
         public void ParseUserAcct()

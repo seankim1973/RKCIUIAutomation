@@ -4,6 +4,7 @@ using RKCIUIAutomation.Config;
 using System;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
+using RKCIUIAutomation.Test;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -17,18 +18,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public DesignDocument(IWebDriver driver) => this.Driver = driver;
 
-        internal void ScrollToLastColumn()
-        {
-            ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][last()]"));
-            Thread.Sleep(5000);
-        }
+        public override void ScrollToLastColumn()
+            => ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][last()]"));
 
-        internal void ScrollToFirstColumn()
-        {
-            ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][1]"));
-            Thread.Sleep(5000);
-        }
-
+        public override void ScrollToFirstColumn()
+            => ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][1]"));
 
         public enum DesignDocDetails_InputFields
         {
@@ -214,6 +208,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public interface IDesignDocument
     {
+        void ScrollToLastColumn();
+
+        void ScrollToFirstColumn();
+
         void EnterVerifiedDate(string shortDate = "01/01/2019");
 
         void ClickBtn_AddComment();
@@ -343,7 +341,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     #region Common Workflow Implementation class
 
-    public abstract class DesignDocument_Impl : PageBase, IDesignDocument
+    public abstract class DesignDocument_Impl : TestBase, IDesignDocument
     {
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
@@ -765,6 +763,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForActiveCommentTab();
             Kendo.ClickCommentTab(commentTabNumber);
         }
+
+        public abstract void ScrollToLastColumn();
+
+        public abstract void ScrollToFirstColumn();
     }
 
     #endregion Common Workflow Implementation class
@@ -859,13 +861,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void EnterNoComment()
         {
             WaitForPageReady();
-            //Thread.Sleep(5000);
             ClickBtn_AddComment();
-            Thread.Sleep(5000);
             SelectNoCommentReviewType();
-            Thread.Sleep(5000);
             ClickBtn_Update();
-            Thread.Sleep(5000);
         }
 
         public override void EnterRegularCommentAndDrawingPageNo()
@@ -896,18 +894,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickBtn_SaveForward();
         }
 
-        //public override void EnterClosingCommentAndCode()
-        //{
-        //    ClickTab_Requires_Closing();
-        //    FilterDocNumber();
-        //    ClickEnterBtnForRow();
-        //    WaitForPageReady();
-        //    ClickBtn_CommentsTblRow_Edit();
-        //    EnterTextInCommentField(CommentType.CommentClosingInput);
-        //    SelectDDL_ClosingStamp();
-        //    ClickBtn_Update();
-        //    ClickBtn_SaveForward();
-        //}
 
         public override void ClickBtn_BackToList()
         {
