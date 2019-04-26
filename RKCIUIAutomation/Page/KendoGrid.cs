@@ -62,14 +62,12 @@ namespace RKCIUIAutomation.Page
 
         private void ExecuteJsScript(string jsToBeExecuted)
         {
-            driver = Driver;
             IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
             executor.ExecuteScript(jsToBeExecuted);
         }
 
         private object ExecuteJsScriptGet(string jsToBeExecuted)
         {
-            driver = Driver;
             IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
             return executor.ExecuteScript(jsToBeExecuted);
         }
@@ -251,7 +249,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 string jsToBeExecuted = GetGridReference(tableType);
                 jsToBeExecuted = $"{jsToBeExecuted} return grid.dataSource.page();";
                 IJavaScriptExecutor executor = driver as IJavaScriptExecutor;

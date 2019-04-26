@@ -90,7 +90,6 @@ namespace RKCIUIAutomation.Page.PageObjects
 
         public bool AlreadyLoggedIn()
         {
-            driver = Driver;
             bool result = false;
             IWebElement elem = null;
 
@@ -129,7 +128,6 @@ namespace RKCIUIAutomation.Page.PageObjects
             {
                 if (!alreadyLoggedIn)
                 {
-                    driver = Driver;
                     pageTitle = SetPageTitleVar();
 
                     if (pageTitle.Contains("Log in"))

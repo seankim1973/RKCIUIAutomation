@@ -367,8 +367,6 @@ namespace RKCIUIAutomation.Base
             }
             finally
             {
-                driver = Driver;
-
                 if (driver != null)
                 {
                     reportInstance.Flush();

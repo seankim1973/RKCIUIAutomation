@@ -36,21 +36,20 @@ namespace RKCIUIAutomation.Page
 
         private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
         {
-            IWebElement element = null;
+            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
 
             try
             {
-                driver = Driver;
                 string javaScript = jsAction.GetString();
-                element = GetElement(elementByLocator);
-                IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
+                IWebElement element = GetElement(elementByLocator);
                 executor.ExecuteScript(javaScript, element);
+
                 log.Info($"{jsAction.ToString()}ed on javascript element: - {elementByLocator}");
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -60,8 +59,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
-
                 if (!windowHandle.HasValue())
                 {
                     driver.SwitchTo().Window(windowHandle);
@@ -126,7 +123,6 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                driver = Driver;
                 WaitForPageReady();
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                 wait.Until(x => driver.FindElement(elementByLocator));
@@ -138,13 +134,12 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForElementToClear(By locator, int timeOutInSeconds = 20, int pollingInterval = 500)
+        internal void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 500)
         {
             try
             {
-                driver = Driver;
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                wait.Until(driver => ExpectedConditions.InvisibilityOfElementLocated(locator));
+                wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(locator));
             }
             catch (Exception e)
             {
@@ -152,7 +147,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForLoading(int timeOutInSeconds = 20, int pollingInterval = 500)
+        internal void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500)
         {
             try
             {
@@ -173,14 +168,11 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForPageReady(int timeOutInSeconds = 20, int pollingInterval = 1000)
+        internal void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 1000)
         {
-            IJavaScriptExecutor javaScriptExecutor = null;
-            WaitForLoading();
-
-            driver = Driver;
-            javaScriptExecutor = driver as IJavaScriptExecutor;
+            IJavaScriptExecutor javaScriptExecutor = driver as IJavaScriptExecutor;
             bool pageIsReady = false;
+            WaitForLoading();
 
             try
             {
@@ -219,14 +211,14 @@ namespace RKCIUIAutomation.Page
                         log.Error($"Error in WaitForPageReady() : {e.StackTrace}");
                     }
                 }
+
+                WaitForLoading();
             }
 
         }
 
         public void RefreshWebPage()
         {
-            driver = Driver;
-
             try
             {
                 driver.Navigate().Refresh();
@@ -245,7 +237,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 elem = driver.FindElement(elementByLocator);
             }
             catch (Exception e)
@@ -262,7 +253,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 WaitForElement(elementByLocator);
                 elements = new List<IWebElement>();
                 elements = driver.FindElements(elementByLocator);
@@ -435,7 +425,6 @@ namespace RKCIUIAutomation.Page
                 pageTitle = string.Empty;
                 WaitForPageReady();
 
-                driver = Driver;
                 log.Debug($"...waiting for page title");
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                 wait.Until(x => x.Title.HasValue());
@@ -456,7 +445,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 log.Debug($"...waiting for page title");
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                 wait.Until(x => driver.Url.HasValue());
@@ -803,7 +791,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 alert = driver.SwitchTo().Alert();
 
@@ -835,7 +822,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 alert = driver.SwitchTo().Alert();
                 alertMsg = alert.Text;
@@ -859,7 +845,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 alert = driver.SwitchTo().Alert();
                 alertMsg = alert.Text;
@@ -882,7 +867,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 string actualAlertMsg = driver.SwitchTo().Alert().Text;
                 msgMatch = (actualAlertMsg).Contains(expectedMessage)
@@ -933,7 +917,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 driver.FindElement(elementByLocator);
                 isDisplayed = true;
             }
@@ -1061,7 +1044,6 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                driver = Driver;
                 driver.Navigate().GoToUrl(pageUrl);
                 WaitForPageReady();
                 pageTitle = SetPageTitleVar();
@@ -1111,7 +1093,6 @@ namespace RKCIUIAutomation.Page
                 {
                     if (continueTestIfPageNotLoaded == true)
                     {
-                        driver = Driver;
                         LogInfo(">>> Attempting to navigate back to previous page to continue testing <<<");
                         driver.Navigate().Back();
                         WaitForPageReady();
@@ -1471,8 +1452,6 @@ namespace RKCIUIAutomation.Page
                     string xPath = ConvertToType<string>(elementOrLocator);
                     elem = GetElement(By.XPath(xPath));
                 }
-
-                driver = Driver;
 
                 if (elem != null)
                 {

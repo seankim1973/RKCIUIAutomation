@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Test;
 
 namespace RKCIUIAutomation.Page.Navigation
 {
@@ -318,9 +319,9 @@ namespace RKCIUIAutomation.Page.Navigation
     #endregion PageNavigation Interface class
 
     //PageNavigation Common Implementation class
-    public abstract class PageNavigation_Impl : PageBase, IPageNavigation
+    public abstract class PageNavigation_Impl : TestBase, IPageNavigation
     {
-        internal NavMenu Navigate => new NavMenu();
+        internal NavMenu Navigate => new NavMenu(Driver);
 
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
 

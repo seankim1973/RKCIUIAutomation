@@ -109,8 +109,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
         internal void NavigateToGeneralNcrPage()
         {
-            driver = Driver;
-
             if (!driver.Title.Contains("NCR List"))
             {
                 NavigateToPage.QARecordControl_General_NCR();

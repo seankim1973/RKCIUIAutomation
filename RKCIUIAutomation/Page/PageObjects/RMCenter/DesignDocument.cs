@@ -434,6 +434,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             JsClickElement(DesignDoc_Base.BackToListBtn_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public virtual void ClickBtn_SaveOnly()
@@ -446,6 +447,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             JsClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public virtual void CreateDocument()
@@ -674,15 +676,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         //    ClickBtn_SaveForward();
         //}
 
-        public virtual void _LoggedInUserUploadsDesignDocument()
-        {
-            // Login as user to make resolution comment (All tenants - DevAdmin)
-            EnterTextInCommentField(CommentType.CommentResolutionInput);
-            SelectAgreeResolutionCode(); //
-            ClickSave();
-            //wait for saveforward to load
-            ClickSubmitForward();
-        }
+        //public virtual void _LoggedInUserUploadsDesignDocument()
+        //{
+        //    // Login as user to make resolution comment (All tenants - DevAdmin)
+        //    EnterTextInCommentField(CommentType.CommentResolutionInput);
+        //    SelectAgreeResolutionCode(); //
+        //    ClickSave();
+        //    //wait for saveforward to load
+        //    ClickSubmitForward();
+        //}
 
         private bool VerifyRequiredFieldErrorMsg(string errorMsg)
             => ElementIsDisplayed(By.XPath($"//li[text()='{errorMsg}']"));
@@ -703,7 +705,22 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public virtual void SelectTab(TableTab tableTab)
-            => ClickTab(tableTab);
+        {
+            try
+            {
+                WaitForPageReady();
+                WaitForLoading();
+                //Thread.Sleep(5000);
+                ClickTab(tableTab);
+                WaitForPageReady();
+                WaitForLoading();
+            }
+            catch (Exception e)
+            {
+                log.Error($"Error occured in SelectedTab() : {e.StackTrace}");
+                throw e;
+            }
+        }
 
         public virtual void ClickTab_Comment() => SelectTab(TableTab.Comment);
 
@@ -894,17 +911,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickBtn_SaveForward();
         }
 
-
         public override void ClickBtn_BackToList()
         {
             JsClickElement(DesignDoc_Base.BackToListBtn_InTable_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public override void ClickBtn_SaveForward()
         {
             ClickElement(DesignDoc_Base.Table_ForwardBtn_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public override void SelectRegularCommentReviewType(int selectionIndex = 3)
@@ -1036,12 +1054,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             JsClickElement(DesignDoc_Base.BackToListBtn_InTable_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public override void ClickBtn_SaveForward()
         {
             JsClickElement(DesignDoc_Base.Table_ForwardBtn_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public override void SelectRegularCommentReviewType(int selectionIndex = 3)
