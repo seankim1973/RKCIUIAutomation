@@ -498,7 +498,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     [StringValue("QA Test Search")] QA_Test_Search,
                     [StringValue("QA Test Summary Search")] QA_Test_Summary_Search,
-                    [StringValue("QA Daily Inspection Report")] QA_Daily_Inspection_Report,
+                    [StringValue("QA DIR Search")] QA_DIR_Search,
                     [StringValue("QA DIR Summary Report")] QA_DIR_Summary_Report
                 }
             }
