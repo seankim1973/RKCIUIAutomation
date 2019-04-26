@@ -341,8 +341,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-                driver = Driver;
-
                 IList<IWebElement> ReqFieldErrorLabelElements = driver.FindElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')]"));
 
                 IList<string> RequiredFieldIDs = GetRequiredFieldIDs();

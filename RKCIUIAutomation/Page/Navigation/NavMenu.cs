@@ -177,8 +177,6 @@ namespace RKCIUIAutomation.Page.Navigation
                 }
 
                 JsHover(GetMainNavMenuByLocator(mainNavEnum));
-
-                driver = Driver;
                 builder = new Actions(driver);
 
                 if (subOfMainNavEnum != null)
