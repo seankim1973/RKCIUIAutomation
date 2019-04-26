@@ -815,7 +815,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public override void QASearch_QA_Test_Summary_Search() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_Test_Summary_Search);
 
-        public override void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_Daily_Inspection_Report);
+        public override void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_DIR_Search);
 
         public override void QASearch_DIR_Summary_Report() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_DIR_Summary_Report);
 

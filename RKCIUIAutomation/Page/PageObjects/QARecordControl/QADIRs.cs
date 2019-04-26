@@ -34,6 +34,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("DIREntries_0__DivisionID")] Division, //SH249
             [StringValue("DIREntries_0__BidItemCodeID")] Bid_Item_Code, //SH249
             [StringValue("DIREntries_0__SectionId")] Spec_Section,
+            [StringValue("DIREntries_0__SpecSectionId")] Spec_Section_Paragraph,
             [StringValue("DIREntries_0__FeatureID")] Feature, //requires selection of Area DDL
             [StringValue("DIREntries_0__HoldPointNo")] Control_Point_Number,
             [StringValue("DIREntries_0__HoldPointTypeID")] Control_Point_Type,
@@ -245,6 +246,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             if (!id.Contains(" "))
                             {
                                 id = id.SplitCamelCase();
+
+                                if (id.Equals("SpecSection"))
+                                {
+                                    id = $"{id} Paragraph";
+                                }
                             }
                         }
                     }
@@ -557,6 +563,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void SelectDDL_Area(int ddListSelection = 1);
 
         void SelectDDL_SpecSection(int ddListSelection = 1);
+
+        void SelectDDL_SpecSectionParagraph(int ddListSelection = 1);
 
         void SelectDDL_Division(int ddListSelection = 1);
 
@@ -988,6 +996,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void SelectDDL_SpecSection(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Spec_Section, ddListSelection);
+
+        public virtual void SelectDDL_SpecSectionParagraph(int ddListSelection = 1)
+            => ExpandAndSelectFromDDList(InputFields.Spec_Section_Paragraph, ddListSelection);
 
         public virtual void SelectDDL_Division(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Division, ddListSelection);
@@ -1926,10 +1937,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_AverageTemp(80);
             SelectDDL_Area();
             SelectDDL_SpecSection();
+            SelectDDL_SpecSectionParagraph();
+            string specSectionParagraphText = GetTextFromDDL(InputFields.Spec_Section_Paragraph);
+            string spectionDescriptionText = GetText(GetTextAreaFieldByLocator(InputFields.Section_Description));
+            AddAssertionToList(specSectionParagraphText.Equals(spectionDescriptionText));
             SelectDDL_Feature();
             SelectDDL_Contractor("LINXS");
             SelectDDL_CrewForeman();
-            EnterText_SectionDescription(GetTextFromDDL(QADIRs.InputFields.Spec_Section));
             SelectChkbox_InspectionType_I();
             SelectChkbox_InspectionResult_P();
             Enter_ReadyDateTime();
@@ -1951,6 +1965,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.Area.GetString(),
                 InputFields.Average_Temperature.GetString(),
                 InputFields.Spec_Section.GetString(),
+                InputFields.Spec_Section_Paragraph.GetString(),
                 InputFields.Section_Description.GetString(),
                 InputFields.Feature.GetString(),
                 InputFields.Crew_Foreman.GetString(),
