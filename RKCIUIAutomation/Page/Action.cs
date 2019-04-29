@@ -160,11 +160,15 @@ namespace RKCIUIAutomation.Page
 
                 foreach (string className in classNames)
                 {
-                    WaitForElementToClear(By.ClassName(className));
+                    WaitForElementToClear(By.ClassName(className), timeOutInSeconds, pollingInterval);
                 }
             }
             catch (Exception)
             {
+            }
+            finally
+            {
+                Thread.Sleep(750);
             }
         }
 
@@ -172,7 +176,6 @@ namespace RKCIUIAutomation.Page
         {
             IJavaScriptExecutor javaScriptExecutor = driver as IJavaScriptExecutor;
             bool pageIsReady = false;
-            WaitForLoading();
 
             try
             {
@@ -211,10 +214,7 @@ namespace RKCIUIAutomation.Page
                         log.Error($"Error in WaitForPageReady() : {e.StackTrace}");
                     }
                 }
-
-                WaitForLoading();
             }
-
         }
 
         public void RefreshWebPage()
@@ -606,8 +606,9 @@ namespace RKCIUIAutomation.Page
             try
             {
                 ScrollToElement(By.XPath("//h4[text()='Attachments']"));
-                By uploadInput_ByLocator = By.XPath("//input[@id='UploadFiles_0_']");
-                GetElement(uploadInput_ByLocator).SendKeys(filePath);
+                IWebElement uploadInputElem = GetElement(By.XPath("//input[@id='UploadFiles_0_']"));
+                uploadInputElem.SendKeys(filePath);
+                WaitForLoading();
                 log.Info($"Entered {filePath}' for file upload");
 
                 By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
