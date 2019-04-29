@@ -46,7 +46,7 @@ namespace RKCIUIAutomation.UnitTest
             LogInfo($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Qms_Document();
-            Assert.True(VerifyPageTitle("QMS Documents"));
+            Assert.True(VerifyPageHeader("QMS Documents"));
         }
 
         [Test]
@@ -56,23 +56,28 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Get SubMenu Names")]
         public void GetSubMenuNames()
         {
-            LoginAs(UserType.Bhoomi);
-            try
-            {
-                JsHover(By.XPath("//a[text()='Quality Search']"));
-                IList<IWebElement> elements = Driver.FindElements(By.XPath("//a[text()='Quality Search']/following-sibling::ul/li/a"));
+            LoginAs(UserType.DIRMgrQA);
+            NavigateToPage.QARecordControl_QA_DIRs();
+            VerifyPageHeader("Test");
+            NavigateToPage.QASearch_Daily_Inspection_Report();
+            VerifyPageHeader("Test");
 
-                foreach (IWebElement elem in elements)
-                {
-                    string subMenu = elem.Text;
-                    Console.WriteLine(subMenu);
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-                throw;
-            }
+            //try
+            //{
+            //    JsHover(By.XPath("//a[text()='Quality Search']"));
+            //    IList<IWebElement> elements = Driver.FindElements(By.XPath("//a[text()='Quality Search']/following-sibling::ul/li/a"));
+
+            //    foreach (IWebElement elem in elements)
+            //    {
+            //        string subMenu = elem.Text;
+            //        Console.WriteLine(subMenu);
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    log.Error(e.Message);
+            //    throw;
+            //}
 
         }
     }
@@ -89,10 +94,10 @@ namespace RKCIUIAutomation.UnitTest
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_Owner_Submittal();
-            AddAssertionToList(VerifyPageTitle("New Submittal"));
+            AddAssertionToList(VerifyPageHeader("New Submittal"));
             ClickCancel();
             NavigateToPage.RMCenter_Upload_DEV_Submittal();
-            AddAssertionToList(VerifyPageTitle("Submittal Details"));
+            AddAssertionToList(VerifyPageHeader("Submittal Details"));
             AssertAll();
         }
     }
@@ -289,11 +294,11 @@ namespace RKCIUIAutomation.UnitTest
             LogInfo($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.My_Details();
-            Assert.True(VerifyPageTitle("Account Details"));
+            Assert.True(VerifyPageHeader("Account Details"));
             NavigateToPage.UserMgmt_Roles();
-            Assert.True(VerifyPageTitle("Roles"));
+            Assert.True(VerifyPageHeader("Roles"));
             NavigateToPage.SysConfig_Gradations();
-            Assert.True(VerifyPageTitle("Gradations"));
+            Assert.True(VerifyPageHeader("Gradations"));
         }
     }
 
@@ -356,7 +361,7 @@ namespace RKCIUIAutomation.UnitTest
             LogInfo($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Qms_Document();
-            Assert.True(VerifyPageTitle("QMS Documents"));
+            Assert.True(VerifyPageHeader("QMS Documents"));
         }
     }
 
@@ -408,7 +413,7 @@ namespace RKCIUIAutomation.UnitTest
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Qms_Document();
-            Assert.True(VerifyPageTitle("QMS Documents"));
+            Assert.True(VerifyPageHeader("QMS Documents"));
         }
     }
 
@@ -425,11 +430,11 @@ namespace RKCIUIAutomation.UnitTest
             LogInfo($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.My_Details();
-            AddAssertionToList(VerifyPageTitle("Account Details"));
+            AddAssertionToList(VerifyPageHeader("Account Details"));
             NavigateToPage.UserMgmt_Roles();
-            AddAssertionToList(VerifyPageTitle("Roles"));
+            AddAssertionToList(VerifyPageHeader("Roles"));
             NavigateToPage.SysConfig_Gradations();
-            AddAssertionToList(VerifyPageTitle("Gradations"));
+            AddAssertionToList(VerifyPageHeader("Gradations"));
             AssertAll();
         }
     }
@@ -465,7 +470,7 @@ namespace RKCIUIAutomation.UnitTest
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Search();
             //RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-            Assert.True(VerifyPageTitle("RM Center Search"));
+            Assert.True(VerifyPageHeader("RM Center Search"));
         }
     }
 
@@ -482,7 +487,7 @@ namespace RKCIUIAutomation.UnitTest
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Search();
             //RMCenter_SearchPage.PopulateAllSearchCriteriaFields();
-            Assert.True(VerifyPageTitle("Failed Test"));
+            Assert.True(VerifyPageHeader("Failed Test"));
 
             /*
             //Use for quicker test failure
@@ -505,7 +510,7 @@ namespace RKCIUIAutomation.UnitTest
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Admin_Project_Details();
-            Assert.True(VerifyPageTitle("Failed Test"));
+            Assert.True(VerifyPageHeader("Failed Test"));
         }
     }
 
@@ -521,7 +526,7 @@ namespace RKCIUIAutomation.UnitTest
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Admin_Menu_Editor();
-            Assert.True(VerifyPageTitle("Failed Test"));
+            Assert.True(VerifyPageHeader("Failed Test"));
         }
     }
 
@@ -537,7 +542,7 @@ namespace RKCIUIAutomation.UnitTest
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Admin_Contracts();
-            Assert.True(VerifyPageTitle("Failed Test"));
+            Assert.True(VerifyPageHeader("Failed Test"));
         }
     }
 
@@ -553,7 +558,7 @@ namespace RKCIUIAutomation.UnitTest
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Admin_Companies();
-            Assert.True(VerifyPageTitle("Failed Test"));
+            Assert.True(VerifyPageHeader("Failed Test"));
         }
     }
 
@@ -663,7 +668,7 @@ namespace RKCIUIAutomation.UnitTest
             NavigateToPage.QARecordControl_General_NCR();
             string ncrDesc = "DlEamxKSEhxuBTbyRKGQtuoiDO";
 
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(GeneralNCR.TableTab.CQM_Review, ncrDesc));
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDesc), "UNIT TEST VerifyNCRDocIsDisplayedInReview");
         }
     }
 

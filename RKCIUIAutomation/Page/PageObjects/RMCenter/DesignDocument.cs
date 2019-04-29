@@ -1,12 +1,10 @@
-﻿using MiniGuids;
-using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
+using RKCIUIAutomation.Test;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -18,20 +16,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public DesignDocument(IWebDriver driver) => driver = Driver;
+        public DesignDocument(IWebDriver driver) => this.Driver = driver;
 
-        internal void ScrollToLastColumn()
-        {
-            ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][last()]"));
-            Thread.Sleep(5000);
-        }
+        public override void ScrollToLastColumn()
+            => ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][last()]"));
 
-        internal void ScrollToFirstColumn()
-        {
-            ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][1]"));
-            Thread.Sleep(5000);
-        }
-
+        public override void ScrollToFirstColumn()
+            => ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][1]"));
 
         public enum DesignDocDetails_InputFields
         {
@@ -132,12 +123,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         [ThreadStatic]
         internal static string designDocNumber;
 
-        [ThreadStatic]
-        internal static string docTitleKey;
-
-        [ThreadStatic]
-        internal static string docNumberKey;
-
         internal By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
 
         internal By CancelBtnUploadPage_ByLocator => By.Id("btnCancel");
@@ -194,21 +179,24 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal void Click_UniqueTblBtn(string btnClass)
         {
-            JsClickElement(By.XPath($"//a[contains(@class, '{btnClass}')]"));
+            ClickElement(By.XPath($"//a[contains(@class, '{btnClass}')]"));
             WaitForPageReady();
         }
 
         internal void StoreDesignDocTitleAndNumber()
         {
-            MiniGuid guid = MiniGuid.NewGuid();
+            //MiniGuid guid = GenerateRandomGuid();
 
-            string docKey = $"{tenantName}{GetTestName()}";
-            docTitleKey = $"{docKey}_DsgnDocTtl";
-            docNumberKey = $"{docKey}_DsgnDocNumb";
-            CreateVar(docTitleKey, docTitleKey);
-            CreateVar(docNumberKey, guid);
-            designDocTitle = GetVar(docTitleKey).ToString();
-            designDocNumber = GetVar(docNumberKey).ToString();
+            //string docKey = $"{tenantName}{GetTestName()}";
+            //docTitleKey = $"{docKey}_DsgnDocTtl";
+            //docNumberKey = $"{docKey}_DsgnDocNumb";
+            //docTitleKey = $"DsgnDocTtl";
+            //docNumberKey = $"DsgnDocNumb";
+
+            //CreateVar(docTitleKey, docTitleKey);
+            //CreateVar(docNumberKey, guid);
+            designDocTitle = GetVar("DsgnDocTtl");
+            designDocNumber = GetVar("DsgnDocNumb");
             Console.WriteLine($"#####Title: {designDocTitle}\nNumber: {designDocNumber}");
         }
 
@@ -220,6 +208,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public interface IDesignDocument
     {
+        void ScrollToLastColumn();
+
+        void ScrollToFirstColumn();
+
         void EnterVerifiedDate(string shortDate = "01/01/2019");
 
         void ClickBtn_AddComment();
@@ -349,7 +341,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     #region Common Workflow Implementation class
 
-    public abstract class DesignDocument_Impl : PageBase, IDesignDocument
+    public abstract class DesignDocument_Impl : TestBase, IDesignDocument
     {
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
@@ -400,8 +392,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal DesignDocument DesignDoc_Base => new DesignDocument();
 
-        //internal KendoGrid Kendo => new KendoGrid();
-
         public virtual void SelectDDL_ReviewType(int selectionIndex)
             => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, selectionIndex);
 
@@ -444,6 +434,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             JsClickElement(DesignDoc_Base.BackToListBtn_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public virtual void ClickBtn_SaveOnly()
@@ -456,10 +447,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             JsClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public virtual void CreateDocument()
         {
+            WaitForPageReady();
             ClickElement(DesignDoc_Base.UploadNewDesignDoc_ByLocator);
             EnterDesignDocTitleAndNumber();
             UploadFile("test.xlsx");
@@ -683,15 +676,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         //    ClickBtn_SaveForward();
         //}
 
-        public virtual void _LoggedInUserUploadsDesignDocument()
-        {
-            // Login as user to make resolution comment (All tenants - DevAdmin)
-            EnterTextInCommentField(CommentType.CommentResolutionInput);
-            SelectAgreeResolutionCode(); //
-            ClickSave();
-            //wait for saveforward to load
-            ClickSubmitForward();
-        }
+        //public virtual void _LoggedInUserUploadsDesignDocument()
+        //{
+        //    // Login as user to make resolution comment (All tenants - DevAdmin)
+        //    EnterTextInCommentField(CommentType.CommentResolutionInput);
+        //    SelectAgreeResolutionCode(); //
+        //    ClickSave();
+        //    //wait for saveforward to load
+        //    ClickSubmitForward();
+        //}
 
         private bool VerifyRequiredFieldErrorMsg(string errorMsg)
             => ElementIsDisplayed(By.XPath($"//li[text()='{errorMsg}']"));
@@ -712,7 +705,22 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public virtual void SelectTab(TableTab tableTab)
-            => ClickTab(tableTab);
+        {
+            try
+            {
+                WaitForPageReady();
+                WaitForLoading();
+                //Thread.Sleep(5000);
+                ClickTab(tableTab);
+                WaitForPageReady();
+                WaitForLoading();
+            }
+            catch (Exception e)
+            {
+                log.Error($"Error occured in SelectedTab() : {e.StackTrace}");
+                throw e;
+            }
+        }
 
         public virtual void ClickTab_Comment() => SelectTab(TableTab.Comment);
 
@@ -772,6 +780,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForActiveCommentTab();
             Kendo.ClickCommentTab(commentTabNumber);
         }
+
+        public abstract void ScrollToLastColumn();
+
+        public abstract void ScrollToFirstColumn();
     }
 
     #endregion Common Workflow Implementation class
@@ -899,29 +911,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickBtn_SaveForward();
         }
 
-        //public override void EnterClosingCommentAndCode()
-        //{
-        //    ClickTab_Requires_Closing();
-        //    FilterDocNumber();
-        //    ClickEnterBtnForRow();
-        //    WaitForPageReady();
-        //    ClickBtn_CommentsTblRow_Edit();
-        //    EnterTextInCommentField(CommentType.CommentClosingInput);
-        //    SelectDDL_ClosingStamp();
-        //    ClickBtn_Update();
-        //    ClickBtn_SaveForward();
-        //}
-
         public override void ClickBtn_BackToList()
         {
             JsClickElement(DesignDoc_Base.BackToListBtn_InTable_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public override void ClickBtn_SaveForward()
         {
             ClickElement(DesignDoc_Base.Table_ForwardBtn_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public override void SelectRegularCommentReviewType(int selectionIndex = 3)
@@ -1053,12 +1054,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             JsClickElement(DesignDoc_Base.BackToListBtn_InTable_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public override void ClickBtn_SaveForward()
         {
             JsClickElement(DesignDoc_Base.Table_ForwardBtn_ByLocator);
             WaitForPageReady();
+            //WaitForLoading();
         }
 
         public override void SelectRegularCommentReviewType(int selectionIndex = 3)

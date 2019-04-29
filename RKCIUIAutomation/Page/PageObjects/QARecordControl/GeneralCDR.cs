@@ -1,5 +1,4 @@
-﻿using MiniGuids;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
@@ -80,15 +79,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         [ThreadStatic]
         internal static string cdrDescription;
-
-        [ThreadStatic]
-        internal static string cdrNewDescription;
-
-        [ThreadStatic]
-        internal static string cdrDescKey;
-
-        [ThreadStatic]
-        internal static string cdrNewDescKey;
 
         internal readonly By newBtn_ByLocator = By.XPath("//div[@id='CdrGrid_Revise']/div/a[contains(@class, 'k-button')]");
 
@@ -273,26 +263,20 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         private void CreateCdrDescription(bool tempDescription = false)
         {
-            MiniGuid guid = MiniGuid.NewGuid();
-            string descKey = $"{tenantName}{GetTestName()}";
             string logMsg = string.Empty;
             string descValue = string.Empty;
-
+            string descKey = tempDescription
+                ? "NewCdrDescription"
+                : "CdrDescription";
+            
             if (tempDescription)
             {
-                cdrNewDescKey = $"{descKey}_CdrNewDescription";
-                CreateVar(cdrNewDescKey, guid);
-                cdrNewDescription = GetVar(cdrNewDescKey);
-                descKey = cdrNewDescKey;
-                descValue = cdrNewDescription;
+                descValue = GetVar(descKey);
                 logMsg = "new temp ";
             }
             else
             {
-                cdrDescKey = $"{descKey}_CdrDescription";
-                CreateVar(cdrDescKey, guid);
-                cdrDescription = GetVar(cdrDescKey);
-                descKey = cdrDescKey;
+                cdrDescription = GetVar(descKey);
                 descValue = cdrDescription;
                 logMsg = "";
             }
@@ -301,7 +285,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public virtual string GetCDRDocDescription(bool tempDescription = false)
-            => GetVar(tempDescription ? cdrNewDescKey : cdrDescKey);
+            => GetVar(tempDescription ? "NewCdrDescription" : "CdrDescription");
 
         public virtual string EnterDescription(string description = "", bool tempDescription = false)
             => EnterDesc(description, InputFields.DeficiencyDescription);
@@ -357,8 +341,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-                driver = Driver;
-
                 IList<IWebElement> ReqFieldErrorLabelElements = driver.FindElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')]"));
 
                 IList<string> RequiredFieldIDs = GetRequiredFieldIDs();
@@ -416,18 +398,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRDescription = "")
         {
             ClickTab(tableTab);
-            cdrDescription = CDRDescription.HasValue()
+            //cdrDescription = CDRDescription.HasValue()
+            //    ? CDRDescription
+            //    : cdrDescription;
+            return VerifyRecordIsDisplayed(ColumnName.Description, CDRDescription.HasValue()
                 ? CDRDescription
-                : cdrDescription;
-            return VerifyRecordIsDisplayed(ColumnName.Description, cdrDescription);
+                : cdrDescription);
         }
 
         public virtual void FilterDescription(string description = "")
         {
-            cdrDescription = description.HasValue()
+            //cdrDescription = description.HasValue()
+            //    ? description
+            //    : cdrDescription;
+            FilterTableColumnByValue(ColumnName.Description, description.HasValue()
                 ? description
-                : cdrDescription;
-            FilterTableColumnByValue(ColumnName.Description, cdrDescription);
+                : cdrDescription);
         }
     }
 

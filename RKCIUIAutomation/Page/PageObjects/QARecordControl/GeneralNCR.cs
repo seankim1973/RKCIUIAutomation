@@ -1,10 +1,9 @@
-﻿using MiniGuids;
-using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
@@ -72,10 +71,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Closed NCR")] Closed_NCR,
             [StringValue("CQM Review")] CQM_Review,
             [StringValue("QM Review")] QM_Review,
+            [StringValue("Review")] Review,
             [StringValue("Create/Revise")] Create_Revise,
             [StringValue("Creating/Revise")] Creating_Revise,
             [StringValue("Developer Concurrence")] Developer_Concurrence,
             [StringValue("DOT Approval")] DOT_Approval,
+            [StringValue("LAWA Concurrence")] LAWA_Concurrence,
             [StringValue("Engineer Concurrence")] Engineer_Concurrence,
             [StringValue("Originator Concurrence")] Originator_Concurrence,
             [StringValue("Owner Concurrence")] Owner_Concurrence,
@@ -147,17 +148,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         [ThreadStatic]
         internal static string ncrDescription;
 
-        [ThreadStatic]
-        internal static string ncrNewDescription;
-
-        [ThreadStatic]
-        internal static string ncrDescKey;
-
-        [ThreadStatic]
-        internal static string ncrNewDescKey;
-
-        internal MiniGuid guid;
-
         internal static readonly By newBtn_ByLocator = By.XPath("//div[@id='NcrGrid_Revise']/div/a[contains(@class, 'k-button')]");
 
         internal static readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
@@ -196,34 +186,28 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             desc = desc.HasValue()
                 ? desc
                 : GetVar(tempDescription
-                    ? ncrNewDescKey
-                    : ncrDescKey);
+                    ? "NewNcrDescription"
+                    : "NcrDescription");
             EnterText(descLocator, desc);
             return desc;
         }
 
         internal void CreateNcrDescription(bool tempDescription = false)
         {
-            guid = MiniGuid.NewGuid();
-            string descKey = $"{tenantName}{GetTestName()}";
             string logMsg = string.Empty;
             string descValue = string.Empty;
+            string descKey = tempDescription
+                ? "NewNcrDescription"
+                : "NcrDescription";
 
             if (tempDescription)
             {
-                ncrNewDescKey = $"{descKey}_NcrNewDescription";
-                CreateVar(ncrNewDescKey, guid);
-                ncrNewDescription = GetVar(ncrNewDescKey);
-                descKey = ncrNewDescKey;
-                descValue = ncrNewDescription;
+                descValue = GetVar(descKey);
                 logMsg = "new temp ";
             }
             else
             {
-                ncrDescKey = $"{descKey}_NcrDescription";
-                CreateVar(ncrDescKey, guid);
-                ncrDescription = GetVar(ncrDescKey);
-                descKey = ncrDescKey;
+                ncrDescription = GetVar(descKey);
                 descValue = ncrDescription;
                 logMsg = "";
             }
@@ -315,11 +299,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void ClickTab_CQM_Review();
 
+        void ClickTab_Review();
+
         void ClickTab_Creating_Revise();
 
         void ClickTab_Developer_Concurrence();
 
         void ClickTab_DOT_Approval();
+
+        void ClickTab_LAWA_Concurrence();
 
         void ClickTab_Engineer_Concurrence();
 
@@ -618,7 +606,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     break;
             }
 
-            EnterText(GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer}");
+            Thread.Sleep(5000);
+            EnterText(GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer.ToString()}");
 
             GeneralNCR_Base.ClickBtn_Sign(signBtn);
             ClickBtn_SignaturePanel_OK();
@@ -638,6 +627,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void ClickTab_CQM_Review()
             => ClickTab(TableTab.CQM_Review);
 
+        public virtual void ClickTab_Review()
+            => ClickTab(TableTab.Review);
+
         public virtual void ClickTab_Creating_Revise()
             => ClickTab(TableTab.Creating_Revise);
 
@@ -646,6 +638,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void ClickTab_DOT_Approval()
             => ClickTab(TableTab.DOT_Approval);
+
+        public virtual void ClickTab_LAWA_Concurrence()
+            => ClickTab(TableTab.LAWA_Concurrence);
 
         public virtual void ClickTab_Engineer_Concurrence()
             => ClickTab(TableTab.Engineer_Concurrence);
@@ -878,10 +873,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual string GetNCRDocDescription(bool tempDescription = false)
             => GetVar(tempDescription
-                ? ncrNewDescKey
-                : ncrDescKey);
+                ? "NewNcrDescription"
+                : "NcrDescription");
 
-        public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);
+        //public virtual string GetNewNCRDocDescription() => GetVar(ncrNewDescKey);
 
         public virtual bool VerifyReqFieldErrorLabelsForNewDoc()
         {
@@ -1065,6 +1060,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
+                WaitForPageReady();
+
                 ClickTab(tableTab);
 
                 string _ncrDesc = description.HasValue()
@@ -1077,7 +1074,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     ? "Found"
                     : "Unable to find";
 
-                LogInfo($"{logMsg} record under {tableTab.GetString()} tab with description: {_ncrDesc}.", isDisplayed);
+                LogInfo($"{logMsg} record under '{tableTab.GetString()}' tab with description: {_ncrDesc}.", isDisplayed);
             }
             catch (Exception e)
             {
@@ -1103,6 +1100,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 ClickBtn_SaveOnly();
             }
+
+            WaitForPageReady();
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using RKCIUIAutomation.Test;
 
 namespace RKCIUIAutomation.Page.Navigation
 {
@@ -318,9 +319,9 @@ namespace RKCIUIAutomation.Page.Navigation
     #endregion PageNavigation Interface class
 
     //PageNavigation Common Implementation class
-    public abstract class PageNavigation_Impl : PageBase, IPageNavigation
+    public abstract class PageNavigation_Impl : TestBase, IPageNavigation
     {
-        internal NavMenu Navigate => new NavMenu();
+        internal NavMenu Navigate => new NavMenu(Driver);
 
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
 
@@ -698,6 +699,7 @@ namespace RKCIUIAutomation.Page.Navigation
         }
 
         public override void Qms_Document() => Navigate.Menu(NavMenu.QARecordControl.Menu.QMS_Document);
+
     }
 
     #endregion Implementation specific to SGWay
@@ -779,9 +781,9 @@ namespace RKCIUIAutomation.Page.Navigation
         public PageNavigation_LAX(IWebDriver driver) : base(driver)
         { }
 
-        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Deficiency_Notice);
+        public override void QARecordControl_General_CDR() => Navigate.Menu(NavMenu.RecordControl.Menu.Deficiency_Notice);
 
-        public override void QARecordControl_General_NCR() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_NCR);
+        public override void QARecordControl_General_NCR() => Navigate.Menu(NavMenu.RecordControl.Menu.NCR);
 
         public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIR);
 
@@ -813,7 +815,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public override void QASearch_QA_Test_Summary_Search() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_Test_Summary_Search);
 
-        public override void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_Daily_Inspection_Report);
+        public override void QASearch_Daily_Inspection_Report() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_DIR_Search);
 
         public override void QASearch_DIR_Summary_Report() => Navigate.Menu(NavMenu.QualitySearch.QA.Menu.QA_DIR_Summary_Report);
 

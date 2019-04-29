@@ -222,20 +222,14 @@ namespace RKCIUIAutomation.Sandbox
         //[TestMethod]
         public void TestMiniGuid()
         {
-            MiniGuid guid;
-            guid = MiniGuid.NewGuid();
-
-            string key = "GUID";
-            CreateVar(key, guid);
-
-            var value = GetVar(key);
+            var value = GetVar("GUID");
             Console.WriteLine(value);
         }
 
         [TestMethod]
         public void TestCreateGetVar()
         {
-            CreateVar("Int", 1500000);
+            CreateVar("Int", "12345");
             CreateVar("String", "BlahBlahTestName1234654789654321");
 
             Console.WriteLine(GetVar("Int"));
@@ -266,7 +260,8 @@ namespace RKCIUIAutomation.Sandbox
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
             [StringValue("last")] Last,
-            [StringValue("KENDOUItabStripID")] KendoTabStripId
+            [StringValue("KENDOUItabStripID")] KendoTabStripId,
+            NoStringValueEnum
         }
 
         [TestMethod]
@@ -294,15 +289,10 @@ namespace RKCIUIAutomation.Sandbox
             string actual = tabStripEnum.GetString();
             Console.WriteLine($"EXPECTED VALUE: {expected}\nACTUAL VALUE: {actual}");
             Assert.AreEqual(expected, actual);
+            bool nostringEnumVal =TableButton.NoStringValueEnum.Equals("NoStringValueEnum");
+            Console.WriteLine($"nostringEnumVal : {nostringEnumVal}");
         }
 
-        [TestMethod]
-        public void KendoGridClassTest()
-        {
-            KendoGrid kendo = new KendoGrid(Driver);
-            //kendo.Filter("SubmittalNumber", FilterOperator.EqualTo, "Oncor - Wedgemere Drive");
-            kendo.Sort("ColumnNameTest", SortType.Ascending);
-        }
 
         [TestMethod]
         public void ParseUserAcct()
@@ -395,6 +385,10 @@ namespace RKCIUIAutomation.Sandbox
             //int testCaseNumber = 1234;
             //HipTestApi hipTest = new HipTestApi();
             //hipTest.BuildTestRunSnapshotData(195019);
+
+            string test = "    12345   ";
+            test = test.Trim();
+            Console.WriteLine(test);
         }
 
         [TestMethod]
@@ -611,7 +605,7 @@ namespace RKCIUIAutomation.Sandbox
                 "span_0_InspectionType",
                 "span_0_InspectionPassFail"
             };
-            
+
             IList<string> trimmedIDs = qaDirs.TrimInputFieldIDs(errorIDs, "0_");
 
             Console.WriteLine("##################### \nTrimmed Error Field IDs List");
@@ -766,11 +760,41 @@ namespace RKCIUIAutomation.Sandbox
         [TestMethod]
         public void DateTimeParse()
         {
-            string filterValue = "04/22/2018";
-            DateTime.TryParse(filterValue, out DateTime filterDateTime);
-            Console.WriteLine($"MM: {filterDateTime.Month}");
-            Console.WriteLine($"DD: {filterDateTime.Day}");
-            Console.WriteLine($"YYYY: {filterDateTime.Year}");
+            //string filterValue = "04/22/2018";
+            //DateTime.TryParse(filterValue, out DateTime filterDateTime);
+            //Console.WriteLine($"MM: {filterDateTime.Month}");
+            //Console.WriteLine($"DD: {filterDateTime.Day}");
+            //Console.WriteLine($"YYYY: {filterDateTime.Year}");
+
+            #region
+            /*
+            // Test to return future short date
+            string currentDate = "12/28/2019"; //DateTime.Now.ToShortDateString();
+            string[] splitShortDate = Regex.Split(currentDate, "/");
+            int mm = int.Parse(splitShortDate[0]);
+            int dd = int.Parse(splitShortDate[1]);
+            int yyyy = int.Parse(splitShortDate[2]);
+
+            yyyy = dd > 27 && mm == 12
+                ? yyyy + 1
+                :yyyy;
+
+            mm = dd > 27
+                ? mm == 12
+                    ? 1
+                    : mm + 1
+                : mm;
+
+            dd = dd > 27
+                ? 1
+                : dd + 1;
+
+            string futureDate = $"{mm}/{dd}/{yyyy}";
+            Console.WriteLine("CURRENT DATE: " + currentDate);
+            Console.WriteLine("FUTURE DATE: " + futureDate);
+            */
+            #endregion
+
         }
 
         [TestMethod]
@@ -779,11 +803,130 @@ namespace RKCIUIAutomation.Sandbox
             //string packageNumber = "IQF-DIR-20181209-2";
             //Console.WriteLine(packageNumber.TrimEnd('1', '2'));
 
-            string test = "";
-            bool hasValue = test.HasValue();
-            bool isNullOrEmpty = string.IsNullOrEmpty(test);
-            Console.WriteLine($"HAS VALUE: {hasValue}");
-            Console.WriteLine($"ISNULLOREMPTY: {isNullOrEmpty}");
+            //string test = "";
+            //bool hasValue = test.HasValue();
+            //bool isNullOrEmpty = string.IsNullOrEmpty(test);
+            //Console.WriteLine($"HAS VALUE: {hasValue}");
+            //Console.WriteLine($"ISNULLOREMPTY: {isNullOrEmpty}");
+
+            /*
+            //test for comparisons of List Array
+            IList<string> stringList = new List<string>
+            {
+                "test1",
+                "test2"
+            };
+
+            IList<string> stringList2 = new List<string>
+            {
+                "test1",
+                "test2"
+            };
+            
+            Console.WriteLine($"== eval : {stringList == stringList2}");
+            Console.WriteLine($".equal eval : {stringList.Equals(stringList2)}");
+            Console.WriteLine($".SequenceEqual eval : {stringList.SequenceEqual(stringList2)}");
+            */
+
+            /*
+            //test for limiting length of string
+            string testString = "abcdefghijklmnopqrstuvwxyz";
+            testString = testString.Substring(0, 20);
+            Console.WriteLine(testString);
+            Console.WriteLine(testString.Length);
+            testString = "abcdefghijklmnop";
+            Console.WriteLine(testString + " length : " + testString.Length);
+            */
+
+            //IList<string> actual = new List<string>()
+            //{
+            //    "123ABC456",
+            //    "78910"
+            //};
+
+            //IList<string> expected = new List<string>()
+            //{
+            //    "123",
+            //    "ABC",
+            //    "456",
+            //    "789",
+            //    "11"
+            //};
+
+            //for (int i = 0; i < expected.Count; i++)
+            //{
+            //    string e = expected[i];
+
+            //    IList<bool> compareList = new List<bool>();
+
+            //    foreach (string a in actual)
+            //    {
+            //        bool aContainsE = a.Contains(e);
+            //        Console.WriteLine($"Actual {a} contains Expected {e} : {aContainsE}");
+            //        compareList.Add(aContainsE);
+            //    }
+
+            //    bool result = compareList.Contains(true)
+            //        ? true
+            //        : false;
+
+            //    Console.WriteLine($"RESULT : {result}");
+            //}
+
+            //string val = "Label::Value";
+            //string[] splitVal = new string[] { };
+            //splitVal = Regex.Split(val, "::");
+
+            //string label = splitVal[0] + " : ";
+            //string value = splitVal[1];
+
+            //Console.WriteLine($"{label}{value}");
+
+            //string str1 = "Value Of String";
+            //string str2 = "Value Of";
+
+            //bool str1ContainsStr2 = str1.Contains(str2);
+            //bool str2ContainsStr1 = str2.Contains(str1);
+            //bool str1Equals2 = str1.Equals(str2);
+
+            // bool valuesMatch = (str1ContainsStr2 || str2ContainsStr1 || str1Equals2)
+            //    ? true
+            //    : false;
+
+            //Console.WriteLine($"VALUES MATCH : {valuesMatch}");
+
+            string str = "Quality Management Service";
+            string value = Regex.Replace(str, @" ", "_");
+            Console.WriteLine(value);
+        }
+
+        enum TestEnum
+        {
+            Test1,
+            Test2
+        }
+
+        [TestMethod]
+        public void KeyValueTest()
+        {
+            //IList<KeyValuePair<TestEnum, string>> kvPairs = new List<KeyValuePair<TestEnum, string>>();
+
+            //KeyValuePair<TestEnum, string> pair1 = new KeyValuePair<TestEnum, string>(TestEnum.Test1, "test1Value");
+            //KeyValuePair<TestEnum, string> pair2 = new KeyValuePair<TestEnum, string>(TestEnum.Test2, "test2Value");
+
+            //kvPairs.Add(pair1);
+            //kvPairs.Add(pair2);
+
+            //var key = (from kvp in kvPairs where kvp.Key == TestEnum.Test1 select kvp.Value).FirstOrDefault();
+            //Console.WriteLine(key);
+            object arg = TestEnum.Test1;
+            object argString = "";
+            Type argType = arg.GetType();
+            Type argStringType = argString.GetType();
+
+            Console.WriteLine($"TYPE is Enum: {(arg is Enum).ToString()} - {argType.ToString()}");
+            Console.WriteLine($"TYPE is String: {(argString is string).ToString()} - {argStringType.ToString()}");
+
         }
     }
 }

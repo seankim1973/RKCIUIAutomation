@@ -5,6 +5,7 @@ using RKCIUIAutomation.Page.Workflows;
 using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace RKCIUIAutomation.Page
@@ -126,6 +127,7 @@ namespace RKCIUIAutomation.Page
             [StringValue("Create", BtnCategory.Packages)] Create_Package,
             [StringValue("Recreate", BtnCategory.Packages)] Recreate_Package,
             [StringValue("/a[contains(@onclick, 'download')]", BtnCategory.Download)] Download,
+            [StringValue("/a", BtnCategory.LastOrOnlyInRow)] View,
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,
@@ -241,20 +243,32 @@ namespace RKCIUIAutomation.Page
         public By GetTblRow_ByLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumn)}");
 
-        private string TableColumnIndex(string columnName)
-            => $"//th[@data-title='{columnName}']";
-
-        public string GetColumnValueForRow<T>(T textInRowForAnyColumnOrRowIndex, string getValueFromColumnName, bool isMultiTabGrid = true)
+        public string GetColumnValueForRow<T, C>(T textInRowForAnyColumnOrRowIndex, C getValueFromColumnName, bool isMultiTabGrid = true)
         {
-            string rowXPath = string.Empty;
+            Type cArgType = getValueFromColumnName.GetType();
+            string columnDataTypeXPath = string.Empty;
+            string rowXPath = string.Empty;           
+            object cArgObj = null;
 
             try
             {
                 string gridTypeXPath = $"{GetGridTypeXPath(isMultiTabGrid)}";
 
-                By headerLocator = By.XPath($"{gridTypeXPath}{TableColumnIndex(getValueFromColumnName)}");
-                string dataIndexAttribute = GetElement(headerLocator).GetAttribute("data-index");
-                int xPathIndex = int.Parse(dataIndexAttribute) + 1;
+                if (getValueFromColumnName is string)
+                {
+                    cArgObj = ConvertToType<string>(getValueFromColumnName);
+                    columnDataTypeXPath = $"//th[@data-title='{(string)cArgObj}']";
+                }
+                else if (getValueFromColumnName is Enum)
+                {
+                    cArgObj = ConvertToType<Enum>(getValueFromColumnName);
+                    string columnId = ((Enum)cArgObj).GetString();
+                    columnDataTypeXPath = $"//th[@data-field='{columnId}']";
+                }
+          
+                By headerLocator = By.XPath($"{gridTypeXPath}{columnDataTypeXPath}");
+                string dataIndex = GetAttribute(headerLocator, "data-index");
+                int xPathIndex = int.Parse(dataIndex) + 1;
 
                 rowXPath = $"{gridTypeXPath}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
             }
@@ -281,6 +295,8 @@ namespace RKCIUIAutomation.Page
             {
                 log.Error(e.StackTrace);
             }
+
+            WaitForPageReady();
         }
 
         internal By GetTableBtnLocator<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
@@ -307,6 +323,9 @@ namespace RKCIUIAutomation.Page
         /// <param name="textInRowForAnyColumn"></param>
         public void ClickEditBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
             => ClickButtonForRow(TableButton.Action_Edit, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
+
+        public void ClickViewBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
+            => ClickButtonForRow(TableButton.View, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
 
         public void ClickCreateBtnForRow(int textInRowForAnyColumn = 1, bool isMultiTabGrid = true)
             => ClickButtonForRow(TableButton.Create_Package, textInRowForAnyColumn, isMultiTabGrid, true);
@@ -405,12 +424,14 @@ namespace RKCIUIAutomation.Page
             string currentTabName = string.Empty;
             string logMsg = string.Empty;
             string activeTblTab = "";
-            int tblRowCount = 0;
+
+            By noRecordsMsgLocator = By.XPath("//div[@class='k-grid-norecords']");
+            By tableRowsLocator = By.XPath("//tbody[@role='rowgroup']/tr");
 
             try
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
-
+                WaitForLoading();
                 string gridId = _kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = GetAttribute(gridParentDivLocator, "class");
@@ -420,26 +441,27 @@ namespace RKCIUIAutomation.Page
                     case TableType.Single:
                         isMultiTabGrid = false;
                         break;
-
                     case TableType.MultiTab:
                         isMultiTabGrid = true;
+                        currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
+                        activeTblTab = "//div[@class='k-content k-state-active']";
+                        noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
+                        tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
                         break;
-
                     case TableType.Unknown:
-                        isMultiTabGrid = gridType.Contains("active") ? true : false;
+                        isMultiTabGrid = gridType.Contains("active")
+                            ? true
+                            : false;
                         break;
                 }
 
-                By recordRowLocator = GetTblRow_ByLocator(recordNameOrNumber, isMultiTabGrid, filterOperator == FilterOperator.Contains ? true : false);
+                By recordRowLocator = GetTblRow_ByLocator(recordNameOrNumber, isMultiTabGrid,
+                    filterOperator == FilterOperator.Contains
+                    ? true
+                    : false
+                    );
 
-                if (isMultiTabGrid)
-                {
-                    currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
-                    activeTblTab = "//div[@class='k-content k-state-active']";
-                }
-
-                By noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
-                By tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
+                tblRowElems = GetElements(tableRowsLocator);
 
                 if (noRecordsExpected)
                 {
@@ -452,15 +474,12 @@ namespace RKCIUIAutomation.Page
                     }
                     else
                     {
-                        tblRowElems = GetElements(tableRowsLocator);
-                        tblRowCount = (int)tblRowElems?.Count;
-
-                        if (tblRowCount > 0)
+                        if (tblRowElems.Any())
                         {
                             var recordRowDisplayed = ElementIsDisplayed(recordRowLocator);
                             if (recordRowDisplayed)
                             {
-                                logMsg = $"No Records are Expected, but found {tblRowCount} record";
+                                logMsg = $"No Records are Expected, but found {tblRowElems.Count} record";
                             }
                         }
                         else
@@ -471,10 +490,7 @@ namespace RKCIUIAutomation.Page
                 }
                 else
                 {
-                    tblRowElems = GetElements(tableRowsLocator);
-                    tblRowCount = (int)tblRowElems?.Count;
-
-                    if (tblRowCount > 0)
+                    if (tblRowElems.Any())
                     {
                         LogStep($"Searching for record: {recordNameOrNumber}");
                         isDisplayedAsExpected = ElementIsDisplayed(recordRowLocator);
@@ -497,6 +513,15 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+
+                noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
+                isDisplayedAsExpected = noRecordsExpected
+                    ? noRecordsMsgDisplayed
+                        ? true
+                        : false
+                    : noRecordsMsgDisplayed
+                        ? false
+                        : true;
             }
 
             LogInfo(logMsg, isDisplayedAsExpected);

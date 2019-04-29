@@ -168,6 +168,16 @@ namespace RKCIUIAutomation.Test
         [ThreadStatic]
         private static IList<KeyValuePair<string, bool>> assertionList;
 
+        public void AssertToList_VerifyPageHeader(string expectedPageHeader, string additionalDetails = "")
+        {
+            additionalDetails = additionalDetails.HasValue()
+                ? $" - {additionalDetails}"
+                : "";
+
+            WaitForPageReady();
+            AddAssertionToList(VerifyPageHeader(expectedPageHeader), $"VerifyPageTitle('{expectedPageHeader}'){additionalDetails}");
+        }
+
         public void AddAssertionToList(bool assertion, string details = "")
         {
             KeyValuePair<string, bool> assertionKVPair = new KeyValuePair<string, bool>(details, assertion);

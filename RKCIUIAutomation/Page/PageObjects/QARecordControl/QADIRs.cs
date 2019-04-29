@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
@@ -33,6 +34,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("DIREntries_0__DivisionID")] Division, //SH249
             [StringValue("DIREntries_0__BidItemCodeID")] Bid_Item_Code, //SH249
             [StringValue("DIREntries_0__SectionId")] Spec_Section,
+            [StringValue("DIREntries_0__SpecSectionId")] Spec_Section_Paragraph,
             [StringValue("DIREntries_0__FeatureID")] Feature, //requires selection of Area DDL
             [StringValue("DIREntries_0__HoldPointNo")] Control_Point_Number,
             [StringValue("DIREntries_0__HoldPointTypeID")] Control_Point_Type,
@@ -147,13 +149,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         [ThreadStatic]
         internal static string dirNumberKey;
 
-        internal void StoreDirNumber(string dirNum = "")
+        internal void StoreDirNumber()
         {
-            dirNumber = dirNum.Equals("")
-                ? GetAttribute(By.Id("DIRNO"), "value")
-                : dirNum;
-
-            dirNumberKey = $"{tenantName}{GetTestName()}_dirNumber";
+            dirNumber = GetAttribute(By.Id("DIRNO"), "value");
+            dirNumberKey = $"DIR_varKey";
             CreateVar(dirNumberKey, dirNumber);
             log.Debug($"#####Stored DIR Number - KEY: {dirNumberKey} || VALUE: {GetVar(dirNumberKey)}");
         }
@@ -247,6 +246,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             if (!id.Contains(" "))
                             {
                                 id = id.SplitCamelCase();
+
+                                if (id.Equals("SpecSection"))
+                                {
+                                    id = $"{id} Paragraph";
+                                }
                             }
                         }
                     }
@@ -323,6 +327,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return reqFieldsMatch;
         }
 
+        internal void CloseErrorSummaryPopupMsg()
+            => JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
+
         internal IList<string> GetErrorSummaryIDs()
         {
             IList<string> errorElements = null;
@@ -335,7 +342,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 foreach (string error in errorElements)
                 {
-                    string[] splitType = new string[2];
+                    string[] splitType = new string[] { };
 
                     if (error.Contains("DIR:"))
                     {
@@ -346,7 +353,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         splitType = Regex.Split(error, "1: ");
                     }
 
-                    string[] splitReq = Regex.Split(splitType[1], " Required");
+                    string[] splitReq = new string[] { };
+                    splitReq = Regex.Split(splitType[1], " Required");
                     string fieldName = splitReq[0];
                     extractedFieldNames.Add(fieldName);
                     log.Debug($"Adding Required Field Error Summary ID to Actuals list: {fieldName}");
@@ -355,10 +363,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-            }
-            finally
-            {
-                JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
             }
 
             return extractedFieldNames;
@@ -495,6 +499,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     #endregion DIR/IDR/DWR Generic Class
 
+
     public interface IQADIRs
     {
         bool IsLoaded();
@@ -545,9 +550,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void PopulateRequiredFields();
 
-        string GetDirNumber(string DirNumberKey = "");
+        string GetDirNumber();
 
-        void SetDirNumber(string DirNumberKey = "");
+        void SetDirNumber();
 
         void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00);
 
@@ -558,6 +563,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void SelectDDL_Area(int ddListSelection = 1);
 
         void SelectDDL_SpecSection(int ddListSelection = 1);
+
+        void SelectDDL_SpecSectionParagraph(int ddListSelection = 1);
 
         void SelectDDL_Division(int ddListSelection = 1);
 
@@ -752,11 +759,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         QADIRs QaDIRs_Base => new QADIRs(Driver);
 
-        public virtual string GetDirNumber(string dirNumKey = "")
-            => GetVar(dirNumKey.Equals("") ? dirNumberKey : dirNumKey);
+        public virtual string GetDirNumber()
+            => GetVar(dirNumberKey);
 
-        public virtual void SetDirNumber(string dirNum = "")
-            => QaDIRs_Base.StoreDirNumber(dirNum);
+        public virtual void SetDirNumber()
+            => QaDIRs_Base.StoreDirNumber();
 
         public virtual bool IsLoaded()
             => Driver.Title.Equals("DIR List - ELVIS PMC");
@@ -804,7 +811,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.No_Error));
 
         public virtual void ClickBtn_Back_To_QC_Review()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review));
+            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review, false));
 
         public virtual void ClickBtn_Back_To_Field()
             => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_Field, false));
@@ -990,6 +997,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public virtual void SelectDDL_SpecSection(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Spec_Section, ddListSelection);
 
+        public virtual void SelectDDL_SpecSectionParagraph(int ddListSelection = 1)
+            => ExpandAndSelectFromDDList(InputFields.Spec_Section_Paragraph, ddListSelection);
+
         public virtual void SelectDDL_Division(int ddListSelection = 1)
             => ExpandAndSelectFromDDList(InputFields.Division, ddListSelection);
 
@@ -1046,7 +1056,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 ClickTab(tableTab);
-                string _dirNum = dirNumber.Equals("") ? GetDirNumber() : dirNumber;
+                string _dirNum = dirNumber.HasValue()
+                    ? dirNumber
+                    : GetDirNumber();
+
                 isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, TableType.MultiTab, noRecordsExpected);
 
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
@@ -1146,7 +1159,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     }
                 }
 
-                alertMsgExpected = assertList.Contains(false) ? false : true;
+                alertMsgExpected = assertList.Contains(false)
+                    ? false
+                    : true;
             }
             catch (Exception e)
             {
@@ -1328,6 +1343,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+            }
+            finally
+            {
+                QaDIRs_Base.CloseErrorSummaryPopupMsg();
             }
 
             return requiredFieldsMatch;
@@ -1626,7 +1645,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_ReadyDateTime();
             Enter_CompletedDateTime("", TimeBlock.PM_12_00);
             Enter_TotalInspectionTime();
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1648,6 +1666,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             };
 
             return RequiredFieldIDs;
+        }
+
+        public override IList<Enum> GetDeficienciesRdoBtnIDsList()
+        {
+            IList<Enum> deficienciesRdoBtnIDs = new List<Enum>()
+            {
+                RadioBtnsAndCheckboxes.Deficiencies_Yes,
+                //RadioBtnsAndCheckboxes.Deficiencies_CIF,
+                RadioBtnsAndCheckboxes.Deficiencies_CDR,
+                RadioBtnsAndCheckboxes.Deficiencies_NCR
+            };
+
+            return deficienciesRdoBtnIDs;
         }
     }
 
@@ -1699,8 +1730,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_HoldPointType();
-
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1758,7 +1787,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             SelectDDL_Feature();
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1809,7 +1837,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             SelectDDL_Feature();
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1861,7 +1888,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //ClickBtn_Save_Forward();
             //AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             //SelectDDL_ControlPointNumber(2);
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1911,10 +1937,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_AverageTemp(80);
             SelectDDL_Area();
             SelectDDL_SpecSection();
+            SelectDDL_SpecSectionParagraph();
+            string specSectionParagraphText = GetTextFromDDL(InputFields.Spec_Section_Paragraph);
+            string spectionDescriptionText = GetText(GetTextAreaFieldByLocator(InputFields.Section_Description));
+            AddAssertionToList(specSectionParagraphText.Equals(spectionDescriptionText));
             SelectDDL_Feature();
             SelectDDL_Contractor("LINXS");
             SelectDDL_CrewForeman();
-            EnterText_SectionDescription(GetTextFromDDL(QADIRs.InputFields.Spec_Section));
             SelectChkbox_InspectionType_I();
             SelectChkbox_InspectionResult_P();
             Enter_ReadyDateTime();
@@ -1925,8 +1954,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             //AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             //SelectDDL_ControlPointNumber(); 
-
-            SetDirNumber();
         }
 
         public override IList<string> GetExpectedRequiredFieldIDsList()
@@ -1938,6 +1965,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.Area.GetString(),
                 InputFields.Average_Temperature.GetString(),
                 InputFields.Spec_Section.GetString(),
+                InputFields.Spec_Section_Paragraph.GetString(),
                 InputFields.Section_Description.GetString(),
                 InputFields.Feature.GetString(),
                 InputFields.Crew_Foreman.GetString(),

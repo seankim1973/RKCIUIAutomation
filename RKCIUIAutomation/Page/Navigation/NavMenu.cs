@@ -177,24 +177,24 @@ namespace RKCIUIAutomation.Page.Navigation
                 }
 
                 JsHover(GetMainNavMenuByLocator(mainNavEnum));
-                builder = new Actions(Driver);
+                builder = new Actions(driver);
 
                 if (subOfMainNavEnum != null)
                 {
                     By subOfMainNavLocator = GetNavMenuByLocator(subOfMainNavEnum, mainNavEnum);
-                    element = Driver.FindElement(subOfMainNavLocator);
+                    element = driver.FindElement(subOfMainNavLocator);
                     builder.MoveToElement(element).Perform();
 
                     if (childOfSubMenuEnum != null)
                     {
                         By childOfSubMenuLocator = GetNavMenuByLocator(childOfSubMenuEnum, subOfMainNavEnum);
-                        element = Driver.FindElement(childOfSubMenuLocator);
+                        element = driver.FindElement(childOfSubMenuLocator);
                         builder.MoveToElement(element).Perform();
 
                         if (subOfChildMenuEnum != null)
                         {
                             By subOfChildMenuLocator = GetNavMenuByLocator(subOfChildMenuEnum, childOfSubMenuEnum);
-                            element = Driver.FindElement(subOfChildMenuLocator);
+                            element = driver.FindElement(subOfChildMenuLocator);
                             builder.MoveToElement(element).Perform();
                         }
                     }
@@ -205,22 +205,13 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     clickLocator = GetNavMenuByLocator(baseUtils.ConvertToType<Enum>(navEnum), baseUtils.ConvertToType<Enum>(mainNavEnum));
                 }
+
+                JsClickElement(clickLocator);
+                WaitForPageReady();
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
-            }
-            finally
-            {
-                try
-                {
-                    JsClickElement(clickLocator);
-                    WaitForPageReady();
-                }
-                catch (Exception e)
-                {
-                    log.Error(e.Message);
-                }
             }
         }
 
@@ -507,7 +498,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     [StringValue("QA Test Search")] QA_Test_Search,
                     [StringValue("QA Test Summary Search")] QA_Test_Summary_Search,
-                    [StringValue("QA Daily Inspection Report")] QA_Daily_Inspection_Report,
+                    [StringValue("QA DIR Search")] QA_DIR_Search,
                     [StringValue("QA DIR Summary Report")] QA_DIR_Summary_Report
                 }
             }
@@ -593,6 +584,8 @@ namespace RKCIUIAutomation.Page.Navigation
 
             public enum Menu
             {
+                [StringValue("NCR")] NCR,
+                [StringValue("Deficiency Notice")] Deficiency_Notice,
                 [StringValue("Test Count")] Test_Count,
                 [StringValue("DIR Count")] DIR_Count,
                 [StringValue("Retaining Wall Backfill Quantity Tracker")] Retaining_Wall_Backfill_Quantity_Tracker,
