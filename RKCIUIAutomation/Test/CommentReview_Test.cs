@@ -29,7 +29,7 @@ namespace RKCIUIAutomation.Test.CommentReview
         [Test]
         [Category(Component.DesignDoc_CommentReview)]
         [Property(Component2, Component.CommentReview_NoComment)]
-        [Property(TestCaseNumber, 123456)]
+        [Property(TestCaseNumber, 675207)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Comment Review No Comment")]
         public void CommentReviewNoComment()

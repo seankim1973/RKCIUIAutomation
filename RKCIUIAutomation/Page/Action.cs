@@ -168,7 +168,7 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                Thread.Sleep(750);
+                Thread.Sleep(500);
             }
         }
 

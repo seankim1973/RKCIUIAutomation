@@ -127,12 +127,14 @@ namespace RKCIUIAutomation.Base
 
         private ConfigUtils Configs = new ConfigUtils();
 
+        internal static string tmpDevEnvIP = "http://10.0.70.68:3000";
+
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Staging}");
+            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Dev}");
             string _tenantName = Parameters.Get("Tenant", $"{TenantName.SH249}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
@@ -189,7 +191,7 @@ namespace RKCIUIAutomation.Base
         private void InitExtentTestInstance()
         {
             reportInstance = ExtentManager.GetReportInstance();
-            testInstance = reportInstance.CreateTest($"Suite: {testSuite} | Tenant: {tenantName} | Env: {testEnv}");
+            testInstance = reportInstance.CreateTest($"Suite: {testSuite} | Tenant: {tenantName} | Env: {testEnv}<br>Test: {testName} | Hiptest TC# {testCaseNumber}");
             //testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
         }
 

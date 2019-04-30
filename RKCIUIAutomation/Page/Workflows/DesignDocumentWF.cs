@@ -35,20 +35,18 @@ namespace RKCIUIAutomation.Page.Workflows
 
         private bool AlreadyInDesignDocumentPage()
             => VerifyPageHeader("Design Document");
-        
+
+        // IQF User - AtCRCreate@rkci.com - CreateComment & EnterComment(SG & SH249)
+        // IQF Records Mgr - CreateComment(SG & SH249) & FwdComment(SH249)
+        // DOT User - ATCRComment @rkci.com - EnterComment
+        // DOT Admin - ATCRCommentAdmin@rkci.com - FwdComment
+        // IQF Admin - FwdComment(SG) & EnterResolution(SG)
+        // *Dev User - ATCRResponse@rkci.com - EnterResponse
+        // *Dev Admin - ATCRResponseAdmin@rkci.com - FwdResponse    
+        // *Dev User - ATCRVerify@rkci.com       
+        // *Dev Admin - ATCRVerifyAdmin@rkci.com
         public override void LoginToDesignDocuments(CR_Workflow workflow)
         {
-            /**
-            // IQF User - AtCRCreate@rkci.com - CreateComment & EnterComment(SG & SH249)
-            // IQF Records Mgr - CreateComment(SG & SH249) & FwdComment(SH249)
-            // DOT User - ATCRComment @rkci.com - EnterComment
-            // DOT Admin - ATCRCommentAdmin@rkci.com - FwdComment
-            // IQF Admin - FwdComment(SG) & EnterResolution(SG)
-            // *Dev User - ATCRResponse@rkci.com - EnterResponse
-            // *Dev Admin - ATCRResponseAdmin@rkci.com - FwdResponse    
-            // *Dev User - ATCRVerify@rkci.com       
-            // *Dev Admin - ATCRVerifyAdmin@rkci.com
-            */
             var currentTenant = tenantName;
             UserType userAcct = UserType.Bhoomi;
 
@@ -81,6 +79,36 @@ namespace RKCIUIAutomation.Page.Workflows
                     }
                     break;
 
+                case TenantName.SH249:
+                    switch (workflow)
+                    {
+                        case CR_Workflow.CreateComment:
+                            userAcct = UserType.IQFRecordsMgr;
+                            break;
+                        case CR_Workflow.EnterComment:
+                            userAcct = UserType.IQFUser;
+                            break;
+                        case CR_Workflow.ForwardComment:
+                            userAcct = UserType.IQFRecordsMgr;
+                            break;
+                        case CR_Workflow.EnterResponse:
+                            userAcct = UserType.IQFAdmin;
+                            break;
+                        case CR_Workflow.ForwardResponse:
+                            userAcct = UserType.IQFAdmin;
+                            break;
+                        case CR_Workflow.EnterResolution:
+                            userAcct = UserType.IQFAdmin;
+                            break;
+                        case CR_Workflow.ForwardResolution:
+                            userAcct = UserType.IQFAdmin;
+                            break;
+                        case CR_Workflow.ClosingComment:
+                            userAcct = UserType.IQFAdmin;
+                            break;
+                    }
+                    break;
+
                 case TenantName.SGWay:
                     switch (workflow)
                     {
@@ -104,36 +132,6 @@ namespace RKCIUIAutomation.Page.Workflows
                             break;
                         case CR_Workflow.ForwardResponse:
                             userAcct = UserType.DEVAdmin;
-                            break;
-                        case CR_Workflow.EnterResolution:
-                            userAcct = UserType.IQFAdmin;
-                            break;
-                        case CR_Workflow.ForwardResolution:
-                            userAcct = UserType.IQFAdmin;
-                            break;
-                        case CR_Workflow.ClosingComment:
-                            userAcct = UserType.IQFAdmin;
-                            break;
-                    }
-                    break;
-
-                case TenantName.SH249:
-                    switch (workflow)
-                    {
-                        case CR_Workflow.CreateComment:
-                            userAcct = UserType.IQFRecordsMgr;
-                            break;
-                        case CR_Workflow.EnterComment:
-                            userAcct = UserType.IQFUser;
-                            break;
-                        case CR_Workflow.ForwardComment:
-                            userAcct = UserType.IQFRecordsMgr;
-                            break;
-                        case CR_Workflow.EnterResponse:
-                            userAcct = UserType.IQFAdmin;
-                            break;
-                        case CR_Workflow.ForwardResponse:
-                            userAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.EnterResolution:
                             userAcct = UserType.IQFAdmin;

@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 using RKCIUIAutomation.Test;
+using System.Collections.Generic;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -24,7 +25,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void ScrollToFirstColumn()
             => ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][1]"));
 
-        public enum DesignDocDetails_InputFields
+        public enum EntryField
         {
             [StringValue("Submittal_Title")] Title,
             [StringValue("Submittal_Document_Number")] DocumentNumber,
@@ -38,6 +39,25 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Comment_CommentTypeId_")] CommentType,
             [StringValue("Comment_CategoryId_")] Category,
             [StringValue("Comment_DisciplineId_")] Discipline
+        }
+
+        public enum DesignDocHeader
+        {
+            [StringValue("Date")] Date,
+            [StringValue("Document Date")] Document_Date,
+            [StringValue("Number")] Number,
+            [StringValue("Document Number")] Document_Number,
+            [StringValue("Title")] Title,
+            [StringValue("Segment")] Segment,
+            [StringValue("Action")] Action,
+            [StringValue("Status")] Status,
+            [StringValue("Trans. Date")] Trans_Date,
+            [StringValue("Transmittal Date")] Transmittal_Date,
+            [StringValue("Trans. N°")] Trans_No,
+            [StringValue("Transmittal N°")] Transmittal_No,
+            [StringValue("Review Deadline")] Review_Deadline,
+            [StringValue("Remaining Days")] Remaining_Days,
+            [StringValue("")] File_Name
         }
 
         public enum TableTab
@@ -123,6 +143,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         [ThreadStatic]
         internal static string designDocNumber;
 
+        [ThreadStatic]
+        internal static IList<EntryField> tenantAllEntryFields;
+
+        [ThreadStatic]
+        internal static IList<DesignDocHeader> tenantDesignDocDetailsHeaders;
+
+        [ThreadStatic]
+        internal static IList<KeyValuePair<EntryField, string>> tenantAllEntryFieldKeyValuePairs;
+
         internal By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
 
         internal By CancelBtnUploadPage_ByLocator => By.Id("btnCancel");
@@ -185,21 +214,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal void StoreDesignDocTitleAndNumber()
         {
-            //MiniGuid guid = GenerateRandomGuid();
-
-            //string docKey = $"{tenantName}{GetTestName()}";
-            //docTitleKey = $"{docKey}_DsgnDocTtl";
-            //docNumberKey = $"{docKey}_DsgnDocNumb";
-            //docTitleKey = $"DsgnDocTtl";
-            //docNumberKey = $"DsgnDocNumb";
-
-            //CreateVar(docTitleKey, docTitleKey);
-            //CreateVar(docNumberKey, guid);
             designDocTitle = GetVar("DsgnDocTtl");
             designDocNumber = GetVar("DsgnDocNumb");
             Console.WriteLine($"#####Title: {designDocTitle}\nNumber: {designDocNumber}");
         }
 
+        public override void VerifyRequiredFields()
+        {
+            string[] requiredMsgs = new string[] { };
+                
+        }
     }
 
     #endregion DesignDocument Generic class
@@ -208,6 +232,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public interface IDesignDocument
     {
+        void VerifyRequiredFields();
+
         void ScrollToLastColumn();
 
         void ScrollToFirstColumn();
@@ -434,7 +460,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             JsClickElement(DesignDoc_Base.BackToListBtn_ByLocator);
             WaitForPageReady();
-            //WaitForLoading();
         }
 
         public virtual void ClickBtn_SaveOnly()
@@ -447,55 +472,58 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             JsClickElement(DesignDoc_Base.SaveForwardBtn_ByLocator);
             WaitForPageReady();
-            //WaitForLoading();
         }
 
         public virtual void CreateDocument()
         {
             WaitForPageReady();
             ClickElement(DesignDoc_Base.UploadNewDesignDoc_ByLocator);
+
+            //verify required fields
+            //populate and store data for all fields
+
             EnterDesignDocTitleAndNumber();
             UploadFile("test.xlsx");
             ClickElement(DesignDoc_Base.SaveForwardBtnUploadPage_ByLocator);
             WaitForPageReady();
         }
 
-        internal string SetCommentStamp(DesignDocDetails_InputFields inputFieldEnum, int commentTabIndex)
+        internal string SetCommentStamp(EntryField inputFieldEnum, int commentTabIndex)
             => $"{inputFieldEnum.GetString()}{(commentTabIndex - 1).ToString()}_";
 
         public virtual void SelectRegularCommentReviewType(int commentTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 3);
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.ReviewType, commentTabNumber), 3);
 
         public virtual void SelectNoCommentReviewType(int commentTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 1);
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.ReviewType, commentTabNumber), 1);
 
         public virtual void SelectCommentType(int commentTypeTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.CommentType, commentTypeTabNumber), 1);
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.CommentType, commentTypeTabNumber), 1);
 
         public virtual void SelectOrganization(int disciplineNumber = 1)
         {
         }
 
         public virtual void SelectDiscipline(int disciplineNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Discipline, disciplineNumber), 1);
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.Discipline, disciplineNumber), 1);
 
         public virtual void SelectCategory(int categoryNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.Category, categoryNumber), 1);
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.Category, categoryNumber), 1);
 
         public virtual void SelectAgreeResolutionCode(int commentTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
 
         public virtual void SelectAgreeResponseCode(int commentTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 2); //check the index, UI not working so need to confirm later
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.ResponseCode, commentTabNumber), 2); //check the index, UI not working so need to confirm later
 
         public virtual void SelectDisagreeResponseCode(int commentTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResponseCode, commentTabNumber), 3);//check the index, UI not working so need to confirm later
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.ResponseCode, commentTabNumber), 3);//check the index, UI not working so need to confirm later
 
         public virtual void SelectDisagreeResolutionCode(int commentTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
 
         public virtual void SelectDDL_ClosingStamp(int commentTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ClosingStamp, commentTabNumber), 1);
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.ClosingStamp, commentTabNumber), 1);
 
         public virtual void SelectDDL_VerificationCode(int selectionIndex = 1)
         {
@@ -512,8 +540,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             //login as uploading user IQFRecordsmgr (for SG and SH249) and IQFuser(GLX and Garnet)
             SetDesignDocTitleAndNumber();
-            EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.Title), designDocTitle);
-            EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocDetails_InputFields.DocumentNumber), designDocNumber);
+            EnterText(PageHelper.GetTextInputFieldByLocator(EntryField.Title), designDocTitle);
+            EnterText(PageHelper.GetTextInputFieldByLocator(EntryField.DocumentNumber), designDocNumber);
         }
 
         /// <summary>
@@ -784,6 +812,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void ScrollToLastColumn();
 
         public abstract void ScrollToFirstColumn();
+        public abstract void VerifyRequiredFields();
     }
 
     #endregion Common Workflow Implementation class
@@ -825,10 +854,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override void SelectRegularCommentReviewType(int commentTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 2);
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.ReviewType, commentTabNumber), 2);
 
         public override void SelectNoCommentReviewType(int commentTabNumber = 1)
-            => ExpandAndSelectFromDDList(SetCommentStamp(DesignDocDetails_InputFields.ReviewType, commentTabNumber), 3);
+            => ExpandAndSelectFromDDList(SetCommentStamp(EntryField.ReviewType, commentTabNumber), 3);
     }
 
     #endregion Implementation specific to Garnet
@@ -1054,14 +1083,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             JsClickElement(DesignDoc_Base.BackToListBtn_InTable_ByLocator);
             WaitForPageReady();
-            //WaitForLoading();
         }
 
         public override void ClickBtn_SaveForward()
         {
             JsClickElement(DesignDoc_Base.Table_ForwardBtn_ByLocator);
             WaitForPageReady();
-            //WaitForLoading();
         }
 
         public override void SelectRegularCommentReviewType(int selectionIndex = 3)

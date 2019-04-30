@@ -6,6 +6,7 @@ namespace RKCIUIAutomation.Config
 {
     public enum TestEnv
     {
+        [StringValue("Dev")] Dev,
         [StringValue("Test")] Testing,
         [StringValue("Stage")] Staging,
         [StringValue("Prod")] Production
