@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Specialized;
@@ -18,12 +19,24 @@ namespace RKCIUIAutomation.Config
 
         public ConfigUtils(IWebDriver driver) => this.Driver = driver;
 
-        public TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg) => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nunitArg);
+        public TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg)
+        => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nunitArg);
 
-        public string GetSiteUrl(TestEnv testEnv, TenantName project)
+        public string GetSiteUrl(TestEnv testEnv, TenantName tenant)
         {
-            string siteKey = $"{project}_{testEnv.GetString()}";
-            return GetValueFromConfigManager(siteUrlKey: siteKey);
+            string siteUrl = string.Empty;
+
+            if (testEnv.Equals(TestEnv.Dev))
+            {
+                siteUrl = BaseClass.tmpDevEnvIP;
+            }
+            else
+            {
+                string siteKey = $"{tenant}_{testEnv.GetString()}";
+                siteUrl = GetValueFromConfigManager(siteUrlKey: siteKey);
+            }
+
+            return siteUrl;
         }
 
         //return string array of username[0] and password[1]
