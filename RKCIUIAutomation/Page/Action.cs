@@ -174,6 +174,7 @@ namespace RKCIUIAutomation.Page
 
         internal void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 1000)
         {
+            WaitForLoading();
             IJavaScriptExecutor javaScriptExecutor = driver as IJavaScriptExecutor;
             bool pageIsReady = false;
 

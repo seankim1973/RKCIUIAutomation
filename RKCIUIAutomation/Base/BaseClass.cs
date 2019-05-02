@@ -134,7 +134,7 @@ namespace RKCIUIAutomation.Base
         {
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Dev}");
+            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Staging}");
             string _tenantName = Parameters.Get("Tenant", $"{TenantName.SH249}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");

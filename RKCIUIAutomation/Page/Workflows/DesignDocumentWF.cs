@@ -184,7 +184,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
             WaitForPageReady();
         }
-
     }
 
     public interface IDesignDocumentWF
@@ -425,6 +424,7 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         public abstract void LoginToDesignDocuments(CR_Workflow workflowType);
+
     }
 
     internal class DesignDocumentWF_GLX : DesignDocumentWF
@@ -661,7 +661,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LogInfo("--------------------------9. IQF Admin verifies if record in closed tab ----------------------");
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
-
+        
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
         {
             LoginToDesignDocuments(workflowType);
