@@ -377,7 +377,6 @@
     <Compile Include="Page\PageObjects\RMCenter\ProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\RFCManagement.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittals.cs" />
     <Compile Include="Page\PageObjects\RMCenter\Search.cs" />
     <Compile Include="Page\PageObjects\RMCenter\SubmittalDetails.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadDEVSubmittal.cs" />
