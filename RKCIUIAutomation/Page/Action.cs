@@ -141,9 +141,9 @@ namespace RKCIUIAutomation.Page
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                 wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(locator));
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Error(e.Message);
+                //log.Error(e.Message);
             }
         }
 
@@ -168,7 +168,7 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
             }
         }
 

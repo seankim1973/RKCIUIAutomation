@@ -374,32 +374,32 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         public virtual void TCWF_CommentReviewRegularComment()
         {
-            LogInfo("--------------------------1.Login As IQF User and Create Document----------------------");
+            LogStep("STEP: 1.Login As IQF User and Create Document", true);
             CreateDesignDocCommentReviewDocument();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2.Login As DOT User and Enter Regular Comment----------------------");
+            LogStep("STEP: 2.Login As DOT User and Enter Regular Comment", true);
             EnterRegularComment(CR_Workflow.EnterComment_DOT);//UserType.DOTUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Login As DOT Admin and Forward Comment----------------------");
+            LogStep("STEP: 3. Login As DOT Admin and Forward Comment", true);
             ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------4.Login As DEV User, Enter Response and Disagree Response Code----------------------");
+            LogStep("STEP: 4.Login As DEV User, Enter Response and Disagree Response Code", true);
             EnterResponseAndDisagreeResponseCode();//UserType.DEVUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------5. Login As DEV Admin and Forward Response Comment----------------------");
+            LogStep("STEP: 5. Login As DEV Admin and Forward Response Comment", true);
             ForwardResponseComment();//UserType.DEVAdmin
 
-            LogInfo("--------------------------6. DEV Admin enters Resolution='Disagree workflow'----------------------");
+            LogStep("STEP: 6. DEV Admin enters Resolution='Disagree workflow'", true);
             EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
 
-            LogInfo("--------------------------7. DEV Admin forwards Resolution='Disagree workflow'----------------------");
+            LogStep("STEP: 7. DEV Admin forwards Resolution='Disagree workflow'", true);
             ForwardResolutionCommentAndCodeForDisagreeResponse();
 
-            LogInfo("--------------------------8. DEV Admin verifies if record in closed tab ----------------------");
+            LogStep("STEP: 8. DEV Admin verifies if record in closed tab", true);
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
 
@@ -408,18 +408,18 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         public virtual void TCWF_CommentReviewNoComment()
         {
-            LogInfo("--------------------------1.Login As IQF User and Create Document----------------------");
+            LogStep("STEP: 1.Login As IQF User and Create Document", true);
             CreateDesignDocCommentReviewDocument();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2.Login As DOT User and enter no comment----------------------");
+            LogStep("STEP: 2.Login As DOT User and enter no comment", true);
             EnterNoComment(CR_Workflow.EnterComment_DOT);//UserType.DOTUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Login As DOT Admin and Forward Comment----------------------");
+            LogStep("STEP: 3. Login As DOT Admin and Forward Comment", true);
             ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
 
-            LogInfo("--------------------------4. DEV Admin verifies if record in closed tab ----------------------");
+            LogStep("STEP: 4. DEV Admin verifies if record in closed tab", true);
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
 
@@ -468,47 +468,47 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void TCWF_CommentReviewRegularComment()
         {
-            LogInfo("--------------------------1. Log in as IQF RecordsManager'----------------------");
+            LogStep("STEP: 1. Log in as IQF RecordsManager", true);
             CreateDesignDocCommentReviewDocument();//UserType.IQFRecordsMgr
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as IQF User, enters Comments----------------------");
+            LogStep("STEP: 2. Log in as IQF User, enters Comments", true);
             EnterRegularComment();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as IQF Admin, forwards Comments----------------------");
+            LogStep("STEP: 3. Log in as IQF Admin, forwards Comments", true);
             ForwardComment();//UserType.IQFRecordsMgr  //Workaround: using IQF Rcrds Mgr, instead of IQF Admin
 
-            LogInfo("-------------------------4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode----------------------");
+            LogStep("STEP: 4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode", true);
             EnterResponseCommentAndDisagreeResponseCode();
 
-            LogInfo("--------------------------5. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+            LogStep("STEP: 5. Log in as IQF Admin, Enters,forwards closing comment", true);
             EnterClosingCommentAndCode();
 
-            LogInfo("--------------------------6. IQF Admin verifies if record in closed tab ----------------------");
+            LogStep("STEP: 6. IQF Admin verifies if record in closed tab", true);
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
 
         public override void TCWF_CommentReviewNoComment()
         {
-            LogInfo("--------------------------1. Log in as IQF RecordsManager'----------------------");
+            LogStep("STEP: 1. Log in as IQF RecordsManager", true);
             CreateDesignDocCommentReviewDocument();//UserType.IQFRecordsMgr
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as IQF User, enter no Comments----------------------");
+            LogStep("STEP: 2. Log in as IQF User, enter no Comments", true);
             EnterNoComment();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as IQF Admin, forwards Comments----------------------");
+            LogStep("STEP: 3. Log in as IQF Admin, forwards Comments", true);
             ForwardComment();//UserType.IQFRecordsMgr  //Workaround: using IQF Rcrds Mgr, instead of IQF Admin
 
             //LogInfo("-------------------------4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode----------------------");
             //EnterResponseCommentAndDisagreeResponseCode();
 
-            LogInfo("--------------------------4. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+            LogStep("STEP: 4. Log in as IQF Admin, Enters,forwards closing comment", true);
             EnterClosingCommentAndCode();
 
-            LogInfo("--------------------------5. IQF Admin verifies if record in closed tab ----------------------");
+            LogStep("STEP: 5. IQF Admin verifies if record in closed tab", true);
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
 
@@ -583,82 +583,81 @@ namespace RKCIUIAutomation.Page.Workflows
         
         public override void TCWF_CommentReviewRegularComment()
         {
-            LogInfo("--------------------------1. Log in as IQFRMgr and Create Document----------------------");
+            LogStep("STEP: 1. Log in as IQFRMgr and Create Document", true);
             CreateDesignDocCommentReviewDocument();//UserType.IQFRecordsMgr
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as DOT User, enters Comments----------------------");
+            LogStep("STEP: 2. Log in as DOT User, enters Comments", true);
             EnterRegularComment(CR_Workflow.EnterComment_DOT);//UserType.DOTUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as IQF User, enters Comments----------------------");
+            LogStep("STEP: 3. Log in as IQF User, enters Comments", true);
             EnterRegularComment();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------4. Log in as DOT Admin, forwards Comments----------------------");
+            LogStep("STEP: 4. Log in as DOT Admin, forwards Comments", true);
             ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------5. Log in as IQF Admin, forwards Comments----------------------");
+            LogStep("STEP: 5. Log in as IQF Admin, forwards Comments", true);
             ForwardComment();//UserType.IQFAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------6. Log in as DEV User, enters Response and Disagree Response Code----------------------");
+            LogStep("STEP: 6. Log in as DEV User, enters Response and Disagree Response Code", true);
             EnterResponseAndDisagreeResponseCode();//UserType.DEVUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------7. Log in as DEV Admin, forwards Response Comments----------------------");
+            LogStep("STEP: 7. Log in as DEV Admin, forwards Response Comments", true);
             ForwardResponseComment();//UserType.DEVAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------8. Log in as IQF Admin, Add Resolution Comment for Disagree workflow ----------------------");
+            LogStep("STEP: 8. Log in as IQF Admin, Add Resolution Comment for Disagree workflow", true);
             EnterResolutionCommentAndResolutionCodeforDisagreeResponse();//UserType.IQFAdmin
 
-            LogInfo("--------------------------9. Log in as IQF Admin, forwards Resolution----------------------");
+            LogStep("STEP: 9. Log in as IQF Admin, forwards Resolution", true);
             ForwardResolutionCommentAndCodeForDisagreeResponse();
 
-            LogInfo("--------------------------10. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+            LogStep("STEP: 10. Log in as IQF Admin, Enters,forwards closing comment", true);
             EnterAndForwardClosingComment();
 
-            LogInfo("--------------------------11. IQF Admin verifies if record in closed tab ----------------------");
+            LogStep("STEP: 11. IQF Admin verifies if record in closed tab", true);
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
         
         public override void TCWF_CommentReviewNoComment()
         {
-            LogInfo("--------------------------No comment Workflow begins----------------------");
-            LogInfo("--------------------------1. Log in as IQFRM'----------------------");
+            LogStep("STEP: 1. Log in as IQFRM", true);
             CreateDesignDocCommentReviewDocument();//UserType.IQFRecordsMgr
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as DOT User, enter no Comments----------------------");
+            LogStep("STEP: 2. Log in as DOT User, enter no Comments", true);
             EnterNoComment(CR_Workflow.EnterComment_DOT);//UserType.DOTUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as IQF User, enter no Comments----------------------");
+            LogStep("STEP: 3. Log in as IQF User, enter no Comments", true);
             EnterNoComment();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------4. Log in as DOT Admin, forwards Comments----------------------");
+            LogStep("STEP: 4. Log in as DOT Admin, forwards Comments", true);
             ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------5. Log in as IQF Admin, forwards Comments----------------------");
+            LogStep("STEP: 5. Log in as IQF Admin, forwards Comments", true);
             ForwardComment();//UserType.IQFAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------6. Log in as DEV User, enters Response and Agree Response Code----------------------");
+            LogStep("STEP: 6. Log in as DEV User, enters Response and Agree Response Code", true);
             EnterResponseAndAgreeResponseCode();//UserType.DEVUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------7. Log in as DEV Admin, forwards Response Comments----------------------");
+            LogStep("STEP: 7. Log in as DEV Admin, forwards Response Comments", true);
             ForwardResponseComment();//UserType.DEVAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------8. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+            LogStep("STEP: 8. Log in as IQF Admin, Enters,forwards closing comment", true);
             EnterAndForwardClosingComment();//UserType.IQFAdmin
 
-            LogInfo("--------------------------9. IQF Admin verifies if record in closed tab ----------------------");
+            LogStep("STEP: 9. IQF Admin verifies if record in closed tab", true);
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
         
@@ -846,30 +845,30 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void TCWF_CommentReviewRegularComment()
         {
-            LogInfo("--------------------------1. Log in as ATCRCreate User, upload and forward to comment'----------------------");
+            LogStep("STEP: 1. Log in as ATCRCreate User, upload and forward to comment", true);
             CreateDesignDocCommentReviewDocument();
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as ATCRComment User, enters Comment----------------------");
+            LogStep("STEP: 2. Log in as ATCRComment User, enters Comment", true);
             EnterRegularComment();
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as ATCRComment Admin, forwards Comments to response----------------------");
+            LogStep("STEP: 3. Log in as ATCRComment Admin, forwards Comments to response", true);
             ForwardComment();
             LogoutToLoginPage();
 
-            LogInfo("-------------------------4. Log in as ATCRResponse User, enters Response and Resolution stampcode to verification----------------------");
+            LogStep("STEP: 4. Log in as ATCRResponse User, enters Response and Resolution stampcode to verification", true);
             EnterResponseCommentAndDisagreeResponseCode();
             LogoutToLoginPage();
 
-            LogInfo("-------------------------5. Log in as ATCRResponse Admin, enters Response and Resolution stampcode to verification----------------------");
+            LogStep("STEP: 5. Log in as ATCRResponse Admin, enters Response and Resolution stampcode to verification", true);
             ForwardResponseComment();
             LogoutToLoginPage();
 
-            LogInfo("--------------------------8. Log in as Enter Closing Comment as ATCRVerify and forward as ATCRVerify Admin (Resolution='Disagree workflow')----------------------");
+            LogStep("STEP: 6. Log in as ATCRVerify, enter Closing Comment and forward as ATCRVerify Admin (Resolution='Disagree workflow')", true);
             EnterAndForwardClosingComment();
 
-            LogInfo("--------------------------9. ATCRVerify Admin verifies if record in closed tab ----------------------");
+            LogStep("STEP: 7. ATCRVerify Admin verifies if record in closed tab", true);
             Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
         }
     }
