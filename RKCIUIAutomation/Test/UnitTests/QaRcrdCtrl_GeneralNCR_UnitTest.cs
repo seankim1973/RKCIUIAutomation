@@ -69,7 +69,7 @@ namespace RKCIUIAutomation.Test.UnitTests
             LogInfo($"Testing, UserAccts for {tenantName}");
             //LoginAs(UserType.IQFRecordsMgr);
             DesignDocumentWF ddwf = new DesignDocumentWF();
-            ddwf.LoginToDesignDocuments(DesignDocumentWF.CR_Workflow.CreateComment);
+            ddwf.LogIntoDesignDocumentsPage(DesignDocumentWF.CR_Workflow.CreateComment);
 
             string CurrentUser = GetCurrentUser();
             Assert.True(CurrentUser == "AT_CR Comment");

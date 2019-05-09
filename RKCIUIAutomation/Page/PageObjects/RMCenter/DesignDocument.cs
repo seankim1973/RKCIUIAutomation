@@ -6,6 +6,7 @@ using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 using RKCIUIAutomation.Test;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -25,22 +26,22 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void ScrollToFirstColumn()
             => ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][1]"));
 
-        public enum EntryField
+        public enum DesignDocEntryField
         {
-            [StringValue("Submittal_Title")] Title,
-            [StringValue("Submittal_Document_Number")] DocumentNumber,
-            [StringValue("Submittal_Document_DocumentDate")] DocumentDate,
-            [StringValue("Submittal_SegmentId")] Segment,
-            [StringValue("Submittal_SecuritySensitiveInformationViewRightRequired")] SSI,
-            [StringValue("Submittal_TransmittalNumber")] TransmittalNumber,
-            [StringValue("Submittal_TransmittalDate")] TransmittalDate,
-            [StringValue("chkIncludeDot")] MaxReviewDays_Chkbox_DOT,
-            [StringValue("MaxDOTDays")] MaxReviewDays_Count_DOT,
-            [StringValue("chkIncludeIqf")] MaxReviewDays_Chkbox_QAF,
-            [StringValue("MaxIQFDays")] MaxReviewDays_Count_QAF,
-            [StringValue("chkIncludeOther")] MaxReviewDays_Chkbox_Other,
-            [StringValue("MaxOtherDays")] MaxReviewDays_Count_Other,
-            [StringValue("Submittal_OtherReviewerId")] MaxReviewDays__OtherReviewer
+            [StringValue("Submittal_Title", TEXT)] Title,
+            [StringValue("Submittal_Document_Number", TEXT)] DocumentNumber,
+            [StringValue("Submittal_Document_DocumentDate", DATE)] DocumentDate,
+            [StringValue("Submittal_SegmentId", DDL)] Segment,
+            [StringValue("Submittal_SecuritySensitiveInformationViewRightRequired", CHKBOX)] SSI,
+            [StringValue("Submittal_TransmittalNumber", TEXT)] TransmittalNumber,
+            [StringValue("Submittal_TransmittalDate", DATE)] TransmittalDate,
+            [StringValue("chkIncludeDot", CHKBOX)] MaxReviewDays_DOT_Chkbox,
+            [StringValue("MaxDOTDays", TEXT)] MaxReviewDays_DOT,
+            [StringValue("chkIncludeIqf", CHKBOX)] MaxReviewDays_QAF_Chkbox,
+            [StringValue("MaxIQFDays", TEXT)] MaxReviewDays_QAF,
+            [StringValue("chkIncludeOther", CHKBOX)] MaxReviewDays_Other_Chkbox,
+            [StringValue("MaxOtherDays", TEXT)] MaxReviewDays_Other,
+            [StringValue("Submittal_OtherReviewerId", DDL)] MaxReviewDays_Other_Reviewer
         }
 
         public enum DesignDocHeader
@@ -103,42 +104,59 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Comment_ClosingComment_")] CommentClosingInput
         }
 
+        //data-field attribute values
         public enum CommentEntryField_InTable
         {
+            [StringValue("CommentType")] DocType,
+            [StringValue("CommentType")] CommentType,
+            [StringValue("Category")] Category,
+            [StringValue("Organization")] Org,
+            //[StringValue("ReviewerName")] By,
+            [StringValue("ReviewType")] ReviewType,
             [StringValue("Text")] CommentInput,
+            //[StringValue("Text")] Comment,
+            //[StringValue("ContractReference")] Contract_Doc_Reference,
             [StringValue("ContractReference")] ContractReferenceInput,
             [StringValue("DrawingPageNumber")] DrawingPageNumberInput,
+            //[StringValue("DrawingPageNumber")] Page_Sht_Dwg,
+            [StringValue("Discipline")] Discipline,
             [StringValue("Response")] CommentResponseInput,
+            [StringValue("ResponseCode")] ResponseCode,
             [StringValue("ResolutionMeetingDecision")] CommentResolutionInput,
+            [StringValue("ResolutionStamp")] ResolutionStamp,
             [StringValue("ClosingComment")] CommentClosingInput,
+            [StringValue("ClosingStamp")] ClosingStamp,
             [StringValue("ReviewerName")] ReviewerName,
+            [StringValue("Reviewer")] Reviewer,
             [StringValue("VerifierName")] VerifiedBy,
+            [StringValue("VerificationCode")] VerificationCode,
+            [StringValue("VerifiedDateOffset")] VerifiedDate,
             [StringValue("VerificationNotes")] VerificationNotes
         }
 
         //data-field attribute values
-        public enum PkgComments_TblHeader
-        {
-            [StringValue("RowId")] RowNumber,
-            [StringValue("CommentType")] DocType,
-            [StringValue("DrawingPageNumber")] Page_Sht_Dwg,
-            [StringValue("Discipline")] Discipline,
-            [StringValue("Text")] Comment,
-            [StringValue("ContractReference")] Contract_Doc_Reference,
-            [StringValue("Organization")] Org,
-            [StringValue("ReviewerName")] By,
-            [StringValue("ReviewType")] ReviewType,
-            [StringValue("Reviewer")] Reviewer,
-            [StringValue("CommentType")] CommentType,
-            [StringValue("Category")] Category,
-            [StringValue("ResolutionStamp")] ResolutionStamp,
-            [StringValue("ResponseCode")] ResponseCode,
-            [StringValue("ClosingStamp")] ClosingStamp,
-            [StringValue("VerificationCode")] VerificationCode,
-            [StringValue("VerifiedDateOffset")] VerifiedDate
-        }
+        //public enum CommentEntryField_InTable
+        //{
+        //    //[StringValue("RowId")] RowNumber,
+        //    [StringValue("CommentType")] DocType,
+        //    //[StringValue("DrawingPageNumber")] Page_Sht_Dwg,
+        //    [StringValue("Discipline")] Discipline,
+        //    //[StringValue("Text")] Comment,
+        //    //[StringValue("ContractReference")] Contract_Doc_Reference,
+        //    [StringValue("Organization")] Org,
+        //    //[StringValue("ReviewerName")] By,
+        //    [StringValue("ReviewType")] ReviewType,
+        //    [StringValue("Reviewer")] Reviewer,
+        //    [StringValue("CommentType")] CommentType,
+        //    [StringValue("Category")] Category,
+        //    [StringValue("ResolutionStamp")] ResolutionStamp,
+        //    [StringValue("ResponseCode")] ResponseCode,
+        //    [StringValue("ClosingStamp")] ClosingStamp,
+        //    [StringValue("VerificationCode")] VerificationCode,
+        //    [StringValue("VerifiedDateOffset")] VerifiedDate
+        //}
 
-        public enum PkgComments_Button
+        public enum CommentRowBtn
         {
             Edit,
             Delete,
@@ -153,27 +171,27 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         internal static string designDocNumber;
 
         [ThreadStatic]
-        internal static IList<EntryField> tenantDesignDocCreatePgEntryFields;
+        internal static IList<DesignDocEntryField> designDocCreatePgEntryFields;
 
         [ThreadStatic]
-        internal static IList<DesignDocHeader> tenantDesignDocDetailsHeaders;
+        internal static IList<DesignDocHeader> designDocDetailsHeaders;
 
         [ThreadStatic]
-        internal static IList<KeyValuePair<EntryField, string>> tenantAllCreatePgEntryFieldKeyValuePairs;
+        internal static IList<KeyValuePair<DesignDocEntryField, string>> createPgEntryFieldKeyValuePairs;
 
         [ThreadStatic]
-        internal static IList<Enum> tenantCommentEntryFields;
+        internal static IList<Enum> commentEntryFields;
 
         [ThreadStatic]
-        internal static IList<KeyValuePair<Enum, string>> tenantAllCommentEntryFieldKeyValuePairs;
+        internal static IList<KeyValuePair<Enum, string>> commentEntryFieldKeyValuePairs;
 
-        private string GetTblColumnIndex(PkgComments_TblHeader tableHeader)
+        private string GetTblColumnIndex(CommentEntryField_InTable tableHeader)
             => GetAttribute(By.XPath($"//thead[@role='rowgroup']/tr/th[@data-field='{tableHeader.GetString()}']"), "data-index");
 
-        private By GetTblBtnByLocator(PkgComments_Button rowButton, int rowID)
+        private By GetTblBtnByLocator(CommentRowBtn rowButton, int rowID)
             => By.XPath($"//tbody/tr[{rowID}]/td[1]/a[text()='{rowButton.ToString()}']");
 
-        private void Click_TblRowBtn(PkgComments_Button rowButton, bool clickBtnForLatest = true, int rowID = 1)
+        private void Click_TblRowBtn(CommentRowBtn rowButton, bool clickBtnForLatest = true, int rowID = 1)
         {
             By locator = By.XPath("//div[@class='k-grid-content']//tbody/tr");
 
@@ -192,16 +210,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override void ClickBtn_CommentsTblRow_Edit(bool clickBtnForLatest = true, int rowID = 1)
-            => Click_TblRowBtn(PkgComments_Button.Edit, clickBtnForLatest, rowID);
+            => Click_TblRowBtn(CommentRowBtn.Edit, clickBtnForLatest, rowID);
 
         public override void Click_TblBtn_Delete(bool clickBtnForLatest = true, int rowID = 1)
-            => Click_TblRowBtn(PkgComments_Button.Delete, clickBtnForLatest, rowID);
+            => Click_TblRowBtn(CommentRowBtn.Delete, clickBtnForLatest, rowID);
 
         public override void Click_TblBtn_Files(bool clickBtnForLatest = true, int rowID = 1)
-            => Click_TblRowBtn(PkgComments_Button.Files, clickBtnForLatest, rowID);
+            => Click_TblRowBtn(CommentRowBtn.Files, clickBtnForLatest, rowID);
 
         public override void Click_TblBtn_Details(bool clickBtnForLatest = true, int rowID = 1)
-            => Click_TblRowBtn(PkgComments_Button.Details, clickBtnForLatest, rowID);
+            => Click_TblRowBtn(CommentRowBtn.Details, clickBtnForLatest, rowID);
 
         private void StoreDesignDocTitleAndNumber()
         {
@@ -213,8 +231,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void EnterDesignDocTitleAndNumber()
         {
             StoreDesignDocTitleAndNumber();
-            EnterText(PageHelper.GetTextInputFieldByLocator(EntryField.Title), designDocTitle);
-            EnterText(PageHelper.GetTextInputFieldByLocator(EntryField.DocumentNumber), designDocNumber);
+            EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocEntryField.Title), designDocTitle);
+            EnterText(PageHelper.GetTextInputFieldByLocator(DesignDocEntryField.DocumentNumber), designDocNumber);
         }
 
         private void Click_UniqueTblBtn(string btnClass)
@@ -232,6 +250,88 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void ClickBtn_Cancel()
             => Click_UniqueTblBtn("k-grid-cancel");
 
+        private KeyValuePair<DesignDocEntryField, string> PopulateEntryFieldValue<T>(DesignDocEntryField entryField, T indexOrText, bool useContains = false)
+        {
+            string fieldType = entryField.GetString(true);
+            Type argType = indexOrText.GetType();
+            object argValue = null;
+            bool isValidArg = false;
+
+            KeyValuePair<DesignDocEntryField, string> fieldValuePair;
+            string fieldValue = string.Empty;
+
+            try
+            {
+                if (argType == typeof(string))
+                {
+                    isValidArg = true;
+                    argValue = ConvertToType<string>(indexOrText);
+                }
+                else if (argType == typeof(int))
+                {
+                    isValidArg = true;
+                    argValue = ConvertToType<int>(indexOrText);
+                }
+
+                if (isValidArg)
+                {
+                    if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+                    {
+                        if (!((string)argValue).HasValue())
+                        {
+                            if (fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+                            {
+                                argValue = fieldType.Equals(DATE)
+                                    ? GetShortDate()
+                                    : GetFutureShortDate();
+                            }
+                            else
+                            {
+                                argValue = GetVar(entryField);
+
+                                int argValueLength = ((string)argValue).Length;
+
+                                By inputLocator = GetInputFieldByLocator(entryField);
+                                int elemMaxLength = int.Parse(GetAttribute(inputLocator, "maxlength"));
+
+                                argValue = argValueLength > elemMaxLength
+                                    ? ((string)argValue).Substring(0, elemMaxLength)
+                                    : argValue;
+                            }
+
+                            fieldValue = (string)argValue;
+                        }
+
+                        EnterText(By.Id(entryField.GetString()), fieldValue);
+                    }
+                    else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
+                    {
+                        //TODO
+                    }
+                    else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
+                    {
+                        //TODO
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+
+            return fieldValuePair = new KeyValuePair<DesignDocEntryField, string>(entryField, fieldValue);
+        }
+
+        public override void PopulateAllCreatePgEntryFields()
+        {
+            foreach (DesignDocEntryField entryField in designDocCreatePgEntryFields)
+            {
+                
+                //TODO
+            }
+        }
     }
 
     #endregion DesignDocument Generic class
@@ -240,11 +340,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public interface IDesignDocument
     {
-        IList<EntryField> SetTenantAllDesignDocCreatePgEntryFieldsList();
+        IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList();
 
-        IList<DesignDocHeader> SetTenantAllDesignDocHeaderLabelsList();
+        IList<DesignDocHeader> SetDesignDocDetailsHeadersList();
 
-        IList<Enum> SetTenantAllCommentEntryFieldsList();
+        IList<Enum> SetCommentEntryFieldsList();
+
 
         void ScrollToLastColumn();
 
@@ -299,6 +400,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void ClickTab_Closed();
 
         void CreateDocument();
+
+        void PopulateAllCreatePgEntryFields();
 
         void EnterDesignDocTitleAndNumber();
 
@@ -474,29 +577,29 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         #endregion Page element By Locators
 
-        public virtual IList<EntryField> SetTenantAllDesignDocCreatePgEntryFieldsList()
-            => tenantDesignDocCreatePgEntryFields;
+        public virtual IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList()
+            => designDocCreatePgEntryFields;
 
-        public virtual IList<DesignDocHeader> SetTenantAllDesignDocHeaderLabelsList()
-            => tenantDesignDocDetailsHeaders;
+        public virtual IList<DesignDocHeader> SetDesignDocDetailsHeadersList()
+            => designDocDetailsHeaders;
 
-        public virtual IList<Enum> SetTenantAllCommentEntryFieldsList()
-            => tenantCommentEntryFields;
+        public virtual IList<Enum> SetCommentEntryFieldsList()
+            => commentEntryFields;
 
         public virtual void SelectDDL_ReviewType(int selectionIndex)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ReviewType, selectionIndex);
 
         public virtual void SelectDDL_Reviewer<T>(T selectionIndexOrReviewerName, bool useContainsFilter)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Reviewer, selectionIndexOrReviewerName, useContainsFilter);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.Reviewer, selectionIndexOrReviewerName, useContainsFilter);
 
         public virtual void SelectDDL_CommentType(int selectionIndex)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.CommentType, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.CommentType, selectionIndex);
 
         public virtual void SelectDDL_Category(int selectionIndex)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Category, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.Category, selectionIndex);
 
         public virtual void SelectDDL_Discipline(int selectionIndex)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Discipline, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.Discipline, selectionIndex);
 
         public virtual void ClickBtn_BackToList()
         {
@@ -613,14 +716,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 {
                     entryFieldLocator = By.Id($"{commentField.GetString()}");
                 }
-                else if (commentFieldEnum == typeof(PkgComments_TblHeader))
-                {
-                    entryFieldLocator = GetTextInputFieldByLocator(commentField);
-                }
+                //else if (commentFieldEnum == typeof(CommentEntryField_InTable))
+                //{
+                //    entryFieldLocator = GetTextInputFieldByLocator(commentField);
+                //}
 
                 ScrollToElement(entryFieldLocator);
 
-                if (commentField.Equals(PkgComments_TblHeader.VerifiedDate))
+                if (commentField.Equals(CommentEntryField_InTable.VerifiedDate))
                 {
                     text = GetShortDate();
                     EnterText(GetTextInputFieldByLocator(commentField), text);
@@ -745,10 +848,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             try
             {
                 WaitForPageReady();
-                WaitForLoading();
-                Thread.Sleep(5000);
-                ClickTab(tableTab);               
-                WaitForLoading();
+                Thread.Sleep(2500);
+                ClickTab(tableTab);
+                Thread.Sleep(2500);
                 WaitForPageReady();
             }
             catch (Exception e)
@@ -827,7 +929,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void Click_TblBtn_Details(bool clickBtnForLatest = true, int rowID = 1);
         public abstract void ScrollToLastColumn();
         public abstract void ScrollToFirstColumn();
-
+        public abstract void PopulateAllCreatePgEntryFields();
     }
 
     #endregion Common Workflow Implementation class
@@ -941,6 +1043,57 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
+        public override IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList()
+        {
+            if (!designDocCreatePgEntryFields.Any())
+            {
+                designDocCreatePgEntryFields = new List<DesignDocEntryField>
+                {
+                    DesignDocEntryField.Title,
+                    DesignDocEntryField.DocumentNumber,
+                    DesignDocEntryField.DocumentDate,
+                    DesignDocEntryField.Segment,
+                    DesignDocEntryField.TransmittalNumber,
+                    DesignDocEntryField.TransmittalDate,
+                    DesignDocEntryField.MaxReviewDays_QAF,
+                    DesignDocEntryField.MaxReviewDays_DOT
+                };
+            }
+
+            return designDocCreatePgEntryFields;
+        }
+
+        public override IList<DesignDocHeader> SetDesignDocDetailsHeadersList()
+        {
+            if (!designDocDetailsHeaders.Any())
+            {
+                designDocDetailsHeaders = new List<DesignDocHeader>
+                {
+                    DesignDocHeader.Date,
+                    DesignDocHeader.Number,
+                    DesignDocHeader.Title,
+                    DesignDocHeader.Segment,
+                    DesignDocHeader.Action,
+                    DesignDocHeader.Status,
+                    DesignDocHeader.Trans_Date,
+                    DesignDocHeader.Trans_No,
+                    DesignDocHeader.Review_Deadline,
+                    DesignDocHeader.Remaining_Days
+                };
+            }
+
+            return designDocDetailsHeaders;
+        }
+
+        //TODO
+        public override IList<Enum> SetCommentEntryFieldsList()
+        {
+            return commentEntryFields = new List<Enum>
+            {
+                CommentEntryField_InTable.CommentInput,
+            };
+        }
+
         public override void EnterRegularCommentAndDrawingPageNo()
         {
             SelectRegularCommentReviewType();
@@ -1002,6 +1155,57 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
+        public override IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList()
+        {
+            if (!designDocCreatePgEntryFields.Any())
+            {
+                designDocCreatePgEntryFields = new List<DesignDocEntryField>
+                {
+                    DesignDocEntryField.Title,
+                    DesignDocEntryField.DocumentNumber,
+                    DesignDocEntryField.DocumentDate,
+                    DesignDocEntryField.Segment,
+                    DesignDocEntryField.TransmittalNumber,
+                    DesignDocEntryField.TransmittalDate,
+                    DesignDocEntryField.MaxReviewDays_QAF,
+                    DesignDocEntryField.MaxReviewDays_DOT,
+                    DesignDocEntryField.MaxReviewDays_Other,
+                    DesignDocEntryField.MaxReviewDays_Other_Reviewer
+                };
+            }
+
+            return designDocCreatePgEntryFields;
+        }
+
+        public override IList<DesignDocHeader> SetDesignDocDetailsHeadersList()
+        {
+            if (!designDocDetailsHeaders.Any())
+            {
+                designDocDetailsHeaders = new List<DesignDocHeader>
+                {
+                    DesignDocHeader.Date,
+                    DesignDocHeader.Number,
+                    DesignDocHeader.Title,
+                    DesignDocHeader.Segment,
+                    DesignDocHeader.Action,
+                    DesignDocHeader.Status,
+                    DesignDocHeader.Trans_Date,
+                    DesignDocHeader.Trans_No
+                };
+            }
+
+            return designDocDetailsHeaders;
+        }
+
+        //TODO
+        public override IList<Enum> SetCommentEntryFieldsList()
+        {
+            return commentEntryFields = new List<Enum>
+            {
+                CommentEntryField_InTable.CommentInput,
+            };
+        }
+
         public override void EnterNoComment()
         {
             WaitForPageReady();
@@ -1053,34 +1257,34 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override void SelectRegularCommentReviewType(int selectionIndex = 3)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ReviewType, selectionIndex);
 
         public override void SelectNoCommentReviewType(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ReviewType, selectionIndex);
 
         public override void SelectCommentType(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.CommentType, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.CommentType, selectionIndex);
 
         public override void SelectDiscipline(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Discipline, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.Discipline, selectionIndex);
 
         public override void SelectCategory(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Category, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.Category, selectionIndex);
 
         public override void SelectAgreeResolutionCode(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResolutionStamp, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ResolutionStamp, selectionIndex);
 
         public override void SelectAgreeResponseCode(int selectionIndex = 2)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResponseCode, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ResponseCode, selectionIndex);
 
         public override void SelectDisagreeResponseCode(int selectionIndex = 3)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResponseCode, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ResponseCode, selectionIndex);
 
         public override void SelectDisagreeResolutionCode(int selectionIndex = 2)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResolutionStamp, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ResolutionStamp, selectionIndex);
 
         public override void SelectDDL_ClosingStamp(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ClosingStamp, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ClosingStamp, selectionIndex);
 
     }
 
@@ -1091,42 +1295,52 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class DesignDocument_LAX : DesignDocument
     {
         public DesignDocument_LAX(IWebDriver driver) : base(driver)
-        {
-            tenantDesignDocCreatePgEntryFields = new List<EntryField>
-            {
-                EntryField.Title,
-                EntryField.DocumentNumber,
-                EntryField.DocumentDate,
-                EntryField.Segment,
-            };
-
-            tenantDesignDocDetailsHeaders = new List<DesignDocHeader>
-            {
-            };
-
-            tenantCommentEntryFields = new List<Enum>
-            {
-                CommentEntryField_InTable.CommentInput,
-            };
+        {           
         }
 
-        public override IList<EntryField> SetTenantAllDesignDocCreatePgEntryFieldsList()
+        public override IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList()
         {
-            return tenantDesignDocCreatePgEntryFields = new List<EntryField>
+            if (!designDocCreatePgEntryFields.Any())
             {
-            };
+                designDocCreatePgEntryFields = new List<DesignDocEntryField>
+                {
+                    DesignDocEntryField.Title,
+                    DesignDocEntryField.DocumentNumber,
+                    DesignDocEntryField.DocumentDate,
+                    DesignDocEntryField.Segment,
+                    DesignDocEntryField.TransmittalNumber,
+                    DesignDocEntryField.TransmittalDate,
+                    DesignDocEntryField.MaxReviewDays_DOT
+                };
+            }
+
+            return designDocCreatePgEntryFields;
         }
 
-        public override IList<DesignDocHeader> SetTenantAllDesignDocHeaderLabelsList()
+        public override IList<DesignDocHeader> SetDesignDocDetailsHeadersList()
         {
-            return tenantDesignDocDetailsHeaders = new List<DesignDocHeader>
+            if (!designDocDetailsHeaders.Any())
             {
-            };
+                designDocDetailsHeaders = new List<DesignDocHeader>
+                {
+                    DesignDocHeader.Date,
+                    DesignDocHeader.Number,
+                    DesignDocHeader.Title,
+                    DesignDocHeader.Segment,
+                    DesignDocHeader.Action,
+                    DesignDocHeader.Status,
+                    DesignDocHeader.Trans_Date,
+                    DesignDocHeader.Trans_No
+                };
+            }
+
+            return designDocDetailsHeaders;
         }
 
-        public override IList<Enum> SetTenantAllCommentEntryFieldsList()
+        //TODO
+        public override IList<Enum> SetCommentEntryFieldsList()
         {
-            return tenantCommentEntryFields = new List<Enum>
+            return commentEntryFields = new List<Enum>
             {
                 CommentEntryField_InTable.CommentInput,
             };
@@ -1145,16 +1359,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override void SelectRegularCommentReviewType(int selectionIndex = 3)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ReviewType, selectionIndex);
 
         public override void SelectNoCommentReviewType(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ReviewType, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ReviewType, selectionIndex);
 
         public override void SelectCommentType(int selectionIndex = 1)
         {
             try
             {
-                ExpandAndSelectFromDDList(PkgComments_TblHeader.DocType, selectionIndex);
+                ExpandAndSelectFromDDList(CommentEntryField_InTable.DocType, selectionIndex);
             }
             catch (ElementNotInteractableException e)
             {
@@ -1165,31 +1379,31 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override void SelectOrganization(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Org, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.Org, selectionIndex);
 
         public override void SelectDiscipline(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Discipline, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.Discipline, selectionIndex);
 
         public override void SelectCategory(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.Category, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.Category, selectionIndex);
 
         public override void SelectAgreeResolutionCode(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResolutionStamp, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ResolutionStamp, selectionIndex);
 
         public override void SelectAgreeResponseCode(int selectionIndex = 2)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResponseCode, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ResponseCode, selectionIndex);
 
         public override void SelectDisagreeResponseCode(int selectionIndex = 3)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResponseCode, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ResponseCode, selectionIndex);
 
         public override void SelectDisagreeResolutionCode(int selectionIndex = 2)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ResolutionStamp, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ResolutionStamp, selectionIndex);
 
         public override void SelectDDL_ClosingStamp(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.ClosingStamp, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.ClosingStamp, selectionIndex);
 
         public override void SelectDDL_VerificationCode(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(PkgComments_TblHeader.VerificationCode, selectionIndex);
+            => ExpandAndSelectFromDDList(CommentEntryField_InTable.VerificationCode, selectionIndex);
 
         public override void EnterVerifiedDate(string shortDate = "01/01/2019")
         {
@@ -1197,7 +1411,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 ? GetShortDate()
                 : shortDate;
 
-            EnterText(GetTextInputFieldByLocator(PkgComments_TblHeader.VerifiedDate), shortDate);
+            EnterText(GetTextInputFieldByLocator(CommentEntryField_InTable.VerifiedDate), shortDate);
         }
 
         public override void EnterRegularCommentAndDrawingPageNo()

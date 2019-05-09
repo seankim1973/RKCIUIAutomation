@@ -613,8 +613,9 @@ namespace RKCIUIAutomation.Page
                 log.Info($"Entered {filePath}' for file upload");
 
                 By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
-                WaitForElement(uploadStatusLabel);
-                WaitForPageReady();
+                bool uploadStatus = ElementIsDisplayed(uploadStatusLabel);
+
+                LogInfo($"File Upload {(uploadStatus ? "Successful" : "Failed")}.", uploadStatus);
             }
             catch (Exception e)
             {
@@ -915,22 +916,22 @@ namespace RKCIUIAutomation.Page
 
         public bool ElementIsDisplayed(By elementByLocator)
         {
-            bool isDisplayed = false;
+            IWebElement elem = null;
 
             try
             {
-                driver.FindElement(elementByLocator);
-                isDisplayed = true;
+                elem = GetElement(elementByLocator);
             }
-            catch (NoSuchElementException)
+            catch (NoSuchElementException nse)
             {
+                log.Debug($"NoSuchElementException in ElementIsDisplayed(): {nse.Message}");
             }
             catch (Exception e)
             {
                 log.Error($"Error in ElementIsDisplayed(): {e.StackTrace}");
             }
 
-            return isDisplayed;
+            return elem.Displayed;
         }
 
         public bool VerifyPageHeader(string expectedPageHeading)

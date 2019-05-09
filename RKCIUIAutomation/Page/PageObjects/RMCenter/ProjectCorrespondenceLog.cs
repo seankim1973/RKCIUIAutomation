@@ -30,34 +30,34 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public enum EntryField
         {
-            [StringValue("DocumentDate", "DATE")] Date,
-            [StringValue("TransmittalNo", "TXT")] TransmittalNumber,
-            [StringValue("SecurityClassificationId", "DDL")] SecurityClassification,
-            [StringValue("Title", "TXT")] Title,
-            [StringValue("From", "TXT")] From,
-            [StringValue("AgencyFromId", "DDL")] AgencyFrom,
-            [StringValue("Attention", "TXT")] Attention,
-            [StringValue("AgencyToId", "DDL")] AgencyAttention,
-            [StringValue("DocumentTypeCatogoryId", "DDL")] DocumentCategory,
-            [StringValue("DocumentTypeId", "DDL")] DocumentType,
-            [StringValue("OriginatorDocumentRef", "TXT")] OriginatorDocumentRef,
-            [StringValue("Revision", "TXT")] Revision,
-            [StringValue("SelectedTransmittedIds", "MULTIDDL")] Transmitted,
-            [StringValue("SegmentId", "DDL")] Segment_Area,
-            [StringValue("DesignPackagesIdsNcr", "MULTIDDL")] DesignPackages,
-            [StringValue("CdrlNumber", "TXT")] CDRL,
-            [StringValue("ResponseRequiredRadioButton_True", "RDOBTN")] ResponseRequired_Yes,
-            [StringValue("ResponseRequiredRadioButton_False", "RDOBTN")] ResponseRequired_No,
-            [StringValue("ResponseRequiredDate", "FUTUREDATE")] ResponseRequiredBy_Date,
-            [StringValue("OwnerReponseId", "DDL")] OwnerResponse,
-            [StringValue("OwnerResponseBy", "TXT")] OwnerResponseBy,
-            [StringValue("OwnerResponseDate", "DATE")] OwnerResponseDate,
-            [StringValue("SectionId", "DDL")] SpecSection,
-            [StringValue("MSLNo", "TXT")] MSLNumber,
-            [StringValue("AvailableAccessItems", "DDL")] Access,
-            [StringValue("ViaId", "DDL")] Via,
-            [StringValue("AllowReshare", "CHKBOX")] AllowResharing,
-            [StringValue("TransmissionFiles", "UPLOAD")] Attachments
+            [StringValue("DocumentDate", DATE)] Date,
+            [StringValue("TransmittalNo", TEXT)] TransmittalNumber,
+            [StringValue("SecurityClassificationId", DDL)] SecurityClassification,
+            [StringValue("Title", TEXT)] Title,
+            [StringValue("From", TEXT)] From,
+            [StringValue("AgencyFromId", DDL)] AgencyFrom,
+            [StringValue("Attention", TEXT)] Attention,
+            [StringValue("AgencyToId", DDL)] AgencyAttention,
+            [StringValue("DocumentTypeCatogoryId", DDL)] DocumentCategory,
+            [StringValue("DocumentTypeId", DDL)] DocumentType,
+            [StringValue("OriginatorDocumentRef", TEXT)] OriginatorDocumentRef,
+            [StringValue("Revision", TEXT)] Revision,
+            [StringValue("SelectedTransmittedIds", MULTIDDL)] Transmitted,
+            [StringValue("SegmentId", DDL)] Segment_Area,
+            [StringValue("DesignPackagesIdsNcr", MULTIDDL)] DesignPackages,
+            [StringValue("CdrlNumber", TEXT)] CDRL,
+            [StringValue("ResponseRequiredRadioButton_True", RDOBTN)] ResponseRequired_Yes,
+            [StringValue("ResponseRequiredRadioButton_False", RDOBTN)] ResponseRequired_No,
+            [StringValue("ResponseRequiredDate", FUTUREDATE)] ResponseRequiredBy_Date,
+            [StringValue("OwnerReponseId", DDL)] OwnerResponse,
+            [StringValue("OwnerResponseBy", TEXT)] OwnerResponseBy,
+            [StringValue("OwnerResponseDate", DATE)] OwnerResponseDate,
+            [StringValue("SectionId", DDL)] SpecSection,
+            [StringValue("MSLNo", TEXT)] MSLNumber,
+            [StringValue("AvailableAccessItems", DDL)] Access,
+            [StringValue("ViaId", DDL)] Via,
+            [StringValue("AllowReshare", CHKBOX)] AllowResharing,
+            [StringValue("TransmissionFiles", UPLOAD)] Attachments
         }
 
         public enum ColumnName
@@ -276,8 +276,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 }
                                 else
                                 {
-                                    argValue = GetVarForEntryField(entryField);
-
+                                    //argValue = GetVarForEntryField(entryField);
+                                    argValue = GetVar(entryField);
                                     int argValueLength = ((string)argValue).Length;
 
                                     By inputLocator = GetInputFieldByLocator(entryField);
@@ -417,12 +417,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             {
                 foreach (EntryField colEntryField in expectedEntryFieldsForTblColumns)
                 {
-                    var expectedType = colEntryField.GetType();
+                    //var expectedType = colEntryField.GetType();
                     var entryFieldType = colEntryField.GetString(true);
 
                     ColumnName columnName = GetMatchingColumnNameForEntryField(colEntryField);
                     var expectedValue = (from kvp in tenantAllEntryFieldKeyValuePairs where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
-                    expectedValueInTable = expectedType.Equals(entryFieldType == DATE) || expectedType.Equals(entryFieldType == FUTUREDATE)
+                    expectedValueInTable = entryFieldType.Equals(DATE) || entryFieldType.Equals(FUTUREDATE)
                         ? GetShortDate(expectedValue, true)
                         : colEntryField.Equals(EntryField.DocumentType) || colEntryField.Equals(EntryField.Via)
                             ? expectedValue.ReplaceSpacesWithUnderscores()
