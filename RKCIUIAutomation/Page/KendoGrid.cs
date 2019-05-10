@@ -271,7 +271,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 By tabStripLocator = By.XPath("//div[contains(@class,'k-tabstrip-top')]");
-                string tabStripId = GetElement(tabStripLocator).GetAttribute("id");
+                string tabStripId = GetAttribute(tabStripLocator, "id");
                 tabStripRef = $"var tab = $('#{tabStripId}').data('kendoTabStrip');";
 
                 string logMsg = tabStripId.HasValue()
@@ -282,7 +282,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
 
             return tabStripRef;
@@ -305,7 +305,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+                throw;
             }
 
             return gridRef;

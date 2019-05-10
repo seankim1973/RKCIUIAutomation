@@ -406,7 +406,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
 
             return pkgData;
@@ -473,7 +473,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+                throw;
             }
         }
 
@@ -1492,7 +1492,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+                throw;
             }
             logMsg = fileDownloaded
                 ? "Success"
@@ -1538,7 +1538,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+                throw;
             }
             
             return pkgIsCreated;

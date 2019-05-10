@@ -17,7 +17,7 @@ namespace RKCIUIAutomation.Base
 {
     [TestFixture]
     [Parallelizable]
-    public class BaseClass : BaseUtils
+    public class BaseClass : BaseUtils, IConfigUtils, IProjectProperties
     {
         [ThreadStatic]
         public static IWebDriver driver;
@@ -125,7 +125,7 @@ namespace RKCIUIAutomation.Base
 
         #endregion TestCase Details
 
-        private ConfigUtils Configs = new ConfigUtils();
+        //private ConfigUtils Configs = new ConfigUtils();
 
         internal static string tmpDevEnvIP = "http://10.0.70.68:3000";
 
@@ -134,18 +134,18 @@ namespace RKCIUIAutomation.Base
         {
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Dev}");
+            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Staging}");
             string _tenantName = Parameters.Get("Tenant", $"{TenantName.SH249}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
-            testPlatform = Configs.GetTestRunEnv<TestPlatform>(_testPlatform);
-            browserType = Configs.GetTestRunEnv<BrowserType>(_browserType);
-            testEnv = Configs.GetTestRunEnv<TestEnv>(_testEnv);
-            tenantName = Configs.GetTestRunEnv<TenantName>(_tenantName);
-            reporter = Configs.GetTestRunEnv<Reporter>(_reporter);
-            siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
+            testPlatform = GetTestRunEnv<TestPlatform>(_testPlatform);
+            browserType = GetTestRunEnv<BrowserType>(_browserType);
+            testEnv = GetTestRunEnv<TestEnv>(_testEnv);
+            tenantName = GetTestRunEnv<TenantName>(_tenantName);
+            reporter = GetTestRunEnv<Reporter>(_reporter);
+            siteUrl = GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
             if (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local)
@@ -198,8 +198,7 @@ namespace RKCIUIAutomation.Base
         private void InitWebDriverInstance()
         {
             List<string> tenantComponents = new List<string>();
-            ProjectProperties props = new ProjectProperties();
-            tenantComponents = props.GetComponentsForProject(tenantName);
+            tenantComponents = SetTenantComponents(tenantName);
 
             if (tenantComponents.Contains(testComponent1))
             {
@@ -246,7 +245,6 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
-                //string component = string.IsNullOrEmpty(testComponent2) ? testComponent1 : testComponent2;
                 reportCategories = reportCategories ?? testRunDetails;
                 var component = !testComponent2.HasValue()
                     ? testComponent1
@@ -264,7 +262,7 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 log.Debug(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 

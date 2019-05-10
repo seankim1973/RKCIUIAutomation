@@ -277,7 +277,7 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         private static Cookie cookie;
 
-        public void LogStep(string testStep)
+        public void LogStep(string testStep, bool logInfo = false)
         {
             try
             {
@@ -286,6 +286,11 @@ namespace RKCIUIAutomation.Base
                 CheckForLineBreaksInLogMsg(Level.Info, logMsg);
                 cookie = new Cookie("zaleniumMessage", testStep);
                 driver.Manage().Cookies.AddCookie(cookie);
+
+                if (logInfo)
+                {
+                    LogInfo(testStep);
+                }
             }
             catch (UnableToSetCookieException)
             {

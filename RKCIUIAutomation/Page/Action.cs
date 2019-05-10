@@ -141,9 +141,9 @@ namespace RKCIUIAutomation.Page
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                 wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(locator));
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Error(e.Message);
+                //log.Error(e.Message);
             }
         }
 
@@ -168,12 +168,13 @@ namespace RKCIUIAutomation.Page
             }
             finally
             {
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
             }
         }
 
         internal void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 1000)
         {
+            WaitForLoading();
             IJavaScriptExecutor javaScriptExecutor = driver as IJavaScriptExecutor;
             bool pageIsReady = false;
 
@@ -292,7 +293,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 LogError(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -378,7 +379,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -414,7 +415,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -529,7 +530,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -612,8 +613,9 @@ namespace RKCIUIAutomation.Page
                 log.Info($"Entered {filePath}' for file upload");
 
                 By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
-                WaitForElement(uploadStatusLabel);
-                WaitForPageReady();
+                bool uploadStatus = ElementIsDisplayed(uploadStatusLabel);
+
+                LogInfo($"File Upload {(uploadStatus ? "Successful" : "Failed")}.", uploadStatus);
             }
             catch (Exception e)
             {
@@ -914,22 +916,22 @@ namespace RKCIUIAutomation.Page
 
         public bool ElementIsDisplayed(By elementByLocator)
         {
-            bool isDisplayed = false;
+            IWebElement elem = null;
 
             try
             {
-                driver.FindElement(elementByLocator);
-                isDisplayed = true;
+                elem = GetElement(elementByLocator);
             }
-            catch (NoSuchElementException)
+            catch (NoSuchElementException nse)
             {
+                log.Debug($"NoSuchElementException in ElementIsDisplayed(): {nse.Message}");
             }
             catch (Exception e)
             {
                 log.Error($"Error in ElementIsDisplayed(): {e.StackTrace}");
             }
 
-            return isDisplayed;
+            return elem.Displayed;
         }
 
         public bool VerifyPageHeader(string expectedPageHeading)
@@ -1123,7 +1125,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error($"Error in VerifyPageIsLoaded() : {e.StackTrace}");
-                throw e;
+                throw;
             }
         }
 
@@ -1363,7 +1365,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+                throw;
             }
         }
 
@@ -1425,7 +1427,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+                throw;
             }
         }
 

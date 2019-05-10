@@ -11,7 +11,15 @@ using static RKCIUIAutomation.Tools.HipTestApi;
 
 namespace RKCIUIAutomation.Config
 {
-    public class ConfigUtils : ProjectProperties
+    public interface IConfigUtils
+    {
+        string GetHipTestCreds(HipTestKey credType);
+        string GetSiteUrl(TestEnv testEnv, TenantName tenant);
+        TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg);
+        string[] GetUser(UserType userType);
+    }
+
+    public class ConfigUtils : ProjectProperties, IConfigUtils
     {
         public ConfigUtils()
         {

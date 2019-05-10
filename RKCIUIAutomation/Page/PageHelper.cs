@@ -23,6 +23,7 @@ namespace RKCIUIAutomation.Page
         public const string MULTIDDL = "MULTIDDL";
         public const string RDOBTN = "RDOBTN";
         public const string CHKBOX = "CHKBOX";
+        public const string UPLOAD = "UPLOAD";
 
         public static PageBaseHelper PgBaseHelper
             => new PageBaseHelper();
