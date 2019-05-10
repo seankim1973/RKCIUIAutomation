@@ -82,7 +82,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error($"Error occured while adding to HashTable \n{e.Message}");
-                throw e;
+                throw;
             }
         }
 

@@ -631,10 +631,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             return isDisplayed;
         }
+
+        public override IList<KeyValuePair<EntryField, string>> GetTenantEntryFieldKVPairsList()
+        {
+            IList<KeyValuePair<EntryField, string>> kvPairsList = new List<KeyValuePair<EntryField, string>>() { };
+            kvPairsList = tenantAllEntryFieldKeyValuePairs;
+            return kvPairsList;
+        }
     }
 
     public interface IProjectCorrespondenceLog
     {
+        IList<KeyValuePair<EntryField, string>> GetTenantEntryFieldKVPairsList();
+
         void ClickViewBtnForTransmissionsRow();
 
         void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber);
@@ -868,6 +877,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract bool VerifyTransmittalLogIsDisplayedByGridColumnFilter();
 
         public abstract bool VerifyTransmittalLocationBySearch();
+        public abstract IList<KeyValuePair<EntryField, string>> GetTenantEntryFieldKVPairsList();
     }
 
     #endregion Common Workflow Implementation class

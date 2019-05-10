@@ -695,7 +695,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             catch (Exception e)
             {
                 LogError(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -767,7 +767,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -856,7 +856,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             catch (Exception e)
             {
                 log.Error($"Error occured in SelectedTab() : {e.StackTrace}");
-                throw e;
+                throw;
             }
         }
 

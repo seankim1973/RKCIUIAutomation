@@ -45,7 +45,7 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -58,7 +58,7 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 log.Error($"Error in GetHtmlReporter method:\n{e.Message}");
-                throw e;
+                throw;
             }
 
             return HtmlReporter;
@@ -77,7 +77,7 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 log.Error($"Error in GetKlovReporter method:\n{e.Message}");
-                throw e;
+                throw;
             }
 
             return Klov;

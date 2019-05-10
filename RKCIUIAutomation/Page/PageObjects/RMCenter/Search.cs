@@ -16,8 +16,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public Search()
         {
-            tenantSearchCriteriaFields = RMCenterSearch.SetTenantSearchCriteriaFields();
-            tenantSearchGridColumnNames = RMCenterSearch.SetTenantSearchGridColumnNames();
+            tenantSearchCriteriaFields = SetTenantSearchCriteriaFields();
+            tenantSearchGridColumnNames = SetTenantSearchGridColumnNames();
         }
 
         public Search(IWebDriver driver) => this.Driver = driver;
@@ -79,7 +79,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void ClickBtn_Clear()
             => JsClickElement(By.Id("ClearButton"));
 
-        public override bool VerifySearchResultByCriteria(string transmittalNumber)
+        public override bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList)
         {
             bool isDisplayed = false;
             string logMsg = string.Empty;
@@ -89,7 +89,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 SearchCriteria criteria;              
                 IList<bool> resultsList = new List<bool>();
 
-                foreach (KeyValuePair<EntryField, string> kvPair in tenantAllEntryFieldKeyValuePairs)
+                foreach (KeyValuePair<EntryField, string> kvPair in entryFieldValuesList)
                 {
                     criteria = GetMatchingSearchCriteriaForEntryField(kvPair.Key);
 
@@ -218,7 +218,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         IList<ColumnName> SetTenantSearchGridColumnNames();
 
-        bool VerifySearchResultByCriteria(string transmittalNumber);
+        bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList);
 
         void ClickBtn_Search();
 
@@ -349,7 +349,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual void EnterText_OriginatorDocumentRef(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.OriginatorDocumentRef), text);
 
 
-        public abstract bool VerifySearchResultByCriteria(string transmittalNumber);
+        public abstract bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList);
 
         public abstract void ClickBtn_Search();
 

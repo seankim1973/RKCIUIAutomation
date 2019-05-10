@@ -186,7 +186,7 @@ namespace RKCIUIAutomation.Page.Workflows
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -282,7 +282,7 @@ namespace RKCIUIAutomation.Page.Workflows
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 

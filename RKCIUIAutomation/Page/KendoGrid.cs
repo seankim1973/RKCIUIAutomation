@@ -282,7 +282,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
 
             return tabStripRef;
@@ -305,7 +305,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+                throw;
             }
 
             return gridRef;

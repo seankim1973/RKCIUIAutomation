@@ -293,7 +293,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 LogError(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -379,7 +379,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -415,7 +415,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -530,7 +530,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -1125,7 +1125,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error($"Error in VerifyPageIsLoaded() : {e.StackTrace}");
-                throw e;
+                throw;
             }
         }
 
@@ -1365,7 +1365,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+                throw;
             }
         }
 
@@ -1427,7 +1427,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+                throw;
             }
         }
 
