@@ -191,7 +191,7 @@ namespace RKCIUIAutomation.Base
         private void InitExtentTestInstance()
         {
             reportInstance = ExtentManager.GetReportInstance();
-            testInstance = reportInstance.CreateTest($"Suite: {testSuite} | Tenant: {tenantName} | Env: {testEnv}<br>Test: {testName} | Hiptest TC# {testCaseNumber}");
+            testInstance = reportInstance.CreateTest($"Suite: {testSuite} | Tenant: {tenantName} | Env: {testEnv} | Test: {testName} | Hiptest TC# {testCaseNumber}");
             //testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
         }
 

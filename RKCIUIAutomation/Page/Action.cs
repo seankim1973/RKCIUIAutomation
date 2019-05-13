@@ -299,7 +299,7 @@ namespace RKCIUIAutomation.Page
 
 
         public string GetAttribute(By elementByLocator, string attributeName)
-            => GetElement(elementByLocator)?.GetAttribute(attributeName);
+            => GetElement(elementByLocator)?.GetAttribute(attributeName);            
 
         //public IList<string> GetAttributes(By elementByLocator, string attributeName)
         //{
