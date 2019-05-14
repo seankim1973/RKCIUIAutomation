@@ -27,9 +27,9 @@ namespace RKCIUIAutomation.Page.Workflows
             [StringValue("")] ForwardComment_DOT,
             [StringValue("")] EnterResponse,
             [StringValue("")] ForwardResponse,
-            [StringValue("")] EnterResolution,
+            [StringValue("Requires Resolution")] EnterResolution,
             [StringValue("")] ForwardResolution,
-            [StringValue("")] ClosingComment,
+            [StringValue("Requires Closing")] ClosingComment,
             [StringValue("")] ForwardClosingComment
         }
 
@@ -579,6 +579,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
             ClickEnterBtnForRow();
+            DesignDocCommentReview.VerifyDesignDocDetailsHeader();
         }
     }
 
@@ -790,6 +791,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
             ClickEnterBtnForRow();
+            DesignDocCommentReview.VerifyDesignDocDetailsHeader();
         }
 
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
