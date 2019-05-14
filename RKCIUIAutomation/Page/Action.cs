@@ -413,7 +413,8 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                //log.Error(e.StackTrace);
+                log.Error("Exception Message: " + e.Message + ", StackTrace: " + e.StackTrace);
                 throw e;
             }
         }
