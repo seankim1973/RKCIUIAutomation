@@ -16,9 +16,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public DesignDocument()
         {
+            designDocDetailsHeaders = new List<DesignDocHeader>() { };
+            designDocCreatePgEntryFields = new List<DesignDocEntryField>() { };
+            commentEntryFieldKeyValuePairs = new List<KeyValuePair<Enum, string>>() { };
+            createPgEntryFieldKeyValuePairs = new List<KeyValuePair<DesignDocEntryField, string>>() { };
         }
 
-        public DesignDocument(IWebDriver driver) => this.Driver = driver;
+        public DesignDocument(IWebDriver driver)
+        {
+            this.Driver = driver;
+            SetDesignDocCreatePgEntryFieldsList();
+            SetDesignDocDetailsHeadersList();
+        }
 
         public override void ScrollToLastColumn()
             => ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][last()]"));
@@ -59,8 +68,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Trans. N°")] Trans_No,
             [StringValue("Transmittal N°")] Transmittal_No,
             [StringValue("Review Deadline")] Review_Deadline,
-            [StringValue("Remaining Days")] Remaining_Days,
-            [StringValue("")] File_Name
+            [StringValue("Remaining Days")] Remaining_Days
+            //[StringValue("")] File_Name
         }
 
         public enum TableTab
@@ -165,6 +174,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         [ThreadStatic]
+        internal static string documentStatus;
+
+        [ThreadStatic]
         internal static string designDocTitle;
 
         [ThreadStatic]
@@ -250,7 +262,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void ClickBtn_Cancel()
             => Click_UniqueTblBtn("k-grid-cancel");
 
-        private KeyValuePair<DesignDocEntryField, string> PopulateEntryFieldValue<T>(DesignDocEntryField entryField, T indexOrText, bool useContains = false)
+        private KeyValuePair<DesignDocEntryField, string> PopulateAndStoreEntryFieldValue<T>(DesignDocEntryField entryField, T indexOrText, bool useContains = false)
         {
             string fieldType = entryField.GetString(true);
             Type argType = indexOrText.GetType();
@@ -287,14 +299,35 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                             }
                             else
                             {
-                                argValue = GetVar(entryField);
+                                if (entryField.Equals(DesignDocEntryField.Title))
+                                {
+                                    designDocTitle = GetVar("designDocTitle");
+                                    argValue = designDocTitle;
+                                }
+                                else if (entryField.Equals(DesignDocEntryField.DocumentNumber))
+                                {
+                                    designDocNumber = GetVar("designDocDesc");
+                                    argValue = designDocNumber;
+                                }
+                                else
+                                {
+                                    argValue = GetVar(entryField, false);
+                                }
 
                                 int argValueLength = ((string)argValue).Length;
 
                                 By inputLocator = GetInputFieldByLocator(entryField);
-                                int elemMaxLength = int.Parse(GetAttribute(inputLocator, "maxlength"));
+                                int elemMaxLength = 0;
 
-                                argValue = argValueLength > elemMaxLength
+                                try
+                                {
+                                    elemMaxLength = int.Parse(GetAttribute(inputLocator, "maxlength"));
+                                }
+                                catch (Exception)
+                                {
+                                }
+
+                                argValue = elemMaxLength > 0 && argValueLength > elemMaxLength
                                     ? ((string)argValue).Substring(0, elemMaxLength)
                                     : argValue;
                             }
@@ -306,11 +339,36 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     }
                     else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
                     {
-                        //TODO
+                        argValue = ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
+                        ? 1
+                        : argValue;
+
+                        ExpandAndSelectFromDDList(entryField, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
+
+                        if (fieldType.Equals(DDL))
+                        {
+                            fieldValue = GetTextFromDDL(entryField);
+                        }
+                        else
+                        {
+                            fieldValue = string.Join("::", GetTextFromMultiSelectDDL(entryField).ToArray());
+                        }                       
                     }
                     else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
                     {
-                        //TODO
+                        var maxDaysEnum = DesignDocEntryField.MaxReviewDays_QAF;
+
+                        if (entryField.Equals(DesignDocEntryField.MaxReviewDays_DOT_Chkbox))
+                        {
+                            maxDaysEnum = DesignDocEntryField.MaxReviewDays_DOT;
+                        }
+                        else if (entryField.Equals(DesignDocEntryField.MaxReviewDays_Other_Chkbox))
+                        {
+                            SelectRadioBtnOrChkbox(entryField);
+                            maxDaysEnum = DesignDocEntryField.MaxReviewDays_Other;
+                        }
+
+                        fieldValue = GetText(GetTextInputFieldByLocator(maxDaysEnum));
                     }
                 }
             }
@@ -320,7 +378,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 throw;
             }
 
-
             return fieldValuePair = new KeyValuePair<DesignDocEntryField, string>(entryField, fieldValue);
         }
 
@@ -328,10 +385,140 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             foreach (DesignDocEntryField entryField in designDocCreatePgEntryFields)
             {
-                
-                //TODO
+                KeyValuePair<DesignDocEntryField, string> kvPair = new KeyValuePair<DesignDocEntryField, string>();
+                kvPair = PopulateAndStoreEntryFieldValue(entryField, "");
+                createPgEntryFieldKeyValuePairs.Add(kvPair);
+            }
+
+            designDocTitle = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == DesignDocEntryField.Title select kvp.Value).FirstOrDefault();
+            designDocNumber = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == DesignDocEntryField.DocumentNumber select kvp.Value).FirstOrDefault();
+        }
+
+        private string GetEntryFieldValueForMatchingHeader(DesignDocHeader docHeader)
+        {
+            string entryValue = string.Empty;
+            DesignDocEntryField entryField = DesignDocEntryField.Title;
+
+            if (docHeader.Equals(DesignDocHeader.Action) ||
+                docHeader.Equals(DesignDocHeader.Status) ||
+                docHeader.Equals(DesignDocHeader.Remaining_Days) ||
+                docHeader.Equals(DesignDocHeader.Review_Deadline))
+            {
+                switch (docHeader)
+                {
+                    case DesignDocHeader.Action:
+                        entryValue = "For Review/Comment";
+                        break;
+                    case DesignDocHeader.Status:
+                        entryValue = GetDesignDocStatus();
+                        break;
+                    case DesignDocHeader.Remaining_Days:
+                        entryValue = ""; //TODO
+                        break;
+                    case DesignDocHeader.Review_Deadline:
+                        entryValue = ""; //TODO
+                        break;
+                }
+            }
+            else
+            {
+                if (docHeader.Equals(DesignDocHeader.Date) || docHeader.Equals(DesignDocHeader.Document_Date))
+                {
+                    entryField = DesignDocEntryField.DocumentDate;
+                }
+                else if (docHeader.Equals(DesignDocHeader.Number) || docHeader.Equals(DesignDocHeader.Document_Number))
+                {
+                    entryField = DesignDocEntryField.DocumentNumber;
+                }
+                else if (docHeader.Equals(DesignDocHeader.Transmittal_Date) || docHeader.Equals(DesignDocHeader.Trans_Date))
+                {
+                    entryField = DesignDocEntryField.TransmittalDate;
+                }
+                else if (docHeader.Equals(DesignDocHeader.Transmittal_No) || docHeader.Equals(DesignDocHeader.Trans_No))
+                {
+                    entryField = DesignDocEntryField.TransmittalNumber;
+                }
+                else if (docHeader.Equals(DesignDocHeader.Segment))
+                {
+                    entryField = DesignDocEntryField.Segment;
+                }
+                else if (docHeader.Equals(DesignDocHeader.Title))
+                {
+                    entryField = DesignDocEntryField.Title;
+                }
+            }
+
+            entryValue = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == entryField select kvp.Value).FirstOrDefault();
+
+            return entryValue;
+        }
+
+        public override void VerifyDesignDocDetailsHeader()
+        {
+            IList<string> expectedValueInHeaderList = new List<string>();
+            IList<string> actualValueInHeaderList = new List<string>();
+
+            try
+            {
+                foreach (DesignDocHeader header in designDocDetailsHeaders)
+                {
+                    actualValueInHeaderList.Add(GetHeaderValue(header));
+                    expectedValueInHeaderList.Add(GetEntryFieldValueForMatchingHeader(header));
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            VerifyExpectedList(actualValueInHeaderList, expectedValueInHeaderList, "VerifyDesignDocDetailsHeader");
+        }
+
+        private string GetHeaderValue(DesignDocHeader docHeader)
+            => GetText(By.XPath($"//label[contains(text(),'{docHeader.GetString()}')]/following-sibling::div[1]"));
+
+        public override void SetDesignDocStatus(TableTab tableTab)
+        {
+            if (tableTab.Equals(TableTab.Comment) || tableTab.Equals(TableTab.Requires_Comment))
+            {
+                documentStatus = "Requires Comment";
+            }
+            else if (tableTab.Equals(TableTab.Response) || tableTab.Equals(TableTab.Requires_Response))
+            {
+                documentStatus = "Requires Response";
+            }
+            else if (tableTab.Equals(TableTab.Requires_Closing) || tableTab.Equals(TableTab.Verification))
+            {
+                documentStatus = "Requires Closing";
+            }
+            else
+            {
+                switch (tableTab)
+                {
+                    case TableTab.Pending_Comment://SG
+                        documentStatus = "Pending Comment";
+                        break;
+                    case TableTab.Pending_Resolution://SG
+                        documentStatus = "Pending Resolution";
+                        break;
+                    case TableTab.Requires_Resolution://SH249, SG
+                        documentStatus = "Requires Resolution";
+                        break;
+                    case TableTab.Pending_Response://SG
+                        documentStatus = "Pending Response";
+                        break;
+                    case TableTab.Pending_Closing://SG
+                        documentStatus = "Pending Closing";
+                        break;
+                    case TableTab.Closed://LAX, SG, SH249
+                        documentStatus = "Review Completed";
+                        break;
+                }
             }
         }
+
+        public override string GetDesignDocStatus()
+            => documentStatus;
     }
 
     #endregion DesignDocument Generic class
@@ -346,6 +533,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         IList<Enum> SetCommentEntryFieldsList();
 
+        void SetDesignDocStatus(TableTab tableTab);
+
+        string GetDesignDocStatus();
+
+        void VerifyDesignDocDetailsHeader();
 
         void ScrollToLastColumn();
 
@@ -624,8 +816,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForPageReady();
             ClickElement(UploadNewDesignDoc_ByLocator);
 
-            //populate and store data for all fields
-            EnterDesignDocTitleAndNumber();
+            PopulateAllCreatePgEntryFields();
+
+            //EnterDesignDocTitleAndNumber();
 
             UploadFile("test.xlsx");
             ClickElement(SaveForwardBtnUploadPage_ByLocator);
@@ -839,7 +1032,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual bool VerifyItemStatusIsClosed()
         {
-            SelectTab(TableTab.Closed);
+            ClickTab_Closed();
+            //SelectTab(TableTab.Closed);
             return VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber);
         }
 
@@ -858,6 +1052,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error($"Error occured in SelectedTab() : {e.StackTrace}");
                 throw;
             }
+
+            SetDesignDocStatus(tableTab);
         }
 
         public virtual void ClickTab_Comment() => SelectTab(TableTab.Comment);
@@ -930,6 +1126,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void ScrollToLastColumn();
         public abstract void ScrollToFirstColumn();
         public abstract void PopulateAllCreatePgEntryFields();
+        public abstract void VerifyDesignDocDetailsHeader();
+        public abstract void SetDesignDocStatus(TableTab tableTab);
+        public abstract string GetDesignDocStatus();
     }
 
     #endregion Common Workflow Implementation class
@@ -1055,8 +1254,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     DesignDocEntryField.Segment,
                     DesignDocEntryField.TransmittalNumber,
                     DesignDocEntryField.TransmittalDate,
-                    DesignDocEntryField.MaxReviewDays_QAF,
-                    DesignDocEntryField.MaxReviewDays_DOT
+                    DesignDocEntryField.MaxReviewDays_QAF_Chkbox,
+                    DesignDocEntryField.MaxReviewDays_DOT_Chkbox
                 };
             }
 
@@ -1167,9 +1366,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     DesignDocEntryField.Segment,
                     DesignDocEntryField.TransmittalNumber,
                     DesignDocEntryField.TransmittalDate,
-                    DesignDocEntryField.MaxReviewDays_QAF,
-                    DesignDocEntryField.MaxReviewDays_DOT,
-                    DesignDocEntryField.MaxReviewDays_Other,
+                    DesignDocEntryField.MaxReviewDays_QAF_Chkbox,
+                    DesignDocEntryField.MaxReviewDays_DOT_Chkbox,
+                    DesignDocEntryField.MaxReviewDays_Other_Chkbox,
                     DesignDocEntryField.MaxReviewDays_Other_Reviewer
                 };
             }
@@ -1180,7 +1379,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override IList<DesignDocHeader> SetDesignDocDetailsHeadersList()
         {
             if (!designDocDetailsHeaders.Any())
-            {
+            { 
                 designDocDetailsHeaders = new List<DesignDocHeader>
                 {
                     DesignDocHeader.Date,
@@ -1295,7 +1494,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class DesignDocument_LAX : DesignDocument
     {
         public DesignDocument_LAX(IWebDriver driver) : base(driver)
-        {           
+        {
         }
 
         public override IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList()
@@ -1310,7 +1509,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     DesignDocEntryField.Segment,
                     DesignDocEntryField.TransmittalNumber,
                     DesignDocEntryField.TransmittalDate,
-                    DesignDocEntryField.MaxReviewDays_DOT
+                    DesignDocEntryField.MaxReviewDays_DOT_Chkbox
                 };
             }
 

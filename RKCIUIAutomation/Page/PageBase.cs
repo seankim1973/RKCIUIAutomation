@@ -46,10 +46,9 @@ namespace RKCIUIAutomation.Page
 
                 Type argType = key.GetType();
 
-                if (argType.Equals(typeof(Enum)))
+                if (key is Enum)
                 {
-                    argKey = ConvertToType<Enum>(key);
-                    argKey.ToString();
+                    argKey = ConvertToType<Enum>(key).ToString();
                 }
                 else
                 {
@@ -92,34 +91,19 @@ namespace RKCIUIAutomation.Page
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public string GetVar<T>(T key, bool keyIncludesPrefix = false)
+        public string GetVar<T>(T key, bool keyIncludesPrefix = false, string varValue = "")
         {
-            Type argType = key.GetType();
-            string argKey = string.Empty;
+            string argKey = key is Enum
+                ? ConvertToType<Enum>(key).ToString()
+                : ConvertToType<string>(key);
 
-            if (argType.Equals(typeof(Enum)))
-            {
-                argKey = (ConvertToType<Enum>(key)).ToString();
-            }
-            else
-            {
-                argKey = ConvertToType<string>(key);
-            }
-
-            argKey = keyIncludesPrefix
-                ? argKey
-                : BaseHelper.GetEnvVarPrefix(argKey);
-
-            if (!HashKeyExists(argKey))
-            {
-                CreateVar(argKey, "", false);
-            }
+            CreateVar(key, varValue, keyIncludesPrefix);
 
             Hashtable = GetHashTable();
-            var varValue = Hashtable[argKey].ToString();
-            log.Debug($"#####GetVar Key: {argKey} has Value: {varValue}");
+            var value = Hashtable[argKey].ToString();
+            log.Debug($"#####GetVar Key: {argKey} has Value: {value}");
             
-            return varValue;
+            return value;
         }
 
         public bool HashKeyExists(string key)

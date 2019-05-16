@@ -19,23 +19,23 @@ namespace RKCIUIAutomation.Page.Workflows
         public DesignDocumentWF(IWebDriver driver) => this.Driver = driver;
 
         public enum CR_Workflow
-        {
-            CreateComment,
-            EnterComment,
-            ForwardComment,
-            EnterComment_DOT,
-            ForwardComment_DOT,
-            EnterResponse,
-            ForwardResponse,
-            EnterResolution,
-            ForwardResolution,
-            ClosingComment, 
-            ForwardClosingComment
+        {//TODO - Use StringValueAttribute as DesignDocHeader Status value
+            [StringValue("")] CreateComment,
+            [StringValue("Requires Comment")] EnterComment,
+            [StringValue("")] ForwardComment,
+            [StringValue("")] EnterComment_DOT,
+            [StringValue("")] ForwardComment_DOT,
+            [StringValue("")] EnterResponse,
+            [StringValue("")] ForwardResponse,
+            [StringValue("Requires Resolution")] EnterResolution,
+            [StringValue("")] ForwardResolution,
+            [StringValue("Requires Closing")] ClosingComment,
+            [StringValue("")] ForwardClosingComment
         }
 
         private bool AlreadyInDesignDocumentPage()
             => VerifyPageHeader("Design Document");
-
+            
         // IQF User - AtCRCreate@rkci.com - CreateComment & EnterComment(SG & SH249)
         // IQF Records Mgr - CreateComment(SG & SH249) & FwdComment(SH249)
         // DOT User - ATCRComment @rkci.com - EnterComment
@@ -172,6 +172,8 @@ namespace RKCIUIAutomation.Page.Workflows
                     }
                     break;
             }
+
+            documentStatus = workflow.GetString();
 
             LoginAs(userAcct);
 
@@ -577,6 +579,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
             ClickEnterBtnForRow();
+            DesignDocCommentReview.VerifyDesignDocDetailsHeader();
         }
     }
 
@@ -788,6 +791,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
             ClickEnterBtnForRow();
+            DesignDocCommentReview.VerifyDesignDocDetailsHeader();
         }
 
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)

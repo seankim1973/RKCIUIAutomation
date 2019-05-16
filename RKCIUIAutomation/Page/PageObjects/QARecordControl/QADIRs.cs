@@ -149,7 +149,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         [ThreadStatic]
         internal static string dirNumberKey;
 
-        internal void StoreDirNumber()
+        public override void SetDirNumber()
         {
             dirNumber = GetAttribute(By.Id("DIRNO"), "value");
             dirNumberKey = $"DIR_varKey";
@@ -179,7 +179,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return id;
         }
 
-        internal IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern)
+        public override IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern)
         {
             IList<string> trimmedList = null;
 
@@ -275,7 +275,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return trimmedList;
         }
 
-        internal bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs)
+        public override bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs)
         {
             int expectedCount = 0;
             int actualCount = 0;
@@ -327,10 +327,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return reqFieldsMatch;
         }
 
-        internal void CloseErrorSummaryPopupMsg()
+        public override void CloseErrorSummaryPopupMsg()
             => JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
 
-        internal IList<string> GetErrorSummaryIDs()
+        public override IList<string> GetErrorSummaryIDs()
         {
             IList<string> errorElements = null;
             IList<string> extractedFieldNames = null;
@@ -412,7 +412,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return pkgData;
         }
 
-        internal void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1)
+        public override void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1)
         {
             try
             {
@@ -477,7 +477,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        internal TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1)
+        public override TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1)
         {
             BaseUtils baseUtils = new BaseUtils();
             string colName = packagesColumnName.GetString(true);
@@ -706,6 +706,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         string GetTechIdForDirUserAcct(bool selectUserFromDDList = false, UserType dirNoDDListTech = UserType.DIRTechQA);
 
         void VerifyRecreateBtnIsDisplayed(string packageNumber, string newDirNumber);
+
+        void CloseErrorSummaryPopupMsg();
+
+        IList<string> GetErrorSummaryIDs();
+
+        IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern);
+
+        bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs);
+
+        void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1);
+
+        TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1);
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -757,13 +769,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return instance;
         }
 
-        QADIRs QaDIRs_Base => new QADIRs(Driver);
+        //QADIRs QaDIRs_Base => new QADIRs(Driver);
 
         public virtual string GetDirNumber()
-            => GetVar(dirNumberKey);
+            => dirNumber;
 
-        public virtual void SetDirNumber()
-            => QaDIRs_Base.StoreDirNumber();
+        public abstract void SetDirNumber();
+            //=> QaDIRs_Base.StoreDirNumber();
 
         public virtual bool IsLoaded()
             => Driver.Title.Equals("DIR List - ELVIS PMC");
@@ -1286,7 +1298,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 errorSummaryIDs = new List<string>();
-                errorSummaryIDs = QaDIRs_Base.GetErrorSummaryIDs();
+                errorSummaryIDs = GetErrorSummaryIDs();
 
                 string reqFieldIdXPath = string.Empty;
                 string splitPattern = string.Empty;
@@ -1312,9 +1324,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         break;
                 }
 
-                IList<string> trimmedActualIds = QaDIRs_Base.TrimInputFieldIDs(GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
+                IList<string> trimmedActualIds = TrimInputFieldIDs(GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
 
-                bool actualMatchesExpected = QaDIRs_Base.VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
+                bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
 
                 if (actualMatchesExpected)
                 {
@@ -1346,7 +1358,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             finally
             {
-                QaDIRs_Base.CloseErrorSummaryPopupMsg();
+                CloseErrorSummaryPopupMsg();
             }
 
             return requiredFieldsMatch;
@@ -1407,10 +1419,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public virtual void FilterTable_CreatePackagesTab(int indexOfRow = 1)
-            => QaDIRs_Base.Verify_Column_Filters_DirPackageTabs(TableTab.Create_Packages, indexOfRow);
+            => Verify_Column_Filters_DirPackageTabs(TableTab.Create_Packages, indexOfRow);
 
         public virtual void FilterTable_PackagesTab(int indexOfRow = 1)
-            => QaDIRs_Base.Verify_Column_Filters_DirPackageTabs(TableTab.Packages, indexOfRow);
+            => Verify_Column_Filters_DirPackageTabs(TableTab.Packages, indexOfRow);
 
         public virtual string GetDirNumberForRow(string textInRowForAnyColumn)
             => GetColumnValueForRow(textInRowForAnyColumn, "DIR №");
@@ -1504,19 +1516,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public virtual string GetDirPackageWeekStartFromRow(int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_Start, rowIndex).Trim();
+            => GetDirPackagesDataForRow<string>(PackagesColumnName.Week_Start, rowIndex).Trim();
 
         public virtual string GetDirPackageWeekEndFromRow(int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_End, rowIndex).Trim();
+            => GetDirPackagesDataForRow<string>(PackagesColumnName.Week_End, rowIndex).Trim();
 
         public virtual string GetDirPackageNewDirCountFromRow(int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.New_DIR_Count, rowIndex).Trim();
+            => GetDirPackagesDataForRow<string>(PackagesColumnName.New_DIR_Count, rowIndex).Trim();
 
         public virtual string GetDirPackageNumberFromRow(int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Package_Number, rowIndex).Trim();
+            => GetDirPackagesDataForRow<string>(PackagesColumnName.Package_Number, rowIndex).Trim();
 
         public virtual string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string[]>(NewDIRsOrDIRs, rowIndex);
+            => GetDirPackagesDataForRow<string[]>(NewDIRsOrDIRs, rowIndex);
 
         public virtual bool Verify_Package_Created(string weekStart, string[] dirNumbers)
         {
@@ -1614,6 +1626,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             LogInfo(logMsg, new bool[] { recreateBtnIsDisplayed, dirNumbersContainsNewDIR });
         }
+
+        public abstract IList<string> GetErrorSummaryIDs();
+        public abstract IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern);
+        public abstract bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs);
+        public abstract void CloseErrorSummaryPopupMsg();
+        public abstract void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1);
+        public abstract TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1);
     }
 
     //Tenant Specific Classes
