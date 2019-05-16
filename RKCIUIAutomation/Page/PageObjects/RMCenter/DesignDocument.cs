@@ -299,11 +299,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                             }
                             else
                             {
-                                bool includeKeyPrefix = entryField.Equals(DesignDocEntryField.Title) || entryField.Equals(DesignDocEntryField.DocumentNumber)
-                                    ? true
-                                    : false;
-
-                                argValue = GetVar(entryField, includeKeyPrefix);
+                                if (entryField.Equals(DesignDocEntryField.Title))
+                                {
+                                    designDocTitle = GetVar("designDocTitle");
+                                    argValue = designDocTitle;
+                                }
+                                else if (entryField.Equals(DesignDocEntryField.DocumentNumber))
+                                {
+                                    designDocNumber = GetVar("designDocDesc");
+                                    argValue = designDocNumber;
+                                }
+                                else
+                                {
+                                    argValue = GetVar(entryField, false);
+                                }
 
                                 int argValueLength = ((string)argValue).Length;
 
@@ -318,7 +327,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 {
                                 }
 
-                                argValue = argValueLength > elemMaxLength
+                                argValue = elemMaxLength > 0 && argValueLength > elemMaxLength
                                     ? ((string)argValue).Substring(0, elemMaxLength)
                                     : argValue;
                             }
@@ -326,14 +335,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                             fieldValue = (string)argValue;
                         }
 
-                        EnterText(GetTextInputFieldByLocator(entryField), fieldValue);
-                        //EnterText(By.Id(entryField.GetString()), fieldValue);
+                        EnterText(By.Id(entryField.GetString()), fieldValue);
                     }
                     else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
                     {
                         argValue = ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
-                            ? 1
-                            : argValue;
+                        ? 1
+                        : argValue;
 
                         ExpandAndSelectFromDDList(entryField, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
 
@@ -344,7 +352,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         else
                         {
                             fieldValue = string.Join("::", GetTextFromMultiSelectDDL(entryField).ToArray());
-                        }
+                        }                       
                     }
                     else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
                     {
@@ -358,7 +366,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         {
                             SelectRadioBtnOrChkbox(entryField);
                             maxDaysEnum = DesignDocEntryField.MaxReviewDays_Other;
-                            ExpandAndSelectFromDDList(DesignDocEntryField.MaxReviewDays_Other_Reviewer, 1);
                         }
 
                         fieldValue = GetText(GetTextInputFieldByLocator(maxDaysEnum));
@@ -390,7 +397,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         private string GetEntryFieldValueForMatchingHeader(DesignDocHeader docHeader)
         {
             string entryValue = string.Empty;
-            DesignDocEntryField entryField = DesignDocEntryField.DocumentDate;
+            DesignDocEntryField entryField = DesignDocEntryField.Title;
 
             if (docHeader.Equals(DesignDocHeader.Action) ||
                 docHeader.Equals(DesignDocHeader.Status) ||
@@ -437,11 +444,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 }
                 else if (docHeader.Equals(DesignDocHeader.Title))
                 {
-                    entryField = DesignDocEntryField.Segment;
+                    entryField = DesignDocEntryField.Title;
                 }
-
-                entryValue = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == entryField select kvp.Value).FirstOrDefault();
             }
+
+            entryValue = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == entryField select kvp.Value).FirstOrDefault();
 
             return entryValue;
         }
@@ -464,7 +471,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            VerifyExpectedList(actualValueInHeaderList, expectedValueInHeaderList);
+            VerifyExpectedList(actualValueInHeaderList, expectedValueInHeaderList, "VerifyDesignDocDetailsHeader");
         }
 
         private string GetHeaderValue(DesignDocHeader docHeader)
@@ -1247,8 +1254,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     DesignDocEntryField.Segment,
                     DesignDocEntryField.TransmittalNumber,
                     DesignDocEntryField.TransmittalDate,
-                    DesignDocEntryField.MaxReviewDays_QAF,
-                    DesignDocEntryField.MaxReviewDays_DOT
+                    DesignDocEntryField.MaxReviewDays_QAF_Chkbox,
+                    DesignDocEntryField.MaxReviewDays_DOT_Chkbox
                 };
             }
 
@@ -1359,9 +1366,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     DesignDocEntryField.Segment,
                     DesignDocEntryField.TransmittalNumber,
                     DesignDocEntryField.TransmittalDate,
-                    DesignDocEntryField.MaxReviewDays_QAF,
-                    DesignDocEntryField.MaxReviewDays_DOT,
-                    DesignDocEntryField.MaxReviewDays_Other,
+                    DesignDocEntryField.MaxReviewDays_QAF_Chkbox,
+                    DesignDocEntryField.MaxReviewDays_DOT_Chkbox,
+                    DesignDocEntryField.MaxReviewDays_Other_Chkbox,
                     DesignDocEntryField.MaxReviewDays_Other_Reviewer
                 };
             }
@@ -1502,7 +1509,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     DesignDocEntryField.Segment,
                     DesignDocEntryField.TransmittalNumber,
                     DesignDocEntryField.TransmittalDate,
-                    DesignDocEntryField.MaxReviewDays_DOT
+                    DesignDocEntryField.MaxReviewDays_DOT_Chkbox
                 };
             }
 
