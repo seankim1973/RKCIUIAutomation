@@ -42,21 +42,9 @@ namespace RKCIUIAutomation.Page
             try
             {
                 string logMsg = string.Empty;
-                object argKey = null;
-
-                Type argType = key.GetType();
-
-                if (key is Enum)
-                {
-                    argKey = ConvertToType<Enum>(key).ToString();
-                }
-                else
-                {
-                    argKey = ConvertToType<string>(key);
-                }
-
+                string argKey = ConvertToType<string>(key);
                 argKey = withPrefix
-                    ? BaseHelper.GetEnvVarPrefix((string)argKey)
+                    ? BaseHelper.GetEnvVarPrefix(argKey)
                     : argKey;
 
                 value = value.HasValue()
@@ -65,7 +53,7 @@ namespace RKCIUIAutomation.Page
 
                 Hashtable = GetHashTable();
 
-                if (!HashKeyExists((string)argKey))
+                if (!HashKeyExists(argKey))
                 {
                     Hashtable.Add(argKey, value);
                     logMsg = "Created";
@@ -76,7 +64,7 @@ namespace RKCIUIAutomation.Page
                     logMsg = "Updated";
                 }
 
-                log.Debug($"{logMsg} HashTable - Key: {argKey.ToString()} : Value: {value.ToString()}");
+                log.Debug($"{logMsg} HashTable - Key: {argKey} : Value: {value}");
             }
             catch (Exception e)
             {
@@ -91,19 +79,23 @@ namespace RKCIUIAutomation.Page
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public string GetVar<T>(T key, bool keyIncludesPrefix = false, string varValue = "")
+        public string GetVar<T>(T key, bool keyIncludesPrefix = false)
         {
-            string argKey = key is Enum
-                ? ConvertToType<Enum>(key).ToString()
-                : ConvertToType<string>(key);
+            string argKey = ConvertToType<string>(key);
+            argKey = keyIncludesPrefix
+                ? argKey
+                : BaseHelper.GetEnvVarPrefix(argKey);
 
-            CreateVar(key, varValue, keyIncludesPrefix);
+            if (!HashKeyExists(argKey))
+            {
+                CreateVar(argKey, "", false);
+            }
 
             Hashtable = GetHashTable();
-            var value = Hashtable[argKey].ToString();
-            log.Debug($"#####GetVar Key: {argKey} has Value: {value}");
-            
-            return value;
+            var varValue = Hashtable[argKey].ToString();
+            log.Debug($"#####GetVar Key: {argKey} has Value: {varValue}");
+
+            return varValue;
         }
 
         public bool HashKeyExists(string key)

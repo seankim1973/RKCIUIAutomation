@@ -111,6 +111,8 @@ namespace RKCIUIAutomation.Page
                 wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
             }
+            catch (UnhandledAlertException)
+            { }
             catch (Exception e)
             {
                 log.Error($"Error occured in method GetStandardWait : {e.Message}");
@@ -180,18 +182,15 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0");
-            }
-            catch (InvalidOperationException)
-            {
-                pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'");
-            }
-            catch (Exception e)
-            {
-                log.Error($"Error in WaitForPageReady method : {e.Message}");
-            }
-            finally
-            {
+                try
+                {
+                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0");
+                }
+                catch (InvalidOperationException)
+                {
+                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'");
+                }
+
                 if (!pageIsReady)
                 {
                     log.Debug("...waiting for page to be in Ready state");
@@ -199,23 +198,30 @@ namespace RKCIUIAutomation.Page
                     try
                     {
                         WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                        wait.Until(wd => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
-                    }
-                    catch (InvalidOperationException e)
-                    {
-                        log.Debug(e.Message);
-                        WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                        wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
+                        wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
                     }
                     catch (UnhandledAlertException)
-                    {
-                    }
-                    catch (Exception e)
-                    {
-                        log.Error($"Error in WaitForPageReady() : {e.StackTrace}");
-                    }
+                    { }
                 }
             }
+            catch (InvalidOperationException)
+            {
+                try
+                {
+                    WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+                    wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
+                }
+                catch (UnhandledAlertException)
+                { }
+
+            }
+            catch (UnhandledAlertException)
+            { }
+            catch (Exception e)
+            {
+                log.Warn($"Error in WaitForPageReady method : {e.Message}");
+            }
+
         }
 
         public void RefreshWebPage()
@@ -474,6 +480,12 @@ namespace RKCIUIAutomation.Page
                 if (element.Displayed)
                 {
                     text = element.Text;
+
+                    if (!text.HasValue())
+                    {
+                        text = element.GetAttribute("value");
+                    }
+
                     string logMsg = text.HasValue()
                         ? $"Retrieved '{text}'"
                         : $"Unable to retrieve text {text}";
@@ -588,6 +600,8 @@ namespace RKCIUIAutomation.Page
                     LogError($"Element {chkbxOrRadioBtn.ToString()}, is not selectable", true);
                 }
             }
+            catch (UnhandledAlertException)
+            { }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
@@ -790,7 +804,6 @@ namespace RKCIUIAutomation.Page
         public void ConfirmActionDialog(bool confirmYes = true)
         {
             string actionMsg = string.Empty;
-            WaitForPageReady();
 
             try
             {
@@ -821,7 +834,6 @@ namespace RKCIUIAutomation.Page
         public string AcceptAlertMessage()
         {
             string alertMsg = string.Empty;
-            WaitForPageReady();
 
             try
             {
@@ -844,7 +856,6 @@ namespace RKCIUIAutomation.Page
         public string DismissAlertMessage()
         {
             string alertMsg = string.Empty;
-            WaitForPageReady();
 
             try
             {

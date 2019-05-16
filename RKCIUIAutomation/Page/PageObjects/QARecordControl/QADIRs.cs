@@ -247,7 +247,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             {
                                 id = id.SplitCamelCase();
 
-                                if (id.Equals("SpecSection"))
+                                if (id.Equals("SpecSection") || id.Equals("Spec Section"))
                                 {
                                     id = $"{id} Paragraph";
                                 }
@@ -495,6 +495,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
+        public override bool VerifySpecSectionDescriptionAutoPopulatedData()
+        {
+            string specSectionParagraphText = GetTextFromDDL(InputFields.Spec_Section_Paragraph);
+            string spectionDescriptionText = GetText(GetTextAreaFieldByLocator(InputFields.Section_Description));
+            bool valuesMatch = specSectionParagraphText.Contains(spectionDescriptionText);
+            LogInfo($"EXPECTED: {specSectionParagraphText}<br>ACTUAL: {spectionDescriptionText}", valuesMatch);
+            return valuesMatch;
+        }
     }
 
     #endregion DIR/IDR/DWR Generic Class
@@ -718,6 +726,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1);
 
         TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1);
+
+        bool VerifySpecSectionDescriptionAutoPopulatedData();
     }
 
     public abstract class QADIRs_Impl : TestBase, IQADIRs
@@ -1135,46 +1145,60 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 SelectRdoBtn_Deficiencies_No();
                 SelectChkbox_InspectionResult_P(false);
 
-                foreach (Enum resultChkBox in resultChkBoxIDs)
+                try
                 {
-                    SelectRadioBtnOrChkbox(resultChkBox, false);
-
-                    foreach (Enum deficiencyRdoBtn in deficienciesRdoBtnIDs)
+                    foreach (Enum resultChkBox in resultChkBoxIDs)
                     {
-                        SelectRadioBtnOrChkbox(deficiencyRdoBtn);
-                        resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "Pass" : "Engineer Decision";
-                        expectedAlertMsg = $"Since {resultTypeMsg} checked, not allow to check any deficiency";
-                        alertMsg = AcceptAlertMessage(); //GetAlertMessage();
-                        alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
-                        assertList.Add(alertMsgMatch);
-                        LogInfo($"Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        SelectRadioBtnOrChkbox(resultChkBox, false);
+
+                        foreach (Enum deficiencyRdoBtn in deficienciesRdoBtnIDs)
+                        {
+                            SelectRadioBtnOrChkbox(deficiencyRdoBtn);
+                            resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "Pass" : "Engineer Decision";
+                            expectedAlertMsg = $"Since {resultTypeMsg} checked, not allow to check any deficiency";
+                            alertMsg = AcceptAlertMessage(); //GetAlertMessage();
+                            alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
+                            assertList.Add(alertMsgMatch);
+                            LogInfo($"Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        }
                     }
+                }
+                catch (UnhandledAlertException)
+                {
                 }
 
                 SelectChkbox_InspectionResult_P(false); //Ensures Pass Result checkbox is selected
                 SelectRdoBtn_Deficiencies_No();
                 SelectChkbox_InspectionResult_P(); //Unchecks Pass Result checkbox
 
-                foreach (Enum deficiencyRdoBtn in deficienciesRdoBtnIDs)
+                try
                 {
-                    SelectRadioBtnOrChkbox(deficiencyRdoBtn);
-
-                    foreach (Enum resultChkBox in resultChkBoxIDs)
+                    foreach (Enum deficiencyRdoBtn in deficienciesRdoBtnIDs)
                     {
-                        SelectRadioBtnOrChkbox(resultChkBox, false);
-                        resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "pass" : "make engineer decision";
-                        expectedAlertMsg = $"There is a deficiency checked in this entry, not allow to {resultTypeMsg}!";
-                        alertMsg = AcceptAlertMessage(); //GetAlertMessage();
-                        alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
-                        assertList.Add(alertMsgMatch);
-                        LogInfo($"Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        SelectRadioBtnOrChkbox(deficiencyRdoBtn);
+
+                        foreach (Enum resultChkBox in resultChkBoxIDs)
+                        {
+                            SelectRadioBtnOrChkbox(resultChkBox, false);
+                            resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "pass" : "make engineer decision";
+                            expectedAlertMsg = $"There is a deficiency checked in this entry, not allow to {resultTypeMsg}!";
+                            alertMsg = AcceptAlertMessage(); //GetAlertMessage();
+                            alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
+                            assertList.Add(alertMsgMatch);
+                            LogInfo($"Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        }
                     }
+                }
+                catch (UnhandledAlertException)
+                {
                 }
 
                 alertMsgExpected = assertList.Contains(false)
                     ? false
                     : true;
             }
+            catch (UnhandledAlertException)
+            { }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
@@ -1633,6 +1657,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void CloseErrorSummaryPopupMsg();
         public abstract void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1);
         public abstract TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1);
+        public abstract bool VerifySpecSectionDescriptionAutoPopulatedData();
     }
 
     //Tenant Specific Classes
@@ -1957,9 +1982,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Area();
             SelectDDL_SpecSection();
             SelectDDL_SpecSectionParagraph();
-            string specSectionParagraphText = GetTextFromDDL(InputFields.Spec_Section_Paragraph);
-            string spectionDescriptionText = GetText(GetTextAreaFieldByLocator(InputFields.Section_Description));
-            AddAssertionToList(specSectionParagraphText.Equals(spectionDescriptionText));
+            AddAssertionToList(VerifySpecSectionDescriptionAutoPopulatedData(), "VerifySpecSectionDescriptionAutoPopulatedData");
             SelectDDL_Feature();
             SelectDDL_Contractor("LINXS");
             SelectDDL_CrewForeman();
