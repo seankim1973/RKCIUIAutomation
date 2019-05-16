@@ -278,6 +278,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
             ClickEnterBtnForRow();
+            DesignDocCommentReview.VerifyDesignDocDetailsHeader();
             DesignDocCommentReview.WaitForActiveCommentTab();
         }
 

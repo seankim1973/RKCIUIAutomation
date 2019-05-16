@@ -446,9 +446,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 {
                     entryField = DesignDocEntryField.Title;
                 }
-            }
 
-            entryValue = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == entryField select kvp.Value).FirstOrDefault();
+                entryValue = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == entryField select kvp.Value).FirstOrDefault();
+            }
 
             return entryValue;
         }
