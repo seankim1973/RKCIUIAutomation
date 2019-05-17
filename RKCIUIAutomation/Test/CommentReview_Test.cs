@@ -20,6 +20,7 @@ namespace RKCIUIAutomation.Test.CommentReview
         public void CommentReviewRegularComment()
         {
             WF_DesignDocCommentReview.TCWF_CommentReviewRegularComment();
+            AssertAll();
         }
     }
 
@@ -35,6 +36,7 @@ namespace RKCIUIAutomation.Test.CommentReview
         public void CommentReviewNoComment()
         {
             WF_DesignDocCommentReview.TCWF_CommentReviewNoComment();
+            AssertAll();
         }
     }
 

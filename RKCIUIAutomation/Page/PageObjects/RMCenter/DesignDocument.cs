@@ -16,17 +16,22 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public DesignDocument()
         {
-            designDocDetailsHeaders = new List<DesignDocHeader>() { };
-            designDocCreatePgEntryFields = new List<DesignDocEntryField>() { };
-            commentEntryFieldKeyValuePairs = new List<KeyValuePair<Enum, string>>() { };
-            createPgEntryFieldKeyValuePairs = new List<KeyValuePair<DesignDocEntryField, string>>() { };
+            //designDocDetailsHeaders = new List<DesignDocHeader>() { };
+            //designDocCreatePgEntryFields = new List<DesignDocEntryField>() { };
+            //commentEntryFieldKeyValuePairs = new List<KeyValuePair<Enum, string>>() { };
+            //createPgEntryFieldKeyValuePairs = new List<KeyValuePair<DesignDocEntryField, string>>() { };
+
+            
+            createPgEntryFieldKeyValuePairs = GetDesignDocEntryFieldKeyValuePairs();           
+            commentEntryFieldKeyValuePairs = GetCommentEntryFieldKeyValuePairs();
         }
 
         public DesignDocument(IWebDriver driver)
         {
             this.Driver = driver;
-            SetDesignDocCreatePgEntryFieldsList();
-            SetDesignDocDetailsHeadersList();
+            commentEntryFields = GetCommentEntryFieldsList();
+            designDocDetailsHeaders = GetDesignDocDetailsHeadersList();
+            designDocCreatePgEntryFields = GetDesignDocCreatePgEntryFieldsList();
         }
 
         public override void ScrollToLastColumn()
@@ -34,6 +39,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void ScrollToFirstColumn()
             => ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][1]"));
+
+        public enum CommentType
+        {
+            RegularComment,
+            NoComment
+        }
 
         public enum DesignDocEntryField
         {
@@ -197,6 +208,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         [ThreadStatic]
         internal static IList<KeyValuePair<Enum, string>> commentEntryFieldKeyValuePairs;
 
+        public override void CreateDocument()
+        {
+            WaitForPageReady();
+            ClickElement(UploadNewDesignDoc_ByLocator);
+
+            PopulateAllCreatePgEntryFields();
+
+            //EnterDesignDocTitleAndNumber();
+
+            UploadFile("test.xlsx");
+            ClickElement(SaveForwardBtnUploadPage_ByLocator);
+            WaitForPageReady();
+        }
+
         private string GetTblColumnIndex(CommentEntryField_InTable tableHeader)
             => GetAttribute(By.XPath($"//thead[@role='rowgroup']/tr/th[@data-field='{tableHeader.GetString()}']"), "data-index");
 
@@ -301,12 +326,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                             {
                                 if (entryField.Equals(DesignDocEntryField.Title))
                                 {
-                                    designDocTitle = GetVar("designDocTitle");
+                                    designDocTitle = GetVar(entryField);
                                     argValue = designDocTitle;
                                 }
                                 else if (entryField.Equals(DesignDocEntryField.DocumentNumber))
                                 {
-                                    designDocNumber = GetVar("designDocDesc");
+                                    designDocNumber = GetVar(entryField);
                                     argValue = designDocNumber;
                                 }
                                 else
@@ -381,6 +406,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return fieldValuePair = new KeyValuePair<DesignDocEntryField, string>(entryField, fieldValue);
         }
 
+        /// <summary>
+        /// Populates entry fields accordingly to 'designDocCreatePgEntryFields' list ([ThreadStatic] field variable) and stores EntryField enum and value in 'createPgEntryFieldKeyValuePairs' ([ThreadStatic] field variable).
+        /// </summary>
         public override void PopulateAllCreatePgEntryFields()
         {
             foreach (DesignDocEntryField entryField in designDocCreatePgEntryFields)
@@ -390,11 +418,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 createPgEntryFieldKeyValuePairs.Add(kvPair);
             }
 
-            designDocTitle = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == DesignDocEntryField.Title select kvp.Value).FirstOrDefault();
-            designDocNumber = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == DesignDocEntryField.DocumentNumber select kvp.Value).FirstOrDefault();
+            //designDocTitle = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == DesignDocEntryField.Title select kvp.Value).FirstOrDefault();
+            //designDocNumber = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == DesignDocEntryField.DocumentNumber select kvp.Value).FirstOrDefault();
         }
 
-        private string GetEntryFieldValueForMatchingHeader(DesignDocHeader docHeader)
+        private string GetExpectedValueForDesignDocHeader(DesignDocHeader docHeader)
         {
             string entryValue = string.Empty;
             DesignDocEntryField entryField = DesignDocEntryField.Title;
@@ -463,7 +491,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 foreach (DesignDocHeader header in designDocDetailsHeaders)
                 {
                     actualValueInHeaderList.Add(GetHeaderValue(header));
-                    expectedValueInHeaderList.Add(GetEntryFieldValueForMatchingHeader(header));
+                    expectedValueInHeaderList.Add($"{header}::{GetExpectedValueForDesignDocHeader(header)}");
                 }
             }
             catch (Exception e)
@@ -471,7 +499,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            VerifyExpectedList(actualValueInHeaderList, expectedValueInHeaderList, "VerifyDesignDocDetailsHeader");
+            string methodName = "VerifyDesignDocDetailsHeader";
+            AddAssertionToList(VerifyExpectedList(actualValueInHeaderList, expectedValueInHeaderList, methodName), $"{methodName} - VerifyExpectedList");
         }
 
         private string GetHeaderValue(DesignDocHeader docHeader)
@@ -519,6 +548,34 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override string GetDesignDocStatus()
             => documentStatus;
+
+        public override IList<KeyValuePair<DesignDocEntryField, string>> GetDesignDocEntryFieldKeyValuePairs()
+        {
+            if (createPgEntryFieldKeyValuePairs == null)
+            {
+                createPgEntryFieldKeyValuePairs = new List<KeyValuePair<DesignDocEntryField, string>>();
+            }
+
+            return createPgEntryFieldKeyValuePairs;
+        }
+
+        public override IList<KeyValuePair<Enum, string>> GetCommentEntryFieldKeyValuePairs()
+        {
+            if (commentEntryFieldKeyValuePairs == null)
+            {
+                commentEntryFieldKeyValuePairs = new List<KeyValuePair<Enum, string>>();
+            }
+
+            return commentEntryFieldKeyValuePairs;
+        }
+
+        public override void VerifyItemStatusIsClosed()
+        {
+            ClickTab_Closed();
+            //SelectTab(TableTab.Closed);
+            AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber), $"VerifyItemStatusIsClosed");
+        }
+
     }
 
     #endregion DesignDocument Generic class
@@ -527,11 +584,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public interface IDesignDocument
     {
-        IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList();
+        IList<DesignDocEntryField> GetDesignDocCreatePgEntryFieldsList();
 
-        IList<DesignDocHeader> SetDesignDocDetailsHeadersList();
+        IList<DesignDocHeader> GetDesignDocDetailsHeadersList();
 
-        IList<Enum> SetCommentEntryFieldsList();
+        IList<Enum> GetCommentEntryFieldsList();
+
+        IList<KeyValuePair<DesignDocEntryField, string>> GetDesignDocEntryFieldKeyValuePairs();
+
+        IList<KeyValuePair<Enum, string>> GetCommentEntryFieldKeyValuePairs();
 
         void SetDesignDocStatus(TableTab tableTab);
 
@@ -613,7 +674,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         void Workflow_ForwardResolutionCommentAndCodeForDisagreeResponse();
 
-        bool VerifyItemStatusIsClosed();
+        void VerifyItemStatusIsClosed();
 
         void ClickBtn_BackToList();
 
@@ -769,13 +830,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         #endregion Page element By Locators
 
-        public virtual IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList()
+        public virtual IList<DesignDocEntryField> GetDesignDocCreatePgEntryFieldsList()
             => designDocCreatePgEntryFields;
 
-        public virtual IList<DesignDocHeader> SetDesignDocDetailsHeadersList()
+        public virtual IList<DesignDocHeader> GetDesignDocDetailsHeadersList()
             => designDocDetailsHeaders;
 
-        public virtual IList<Enum> SetCommentEntryFieldsList()
+        public virtual IList<Enum> GetCommentEntryFieldsList()
             => commentEntryFields;
 
         public virtual void SelectDDL_ReviewType(int selectionIndex)
@@ -811,19 +872,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             WaitForPageReady();
         }
 
-        public virtual void CreateDocument()
-        {
-            WaitForPageReady();
-            ClickElement(UploadNewDesignDoc_ByLocator);
+        public abstract void CreateDocument();
+        //{
+        //    WaitForPageReady();
+        //    ClickElement(UploadNewDesignDoc_ByLocator);
 
-            PopulateAllCreatePgEntryFields();
+        //    PopulateAllCreatePgEntryFields();
 
-            //EnterDesignDocTitleAndNumber();
+        //    //EnterDesignDocTitleAndNumber();
 
-            UploadFile("test.xlsx");
-            ClickElement(SaveForwardBtnUploadPage_ByLocator);
-            WaitForPageReady();
-        }
+        //    UploadFile("test.xlsx");
+        //    ClickElement(SaveForwardBtnUploadPage_ByLocator);
+        //    WaitForPageReady();
+        //}
 
         internal string SetCommentStamp(CommentEntryField inputFieldEnum, int commentTabIndex)
             => $"{inputFieldEnum.GetString()}{(commentTabIndex - 1).ToString()}_";
@@ -1030,12 +1091,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual bool VerifyUploadFileErrorMsgIsDisplayed()
             => VerifyRequiredFieldErrorMsg("At least one file must be added.");
 
-        public virtual bool VerifyItemStatusIsClosed()
-        {
-            ClickTab_Closed();
-            //SelectTab(TableTab.Closed);
-            return VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber);
-        }
+        public abstract void VerifyItemStatusIsClosed();
 
         public virtual void SelectTab(TableTab tableTab)
         {
@@ -1129,6 +1185,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void VerifyDesignDocDetailsHeader();
         public abstract void SetDesignDocStatus(TableTab tableTab);
         public abstract string GetDesignDocStatus();
+        public abstract IList<KeyValuePair<DesignDocEntryField, string>> GetDesignDocEntryFieldKeyValuePairs();
+        public abstract IList<KeyValuePair<Enum, string>> GetCommentEntryFieldKeyValuePairs();
     }
 
     #endregion Common Workflow Implementation class
@@ -1242,9 +1300,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList()
+        public override IList<DesignDocEntryField> GetDesignDocCreatePgEntryFieldsList()
         {
-            if (!designDocCreatePgEntryFields.Any())
+            if (designDocCreatePgEntryFields == null)
             {
                 designDocCreatePgEntryFields = new List<DesignDocEntryField>
                 {
@@ -1262,9 +1320,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return designDocCreatePgEntryFields;
         }
 
-        public override IList<DesignDocHeader> SetDesignDocDetailsHeadersList()
+        public override IList<DesignDocHeader> GetDesignDocDetailsHeadersList()
         {
-            if (!designDocDetailsHeaders.Any())
+            if (designDocDetailsHeaders == null)
             {
                 designDocDetailsHeaders = new List<DesignDocHeader>
                 {
@@ -1285,12 +1343,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         //TODO
-        public override IList<Enum> SetCommentEntryFieldsList()
+        public override IList<Enum> GetCommentEntryFieldsList()
         {
-            return commentEntryFields = new List<Enum>
+            if (commentEntryFields == null)
             {
-                CommentEntryField_InTable.CommentInput,
-            };
+                commentEntryFields = new List<Enum>
+                {
+                    CommentEntryField.CommentInput,
+                };
+            }
+
+            return commentEntryFields;
         }
 
         public override void EnterRegularCommentAndDrawingPageNo()
@@ -1354,9 +1417,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList()
+        public override IList<DesignDocEntryField> GetDesignDocCreatePgEntryFieldsList()
         {
-            if (!designDocCreatePgEntryFields.Any())
+            if (designDocCreatePgEntryFields == null)
             {
                 designDocCreatePgEntryFields = new List<DesignDocEntryField>
                 {
@@ -1376,9 +1439,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return designDocCreatePgEntryFields;
         }
 
-        public override IList<DesignDocHeader> SetDesignDocDetailsHeadersList()
+        public override IList<DesignDocHeader> GetDesignDocDetailsHeadersList()
         {
-            if (!designDocDetailsHeaders.Any())
+            if (designDocDetailsHeaders == null)
             { 
                 designDocDetailsHeaders = new List<DesignDocHeader>
                 {
@@ -1397,12 +1460,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         //TODO
-        public override IList<Enum> SetCommentEntryFieldsList()
+        public override IList<Enum> GetCommentEntryFieldsList()
         {
-            return commentEntryFields = new List<Enum>
+            if (commentEntryFields == null)
             {
-                CommentEntryField_InTable.CommentInput,
-            };
+                commentEntryFields = new List<Enum>
+                {
+                    CommentEntryField_InTable.CommentInput,
+                };
+            }
+
+            return commentEntryFields;
         }
 
         public override void EnterNoComment()
@@ -1497,9 +1565,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override IList<DesignDocEntryField> SetDesignDocCreatePgEntryFieldsList()
+        public override IList<DesignDocEntryField> GetDesignDocCreatePgEntryFieldsList()
         {
-            if (!designDocCreatePgEntryFields.Any())
+            if (designDocCreatePgEntryFields == null)
             {
                 designDocCreatePgEntryFields = new List<DesignDocEntryField>
                 {
@@ -1516,9 +1584,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return designDocCreatePgEntryFields;
         }
 
-        public override IList<DesignDocHeader> SetDesignDocDetailsHeadersList()
+        public override IList<DesignDocHeader> GetDesignDocDetailsHeadersList()
         {
-            if (!designDocDetailsHeaders.Any())
+            if (designDocDetailsHeaders == null)
             {
                 designDocDetailsHeaders = new List<DesignDocHeader>
                 {
@@ -1537,12 +1605,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         //TODO
-        public override IList<Enum> SetCommentEntryFieldsList()
+        public override IList<Enum> GetCommentEntryFieldsList()
         {
-            return commentEntryFields = new List<Enum>
+            if (commentEntryFields == null)
             {
-                CommentEntryField_InTable.CommentInput,
-            };
+                commentEntryFields = new List<Enum>
+                {
+                    CommentEntryField_InTable.CommentInput,
+                };
+            }
+
+            return commentEntryFields;
         }
 
         public override void ClickBtn_BackToList()

@@ -277,19 +277,38 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         private static Cookie cookie;
 
-        public void LogStep(string testStep, bool logInfo = false)
+        public void LogStep(string testStep, bool logInfo = false, bool testResult = true)
         {
             try
             {
                 string logMsg = $"TestStep: {testStep}";
-                testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Grey));
+
+                ExtentColor logLabelColor = testResult
+                    ? ExtentColor.Grey
+                    : ExtentColor.Red;
+
+                testInstance.Info(CreateReportMarkupLabel(logMsg, logLabelColor));
                 CheckForLineBreaksInLogMsg(Level.Info, logMsg);
                 cookie = new Cookie("zaleniumMessage", testStep);
                 driver.Manage().Cookies.AddCookie(cookie);
 
                 if (logInfo)
+                {                   
+                    if (testResult)
+                    {
+                        LogInfo(testStep);
+                    }
+                    else
+                    {
+                        LogInfo(testStep, testResult);
+                    }
+                }
+                else
                 {
-                    LogInfo(testStep);
+                    if (testResult.Equals(false))
+                    {
+                        LogInfo(testStep, testResult);
+                    }
                 }
             }
             catch (UnableToSetCookieException)

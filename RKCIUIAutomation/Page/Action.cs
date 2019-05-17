@@ -133,6 +133,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.Message);
+                throw;
             }
         }
 
@@ -174,7 +175,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 1000)
+        internal void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000)
         {
             WaitForLoading();
             IJavaScriptExecutor javaScriptExecutor = driver as IJavaScriptExecutor;
@@ -472,6 +473,7 @@ namespace RKCIUIAutomation.Page
         {
             IWebElement element = null;
             string text = string.Empty;
+            bool hasValue = false;
 
             try
             {
@@ -479,17 +481,12 @@ namespace RKCIUIAutomation.Page
 
                 if (element.Displayed)
                 {
-                    text = element.Text;
-
-                    if (!text.HasValue())
-                    {
-                        text = element.GetAttribute("value");
-                    }
-
-                    string logMsg = text.HasValue()
+                    text = element.Text ?? element.GetAttribute("value");
+                    hasValue = text.HasValue();
+                    string logMsg = hasValue
                         ? $"Retrieved '{text}'"
-                        : $"Unable to retrieve text {text}";
-                    LogStep($"{logMsg} from element - {elementByLocator}");
+                        : $"Unable to retrieve text";
+                    LogStep($"{logMsg} from element - {elementByLocator}", false, hasValue);
                 }
             }
             catch (Exception e)
@@ -1276,15 +1273,19 @@ namespace RKCIUIAutomation.Page
                 string[][] logTable = new string[expectedCount + 2][];
                 logTable[logTblRowIndex] = new string[2] { $"{verificationMethodName}<br>|  Expected  | ", $"<br> |  Found Matching Actual  | " };
 
+                bool actualHasValue = false;
+                bool expectedHasValue = false;
+                string actualValueLogMsg = string.Empty;
+                string expectedLabel = string.Empty;
+
                 for (int i = 0; i < expectedCount; i++)
                 {
-                    string expectedLabel = string.Empty;
-                    string actualValue = string.Empty;
-
                     logTblRowIndex++;
                     string expected = expectedList[i];
 
-                    if (expected.Contains("::"))
+                    expectedHasValue = expected.HasValue();
+
+                    if (expectedHasValue && expected.Contains("::"))
                     {
                         string[] splitExpected = Regex.Split(expected, "::");
                         expectedLabel = $"{splitExpected[0]}<br>";
@@ -1294,29 +1295,45 @@ namespace RKCIUIAutomation.Page
                     IList<bool> compareResults = new List<bool>();
 
                     bool actualAndExpectedMatch = false;
+                    string tblLogMsg = $"Expected Value : {expected}";
+                    string failedDefaultMsg = "";
 
                     foreach (string actual in actualList)
                     {
-                        actualAndExpectedMatch = actual.Contains(expected) || expected.Contains(actual) || actual.Equals(expected)
-                            ? true
-                            : false;
+                        actualHasValue = actual.HasValue();
+                        actualAndExpectedMatch = expectedHasValue //if Expected has value
+                            ? actualHasValue //if Expected has value, check if Actual has value
+                                ? actual.Contains(expected) || expected.Contains(actual) || actual.Equals(expected)
+                                    ? true //if Expected and Actual have values and actual/expected contain or equal one another
+                                    : false //if Expected and Actual have values and actual/expected DO NOT contain or equal one another
+                                : false //if Expected has value and Actual DO NOT have value
+                            : actualHasValue //if Expected DO NOT have value, check if Actual has value
+                                ? false //if Expected DO NOT have value and Actual has value
+                                : true; //if Expected DO NOT have value and Actual DO NOT have value
 
                         compareResults.Add(actualAndExpectedMatch);
 
                         if (actualAndExpectedMatch)
                         {
-                            actualValue = string.Empty;
                             break;
-                        }
-                        else
-                        {
-                            actualValue = $"<br>Values Do Not Match - Actual Value : {actual}";
                         }
                     }
 
                     fieldsMatch = compareResults.Contains(true)
                         ? true
                         : false;
+
+                    tblLogMsg = actualAndExpectedMatch
+                        ? tblLogMsg
+                        : actualHasValue
+                            ? $"{tblLogMsg}<br>Could not find matching actual value."
+                            : $"{tblLogMsg}<br>Actual Value is Empty!";
+
+                    if (actualHasValue.Equals(false) && expectedHasValue.Equals(false))
+                    {
+                        tblLogMsg = "Both Expected and Actual values are empty!";
+                        fieldsMatch = false;
+                    }
 
                     results.Add(fieldsMatch);
 
@@ -1325,7 +1342,8 @@ namespace RKCIUIAutomation.Page
                         ? $"0{logTblRowNumber}"
                         : logTblRowNumber;
 
-                    logTable[logTblRowIndex] = new string[2] { $"{logTblRowNumber}: {expectedLabel}Expected Value : {expected}{actualValue}", $"{fieldsMatch.ToString()}" };
+                    logTable[logTblRowIndex] = new string[2] { $"{logTblRowNumber}: {expectedLabel}{tblLogMsg}{failedDefaultMsg}", $"{fieldsMatch.ToString()}" };
+                    failedDefaultMsg = "";
                 }
 
                 fieldsMatch = results.Contains(false)
@@ -1486,6 +1504,7 @@ namespace RKCIUIAutomation.Page
         public void LogoutToLoginPage()
         {
             Thread.Sleep(3000);
+            WaitForPageReady();
             ClickLogoutLink();
             WaitForPageReady();
             ClickLoginLink();

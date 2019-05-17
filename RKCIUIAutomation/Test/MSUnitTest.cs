@@ -928,5 +928,25 @@ namespace RKCIUIAutomation.Sandbox
             Console.WriteLine($"TYPE is String: {(argString is string).ToString()} - {argStringType.ToString()}");
 
         }
+
+        [TestMethod]
+        public void HasValueTest()
+        {
+            string text1 = "";
+            string text2 = "Test";
+
+            bool text1HasValue = text1.HasValue();
+            bool text2HasValue = text2.HasValue();
+
+            Console.WriteLine($"text1HasValue : {text1HasValue}");
+            Console.WriteLine($"!text1HasValue : {!text1HasValue}");
+            Console.WriteLine($"text1HasValue Eq True : {text1HasValue.Equals(true)}");
+
+
+            Console.WriteLine($"text2HasValue : {text2HasValue}");
+            Console.WriteLine($"!text2HasValue : {!text2HasValue}");
+            Console.WriteLine($"!text2HasValue Eq True : {text2HasValue.Equals(true)}");
+
+        }
     }
 }

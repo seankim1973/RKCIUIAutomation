@@ -578,7 +578,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             int totalTabCount = remainingTblTabs.Count;
 
             ClickSaveForward();
-            AssertToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_DetailsPageValues()");
+            AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_DetailsPageValues()");
 
             for (int i = 0; i < totalTabCount; i++)
             {
@@ -604,7 +604,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
             ProjCorrespondenceLog.ClickViewBtnForTransmissionsRow();
             ClickSaveForward();
-            AssertToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
+            AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
 
             for (int i = 0; i < totalTabCount; i++)
             {
@@ -619,7 +619,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 {
                     ProjCorrespondenceLog.ClickViewBtnForTransmissionsRow();
                     ClickSaveForward();
-                    AssertToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
+                    AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
                 }
             }
         }
@@ -824,7 +824,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             LoginAs(userType);
             WaitForPageReady();
             NavigateToPage.RMCenter_Project_Correspondence_Log();
-            AssertToList_VerifyPageHeader("Transmissions", "LogintoCorrespondenceLogPage()");
+            AddAssertionToList_VerifyPageHeader("Transmissions", "LogintoCorrespondenceLogPage()");
         }
 
         public virtual IList<EntryField> SetTenantRequiredFieldsList()
@@ -848,7 +848,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             string transmittalNumber = PopulateAllFields();
             UploadFile();
             ClickSave();
-            AssertToList_VerifyPageHeader("Transmissions", "CreateNewAndPopulateFields()");
+            AddAssertionToList_VerifyPageHeader("Transmissions", "CreateNewAndPopulateFields()");
             return transmittalNumber;
         }
 

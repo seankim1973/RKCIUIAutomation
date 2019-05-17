@@ -457,8 +457,8 @@ namespace RKCIUIAutomation.Page
 
                 By recordRowLocator = GetTblRow_ByLocator(recordNameOrNumber, isMultiTabGrid,
                     filterOperator == FilterOperator.Contains
-                    ? true
-                    : false
+                        ? true
+                        : false
                     );
 
                 tblRowElems = GetElements(tableRowsLocator);
