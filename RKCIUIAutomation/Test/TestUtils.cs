@@ -16,6 +16,8 @@ namespace RKCIUIAutomation.Test
         {
         }
 
+        public static TestUtils Utility = new TestUtils();
+
         public TestUtils(IWebDriver driver) => this.Driver = driver;
 
         [ThreadStatic]

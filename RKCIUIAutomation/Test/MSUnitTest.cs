@@ -760,6 +760,17 @@ namespace RKCIUIAutomation.Sandbox
         [TestMethod]
         public void DateTimeParse()
         {
+            DateTime date = DateTime.Now;
+            Console.WriteLine($"TODAY : {date.ToShortDateString()}");
+
+            double daysToAdd = 12;
+            DateTime futureDate = date.AddDays(daysToAdd);
+            Console.WriteLine($"FUTUREDate (+{daysToAdd}) : {futureDate.ToShortDateString()}");
+
+            double daysToSubtract = -25;
+            DateTime pastDate = date.AddDays(daysToSubtract);
+            Console.WriteLine($"PASTDate ({daysToSubtract}) : {pastDate.ToShortDateString()}");
+
             //string filterValue = "04/22/2018";
             //DateTime.TryParse(filterValue, out DateTime filterDateTime);
             //Console.WriteLine($"MM: {filterDateTime.Month}");

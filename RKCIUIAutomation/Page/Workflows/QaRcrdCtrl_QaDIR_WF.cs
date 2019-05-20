@@ -347,7 +347,7 @@ namespace RKCIUIAutomation.Page.Workflows
             return VerifyViewPdfReport(dirNumber);
         }
 
-        internal string ClickViewSelectedDirPDFs(bool selectNoneForMultiView)
+        public override string ClickViewSelectedDirPDFs(bool selectNoneForMultiView)
         {
             string expectedUrl = "No Checkboxes Selected (Expected URL is Empty)";
             int rowCount = 0;
@@ -412,7 +412,7 @@ namespace RKCIUIAutomation.Page.Workflows
                         ? true : false
                     : isDeleted == 0
                         ? true : false;
-                LogStep($"Performed DB Cleanup for DIR# {dirNumber}");
+                LogStep($"Performed DB Cleanup for DIR# {dirNumber}", cleanupSuccessful);
             }
             catch (Exception e)
             {
@@ -469,6 +469,11 @@ namespace RKCIUIAutomation.Page.Workflows
             }
         }
 
+        public override bool VerifyWorkflowLocationAfterSimpleWF(string dirNumber)
+            => QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber, WorkflowLocation.Closed);
+
+        public override bool VerifyWorkflowLocationAfterSimpleWF_forDirRevision(string dirNumber, string expectedRevision)
+            => QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber, WorkflowLocation.Closed, true, expectedRevision);
     }
 
     public interface IQaRcrdCtrl_QaDIR_WF
@@ -570,6 +575,8 @@ namespace RKCIUIAutomation.Page.Workflows
         bool Verify_ViewReport_forDIR_inAuthorization(string dirNumber);
 
         bool Verify_ViewMultiDirPDF(bool selectNoneForMultiView = false);
+
+        string ClickViewSelectedDirPDFs(bool selectNoneForMultiView);
 
         bool VerifyDbCleanupForDIR(string dirnumber, string revision = "A", bool setAsDeleted = true);
 
@@ -858,11 +865,9 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void Verify_DIR_then_Approve_inAuthorization(string dirNumber)
             => QaDirWF_Base.Verify_DIR_then_Approve(TableTab.Authorization, dirNumber);
 
-        public virtual bool VerifyWorkflowLocationAfterSimpleWF(string dirNumber)
-            => QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber, WorkflowLocation.Closed);
+        public abstract bool VerifyWorkflowLocationAfterSimpleWF(string dirNumber);
 
-        public virtual bool VerifyWorkflowLocationAfterSimpleWF_forDirRevision(string dirNumber, string expectedRevision)
-            => QaSearch_DIR.VerifyDirWorkflowLocationByTblFilter(dirNumber, WorkflowLocation.Closed, true, expectedRevision);
+        public abstract bool VerifyWorkflowLocationAfterSimpleWF_forDirRevision(string dirNumber, string expectedRevision);
 
         public virtual bool Verify_DIR_Delete_or_ApproveNoError_inQcReview(string dirNumber, bool delete = false)
             => QaDirWF_Base.DIR_DeleteOrApproveNoError(TableTab.QC_Review, dirNumber, delete, true);
@@ -1018,10 +1023,11 @@ namespace RKCIUIAutomation.Page.Workflows
             => QaDirWF_Base.Verify_ViewDirPDF(TableTab.Authorization, dirNumber);
 
         public virtual bool Verify_ViewMultiDirPDF(bool selectNoneForMultiView = false)
-            => VerifyViewPdfReport("", true, selectNoneForMultiView);
+            => VerifyViewPdfReport("", true, selectNoneForMultiView, ClickViewSelectedDirPDFs(selectNoneForMultiView));
 
         public abstract bool VerifyDbCleanupForDIR(string dirnumber, string revision = "A", bool setAsDeleted = true);
         public abstract void VerifyDbCleanupForCreatePackages(bool isPkgCreated, string weekStartDate, string[] dirNumbers);
+        public abstract string ClickViewSelectedDirPDFs(bool selectNoneForMultiView);
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_GLX : QaRcrdCtrl_QaDIR_WF

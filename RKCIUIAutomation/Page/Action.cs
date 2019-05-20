@@ -477,12 +477,20 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                element = GetElement(elementByLocator);
+                //element = GetElement(elementByLocator);
+                element = ScrollToElement(elementByLocator);
 
                 if (element.Displayed)
                 {
-                    text = element.Text ?? element.GetAttribute("value");
+                    text = element.Text;
                     hasValue = text.HasValue();
+
+                    if (!hasValue)
+                    {
+                        text = element.GetAttribute("value");
+                        hasValue = text.HasValue();
+                    }
+
                     string logMsg = hasValue
                         ? $"Retrieved '{text}'"
                         : $"Unable to retrieve text";
@@ -1481,8 +1489,8 @@ namespace RKCIUIAutomation.Page
                 }
                 else if (argType == typeof(string))
                 {
-                    string xPath = ConvertToType<string>(elementOrLocator);
-                    elem = GetElement(By.XPath(xPath));
+                    string locatorString = ConvertToType<string>(elementOrLocator);
+                    elem = GetElement(By.Id(locatorString)) ?? GetElement(By.XPath(locatorString));
                 }
 
                 if (elem != null)

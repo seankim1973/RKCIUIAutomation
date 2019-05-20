@@ -529,7 +529,15 @@ namespace RKCIUIAutomation.Page
             return isDisplayedAsExpected;
         }
 
-        public bool VerifyViewPdfReport(string textInRowForAnyColumn = "", bool isMultiViewPDF = false, bool selectNoneForMultiView = false)
+        /// <summary>
+        /// Verifies the URL of the PDF Report is valid.  If 'isMultiViewPDF' parameter is true, then 'expectedReportUrl' must be provided.
+        /// </summary>
+        /// <param name="textInRowForAnyColumn"></param>
+        /// <param name="isMultiViewPDF"></param>
+        /// <param name="selectNoneForMultiView"></param>
+        /// <param name="expectedReportUrl"></param>
+        /// <returns></returns>
+        public bool VerifyViewPdfReport(string textInRowForAnyColumn = "", bool isMultiViewPDF = false, bool selectNoneForMultiView = false, string expectedReportUrl = "")
         {
             bool errorSearchResult = true;
             bool pdfTabUrlExpected = false;
@@ -538,23 +546,22 @@ namespace RKCIUIAutomation.Page
             string reportUrlLogMsg = string.Empty;
             string mainWindowHandle = string.Empty;
             string viewPdfWindowHandle = string.Empty;
-            string expectedReportUrl = string.Empty;
+            //string expectedReportUrl = string.Empty;
             string pageErrorHeadingText = string.Empty;
             string actualReportUrl = string.Empty;
             string pdfWindowTitle = string.Empty;
 
             try
             {
-                TestUtils testUtils = new TestUtils(Driver);
-                QaRcrdCtrl_QaDIR_WF qaDirWF = new QaRcrdCtrl_QaDIR_WF(Driver);
-
                 expectedReportUrl = isMultiViewPDF
-                    ? qaDirWF.ClickViewSelectedDirPDFs(selectNoneForMultiView)
+                    ? expectedReportUrl.HasValue()
+                        ? expectedReportUrl
+                        : "ERROR: Expected MultiView Report URL not provided"
                     : ClickViewReportBtnForRow(textInRowForAnyColumn, true, false);
 
-                mainWindowHandle = Driver.WindowHandles[0];
-                viewPdfWindowHandle = Driver.WindowHandles[1];
-                newTabDisplayed = Driver.WindowHandles.Count > 1 ? true : false;
+                mainWindowHandle = driver.WindowHandles[0];
+                viewPdfWindowHandle = driver.WindowHandles[1];
+                newTabDisplayed = driver.WindowHandles.Count > 1 ? true : false;
 
                 if (newTabDisplayed)
                 {
@@ -566,36 +573,39 @@ namespace RKCIUIAutomation.Page
 
                         if (retryCount < 5)
                         {
-                            Driver.SwitchTo().Window(viewPdfWindowHandle);
-                            actualReportUrl = Driver.Url;
-                            pdfWindowTitle = Driver.Title;
+                            driver.SwitchTo().Window(viewPdfWindowHandle);
+                            actualReportUrl = driver.Url;
+                            pdfWindowTitle = driver.Title;
                             retryCount++;
                         }
                     }
                     while (string.IsNullOrEmpty(actualReportUrl) || actualReportUrl.Contains("blank"));
                 }
-                
-                pdfTabUrlExpected = expectedReportUrl.Equals(actualReportUrl);
 
-                if (!pdfTabUrlExpected || pdfWindowTitle.Contains("Error") || pdfWindowTitle.Contains("Object reference"))
+                if (!expectedReportUrl.Contains("ERROR:"))
                 {
-                    try
-                    {
-                        IWebElement headingElem = Driver.FindElement(By.XPath("//h1")) ?? Driver.FindElement(By.XPath("//h2"));
+                    pdfTabUrlExpected = expectedReportUrl.Equals(actualReportUrl);
 
-                        if (headingElem != null)
+                    if (!pdfTabUrlExpected || pdfWindowTitle.Contains("Error") || pdfWindowTitle.Contains("Object reference"))
+                    {
+                        try
                         {
-                            pageErrorHeadingText = headingElem?.Text;
-                            logMsg = $"an error was found on the ViewDirPDF page: {pageErrorHeadingText}";
-                            errorSearchResult = false;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        logMsg = "Searched for Error page headings, but did not find any";
-                    }
+                            IWebElement headingElem = driver.FindElement(By.XPath("//h1")) ?? driver.FindElement(By.XPath("//h2"));
 
-                    testUtils.AddAssertionToList(errorSearchResult, "Verify ViewDirPDF page loaded successfully");
+                            if (headingElem != null)
+                            {
+                                pageErrorHeadingText = headingElem?.Text;
+                                logMsg = $"an error was found on the ViewDirPDF page: {pageErrorHeadingText}";
+                                errorSearchResult = false;
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            logMsg = "Searched for Error page headings, but did not find any";
+                        }
+
+                        TestUtils.Utility.AddAssertionToList(errorSearchResult, "Verify ViewDirPDF page loaded successfully");
+                    }
                 }
 
                 string logURLsMatch = $"Expected and Actual PDF Report URLs match<br>{actualReportUrl}";
@@ -610,7 +620,7 @@ namespace RKCIUIAutomation.Page
                             : "Change this message when bug is fixed - should show/check for a pop-up msg (Select a DIR Row)"
                         : $"Unexpected Actual PDF Report URL<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}";
 
-                testUtils.AddAssertionToList(pdfTabUrlExpected, "ViewDirPDF URL is as expected");
+                TestUtils.Utility.AddAssertionToList(pdfTabUrlExpected, "ViewDirPDF URL is as expected");
                 bool[] results = new bool[]{pdfTabUrlExpected, errorSearchResult};
                 LogInfo($"{reportUrlLogMsg}", results);
             }
@@ -622,8 +632,8 @@ namespace RKCIUIAutomation.Page
             {
                 if (newTabDisplayed)
                 {
-                    Driver.SwitchTo().Window(viewPdfWindowHandle).Close();
-                    Driver.SwitchTo().Window(mainWindowHandle);
+                    driver.SwitchTo().Window(viewPdfWindowHandle).Close();
+                    driver.SwitchTo().Window(mainWindowHandle);
                 }
             }
 

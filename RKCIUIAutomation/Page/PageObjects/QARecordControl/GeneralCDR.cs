@@ -373,10 +373,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public void PopulateRequiredFieldsAndSaveForward()
         {
-            TestUtils testUtils = new TestUtils();
+            //TestUtils testUtils = new TestUtils();
 
             ClickBtn_SaveForward();
-            testUtils.AddAssertionToList(VerifyReqFieldsErrorLabelsForNewDoc(), "VerifyReqFieldsErrorLabelsForNewDoc()");
+            TestUtils.Utility.AddAssertionToList(VerifyReqFieldsErrorLabelsForNewDoc(), "VerifyReqFieldsErrorLabelsForNewDoc");
             EnterIssuedDate();
             SelectDDL_Originator();
             EnterDescription();

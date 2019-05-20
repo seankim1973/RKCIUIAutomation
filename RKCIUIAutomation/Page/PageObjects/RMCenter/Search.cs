@@ -7,6 +7,7 @@ using static RKCIUIAutomation.Page.PageObjects.RMCenter.ProjectCorrespondenceLog
 using System;
 using ColumnName = RKCIUIAutomation.Page.PageObjects.RMCenter.Search.ColumnName;
 using RKCIUIAutomation.Base;
+using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -16,11 +17,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public Search()
         {
+        }
+
+        public Search(IWebDriver driver)
+        {
+            this.Driver = driver;
             tenantSearchCriteriaFields = SetTenantSearchCriteriaFields();
             tenantSearchGridColumnNames = SetTenantSearchGridColumnNames();
         }
-
-        public Search(IWebDriver driver) => this.Driver = driver;
 
         [ThreadStatic]
         public static IList<SearchCriteria> tenantSearchCriteriaFields;
@@ -93,7 +97,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 {
                     criteria = GetMatchingSearchCriteriaForEntryField(kvPair.Key);
 
-                    if (criteria != SearchCriteria.NoSelection)
+                    if (!criteria.Equals(SearchCriteria.NoSelection))
                     {
                         PopulateCriteriaByType(criteria, kvPair.Value);
                         ClickBtn_Search();
@@ -103,7 +107,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
                         logMsg = $"Search by Criteria '{criteria}'";
                         LogInfo($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
-                        AddAssertionToList(searchResult, logMsg);
+                        TestUtils.Utility.AddAssertionToList(searchResult, logMsg);
 
                         ClickBtn_Clear();
                         WaitForLoading();
@@ -124,7 +128,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         private SearchCriteria GetMatchingSearchCriteriaForEntryField(EntryField entryField)
         {
-            SearchCriteria criteria;
+            SearchCriteria criteria = SearchCriteria.NoSelection;
 
             switch (entryField)
             {
@@ -164,9 +168,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 case EntryField.TransmittalNumber:
                     criteria = SearchCriteria.TransmittalNumber;
                     break;
-                default:
-                    criteria = SearchCriteria.NoSelection;
-                    break;
             }
 
             return criteria;
@@ -180,12 +181,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             {
                 if (criteria.Equals(SearchCriteria.MSLNo))
                 {
-                    RMCenterSearch.EnterCriteria_MSLNumber(fieldValue);
+                    EnterCriteria_MSLNumber(fieldValue);
                 }
                 else if (criteria.Equals(SearchCriteria.DocumentType))
                 {
-                    RMCenterSearch.SelectDDL_DocumentType(fieldValue);
-                    RMCenterSearch.EnterCriteria_Number(fieldValue);
+                    SelectDDL_DocumentType(fieldValue);
+                    EnterCriteria_Number(fieldValue);
                 }
                 else
                 {
@@ -266,7 +267,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     #region Search Common Implementation class
 
-    public abstract class Search_Impl : TestBase, ISearch
+    public abstract class Search_Impl : PageBase, ISearch
     {
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
 
@@ -389,28 +390,40 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override IList<SearchCriteria> SetTenantSearchCriteriaFields()
-            => tenantSearchCriteriaFields = new List<SearchCriteria>()
+        {
+            if (tenantSearchCriteriaFields == null)
             {
-                SearchCriteria.Attention,
-                SearchCriteria.DocumentType,
-                SearchCriteria.From,
-                SearchCriteria.Number,
-                SearchCriteria.Owner_MSLNumber,
-                SearchCriteria.Status,
-                SearchCriteria.Title,
-                SearchCriteria.TransmittalNumber
-            };
+                tenantSearchCriteriaFields = new List<SearchCriteria>()
+                {
+                    SearchCriteria.Attention,
+                    SearchCriteria.DocumentType,
+                    SearchCriteria.From,
+                    SearchCriteria.Number,
+                    SearchCriteria.Owner_MSLNumber,
+                    SearchCriteria.Status,
+                    SearchCriteria.Title,
+                    SearchCriteria.TransmittalNumber
+                };
+            }
+            return tenantSearchCriteriaFields;
+        }
 
         public override IList<ColumnName> SetTenantSearchGridColumnNames()
-            => tenantSearchGridColumnNames = new List<ColumnName>()
+        {
+            if (tenantSearchGridColumnNames == null)
             {
-                ColumnName.Attention,
-                ColumnName.From,
-                ColumnName.MSLNo,
-                ColumnName.Number,
-                ColumnName.Title,
-                ColumnName.TransmittalNumber
-            };
+                tenantSearchGridColumnNames = new List<ColumnName>()
+                {
+                    ColumnName.Attention,
+                    ColumnName.From,
+                    ColumnName.MSLNo,
+                    ColumnName.Number,
+                    ColumnName.Title,
+                    ColumnName.TransmittalNumber
+                };
+            }
+            return tenantSearchGridColumnNames;
+        }
     }
 
     #endregion Implementation specific to SGWay
@@ -424,28 +437,40 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override IList<SearchCriteria> SetTenantSearchCriteriaFields()
-            => tenantSearchCriteriaFields = new List<SearchCriteria>()
+        {
+            if (tenantSearchCriteriaFields == null)
             {
-                SearchCriteria.Attention,
-                SearchCriteria.DocumentType,
-                SearchCriteria.From,
-                SearchCriteria.Number,
-                SearchCriteria.Owner_MSLNumber,
-                SearchCriteria.Status,
-                SearchCriteria.Title,
-                SearchCriteria.TransmittalNumber
-            };
+                tenantSearchCriteriaFields = new List<SearchCriteria>()
+                {
+                    SearchCriteria.Attention,
+                    SearchCriteria.DocumentType,
+                    SearchCriteria.From,
+                    SearchCriteria.Number,
+                    SearchCriteria.Owner_MSLNumber,
+                    SearchCriteria.Status,
+                    SearchCriteria.Title,
+                    SearchCriteria.TransmittalNumber
+                };
+            }
+            return tenantSearchCriteriaFields;
+        }
 
         public override IList<ColumnName> SetTenantSearchGridColumnNames()
-            => tenantSearchGridColumnNames = new List<ColumnName>()
+        {
+            if (tenantSearchGridColumnNames == null)
             {
-                ColumnName.Attention,
-                ColumnName.From,
-                ColumnName.MSLNo,
-                ColumnName.Number,
-                ColumnName.Title,
-                ColumnName.TransmittalNumber
-            };
+                tenantSearchGridColumnNames = new List<ColumnName>()
+                {
+                    ColumnName.Attention,
+                    ColumnName.From,
+                    ColumnName.MSLNo,
+                    ColumnName.Number,
+                    ColumnName.Title,
+                    ColumnName.TransmittalNumber
+                };
+            }
+            return tenantSearchGridColumnNames;
+        }
     }
 
     #endregion Implementation specific to SH249
@@ -470,38 +495,49 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override IList<SearchCriteria> SetTenantSearchCriteriaFields()
-            => tenantSearchCriteriaFields = new List<SearchCriteria>()
+        {
+            if (tenantSearchCriteriaFields == null)
             {
-                SearchCriteria.Attention,
-                SearchCriteria.Category,
-                SearchCriteria.DesignPackages,
-                SearchCriteria.DocumentType,
-                SearchCriteria.From,
-                SearchCriteria.MSLNo,
-                SearchCriteria.OriginatorDocumentRef,
-                SearchCriteria.OwnerResponse,
-                SearchCriteria.SegmentArea,
-                SearchCriteria.SpecSection,
-                SearchCriteria.Title,
-                SearchCriteria.TransmittalDate_From,
-                SearchCriteria.TransmittalNumber
-            };
+                tenantSearchCriteriaFields = new List<SearchCriteria>()
+                {
+                    SearchCriteria.Attention,
+                    SearchCriteria.Category,
+                    SearchCriteria.DesignPackages,
+                    SearchCriteria.DocumentType,
+                    SearchCriteria.From,
+                    SearchCriteria.MSLNo,
+                    SearchCriteria.OriginatorDocumentRef,
+                    SearchCriteria.OwnerResponse,
+                    SearchCriteria.SegmentArea,
+                    SearchCriteria.SpecSection,
+                    SearchCriteria.Title,
+                    SearchCriteria.TransmittalDate_From,
+                    SearchCriteria.TransmittalNumber
+                };
+            }
+            return tenantSearchCriteriaFields;
+        }
 
         public override IList<ColumnName> SetTenantSearchGridColumnNames()
-            => tenantSearchGridColumnNames = new List<ColumnName>()
+        {
+            if (tenantSearchGridColumnNames == null)
             {
-                ColumnName.Attention,
-                ColumnName.From,
-                ColumnName.OriginatorDocumentRef,
-                ColumnName.OwnerResponse,
-                ColumnName.OwnerResponseBy,
-                ColumnName.OwnerResponseDate,
-                ColumnName.SpecSection,
-                ColumnName.Title,
-                ColumnName.TransmittalDate,
-                ColumnName.TransmittalNumber
-            };
-        
+                tenantSearchGridColumnNames = new List<ColumnName>()
+                {
+                    ColumnName.Attention,
+                    ColumnName.From,
+                    ColumnName.OriginatorDocumentRef,
+                    ColumnName.OwnerResponse,
+                    ColumnName.OwnerResponseBy,
+                    ColumnName.OwnerResponseDate,
+                    ColumnName.SpecSection,
+                    ColumnName.Title,
+                    ColumnName.TransmittalDate,
+                    ColumnName.TransmittalNumber
+                };
+            }
+            return tenantSearchGridColumnNames;
+        }
     }
 
     #endregion Implementation specific to GLX
@@ -515,28 +551,39 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override IList<SearchCriteria> SetTenantSearchCriteriaFields()
-            => tenantSearchCriteriaFields = new List<SearchCriteria>()
+        {
+            if (tenantSearchCriteriaFields == null)
             {
-                SearchCriteria.Attention,
-                SearchCriteria.DocumentType,
-                SearchCriteria.From,
-                SearchCriteria.Number,
-                SearchCriteria.Owner_MSLNumber,
-                SearchCriteria.Status,
-                SearchCriteria.Title,
-                SearchCriteria.TransmittalNumber
-            };
-
+                tenantSearchCriteriaFields = new List<SearchCriteria>()
+                {
+                    SearchCriteria.Attention,
+                    SearchCriteria.DocumentType,
+                    SearchCriteria.From,
+                    SearchCriteria.Number,
+                    SearchCriteria.Owner_MSLNumber,
+                    SearchCriteria.Status,
+                    SearchCriteria.Title,
+                    SearchCriteria.TransmittalNumber
+                };
+            }
+            return tenantSearchCriteriaFields;
+        }
         public override IList<ColumnName> SetTenantSearchGridColumnNames()
-            => tenantSearchGridColumnNames = new List<ColumnName>()
+        {
+            if (tenantSearchGridColumnNames == null)
             {
-                ColumnName.Attention,
-                ColumnName.From,
-                ColumnName.MSLNo,
-                ColumnName.Number,
-                ColumnName.Title,
-                ColumnName.TransmittalNumber
-            };
+                tenantSearchGridColumnNames = new List<ColumnName>()
+                {
+                    ColumnName.Attention,
+                    ColumnName.From,
+                    ColumnName.MSLNo,
+                    ColumnName.Number,
+                    ColumnName.Title,
+                    ColumnName.TransmittalNumber
+                };
+            }
+            return tenantSearchGridColumnNames;
+        }
     }
 
     #endregion Implementation specific to I15South
@@ -554,28 +601,40 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override IList<SearchCriteria> SetTenantSearchCriteriaFields()
-            => tenantSearchCriteriaFields = new List<SearchCriteria>()
+        {
+            if (tenantSearchCriteriaFields == null)
             {
-                SearchCriteria.Attention,
-                SearchCriteria.DocumentType,
-                SearchCriteria.From,
-                SearchCriteria.Number,
-                SearchCriteria.Status,
-                SearchCriteria.Title,
-                SearchCriteria.TransmittalDate_From,
-                SearchCriteria.TransmittalNumber
-            };
+                tenantSearchCriteriaFields = new List<SearchCriteria>()
+                {
+                    SearchCriteria.Attention,
+                    SearchCriteria.DocumentType,
+                    SearchCriteria.From,
+                    SearchCriteria.Number,
+                    SearchCriteria.Status,
+                    SearchCriteria.Title,
+                    SearchCriteria.TransmittalDate_From,
+                    SearchCriteria.TransmittalNumber
+                };
+            }
+            return tenantSearchCriteriaFields;
+        }
 
         public override IList<ColumnName> SetTenantSearchGridColumnNames()
-            => tenantSearchGridColumnNames = new List<ColumnName>()
+        {
+            if (tenantSearchGridColumnNames == null)
             {
-                ColumnName.Attention,
-                ColumnName.From,
-                ColumnName.Number,
-                ColumnName.Title,
-                ColumnName.TransmittalDate,
-                ColumnName.TransmittalNumber
-            };
+                tenantSearchGridColumnNames = new List<ColumnName>()
+                {
+                    ColumnName.Attention,
+                    ColumnName.From,
+                    ColumnName.Number,
+                    ColumnName.Title,
+                    ColumnName.TransmittalDate,
+                    ColumnName.TransmittalNumber
+                };
+            }
+            return tenantSearchGridColumnNames;
+        }
     }
 
     #endregion Implementation specific to I15Tech
@@ -592,29 +651,41 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             => log.Info("Search Criteria field 'Number' does not exist for Tenant LAX");
 
         public override IList<SearchCriteria> SetTenantSearchCriteriaFields()
-            => tenantSearchCriteriaFields = new List<SearchCriteria>()
+        {
+            if (tenantSearchCriteriaFields == null)
             {
-                SearchCriteria.Attention,
-                SearchCriteria.Category,
-                SearchCriteria.DocumentType,
-                SearchCriteria.From,
-                SearchCriteria.OriginatorDocumentRef,
-                SearchCriteria.SegmentArea,
-                SearchCriteria.Status,
-                SearchCriteria.Title,
-                SearchCriteria.TransmittalDate_From,
-                SearchCriteria.TransmittalNumber
-            };
+                tenantSearchCriteriaFields = new List<SearchCriteria>()
+                {
+                    SearchCriteria.Attention,
+                    SearchCriteria.Category,
+                    SearchCriteria.DocumentType,
+                    SearchCriteria.From,
+                    SearchCriteria.OriginatorDocumentRef,
+                    SearchCriteria.SegmentArea,
+                    SearchCriteria.Status,
+                    SearchCriteria.Title,
+                    SearchCriteria.TransmittalDate_From,
+                    SearchCriteria.TransmittalNumber
+                };
+            }
+            return tenantSearchCriteriaFields;
+        }
 
         public override IList<ColumnName> SetTenantSearchGridColumnNames()
-            => tenantSearchGridColumnNames = new List<ColumnName>()
+        {
+            if (tenantSearchGridColumnNames == null)
             {
-                ColumnName.Number,
-                ColumnName.OriginatorDocumentRef,
-                ColumnName.Title,
-                ColumnName.TransmittalDate,
-                ColumnName.TransmittalNumber
-            };
+                tenantSearchGridColumnNames = new List<ColumnName>()
+                {
+                    ColumnName.Number,
+                    ColumnName.OriginatorDocumentRef,
+                    ColumnName.Title,
+                    ColumnName.TransmittalDate,
+                    ColumnName.TransmittalNumber
+                };
+            }
+            return tenantSearchGridColumnNames;
+        }
     }
 
     #endregion Implementation specific to LAX

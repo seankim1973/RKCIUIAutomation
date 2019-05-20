@@ -70,8 +70,18 @@ namespace RKCIUIAutomation.Page
             return date;
         }
 
-        public static string GetFutureShortDate(string shortDate = "")
+        private static string ModifyShortDate(string shortDate, double daysToModifyDateBy)
         {
+            DateTime dateValue = DateTime.TryParse(shortDate, out dateValue)
+                ? dateValue.AddDays(daysToModifyDateBy)
+                : DateTime.Now.AddDays(daysToModifyDateBy);
+
+            return dateValue.ToShortDateString();
+        }
+
+        public static string GetFutureShortDate(string shortDate = "", double daysToAdd = 1)
+            => ModifyShortDate(shortDate, daysToAdd);
+        /*{
             string currentDate = GetShortDate(shortDate);
 
             string[] splitShortDate = Regex.Split(currentDate, "/");
@@ -94,10 +104,11 @@ namespace RKCIUIAutomation.Page
                 : dd + 1;
 
             return $"{mm}/{dd}/{yyyy}";
-        }
+        }*/
 
-        public static string GetPastShortDate(string shortDate = "")
-        {
+        public static string GetPastShortDate(string shortDate = "", double daysToSubtract = -1)
+            => ModifyShortDate(shortDate, daysToSubtract);
+        /*{
             string currentDate = GetShortDate(shortDate);
 
             string[] splitShortDate = Regex.Split(currentDate, "/");
@@ -120,7 +131,7 @@ namespace RKCIUIAutomation.Page
                 : dd - 1;
 
             return $"{mm}/{dd}/{yyyy}";
-        }
+        }*/
 
         public static string GetShortTime()
             => DateTime.Now.ToShortTimeString();

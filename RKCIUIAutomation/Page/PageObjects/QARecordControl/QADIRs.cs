@@ -498,10 +498,71 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override bool VerifySpecSectionDescriptionAutoPopulatedData()
         {
             string specSectionParagraphText = GetTextFromDDL(InputFields.Spec_Section_Paragraph);
-            string spectionDescriptionText = GetText(GetTextAreaFieldByLocator(InputFields.Section_Description));
-            bool valuesMatch = specSectionParagraphText.Contains(spectionDescriptionText);
+            string spectionDescriptionText = GetText(By.Id(InputFields.Section_Description.GetString()));
+            bool valuesMatch = specSectionParagraphText.HasValue() && spectionDescriptionText.HasValue()
+                ? specSectionParagraphText.Contains(spectionDescriptionText)
+                : false;
+
             LogInfo($"EXPECTED: {specSectionParagraphText}<br>ACTUAL: {spectionDescriptionText}", valuesMatch);
             return valuesMatch;
+        }
+
+        public override void PopulateRequiredFields()
+        {
+        }
+
+        public override bool VerifyControlPointReqFieldErrors()
+            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedHoldPointReqFieldIDsList(), RequiredFieldType.ControlPoint);
+
+        public override bool VerifyEngineerCommentsReqFieldErrors()
+            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList(), RequiredFieldType.EngineerComments);
+
+        public override bool VerifyDirNumberExistsInDbError()
+        {
+            By errorLocator = By.Id("error");
+            IWebElement errorElem = null;
+            bool isDisplayed = false;
+            string logMsg = string.Empty;
+
+            try
+            {
+                errorElem = GetElement(errorLocator);
+                isDisplayed = (bool)errorElem?.Displayed ? true : false;
+                logMsg = isDisplayed ? "" : " not";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            LogInfo($"'This DIR No. exists in the database' error message is{logMsg} displayed", isDisplayed);
+            return isDisplayed;
+        }
+
+        public override bool VerifyDirRevisionInDetailsPage(string expectedDirRev)
+        {
+            By revLocator = By.XPath("//label[contains(text(),'Revision')]/parent::div");
+            bool revAsExpected = false;
+            string actualDirRev = string.Empty;
+            string logMsg = string.Empty;
+
+            try
+            {
+                actualDirRev = GetText(revLocator);
+                string[] splitActual = new string[2];
+                splitActual = Regex.Split(actualDirRev, "Revision\r\n");
+                actualDirRev = splitActual[1];
+                revAsExpected = actualDirRev.Equals(expectedDirRev);
+                var ifFalseLog = revAsExpected ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
+                logMsg = $"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual DIR Rev Matches Expected: {revAsExpected}";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            LogInfo($"{logMsg} ", revAsExpected);
+            return revAsExpected;
         }
     }
 
@@ -881,24 +942,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => FilterTableColumnByValue(ColumnName.DIR_No, DirNumber);
 
         //All SimpleWF Tenants have different required fields
-        public virtual void PopulateRequiredFields()
-        {
-            //SelectDDL_TimeBegin(TimeBlock.AM_06_00);
-            //SelectDDL_TimeEnd(TimeBlock.PM_04_00);
-            //Enter_AverageTemp(80);
-            //SelectDDL_Area();
-            //SelectDDL_SpecSection();
-            //SelectDDL_Feature();
-            //SelectDDL_Contractor();
-            //SelectDDL_CrewForeman();
-            //EnterText_SectionDescription(GetTextFromDDL(QADIRs.InputFields.Spec_Section));
-            //SelectChkbox_InspectionType_I();
-            //SelectChkbox_InspectionResult_P();
-            //Enter_ReadyDate();
-            //Enter_CompletedDate();
-            //Enter_TotalInspectionTime();
-            //SetDirNumber();
-        }
+        public abstract void PopulateRequiredFields();
 
         //All SimpleWF Tenants have different required fields
         public virtual IList<string> GetExpectedRequiredFieldIDsList()
@@ -1388,60 +1432,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return requiredFieldsMatch;
         }
 
-        public virtual bool VerifyControlPointReqFieldErrors()
-            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedHoldPointReqFieldIDsList(), RequiredFieldType.ControlPoint);
-
-        public virtual bool VerifyEngineerCommentsReqFieldErrors()
-            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList(), RequiredFieldType.EngineerComments);
-
-        public virtual bool VerifyDirNumberExistsInDbError()
-        {
-            By errorLocator = By.Id("error");
-            IWebElement errorElem = null;
-            bool isDisplayed = false;
-            string logMsg = string.Empty;
-
-            try
-            {
-                errorElem = GetElement(errorLocator);
-                isDisplayed = (bool)errorElem?.Displayed ? true : false;
-                logMsg = isDisplayed ? "" : " not";
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-
-            LogInfo($"'This DIR No. exists in the database' error message is{logMsg} displayed", isDisplayed);
-            return isDisplayed;
-        }
-
-        public virtual bool VerifyDirRevisionInDetailsPage(string expectedDirRev)
-        {
-            By revLocator = By.XPath("//label[contains(text(),'Revision')]/parent::div");
-            bool revAsExpected = false;
-            string actualDirRev = string.Empty;
-            string logMsg = string.Empty;
-
-            try
-            {
-                actualDirRev = GetText(revLocator);
-                string[] splitActual = new string[2];
-                splitActual = Regex.Split(actualDirRev, "Revision\r\n");
-                actualDirRev = splitActual[1];
-                revAsExpected = actualDirRev.Equals(expectedDirRev);
-                var ifFalseLog = revAsExpected ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
-                logMsg = $"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual DIR Rev Matches Expected: {revAsExpected}";
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-
-            LogInfo($"{logMsg} ", revAsExpected);
-            return revAsExpected;
-        }
-
         public virtual void FilterTable_CreatePackagesTab(int indexOfRow = 1)
             => Verify_Column_Filters_DirPackageTabs(TableTab.Create_Packages, indexOfRow);
 
@@ -1658,6 +1648,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1);
         public abstract TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1);
         public abstract bool VerifySpecSectionDescriptionAutoPopulatedData();
+        public abstract bool VerifyControlPointReqFieldErrors();
+        public abstract bool VerifyEngineerCommentsReqFieldErrors();
+        public abstract bool VerifyDirNumberExistsInDbError();
+        public abstract bool VerifyDirRevisionInDetailsPage(string expectedDirRev);
     }
 
     //Tenant Specific Classes
