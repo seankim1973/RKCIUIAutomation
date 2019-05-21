@@ -36,7 +36,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         /// <param name="user"></param>
         /// <param name="ncrDescription"></param>
-        void Review_and_Approve_NCR(UserType user, string ncrDescription);
+        void Review_and_Approve_NCR(UserType user, string ncrDescription, bool isResolution = false);
 
         void Review_and_Return_NCR_ForRevise(UserType user, string ncrDescription);
 
@@ -44,7 +44,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         void CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(string ncrDescription);
 
-        void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription);
+        void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription, bool isResolution = false);
 
         void SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(string ncrDescription, bool approveNCR = true);
 
@@ -56,9 +56,15 @@ namespace RKCIUIAutomation.Page.Workflows
 
         void CloseNCR_in_VerificationAndClosure(string ncrDescription);
 
-        bool VerifyNCRDocIsDisplayedInReview(string ncrDescription);
+        bool VerifyNCRDocIsDisplayedInReview(string ncrDescription, bool isResolution = false);
 
         bool VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(string ncrDescription);
+        void VerifyNCRDocIsDisplayedInDevConcurrence(string ncrDescription);
+        void SignDateApproveNCR(TableTab tabName);
+        void VerifySignatureNCR(TableTab tabName, string ncrDescription, bool shouldBeEmpty = false);
+        void VerifyNCRDocIsDisplayedInLAWAConcurrence(string ncrDescription);
+        void VerifyNCRDocIsDisplayedInVerificationAndClosure(string ncrDescription);
+        void VerifyNCRDocIsDisplayedInResolutionAndDisposition(string ncrDescription);
     }
 
     public abstract class QaRcrdCtrl_GeneralNCR_WF_Impl : TestBase, IQaRcrdCtrl_GeneralNCR_WF
@@ -143,20 +149,25 @@ namespace RKCIUIAutomation.Page.Workflows
             return QaRcrdCtrl_GeneralNCR.GetNCRDocDescription();
         }
 
-        public virtual void Review_and_Approve_NCR(UserType user, string ncrDescription)
+        public virtual void Review_and_Approve_NCR(UserType user, string ncrDescription, bool isResolution = false)
         {
             LogDebug("------------WF Review_and_Approve_NCR_Document-------------");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
-            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription, isResolution), "VerifyNCRDocIsDisplayedInReview");
             ClickEditBtnForRow();
 
-            //verify required field error label is shown
-            QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelForTypeOfNCR(), "VerifyReqFieldErrorLabelForTypeOfNCR");
-            QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level1();
-            QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
+            //if (isResolution)
+            //    QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+            //else
+            //{
+                //verify required field error label is shown
+                QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
+                AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelForTypeOfNCR(), "VerifyReqFieldErrorLabelForTypeOfNCR");
+                QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level1();
+                QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
+            //}
         }
 
         public virtual void Review_and_Return_NCR_ForRevise(UserType user, string ncrDescription)
@@ -204,10 +215,17 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
         }
 
-        public virtual void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription)
+        public virtual void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription, bool isResolution = false)
         {
             LogoutToLoginPage();
-            Review_and_Approve_NCR(UserType.NCRMgr, ncrDescription);
+
+            if (!isResolution)
+                Review_and_Approve_NCR(UserType.NCRMgr, ncrDescription, isResolution);
+            else
+            {
+                LoginAs(UserType.NCRMgr);
+                NavigateToGeneralNcrPage();
+            }
 
             LogDebug("------------WF SaveForward_FromResolutionDisposition_ToDeveloperConcurrence-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
@@ -280,12 +298,66 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
         }
+        
+        public virtual void SignDateApproveNCR(TableTab tabName)
+        {
+            if (tabName.Equals(TableTab.Developer_Concurrence))
+            {
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord);
+            }
+            else if(tabName.Equals(TableTab.Verification_and_Closure))
+            {
+                LogInfo("------  enter signature and name for IQF Mgr and QC Mgr then click SaveOnly  -------");
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+                QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+            }
+        }
 
-        public virtual bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
+        public virtual void VerifySignatureNCR(TableTab tabName, string ncrDescription, bool shouldBeEmpty = false)
+        {
+            if (tabName.Equals(TableTab.Developer_Concurrence))
+            {
+                if (shouldBeEmpty)
+                {
+                    AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.EngineerOfRecord, true), "VerifySignatureField(Reviewer.EngineerOfRecord, true)");
+                    AddAssertionToList(VerifyInputField(InputFields.Engineer_of_Record, true), "VerifyInputField(InputFields.Engineer_of_Record, true)");
+                    AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_NA), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_NA)");
+                }
+                else
+                {
+                    AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.EngineerOfRecord), "VerifySignatureField(Reviewer.EngineerOfRecord)");
+                    AddAssertionToList(VerifyInputField(InputFields.Engineer_of_Record), "VerifyInputField(InputFields.Engineer_of_Record)");
+                    AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_Yes), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_Yes)");
+                }
+            }
+            else if (tabName.Equals(TableTab.Verification_and_Closure)) {
+                AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.IQF_Manager), "VerifySignatureField(Reviewer.IQF_Manager)");
+                AddAssertionToList(VerifyInputField(InputFields.IQF_Manager), "VerifyInputField(InputFields.IQF_Manager)");
+                AddAssertionToList(VerifyInputField(InputFields.IQFManagerDate), "VerifyInputField(InputFields.IQFManagerDate)");
+                AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.QC_Manager), "VerifySignatureField(Reviewer.QC_Manager)");
+                AddAssertionToList(VerifyInputField(InputFields.QC_Manager), "VerifyInputField(InputFields.QC_Manager)");
+                AddAssertionToList(VerifyInputField(InputFields.QCManagerApprovedDate), "VerifyInputField(InputFields.QCManagerApprovedDate)");
+            }
+        }
+
+        public virtual bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "", bool isResolution = false)
             => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Review, ncrDescription);
 
         public virtual bool VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(string ncrDescription)
             => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription);
+
+        public virtual void VerifyNCRDocIsDisplayedInDevConcurrence(string ncrDescription)
+            => AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
+
+        public virtual void VerifyNCRDocIsDisplayedInLAWAConcurrence(string ncrDescription)
+            => AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(ncrDescription), "VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence");
+
+        public virtual void VerifyNCRDocIsDisplayedInVerificationAndClosure(string ncrDescription)
+            => AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+
+        public virtual void VerifyNCRDocIsDisplayedInResolutionAndDisposition(string ncrDescription)
+            => AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
 
     }
 
@@ -296,10 +368,10 @@ namespace RKCIUIAutomation.Page.Workflows
         {
         }
 
-        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
+        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "", bool isResolution = false)
             =>QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QM_Review, ncrDescription);
 
-        public override void Review_and_Approve_NCR(UserType user, string ncrDescription)
+        public override void Review_and_Approve_NCR(UserType user, string ncrDescription, bool isResolution = false)
         {
             LogDebug("------------WF Review_and_Approve_NCR_Document-------------");
 
@@ -338,7 +410,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
         }
 
-        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
+        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "", bool isResolution = false)
             => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription);
     }
 
@@ -348,7 +420,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
         }
 
-        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "")
+        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "", bool isResolution = false)
             => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.QC_Review, ncrDescription);
     }
 
@@ -401,6 +473,11 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }
 
+        public override bool VerifyNCRDocIsDisplayedInReview(string ncrDescription = "", bool isResolution = false)
+            => QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(
+                isResolution ? TableTab.Resolution_Disposition : TableTab.Review, 
+                ncrDescription);
+
         public override void CloseNCR_in_VerificationAndClosure(string ncrDescription)
         {
             LogoutToLoginPage();
@@ -443,6 +520,289 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
         }
 
+        public override void CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(string ncrDescription)
+        {
+            LogoutToLoginPage();
+            LogDebug("------------WF QPM CloseNCR_in_VerificationAndClosure-------------");
+            LoginAs(UserType.NCRQpm);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
 
+            LogoutToLoginPage();
+            LogDebug("------------WF Lawa Concur CloseNCR_in_VerificationAndClosure-------------");
+            LoginAs(UserType.NCRLawaConcur);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
+
+            LogoutToLoginPage();
+            LogDebug("------------WF QPM Concur CloseNCR_in_VerificationAndClosure-------------");
+            LoginAs(UserType.NCRQpm);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+            Thread.Sleep(1000);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+
+            LogoutToLoginPage();
+            LogDebug("------------WF CQAM Concur CloseNCR_in_VerificationAndClosure-------------");
+            LoginAs(UserType.NCRCqam);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR CQAM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager, false);
+            Thread.Sleep(1000);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+
+            LogoutToLoginPage();
+            LogDebug("------------WF QPM Concur CloseNCR_in_VerificationAndClosure-------------");
+            LoginAs(UserType.NCRQpm);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+            Thread.Sleep(1000);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+
+            LogoutToLoginPage();
+            LogDebug("------------WF CQAM Concur CloseNCR_in_VerificationAndClosure-------------");
+            LoginAs(UserType.NCRCqam);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR CQAM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+            Thread.Sleep(1000);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+
+            LogoutToLoginPage();
+            LogDebug("------------WF OMQM CloseNCR_in_VerificationAndClosure-------------");
+            LoginAs(UserType.NCROmqm);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR OMQM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Operations_Manager, false);
+            Thread.Sleep(1000);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+
+            LogoutToLoginPage();
+            LogDebug("------------WF CQAM Concur CloseNCR_in_VerificationAndClosure-------------");
+            LoginAs(UserType.NCRCqam);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR CQAM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+            Thread.Sleep(1000);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+
+            LogoutToLoginPage();
+            LogDebug("------------WF OMQM CloseNCR_in_VerificationAndClosure-------------");
+            LoginAs(UserType.NCROmqm);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR OMQM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Operations_Manager);
+            Thread.Sleep(1000);
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+
+            LogDebug("------------WF Final Closure CloseNCR_in_VerificationAndClosure-------------");
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR Closure - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
+        }
+
+        public override void CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(string ncrDescription)
+        {
+            LogDebug("------------WF - QPM - Return_ToRevise_FromVerificationClosure-------------");
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRQpm);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "QPM - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
+
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRMgr);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "QPM - VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRQpm);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "QPM - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
+
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRMgr);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "QPM - VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+
+            LogDebug("------------WF - CQAM - Return_ToRevise_FromVerificationClosure-------------");
+
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRCqam);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "CQAM - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
+
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRMgr);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "CQAM - VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRCqam);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "CQAM - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
+
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRMgr);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "QPM - VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+
+            LogDebug("------------WF - OMQM - Return_ToRevise_FromVerificationClosure-------------");
+
+            LogoutToLoginPage();
+            LoginAs(UserType.NCROmqm);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "OMQM - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
+
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRMgr);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "OMQM - VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
+
+            LogoutToLoginPage();
+            LoginAs(UserType.NCROmqm);
+            NavigateToGeneralNcrPage();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "OMQM - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
+        }
+
+        public override void VerifyNCRDocIsDisplayedInDevConcurrence(string ncrDescription)
+        {
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRDevConcur);
+            NavigateToPage.QARecordControl_General_NCR();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
+        }
+
+        public override void SignDateApproveNCR(TableTab tabName)
+        {
+            if (tabName.Equals(TableTab.Developer_Concurrence))
+            {
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.CQC_Manager);
+            }
+            else if (tabName.Equals(TableTab.Verification_and_Closure))
+            {
+                LogInfo("------  enter signature and name for IQF Mgr, QC Mgr & Operations Manager then click SaveOnly  -------");
+                LogoutToLoginPage();
+                LoginAs(UserType.NCRQpm);
+                NavigateToPage.QARecordControl_General_NCR();
+                QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription);
+                ClickEditBtnForRow();
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+                QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+
+                LogoutToLoginPage();
+                LoginAs(UserType.NCRCqam);
+                NavigateToPage.QARecordControl_General_NCR();
+                QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription);
+                ClickEditBtnForRow();
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+                QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+
+                LogoutToLoginPage();
+                LoginAs(UserType.NCROmqm);
+                NavigateToPage.QARecordControl_General_NCR();
+                QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription);
+                ClickEditBtnForRow();
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Operations_Manager);
+                QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+            }
+        }
+
+        public override void VerifySignatureNCR(TableTab tabName, string ncrDescription, bool shouldBeEmpty = false)
+        {
+            if (tabName.Equals(TableTab.Developer_Concurrence))
+            {
+                if (shouldBeEmpty)
+                {
+                    AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.EngineerOfRecord, true), "VerifySignatureField(Reviewer.EngineerOfRecord, true)");
+                    AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.CQC_Manager, true), "VerifySignatureField(Reviewer.CQC_Manager, true)");
+                    AddAssertionToList(VerifyInputField(InputFields.Engineer_of_Record, true), "VerifyInputField(InputFields.Engineer_of_Record, true)");
+                    AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_NA), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_NA)");
+                    AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.CQCMApproval_NA), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.CQCMApproval_NA)");
+                }
+                else
+                {
+                    AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.EngineerOfRecord), "VerifySignatureField(Reviewer.EngineerOfRecord)");
+                    AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.CQC_Manager), "VerifySignatureField(Reviewer.CQC_Manager)");
+                    AddAssertionToList(VerifyInputField(InputFields.Engineer_of_Record), "VerifyInputField(InputFields.Engineer_of_Record)");
+                    AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_Yes), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_Yes)");
+                }
+            }
+            else if (tabName.Equals(TableTab.Verification_and_Closure))
+            {
+                AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.IQF_Manager), "VerifySignatureField(Reviewer.IQF_Manager)");
+                AddAssertionToList(VerifyInputField(InputFields.IQF_Manager), "VerifyInputField(InputFields.IQF_Manager)");
+                AddAssertionToList(VerifyInputField(InputFields.IQFManagerDate), "VerifyInputField(InputFields.IQFManagerDate)");
+                AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.QC_Manager), "VerifySignatureField(Reviewer.QC_Manager)");
+                AddAssertionToList(VerifyInputField(InputFields.QC_Manager), "VerifyInputField(InputFields.QC_Manager)");
+                AddAssertionToList(VerifyInputField(InputFields.QCManagerApprovedDate), "VerifyInputField(InputFields.QCManagerApprovedDate)");
+                AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.Operations_Manager), "VerifySignatureField(Reviewer.Operations_Manager)");
+                AddAssertionToList(VerifyInputField(InputFields.OMQ_Manager), "VerifyInputField(InputFields.OMQ_Manager)");
+                AddAssertionToList(VerifyInputField(InputFields.OMQManagerApprovedDate), "VerifyInputField(InputFields.OMQManagerApprovedDate)");
+            }
+        }
+
+        public override void VerifyNCRDocIsDisplayedInLAWAConcurrence(string ncrDescription)
+        {
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRLawaConcur);
+            NavigateToPage.QARecordControl_General_NCR();
+            LogInfo("------  edit in DOT Approval tab and provide signature for DOT Review then click Cancel -------");
+            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(ncrDescription), "VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence");
+        }
+
+        public override void VerifyNCRDocIsDisplayedInVerificationAndClosure(string ncrDescription)
+        {
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRQpm);
+            NavigateToPage.QARecordControl_General_NCR();
+            LogInfo("------  edit in Verification and Closure tab then click Revise btn  -------");
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+        }
+
+        public override void VerifyNCRDocIsDisplayedInResolutionAndDisposition(string ncrDescription)
+        {
+            LogoutToLoginPage();
+            LoginAs(UserType.NCRMgr);
+            NavigateToPage.QARecordControl_General_NCR();
+            LogInfo("------  edit in Resolution/Disposition tab and verify Concession Request DDL is set to 'Concession Deviation' from previous selection -------");
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
+
+        }
     }
 }

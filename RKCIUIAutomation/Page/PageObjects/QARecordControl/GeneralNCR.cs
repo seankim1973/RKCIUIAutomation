@@ -135,6 +135,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("OwnerApproval_")] Owner_Approval_NA,
             [StringValue("OwnerApproval_True")] Owner_Approval_Yes,
             [StringValue("OwnerApproval_False")] Owner_Approval_No,
+            [StringValue("CQCMApproval_")] CQCMApproval_NA,
             [StringValue("CQCMApproval_True")] CQCMApproval_Yes,
             [StringValue("CQCMApproval_False")] CQCMApproval_No,
             [StringValue("AsBuiltRequired")] ChkBox_As_Built_Required,
@@ -1007,6 +1008,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                     case Reviewer.QC_Manager:
                         reviewerId = InputFields.QC_Manager;
+                        break;
+
+                    case Reviewer.Operations_Manager:
+                        reviewerId = InputFields.OMQ_Manager;
                         break;
                 }
 
