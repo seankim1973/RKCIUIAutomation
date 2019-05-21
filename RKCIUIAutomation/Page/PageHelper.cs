@@ -81,57 +81,9 @@ namespace RKCIUIAutomation.Page
 
         public static string GetFutureShortDate(string shortDate = "", double daysToAdd = 1)
             => ModifyShortDate(shortDate, daysToAdd);
-        /*{
-            string currentDate = GetShortDate(shortDate);
 
-            string[] splitShortDate = Regex.Split(currentDate, "/");
-            int mm = int.Parse(splitShortDate[0]);
-            int dd = int.Parse(splitShortDate[1]);
-            int yyyy = int.Parse(splitShortDate[2]);
-
-            yyyy = dd > 27 && mm == 12
-                ? yyyy + 1
-                : yyyy;
-
-            mm = dd > 27
-                ? mm == 12
-                    ? 1
-                    : mm + 1
-                : mm;
-
-            dd = dd > 27
-                ? 1
-                : dd + 1;
-
-            return $"{mm}/{dd}/{yyyy}";
-        }*/
-
-        public static string GetPastShortDate(string shortDate = "", double daysToSubtract = -1)
-            => ModifyShortDate(shortDate, daysToSubtract);
-        /*{
-            string currentDate = GetShortDate(shortDate);
-
-            string[] splitShortDate = Regex.Split(currentDate, "/");
-            int mm = int.Parse(splitShortDate[0]);
-            int dd = int.Parse(splitShortDate[1]);
-            int yyyy = int.Parse(splitShortDate[2]);
-
-            yyyy = dd == 1 && mm == 1
-                ? yyyy - 1
-                : yyyy;
-
-            mm = dd == 1
-                ? mm == 1
-                    ? 12
-                    : mm - 1
-                : mm;
-
-            dd = dd == 1
-                ? 27
-                : dd - 1;
-
-            return $"{mm}/{dd}/{yyyy}";
-        }*/
+        public static string GetPastShortDate(string shortDate = "", double daysToSubtract = 1)
+            => ModifyShortDate(shortDate, -daysToSubtract);
 
         public static string GetShortTime()
             => DateTime.Now.ToShortTimeString();
@@ -200,16 +152,7 @@ namespace RKCIUIAutomation.Page
             => parentNavEnum == null
                 ? $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']"
                 : $"//a[contains(text(),'{parentNavEnum.GetString()}')]/following-sibling::ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
-        //{
-        //    if (parentNavEnum == null)
-        //    {
-        //        return $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
-        //    }
-        //    else
-        //    {
-        //        return $"//a[contains(text(),'{parentNavEnum.GetString()}')]/following-sibling::ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
-        //    }
-        //}
+
 
         private string SetInputFieldXpath<T>(T inputFieldLabelOrID)
         {

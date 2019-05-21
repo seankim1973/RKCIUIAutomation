@@ -7,6 +7,8 @@ using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 using RKCIUIAutomation.Test;
 using System.Collections.Generic;
 using System.Linq;
+using static RKCIUIAutomation.Page.Workflows.DesignDocumentWF;
+using static RKCIUIAutomation.Page.KendoGrid;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -422,76 +424,89 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             //designDocNumber = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == DesignDocEntryField.DocumentNumber select kvp.Value).FirstOrDefault();
         }
 
-        private string GetExpectedValueForDesignDocHeader(DesignDocHeader docHeader)
+        private DesignDocEntryField GetExpectedValueForDesignDocHeader(DesignDocHeader docHeader)
         {
-            string entryValue = string.Empty;
             DesignDocEntryField entryField = DesignDocEntryField.Title;
 
-            if (docHeader.Equals(DesignDocHeader.Action) ||
-                docHeader.Equals(DesignDocHeader.Status) ||
-                docHeader.Equals(DesignDocHeader.Remaining_Days) ||
-                docHeader.Equals(DesignDocHeader.Review_Deadline))
+            if (docHeader.Equals(DesignDocHeader.Date) || docHeader.Equals(DesignDocHeader.Document_Date))
             {
-                switch (docHeader)
-                {
-                    case DesignDocHeader.Action:
-                        entryValue = "For Review/Comment";
-                        break;
-                    case DesignDocHeader.Status:
-                        entryValue = GetDesignDocStatus();
-                        break;
-                    case DesignDocHeader.Remaining_Days:
-                        entryValue = ""; //TODO
-                        break;
-                    case DesignDocHeader.Review_Deadline:
-                        entryValue = ""; //TODO
-                        break;
-                }
+                entryField = DesignDocEntryField.DocumentDate;
             }
-            else
+            else if (docHeader.Equals(DesignDocHeader.Number) || docHeader.Equals(DesignDocHeader.Document_Number))
             {
-                if (docHeader.Equals(DesignDocHeader.Date) || docHeader.Equals(DesignDocHeader.Document_Date))
-                {
-                    entryField = DesignDocEntryField.DocumentDate;
-                }
-                else if (docHeader.Equals(DesignDocHeader.Number) || docHeader.Equals(DesignDocHeader.Document_Number))
-                {
-                    entryField = DesignDocEntryField.DocumentNumber;
-                }
-                else if (docHeader.Equals(DesignDocHeader.Transmittal_Date) || docHeader.Equals(DesignDocHeader.Trans_Date))
-                {
-                    entryField = DesignDocEntryField.TransmittalDate;
-                }
-                else if (docHeader.Equals(DesignDocHeader.Transmittal_No) || docHeader.Equals(DesignDocHeader.Trans_No))
-                {
-                    entryField = DesignDocEntryField.TransmittalNumber;
-                }
-                else if (docHeader.Equals(DesignDocHeader.Segment))
-                {
-                    entryField = DesignDocEntryField.Segment;
-                }
-                else if (docHeader.Equals(DesignDocHeader.Title))
-                {
-                    entryField = DesignDocEntryField.Title;
-                }
-
-                entryValue = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == entryField select kvp.Value).FirstOrDefault();
+                entryField = DesignDocEntryField.DocumentNumber;
+            }
+            else if (docHeader.Equals(DesignDocHeader.Transmittal_Date) || docHeader.Equals(DesignDocHeader.Trans_Date))
+            {
+                entryField = DesignDocEntryField.TransmittalDate;
+            }
+            else if (docHeader.Equals(DesignDocHeader.Transmittal_No) || docHeader.Equals(DesignDocHeader.Trans_No))
+            {
+                entryField = DesignDocEntryField.TransmittalNumber;
+            }
+            else if (docHeader.Equals(DesignDocHeader.Segment))
+            {
+                entryField = DesignDocEntryField.Segment;
+            }
+            else if (docHeader.Equals(DesignDocHeader.Title))
+            {
+                entryField = DesignDocEntryField.Title;
             }
 
-            return entryValue;
+            return entryField;
         }
 
         public override void VerifyDesignDocDetailsHeader()
         {
             IList<string> expectedValueInHeaderList = new List<string>();
             IList<string> actualValueInHeaderList = new List<string>();
+            string entryValue = string.Empty;
+            bool expectedHeadersDisplayed = true;
 
             try
             {
                 foreach (DesignDocHeader header in designDocDetailsHeaders)
                 {
-                    actualValueInHeaderList.Add(GetHeaderValue(header));
-                    expectedValueInHeaderList.Add($"{header}::{GetExpectedValueForDesignDocHeader(header)}");
+
+                    if (
+                        header.Equals(DesignDocHeader.Action) ||
+                        header.Equals(DesignDocHeader.Status) ||
+                        header.Equals(DesignDocHeader.Remaining_Days) ||
+                        header.Equals(DesignDocHeader.Review_Deadline)
+                        )
+                    {
+                        switch (header)
+                        {
+                            case DesignDocHeader.Action:
+                                entryValue = "For Review/Comment";
+                                break;
+                            case DesignDocHeader.Status:
+                                entryValue = documentStatus;
+                                break;
+                            case DesignDocHeader.Remaining_Days:
+                                entryValue = ""; //TODO
+                                break;
+                            case DesignDocHeader.Review_Deadline:
+                                entryValue = ""; //TODO
+                                break;
+                        }
+
+                        //On SG, the 'Review Deadline' header field is not shown when Status is 'Requires Response'
+                        expectedHeadersDisplayed = header.Equals(DesignDocHeader.Review_Deadline) && entryValue.Equals("Requires Response")
+                            ? false
+                            : true;
+                    }
+                    else
+                    {
+                        DesignDocEntryField entryField = GetExpectedValueForDesignDocHeader(header);
+                        entryValue = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == entryField select kvp.Value).FirstOrDefault();
+                    }
+
+                    if (expectedHeadersDisplayed)
+                    {
+                        actualValueInHeaderList.Add(GetHeaderValue(header));
+                        expectedValueInHeaderList.Add($"{header}::{entryValue}");
+                    }
                 }
             }
             catch (Exception e)
@@ -499,50 +514,64 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            string methodName = "VerifyDesignDocDetailsHeader";
-            AddAssertionToList(VerifyExpectedList(actualValueInHeaderList, expectedValueInHeaderList, methodName), $"{methodName} - VerifyExpectedList");
+            string reportName = $"VerifyDesignDocDetailsHeader [GridTab ({documentStatus})]";
+            TestUtils.Utility.AddAssertionToList(VerifyExpectedList(actualValueInHeaderList, expectedValueInHeaderList, reportName), reportName);
         }
 
-        private string GetHeaderValue(DesignDocHeader docHeader)
+        public override string GetHeaderValue(DesignDocHeader docHeader)
             => GetText(By.XPath($"//label[contains(text(),'{docHeader.GetString()}')]/following-sibling::div[1]"));
 
-        public override void SetDesignDocStatus(TableTab tableTab)
+        public override void SetDesignDocStatus<T>(T tableTabOrWorkflow)
         {
-            if (tableTab.Equals(TableTab.Comment) || tableTab.Equals(TableTab.Requires_Comment))
+            Type argType = tableTabOrWorkflow.GetType();
+
+            if (argType == typeof(TableTab))
             {
-                documentStatus = "Requires Comment";
-            }
-            else if (tableTab.Equals(TableTab.Response) || tableTab.Equals(TableTab.Requires_Response))
-            {
-                documentStatus = "Requires Response";
-            }
-            else if (tableTab.Equals(TableTab.Requires_Closing) || tableTab.Equals(TableTab.Verification))
-            {
-                documentStatus = "Requires Closing";
-            }
-            else
-            {
-                switch (tableTab)
+                TableTab tableTab = TableTab.Creating;
+
+                tableTab = ConvertToType<TableTab>(tableTabOrWorkflow);
+                if (tableTab.Equals(TableTab.Comment) || tableTab.Equals(TableTab.Requires_Comment))
                 {
-                    case TableTab.Pending_Comment://SG
-                        documentStatus = "Pending Comment";
-                        break;
-                    case TableTab.Pending_Resolution://SG
-                        documentStatus = "Pending Resolution";
-                        break;
-                    case TableTab.Requires_Resolution://SH249, SG
-                        documentStatus = "Requires Resolution";
-                        break;
-                    case TableTab.Pending_Response://SG
-                        documentStatus = "Pending Response";
-                        break;
-                    case TableTab.Pending_Closing://SG
-                        documentStatus = "Pending Closing";
-                        break;
-                    case TableTab.Closed://LAX, SG, SH249
-                        documentStatus = "Review Completed";
-                        break;
+                    documentStatus = "Requires Comment";
                 }
+                else if (tableTab.Equals(TableTab.Response) || tableTab.Equals(TableTab.Requires_Response))
+                {
+                    documentStatus = "Requires Response";
+                }
+                else if (tableTab.Equals(TableTab.Requires_Closing) || tableTab.Equals(TableTab.Verification))
+                {
+                    documentStatus = "Requires Closing";
+                }
+                else
+                {
+                    switch (tableTab)
+                    {
+                        case TableTab.Pending_Comment://SG
+                            documentStatus = "Pending Comment";
+                            break;
+                        case TableTab.Pending_Resolution://SG
+                            documentStatus = "Pending Resolution";
+                            break;
+                        case TableTab.Requires_Resolution://SH249, SG
+                            documentStatus = "Requires Resolution";
+                            break;
+                        case TableTab.Pending_Response://SG
+                            documentStatus = "Pending Response";
+                            break;
+                        case TableTab.Pending_Closing://SG
+                            documentStatus = "Pending Closing";
+                            break;
+                        case TableTab.Closed://LAX, SG, SH249
+                            documentStatus = "Review Completed";
+                            break;
+                    }
+                }
+            }
+            else if (argType == typeof(CR_Workflow))
+            {
+                CR_Workflow workflow = CR_Workflow.CreateComment;
+                workflow = ConvertToType<CR_Workflow>(tableTabOrWorkflow);
+                documentStatus = Kendo.GetCurrentTableTabName();
             }
         }
 
@@ -573,7 +602,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             ClickTab_Closed();
             //SelectTab(TableTab.Closed);
-            AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber), $"VerifyItemStatusIsClosed");
+            TestUtils.Utility.AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber), $"VerifyItemStatusIsClosed");
         }
 
     }
@@ -594,7 +623,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         IList<KeyValuePair<Enum, string>> GetCommentEntryFieldKeyValuePairs();
 
-        void SetDesignDocStatus(TableTab tableTab);
+        string GetHeaderValue(DesignDocHeader docHeader);
+
+        void SetDesignDocStatus<T>(T tableTabOrWorkflow);
 
         string GetDesignDocStatus();
 
@@ -733,7 +764,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     #region Common Workflow Implementation class
 
-    public abstract class DesignDocument_Impl : TestBase, IDesignDocument
+    public abstract class DesignDocument_Impl : PageBase, IDesignDocument
     {
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
@@ -1183,10 +1214,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void ScrollToFirstColumn();
         public abstract void PopulateAllCreatePgEntryFields();
         public abstract void VerifyDesignDocDetailsHeader();
-        public abstract void SetDesignDocStatus(TableTab tableTab);
+        public abstract void SetDesignDocStatus<T>(T tableTabOrWorkflow);
         public abstract string GetDesignDocStatus();
         public abstract IList<KeyValuePair<DesignDocEntryField, string>> GetDesignDocEntryFieldKeyValuePairs();
         public abstract IList<KeyValuePair<Enum, string>> GetCommentEntryFieldKeyValuePairs();
+        public abstract string GetHeaderValue(DesignDocHeader docHeader);
     }
 
     #endregion Common Workflow Implementation class
@@ -1225,6 +1257,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             tabName = $"{tabPrefix}{tableTab.GetString()}";
             ClickTab(tabName);
+
+            SetDesignDocStatus(tableTab);
         }
 
         public override void SelectRegularCommentReviewType(int commentTabNumber = 1)
@@ -1326,16 +1360,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             {
                 designDocDetailsHeaders = new List<DesignDocHeader>
                 {
-                    DesignDocHeader.Date,
-                    DesignDocHeader.Number,
+                    DesignDocHeader.Document_Number,
+                    DesignDocHeader.Status,
                     DesignDocHeader.Title,
                     DesignDocHeader.Segment,
-                    DesignDocHeader.Action,
-                    DesignDocHeader.Status,
-                    DesignDocHeader.Trans_Date,
-                    DesignDocHeader.Trans_No,
+                    DesignDocHeader.Document_Date,
                     DesignDocHeader.Review_Deadline,
-                    DesignDocHeader.Remaining_Days
+                    DesignDocHeader.Transmittal_Date,
+                    DesignDocHeader.Action,
+                    DesignDocHeader.Remaining_Days,
+                    DesignDocHeader.Transmittal_No
                 };
             }
 
@@ -1355,6 +1389,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             return commentEntryFields;
         }
+
+        public override string GetHeaderValue(DesignDocHeader docHeader)
+            => GetText(By.XPath($"//label[contains(text(),'{docHeader.GetString()}')]/parent::div/following-sibling::div[1]"));
 
         public override void EnterRegularCommentAndDrawingPageNo()
         {

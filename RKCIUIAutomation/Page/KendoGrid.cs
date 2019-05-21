@@ -10,13 +10,16 @@ namespace RKCIUIAutomation.Page
 {
     extern alias newtJson;
 
-    public class KendoGrid : Action
+    public class KendoGrid : Action, IKendoGrid
     {
+        protected static KendoGrid _instance { get; set; }
+        public static KendoGrid Kendo { get => _instance = new KendoGrid(); set { } }
+
         public KendoGrid()
         {
         }
 
-        //public KendoGrid(IWebDriver driver) => this.Driver = driver;
+        public KendoGrid(IWebDriver driver) => this.Driver = driver;
 
         public void ClickCommentTab(int commentNumber)
         {

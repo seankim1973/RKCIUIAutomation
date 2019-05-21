@@ -299,6 +299,7 @@
     <Compile Include="Config\ProjectProperties.cs" />
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\Action.cs" />
+    <Compile Include="Page\IKendoGrid.cs" />
     <Compile Include="Page\KendoGrid.cs" />
     <Compile Include="Page\Navigation\PageNavigation.cs" />
     <Compile Include="Page\Navigation\NavMenu.cs" />

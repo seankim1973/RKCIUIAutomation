@@ -1281,15 +1281,16 @@ namespace RKCIUIAutomation.Page
                 string[][] logTable = new string[expectedCount + 2][];
                 logTable[logTblRowIndex] = new string[2] { $"{verificationMethodName}<br>|  Expected  | ", $"<br> |  Found Matching Actual  | " };
 
-                bool actualHasValue = false;
-                bool expectedHasValue = false;
-                string actualValueLogMsg = string.Empty;
-                string expectedLabel = string.Empty;
-
                 for (int i = 0; i < expectedCount; i++)
                 {
+                    bool actualHasValue = false;
+                    bool expectedHasValue = false;
+                    string expected = string.Empty;
+                    string expectedLabel = string.Empty;
+                    string actualValueLogMsg = string.Empty;
+
                     logTblRowIndex++;
-                    string expected = expectedList[i];
+                    expected = expectedList[i];
 
                     expectedHasValue = expected.HasValue();
 

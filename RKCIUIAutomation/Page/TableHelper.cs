@@ -1,12 +1,12 @@
 ﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
-using RKCIUIAutomation.Page.Workflows;
 using RKCIUIAutomation.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using static RKCIUIAutomation.Page.KendoGrid;
 
 namespace RKCIUIAutomation.Page
 {
@@ -18,10 +18,10 @@ namespace RKCIUIAutomation.Page
 
         public TableHelper(IWebDriver driver) => this.Driver = driver;
 
-        [ThreadStatic]
-        private KendoGrid _kendo;
+        //[ThreadStatic]
+        //private KendoGrid _kendo;
 
-        internal KendoGrid Kendo => _kendo = new KendoGrid();
+        //public static IKendoGrid Kendo;
 
         #region Kendo Grid Public Methods
 
@@ -432,7 +432,7 @@ namespace RKCIUIAutomation.Page
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
                 WaitForLoading();
-                string gridId = _kendo.GetGridID(tableType);
+                string gridId = Kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = GetAttribute(gridParentDivLocator, "class");
 
@@ -443,7 +443,7 @@ namespace RKCIUIAutomation.Page
                         break;
                     case TableType.MultiTab:
                         isMultiTabGrid = true;
-                        currentTabName = GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
+                        currentTabName = Kendo.GetCurrentTableTabName();//GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
                         activeTblTab = "//div[@class='k-content k-state-active']";
                         noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
                         tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");

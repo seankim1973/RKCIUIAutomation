@@ -19,7 +19,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public DesignDocumentWF(IWebDriver driver) => this.Driver = driver;
 
         public enum CR_Workflow
-        {//TODO - Use StringValueAttribute as DesignDocHeader Status value
+        {
             [StringValue("")] CreateComment,
             [StringValue("Requires Comment")] EnterComment,
             [StringValue("")] ForwardComment,
@@ -173,8 +173,6 @@ namespace RKCIUIAutomation.Page.Workflows
                     break;
             }
 
-            documentStatus = workflow.GetString();
-
             LoginAs(userAcct);
 
             bool alreadyInDesignDocumentPage = AlreadyInDesignDocumentPage();
@@ -183,6 +181,8 @@ namespace RKCIUIAutomation.Page.Workflows
             {
                 NavigateToPage.RMCenter_Design_Documents();
             }
+
+            DesignDocCommentReview.SetDesignDocStatus(workflow);
 
             WaitForPageReady();
         }
@@ -285,11 +285,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
         //All Tenants
         public abstract void CreateCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment);
-        //{
-        //    LoginToDesignDocuments(workflowType);
-        //    AddAssertionToList(VerifyPageHeader("Design Document"), "VerifyPageTitle(\"Design Document\")");
-        //    DesignDocCommentReview.CreateDocument();
-        //}
 
         //Garnet and GLX
         public virtual void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
@@ -574,8 +569,8 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickBtn_Update();
             DesignDocCommentReview.ClickBtn_SaveForward();
 
-            log.Warn("!!!Clicked BackToList button - workaround for bug EPA-2887!!!");
-            DesignDocCommentReview.ClickBtn_BackToList();
+            //log.Warn("!!!Clicked BackToList button - workaround for bug EPA-2887!!!");
+            //DesignDocCommentReview.ClickBtn_BackToList();
         }
 
         public override void FilterTableAndEditDoc(string docNumber = "")
