@@ -42,22 +42,9 @@ namespace RKCIUIAutomation.Page
             try
             {
                 string logMsg = string.Empty;
-                object argKey = null;
-
-                Type argType = key.GetType();
-
-                if (argType.Equals(typeof(Enum)))
-                {
-                    argKey = ConvertToType<Enum>(key);
-                    argKey.ToString();
-                }
-                else
-                {
-                    argKey = ConvertToType<string>(key);
-                }
-
+                string argKey = ConvertToType<string>(key);
                 argKey = withPrefix
-                    ? BaseHelper.GetEnvVarPrefix((string)argKey)
+                    ? BaseHelper.GetEnvVarPrefix(argKey)
                     : argKey;
 
                 value = value.HasValue()
@@ -66,7 +53,7 @@ namespace RKCIUIAutomation.Page
 
                 Hashtable = GetHashTable();
 
-                if (!HashKeyExists((string)argKey))
+                if (!HashKeyExists(argKey))
                 {
                     Hashtable.Add(argKey, value);
                     logMsg = "Created";
@@ -77,12 +64,12 @@ namespace RKCIUIAutomation.Page
                     logMsg = "Updated";
                 }
 
-                log.Debug($"{logMsg} HashTable - Key: {argKey.ToString()} : Value: {value.ToString()}");
+                log.Debug($"{logMsg} HashTable - Key: {argKey} : Value: {value}");
             }
             catch (Exception e)
             {
                 log.Error($"Error occured while adding to HashTable \n{e.Message}");
-                throw e;
+                throw;
             }
         }
 
@@ -94,18 +81,7 @@ namespace RKCIUIAutomation.Page
         /// <returns></returns>
         public string GetVar<T>(T key, bool keyIncludesPrefix = false)
         {
-            Type argType = key.GetType();
-            string argKey = string.Empty;
-
-            if (argType.Equals(typeof(Enum)))
-            {
-                argKey = (ConvertToType<Enum>(key)).ToString();
-            }
-            else
-            {
-                argKey = ConvertToType<string>(key);
-            }
-
+            string argKey = ConvertToType<string>(key);
             argKey = keyIncludesPrefix
                 ? argKey
                 : BaseHelper.GetEnvVarPrefix(argKey);
@@ -118,7 +94,7 @@ namespace RKCIUIAutomation.Page
             Hashtable = GetHashTable();
             var varValue = Hashtable[argKey].ToString();
             log.Debug($"#####GetVar Key: {argKey} has Value: {varValue}");
-            
+
             return varValue;
         }
 

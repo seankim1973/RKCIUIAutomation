@@ -115,7 +115,7 @@ namespace RKCIUIAutomation.Sandbox
         //[TestMethod]
         public void MSUnitTest2()
         {
-            List<string> components = GetComponentsForProject(TenantName.Garnet);
+            List<string> components = SetTenantComponents(TenantName.Garnet);
             int componentCount = components.Count;
 
             log.Error($"Component count is {componentCount}");

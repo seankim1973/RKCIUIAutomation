@@ -5,8 +5,29 @@ using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Config
 {
-    public class ProjectProperties : WebDriverFactory
+    public interface IProjectProperties
     {
+        List<string> TenantComponents { get; set; }
+    }
+
+    public class ProjectProperties : WebDriverFactory, IProjectProperties
+    {
+        private static readonly List<string> commonComponents = new List<string>
+        {
+            Component.Link_Coverage,
+            Component.Breaksheet_Module,
+            Component.CVL_List,
+            Component.CVL_Lists,
+            Component.CVL_List_Items,
+            Component.Other,
+            Component.Project_Configuration,
+            Component.Search,
+            Component.Submittals,
+            Component.Correspondence_Log
+        };
+
+        public List<string> TenantComponents { get; set; }
+
         public class Component
         {
             public const string Breaksheet_Module = "Breaksheet_Module";
@@ -65,164 +86,179 @@ namespace RKCIUIAutomation.Config
             
         }
 
-        public List<string> GetComponentsForProject(TenantName tenantName)
+        public static List<string> SetTenantComponents(TenantName tenantName)
         {
-            List<string> components = new List<string>();
-            try
-            {
-                components = CommonComponents;
-                components.AddRange(DefineAdditionalComponents(tenantName));
-            }
-            catch (Exception e)
-            {
-                log.Error("Exception occured during GetComponentsForProject method", e);
-            }
+            IProjectProperties instance = null;
 
-            return components;
-        }
-
-        private List<string> DefineAdditionalComponents(TenantName tenantName)
-        {
-            List<string> additionalComponents = new List<string>();
             switch (tenantName)
             {
                 case TenantName.Garnet:
-                    additionalComponents = Components_Garnet;
+                    instance = new ProjectProperties_Garnet();
                     break;
 
                 case TenantName.GLX:
-                    additionalComponents = Components_GreenLineExt;
+                    instance = new ProjectProperties_GLX();
                     break;
 
                 case TenantName.I15South:
-                    additionalComponents = Components_I15Southbound;
+                    instance = new ProjectProperties_I15SB();
                     break;
 
                 case TenantName.I15Tech:
-                    additionalComponents = Components_I15TechCorridor;
+                    instance = new ProjectProperties_I15Tech();
                     break;
 
                 case TenantName.SH249:
-                    additionalComponents = Components_SH249Ext;
+                    instance = new ProjectProperties_SH249();
                     break;
 
                 case TenantName.SGWay:
-                    additionalComponents = Components_SouthernGateway;
+                    instance = new ProjectProperties_SGWay();
                     break;
 
                 case TenantName.LAX:
-                    additionalComponents = Components_LAX;
+                    instance = new ProjectProperties_LAX();
                     break;
             }
-            return additionalComponents;
+
+            List<string> components = new List<string>();
+            components.AddRange(commonComponents);
+            components.AddRange(instance.TenantComponents);
+            return components;
         }
+    }
 
-        private readonly List<string> Components_Garnet = new List<string>
+    public class ProjectProperties_LAX : ProjectProperties, IProjectProperties
+    {
+        public ProjectProperties_LAX()
         {
-            Component.Garnet,
-            Component.CDR,
-            Component.CDR_WF_Simple,
-            Component.RFI,
-            Component.QAField,
-        };
+            TenantComponents = new List<string>
+            {
+                Component.LAX,
+                Component.CDR,
+                Component.CDR_WF_Complex,
+                Component.NCR,
+                Component.NCR_WF_Complex,
+                Component.DIR,
+                Component.DIR_WF_Simple_QA,
+                Component.DIR_WF_Simple_QC,
+                Component.DesignDoc_CommentReview,
+                Component.CommentReview_RegularComment
+            };
+        }
+    }
 
-        private readonly List<string> Components_GreenLineExt = new List<string>
+    public class ProjectProperties_SH249 : ProjectProperties, IProjectProperties
+    {
+        public ProjectProperties_SH249()
         {
-            Component.GLX,
-            Component.CDR,
-            Component.CDR_WF_Complex,
-            Component.RFI,
-            Component.NCR,
-            Component.NCR_WF_Complex,
-            Component.DIR,
-            Component.DIR_WF_Simple_QA,
-            Component.DIR_WF_Simple_QC
-        };
+            TenantComponents = new List<string>
+            {
+                Component.SH249,
+                Component.CDR,
+                Component.CDR_WF_Simple,
+                Component.QAField,
+                Component.NCR,
+                Component.NCR_WF_Simple,
+                Component.DIR,
+                Component.DIR_WF_Complex,
+                Component.DesignDoc_CommentReview,
+                Component.CommentReview_NoComment,
+                Component.CommentReview_RegularComment
+            };
+        }
+    }
 
-        private readonly List<string> Components_I15Southbound = new List<string>
+    public class ProjectProperties_SGWay : ProjectProperties, IProjectProperties
+    {
+        public ProjectProperties_SGWay()
         {
-            Component.I15South,
-            Component.CDR,
-            Component.CDR_WF_Complex,
-            Component.OV_Test,
-            Component.QAField,
-            Component.NCR,
-            Component.NCR_WF_Complex,
-            Component.DIR,
-            Component.DIR_WF_Simple_QA
-        };
+            TenantComponents = new List<string>
+            {
+                Component.SGWay,
+                Component.CDR,
+                Component.CDR_WF_Simple,
+                Component.QAField,
+                Component.NCR,
+                Component.NCR_WF_Simple,
+                Component.DIR,
+                Component.DIR_WF_Complex,
+                Component.DesignDoc_CommentReview,
+                Component.CommentReview_NoComment,
+                Component.CommentReview_RegularComment
+            };
+        }
+    }
 
-        private readonly List<string> Components_I15TechCorridor = new List<string>
+    public class ProjectProperties_I15SB : ProjectProperties, IProjectProperties
+    {
+        public ProjectProperties_I15SB()
         {
-            Component.I15Tech,
-            Component.CDR,
-            Component.CDR_WF_Complex,
-            Component.OV_Test,
-            Component.QAField,
-            Component.NCR,
-            Component.NCR_WF_Complex,
-            Component.DIR,
-            Component.DIR_WF_Simple_QA
-        };
+            TenantComponents = new List<string>
+            {
+                Component.I15South,
+                Component.CDR,
+                Component.CDR_WF_Complex,
+                Component.OV_Test,
+                Component.QAField,
+                Component.NCR,
+                Component.NCR_WF_Complex,
+                Component.DIR,
+                Component.DIR_WF_Simple_QA
+            };
+        }
+    }
 
-        private readonly List<string> Components_SH249Ext = new List<string>
+    public class ProjectProperties_I15Tech : ProjectProperties, IProjectProperties
+    {
+        public ProjectProperties_I15Tech()
         {
-            Component.SH249,
-            Component.CDR,
-            Component.CDR_WF_Simple,
-            Component.QAField,
-            Component.NCR,
-            Component.NCR_WF_Simple,
-            Component.DIR,
-            Component.DIR_WF_Complex,
-            Component.DesignDoc_CommentReview,
-            Component.CommentReview_NoComment,
-            Component.CommentReview_RegularComment
+            TenantComponents = new List<string>
+            {
+                Component.I15Tech,
+                Component.CDR,
+                Component.CDR_WF_Complex,
+                Component.OV_Test,
+                Component.QAField,
+                Component.NCR,
+                Component.NCR_WF_Complex,
+                Component.DIR,
+                Component.DIR_WF_Simple_QA
+            };
+        }
+    }
 
-        };
-
-        private readonly List<string> Components_SouthernGateway = new List<string>
+    public class ProjectProperties_GLX : ProjectProperties, IProjectProperties
+    {
+        public ProjectProperties_GLX()
         {
-            Component.SGWay,
-            Component.CDR,
-            Component.CDR_WF_Simple,
-            Component.QAField,
-            Component.NCR,
-            Component.NCR_WF_Simple,
-            Component.DIR,
-            Component.DIR_WF_Complex,
-            Component.DesignDoc_CommentReview,
-            Component.CommentReview_NoComment,
-            Component.CommentReview_RegularComment
+            TenantComponents = new List<string>
+            {
+                Component.GLX,
+                Component.CDR,
+                Component.CDR_WF_Complex,
+                Component.RFI,
+                Component.NCR,
+                Component.NCR_WF_Complex,
+                Component.DIR,
+                Component.DIR_WF_Simple_QA,
+                Component.DIR_WF_Simple_QC
+            };
+        }
+    }
 
-        };
-
-        private readonly List<string> Components_LAX = new List<string>
+    public class ProjectProperties_Garnet : ProjectProperties, IProjectProperties
+    {
+        public ProjectProperties_Garnet()
         {
-            Component.LAX,
-            Component.CDR,
-            Component.CDR_WF_Complex,
-            Component.NCR,
-            Component.NCR_WF_Complex,
-            Component.DIR,
-            Component.DIR_WF_Simple_QA,
-            Component.DIR_WF_Simple_QC,
-            Component.DesignDoc_CommentReview,
-            Component.CommentReview_RegularComment
-        };
-
-        private readonly List<string> CommonComponents = new List<string>
-        {
-            Component.Link_Coverage,
-            Component.Breaksheet_Module,
-            Component.CVL_List,
-            Component.CVL_Lists,
-            Component.CVL_List_Items,
-            Component.Other,
-            Component.Project_Configuration,
-            Component.Search,
-            Component.Submittals,
-            Component.Correspondence_Log
-        };
+            TenantComponents = new List<string>
+            {
+                Component.Garnet,
+                Component.CDR,
+                Component.CDR_WF_Simple,
+                Component.RFI,
+                Component.QAField
+            };
+        }
     }
 }

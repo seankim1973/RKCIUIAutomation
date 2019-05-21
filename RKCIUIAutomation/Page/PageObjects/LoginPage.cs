@@ -174,7 +174,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                             catch (Exception e)
                             {
                                 LogError($"Exception occured while waiting for element - {field}", true, e);
-                                throw e;
+                                throw;
                             }
                         }
 

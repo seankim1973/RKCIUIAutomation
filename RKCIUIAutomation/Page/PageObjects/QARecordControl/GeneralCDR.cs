@@ -375,7 +375,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             TestUtils testUtils = new TestUtils();
 
-            ClickBtn_SaveForward(); 
+            ClickBtn_SaveForward();
             testUtils.AddAssertionToList(VerifyReqFieldsErrorLabelsForNewDoc(), "VerifyReqFieldsErrorLabelsForNewDoc()");
             EnterIssuedDate();
             SelectDDL_Originator();

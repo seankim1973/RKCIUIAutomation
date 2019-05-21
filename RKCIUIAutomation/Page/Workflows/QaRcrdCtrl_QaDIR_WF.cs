@@ -186,7 +186,7 @@ namespace RKCIUIAutomation.Page.Workflows
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -282,7 +282,7 @@ namespace RKCIUIAutomation.Page.Workflows
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
 
@@ -388,6 +388,85 @@ namespace RKCIUIAutomation.Page.Workflows
             }
 
             return expectedUrl;
+        }
+
+        public override bool VerifyDbCleanupForDIR(string dirNumber, string dirRevision = "A", bool setAsDeleted = true)
+        {
+            bool cleanupSuccessful = false;
+
+            try
+            {
+                DirDbAccess db = new DirDbAccess();
+                db.SetDIR_DIRNO_IsDeleted(dirNumber, dirRevision, setAsDeleted);
+
+                DirDbData data = new DirDbData();
+                data = db.GetDirData(dirNumber, dirRevision);
+                int isDeleted = data.IsDeleted;
+
+                //if isDeleted = 1 && setAsDeleted = true --> success
+                //if isDeleted = 0 && setAsDeleted = false --> success
+                //if isDeleted = 0 && setAsDeleted = true --> fail
+                //if isDeleted = 1 && setAsDeleted = false --> fail
+                cleanupSuccessful = setAsDeleted
+                    ? isDeleted == 1
+                        ? true : false
+                    : isDeleted == 0
+                        ? true : false;
+                LogStep($"Performed DB Cleanup for DIR# {dirNumber}");
+            }
+            catch (Exception e)
+            {
+                log.Warn($"Error occurred during VerifyDbCleanupForDIR : {e.Message}");
+            }
+
+            return cleanupSuccessful;
+        }
+
+        public override void VerifyDbCleanupForCreatePackages(bool isPkgCreated, string weekStartDate, string[] dirNumbers)
+        {
+            if (isPkgCreated)
+            {
+                string packageNumber = QaRcrdCtrl_QaDIR.CalculateDirPackageNumber(weekStartDate);
+
+                DirDbAccess db = new DirDbAccess();
+                db.SetDIRPackageNo_AndReferences_AsDeleted(packageNumber);
+
+                DirDbData data = new DirDbData();
+                data = db.GetDirPackageData(packageNumber);
+                int isDeleted = data.IsDeleted;
+
+                bool result = isDeleted == 1 ? true : false;
+                string resultLog = isDeleted == 0 ? " NOT" : "";
+                AddAssertionToList(result, $"PackageNo ({packageNumber}) IsDeleted has{resultLog} been updated)");
+
+                List<bool> dirPkgIdResetResults = new List<bool>();
+                foreach (string dir in dirNumbers)
+                {
+                    bool dirPkgIdisNull = false;
+
+                    data = db.GetDirData(dir);
+                    var dirPkgId = data.DIRPackageID;
+
+                    if (dirPkgId == null)
+                    {
+                        dirPkgIdisNull = true;
+                    }
+                    else
+                    {
+                        AddAssertionToList(dirPkgIdisNull, $"DIR ({dir}) should have NULL value for DIRPackageID, but has value of: ({dirPkgId.ToString()})");
+                    }
+
+                    dirPkgIdResetResults.Add(dirPkgIdisNull);
+                }
+
+                result = !dirPkgIdResetResults.Contains(false);
+                resultLog = result ? "" : " NOT";
+                AddAssertionToList(result, $"DB cleanup for DIRPackageID references for the associated DIRs are as{resultLog} expected.");
+            }
+            else
+            {
+                AddAssertionToList(false, $"Task, DB cleanup for DIRPackageID references, was not performed because the Package was not created successfully in the previous step.");
+            }
         }
 
     }
@@ -941,84 +1020,8 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual bool Verify_ViewMultiDirPDF(bool selectNoneForMultiView = false)
             => VerifyViewPdfReport("", true, selectNoneForMultiView);
 
-        public virtual bool VerifyDbCleanupForDIR(string dirNumber, string dirRevision = "A", bool setAsDeleted = true)
-        {
-            bool cleanupSuccessful = false;
-
-            try
-            {
-                DirDbAccess db = new DirDbAccess();
-                db.SetDIR_DIRNO_IsDeleted(dirNumber, dirRevision, setAsDeleted);
-
-                DirDbData data = new DirDbData();
-                data = db.GetDirData(dirNumber, dirRevision);
-                int isDeleted = data.IsDeleted;
-
-                //if isDeleted = 1 && setAsDeleted = true --> success
-                //if isDeleted = 0 && setAsDeleted = false --> success
-                //if isDeleted = 0 && setAsDeleted = true --> fail
-                //if isDeleted = 1 && setAsDeleted = false --> fail
-                cleanupSuccessful = setAsDeleted
-                    ? isDeleted == 1
-                        ? true : false
-                    : isDeleted == 0
-                        ? true : false;
-                LogStep($"Performed DB Cleanup for DIR# {dirNumber}");
-            }
-            catch (Exception e)
-            {
-                log.Error($"Error occured during VerifyDbCleanupForDIR : {e.Message}");
-            }
-
-            return cleanupSuccessful;
-        }
-
-        public virtual void VerifyDbCleanupForCreatePackages(bool isPkgCreated, string weekStartDate, string[] dirNumbers)
-        {
-            if (isPkgCreated)
-            {
-                string packageNumber = QaRcrdCtrl_QaDIR.CalculateDirPackageNumber(weekStartDate);
-
-                DirDbAccess db = new DirDbAccess();
-                db.SetDIRPackageNo_AndReferences_AsDeleted(packageNumber);
-
-                DirDbData data = new DirDbData();
-                data = db.GetDirPackageData(packageNumber);
-                int isDeleted = data.IsDeleted;
-
-                bool result = isDeleted == 1 ? true : false;
-                string resultLog = isDeleted == 0 ? " NOT" : "";
-                AddAssertionToList(result, $"PackageNo ({packageNumber}) IsDeleted has{resultLog} been updated)");
-
-                List<bool> dirPkgIdResetResults = new List<bool>();
-                foreach (string dir in dirNumbers)
-                {
-                    bool dirPkgIdisNull = false;
-
-                    data = db.GetDirData(dir);
-                    var dirPkgId = data.DIRPackageID;
-
-                    if (dirPkgId == null)
-                    {
-                        dirPkgIdisNull = true;
-                    }
-                    else
-                    {
-                        AddAssertionToList(dirPkgIdisNull, $"DIR ({dir}) should have NULL value for DIRPackageID, but has value of: ({dirPkgId.ToString()})");
-                    }
-
-                    dirPkgIdResetResults.Add(dirPkgIdisNull);
-                }
-
-                result = !dirPkgIdResetResults.Contains(false);
-                resultLog = result ? "" : " NOT";
-                AddAssertionToList(result, $"DB cleanup for DIRPackageID references for the associated DIRs are as{resultLog} expected.");
-            }
-            else
-            {
-                AddAssertionToList(false, $"Task, DB cleanup for DIRPackageID references, was not performed because the Package was not created successfully in the previous step.");
-            }
-        }
+        public abstract bool VerifyDbCleanupForDIR(string dirnumber, string revision = "A", bool setAsDeleted = true);
+        public abstract void VerifyDbCleanupForCreatePackages(bool isPkgCreated, string weekStartDate, string[] dirNumbers);
     }
 
     internal class QaRcrdCtrl_QaDIR_WF_GLX : QaRcrdCtrl_QaDIR_WF

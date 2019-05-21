@@ -87,7 +87,7 @@ namespace RKCIUIAutomation.Tools
             catch (ArgumentOutOfRangeException e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
             return output[0];
         }
@@ -127,7 +127,7 @@ namespace RKCIUIAutomation.Tools
             catch (ArgumentOutOfRangeException e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
             
             return output[0];
@@ -153,7 +153,7 @@ namespace RKCIUIAutomation.Tools
             catch (ArgumentOutOfRangeException e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
         }
     }
