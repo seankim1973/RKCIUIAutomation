@@ -158,16 +158,10 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription, isResolution), "VerifyNCRDocIsDisplayedInReview");
             ClickEditBtnForRow();
 
-            //if (isResolution)
-            //    QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
-            //else
-            //{
-                //verify required field error label is shown
-                QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
-                AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelForTypeOfNCR(), "VerifyReqFieldErrorLabelForTypeOfNCR");
-                QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level1();
-                QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
-            //}
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
+            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelForTypeOfNCR(), "VerifyReqFieldErrorLabelForTypeOfNCR");
+            QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level1();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
         }
 
         public virtual void Review_and_Return_NCR_ForRevise(UserType user, string ncrDescription)
@@ -522,6 +516,8 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(string ncrDescription)
         {
+            SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
+
             LogoutToLoginPage();
             LogDebug("------------WF QPM CloseNCR_in_VerificationAndClosure-------------");
             LoginAs(UserType.NCRQpm);
@@ -752,6 +748,7 @@ namespace RKCIUIAutomation.Page.Workflows
                     AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.EngineerOfRecord, true), "VerifySignatureField(Reviewer.EngineerOfRecord, true)");
                     AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.CQC_Manager, true), "VerifySignatureField(Reviewer.CQC_Manager, true)");
                     AddAssertionToList(VerifyInputField(InputFields.Engineer_of_Record, true), "VerifyInputField(InputFields.Engineer_of_Record, true)");
+                    AddAssertionToList(VerifyInputField(InputFields.CQC_Manager, true), "VerifyInputField(InputFields.CQC_Manager, true)");
                     AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_NA), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_NA)");
                     AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.CQCMApproval_NA), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.CQCMApproval_NA)");
                 }
@@ -760,8 +757,13 @@ namespace RKCIUIAutomation.Page.Workflows
                     AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.EngineerOfRecord), "VerifySignatureField(Reviewer.EngineerOfRecord)");
                     AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.CQC_Manager), "VerifySignatureField(Reviewer.CQC_Manager)");
                     AddAssertionToList(VerifyInputField(InputFields.Engineer_of_Record), "VerifyInputField(InputFields.Engineer_of_Record)");
+                    AddAssertionToList(VerifyInputField(InputFields.CQC_Manager), "VerifyInputField(InputFields.CQC_Manager)");
                     AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_Yes), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_Yes)");
+                    AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.CQCMApproval_Yes), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.CQCMApproval_Yes)");
                 }
+
+                
+                
             }
             else if (tabName.Equals(TableTab.Verification_and_Closure))
             {

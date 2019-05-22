@@ -416,8 +416,6 @@ namespace RKCIUIAutomation.Test.NCR
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription, false);
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(ncrDescription);
 
-            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
-
             WF_QaRcrdCtrl_GeneralNCR.CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(ncrDescription);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
             //Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription));
@@ -529,8 +527,6 @@ namespace RKCIUIAutomation.Test.NCR
             ClickEditBtnForRow();
             WF_QaRcrdCtrl_GeneralNCR.VerifySignatureNCR(TableTab.Developer_Concurrence, ncrDescription, false);
             
-            AddAssertionToList(VerifyInputField(InputFields.CQC_Manager), "VerifyInputField(InputFields.CQC_Manager)");
-            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.CQCMApproval_Yes), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.CQCMApproval_Yes)");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
             WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInLAWAConcurrence(ncrDescription);
