@@ -607,7 +607,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LogDebug("------------WF Final Closure CloseNCR_in_VerificationAndClosure-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR Closure - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
+            QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
         }
 
         public override void CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(string ncrDescription)
