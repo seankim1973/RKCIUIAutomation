@@ -3,7 +3,7 @@ using RKCIUIAutomation.Config;
 using System;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using static RKCIUIAutomation.Base.BaseUtils;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
 {

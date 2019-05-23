@@ -1,22 +1,23 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using RestSharp.Extensions;
+using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Base.BaseUtils;
 
 namespace RKCIUIAutomation.Test
 {
-    public class TestUtils : PageBase
+    public class TestUtils : PageHelper, ITestUtils
     {
         public TestUtils()
         {
         }
-
-        public static TestUtils Utility = new TestUtils();
 
         public TestUtils(IWebDriver driver) => this.Driver = driver;
 
@@ -56,7 +57,7 @@ namespace RKCIUIAutomation.Test
                 WriteToFile(Environment.NewLine);
 
                 IList<IWebElement> elements = new List<IWebElement>();
-                elements = GetElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
+                elements = PageAction.GetElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
                 if (elements.Any())
                 {
                     foreach (IWebElement mainNavElem in elements)
@@ -149,7 +150,7 @@ namespace RKCIUIAutomation.Test
                 }
                 else
                 {
-                    LogError("!!! Unable to retrieve navigation menu URLs", false);
+                    Utility.LogError("!!! Unable to retrieve navigation menu URLs", false);
                 }
             }
             catch (Exception e)
@@ -176,8 +177,8 @@ namespace RKCIUIAutomation.Test
                 ? $" - {additionalDetails}"
                 : "";
 
-            WaitForPageReady();
-            AddAssertionToList(VerifyPageHeader(expectedPageHeader), $"VerifyPageTitle('{expectedPageHeader}'){additionalDetails}");
+            PageAction.WaitForPageReady();
+            AddAssertionToList(PageAction.VerifyPageHeader(expectedPageHeader), $"VerifyPageTitle('{expectedPageHeader}'){additionalDetails}");
         }
 
         public void AddAssertionToList(bool assertion, string details = "")
@@ -212,7 +213,7 @@ namespace RKCIUIAutomation.Test
                         }
                         catch (Exception e)
                         {
-                            LogError(e.StackTrace);
+                            Utility.LogError(e.StackTrace);
                         }
                     }
 

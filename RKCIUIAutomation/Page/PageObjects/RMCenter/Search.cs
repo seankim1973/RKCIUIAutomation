@@ -2,6 +2,7 @@
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System.Collections.Generic;
+using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.ProjectCorrespondenceLog;
 using System;
@@ -107,7 +108,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
                         logMsg = $"Search by Criteria '{criteria}'";
                         LogInfo($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
-                        TestUtils.Utility.AddAssertionToList(searchResult, logMsg);
+                        TestUtils.GetInstance.AddAssertionToList(searchResult, logMsg);
 
                         ClickBtn_Clear();
                         WaitForLoading();
@@ -267,7 +268,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     #region Search Common Implementation class
 
-    public abstract class Search_Impl : PageBase, ISearch
+    public abstract class Search_Impl : TestBase, ISearch
     {
         public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
 

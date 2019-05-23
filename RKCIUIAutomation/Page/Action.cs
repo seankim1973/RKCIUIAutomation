@@ -13,18 +13,19 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page
 {
-    public class Action : PageHelper
+    public class Action : BaseClass, IAction
     {
-        private PageHelper PgHelper => new PageHelper();
+        //private PageHelper PgHelper => new PageHelper();
 
         public Action() { }
 
         public Action(IWebDriver driver) => this.Driver = driver;
 
-        private enum JSAction
+        public enum JSAction
         {
             [StringValue("arguments[0].click();")] Click,
 
@@ -34,7 +35,7 @@ namespace RKCIUIAutomation.Page
             Hover
         }
 
-        private void ExecuteJsAction(JSAction jsAction, By elementByLocator)
+        public void ExecuteJsAction(JSAction jsAction, By elementByLocator)
         {
             IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
 
@@ -95,7 +96,7 @@ namespace RKCIUIAutomation.Page
             Thread.Sleep(1000);
         }
 
-        private WebDriverWait GetStandardWait(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500)
+        public WebDriverWait GetStandardWait(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500)
         {
             WebDriverWait wait = null;
 
@@ -121,7 +122,7 @@ namespace RKCIUIAutomation.Page
             return wait;
         }
 
-        internal void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500)
+        public void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500)
         {
             try
             {
@@ -137,7 +138,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 500)
+        public void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 500)
         {
             try
             {
@@ -150,7 +151,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500)
+        public void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500)
         {
             try
             {
@@ -175,7 +176,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        internal void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000)
+        public void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000)
         {
             WaitForLoading();
             IJavaScriptExecutor javaScriptExecutor = driver as IJavaScriptExecutor;

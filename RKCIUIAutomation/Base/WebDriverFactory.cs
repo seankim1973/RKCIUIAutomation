@@ -18,6 +18,9 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class WebDriverFactory : DriverOptionsFactory
     {
+        [ThreadStatic]
+        public static IWebDriver driver;
+
         public IWebDriver Driver
         {
             get => driverThread.Value;

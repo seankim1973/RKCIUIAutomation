@@ -8,9 +8,10 @@ namespace RKCIUIAutomation.Config
     public interface IProjectProperties
     {
         List<string> TenantComponents { get; set; }
+        List<string> SetTenantComponents(TenantName tenantName);
     }
 
-    public class ProjectProperties : WebDriverFactory, IProjectProperties
+    public class ProjectProperties : Factory, IProjectProperties
     {
         private static readonly List<string> commonComponents = new List<string>
         {
@@ -74,7 +75,6 @@ namespace RKCIUIAutomation.Config
             public const string OV_Test = "OV_Test";
             public const string QAField = "QAField";
 
-
             //Tenant Specific Components
             public const string Garnet = "Garnet";
             public const string GLX = "GLX";
@@ -86,7 +86,7 @@ namespace RKCIUIAutomation.Config
             
         }
 
-        public static List<string> SetTenantComponents(TenantName tenantName)
+        public List<string> SetTenantComponents(TenantName tenantName)
         {
             IProjectProperties instance = null;
 

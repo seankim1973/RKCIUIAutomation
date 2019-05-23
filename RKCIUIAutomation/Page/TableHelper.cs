@@ -6,11 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using static RKCIUIAutomation.Page.KendoGrid;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page
 {
-    public class TableHelper : Action
+    public class TableHelper : BaseClass, ITableHelper //Action
     {
         public TableHelper()
         {
@@ -18,11 +18,8 @@ namespace RKCIUIAutomation.Page
 
         public TableHelper(IWebDriver driver) => this.Driver = driver;
 
-        //[ThreadStatic]
-        //private KendoGrid _kendo;
-
-        //public static IKendoGrid Kendo;
-
+        //public IKendoGrid Kendo { get; set; } = new KendoGrid();
+        
         #region Kendo Grid Public Methods
 
         //public void ClickCommentTabNumber(int commentNumber) => Kendo.ClickCommentTab(commentNumber);
@@ -34,19 +31,19 @@ namespace RKCIUIAutomation.Page
         public void RefreshTable() => Kendo.Reload();
 
         public int GetTableRowCount(bool isMultiTabGrid = true)
-            => GetElementsCount(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}//tbody/tr"));
+            => PageAction.GetElementsCount(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}//tbody/tr"));
 
         //<<-- Table Page Navigation Helpers -->>
-        private By GetGoToTblPgBtn_ByLocator(TableButton tblPageNavBtn)
+        public By GetGoToTblPgBtn_ByLocator(TableButton tblPageNavBtn)
             => By.XPath($"//a[contains(@aria-label,'{tblPageNavBtn.GetString()}')]");
 
-        public void GoToFirstPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.First));
+        public void GoToFirstPage() => PageAction.JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.First));
 
-        public void GoToPreviousPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Previous));
+        public void GoToPreviousPage() => PageAction.JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Previous));
 
-        public void GoToNextPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Next));
+        public void GoToNextPage() => PageAction.JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Next));
 
-        public void GoToLastPage() => JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Last));
+        public void GoToLastPage() => PageAction.JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Last));
 
         public int GetCurrentPageNumber() => Kendo.GetCurrentPageNumber();
 
@@ -102,7 +99,7 @@ namespace RKCIUIAutomation.Page
         #region Table Row Button Methods
 
         //<<-- Table Row Button Helpers -->>
-        private class BtnCategory
+        public class BtnCategory
         {
             internal const string LastOrOnlyInRow = "LastOrOnlyInRow";
             internal const string MultiDupsInRow = "MultiDupsInRow";
@@ -112,7 +109,7 @@ namespace RKCIUIAutomation.Page
             internal const string Download = "Download";
         }
 
-        internal enum TableButton
+        public enum TableButton
         {
             [StringValue("/input", BtnCategory.LastOrOnlyInRow)] CheckBox,
             [StringValue("/a", BtnCategory.LastOrOnlyInRow)] QMS_Attachments_View,
@@ -164,7 +161,7 @@ namespace RKCIUIAutomation.Page
             Single
         }
 
-        private string DetermineTblRowBtnXPathExt(TableButton tblBtn, bool rowEndsWithChkbx = false)
+        public string DetermineTblRowBtnXPathExt(TableButton tblBtn, bool rowEndsWithChkbx = false)
         {
             string xPathExtRowType = string.Empty;
             string xPathExt = string.Empty;
@@ -207,12 +204,12 @@ namespace RKCIUIAutomation.Page
             return xPathExt;
         }
 
-        private string GetGridTypeXPath(bool isMultiTabGrid)
+        public string GetGridTypeXPath(bool isMultiTabGrid)
             => isMultiTabGrid 
                 ? "//div[@class='k-content k-state-active']"
                 : "//div[@data-role='grid']";
 
-        private string GetXPathForTblRowBasedOnTextInRowOrRowIndex<T>(T textInRowForAnyColumnOrRowIndex, bool useContainsOperator = false)
+        public string GetXPathForTblRowBasedOnTextInRowOrRowIndex<T>(T textInRowForAnyColumnOrRowIndex, bool useContainsOperator = false)
         {
             object argObj = null;
             string xpath = string.Empty;
@@ -237,7 +234,7 @@ namespace RKCIUIAutomation.Page
             return xpath;
         }
 
-        private By GetTblRowBtn_ByLocator<T>(TableButton tblRowBtn, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
+        public By GetTblRowBtn_ByLocator<T>(TableButton tblRowBtn, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
 
         public By GetTblRow_ByLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
@@ -256,18 +253,18 @@ namespace RKCIUIAutomation.Page
 
                 if (getValueFromColumnName is string)
                 {
-                    cArgObj = ConvertToType<string>(getValueFromColumnName);
+                    cArgObj = Utility.ConvertToType<string>(getValueFromColumnName);
                     columnDataTypeXPath = $"//th[@data-title='{(string)cArgObj}']";
                 }
                 else if (getValueFromColumnName is Enum)
                 {
-                    cArgObj = ConvertToType<Enum>(getValueFromColumnName);
+                    cArgObj = Utility.ConvertToType<Enum>(getValueFromColumnName);
                     string columnId = ((Enum)cArgObj).GetString();
                     columnDataTypeXPath = $"//th[@data-field='{columnId}']";
                 }
           
                 By headerLocator = By.XPath($"{gridTypeXPath}{columnDataTypeXPath}");
-                string dataIndex = GetAttribute(headerLocator, "data-index");
+                string dataIndex = PageAction.GetAttribute(headerLocator, "data-index");
                 int xPathIndex = int.Parse(dataIndex) + 1;
 
                 rowXPath = $"{gridTypeXPath}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
@@ -277,10 +274,10 @@ namespace RKCIUIAutomation.Page
                 log.Error(e.StackTrace);
             }
 
-            return GetText(By.XPath(rowXPath));
+            return PageAction.GetText(By.XPath(rowXPath));
         }
 
-        private void ClickButtonForRow<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
+        public void ClickButtonForRow<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
         {
             try
             {
@@ -288,15 +285,15 @@ namespace RKCIUIAutomation.Page
                     ? new string[] { "Toggled", "checkbox" }
                     : new string[] { "Clicked", "button" };
                 By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
-                JsClickElement(locator);
-                LogStep($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
+                PageAction.JsClickElement(locator);
+                Utility.LogStep($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
 
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
         }
 
         internal By GetTableBtnLocator<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
@@ -356,7 +353,7 @@ namespace RKCIUIAutomation.Page
         public void ClickEnterBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
         {
             ClickButtonForRow(TableButton.Action_Enter, textInRowForAnyColumn, isMultiTabGrid);
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
         }
 
         /// <summary>
@@ -392,7 +389,7 @@ namespace RKCIUIAutomation.Page
         }
 
         internal string GetPdfHref<T>(T textInColumnForRowOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
-            => GetAttribute(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInColumnForRowOrRowIndex)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}"), "href");
+            => PageAction.GetAttribute(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInColumnForRowOrRowIndex)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}"), "href");
 
         public void SelectCheckboxForRow<T>(T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true)
             => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumnOrRowIndex, isMultiTabGrid);
@@ -403,7 +400,7 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                WaitForPageReady();
+                PageAction.WaitForPageReady();
             }
             catch (Exception e)
             {
@@ -431,10 +428,10 @@ namespace RKCIUIAutomation.Page
             try
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
-                WaitForLoading();
+                PageAction.WaitForLoading();
                 string gridId = Kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
-                string gridType = GetAttribute(gridParentDivLocator, "class");
+                string gridType = PageAction.GetAttribute(gridParentDivLocator, "class");
 
                 switch (tableType)
                 {
@@ -461,11 +458,11 @@ namespace RKCIUIAutomation.Page
                         : false
                     );
 
-                tblRowElems = GetElements(tableRowsLocator);
+                tblRowElems = PageAction.GetElements(tableRowsLocator);
 
                 if (noRecordsExpected)
                 {
-                    noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
+                    noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
 
                     if (noRecordsMsgDisplayed)
                     {
@@ -476,7 +473,7 @@ namespace RKCIUIAutomation.Page
                     {
                         if (tblRowElems.Any())
                         {
-                            var recordRowDisplayed = ElementIsDisplayed(recordRowLocator);
+                            var recordRowDisplayed = PageAction.ElementIsDisplayed(recordRowLocator);
                             if (recordRowDisplayed)
                             {
                                 logMsg = $"No Records are Expected, but found {tblRowElems.Count} record";
@@ -492,8 +489,8 @@ namespace RKCIUIAutomation.Page
                 {
                     if (tblRowElems.Any())
                     {
-                        LogStep($"Searching for record: {recordNameOrNumber}");
-                        isDisplayedAsExpected = ElementIsDisplayed(recordRowLocator);
+                        Utility.LogStep($"Searching for record: {recordNameOrNumber}");
+                        isDisplayedAsExpected = PageAction.ElementIsDisplayed(recordRowLocator);
 
                         string contains = filterOperator == FilterOperator.Contains ? "Containing Value: " : "";
                         logMsg = isDisplayedAsExpected
@@ -502,7 +499,7 @@ namespace RKCIUIAutomation.Page
                     }
                     else
                     {
-                        noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
+                        noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
                         if (noRecordsMsgDisplayed)
                         {
                             logMsg = "Expected Record, but 'No Record Located' message is displayed";
@@ -514,7 +511,7 @@ namespace RKCIUIAutomation.Page
             {
                 log.Error(e.StackTrace);
 
-                noRecordsMsgDisplayed = ElementIsDisplayed(noRecordsMsgLocator);
+                noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
                 isDisplayedAsExpected = noRecordsExpected
                     ? noRecordsMsgDisplayed
                         ? true
@@ -524,7 +521,7 @@ namespace RKCIUIAutomation.Page
                         : true;
             }
 
-            LogInfo(logMsg, isDisplayedAsExpected);
+            Utility.LogInfo(logMsg, isDisplayedAsExpected);
 
             return isDisplayedAsExpected;
         }
@@ -604,7 +601,7 @@ namespace RKCIUIAutomation.Page
                             logMsg = "Searched for Error page headings, but did not find any";
                         }
 
-                        TestUtils.Utility.AddAssertionToList(errorSearchResult, "Verify ViewDirPDF page loaded successfully");
+                        TestUtility.AddAssertionToList(errorSearchResult, "Verify ViewDirPDF page loaded successfully");
                     }
                 }
 
@@ -620,9 +617,9 @@ namespace RKCIUIAutomation.Page
                             : "Change this message when bug is fixed - should show/check for a pop-up msg (Select a DIR Row)"
                         : $"Unexpected Actual PDF Report URL<br>Expected URL: {expectedReportUrl}<br>Actual URL: {actualReportUrl}";
 
-                TestUtils.Utility.AddAssertionToList(pdfTabUrlExpected, "ViewDirPDF URL is as expected");
+                TestUtility.AddAssertionToList(pdfTabUrlExpected, "ViewDirPDF URL is as expected");
                 bool[] results = new bool[]{pdfTabUrlExpected, errorSearchResult};
-                LogInfo($"{reportUrlLogMsg}", results);
+                Utility.LogInfo($"{reportUrlLogMsg}", results);
             }
             catch (Exception e)
             {

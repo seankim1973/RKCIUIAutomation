@@ -2,37 +2,34 @@
 using AventStack.ExtentReports.MarkupUtils;
 using log4net;
 using log4net.Core;
+using MiniGuids;
 using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page;
+using RKCIUIAutomation.Tools;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using static RKCIUIAutomation.Base.BaseClass;
+using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Page.StaticHelpers;
 
 namespace RKCIUIAutomation.Base
 {
-    public class BaseUtils : ConfigUtils
+    public class BaseUtils : BaseClass, IBaseUtils
     {
-        public static readonly ILog log = LogManager.GetLogger("");
-        public static string extentReportPath = string.Empty;
-        public static string fullTempFileName = string.Empty;
-        private static string fileName = string.Empty;
-        private static string dateString = string.Empty;
-        private static string baseTempFolder = string.Empty;
-        private static string screenshotSavePath = string.Empty;
+        string _tenantName { get; set; }
+        string _dateString { get; set; }
+        string _codeBasePath { get; set; }
+        string _baseTempFolder { get; set; }
+        string _extentReportPath { get; set; }
+        string _screenshotSavePath { get; set; }
 
         public BaseUtils()
         {
-            baseTempFolder = $"{GetCodeBasePath()}\\Temp";
-            fileName = BaseClass.tenantName.ToString();
-            dateString = GetDateString();
         }
 
         public BaseUtils(IWebDriver driver) => this.Driver = driver;
@@ -48,29 +45,76 @@ namespace RKCIUIAutomation.Base
             return cTemp;
         }
 
-        private string GetDateString()
+        public string GetDateString()
         {
-            string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
-            string month = shortDate[0];
-            string date = shortDate[1];
+            if (!_dateString.HasValue())
+            {
+                string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
+                string month = shortDate[0];
+                string date = shortDate[1];
 
-            month = (month.Length > 1) ? month : $"0{month}";
-            date = (date.Length > 1) ? date : $"0{date}";
-
-            return $"{month}{date}{shortDate[2]}";
+                month = (month.Length > 1) ? month : $"0{month}";
+                date = (date.Length > 1) ? date : $"0{date}";
+                _dateString = $"{month}{date}{shortDate[2]}";
+            }
+            return _dateString;
         }
 
-        public static void DetermineReportFilePath()
+        public void DetermineReportFilePath()
         {
-            extentReportPath = $"{GetCodeBasePath()}\\Report";
-            screenshotSavePath = $"{extentReportPath}\\errorscreenshots\\";
+            _codeBasePath = GetCodeBasePath();
+            _extentReportPath = GetExtentReportPath();
+            _screenshotSavePath = GetScreenshotSavePath();
         }
 
-        public static string GetCodeBasePath()
+        public string GetScreenshotSavePath()
         {
-            Directory.SetCurrentDirectory(Directory.GetParent(TestContext.CurrentContext.TestDirectory).ToString());
-            string baseDir = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
-            return baseDir;
+            if (!_screenshotSavePath.HasValue())
+            {
+                _codeBasePath = GetCodeBasePath();
+                _extentReportPath = GetExtentReportPath();
+                _screenshotSavePath = $"{_extentReportPath}\\errorscreenshots\\";
+            }
+            return _screenshotSavePath;
+        }
+
+        public string GetExtentReportPath()
+        {
+            if (!_extentReportPath.HasValue())
+            {
+                _codeBasePath = GetCodeBasePath();
+                _extentReportPath = $"{_codeBasePath}\\Report";
+            }
+            return _extentReportPath;
+        }
+
+        public string GetCodeBasePath()
+        {
+            if (!_codeBasePath.HasValue())
+            {
+                Directory.SetCurrentDirectory(Directory.GetParent(TestContext.CurrentContext.TestDirectory).ToString());
+                _codeBasePath = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
+            }
+            return _codeBasePath;
+        }
+
+        public string GetBaseTempFolder()
+        {
+            if (!_baseTempFolder.HasValue())
+            {
+                _codeBasePath = GetCodeBasePath();
+                _baseTempFolder = $"{_codeBasePath}\\Temp";
+            }
+            return _baseTempFolder;
+        }
+
+        public string GetTenantName()
+        {
+            if (!_tenantName.HasValue())
+            {
+                _tenantName = tenantName.ToString();
+            }
+            return _tenantName;
         }
 
         public string CaptureScreenshot(string fileName)
@@ -81,9 +125,12 @@ namespace RKCIUIAutomation.Base
 
             try
             {
-                Directory.CreateDirectory(screenshotSavePath);
-                uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
-                fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
+                 
+                _screenshotSavePath = GetScreenshotSavePath();
+                _tenantName = GetTenantName();
+                Directory.CreateDirectory(_screenshotSavePath);
+                uniqueFileName = $"{fileName}{DateTime.Now.Second}_{_tenantName}.png";
+                fullFilePath = $"{_screenshotSavePath}{uniqueFileName}";
 
                 if (reporter == Reporter.Klov)
                 {
@@ -129,7 +176,7 @@ namespace RKCIUIAutomation.Base
 
         //ExtentReports Loggers
 
-        private static void LevelLogger(Level logLevel, string logDetails)
+        private void LevelLogger(Level logLevel, string logDetails)
         {
             if (logLevel == Level.Debug)
             {
@@ -149,7 +196,7 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        private static void CheckForLineBreaksInLogMsg(Level logLevel, string logDetails, Exception e = null)
+        private void CheckForLineBreaksInLogMsg(Level logLevel, string logDetails, Exception e = null)
         {
             if (logDetails.Contains("<br>"))
             {
@@ -235,7 +282,7 @@ namespace RKCIUIAutomation.Base
             CheckForLineBreaksInLogMsg(Level.Error, details, e);
         }
 
-        public static void LogInfo(string details)
+        public void LogInfo(string details)
         {
             if (details.Contains("<br>"))
             {
@@ -276,6 +323,8 @@ namespace RKCIUIAutomation.Base
 
         [ThreadStatic]
         private static Cookie cookie;
+
+        //public List<string> TenantComponents { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public void LogStep(string testStep, bool logInfo = false, bool testResult = true)
         {
@@ -325,18 +374,20 @@ namespace RKCIUIAutomation.Base
             object resultObj = null;
             int resultGauge = 0;
             Type assertionType = assertion.GetType();
-            BaseUtils baseUtils = new BaseUtils();
+            //BaseUtils baseUtils = new BaseUtils();
 
             if (assertionType == typeof(bool))
             {
-                resultObj = baseUtils.ConvertToType<bool>(assertion);
+                //resultObj = baseUtils.ConvertToType<bool>(assertion);
+                resultObj = ConvertToType<bool>(assertion);
                 resultGauge = (bool)resultObj
                     ? resultGauge + 1
                     : resultGauge - 1;
             }
             else if (assertionType == typeof(bool[]))
             {
-                resultObj = baseUtils.ConvertToType<bool[]>(assertion);
+                //resultObj = baseUtils.ConvertToType<bool[]>(assertion);
+                resultObj = ConvertToType<bool[]>(assertion);
                 resultObj = new bool[] { };
 
                 foreach (bool obj in (bool[])resultObj)
@@ -409,28 +460,34 @@ namespace RKCIUIAutomation.Base
                 };
 
             Type argType = expected.GetType();
-            BaseUtils baseUtils = new BaseUtils();
+            //BaseUtils baseUtils = new BaseUtils();
             string Should = string.Empty;
             string Is = string.Empty;
 
             if (argType == typeof(string))
             {
-                baseUtils.ConvertToType<string>(expected);
-                baseUtils.ConvertToType<string>(actual);
+                //baseUtils.ConvertToType<string>(expected);
+                //baseUtils.ConvertToType<string>(actual);
+                ConvertToType<string>(expected);
+                ConvertToType<string>(actual);
 
                 Should = isResultExpected ? "" : "";
             }
             else if (argType == typeof(int))
             {
-                baseUtils.ConvertToType<int>(expected);
-                baseUtils.ConvertToType<int>(actual);
+                //baseUtils.ConvertToType<int>(expected);
+                //baseUtils.ConvertToType<int>(actual);
+                ConvertToType<int>(expected);
+                ConvertToType<int>(actual);
             }
             else if (argType == typeof(bool))
             {
-                Should = baseUtils.ConvertToType<bool>(expected)
+                //Should = baseUtils.ConvertToType<bool>(expected)
+                Should = ConvertToType<bool>(expected)
                     ? "Should be selected"
                     : "Should Not be selected";
-                Is = baseUtils.ConvertToType<bool>(actual)
+                //Is = baseUtils.ConvertToType<bool>(actual)
+                Is = ConvertToType<bool>(actual)
                     ? "Is selected"
                     : "Is Not selected";
             }
@@ -439,35 +496,35 @@ namespace RKCIUIAutomation.Base
             LogInfo($"{expectedHeader}: {expected}<br>{actualHeader}: {actual}<br>{element.ToString()} {logMsg} ", isResultExpected);
         }
 
-        private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
+        private IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
             => MarkupHelper.CreateLabel(details, extentColor);
 
-        private static IMarkup CreateReportMarkupCodeBlock(Exception e)
+        private IMarkup CreateReportMarkupCodeBlock(Exception e)
             => MarkupHelper.CreateCodeBlock($"Exception: {e.StackTrace}");
 
         //Helper methods to gather Test Context Details
-        public static string GetTestName()
+        public string GetTestName()
             => GetTestContextProperty(TestContextProperty.TestName);
 
-        public static string GetTestComponent1()
+        public string GetTestComponent1()
             => GetTestContextProperty(TestContextProperty.TestComponent1);
 
-        public static string GetTestComponent2()
+        public string GetTestComponent2()
             => GetTestContextProperty(TestContextProperty.TestComponent2);
 
-        public static string GetTestDescription()
+        public string GetTestDescription()
             => GetTestContextProperty(TestContextProperty.TestDescription);
 
-        public static string GetTestPriority()
+        public string GetTestPriority()
             => GetTestContextProperty(TestContextProperty.TestPriority);
 
-        public static string GetTestCaseNumber()
+        public string GetTestCaseNumber()
             => GetTestContextProperty(TestContextProperty.TestCaseNumber);
 
-        public static string GetTestClassName()
+        public string GetTestClassName()
             => GetTestContextProperty(TestContextProperty.TestClass);
 
-        private static string GetTestContextProperty(TestContextProperty testContextProperty)
+        private string GetTestContextProperty(TestContextProperty testContextProperty)
         {
             TestContext.TestAdapter testInstance = TestContext.CurrentContext.Test;
             string context = string.Empty;
@@ -537,10 +594,12 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
-                fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
-
-                Directory.CreateDirectory(baseTempFolder);
-                string path = $"{fullTempFileName}{fileExt}";
+                string tmpFolder = Utility.GetBaseTempFolder();
+                string fileName = Utility.GetTenantName();
+                string dateString = Utility.GetDateString();
+                string fullFilePath = $"{tmpFolder}\\{fileName}({dateString})";
+                Directory.CreateDirectory(tmpFolder);
+                string path = $"{fullFilePath}{fileExt}";
 
                 if (overwriteExisting == true)
                 {
@@ -587,119 +646,86 @@ namespace RKCIUIAutomation.Base
                 throw;
             }
         }
-    }
 
-    public static class BaseHelper
-    {
-        private static PageBaseHelper pgbHelper = new PageBaseHelper();
 
-        /// <summary>
-        /// Returns string value [EnvPrefix_varKey] when varKey argument is provided, otherwise returns string value [EnvPrefix]
-        /// <para>[EnvPrefix] consists of [TestCase Number, Test Name, Test Env, Tenant Name]</para>
-        /// </summary>
-        /// <param name="varKey"></param>
-        /// <returns></returns>
-        public static string GetEnvVarPrefix(string varKey = "")
+        [ThreadStatic]
+        internal static Hashtable Hashtable;
+
+        internal Hashtable GetHashTable() => Hashtable ?? new Hashtable();
+
+        public string GenerateRandomGuid()
         {
-            string testName = BaseUtils.GetTestName();
-            string tcNumber = BaseUtils.GetTestCaseNumber();
-            var prefix = $"{tcNumber}{testName}{testEnv}{tenantName}";
-            var key = varKey.HasValue()
-                ? $"{prefix}_{varKey}"
-                : prefix;
-
-            return key;
+            MiniGuid guid = MiniGuid.NewGuid();
+            return guid;
         }
 
-        public static string SplitCamelCase(this string str, bool removeUnderscore = true)
+        public void CreateVar<T>(T key, string value = "", bool withPrefix = true)
         {
-            string value = (removeUnderscore == true) ? Regex.Replace(str, @"_", "") : str;
-            return Regex.Replace(Regex.Replace(value, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
-        }
-
-        public static string ReplaceSpacesWithUnderscores(this string str)
-            => Regex.Replace(str, @" ", "_");
-
-        public static void AssignReportCategories(this ExtentTest testInstance, string[] category)
-        {
-            for (int i = 0; i < category.Length; i++)
-            {
-                testInstance
-                    .AssignCategory(category[i]);
-            }
-        }
-
-        /// <summary>
-        /// Allows for test cases to continue running when an error, which is not related to the objective of the test case, occurs but impacts the overall result of the test case.
-        /// Used in conjection with CheckForTestStatusInjection method, which is part of the TearDown attribute in the BaseClass.
-        /// </summary>
-        /// <param name="status"></param>
-        /// <param name="logMsg"></param>
-        public static void InjectTestStatus(TestStatus status, string logMsg)
-        {
-            pgbHelper.CreateVar($"_msgKey", logMsg);
-            pgbHelper.CreateVar($"_statusKey", status.ToString());
-        }
-
-        /// <summary>
-        /// Used in conjunction with InjectTestStatus method.
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public static List<object> CheckForTestStatusInjection(this TestContext.ResultAdapter result)
-        {
-            PageHelper pageHelper = new PageHelper();
-            List<object> testResults = new List<object>();
-
             try
             {
-                TestStatus _testStatus = TestStatus.Inconclusive;
+                string logMsg = string.Empty;
+                string argKey = Utility.ConvertToType<string>(key);
+                argKey = withPrefix
+                    ? GetEnvVarPrefix(argKey)
+                    : argKey;
 
-                //var prefix = GetEnvVarPrefix();
-                var injStatusKey = GetEnvVarPrefix("_statusKey");
-                var injMsgKey = GetEnvVarPrefix("_msgKey");
+                value = value.HasValue()
+                    ? value
+                    : GenerateRandomGuid();
 
-                string injStatus = string.Empty;
-                string injMsg = string.Empty;
+                Hashtable = GetHashTable();
 
-                if (pgbHelper.HashKeyExists(injStatusKey))
+                if (!HashKeyExists(argKey))
                 {
-                    injStatus = pgbHelper.GetVar(injStatusKey, true);
-                    injMsg = pgbHelper.GetVar(injMsgKey, true);
-
-                    switch (injStatus)
-                    {
-                        case "Warning":
-                            _testStatus = TestStatus.Warning;
-                            break;
-
-                        case "Failed":
-                            _testStatus = TestStatus.Failed;
-                            break;
-
-                        case "Skipped":
-                            _testStatus = TestStatus.Skipped;
-                            break;
-
-                        default:
-                            _testStatus = TestStatus.Inconclusive;
-                            break;
-                    }
+                    Hashtable.Add(argKey, value);
+                    logMsg = "Created";
                 }
                 else
                 {
-                    _testStatus = result.Outcome.Status;
+                    Hashtable[argKey] = value;
+                    logMsg = "Updated";
                 }
 
-                testResults.Add(_testStatus);
-                testResults.Add(injMsg);
+                log.Debug($"{logMsg} HashTable - Key: {argKey} : Value: {value}");
             }
             catch (Exception e)
             {
-                BaseUtils.log.Error(e.StackTrace);
+                log.Error($"Error occured while adding to HashTable \n{e.Message}");
+                throw;
             }
-            
-            return testResults;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string GetVar<T>(T key, bool keyIncludesPrefix = false)
+        {
+            string argKey = ConvertToType<string>(key);
+            argKey = keyIncludesPrefix
+                ? argKey
+                : GetEnvVarPrefix(argKey);
+
+            if (!HashKeyExists(argKey))
+            {
+                CreateVar(argKey, "", false);
+            }
+
+            Hashtable = GetHashTable();
+            var varValue = Hashtable[argKey].ToString();
+            log.Debug($"#####GetVar Key: {argKey} has Value: {varValue}");
+
+            return varValue;
+        }
+
+        public bool HashKeyExists(string key)
+        {
+            Hashtable = GetHashTable();
+            return Hashtable.ContainsKey(key);
+        }
+
+
     }
 }

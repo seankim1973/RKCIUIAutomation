@@ -4,7 +4,7 @@ namespace RKCIUIAutomation.Page
 {
     public interface IKendoGrid
     {
-        //KendoGrid _Kendo { get; set; }
+        KendoGrid GetInstance();
         void ChangePageSize(int newSize, TableHelper.TableType tableType = TableHelper.TableType.Unknown);
         void ClickCommentTab(int commentNumber);
         void ClickTableTab(string tblTabName);

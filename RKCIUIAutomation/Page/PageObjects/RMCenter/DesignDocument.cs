@@ -17,13 +17,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class DesignDocument : DesignDocument_Impl
     {
         public DesignDocument()
-        {
-            //designDocDetailsHeaders = new List<DesignDocHeader>() { };
-            //designDocCreatePgEntryFields = new List<DesignDocEntryField>() { };
-            //commentEntryFieldKeyValuePairs = new List<KeyValuePair<Enum, string>>() { };
-            //createPgEntryFieldKeyValuePairs = new List<KeyValuePair<DesignDocEntryField, string>>() { };
-
-            
+        {            
             createPgEntryFieldKeyValuePairs = GetDesignDocEntryFieldKeyValuePairs();           
             commentEntryFieldKeyValuePairs = GetCommentEntryFieldKeyValuePairs();
         }
@@ -515,7 +509,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
 
             string reportName = $"VerifyDesignDocDetailsHeader [GridTab ({documentStatus})]";
-            TestUtils.Utility.AddAssertionToList(VerifyExpectedList(actualValueInHeaderList, expectedValueInHeaderList, reportName), reportName);
+            TestUtils.GetInstance().AddAssertionToList(VerifyExpectedList(actualValueInHeaderList, expectedValueInHeaderList, reportName), reportName);
         }
 
         public override string GetHeaderValue(DesignDocHeader docHeader)
@@ -602,7 +596,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             ClickTab_Closed();
             //SelectTab(TableTab.Closed);
-            TestUtils.Utility.AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber), $"VerifyItemStatusIsClosed");
+            TestUtils.GetInstance.AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber), $"VerifyItemStatusIsClosed");
         }
 
     }

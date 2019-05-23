@@ -12,11 +12,19 @@ namespace RKCIUIAutomation.Page
 
     public class KendoGrid : Action, IKendoGrid
     {
-        protected static KendoGrid _instance { get; set; }
-        public static KendoGrid Kendo { get => _instance = new KendoGrid(); set { } }
+        KendoGrid _Kendo { get; set; }
+        public KendoGrid GetInstance()
+        {
+            if (_Kendo == null)
+            {
+                _Kendo = new KendoGrid();
+            }
 
+            return _Kendo;
+        }
         public KendoGrid()
         {
+            _Kendo = new KendoGrid();
         }
 
         public KendoGrid(IWebDriver driver) => this.Driver = driver;
