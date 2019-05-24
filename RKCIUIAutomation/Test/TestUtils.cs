@@ -57,7 +57,7 @@ namespace RKCIUIAutomation.Test
                 WriteToFile(Environment.NewLine);
 
                 IList<IWebElement> elements = new List<IWebElement>();
-                elements = PageAction.GetElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
+                elements = PageAction().GetElements(By.XPath("//ul[@class='nav navbar-nav']/li[@class='dropdown']"));  //MainNav Elements
                 if (elements.Any())
                 {
                     foreach (IWebElement mainNavElem in elements)
@@ -150,7 +150,7 @@ namespace RKCIUIAutomation.Test
                 }
                 else
                 {
-                    Utility.LogError("!!! Unable to retrieve navigation menu URLs", false);
+                    BaseUtility.LogError("!!! Unable to retrieve navigation menu URLs", false);
                 }
             }
             catch (Exception e)
@@ -177,8 +177,8 @@ namespace RKCIUIAutomation.Test
                 ? $" - {additionalDetails}"
                 : "";
 
-            PageAction.WaitForPageReady();
-            AddAssertionToList(PageAction.VerifyPageHeader(expectedPageHeader), $"VerifyPageTitle('{expectedPageHeader}'){additionalDetails}");
+            PageAction().WaitForPageReady();
+            AddAssertionToList(PageAction().VerifyPageHeader(expectedPageHeader), $"VerifyPageTitle('{expectedPageHeader}'){additionalDetails}");
         }
 
         public void AddAssertionToList(bool assertion, string details = "")
@@ -213,7 +213,7 @@ namespace RKCIUIAutomation.Test
                         }
                         catch (Exception e)
                         {
-                            Utility.LogError(e.StackTrace);
+                            BaseUtility.LogError(e.StackTrace);
                         }
                     }
 
@@ -232,7 +232,6 @@ namespace RKCIUIAutomation.Test
 
             HttpWebResponse httpResponse = (HttpWebResponse)httpRequest.GetResponse();
             Stream httpResponseStream = httpResponse.GetResponseStream();
-
         }
     }
 }

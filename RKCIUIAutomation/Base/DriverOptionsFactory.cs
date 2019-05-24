@@ -69,7 +69,7 @@ namespace RKCIUIAutomation.Base
         {
             if (browser == BrowserType.Chrome)
             {
-                ChromeOptions chromeOptions = Utility.ConvertToType<ChromeOptions>(options);
+                ChromeOptions chromeOptions = BaseUtility.ConvertToType<ChromeOptions>(options);
                 chromeOptions.PageLoadStrategy = PageLoadStrategy.None;
                 chromeOptions.AddArgument("no-sandbox");
                 chromeOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
@@ -78,7 +78,7 @@ namespace RKCIUIAutomation.Base
             }
             else if (browser == BrowserType.Firefox)
             {
-                FirefoxOptions firefoxOptions = Utility.ConvertToType<FirefoxOptions>(options);
+                FirefoxOptions firefoxOptions = BaseUtility.ConvertToType<FirefoxOptions>(options);
                 firefoxOptions.PageLoadStrategy = PageLoadStrategy.None;
                 firefoxOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
                 firefoxOptions.AddAdditionalCapability("zal:name", testDetails, true);
@@ -86,7 +86,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                DriverOptions _options = Utility.ConvertToType<DriverOptions>(options);
+                DriverOptions _options = BaseUtility.ConvertToType<DriverOptions>(options);
                 _options.PageLoadStrategy = PageLoadStrategy.None;
                 _options.AddAdditionalCapability("zal:tz", "America/Chicago");
                 _options.AddAdditionalCapability("zal:name", testDetails);

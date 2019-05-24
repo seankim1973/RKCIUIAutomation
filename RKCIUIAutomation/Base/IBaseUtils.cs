@@ -6,14 +6,14 @@ namespace RKCIUIAutomation.Base
 {
     public interface IBaseUtils
     {
-        string CaptureScreenshot(string fileName);
+        string CaptureScreenshot(string fileName = "");
         OutType ConvertToType<OutType>(object objToConvert);
         void CreateVar<T>(T key, string value = "", bool withPrefix = true);
-        void DetermineReportFilePath();
+        void DetermineReportFilePath(TenantName tenantName);
         string GenerateRandomGuid();
-        string GetScreenshotSavePath();
-        string GetExtentReportPath();
-        string GetCodeBasePath();
+        void SetScreenshotSavePath();
+        void SetExtentReportPath();
+        void SetCodeBasePath();
         string GetBaseTempFolder();
         string GetDateString();
         string GetTenantName();
@@ -37,7 +37,6 @@ namespace RKCIUIAutomation.Base
         void LogInfo<T>(string details, T assertion, Exception e = null);
         void LogStep(string testStep, bool logInfo = false, bool testResult = true);
         //void RunExternalExecutible(string executible, string cmdLineArgument);
-        string SetGridAddress(TestPlatform platform, string gridIPv4Hostname = "");
-        //void WriteToFile(string msg, string fileExt = ".txt", bool overwriteExisting = false);
+        void ConfigGridAddress(TestPlatform platform, string gridIPv4Hostname = "");
     }
 }

@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using RKCIUIAutomation.Tools;
+using static RKCIUIAutomation.Config.ProjectProperties;
+using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.UnitTest
 {

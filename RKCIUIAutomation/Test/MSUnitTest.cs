@@ -19,6 +19,7 @@ using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Threading;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Sandbox
 {
@@ -109,13 +110,13 @@ namespace RKCIUIAutomation.Sandbox
             //IntPtr winHandle = AutoItX.WinGetHandle("Untitled");
             //AutoItX.WinKill(winHandle);
 
-            log.Error($"{GetCodeBasePath()}\\UploadFiles\\test.xlsx");
+            log.Error($"{CodeBasePath}\\UploadFiles\\test.xlsx");
         }
 
         //[TestMethod]
         public void MSUnitTest2()
         {
-            List<string> components = SetTenantComponents(TenantName.Garnet);
+            List<string> components = Property().TenantComponents;
             int componentCount = components.Count;
 
             log.Error($"Component count is {componentCount}");
@@ -126,7 +127,7 @@ namespace RKCIUIAutomation.Sandbox
             }
 
             Assert.IsTrue(componentCount.Equals(4));
-            Assert.IsFalse(components.Contains(Component.DIR));
+            Assert.IsFalse(components.Contains(ProjectProperties.Component.DIR));
         }
 
         //[TestMethod]

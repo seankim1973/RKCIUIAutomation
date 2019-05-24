@@ -21,33 +21,56 @@ namespace RKCIUIAutomation.Base
 {
     public class BaseUtils : BaseClass, IBaseUtils
     {
-        string _tenantName { get; set; }
-        string _dateString { get; set; }
-        string _codeBasePath { get; set; }
-        string _baseTempFolder { get; set; }
-        string _extentReportPath { get; set; }
-        string _screenshotSavePath { get; set; }
+        public string CurrentTenantName { get; private set; }
+        public static string DateString { get; private set; }
+        public string CodeBasePath { get; private set; }
+        public static string BaseTempFolder { get; private set; }
+        public string ExtentReportPath { get; private set; }
+        public string ScreenshotSavePath { get; private set; }
 
         public BaseUtils()
         {
         }
 
+        public BaseUtils(TenantName tenantName)
+            => DetermineReportFilePath(tenantName);
+
+        public BaseUtils(TestPlatform testPlatform, string gridAddress)
+            => ConfigGridAddress(testPlatform, gridAddress);
+
         public BaseUtils(IWebDriver driver) => this.Driver = driver;
 
-        private string SetWinTempFolder()
+        public void SetCodeBasePath()
         {
-            string cTemp = "C:\\Temp";
-            if (!File.Exists(cTemp))
+            if (!CodeBasePath.HasValue())
             {
-                Directory.CreateDirectory(cTemp);
+                Directory.SetCurrentDirectory(Directory.GetParent(TestContext.CurrentContext.TestDirectory).ToString());
+                CodeBasePath = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
             }
-
-            return cTemp;
         }
+
+        public void SetExtentReportPath()
+        {
+            if (!ExtentReportPath.HasValue())
+            {
+                ExtentReportPath = $"{CodeBasePath}\\Report";
+            }
+        }
+
+        //private string SetWinTempFolder()
+        //{
+        //    string cTemp = "C:\\Temp";
+        //    if (!File.Exists(cTemp))
+        //    {
+        //        Directory.CreateDirectory(cTemp);
+        //    }
+
+        //    return cTemp;
+        //}
 
         public string GetDateString()
         {
-            if (!_dateString.HasValue())
+            if (!DateString.HasValue())
             {
                 string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
                 string month = shortDate[0];
@@ -55,69 +78,47 @@ namespace RKCIUIAutomation.Base
 
                 month = (month.Length > 1) ? month : $"0{month}";
                 date = (date.Length > 1) ? date : $"0{date}";
-                _dateString = $"{month}{date}{shortDate[2]}";
+                DateString = $"{month}{date}{shortDate[2]}";
             }
-            return _dateString;
+
+            return DateString;
         }
 
-        public void DetermineReportFilePath()
+        public void SetScreenshotSavePath()
         {
-            _codeBasePath = GetCodeBasePath();
-            _extentReportPath = GetExtentReportPath();
-            _screenshotSavePath = GetScreenshotSavePath();
-        }
-
-        public string GetScreenshotSavePath()
-        {
-            if (!_screenshotSavePath.HasValue())
+            if (!ScreenshotSavePath.HasValue())
             {
-                _codeBasePath = GetCodeBasePath();
-                _extentReportPath = GetExtentReportPath();
-                _screenshotSavePath = $"{_extentReportPath}\\errorscreenshots\\";
+                ScreenshotSavePath = $"{ExtentReportPath}\\errorscreenshots\\";
             }
-            return _screenshotSavePath;
-        }
-
-        public string GetExtentReportPath()
-        {
-            if (!_extentReportPath.HasValue())
-            {
-                _codeBasePath = GetCodeBasePath();
-                _extentReportPath = $"{_codeBasePath}\\Report";
-            }
-            return _extentReportPath;
-        }
-
-        public string GetCodeBasePath()
-        {
-            if (!_codeBasePath.HasValue())
-            {
-                Directory.SetCurrentDirectory(Directory.GetParent(TestContext.CurrentContext.TestDirectory).ToString());
-                _codeBasePath = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
-            }
-            return _codeBasePath;
         }
 
         public string GetBaseTempFolder()
         {
-            if (!_baseTempFolder.HasValue())
+            if (!BaseTempFolder.HasValue())
             {
-                _codeBasePath = GetCodeBasePath();
-                _baseTempFolder = $"{_codeBasePath}\\Temp";
+                BaseTempFolder = $"{CodeBasePath}\\Temp";
             }
-            return _baseTempFolder;
+
+            return BaseTempFolder;
         }
 
         public string GetTenantName()
         {
-            if (!_tenantName.HasValue())
+            if (!CurrentTenantName.HasValue())
             {
-                _tenantName = tenantName.ToString();
+                CurrentTenantName = tenantName.ToString();
             }
-            return _tenantName;
+            return CurrentTenantName;
         }
 
-        public string CaptureScreenshot(string fileName)
+        public void DetermineReportFilePath(TenantName tenantName)
+        {
+            SetCodeBasePath();
+            SetExtentReportPath();
+            SetScreenshotSavePath();
+        }
+
+        public string CaptureScreenshot(string fileName = "")
         {
             string uniqueFileName = string.Empty;
             string fullFilePath = string.Empty;
@@ -125,12 +126,9 @@ namespace RKCIUIAutomation.Base
 
             try
             {
-                 
-                _screenshotSavePath = GetScreenshotSavePath();
-                _tenantName = GetTenantName();
-                Directory.CreateDirectory(_screenshotSavePath);
-                uniqueFileName = $"{fileName}{DateTime.Now.Second}_{_tenantName}.png";
-                fullFilePath = $"{_screenshotSavePath}{uniqueFileName}";
+                Directory.CreateDirectory(ScreenshotSavePath);
+                uniqueFileName = $"{(fileName.HasValue() ? fileName : GetTestName())}{DateTime.Now.Second}_{GetTenantName()}.png";
+                fullFilePath = $"{ScreenshotSavePath}{uniqueFileName}";
 
                 if (reporter == Reporter.Klov)
                 {
@@ -163,15 +161,13 @@ namespace RKCIUIAutomation.Base
             return uniqueFileName;
         }
 
-        public string SetGridAddress(TestPlatform platform, string gridIPv4Hostname = "")
+        public void ConfigGridAddress(TestPlatform platform, string gridIPv4Hostname = "")
         {
-            string gridIPv4 = gridIPv4Hostname.Equals("")
+            GridVmIP = gridIPv4Hostname.Equals("")
                 ? platform == TestPlatform.GridLocal || platform == TestPlatform.Local
                     ? "127.0.0.1"
                     : "10.1.1.207"
                 : gridIPv4Hostname;
-
-            return gridIPv4;
         }
 
         //ExtentReports Loggers
@@ -263,7 +259,7 @@ namespace RKCIUIAutomation.Base
         public void LogErrorWithScreenshot(string details = "", ExtentColor color = ExtentColor.Red, Exception e = null)
         {
             string localScreenshotPath = @"C:\Automation\klov\errorscreenshots\";
-            string screenshotName = CaptureScreenshot(GetTestName());
+            string screenshotName = CaptureScreenshot();
             var screenshotRefPath = reporter == Reporter.Klov
                 ? testPlatform == TestPlatform.GridLocal
                     ? $"http://127.0.0.1/errorscreenshots/{screenshotName}"
@@ -593,11 +589,12 @@ namespace RKCIUIAutomation.Base
         public static void WriteToFile(string msg, string fileExt = ".txt", bool overwriteExisting = false)
         {
             try
-            {
-                string tmpFolder = Utility.GetBaseTempFolder();
-                string fileName = Utility.GetTenantName();
-                string dateString = Utility.GetDateString();
+            {               
+                string fileName = BaseUtility().GetTenantName();
+                string dateString = BaseUtility().GetDateString();
+                string tmpFolder = BaseUtility().GetBaseTempFolder();
                 string fullFilePath = $"{tmpFolder}\\{fileName}({dateString})";
+
                 Directory.CreateDirectory(tmpFolder);
                 string path = $"{fullFilePath}{fileExt}";
 
@@ -664,7 +661,7 @@ namespace RKCIUIAutomation.Base
             try
             {
                 string logMsg = string.Empty;
-                string argKey = Utility.ConvertToType<string>(key);
+                string argKey = BaseUtility().ConvertToType<string>(key);
                 argKey = withPrefix
                     ? GetEnvVarPrefix(argKey)
                     : argKey;

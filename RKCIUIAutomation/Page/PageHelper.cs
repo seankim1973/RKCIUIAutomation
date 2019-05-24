@@ -8,7 +8,7 @@ using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page
 {
-    public class PageHelper : BaseClass, IPageHelper
+    public class PageHelper : BaseUtils, IPageHelper
     {
         public PageHelper()
         {
@@ -106,11 +106,9 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListFieldXpath<T>(T ddListID)
         {
-            BaseUtils baseUtils = new BaseUtils();
-
             string _ddListID = (ddListID.GetType() == typeof(string))
-                ? baseUtils.ConvertToType<string>(ddListID)
-                : baseUtils.ConvertToType<Enum>(ddListID).GetString();
+                ? BaseUtility().ConvertToType<string>(ddListID)
+                : BaseUtility().ConvertToType<Enum>(ddListID).GetString();
 
             string _ddFieldXpath = _ddListID.Contains("Time")
                 ? $"//span[@aria-controls='{_ddListID}_timeview']"
@@ -121,11 +119,9 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListFieldExpandArrowXpath<T>(T ddListID, bool isMultiSelectDDList = false)
         {
-            BaseUtils baseUtils = new BaseUtils();
-
             string _ddListID = (ddListID.GetType() == typeof(string))
-                ? baseUtils.ConvertToType<string>(ddListID)
-                : baseUtils.ConvertToType<Enum>(ddListID).GetString();
+                ? BaseUtility().ConvertToType<string>(ddListID)
+                : BaseUtility().ConvertToType<Enum>(ddListID).GetString();
 
             string _ddArrowXpath = isMultiSelectDDList
                 ? $"//select[@id='{_ddListID}']/parent::div"
@@ -158,12 +154,12 @@ namespace RKCIUIAutomation.Page
 
             if (inputFieldLabelOrID is string)
             {
-                argValue = Utility.ConvertToType<string>(inputFieldLabelOrID);
+                argValue = BaseUtility().ConvertToType<string>(inputFieldLabelOrID);
                 argValue = $"//label[contains(text(),'{(string)argValue}')]/following::input[1]";
             }
             else if(inputFieldLabelOrID is Enum)
             {
-                argValue = Utility.ConvertToType<Enum>(inputFieldLabelOrID);               
+                argValue = BaseUtility().ConvertToType<Enum>(inputFieldLabelOrID);               
                 argValue = $"//input[@id='{((Enum)argValue).GetString()}']";
             }
 
@@ -182,8 +178,8 @@ namespace RKCIUIAutomation.Page
         private string SetDDListItemsXpath<T, I>(T ddListID, I itemIndexOrName, bool useContains = false)
         {
             string _ddListID = ddListID.GetType() == typeof(string)
-                ? Utility.ConvertToType<string>(ddListID)
-                : Utility.ConvertToType<Enum>(ddListID).GetString();
+                ? BaseUtility().ConvertToType<string>(ddListID)
+                : BaseUtility().ConvertToType<Enum>(ddListID).GetString();
 
             string ddListXPath = _ddListID.Contains("Time")
                 ? $"//ul[@id='{_ddListID}_timeview']"
@@ -193,14 +189,14 @@ namespace RKCIUIAutomation.Page
 
             if (itemIndexOrName.GetType().Equals(typeof(string)))
             {
-                var argName = Utility.ConvertToType<string>(itemIndexOrName);
+                var argName = BaseUtility().ConvertToType<string>(itemIndexOrName);
                 itemValueXPath = useContains
                     ? $"contains(text(),'{argName}')"
                     : $"text()='{argName}'";
             }
             else if (itemIndexOrName.GetType().Equals(typeof(int)))
             {
-                int itemIndex = Utility.ConvertToType<int>(itemIndexOrName);
+                int itemIndex = BaseUtility().ConvertToType<int>(itemIndexOrName);
                 itemIndex = _ddListID.Contains("Time")
                     ? itemIndex + 1
                     : itemIndex;
@@ -254,7 +250,7 @@ namespace RKCIUIAutomation.Page
 
         public By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
             => isMultiSelectDDList
-                ? By.XPath($"//select[@id='{Utility.ConvertToType<Enum>(ddListID).GetString()}']/parent::div")
+                ? By.XPath($"//select[@id='{BaseUtility().ConvertToType<Enum>(ddListID).GetString()}']/parent::div")
                 : By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
 
         /// <summary>
@@ -285,11 +281,11 @@ namespace RKCIUIAutomation.Page
 
             if (argType == typeof(string))
             {
-                buttonVal = Utility.ConvertToType<string>(buttonName);
+                buttonVal = BaseUtility().ConvertToType<string>(buttonName);
             }
             else if (argType == typeof(Enum))
             {
-                buttonVal = Utility.ConvertToType<Enum>(buttonName).GetString();
+                buttonVal = BaseUtility().ConvertToType<Enum>(buttonName).GetString();
             }
 
             return By.XPath(SetInputButtonXpath(buttonVal));

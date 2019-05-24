@@ -39,8 +39,8 @@ namespace RKCIUIAutomation.Page
         /// <returns></returns>
         public static string GetEnvVarPrefix(string varKey = "")
         {
-            string testName = Utility.GetTestName();
-            string tcNumber = Utility.GetTestCaseNumber();
+            string testName = BaseUtility.GetTestName();
+            string tcNumber = BaseUtility.GetTestCaseNumber();
             var prefix = $"{tcNumber}{testName}{BaseClass.testEnv}{BaseClass.tenantName}";
             var key = varKey.HasValue()
                 ? $"{prefix}_{varKey}"
@@ -75,8 +75,8 @@ namespace RKCIUIAutomation.Page
         /// <param name="logMsg"></param>
         public static void InjectTestStatus(TestStatus status, string logMsg)
         {
-            Utility.CreateVar($"_msgKey", logMsg);
-            Utility.CreateVar($"_statusKey", status.ToString());
+            BaseUtility.CreateVar($"_msgKey", logMsg);
+            BaseUtility.CreateVar($"_statusKey", status.ToString());
         }
 
         /// <summary>
@@ -100,10 +100,10 @@ namespace RKCIUIAutomation.Page
                 string injStatus = string.Empty;
                 string injMsg = string.Empty;
 
-                if (Utility.HashKeyExists(injStatusKey))
+                if (BaseUtility.HashKeyExists(injStatusKey))
                 {
-                    injStatus = Utility.GetVar(injStatusKey, true);
-                    injMsg = Utility.GetVar(injMsgKey, true);
+                    injStatus = BaseUtility.GetVar(injStatusKey, true);
+                    injMsg = BaseUtility.GetVar(injMsgKey, true);
 
                     switch (injStatus)
                     {

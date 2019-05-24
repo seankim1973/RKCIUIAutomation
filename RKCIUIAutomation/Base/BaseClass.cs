@@ -21,6 +21,11 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class BaseClass : WebDriverFactory
     {
+        public BaseClass()
+        {
+
+        }
+
         [ThreadStatic]
         public static string pageTitle;
 
@@ -139,21 +144,23 @@ namespace RKCIUIAutomation.Base
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
-            testPlatform = Configs.GetTestRunEnv<TestPlatform>(_testPlatform);
-            browserType = Configs.GetTestRunEnv<BrowserType>(_browserType);
-            testEnv = Configs.GetTestRunEnv<TestEnv>(_testEnv);
-            tenantName = Configs.GetTestRunEnv<TenantName>(_tenantName);
-            reporter = Configs.GetTestRunEnv<Reporter>(_reporter);
-            siteUrl = Configs.GetSiteUrl(testEnv, tenantName);
+            IConfigUtils config = ConfigUtility();
+            testPlatform = config.GetTestRunEnv<TestPlatform>(_testPlatform);
+            browserType = config.GetTestRunEnv<BrowserType>(_browserType);
+            testEnv = config.GetTestRunEnv<TestEnv>(_testEnv);
+            tenantName = config.GetTestRunEnv<TenantName>(_tenantName);
+            reporter = config.GetTestRunEnv<Reporter>(_reporter);
+            siteUrl = config.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
-            if (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local)
-            {
-                testPlatform = TestPlatform.Windows;
-            }
+            testPlatform = browserType == BrowserType.MicrosoftEdge
+                ? testPlatform == TestPlatform.Local
+                    ? TestPlatform.Windows
+                    : testPlatform
+                : testPlatform;
 
-            Utility.DetermineReportFilePath();
-            GridVmIP = Utility.SetGridAddress(testPlatform, _gridAddress);
+            SetReportPath(tenantName);
+            SetGridAddress(testPlatform, _gridAddress);
 
             if (hiptest)
             {
@@ -167,13 +174,14 @@ namespace RKCIUIAutomation.Base
         {
             var _suite = Regex.Split(GetType().Namespace, "\\.");
 
-            testName = Utility.GetTestName();
+            IBaseUtils baseUtil = BaseUtility();
+            testName = baseUtil.GetTestName();
             testSuite = _suite[_suite.Length - 1];
-            testPriority = Utility.GetTestPriority();
-            testCaseNumber = Utility.GetTestCaseNumber();
-            testComponent1 = Utility.GetTestComponent1();
-            testComponent2 = Utility.GetTestComponent2();
-            testDescription = Utility.GetTestDescription();
+            testPriority = baseUtil.GetTestPriority();
+            testCaseNumber = baseUtil.GetTestCaseNumber();
+            testComponent1 = baseUtil.GetTestComponent1();
+            testComponent2 = baseUtil.GetTestComponent2();
+            testDescription = baseUtil.GetTestDescription();
 
             testRunDetails = new string[]
             {
@@ -197,11 +205,12 @@ namespace RKCIUIAutomation.Base
         private void InitWebDriverInstance()
         {
             //List<string> tenantComponents = new List<string>();
-            List<string> tenantComponents = Props.SetTenantComponents(tenantName);
 
-            if (tenantComponents.Contains(testComponent1))
+            IProjectProperties props = SetTenantComponents(tenantName);
+
+            if (props.TenantComponents.Contains(testComponent1))
             {
-                if (tenantComponents.Contains(testComponent2) || !testComponent2.HasValue())
+                if (props.TenantComponents.Contains(testComponent2) || !testComponent2.HasValue())
                 {
                     testDetails = $"({testEnv}){tenantName} - {testName}";
                     Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
@@ -254,7 +263,7 @@ namespace RKCIUIAutomation.Base
 
                 testInstance.AssignReportCategories(reportCategories);
                 string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
-                Utility.LogAssertIgnore(msg);
+                BaseUtility().LogAssertIgnore(msg);
                 InjectTestStatus(TestStatus.Skipped, msg);
                 Assert.Ignore(msg);
             }
@@ -314,7 +323,7 @@ namespace RKCIUIAutomation.Base
                                 ? ""
                                 : $"{injMsg}<br> ")
                             : $"<pre>{result.StackTrace}</pre>";
-                        string screenshotName = Utility.CaptureScreenshot(Utility.GetTestName());
+                        string screenshotName = BaseUtility().CaptureScreenshot();
 
                         if (reporter == Reporter.Klov)
                         {

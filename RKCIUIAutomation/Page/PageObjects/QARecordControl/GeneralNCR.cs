@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
+using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Page.PageHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 {
@@ -156,11 +158,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             try
             {
-                JsClickElement(GetSubmitButtonByLocator(submitButton));
+                PageAction().JsClickElement(PgHelper().GetSubmitButtonByLocator(submitButton));
 
                 if (tenantHasAlert)
                 {
-                    ConfirmActionDialog(acceptAlert);
+                    PageAction().ConfirmActionDialog(acceptAlert);
                 }
             }
             catch (Exception e)
@@ -170,14 +172,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         internal void ClickBtn_Sign(InputFields signBtnType)
-            => JsClickElement(By.XPath($"//a[@signaturehidden='{signBtnType.GetString()}']"));
+            => PageAction().JsClickElement(By.XPath($"//a[@signaturehidden='{signBtnType.GetString()}']"));
 
         internal By SignaturePanelBtnXPathLocator(string btnName)
             => By.XPath($"//div[@id='ncrSignaturePopup']//a[text()='{btnName}']");
 
         internal string EnterDesc(string desc, InputFields descField, bool tempDescription = false, bool replaceCurrentDesc = true)
         {
-            By descLocator = GetTextAreaFieldByLocator(descField);
+            By descLocator = PgHelper().GetTextAreaFieldByLocator(descField);
 
             if (replaceCurrentDesc)
             {
@@ -185,10 +187,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             desc = desc.HasValue()
                 ? desc
-                : GetVar(tempDescription
+                : BaseUtility().GetVar(tempDescription
                     ? "NewNcrDescription"
                     : "NcrDescription");
-            EnterText(descLocator, desc);
+            PageAction().EnterText(descLocator, desc);
             return desc;
         }
 
@@ -202,12 +204,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             if (tempDescription)
             {
-                descValue = GetVar(descKey);
+                descValue = BaseUtility().GetVar(descKey);
                 logMsg = "new temp ";
             }
             else
             {
-                ncrDescription = GetVar(descKey);
+                ncrDescription = BaseUtility().GetVar(descKey);
                 descValue = ncrDescription;
                 logMsg = "";
             }
@@ -229,14 +231,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 if (isDisplayed)
                 {
-                    string docStatus = GetColumnValueForRow(_ncrDesc, "Workflow location");
+                    string docStatus = GridHelper().GetColumnValueForRow(_ncrDesc, "Workflow location");
                     ncrIsClosed = docStatus.Equals("Closed")
                         ? true
                         : false;
                     logMsg = $"Workflow Location displayed as: {docStatus}";
                 }
 
-                LogInfo($"NCR with description ({_ncrDesc}), {logMsg}", ncrIsClosed);
+                BaseUtility().LogInfo($"NCR with description ({_ncrDesc}), {logMsg}", ncrIsClosed);
             }
             catch (Exception e)
             {
@@ -522,15 +524,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         internal GeneralNCR GeneralNCR_Base => new GeneralNCR();
 
         public virtual void FilterDescription(string description = "")
-            => FilterTableColumnByValue(ColumnName.Description, description.HasValue()
+            => GridHelper().FilterTableColumnByValue(ColumnName.Description, description.HasValue()
                 ? description
                 : ncrDescription);
 
         public virtual void ClickBtn_Cancel() 
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
+            => PageAction().JsClickElement(PgHelper().GetSubmitButtonByLocator(SubmitButtons.Cancel));
 
         public virtual void ClickBtn_Revise()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise));
+            => PageAction().JsClickElement(PgHelper().GetSubmitButtonByLocator(SubmitButtons.Revise));
 
         public virtual void ClickBtn_Approve()
             => GeneralNCR_Base.ActionConfirmation(SubmitButtons.Approve);
@@ -539,22 +541,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => GeneralNCR_Base.ActionConfirmation(SubmitButtons.DisapproveClose);
 
         public virtual void ClickBtn_KickBack()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.KickBack));
+            => PageAction().JsClickElement(PgHelper().GetSubmitButtonByLocator(SubmitButtons.KickBack));
 
         public virtual void ClickBtn_Close()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Close));
+            => PageAction().JsClickElement(PgHelper().GetSubmitButtonByLocator(SubmitButtons.Close));
 
         public virtual void ClickBtn_SaveOnly()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.SaveOnly));
+            => PageAction().JsClickElement(PgHelper().GetSubmitButtonByLocator(SubmitButtons.SaveOnly));
 
         public virtual void ClickBtn_SaveForward()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.SaveForward));
+            => PageAction().JsClickElement(PgHelper().GetSubmitButtonByLocator(SubmitButtons.SaveForward));
 
         public virtual void ClickBtn_New()
-            => JsClickElement(newBtn_ByLocator);
+            => PageAction().JsClickElement(newBtn_ByLocator);
 
         public virtual void ClickBtn_ExportToExcel()
-            => JsClickElement(exportToExcel_ByLocator);
+            => PageAction().JsClickElement(exportToExcel_ByLocator);
 
         public virtual void ClickBtn_Sign_RecordEngineer()
             => GeneralNCR_Base.ClickBtn_Sign(InputFields.RecordEngineer_SignBtn);
@@ -569,10 +571,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => GeneralNCR_Base.ClickBtn_Sign(InputFields.QCManager_SignBtn);
 
         public virtual void ClickBtn_SignaturePanel_OK()
-            => JsClickElement(GeneralNCR_Base.SignaturePanelBtnXPathLocator("OK"));
+            => PageAction().JsClickElement(GeneralNCR_Base.SignaturePanelBtnXPathLocator("OK"));
 
         public virtual void ClickBtn_SignaturePanel_Clear()
-            => JsClickElement(GeneralNCR_Base.SignaturePanelBtnXPathLocator("Clear"));
+            => PageAction().JsClickElement(GeneralNCR_Base.SignaturePanelBtnXPathLocator("Clear"));
 
         public virtual void SignDateApproveNCR(Reviewer reviewer, bool Approve = true)
         {
@@ -607,162 +609,162 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
 
             Thread.Sleep(5000);
-            EnterText(GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer.ToString()}");
+            PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer.ToString()}");
 
             GeneralNCR_Base.ClickBtn_Sign(signBtn);
             ClickBtn_SignaturePanel_OK();
 
             if (reviewer == Reviewer.EngineerOfRecord || reviewer == Reviewer.Owner)
             {
-                SelectRadioBtnOrChkbox(approvalField);
+                PageAction().SelectRadioBtnOrChkbox(approvalField);
             }
         }
 
         public virtual void ClickTab_All_NCRs()
-            => ClickTab(TableTab.All_NCRs);
+            => GridHelper().ClickTab(TableTab.All_NCRs);
 
         public virtual void ClickTab_Closed_NCR()
-            => ClickTab(TableTab.Closed_NCR);
+            => GridHelper().ClickTab(TableTab.Closed_NCR);
 
         public virtual void ClickTab_CQM_Review()
-            => ClickTab(TableTab.CQM_Review);
+            => GridHelper().ClickTab(TableTab.CQM_Review);
 
         public virtual void ClickTab_Review()
-            => ClickTab(TableTab.Review);
+            => GridHelper().ClickTab(TableTab.Review);
 
         public virtual void ClickTab_Creating_Revise()
-            => ClickTab(TableTab.Creating_Revise);
+            => GridHelper().ClickTab(TableTab.Creating_Revise);
 
         public virtual void ClickTab_Developer_Concurrence()
-            => ClickTab(TableTab.Developer_Concurrence);
+            => GridHelper().ClickTab(TableTab.Developer_Concurrence);
 
         public virtual void ClickTab_DOT_Approval()
-            => ClickTab(TableTab.DOT_Approval);
+            => GridHelper().ClickTab(TableTab.DOT_Approval);
 
         public virtual void ClickTab_LAWA_Concurrence()
-            => ClickTab(TableTab.LAWA_Concurrence);
+            => GridHelper().ClickTab(TableTab.LAWA_Concurrence);
 
         public virtual void ClickTab_Engineer_Concurrence()
-            => ClickTab(TableTab.Engineer_Concurrence);
+            => GridHelper().ClickTab(TableTab.Engineer_Concurrence);
 
         public virtual void ClickTab_Originator_Concurrence()
-            => ClickTab(TableTab.Originator_Concurrence);
+            => GridHelper().ClickTab(TableTab.Originator_Concurrence);
 
         public virtual void ClickTab_Owner_Concurrence()
-            => ClickTab(TableTab.Owner_Concurrence);
+            => GridHelper().ClickTab(TableTab.Owner_Concurrence);
 
         public virtual void ClickTab_QC_Review()
-            => ClickTab(TableTab.QC_Review);
+            => GridHelper().ClickTab(TableTab.QC_Review);
 
         public virtual void ClickTab_Resolution_Disposition()
-            => ClickTab(TableTab.Resolution_Disposition);
+            => GridHelper().ClickTab(TableTab.Resolution_Disposition);
 
         public virtual void ClickTab_Review_Assign_NCR()
-            => ClickTab(TableTab.Review_Assign_NCR);
+            => GridHelper().ClickTab(TableTab.Review_Assign_NCR);
 
         public virtual void ClickTab_Revise()
-            => ClickTab(TableTab.Revise);
+            => GridHelper().ClickTab(TableTab.Revise);
 
         public virtual void ClickTab_To_Be_Closed()
-            => ClickTab(TableTab.To_Be_Closed);
+            => GridHelper().ClickTab(TableTab.To_Be_Closed);
 
         public virtual void ClickTab_Verification()
-            => ClickTab(TableTab.Verification);
+            => GridHelper().ClickTab(TableTab.Verification);
 
         public virtual void ClickTab_Verification_and_Closure()
-            => ClickTab(TableTab.Verification_and_Closure);
+            => GridHelper().ClickTab(TableTab.Verification_and_Closure);
 
         public virtual void SortTable_Descending()
-            => SortColumnDescending(ColumnName.Action);
+            => GridHelper().SortColumnDescending(ColumnName.Action);
 
         public virtual void SortTable_Ascending()
-            => SortColumnAscending(ColumnName.Action);
+            => GridHelper().SortColumnAscending(ColumnName.Action);
 
         public virtual void SortTable_ToDefault()
-            => SortColumnToDefault(ColumnName.Action);
+            => GridHelper().SortColumnToDefault(ColumnName.Action);
 
         public virtual void SelectRdoBtn_TypeOfNCR_Level1()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level1);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level1);
 
         public virtual void SelectRdoBtn_TypeOfNCR_Level2()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level2);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level2);
 
         public virtual void SelectRdoBtn_TypeOfNCR_Level3()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level3);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.TypeOfNCR_Level3);
 
         public virtual void SelectRdoBtn_EngOfRecordApproval_Yes()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_Yes);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_Yes);
 
         public virtual void SelectRdoBtn_EngOfRecordApproval_No()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_No);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_No);
 
         public virtual void SelectRdoBtn_EngOfRecordApproval_NA()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_NA);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Engineer_Approval_NA);
 
         public virtual void SelectRdoBtn_OwnerApproval_Yes()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_Yes);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_Yes);
 
         public virtual void SelectRdoBtn_OwnerApproval_No()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_No);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_No);
 
         public virtual void SelectRdoBtn_OwnerApproval_NA()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_NA);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Owner_Approval_NA);
 
         public virtual void SelectChkbox_AsBuiltRequired(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, toggleChkboxIfAlreadySelected);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, toggleChkboxIfAlreadySelected);
 
         public virtual void SelectChkbox_RcmndDisposition_CorrectRework(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework, toggleChkboxIfAlreadySelected);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Correct_Rework, toggleChkboxIfAlreadySelected);
 
         public virtual void SelectChkbox_RcmndDisposition_Replace(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Replace, toggleChkboxIfAlreadySelected);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Replace, toggleChkboxIfAlreadySelected);
 
         public virtual void SelectChkbox_RcmndDisposition_AcceptAsIs(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Accept_As_Is, toggleChkboxIfAlreadySelected);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Accept_As_Is, toggleChkboxIfAlreadySelected);
 
         public virtual void SelectChkbox_RcmndDisposition_Repair(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Repair, toggleChkboxIfAlreadySelected);
+            => PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_Repair, toggleChkboxIfAlreadySelected);
 
         public virtual void SelectDDL_Originator(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
 
         public virtual void SelectDDL_ResponsibleManager(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.ResponsibleManager, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.ResponsibleManager, selectionIndex);
         
         public virtual void SelectDDL_Foreman(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.Foreman, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.Foreman, selectionIndex);
 
         public virtual void SelectDDL_PreparedBy(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.PreparedBy, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.PreparedBy, selectionIndex);
 
         public virtual void SelectDDL_Specification(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.Specification, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.Specification, selectionIndex);
 
         public virtual void SelectDDL_Location(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.Location, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.Location, selectionIndex);
 
         public virtual void SelectDDL_Area(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.Area, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.Area, selectionIndex);
 
         public virtual void SelectDDL_Segment(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.Segment, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.Segment, selectionIndex);
 
         public virtual void SelectDDL_TrackNo(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
 
         public virtual void SelectDDL_Roadway(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.Roadway, selectionIndex);
 
         public virtual void SelectDDL_Feature(int selectionIndex = 2)
-            => ExpandAndSelectFromDDList(InputFields.Feature, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.Feature, selectionIndex);
 
         public virtual void SelectDDL_SubFeature(int selectionIndex = 1)
-            => ExpandAndSelectFromDDList(InputFields.SubFeature, selectionIndex);
+            => PageAction().ExpandAndSelectFromDDList(InputFields.SubFeature, selectionIndex);
 
         public virtual void PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ReturnToConformance()
         {
-            ExpandAndSelectFromDDList(InputFields.Concession_Request, 1);
-            SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, false);
+            PageAction().ExpandAndSelectFromDDList(InputFields.Concession_Request, 1);
+            PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, false);
             SelectChkbox_RcmndDisposition_CorrectRework();
             SelectChkbox_RcmndDisposition_Replace();
             EnterCorrectiveActionPlanToResolveNonconformance();
@@ -770,67 +772,67 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual void PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ConcessionDeviation()
         {
-            ExpandAndSelectFromDDList(InputFields.Concession_Request, 2);
-            SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, false);
+            PageAction().ExpandAndSelectFromDDList(InputFields.Concession_Request, 2);
+            PageAction().SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required, false);
             SelectChkbox_RcmndDisposition_AcceptAsIs();
             SelectChkbox_RcmndDisposition_Repair();
             EnterRepairPlan();
         }
 
         public virtual void EnterIssuedDate(string shortDate = "1/1/9999")
-            => EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetShortDate());
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.IssuedDate), GetShortDate());
 
         public virtual void EnterForemanNotificationDate(string dateTime = "1/1/9999 12:00 AM")
-            => EnterText(GetTextInputFieldByLocator(InputFields.ForemanNotificationDate), dateTime);
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.ForemanNotificationDate), dateTime);
 
         public virtual void EnterManagerNotificationDate(string dateTime = "1/1/9999 12:00 AM")
-            => EnterText(GetTextInputFieldByLocator(InputFields.ManagerNotificationDate), dateTime);
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.ManagerNotificationDate), dateTime);
 
         public virtual void EnterResponsibleManager(string mgrName)
-            => EnterText(GetTextInputFieldByLocator(InputFields.ResponsibleManager), mgrName);
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.ResponsibleManager), mgrName);
 
         public virtual void EnterEngineerOfRecord(string engOfRecordText = "")
-            => EnterText(GetTextInputFieldByLocator(InputFields.Engineer_of_Record),
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.Engineer_of_Record),
                 engOfRecordText = (string.IsNullOrEmpty(engOfRecordText) ? "RKCIUIAutomation RecordEngineer" : engOfRecordText));
 
         public virtual void EnterRecordEngineerApprovedDate()
-            => EnterText(GetTextInputFieldByLocator(InputFields.RecordEngineerApprovedDate), GetShortDate());
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.RecordEngineerApprovedDate), GetShortDate());
 
         public virtual void EnterOwnerReview(string ownerReviewText = "")
-            => EnterText(GetTextInputFieldByLocator(InputFields.Owner_Review),
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.Owner_Review),
                 ownerReviewText = (string.IsNullOrEmpty(ownerReviewText) ? "RKCIUIAutomation Owner" : ownerReviewText));
 
         public virtual void EnterOwnerApprovedDate()
-            => EnterText(GetTextInputFieldByLocator(InputFields.OwnerDate), GetShortDate());
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.OwnerDate), GetShortDate());
 
         public virtual void EnterIQFManager(string iqfMgrText = "")
-            => EnterText(GetTextInputFieldByLocator(InputFields.IQF_Manager),
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.IQF_Manager),
                 iqfMgrText = (string.IsNullOrEmpty(iqfMgrText) ? "RKCIUIAutomation IQFMgr" : iqfMgrText));
 
         public virtual void EnterIQFManagerApprovedDate()
-            => EnterText(GetTextInputFieldByLocator(InputFields.IQFManagerDate), GetShortDate());
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.IQFManagerDate), GetShortDate());
 
         public virtual void EnterQCManager(string qcMgrText = "")
-            => EnterText(GetTextInputFieldByLocator(InputFields.QC_Manager),
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.QC_Manager),
                 qcMgrText = (string.IsNullOrEmpty(qcMgrText) ? "RKCIUIAutomation QCMgr" : qcMgrText));
 
         public virtual void EnterQCManagerApprovedDate()
-            => EnterText(GetTextInputFieldByLocator(InputFields.QCManagerApprovedDate), GetShortDate());
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.QCManagerApprovedDate), GetShortDate());
 
         public virtual void EnterCQCM()
-            => EnterText(GetTextInputFieldByLocator(InputFields.CQCM), "RKCIUIAutomation CQCM");
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.CQCM), "RKCIUIAutomation CQCM");
 
         public virtual void EnterCQCMDate()
-            => EnterText(GetTextInputFieldByLocator(InputFields.CQCMDate), GetShortDate());
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.CQCMDate), GetShortDate());
 
         public virtual void EnterCQAM()
-            => EnterText(GetTextInputFieldByLocator(InputFields.CQAM), "RKCIUIAutomation CQAM");
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.CQAM), "RKCIUIAutomation CQAM");
 
         public virtual void EnterCQAMDate()
-            => EnterText(GetTextInputFieldByLocator(InputFields.CQAMDate), GetShortDate());
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.CQAMDate), GetShortDate());
 
         public virtual void EnterPreparedByDate()
-            => EnterText(GetTextInputFieldByLocator(InputFields.PreparedBy_Date), GetShortDate());
+            => PageAction().EnterText(PgHelper().GetTextInputFieldByLocator(InputFields.PreparedBy_Date), GetShortDate());
 
         public virtual string EnterDescription(string description = "", bool tempDescription = false)
             => GeneralNCR_Base.EnterDesc(description, InputFields.Description_of_Nonconformance);
@@ -842,12 +844,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => GeneralNCR_Base.EnterDesc(description, InputFields.RootCause_of_the_Problem, false, false);
 
         public virtual void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "")
-            => EnterText(GetTextAreaFieldByLocator(InputFields.CorrectiveAction), actionPlanText.HasValue()
+            => PageAction().EnterText(PgHelper().GetTextAreaFieldByLocator(InputFields.CorrectiveAction), actionPlanText.HasValue()
                   ? actionPlanText
                   : "RKCIUIAutomation Corrective Action Plan To Resolve Nonconformance.");
 
         public virtual void EnterRepairPlan(string repairPlanText = "")
-            => EnterText(GetTextAreaFieldByLocator(InputFields.RepairPlan), repairPlanText.HasValue()
+            => PageAction().EnterText(PgHelper().GetTextAreaFieldByLocator(InputFields.RepairPlan), repairPlanText.HasValue()
                   ? repairPlanText
                   : "RKCIUIAutomation Repair Plan To Repair Issue If Applicable.");
 
@@ -872,7 +874,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public virtual string GetNCRDocDescription(bool tempDescription = false)
-            => GetVar(tempDescription
+            => BaseUtility().GetVar(tempDescription
                 ? "NewNcrDescription"
                 : "NcrDescription");
 
@@ -887,7 +889,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-                IList<IWebElement> ReqFieldErrorLabelElements = GetElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(),'Required')]"));
+                IList<IWebElement> ReqFieldErrorLabelElements = PageAction().GetElements(By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(),'Required')]"));
                 IList<IWebElement> ActualReqFieldErrorLabelElements = new List<IWebElement>();
 
                 foreach (IWebElement elem in ReqFieldErrorLabelElements)
@@ -926,7 +928,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 if (!countsMatch)
                 {
-                    LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
+                    BaseUtility().LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
                         $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
                 }
 
@@ -934,7 +936,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     ? false
                     : true;
                 reqFieldTable[tblRowIndex + 1] = new string[2] {"Total Required Fields:", results.Count.ToString()};
-                LogInfo(reqFieldTable, reqFieldsMatch);
+                BaseUtility().LogInfo(reqFieldTable, reqFieldsMatch);
             }
             catch (Exception e)
             {
@@ -951,7 +953,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 
-                IWebElement NcrTypeInputElem = GetElement(By.Id(InputFields.Type_of_NCR.GetString()));
+                IWebElement NcrTypeInputElem = PageAction().GetElement(By.Id(InputFields.Type_of_NCR.GetString()));
                 errorLabelIsDisplayed = NcrTypeInputElem.FindElement(By.XPath("//preceding-sibling::span[@data-valmsg-for='NcrType']")).Displayed
                     ? true
                     : false;
@@ -991,9 +993,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 }
 
                 By locator = By.Id(reviewerId.GetString());
-                ScrollToElement(locator);
+                PageAction().ScrollToElement(locator);
 
-                bool isFieldEmpty = GetAttribute(locator, "value").HasValue()
+                bool isFieldEmpty = PageAction().GetAttribute(locator, "value").HasValue()
                     ? false
                     : true;
                 isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty)
@@ -1004,7 +1006,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     ? "Result As Expected"
                     : "Unexpected Result";
 
-                LogInfo($"Signature Field: {logMsg}", isResultExpected);
+                BaseUtility().LogInfo($"Signature Field: {logMsg}", isResultExpected);
                 
             }
             catch (Exception e)
@@ -1020,7 +1022,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             bool errorLabelIsDisplayed = false;
             try
             {
-                IWebElement ConcessionRequestDDListElem = GetElement(By.Id(InputFields.Concession_Request.GetString()));
+                IWebElement ConcessionRequestDDListElem = PageAction().GetElement(By.Id(InputFields.Concession_Request.GetString()));
                 errorLabelIsDisplayed = ConcessionRequestDDListElem.FindElement(By.XPath("//preceding-sibling::span[@data-valmsg-for='ConcessionRequest']")).Displayed
                     ? true 
                     : false;
@@ -1060,21 +1062,21 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-                WaitForPageReady();
+                PageAction().WaitForPageReady();
 
-                ClickTab(tableTab);
+                GridHelper().ClickTab(tableTab);
 
                 string _ncrDesc = description.HasValue()
                     ? description
                     : GetNCRDocDescription();
 
-                isDisplayed = VerifyRecordIsDisplayed(ColumnName.Description, _ncrDesc);
+                isDisplayed = GridHelper().VerifyRecordIsDisplayed(ColumnName.Description, _ncrDesc);
 
                 string logMsg = isDisplayed
                     ? "Found"
                     : "Unable to find";
 
-                LogInfo($"{logMsg} record under '{tableTab.GetString()}' tab with description: {_ncrDesc}.", isDisplayed);
+                BaseUtility().LogInfo($"{logMsg} record under '{tableTab.GetString()}' tab with description: {_ncrDesc}.", isDisplayed);
             }
             catch (Exception e)
             {
@@ -1090,7 +1092,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         private void PopulateRequiredFieldsAndSave(bool SaveForward)
         {
             PopulateRequiredFields();
-            UploadFile("test.xlsx");
+            PageAction().UploadFile("test.xlsx");
 
             if (SaveForward)
             {
@@ -1101,7 +1103,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 ClickBtn_SaveOnly();
             }
 
-            WaitForPageReady();
+            PageAction().WaitForPageReady();
         }
 
     }
@@ -1164,7 +1166,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public override void ClickTab_Creating_Revise()
-            => ClickTab(TableTab.Create_Revise);
+            => GridHelper().ClickTab(TableTab.Create_Revise);
 
         public override void ClickBtn_Approve()
             => GeneralNCR_Base.ActionConfirmation(SubmitButtons.Approve, false);
@@ -1281,7 +1283,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => EnterDesc(description, InputFields.Description_of_NCR);
 
         public override void ClickTab_All_NCRs()
-            => ClickTab(TableTab.ALL_NCRs);
+            => GridHelper().ClickTab(TableTab.ALL_NCRs);
 
         public override bool VerifyNCRDocIsClosed(string description = "")
             => GeneralNCR_Base.CheckNCRisClosed(description, TableTab.ALL_NCRs);
@@ -1327,7 +1329,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => EnterDesc(description, InputFields.Description_of_NCR);
 
         public override void ClickTab_All_NCRs()
-            => ClickTab(TableTab.ALL_NCRs);
+            => GridHelper().ClickTab(TableTab.ALL_NCRs);
 
         public override bool VerifyNCRDocIsClosed(string description = "")
             => GeneralNCR_Base.CheckNCRisClosed(description, TableTab.ALL_NCRs);

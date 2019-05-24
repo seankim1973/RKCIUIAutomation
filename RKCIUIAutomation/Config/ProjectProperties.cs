@@ -8,11 +8,20 @@ namespace RKCIUIAutomation.Config
     public interface IProjectProperties
     {
         List<string> TenantComponents { get; set; }
-        List<string> SetTenantComponents(TenantName tenantName);
+        void ConfigTenantComponents(TenantName tenantName);
     }
 
-    public class ProjectProperties : Factory, IProjectProperties
+    public class ProjectProperties : IProjectProperties
     {
+        public ProjectProperties()
+        {
+        }
+
+        public ProjectProperties(TenantName tenantName)
+        {
+            ConfigTenantComponents(tenantName);
+        }
+
         private static readonly List<string> commonComponents = new List<string>
         {
             Component.Link_Coverage,
@@ -86,7 +95,7 @@ namespace RKCIUIAutomation.Config
             
         }
 
-        public List<string> SetTenantComponents(TenantName tenantName)
+        public void ConfigTenantComponents(TenantName tenantName)
         {
             IProjectProperties instance = null;
 
@@ -124,7 +133,7 @@ namespace RKCIUIAutomation.Config
             List<string> components = new List<string>();
             components.AddRange(commonComponents);
             components.AddRange(instance.TenantComponents);
-            return components;
+            TenantComponents = components;
         }
     }
 
