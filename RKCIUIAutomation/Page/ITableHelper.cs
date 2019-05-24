@@ -5,6 +5,7 @@ namespace RKCIUIAutomation.Page
 {
     public interface ITableHelper
     {
+        string GetPdfHref<T>(T textInColumnForRowOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false);
         void ClearTableFilters(TableHelper.TableType tableType = TableHelper.TableType.Unknown);
         void ClickButtonForRow<T>(TableHelper.TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false);
         void ClickCloseDirBtnForRow(string dirNumber = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = true);
@@ -19,6 +20,7 @@ namespace RKCIUIAutomation.Page
         void ClickTab(Enum tblTabEnum);
         void ClickTab(string tblTabName);
         void ClickViewAttachmentsForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true);
+        By GetTableBtnLocator<T>(TableHelper.TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false);
         void ClickViewBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false);
         string ClickViewReportBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbx = false);
         void ClickViewWebFormForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true);

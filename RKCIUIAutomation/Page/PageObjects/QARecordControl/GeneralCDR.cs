@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralCDR;
 using static RKCIUIAutomation.Base.Factory;
-using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 {
@@ -207,61 +206,61 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         internal GeneralCDR GeneralCDR_Base => new GeneralCDR();
 
         public virtual void ClickBtn_Cancel()
-            => PageAction().JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Cancel));
+            => PageAction.JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Cancel));
 
         public virtual void ClickBtn_SaveOnly()
-            => PageAction().JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.SaveOnly));
+            => PageAction.JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.SaveOnly));
 
         public virtual void ClickBtn_SaveForward()
-            => PageAction().JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.SaveForward));
+            => PageAction.JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.SaveForward));
 
         public virtual void ClickBtn_CloseCDR()
-            => PageAction().JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Close_CDR));
+            => PageAction.JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Close_CDR));
 
         public virtual void ClickBtn_Revise()
-            => PageAction().JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Revise));
+            => PageAction.JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Revise));
 
         public virtual void ClickBtn_Back_To_Disposition()
-            => PageAction().JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Back_To_Disposition));
+            => PageAction.JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Back_To_Disposition));
 
         public virtual void ClickBtn_Back_To_QC_Review()
-            => PageAction().JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Back_To_QC_Review));
+            => PageAction.JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.Back_To_QC_Review));
 
         public virtual void ClickBtn_New()
-            => PageAction().JsClickElement(GeneralCDR_Base.newBtn_ByLocator);
+            => PageAction.JsClickElement(GeneralCDR_Base.newBtn_ByLocator);
 
         public virtual void ClickTab_All()
-            => GridHelper().ClickTab(TableTab.All);
+            => GridHelper.ClickTab(TableTab.All);
 
         public virtual void ClickTab_Closed_DN()
-            => GridHelper().ClickTab(TableTab.Closed_DN);
+            => GridHelper.ClickTab(TableTab.Closed_DN);
 
         public virtual void ClickTab_QC_Review()
-            => GridHelper().ClickTab(TableTab.QC_Review);
+            => GridHelper.ClickTab(TableTab.QC_Review);
 
         public virtual void ClickTab_Disposition()
-            => GridHelper().ClickTab(TableTab.Disposition);
+            => GridHelper.ClickTab(TableTab.Disposition);
 
         public virtual void ClickTab_Revise()
-            => GridHelper().ClickTab(TableTab.Revise);
+            => GridHelper.ClickTab(TableTab.Revise);
 
         public virtual void ClickTab_To_Be_Closed()
-            => GridHelper().ClickTab(TableTab.To_Be_Closed);
+            => GridHelper.ClickTab(TableTab.To_Be_Closed);
 
         public virtual void SortTable_Descending()
-            => TableHelper.SortColumnDescending(ColumnName.Action);
+            => GridHelper.SortColumnDescending(ColumnName.Action);
 
         public virtual void SortTable_Ascending()
-            => TableHelper.SortColumnAscending(ColumnName.Action);
+            => GridHelper.SortColumnAscending(ColumnName.Action);
 
         public virtual void SortTable_ToDefault()
-            => TableHelper.SortColumnToDefault(ColumnName.Action);
+            => GridHelper.SortColumnToDefault(ColumnName.Action);
 
         public virtual void SelectDDL_Originator(int selectionIndex = 1)
-            => PageAction().ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Originator, selectionIndex);
 
         public virtual void EnterIssuedDate(string shortDate = "1/1/9999")
-           => PageAction().EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
+           => PageAction.EnterText(GetTextInputFieldByLocator(InputFields.IssuedDate), GetMaxShortDate());
 
         private void CreateCdrDescription(bool tempDescription = false)
         {
@@ -299,7 +298,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             desc = desc.HasValue()
                 ? desc
                 : GetCDRDocDescription(tempDescription);
-            PageAction().EnterText(descLocator, desc);
+            PageAction.EnterText(descLocator, desc);
             return desc;
         }
 
@@ -320,14 +319,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 if (isDisplayed)
                 {
-                    string docStatus = TableHelper.GetColumnValueForRow(_cdrDesc, "Workflow location");
+                    string docStatus = GridHelper.GetColumnValueForRow(_cdrDesc, "Workflow location");
                     cdrIsClosed = docStatus.Equals("Closed")
                         ? true
                         : false;
                     logMsg = $"Workflow Location displayed as: {docStatus}";
                 }
 
-                LogInfo($"CDR with description ({_cdrDesc}), {logMsg}", cdrIsClosed);
+                Report.Info($"CDR with description ({_cdrDesc}), {logMsg}", cdrIsClosed);
             }
             catch (Exception e)
             {
@@ -378,13 +377,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //TestUtils testUtils = new TestUtils();
 
             ClickBtn_SaveForward();
-            TestUtility().AddAssertionToList(VerifyReqFieldsErrorLabelsForNewDoc(), "VerifyReqFieldsErrorLabelsForNewDoc");
+            TestUtility.AddAssertionToList(VerifyReqFieldsErrorLabelsForNewDoc(), "VerifyReqFieldsErrorLabelsForNewDoc");
             EnterIssuedDate();
             SelectDDL_Originator();
             EnterDescription();
             
             ClickBtn_SaveForward();
-            PageAction().WaitForPageReady();
+            PageAction.WaitForPageReady();
         }
         public virtual IList<string> GetRequiredFieldIDs()
         {
@@ -399,11 +398,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public virtual bool VerifyCDRDocIsDisplayed(TableTab tableTab, string CDRDescription = "")
         {
-            GridHelper().ClickTab(tableTab);
+            GridHelper.ClickTab(tableTab);
             //cdrDescription = CDRDescription.HasValue()
             //    ? CDRDescription
             //    : cdrDescription;
-            return TableHelper.VerifyRecordIsDisplayed(ColumnName.Description, CDRDescription.HasValue()
+            return GridHelper.VerifyRecordIsDisplayed(ColumnName.Description, CDRDescription.HasValue()
                 ? CDRDescription
                 : cdrDescription);
         }
@@ -413,7 +412,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             //cdrDescription = description.HasValue()
             //    ? description
             //    : cdrDescription;
-            TableHelper.FilterTableColumnByValue(ColumnName.Description, description.HasValue()
+            GridHelper.FilterTableColumnByValue(ColumnName.Description, description.HasValue()
                 ? description
                 : cdrDescription);
         }
@@ -446,10 +445,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public override void ClickBtn_Back_To_Disposition()
-            => PageAction().JsClickElement(GetSubmitBtnLocator(SubmitButtons.QC_Disagree));
+            => PageAction.JsClickElement(GetSubmitBtnLocator(SubmitButtons.QC_Disagree));
 
         public override void ClickBtn_CloseCDR()
-            => PageAction().JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.QC_Agree));
+            => PageAction.JsClickElement(GeneralCDR_Base.GetSubmitBtnLocator(SubmitButtons.QC_Agree));
     }
 
     #endregion Implementation specific to GLX

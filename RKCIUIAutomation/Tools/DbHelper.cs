@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Tools
 {
@@ -29,7 +30,7 @@ namespace RKCIUIAutomation.Tools
             }
             catch (Exception e)
             {
-                BaseUtils.log.Error(e.Message);
+                log.Error(e.Message);
             }
 
             return connection;

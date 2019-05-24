@@ -3,6 +3,7 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System.Collections.Generic;
 using System.Threading;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Test.UnitTests
 {
@@ -16,7 +17,7 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Description("CDR UnitTest for Garnet")]
         public void CDR_UnitTest_Garnet()
         {
-            LogInfo("Unit test for Garnet");
+            Report.Step("Unit test for Garnet");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_General_CDR();
             QaRcrdCtrl_GeneralNCR.ClickTab_Review_Assign_NCR();

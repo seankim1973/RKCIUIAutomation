@@ -5,6 +5,7 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -119,7 +120,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual string Create_and_SaveForward_NCR(UserType user)
         {
-            LogDebug("------------WF Create_and_SaveForward_NCR_Document-------------");
+            Report.Step("------------WF Create_and_SaveForward_NCR_Document-------------");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
@@ -133,7 +134,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual string Create_and_SaveOnly_NCR(UserType user)
         {
-            LogDebug("------------WF Create_and_SaveOnly_NCR_Document-------------");
+            Report.Step("------------WF Create_and_SaveOnly_NCR_Document-------------");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
@@ -145,12 +146,12 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void Review_and_Approve_NCR(UserType user, string ncrDescription)
         {
-            LogDebug("------------WF Review_and_Approve_NCR_Document-------------");
+            Report.Step("------------WF Review_and_Approve_NCR_Document-------------");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
             AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
             //verify required field error label is shown
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
@@ -161,30 +162,30 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void Review_and_Return_NCR_ForRevise(UserType user, string ncrDescription)
         {
-            LogDebug("------------WF Return_ToRevise_FromCQMReview-------------");
+            Report.Step("------------WF Return_ToRevise_FromCQMReview-------------");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
             AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
         }
         public virtual void CloseNCR_CQMReview_Disapprove(UserType user, string ncrDescription)
         {
-            LogDebug("------------WF CloseNCR_CQMReview_Disapprove-------------");
+            Report.Step("------------WF CloseNCR_CQMReview_Disapprove-------------");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
             AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_DisapproveClose();
         }
 
         public virtual void SaveForward_FromResolutionDisposition_ToVerificationClosure_ReturnToConformance(string ncrDescription)
         {
-            LogDebug("------------WF TraverseNCR_FromReview_ToVerificationClosure_ReturnToConformance-------------");
+            Report.Step("------------WF TraverseNCR_FromReview_ToVerificationClosure_ReturnToConformance-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown for Concession Request DDList
             QaRcrdCtrl_GeneralNCR.PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ReturnToConformance();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
@@ -192,23 +193,23 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(string ncrDescription)
         {
-            LogDebug("------------WF Return_ToRevise_FromVerificationClosure-------------");
+            Report.Step("------------WF Return_ToRevise_FromVerificationClosure-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
         }
 
         public virtual void SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(string ncrDescription)
         {
-            LogDebug("------------WF SaveForward_FromResolutionDisposition_ToDeveloperConcurrence-------------");
+            Report.Step("------------WF SaveForward_FromResolutionDisposition_ToDeveloperConcurrence-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
             //todo: click Save&Fwd button and verify required field error label is shown for Concession Request DDList
             QaRcrdCtrl_GeneralNCR.PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ConcessionDeviation();
@@ -217,9 +218,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(string ncrDescription, bool approveNCR = true)
         {
-            LogDebug("------------WF SaveForward_FromDeveloperConcurrence_ToDOTApproval-------------");
+            Report.Step("------------WF SaveForward_FromDeveloperConcurrence_ToDOTApproval-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown (RecordEngineer_SignBtn, EngOfRecord, EngApprovalDate, ApprovalRadioBtn)
 
             if (approveNCR)
@@ -236,9 +237,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(string ncrDescription, bool approveNCR = true)
         {
-            LogDebug("------------WF SaveForward_FromDOTApproval_ToVerificationClosure-------------");
+            Report.Step("------------WF SaveForward_FromDOTApproval_ToVerificationClosure-------------");
             AddAssertionToList(VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(ncrDescription), "VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown(Owner_SignBtn, DOTReview, OwnerApprovalDate, OwnerApprovalRdoBtn)
 
             if (approveNCR)
@@ -255,23 +256,23 @@ namespace RKCIUIAutomation.Page.Workflows
             
         public virtual void CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(string ncrDescription)
         {
-            LogDebug("------------WF Return_ToRevise_FromVerificationClosure_ForConcessionDiviation-------------");
+            Report.Step("------------WF Return_ToRevise_FromVerificationClosure_ForConcessionDiviation-------------");
 
             SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
             SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
         }
 
         public virtual void CloseNCR_in_VerificationAndClosure(string ncrDescription)
         {
-            LogDebug("------------WF CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("------------WF CloseNCR_in_VerificationAndClosure-------------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
@@ -298,12 +299,12 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void Review_and_Approve_NCR(UserType user, string ncrDescription)
         {
-            LogDebug("------------WF Review_and_Approve_NCR_Document-------------");
+            Report.Step("------------WF Review_and_Approve_NCR_Document-------------");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
             AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription), "VerifyNCRDocIsDisplayedInReview");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
         }
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using log4net;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using MiniGuids;
 using NUnit.Framework.Interfaces;
@@ -19,7 +20,7 @@ using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Threading;
 using static RKCIUIAutomation.Page.Navigation.NavMenu;
-using static RKCIUIAutomation.Base.Factory;
+//using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Sandbox
 {
@@ -29,6 +30,9 @@ namespace RKCIUIAutomation.Sandbox
     [TestClass]
     public class MSUnitTest : TestBase
     {
+        private static ILog _logger(string loggerName = "") => LogManager.GetLogger(loggerName);
+        public static readonly ILog log = _logger();
+
         public MSUnitTest()
         {
             //
@@ -116,7 +120,8 @@ namespace RKCIUIAutomation.Sandbox
         //[TestMethod]
         public void MSUnitTest2()
         {
-            List<string> components = Property().TenantComponents;
+            IProjectProperties props = new ProjectProperties();
+            List<string> components = props.TenantComponents;
             int componentCount = components.Count;
 
             log.Error($"Component count is {componentCount}");
@@ -250,7 +255,7 @@ namespace RKCIUIAutomation.Sandbox
             internal const string Cat1 = "Cat1";
         }
 
-        private new enum TableButton
+        private enum TableBtns
         {
             [StringValue("", BtnCategory.Cat1)] QMS_Attachments_View,
             [StringValue("-1")] Report_View,
@@ -269,18 +274,18 @@ namespace RKCIUIAutomation.Sandbox
         public void XPathStringTest()
         {
             string SetXPath_TableRowBaseByTextInRow(string textInRowForAnyColumn) => $"//td[text()='{textInRowForAnyColumn}']/parent::tr/td";
-            string xpath(string textInRowForAnyColumn, TableButton tblRowBtn) => $"{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}[last(){tblRowBtn.GetString()}]/a";
-            string xpath2(string textInRowForAnyColumn, TableButton tblRowBtn) => $"{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}[last(){tblRowBtn.GetString(true)}]/a";
+            string xpath(string textInRowForAnyColumn, TableBtns tblRowBtn) => $"{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}[last(){tblRowBtn.GetString()}]/a";
+            string xpath2(string textInRowForAnyColumn, TableBtns tblRowBtn) => $"{SetXPath_TableRowBaseByTextInRow(textInRowForAnyColumn)}[last(){tblRowBtn.GetString(true)}]/a";
 
-            Console.WriteLine($"XPATH: {xpath("Ron Seal", TableButton.QMS_Attachments_View)}");
-            Console.WriteLine($"XPATH2: {xpath2("Ron Seal", TableButton.QMS_Attachments_View)}");
-            Console.WriteLine($"PREVIOUS: {xpath("Ron Seal", TableButton.Previous)}");
+            Console.WriteLine($"XPATH: {xpath("Ron Seal", TableBtns.QMS_Attachments_View)}");
+            Console.WriteLine($"XPATH2: {xpath2("Ron Seal", TableBtns.QMS_Attachments_View)}");
+            Console.WriteLine($"PREVIOUS: {xpath("Ron Seal", TableBtns.Previous)}");
         }
 
         [TestMethod]
         public void EnumParseTest()
         {
-            Enum tblTabEnum = TableButton.Report_View;
+            Enum tblTabEnum = TableBtns.Report_View;
             BaseUtils baseUtils = new BaseUtils();
 
             Type enumType = tblTabEnum.GetType();
@@ -290,7 +295,7 @@ namespace RKCIUIAutomation.Sandbox
             string actual = tabStripEnum.GetString();
             Console.WriteLine($"EXPECTED VALUE: {expected}\nACTUAL VALUE: {actual}");
             Assert.AreEqual(expected, actual);
-            bool nostringEnumVal =TableButton.NoStringValueEnum.Equals("NoStringValueEnum");
+            bool nostringEnumVal =TableBtns.NoStringValueEnum.Equals("NoStringValueEnum");
             Console.WriteLine($"nostringEnumVal : {nostringEnumVal}");
         }
 

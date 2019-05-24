@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using static RKCIUIAutomation.Page.TableHelper;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page
 {
@@ -37,7 +38,7 @@ namespace RKCIUIAutomation.Page
             string tabSelect = $"tab.select('{commentTabIndex.ToString()}');";
             jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
             ExecuteJsScript(jsToBeExecuted);
-            LogInfo($"Clicked Comment {commentNumber} tab : {tabSelect}");
+            Report.Step($"Clicked Comment {commentNumber} tab : {tabSelect}");
         }
 
         public string GetCurrentTableTabName()
@@ -60,7 +61,7 @@ namespace RKCIUIAutomation.Page
                         string tabSelect = $"tab.select('{tabIndex.ToString()}');";
                         jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
                         ExecuteJsScript(jsToBeExecuted);
-                        LogStep($"Clicked Table Tab - {tblTabName}");
+                        Report.Step($"Clicked Table Tab - {tblTabName}");
                     }
                 }
             }
@@ -125,7 +126,7 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.filter([]);";
             ExecuteJsScript(jsToBeExecuted);
-            LogInfo("Cleared all table filter(s)");
+            Report.Info("Cleared all table filter(s)");
         }
 
         public int TotalNumberRows(TableType tableType = TableType.Unknown)
@@ -165,7 +166,7 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.page({pageNumber});";
             ExecuteJsScript(jsToBeExecuted);
-            LogInfo($"Navigated to table page {pageNumber}");
+            Report.Info($"Navigated to table page {pageNumber}");
         }
 
         public void Sort(string columnName, SortType sortType, TableType tableType = TableType.Unknown)
@@ -173,7 +174,7 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} grid.dataSource.sort({{field: '{columnName}', dir: '{sortType.GetString()}'}});";
             ExecuteJsScript(jsToBeExecuted);
-            LogInfo($"Sorted {columnName} column to {sortType.ToString()} order");
+            Report.Info($"Sorted {columnName} column to {sortType.ToString()} order");
         }
 
         public List<T> GetItems<T>(TableType tableType = TableType.Unknown) where T : class
@@ -245,7 +246,7 @@ namespace RKCIUIAutomation.Page
                     ? string.Empty
                     : $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}";
 
-                LogStep($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilterLogMsg}");
+                Report.Step($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilterLogMsg}");
             }
             catch (Exception e)
             {

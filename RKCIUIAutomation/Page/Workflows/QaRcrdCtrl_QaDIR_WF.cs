@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
+using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -20,14 +22,14 @@ namespace RKCIUIAutomation.Page.Workflows
 
         internal void CreateNew_and_PopulateRequiredFields()
         {
-            LogDebug($"-->---> CreateNew_and_PopulateRequiredFields <---<--");
+            Report.Step($"-->---> CreateNew_and_PopulateRequiredFields <---<--");
 
             QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
             QaRcrdCtrl_QaDIR.SetDirNumber();
             QaRcrdCtrl_QaDIR.ClickBtn_Save();            
             string dirNumber = QaRcrdCtrl_QaDIR.GetDirNumber();
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInCreate(dirNumber), "VerifyDirIsDisplayedInCreate as DIRTech");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             WaitForPageReady();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(), "VerifyReqFieldErrorsForNewDir");
@@ -37,10 +39,10 @@ namespace RKCIUIAutomation.Page.Workflows
         internal void Verify_DIR_then_Approve(TableTab tableTab, string dirNumber)
         {
             string tableTabName = tableTab.ToString();
-            LogDebug($"---> Verify_DIR_then_Approve_in {tableTabName} <---");
+            Report.Step($"---> Verify_DIR_then_Approve_in {tableTabName} <---");
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"VerifyDirIsDisplayed(TableTab.{tableTabName})");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
         }
 
@@ -62,7 +64,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
                 if (isDisplayed)
                 {
-                    ClickEditBtnForRow();
+                    GridHelper.ClickEditBtnForRow();
 
                     if (approveDIR)
                     {
@@ -73,7 +75,7 @@ namespace RKCIUIAutomation.Page.Workflows
                         By latestWfStatusLocator = By.XPath("//div[@class='CommentsDiv']//table//tbody/tr[1]/td[4]");
                         string latestStatus = GetText(latestWfStatusLocator);
 
-                        LogInfo($"Activity Log Latest Workflow Status from Authorization : {latestStatus}", isDisplayed);
+                        Report.Info($"Activity Log Latest Workflow Status from Authorization : {latestStatus}", isDisplayed);
                     }
                 }
 
@@ -86,7 +88,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         internal void VerifyColumnFilterInTab(TableTab tableTab, UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
         {
-            LogDebug($"---> VerifyColumnFilterInTab <---<br>TableTab {tableTab.ToString()}<br>Current User {currentUser}<br>DIR# {dirNumber}<br>DIR Rev {dirRev}<br> KickedBack {kickedBack}<br>Use QA Field Menu {useQaFieldMenu}");
+            Report.Step($"---> VerifyColumnFilterInTab <---<br>TableTab {tableTab.ToString()}<br>Current User {currentUser}<br>DIR# {dirNumber}<br>DIR Rev {dirRev}<br> KickedBack {kickedBack}<br>Use QA Field Menu {useQaFieldMenu}");
 
             string dirTechEmail = "testDirTech@rkci.com";
             string dirMgrEmail = "testDirMgr@rkci.com";
@@ -129,7 +131,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
                 if (tableTab != TableTab.To_Be_Closed)
                 {
-                    ClickEditBtnForRow();
+                    GridHelper.ClickEditBtnForRow();
                 }
 
                 if (tableTab == TableTab.Creating || tableTab == TableTab.Create_Revise)
@@ -176,7 +178,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
                     if (isDisplayedInClosed)
                     {
-                        SelectCheckboxForRow(dirNumber);
+                        GridHelper.SelectCheckboxForRow(dirNumber);
                         QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected();
                     }
 
@@ -212,29 +214,29 @@ namespace RKCIUIAutomation.Page.Workflows
                     string dirRev = columnFilterValues[3];
                     string dirTechEmail = "testDirTech@rkci.com";
 
-                    LogDebug($"---> IterateColumnsByFilter <---<br>TableTab {tableTab.ToString()}<br>DIR# {dirNumber}<br>SentBy {sentBy}<br>LockedBy {lockedBy}<br>DIR Rev {dirRev}<br>Use Qa Field Menu {useQaFieldMenu}");
+                    Report.Step($"---> IterateColumnsByFilter <---<br>TableTab {tableTab.ToString()}<br>DIR# {dirNumber}<br>SentBy {sentBy}<br>LockedBy {lockedBy}<br>DIR Rev {dirRev}<br>Use Qa Field Menu {useQaFieldMenu}");
 
                     AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"\nIterateColumnsByFilter VerifyDirIsDisplayed {tableTab.ToString()}, before DIR Locked");
 
                     if (tableTab == TableTab.To_Be_Closed)
                     {
-                        ClickEditBtnForRow(dirNumber, true, true);
+                        GridHelper.ClickEditBtnForRow(dirNumber, true, true);
                     }
                     else
                     {
-                        ClickEditBtnForRow();
+                        GridHelper.ClickEditBtnForRow();
                     }
 
                     WF_QaRcrdCtrl_QaDIR.LoginToDirPage(currentUser, useQaFieldMenu); //locks DIR
                     AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber), $"IterateColumnsByFilter VerifyDirIsDisplayed {tableTab.ToString()}, after DIR Locked");
-                    ClearTableFilters();
+                    GridHelper.ClearTableFilters();
                     AddAssertionToList(true, $"#### IterateColumnsByFilter ####\nTableTab : {tableTab.ToString()}, Use QAField Menu : {useQaFieldMenu}, DIR# : {dirNumber}, SentBy : {sentBy}, LockedBy : {lockedBy}, DIR Rev : {dirRev}");
-                    AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Revision, dirRev), $"IterateColumnsByFilter Column Revision");
-                    AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Created_By, dirTechEmail), $"IterateColumnsByFilter Column Created_By");
-                    AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_By, sentBy, TableType.MultiTab, false, FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Sent_By");
-                    AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Sent_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Sent_Date");
-                    AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_By, lockedBy), $"IterateColumnsByFilter Column Locked_By");
-                    AddAssertionToList(VerifyRecordIsDisplayed(ColumnName.Locked_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Locked Date");
+                    AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(ColumnName.Revision, dirRev), $"IterateColumnsByFilter Column Revision");
+                    AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(ColumnName.Created_By, dirTechEmail), $"IterateColumnsByFilter Column Created_By");
+                    AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(ColumnName.Sent_By, sentBy, TableType.MultiTab, false, FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Sent_By");
+                    AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(ColumnName.Sent_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Sent_Date");
+                    AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(ColumnName.Locked_By, lockedBy), $"IterateColumnsByFilter Column Locked_By");
+                    AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(ColumnName.Locked_Date, GetShortDate(), TableType.MultiTab, false, Page.FilterOperator.IsAfterOrEqualTo), $"IterateColumnsByFilter Column Locked Date");
                     AddAssertionToList(QaRcrdCtrl_QaDIR.GetDirNumberForRow(dirTechEmail).Equals(dirNumber), $"IterateColumnsByFilter DIR# for Filtered Row Matches Expected: ");
                 }
                 else
@@ -263,13 +265,13 @@ namespace RKCIUIAutomation.Page.Workflows
                         newDIRsOrDIRs = splitNewDIRs[0];
                     }
 
-                    AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.Week_Start, wkStart), $"IterateColumnsByFilter Column Week Start");
-                    AddAssertionToList(VerifyRecordIsDisplayed(PackagesColumnName.Week_End, wkEnd), $"IterateColumnsByFilter Column Week End");
-                    AddAssertionToList(VerifyRecordIsDisplayed(newDirCountOrPkgNumberCol, newDirCountOrPkgNumber), $"IterateColumnsByFilter Column {column3Name}");
-                    AddAssertionToList(VerifyRecordIsDisplayed(newDIRsOrDIRsCol, newDIRsOrDIRs), $"IterateColumnsByFilter Column {column4Name}");
+                    AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(PackagesColumnName.Week_Start, wkStart), $"IterateColumnsByFilter Column Week Start");
+                    AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(PackagesColumnName.Week_End, wkEnd), $"IterateColumnsByFilter Column Week End");
+                    AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(newDirCountOrPkgNumberCol, newDirCountOrPkgNumber), $"IterateColumnsByFilter Column {column3Name}");
+                    AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(newDIRsOrDIRsCol, newDIRsOrDIRs), $"IterateColumnsByFilter Column {column4Name}");
                 }
 
-                int totalRows = GetTableRowCount();
+                int totalRows = GridHelper.GetTableRowCount();
                 bool filteredDownToSingleRow = totalRows.Equals(1);
 
                 string logMsg = filteredDownToSingleRow
@@ -277,7 +279,7 @@ namespace RKCIUIAutomation.Page.Workflows
                     : $"Expected To Filter Table to 1 Row, but found {totalRows.ToString()} rows";
                 AddAssertionToList(filteredDownToSingleRow, $"IterateColumnsByFilter - Total Number of Rows after Filter Equals 1");
                 bool[] results = new bool[] { filteredDownToSingleRow, totalRows >= 1 };
-                LogInfo(logMsg, results);
+                Report.Info(logMsg, results);
             }
             catch (Exception e)
             {
@@ -288,7 +290,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         internal bool Verify_DirRevision_inTblRow_then_Approve(TableTab tableTab, string dirNumber, string expectedDirRev)
         {
-            LogDebug($"---> Verify_DirRevision_inTblRow_then_Approve in {tableTab.ToString()} - Expected DIR Rev: {expectedDirRev} <---");
+            Report.Step($"---> Verify_DirRevision_inTblRow_then_Approve in {tableTab.ToString()} - Expected DIR Rev: {expectedDirRev} <---");
 
             bool dirRevMatches = false;
             string ifFalseLog = string.Empty;
@@ -298,22 +300,22 @@ namespace RKCIUIAutomation.Page.Workflows
             {
                 if (string.IsNullOrEmpty(expectedDirRev))
                 {
-                    bool dirRevFound = VerifyRecordIsDisplayed(QADIRs.ColumnName.Revision, expectedDirRev);
+                    bool dirRevFound = GridHelper.VerifyRecordIsDisplayed(QADIRs.ColumnName.Revision, expectedDirRev);
                     AddAssertionToList(dirRevFound, $"VerifyRecordIsDisplayed - DIR Revision: {expectedDirRev}");
-                    LogInfo($"Successfully filtered table by expected DIR Revision: {expectedDirRev}", dirRevFound);
+                    Report.Info($"Successfully filtered table by expected DIR Revision: {expectedDirRev}", dirRevFound);
                 }
 
                 isDisplayed = (tableTab == TableTab.Creating || tableTab == TableTab.Create_Revise)
                     ? WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber)
                     : QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, false);
 
-                string actualDirRev = isDisplayed ? GetColumnValueForRow(dirNumber, "Revision") : "DIR Not Found";
+                string actualDirRev = isDisplayed ? GridHelper.GetColumnValueForRow(dirNumber, "Revision") : "DIR Not Found";
                 dirRevMatches = actualDirRev.Equals(expectedDirRev);
                 ifFalseLog = dirRevMatches ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
 
                 if (isDisplayed)
                 {
-                    ClickEditBtnForRow();
+                    GridHelper.ClickEditBtnForRow();
 
                     if (tableTab == TableTab.Creating || tableTab == TableTab.Create_Revise)
                     {
@@ -330,13 +332,13 @@ namespace RKCIUIAutomation.Page.Workflows
                 log.Error(e.Message);
             }
 
-            LogInfo($"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual Matches Expected Rev? : {dirRevMatches}", dirRevMatches);
+            Report.Info($"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual Matches Expected Rev? : {dirRevMatches}", dirRevMatches);
             return dirRevMatches;
         }
 
         internal string[] GetDirIdForRow<T>(T textInColumnForRowOrRowIndex)
         {
-            string href = GetPdfHref(textInColumnForRowOrRowIndex, true, true);
+            string href = GridHelper.GetPdfHref(textInColumnForRowOrRowIndex, true, true);
             string[] dirID = Regex.Split(href, "ViewDirPDF\\?DirId=");
             return dirID;
         }
@@ -344,7 +346,7 @@ namespace RKCIUIAutomation.Page.Workflows
         internal bool Verify_ViewDirPDF(TableTab tableTab, string dirNumber = "")
         {
             QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber);
-            return VerifyViewPdfReport(dirNumber);
+            return GridHelper.VerifyViewPdfReport(dirNumber);
         }
 
         public override string ClickViewSelectedDirPDFs(bool selectNoneForMultiView)
@@ -356,7 +358,7 @@ namespace RKCIUIAutomation.Page.Workflows
             {
                 if (!selectNoneForMultiView)
                 {
-                    rowCount = GetTableRowCount();
+                    rowCount = GridHelper.GetTableRowCount();
                     rowCount = rowCount > 3 ? 3 : rowCount;
 
                     expectedUrl = $"{GetDirIdForRow(1)[0]}ViewMultiDirPDF?";
@@ -366,7 +368,7 @@ namespace RKCIUIAutomation.Page.Workflows
                         int rowIndex = i + 1;
                         string dirID = $"DirIds[{i}]={GetDirIdForRow(rowIndex)[1]}&";
                         expectedUrl = $"{expectedUrl}{dirID}";
-                        SelectCheckboxForRow(rowIndex);
+                        GridHelper.SelectCheckboxForRow(rowIndex);
                     }
 
                     expectedUrl = expectedUrl.TrimEnd('&');
@@ -375,7 +377,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 QaRcrdCtrl_QaDIR.ClickBtn_View_Selected();
 
                 
-                LogStep(
+                Report.Step(
                     selectNoneForMultiView
                     ? "Clicked View Selected button without row selection"
                     : $"Clicked View Selected button after selecting top {rowCount} rows"
@@ -412,7 +414,7 @@ namespace RKCIUIAutomation.Page.Workflows
                         ? true : false
                     : isDeleted == 0
                         ? true : false;
-                LogStep($"Performed DB Cleanup for DIR# {dirNumber}", cleanupSuccessful);
+                Report.Step($"Performed DB Cleanup for DIR# {dirNumber}", cleanupSuccessful);
             }
             catch (Exception e)
             {
@@ -636,7 +638,7 @@ namespace RKCIUIAutomation.Page.Workflows
             bool QaFieldDIR = false;
             string expectedPageTitle = "List of Inspector's Daily Report"; //(default) QcRecordControl page title
             string logMsg = useQaFieldMenu ? "QaField" : "RecordControl";
-            LogDebug($"---> LoginToDirPage : {logMsg} <---");
+            Report.Step($"---> LoginToDirPage : {logMsg} <---");
 
             try
             {
@@ -707,7 +709,7 @@ namespace RKCIUIAutomation.Page.Workflows
         //GLX,
         public virtual string Create_and_SaveForward_DIR()
         {
-            LogDebug($"---> Create_and_SaveForward_DIR <---");
+            Report.Step($"---> Create_and_SaveForward_DIR <---");
 
             QaDirWF_Base.CreateNew_and_PopulateRequiredFields();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
@@ -716,7 +718,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual string Create_and_SaveOnly_DIR()
         {
-            LogDebug($"---> Create_and_SaveOnly_DIR <---");
+            Report.Step($"---> Create_and_SaveOnly_DIR <---");
 
             QaDirWF_Base.CreateNew_and_PopulateRequiredFields();
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
@@ -725,7 +727,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual string[] Create_and_SaveForward_DIR_with_Failed_Inspection_and_PreviousFailingReports()
         {
-            LogDebug($"---> Create_and_SaveForward_Failed_Inspection_DIR_with_PreviousFailingReports <---");
+            Report.Step($"---> Create_and_SaveForward_Failed_Inspection_DIR_with_PreviousFailingReports <---");
 
             QaDirWF_Base.CreateNew_and_PopulateRequiredFields();
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
@@ -735,7 +737,7 @@ namespace RKCIUIAutomation.Page.Workflows
             string dirNumber = QaRcrdCtrl_QaDIR.GetDirNumber();
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInCreate(dirNumber), $"VerifyDirIsDisplayedInCreate DirNo. {dirNumber}");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyPreviousFailingDirEntry(previousFailedDirNumber), $"VerifyPreviousFailingDirEntry in Create: {previousFailedDirNumber}");
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
             string[] dirNumbers = new string[2]
@@ -760,22 +762,22 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void FilterRecreateColumnWithoutButtonAscending()
         {
-            SortColumnAscending(PackagesColumnName.Week_Start);
-            FilterTableColumnByValue(PackagesColumnName.Recreate, "false");
-            FilterTableColumnByValue(PackagesColumnName.DIRs, QaRcrdCtrl_QaDIR.GetTechIdForDirUserAcct(true), TableType.MultiTab, FilterOperator.Contains);
+            GridHelper.SortColumnAscending(PackagesColumnName.Week_Start);
+            GridHelper.FilterTableColumnByValue(PackagesColumnName.Recreate, "false");
+            GridHelper.FilterTableColumnByValue(PackagesColumnName.DIRs, QaRcrdCtrl_QaDIR.GetTechIdForDirUserAcct(true), TableType.MultiTab, FilterOperator.Contains);
         }
 
         public virtual void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)
         {
-            LogDebug($"---> KickBack_DIR_ForRevise_From{kickBackfromTableTab.ToString()}Tab_then_Edit_inCreateReview <---");
+            Report.Step($"---> KickBack_DIR_ForRevise_From{kickBackfromTableTab.ToString()}Tab_then_Edit_inCreateReview <---");
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber), "VerifyDirIsDisplayed");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             ClickBtn_KickBackOrRevise();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_SendEmailForRevise_No();
             QaRcrdCtrl_QaDIR.ClickBtn_SubmitRevise();
             WaitForPageReady();
             AddAssertionToList(VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
         }
 
         public virtual void Return_DIR_ForRevise_FromQcReview_then_Edit_SaveForward(string dirNumber)
@@ -790,21 +792,21 @@ namespace RKCIUIAutomation.Page.Workflows
 
         private void Upload_Cancel_Verify_inAttachments(string dirNumber)
         {
-            LogDebug($"---> Upload_Cancel_Verify_inAttachments <---");
+            Report.Step($"---> Upload_Cancel_Verify_inAttachments <---");
 
             UploadFile();
         }
 
         public virtual void Modify_Cancel_Verify_inCreateRevise(string dirNumber)
         {
-            LogDebug($"---> Modify_Cancel_Verify_inCreateRevise <---");
+            Report.Step($"---> Modify_Cancel_Verify_inCreateRevise <---");
 
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_Deficiencies_Yes();
             QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
             QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Inspection_Result_P), "VerifyChkBoxRdoBtnSelection Inspection_Result_P");
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Deficiencies_No), "VerifyChkBoxRdoBtnSelection AnyDeficiencies_No");
             AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description, true), "VerifyTextAreaField Deficiency_Description - Should Be Empty");
@@ -812,7 +814,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void Modify_Save_Verify_and_SaveForward_inCreateRevise(string dirNumber)
         {
-            LogDebug($"---> Modify_Save_Verify_and_SaveForward_inCreateRevise <---");
+            Report.Step($"---> Modify_Save_Verify_and_SaveForward_inCreateRevise <---");
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDeficiencySelectionPopupMessages(), "VerifyDeficiencySelectionPopupMessages");
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
@@ -820,7 +822,7 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_QaDIR.EnterText_DeficiencyDescription();
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Inspection_Result_F), "VerifyChkBoxRdoBtnSelection(Inspection_Result_F)");
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Deficiencies_Yes), "VerifyChkBoxRdoBtnSelection(Deficiencies_Yes)");
             AddAssertionToList(VerifyTextAreaField(InputFields.Deficiency_Description), "VerifyTextAreaField(Deficiency_Description)");
@@ -829,14 +831,14 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void LogoutLoginAsQaTech_Edit_Result_SaveForward_then_LogoutLoginAsQaMgr(string dirNumber)
         {
-            LogDebug($"---> LogoutLoginAsQaTech_Edit_Result_SaveForward_then_LogoutLoginAsQaMgr <---");
+            Report.Step($"---> LogoutLoginAsQaTech_Edit_Result_SaveForward_then_LogoutLoginAsQaMgr <---");
 
             LogoutToLoginPage();
             LoginAs(UserType.DIRTechQA);
             NavigateToPage.QAField_QA_DIRs();
 
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInRevise(dirNumber), "VerifyDirIsDisplayed(TableTab.Create_Revise)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_E(false); //Edit 'Results' checkbox in Revise
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
 
@@ -848,10 +850,10 @@ namespace RKCIUIAutomation.Page.Workflows
         //GLX, I15SB, I15Tech, LAX
         public virtual void Enter_EngineerComments_and_Approve_inQcReview(string dirNumber)
         {
-            LogDebug($"---> Verify_EngineerComments_and_Approve_inQcReview <---");
+            Report.Step($"---> Verify_EngineerComments_and_Approve_inQcReview <---");
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             ClearText(GetTextAreaFieldByLocator(InputFields.Engineer_Comments));
             //WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
             //AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyEngineerCommentsReqFieldErrors(), "VerifyEngineerCommentsReqFieldErrors");
@@ -884,7 +886,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual bool Verify_DIR_Delete(TableTab tableTab, string dirNumber, bool acceptAlert = true)
         {
-            LogDebug($"---> Verify_DIR_Delete in {tableTab.ToString()} - Accept Alert: {acceptAlert} <---");
+            Report.Step($"---> Verify_DIR_Delete in {tableTab.ToString()} - Accept Alert: {acceptAlert} <---");
 
             bool isDisplayed = false;
             string actionPerformed = string.Empty;
@@ -898,7 +900,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
                 if (isDisplayed)
                 {
-                    ClickDeleteBtnForRow();
+                    GridHelper.ClickDeleteBtnForRow();
                     if (acceptAlert)
                     {
                         try
@@ -939,11 +941,11 @@ namespace RKCIUIAutomation.Page.Workflows
                     result = acceptAlert ? !verifyResult : verifyResult;
 
                     AddAssertionToList(result, $"VerifyDirIsDisplayed in {tableTab.ToString()}, after {actionPerformed} delete dialog");
-                    LogInfo($"Performed Action: {actionPerformed} delete dialog<br>{resultAfterAction}{isDisplayed}", result);
+                    Report.Info($"Performed Action: {actionPerformed} delete dialog<br>{resultAfterAction}{isDisplayed}", result);
                 }
                 else
                 {
-                    LogError($"Unable to find DIR No. {dirNumber} in {tableTab.ToString()} Tab");
+                    Report.Error($"Unable to find DIR No. {dirNumber} in {tableTab.ToString()} Tab");
                 }
             }
             catch (Exception e)
@@ -965,10 +967,10 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void Edit_DIR_inCreate_and_Verify_AutoSaveTimerRefresh_then_Save(string dirNumber)
         {
-            LogDebug("---> Edit_DIR_inCreate_and_Verify_AutoSaveTimerRefresh_then_Save <---");
+            Report.Step("---> Edit_DIR_inCreate_and_Verify_AutoSaveTimerRefresh_then_Save <---");
 
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInCreate(dirNumber), "VerifyDirIsDisplayedInCreate (Verify AutoSaveTimer Refresh)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyAutoSaveTimerRefresh(), "VerifyAutoSaveTimerRefresh");
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
         }
@@ -1023,7 +1025,7 @@ namespace RKCIUIAutomation.Page.Workflows
             => QaDirWF_Base.Verify_ViewDirPDF(TableTab.Authorization, dirNumber);
 
         public virtual bool Verify_ViewMultiDirPDF(bool selectNoneForMultiView = false)
-            => VerifyViewPdfReport("", true, selectNoneForMultiView, ClickViewSelectedDirPDFs(selectNoneForMultiView));
+            => GridHelper.VerifyViewPdfReport("", true, selectNoneForMultiView, ClickViewSelectedDirPDFs(selectNoneForMultiView));
 
         public abstract bool VerifyDbCleanupForDIR(string dirnumber, string revision = "A", bool setAsDeleted = true);
         public abstract void VerifyDbCleanupForCreatePackages(bool isPkgCreated, string weekStartDate, string[] dirNumbers);
@@ -1086,7 +1088,7 @@ namespace RKCIUIAutomation.Page.Workflows
             => QaDirWF_Base.IterateColumnsByFilter(TableTab.Revise, currentUser, new string[] { dirNumber, sentBy, lockedBy, dirRev }, useQaFieldMenu);
 
         public override void Verify_Column_Filter_In_Authorization(UserType currentUser, string dirNumber, string dirRev = "A", bool kickedBack = false, bool useQaFieldMenu = false)
-            => LogStep("---> Verify_Column_Filter_In_Authorization <---<br>Step skipped for Tenant SH249");
+            => Report.Step("---> Verify_Column_Filter_In_Authorization <---<br>Step skipped for Tenant SH249");
 
         public override void Verify_Column_Filter_ForTabs_In_QaFieldMenu(UserType currentUser, string dirNumber, string dirRev = "A")
         {
@@ -1097,14 +1099,14 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         public override void Return_DIR_ForRevise_FromAuthorization_then_ForwardToAuthorization(string dirNumber)
-            => LogStep("---> KickBack_DIR_ForRevise_FromAuthorization_then_Edit <---<br>Step skipped for Tenant SH249");
+            => Report.Step("---> KickBack_DIR_ForRevise_FromAuthorization_then_Edit <---<br>Step skipped for Tenant SH249");
 
         public override void Verify_DIR_then_Approve_inAuthorization(string dirNumber)
-            => LogStep("Step skipped for Tenant SH249: Verify_DIR_then_Approve_inAuthorization");
+            => Report.Step("Step skipped for Tenant SH249: Verify_DIR_then_Approve_inAuthorization");
 
         public override bool Verify_DirRevision_inTblRow_then_Approve_inAuthorization(string dirNumber, string expectedDirRev)
         {
-            LogStep("---> Verify_DirRevision_inTblRow_then_Approve_inAuthorization <---<br>Step skipped for Tenant SH249");
+            Report.Step("---> Verify_DirRevision_inTblRow_then_Approve_inAuthorization <---<br>Step skipped for Tenant SH249");
             return true;
         }
 
@@ -1119,13 +1121,13 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override bool Verify_DIR_Delete_or_ApproveNoError_inAuthorization(string dirNumber, bool delete = false, bool approveDIR = true)
         {
-            LogStep($"---> Skipped Test Step for Tenant SH249<br>Verify_DIR_Delete_or_ApproveNoError_inAuthorization<---");
+            Report.Step($"---> Skipped Test Step for Tenant SH249<br>Verify_DIR_Delete_or_ApproveNoError_inAuthorization<---");
             return true;
         }
 
         public override bool Verify_ViewReport_forDIR_inAuthorization(string dirNumber)
         {
-            LogStep($"---> Skipped Test Step for Tenant SH249<br>Verify_ViewReport_forDIR_inAuthorization<---");
+            Report.Step($"---> Skipped Test Step for Tenant SH249<br>Verify_ViewReport_forDIR_inAuthorization<---");
             return true;
         }
 
@@ -1137,10 +1139,10 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void Enter_EngineerComments_and_Approve_inQcReview(string dirNumber)
         {
-            LogStep($"---> Verify_EngineerComments_and_Approve_inQcReview <---");
+            Report.Step($"---> Verify_EngineerComments_and_Approve_inQcReview <---");
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             ClearText(GetTextAreaFieldByLocator(InputFields.Engineer_Comments));
             ClickBtn_ApproveOrNoError();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyEngineerCommentsReqFieldErrors(), "VerifyEngineerCommentsReqFieldErrors");
@@ -1185,7 +1187,7 @@ namespace RKCIUIAutomation.Page.Workflows
             Verify_DIR_then_Approve_inReview(dirNumber);
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Authorization, dirNumber), "VerifyDirIsDisplayed");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Back_To_QC_Review();
             Verify_DIR_then_Approve_inReview(dirNumber);
         }
@@ -1210,10 +1212,10 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void Enter_EngineerComments_and_Approve_inQcReview(string dirNumber)
         {
-            LogStep($"---> Verify_EngineerComments_and_Approve_inQcReview <---");
+            Report.Step($"---> Verify_EngineerComments_and_Approve_inQcReview <---");
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             ClearText(GetTextAreaFieldByLocator(InputFields.Engineer_Comments));
             ClickBtn_ApproveOrNoError();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyEngineerCommentsReqFieldErrors(), "VerifyEngineerCommentsReqFieldErrors");

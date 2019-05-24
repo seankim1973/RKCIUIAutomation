@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static RKCIUIAutomation.Tools.HipTest;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Tools
 {

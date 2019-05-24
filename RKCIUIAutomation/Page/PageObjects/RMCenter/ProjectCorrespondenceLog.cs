@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.ProjectCorrespondenceLog;
+using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -336,7 +338,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 }
                 else
                 {
-                    LogError($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
+                    log.Error($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
                 }
             }
             catch (Exception e)
@@ -437,7 +439,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                             ? expectedValue.ReplaceSpacesWithUnderscores()
                             : expectedValue;
 
-                    actualValueInTable = GetColumnValueForRow("", columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
+                    actualValueInTable = GridHelper.GetColumnValueForRow("", columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
                     Console.WriteLine($"COLUMN NAME: {columnName.ToString()} :: ACTUAL VALUE: {actualValueInTable}");
                     string exptedFieldName = $"Field Name : [{colEntryField.ToString()}]";
                     expectedValuesInTableList.Add($"{exptedFieldName}::{expectedValueInTable}");
@@ -474,7 +476,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false)
-            => VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber,
+            => GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber,
                 VerifyIsMultiTabGrid()
                     ? TableType.MultiTab
                     : TableType.Single,
@@ -503,7 +505,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     ? value.ReplaceSpacesWithUnderscores()
                     : value;
 
-                bool isDisplayed = VerifyRecordIsDisplayed(column, value, tenantTableType);
+                bool isDisplayed = GridHelper.VerifyRecordIsDisplayed(column, value, tenantTableType);
 
                 resultsList.Add(isDisplayed);
 
@@ -511,10 +513,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     ? ""
                     : " NOT";
 
-                LogInfo($"Column '{column}' in the grid was{logMsg} filtered successfully by value {value}", isDisplayed);
+                Report.Info($"Column '{column}' in the grid was{logMsg} filtered successfully by value {value}", isDisplayed);
                 AddAssertionToList(isDisplayed, $"VerifyTransmittalLogIsDisplayedByGridColumnFilter [Column : {column}]");
 
-                ClearTableFilters(tenantTableType);
+                GridHelper.ClearTableFilters(tenantTableType);
                 WaitForPageReady();
             }
 
@@ -529,9 +531,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             bool isDisplayed = false;
 
-            ClickTab(tableTab);
+            GridHelper.ClickTab(tableTab);
             WaitForPageReady();
-            isDisplayed = VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber,
+            isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber,
                 ProjCorrespondenceLog.VerifyIsMultiTabGrid()
                     ? TableType.MultiTab
                     : TableType.Single,
@@ -619,7 +621,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             {
                 TableTab currentTab = remainingTblTabs[i];
                 AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(currentTab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
-                ClearTableFilters();
+                GridHelper.ClearTableFilters();
                 ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayedByGridColumnFilter();
                 AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
 
@@ -636,7 +638,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override bool VerifyTransmittalLocationBySearch()
         {
             ClickElement(By.Id("SearchButton"));
-            bool isDisplayed = VerifyRecordIsDisplayed(ColumnName.Title, "RFC A - MOT Segment 1 Phase 0", TableType.Single);
+            bool isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnName.Title, "RFC A - MOT Segment 1 Phase 0", TableType.Single);
 
             return isDisplayed;
         }
@@ -675,17 +677,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber)
         {
-            LogInfo($"Test step skipped for {tenantName} - tenant does not have tabbed table grid");
+            Report.Step($"Test step skipped for {tenantName} - tenant does not have tabbed table grid");
         }
 
         public override void VerifyTransmissionDetailsGridFilterInRemainingTableTabs(string transmittalNumber)
         {
-            LogInfo($"Test step skipped for {tenantName} - tenant does not have tabbed table grid");
+            Report.Step($"Test step skipped for {tenantName} - tenant does not have tabbed table grid");
         }
 
         //For tenants I15SB, I15Tech, SG, SH249
         public override void ClickViewBtnForTransmissionsRow()
-            => ClickViewBtnForRow("", false, false);
+            => GridHelper.ClickViewBtnForRow("", false, false);
 
         public override IList<By> GetTenantRequiredFieldLocators()
         {
@@ -937,7 +939,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override bool VerifyIsMultiTabGrid() => true;
 
         public override void ClickViewBtnForTransmissionsRow()
-            => ClickViewBtnForRow("", true, false);
+            => GridHelper.ClickViewBtnForRow("", true, false);
 
         public override IList<EntryField> GetTenantRequiredFieldsList()
         {
@@ -1360,7 +1362,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override bool VerifyIsMultiTabGrid() => true;
 
         public override void ClickViewBtnForTransmissionsRow()
-            => ClickViewBtnForRow("", true, false);
+            => GridHelper.ClickViewBtnForRow("", true, false);
 
         public override IList<EntryField> GetTenantRequiredFieldsList()
         {

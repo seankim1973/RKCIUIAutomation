@@ -4,7 +4,7 @@ using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.PageObjects
 {
@@ -45,37 +45,37 @@ namespace RKCIUIAutomation.Page.PageObjects
 
             if (tenantName == TenantName.SGWay)
             {
-                LogInfo($"###### using LoginPage_SGWay instance ###### ");
+                Report.Info($"###### using LoginPage_SGWay instance ###### ");
                 instance = new LoginPage_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
-                LogInfo($"###### using LoginPage_SH249 instance ###### ");
+                Report.Info($"###### using LoginPage_SH249 instance ###### ");
                 instance = new LoginPage_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                LogInfo($"###### using LoginPage_Garnet instance ###### ");
+                Report.Info($"###### using LoginPage_Garnet instance ###### ");
                 instance = new LoginPage_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                LogInfo($"###### using LoginPage_GLX instance ###### ");
+                Report.Info($"###### using LoginPage_GLX instance ###### ");
                 instance = new LoginPage_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                LogInfo($"###### using LoginPage_I15South instance ###### ");
+                Report.Info($"###### using LoginPage_I15South instance ###### ");
                 instance = new LoginPage_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                LogInfo($"###### using LoginPage_I15Tech instance ###### ");
+                Report.Info($"###### using LoginPage_I15Tech instance ###### ");
                 instance = new LoginPage_I15Tech(driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                LogInfo($"###### using LoginPage_LAX instance ###### ");
+                Report.Info($"###### using LoginPage_LAX instance ###### ");
                 instance = new LoginPage_LAX(driver);
             }
             return instance;
@@ -121,18 +121,18 @@ namespace RKCIUIAutomation.Page.PageObjects
 
         public virtual void LoginUser(UserType userType)
         {
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
             bool alreadyLoggedIn = AlreadyLoggedIn();
 
             try
             {
                 if (!alreadyLoggedIn)
                 {
-                    pageTitle = SetPageTitleVar();
+                    pageTitle = PageAction.SetPageTitleVar();
 
                     if (pageTitle.Contains("Log in"))
                     {
-                        VerifyPageIsLoaded(true, false);
+                        PageAction.VerifyPageIsLoaded(true, false);
 
                         ConfigUtils Configs = new ConfigUtils();
                         string[] userAcct = Configs.GetUser(userType);
@@ -173,18 +173,18 @@ namespace RKCIUIAutomation.Page.PageObjects
                             }
                             catch (Exception e)
                             {
-                                LogError($"Exception occured while waiting for element - {field}", true, e);
+                                Report.Error($"Exception occured while waiting for element - {field}", true, e);
                                 throw;
                             }
                         }
 
-                        LogStep($"Using account : {userAcct[0]}");
-                        ClickElement(btn_Login);
+                        Report.Step($"Using account : {userAcct[0]}");
+                        PageAction.ClickElement(btn_Login);
                     }
                 }
                 else
                 {
-                    LogStep("Already Logged In");
+                    Report.Step("Already Logged In");
                 }
             }
             catch (Exception e)
@@ -195,13 +195,13 @@ namespace RKCIUIAutomation.Page.PageObjects
             {
                 try
                 {
-                    pageTitle = SetPageTitleVar();
+                    pageTitle = PageAction.SetPageTitleVar();
 
                     if (pageTitle.Contains("Log in"))
                     {
                         bool invalidLoginErrorDisplayed = false;
 
-                        IWebElement invalidLoginError = GetElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+                        IWebElement invalidLoginError = PageAction.GetElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
                         invalidLoginErrorDisplayed = invalidLoginError.Displayed;
 
                         if (invalidLoginError != null && invalidLoginErrorDisplayed)
@@ -209,7 +209,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                             string logMsg = invalidLoginError.Text;
 
                             var ex = new Exception(logMsg.HasValue() ? logMsg : "Invalid Login Error is Displayed!!!");
-                            LogError(logMsg, true);
+                            Report.Error(logMsg, true);
                             throw ex;
                         }
                     }
@@ -222,7 +222,7 @@ namespace RKCIUIAutomation.Page.PageObjects
         }
 
         public virtual void ToggleRememberMeChkbox()
-            => ClickElement(chkbx_RememberMe);
+            => PageAction.ClickElement(chkbx_RememberMe);
 
     }
 

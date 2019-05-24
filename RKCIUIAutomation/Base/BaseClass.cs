@@ -23,7 +23,6 @@ namespace RKCIUIAutomation.Base
     {
         public BaseClass()
         {
-
         }
 
         [ThreadStatic]
@@ -144,7 +143,7 @@ namespace RKCIUIAutomation.Base
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
 
-            IConfigUtils config = ConfigUtility();
+            IConfigUtils config = ConfigUtil;
             testPlatform = config.GetTestRunEnv<TestPlatform>(_testPlatform);
             browserType = config.GetTestRunEnv<BrowserType>(_browserType);
             testEnv = config.GetTestRunEnv<TestEnv>(_testEnv);
@@ -174,7 +173,7 @@ namespace RKCIUIAutomation.Base
         {
             var _suite = Regex.Split(GetType().Namespace, "\\.");
 
-            IBaseUtils baseUtil = BaseUtility();
+            IBaseUtils baseUtil = BaseUtil;
             testName = baseUtil.GetTestName();
             testSuite = _suite[_suite.Length - 1];
             testPriority = baseUtil.GetTestPriority();
@@ -263,7 +262,7 @@ namespace RKCIUIAutomation.Base
 
                 testInstance.AssignReportCategories(reportCategories);
                 string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
-                BaseUtility().LogAssertIgnore(msg);
+                Report.AssertIgnore(msg);
                 InjectTestStatus(TestStatus.Skipped, msg);
                 Assert.Ignore(msg);
             }
@@ -323,7 +322,7 @@ namespace RKCIUIAutomation.Base
                                 ? ""
                                 : $"{injMsg}<br> ")
                             : $"<pre>{result.StackTrace}</pre>";
-                        string screenshotName = BaseUtility().CaptureScreenshot();
+                        string screenshotName = BaseUtil.CaptureScreenshot();
 
                         if (reporter == Reporter.Klov)
                         {

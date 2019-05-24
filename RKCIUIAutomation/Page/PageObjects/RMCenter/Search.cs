@@ -9,6 +9,7 @@ using System;
 using ColumnName = RKCIUIAutomation.Page.PageObjects.RMCenter.Search.ColumnName;
 using RKCIUIAutomation.Base;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
+using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -103,12 +104,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         PopulateCriteriaByType(criteria, kvPair.Value);
                         ClickBtn_Search();
                         WaitForLoading();
-                        bool searchResult = VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableType.Single);
+                        bool searchResult = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableType.Single);
                         resultsList.Add(searchResult);
 
                         logMsg = $"Search by Criteria '{criteria}'";
-                        LogInfo($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
-                        TestUtils.GetInstance.AddAssertionToList(searchResult, logMsg);
+                        Report.Info($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
+                        TestUtility.AddAssertionToList(searchResult, logMsg);
 
                         ClickBtn_Clear();
                         WaitForLoading();

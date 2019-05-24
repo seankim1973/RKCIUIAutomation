@@ -3,6 +3,7 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralCDR;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -109,7 +110,7 @@ namespace RKCIUIAutomation.Page.Workflows
             Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
         }
 
@@ -120,7 +121,7 @@ namespace RKCIUIAutomation.Page.Workflows
             Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_Disposition();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
         }
 
@@ -131,7 +132,7 @@ namespace RKCIUIAutomation.Page.Workflows
             Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_Disposition();
         }
         public virtual void KickBackToQCReviewCDR(UserType user, string cdrDescription)
@@ -141,7 +142,7 @@ namespace RKCIUIAutomation.Page.Workflows
             Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_Disposition();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_QC_Review();
         }
 
@@ -152,13 +153,13 @@ namespace RKCIUIAutomation.Page.Workflows
             Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
            
            
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
         }
 
         public virtual void ReviewAndReviseCDRDocument(UserType user, string cdrDescription)
@@ -168,7 +169,7 @@ namespace RKCIUIAutomation.Page.Workflows
             Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
             QaRcrdCtrl_GeneralCDR.ClickBtn_Revise();
 
@@ -182,7 +183,7 @@ namespace RKCIUIAutomation.Page.Workflows
             Assert.True(VerifyPageHeader("List of CDR Reports"));
             QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
             QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralCDR.ClickBtn_CloseCDR();
         }
     }

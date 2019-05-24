@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using RKCIUIAutomation.Tools;
-using static RKCIUIAutomation.Config.ProjectProperties;
+using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.UnitTest
@@ -45,7 +45,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify Component Name")]
         public void DynamicNavigation()
         {
-            LogInfo($"Other component test - This test should run");
+            Report.Step($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Qms_Document();
             Assert.True(VerifyPageHeader("QMS Documents"));
@@ -227,7 +227,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify test runs/passes with only component1 (valid) property attribute is specified")]
         public void VerifyOnlyComponent1Specified()
         {
-            LogInfo($"This test should be skipped due to Component1");
+            Report.Step($"This test should be skipped due to Component1");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
         }
@@ -243,7 +243,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify test is skipped due to component1 not part of tenant's component list")]
         public void VerifyComponent1TestIsSkipped()
         {
-            LogInfo($"This test should be skipped due to Component1");
+            Report.Step($"This test should be skipped due to Component1");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
         }
@@ -260,7 +260,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify test runs/passes with component1 and 2 properties are part of tenant's component list")]
         public void VerifyComponent2Test()
         {
-            LogInfo($"Two components test - This test should pass");
+            Report.Step($"Two components test - This test should pass");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
         }
@@ -277,7 +277,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify test is skipped due to only component2 not part of tenant's component list")]
         public void VerifyComponent2TestIsSkipped()
         {
-            LogInfo($"This test should be skipped due to Component2");
+            Report.Step($"This test should be skipped due to Component2");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.RMCenter_Upload_QA_Submittal();
         }
@@ -293,7 +293,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify Component Name")]
         public void VerifyComponentTestRuns()
         {
-            LogInfo($"Other component test - This test should run");
+            Report.Step($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.My_Details();
             Assert.True(VerifyPageHeader("Account Details"));
@@ -314,7 +314,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify Component Name")]
         public void NewGWQALabMenu()
         {
-            LogInfo($"Other component test - This test should run");
+            Report.Step($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QALab_BreakSheet_Forecast();
             NavigateToPage.QALab_Cylinder_PickUp_List();
@@ -360,7 +360,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify Component Name")]
         public void DynamicNavigation()
         {
-            LogInfo($"Other component test - This test should run");
+            Report.Step($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Qms_Document();
             Assert.True(VerifyPageHeader("QMS Documents"));
@@ -368,38 +368,38 @@ namespace RKCIUIAutomation.UnitTest
     }
 
     [TestFixture]
-    public class Test_TableHelper : TestBase
+    public class Test_GridHelper : TestBase
     {
         [Test]
         [Category(Component.Other)]
         [Property(TestCaseNumber, 2222)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Component Name")]
-        public void VerifyTableHelper()
+        public void VerifyGridHelper()
         {
             LoginAs(UserType.IQFAdmin);
             NavigateToPage.RMCenter_Design_Documents();
-            TableHelper.ClickTab(DesignDocument.TableTab.Pending_Response);
-            TableHelper.SortColumnAscending(DesignDocument.ColumnName.Action);
-            TableHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
-            TableHelper.SortColumnToDefault(DesignDocument.ColumnName.Action);
-            TableHelper.FilterColumn(DesignDocument.ColumnName.Number, "AJhZSDRCBLSKvmwANBPbkiVSWn", TableType.MultiTab);
-            TableHelper.ClearTableFilters();
-            TableHelper.FilterColumn(DesignDocument.ColumnName.Title, "GarnetCommentReviewRegularComment_DsgnDocTtl", TableType.MultiTab, FilterOperator.EqualTo, FilterLogic.Or, "ATM-PLC-T-00011_UTL-ATM_HDPE-RPLMNT");
-            TableHelper.ClickEnterBtnForRow();
-            //TableHelper.ClickCommentTabNumber(2);
+            GridHelper.ClickTab(DesignDocument.TableTab.Pending_Response);
+            GridHelper.SortColumnAscending(DesignDocument.ColumnName.Action);
+            GridHelper.SortColumnDescending(DesignDocument.ColumnName.Action);
+            GridHelper.SortColumnToDefault(DesignDocument.ColumnName.Action);
+            GridHelper.FilterColumn(DesignDocument.ColumnName.Number, "AJhZSDRCBLSKvmwANBPbkiVSWn", TableType.MultiTab);
+            GridHelper.ClearTableFilters();
+            GridHelper.FilterColumn(DesignDocument.ColumnName.Title, "GarnetCommentReviewRegularComment_DsgnDocTtl", TableType.MultiTab, FilterOperator.EqualTo, FilterLogic.Or, "ATM-PLC-T-00011_UTL-ATM_HDPE-RPLMNT");
+            GridHelper.ClickEnterBtnForRow();
+            //GridHelper.ClickCommentTabNumber(2);
             //DesignDocCommentReview.ClickBtn_BackToList();
 
-            //TableHelper.ClickTab(DesignDocument.TableTab.Requires_Resolution);
-            //TableHelper.ClickTab(DesignDocument.TableTab.Pending_Closing);
-            //TableHelper.ClickTab(DesignDocument.TableTab.Closed);
-            //TableHelper.ClickTab(DesignDocument.TableTab.Requires_Comment);
+            //GridHelper.ClickTab(DesignDocument.TableTab.Requires_Resolution);
+            //GridHelper.ClickTab(DesignDocument.TableTab.Pending_Closing);
+            //GridHelper.ClickTab(DesignDocument.TableTab.Closed);
+            //GridHelper.ClickTab(DesignDocument.TableTab.Requires_Comment);
             //NavigateToPage.RMCenter_Search();
-            //TableHelper.GoToPageNumber(5);
-            //TableHelper.GoToLastPage();
-            //TableHelper.GoToPreviousPage();
-            //TableHelper.GoToFirstPage();
-            //TableHelper.GoToNextPage();
+            //GridHelper.GoToPageNumber(5);
+            //GridHelper.GoToLastPage();
+            //GridHelper.GoToPreviousPage();
+            //GridHelper.GoToFirstPage();
+            //GridHelper.GoToNextPage();
         }
     }
 
@@ -429,7 +429,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify Navigation for sub menu items under Project")]
         public void VerifyComponentTestRuns()
         {
-            LogInfo($"Other component test - This test should run");
+            Report.Step($"Other component test - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.My_Details();
             AddAssertionToList(VerifyPageHeader("Account Details"));
@@ -451,7 +451,7 @@ namespace RKCIUIAutomation.UnitTest
         [Description("Verify Test is Skipped for non-I15 Tenants")]
         public void SkipTestBasedOnComponent()
         {
-            LogInfo($"Test skip test - This test should run only for I15 Tenants");
+            Report.Step($"Test skip test - This test should run only for I15 Tenants");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QALab_BreakSheet_Forecast();
             NavigateToPage.QALab_Cylinder_PickUp_List();

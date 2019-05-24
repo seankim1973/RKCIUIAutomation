@@ -10,7 +10,7 @@ using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
 {
-    public class DriverOptionsFactory
+    public class DriverOptionsFactory : ProjectProperties
     {
         [ThreadStatic]
         private DriverOptions Options;
@@ -69,7 +69,7 @@ namespace RKCIUIAutomation.Base
         {
             if (browser == BrowserType.Chrome)
             {
-                ChromeOptions chromeOptions = BaseUtility.ConvertToType<ChromeOptions>(options);
+                ChromeOptions chromeOptions = BaseUtil.ConvertToType<ChromeOptions>(options);
                 chromeOptions.PageLoadStrategy = PageLoadStrategy.None;
                 chromeOptions.AddArgument("no-sandbox");
                 chromeOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
@@ -78,7 +78,7 @@ namespace RKCIUIAutomation.Base
             }
             else if (browser == BrowserType.Firefox)
             {
-                FirefoxOptions firefoxOptions = BaseUtility.ConvertToType<FirefoxOptions>(options);
+                FirefoxOptions firefoxOptions = BaseUtil.ConvertToType<FirefoxOptions>(options);
                 firefoxOptions.PageLoadStrategy = PageLoadStrategy.None;
                 firefoxOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
                 firefoxOptions.AddAdditionalCapability("zal:name", testDetails, true);
@@ -86,7 +86,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                DriverOptions _options = BaseUtility.ConvertToType<DriverOptions>(options);
+                DriverOptions _options = BaseUtil.ConvertToType<DriverOptions>(options);
                 _options.PageLoadStrategy = PageLoadStrategy.None;
                 _options.AddAdditionalCapability("zal:tz", "America/Chicago");
                 _options.AddAdditionalCapability("zal:name", testDetails);

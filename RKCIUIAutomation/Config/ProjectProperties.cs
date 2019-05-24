@@ -1,7 +1,9 @@
-﻿using RKCIUIAutomation.Base;
+﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Base;
+using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Generic;
-using static RKCIUIAutomation.Base.BaseUtils;
+using static RKCIUIAutomation.Base.WebDriverFactory;
 
 namespace RKCIUIAutomation.Config
 {
@@ -16,6 +18,10 @@ namespace RKCIUIAutomation.Config
         public ProjectProperties()
         {
         }
+
+        WebDriverFactory wdFactory = new WebDriverFactory();
+
+        public ProjectProperties(IWebDriver driver) => wdFactory.Driver = driver;
 
         public ProjectProperties(TenantName tenantName)
         {

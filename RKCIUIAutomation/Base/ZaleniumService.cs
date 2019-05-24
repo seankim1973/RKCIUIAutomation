@@ -39,7 +39,7 @@ namespace RKCIUIAutomation.Base
                 }
                 catch (Exception e)
                 {
-                    LogError(e.Message);
+                    log.Error(e.Message);
                     throw;
                 }
             }
@@ -62,7 +62,7 @@ namespace RKCIUIAutomation.Base
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                log.Error(e.Message);
             }
 
             return isRunning;

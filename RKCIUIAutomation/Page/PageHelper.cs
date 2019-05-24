@@ -107,8 +107,8 @@ namespace RKCIUIAutomation.Page
         private string SetDDListFieldXpath<T>(T ddListID)
         {
             string _ddListID = (ddListID.GetType() == typeof(string))
-                ? BaseUtility().ConvertToType<string>(ddListID)
-                : BaseUtility().ConvertToType<Enum>(ddListID).GetString();
+                ? BaseUtil.ConvertToType<string>(ddListID)
+                : BaseUtil.ConvertToType<Enum>(ddListID).GetString();
 
             string _ddFieldXpath = _ddListID.Contains("Time")
                 ? $"//span[@aria-controls='{_ddListID}_timeview']"
@@ -120,8 +120,8 @@ namespace RKCIUIAutomation.Page
         private string SetDDListFieldExpandArrowXpath<T>(T ddListID, bool isMultiSelectDDList = false)
         {
             string _ddListID = (ddListID.GetType() == typeof(string))
-                ? BaseUtility().ConvertToType<string>(ddListID)
-                : BaseUtility().ConvertToType<Enum>(ddListID).GetString();
+                ? BaseUtil.ConvertToType<string>(ddListID)
+                : BaseUtil.ConvertToType<Enum>(ddListID).GetString();
 
             string _ddArrowXpath = isMultiSelectDDList
                 ? $"//select[@id='{_ddListID}']/parent::div"
@@ -154,12 +154,12 @@ namespace RKCIUIAutomation.Page
 
             if (inputFieldLabelOrID is string)
             {
-                argValue = BaseUtility().ConvertToType<string>(inputFieldLabelOrID);
+                argValue = BaseUtil.ConvertToType<string>(inputFieldLabelOrID);
                 argValue = $"//label[contains(text(),'{(string)argValue}')]/following::input[1]";
             }
             else if(inputFieldLabelOrID is Enum)
             {
-                argValue = BaseUtility().ConvertToType<Enum>(inputFieldLabelOrID);               
+                argValue = BaseUtil.ConvertToType<Enum>(inputFieldLabelOrID);               
                 argValue = $"//input[@id='{((Enum)argValue).GetString()}']";
             }
 
@@ -178,8 +178,8 @@ namespace RKCIUIAutomation.Page
         private string SetDDListItemsXpath<T, I>(T ddListID, I itemIndexOrName, bool useContains = false)
         {
             string _ddListID = ddListID.GetType() == typeof(string)
-                ? BaseUtility().ConvertToType<string>(ddListID)
-                : BaseUtility().ConvertToType<Enum>(ddListID).GetString();
+                ? BaseUtil.ConvertToType<string>(ddListID)
+                : BaseUtil.ConvertToType<Enum>(ddListID).GetString();
 
             string ddListXPath = _ddListID.Contains("Time")
                 ? $"//ul[@id='{_ddListID}_timeview']"
@@ -189,14 +189,14 @@ namespace RKCIUIAutomation.Page
 
             if (itemIndexOrName.GetType().Equals(typeof(string)))
             {
-                var argName = BaseUtility().ConvertToType<string>(itemIndexOrName);
+                var argName = BaseUtil.ConvertToType<string>(itemIndexOrName);
                 itemValueXPath = useContains
                     ? $"contains(text(),'{argName}')"
                     : $"text()='{argName}'";
             }
             else if (itemIndexOrName.GetType().Equals(typeof(int)))
             {
-                int itemIndex = BaseUtility().ConvertToType<int>(itemIndexOrName);
+                int itemIndex = BaseUtil.ConvertToType<int>(itemIndexOrName);
                 itemIndex = _ddListID.Contains("Time")
                     ? itemIndex + 1
                     : itemIndex;
@@ -250,7 +250,7 @@ namespace RKCIUIAutomation.Page
 
         public By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
             => isMultiSelectDDList
-                ? By.XPath($"//select[@id='{BaseUtility().ConvertToType<Enum>(ddListID).GetString()}']/parent::div")
+                ? By.XPath($"//select[@id='{BaseUtil.ConvertToType<Enum>(ddListID).GetString()}']/parent::div")
                 : By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
 
         /// <summary>
@@ -281,11 +281,11 @@ namespace RKCIUIAutomation.Page
 
             if (argType == typeof(string))
             {
-                buttonVal = BaseUtility().ConvertToType<string>(buttonName);
+                buttonVal = BaseUtil.ConvertToType<string>(buttonName);
             }
             else if (argType == typeof(Enum))
             {
-                buttonVal = BaseUtility().ConvertToType<Enum>(buttonName).GetString();
+                buttonVal = BaseUtil.ConvertToType<Enum>(buttonName).GetString();
             }
 
             return By.XPath(SetInputButtonXpath(buttonVal));

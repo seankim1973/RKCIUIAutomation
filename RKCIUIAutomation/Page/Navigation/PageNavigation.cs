@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Navigation
 {

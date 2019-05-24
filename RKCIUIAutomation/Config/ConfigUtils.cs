@@ -8,6 +8,8 @@ using System.Security.Cryptography;
 using System.Text;
 using static RKCIUIAutomation.Base.BaseUtils;
 using static RKCIUIAutomation.Tools.HipTestApi;
+using static RKCIUIAutomation.Base.WebDriverFactory;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Config
 {
@@ -17,7 +19,8 @@ namespace RKCIUIAutomation.Config
         {
         }
 
-        public ConfigUtils(IWebDriver driver) => this.Driver = driver;
+        WebDriverFactory wdFactory = new WebDriverFactory();
+        public ConfigUtils(IWebDriver driver) => wdFactory.Driver = driver;
 
         public TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg)
         => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nunitArg);

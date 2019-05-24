@@ -3,6 +3,8 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System;
 using static RKCIUIAutomation.Page.PageObjects.QASearch.InspectionDeficiencyLogReport;
+using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.QASearch
 {
@@ -126,7 +128,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
                     ? $"{columnValue}-1"
                     : columnValue;
 
-                isDisplayed = VerifyRecordIsDisplayed(columnName, columnValue, TableType.Single, false, FilterOperator.Contains);
+                isDisplayed = GridHelper.VerifyRecordIsDisplayed(columnName, columnValue, TableType.Single, false, FilterOperator.Contains);
             }
             catch (Exception e)
             {

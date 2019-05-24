@@ -4,6 +4,7 @@ using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
 using RKCIUIAutomation.Page.PageObjects.QAField;
 using RKCIUIAutomation.Test;
 using System;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -121,7 +122,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         public virtual void _NavigateToVerifyProjectConfigurationMenu()
         {
-            LogInfo($"Project Configuration component test - This test should run");
+            Report.Step($"Project Configuration component test - This test should run");
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.My_Details();
@@ -263,7 +264,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         public virtual void _NavigateToVerifyQAEngineerMenu()
         {
-            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
+            Report.Step($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QAEngineer_QA_Test_Lab_Supervisor_Review();
             AddAssertionToList(VerifyPageHeader("Lab Supervisor Review"));
@@ -517,7 +518,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         public virtual void _NavigateToVerifyQCEngineerMenu()
         {
-            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
+            Report.Step($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QCEngineer_QC_Test_Lab_Supervisor_Review();
             AddAssertionToList(VerifyPageHeader("Lab Supervisor Review"));

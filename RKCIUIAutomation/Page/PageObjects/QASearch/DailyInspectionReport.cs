@@ -3,8 +3,9 @@ using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System;
-using static RKCIUIAutomation.Page.PageObjects.QASearch.DailyInspectionReport;
+//using static RKCIUIAutomation.Page.PageObjects.QASearch.DailyInspectionReport;
 using static RKCIUIAutomation.Page.TableHelper;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.PageObjects.QASearch
 {
@@ -80,6 +81,78 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
             [StringValue("CancelButton")] AddQuery_Cancel,
         }
+
+        public override void ClickBtn_Search() => PageAction.JsClickElement(By.Id(Buttons.Search.GetString()));
+
+        public override void ClickBtn_Clear() => PageAction.JsClickElement(By.Id(Buttons.Clear.GetString()));
+
+        public override void EnterText_DIR_Number(string dirNumber) => PageAction.EnterText(By.Id(SearchCriteria.DIR_No.GetString()), dirNumber);
+
+        public override bool VerifyDirIsDisplayed(string dirNumber)
+        {
+            bool isDisplayed = false;
+
+            try
+            {
+                isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnName.DIR_No, dirNumber, TableType.Single);
+                string logMsg = isDisplayed ? "Found" : "Unable to find";
+                Report.Info($"{logMsg} DIR record number {dirNumber}.", isDisplayed);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return isDisplayed;
+        }
+
+        private bool CheckIfWorkflowLocationsMatch(string dirNumber, WorkflowLocation expectedWorkflow, bool usingSearch = false, bool dirRevision = false, string expectedRevision = "B")
+        {
+            NavigateToPage.QASearch_Daily_Inspection_Report();
+            string actualWorkflow = string.Empty;
+            bool wfLocationsMatch = false;
+
+            try
+            {
+                dirNumber = dirNumber.HasValue()
+                    ? dirNumber
+                    : QaRcrdCtrl_QaDIR.GetDirNumber();
+
+                if (usingSearch)
+                {
+                    EnterText_DIR_Number(dirNumber);
+                    ClickBtn_Search();
+                }
+
+                bool isDisplayed = VerifyDirIsDisplayed(dirNumber);
+
+                if (isDisplayed && dirRevision)
+                {
+                    isDisplayed = VerifyDirIsDisplayed(expectedRevision);
+                }
+
+                if (isDisplayed)
+                {
+                    actualWorkflow = GridHelper.GetColumnValueForRow(dirNumber, "Workflow Location", false);
+                    string logMsg = string.IsNullOrEmpty(actualWorkflow) ? "not found." : $"Workflow Location displayed as: {actualWorkflow}";
+                    wfLocationsMatch = actualWorkflow.Equals(expectedWorkflow.GetString()) ? true : false;
+                    Report.Info($"DIR Number {dirNumber}, {logMsg}", wfLocationsMatch);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return wfLocationsMatch;
+        }
+
+        public override bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B")
+            => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow, true, dirRevision, expectedRevision);
+
+        public override bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B")
+            => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow, dirRevision, false, expectedRevision);
+
     }
 
     public interface IDailyInspectionReport
@@ -98,7 +171,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
     }
 
-    public abstract class DailyInspectionReport_Impl : TestBase, IDailyInspectionReport
+    public abstract class DailyInspectionReport_Impl : PageBase, IDailyInspectionReport
     {
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
@@ -147,76 +220,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
             return instance;
         }
 
-        public virtual void ClickBtn_Search() => JsClickElement(By.Id(Buttons.Search.GetString()));
-
-        public virtual void ClickBtn_Clear() => JsClickElement(By.Id(Buttons.Clear.GetString()));
-
-        public virtual void EnterText_DIR_Number(string dirNumber) => EnterText(By.Id(SearchCriteria.DIR_No.GetString()), dirNumber);
-
-        public virtual bool VerifyDirIsDisplayed(string dirNumber)
-        {
-            bool isDisplayed = false;
-
-            try
-            {
-                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, dirNumber, TableType.Single);
-                string logMsg = isDisplayed ? "Found" : "Unable to find";
-                LogInfo($"{logMsg} DIR record number {dirNumber}.", isDisplayed);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-
-            return isDisplayed;
-        }
-
-        private bool CheckIfWorkflowLocationsMatch(string dirNumber, WorkflowLocation expectedWorkflow, bool usingSearch = false, bool dirRevision = false, string expectedRevision = "B")
-        {
-            NavigateToPage.QASearch_Daily_Inspection_Report();
-            string actualWorkflow = string.Empty;
-            bool wfLocationsMatch = false;
-
-            try
-            {
-                dirNumber = dirNumber.HasValue()
-                    ? dirNumber
-                    : QaRcrdCtrl_QaDIR.GetDirNumber();
-
-                if (usingSearch)
-                {
-                    QaSearch_DIR.EnterText_DIR_Number(dirNumber);
-                    QaSearch_DIR.ClickBtn_Search();
-                }
-
-                bool isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(dirNumber);
-
-                if (isDisplayed && dirRevision)
-                {
-                    isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(expectedRevision);
-                }
-
-                if (isDisplayed)
-                {
-                    actualWorkflow = GetColumnValueForRow(dirNumber, "Workflow Location", false);
-                    string logMsg = string.IsNullOrEmpty(actualWorkflow) ? "not found." : $"Workflow Location displayed as: {actualWorkflow}";
-                    wfLocationsMatch = actualWorkflow.Equals(expectedWorkflow.GetString()) ? true : false;
-                    LogInfo($"DIR Number {dirNumber}, {logMsg}", wfLocationsMatch);
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-
-            return wfLocationsMatch;
-        }
-
-        public virtual bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B")
-            => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow, true, dirRevision, expectedRevision);
-
-        public virtual bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B")
-            => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow, dirRevision, false, expectedRevision);
+        public abstract void ClickBtn_Clear();
+        public abstract void ClickBtn_Search();
+        public abstract void EnterText_DIR_Number(string dirNumber);
+        public abstract bool VerifyDirIsDisplayed(string dirNumber);
+        public abstract bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B");
+        public abstract bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B");
     }
 
     public class DailyInspectionReport_Garnet : DailyInspectionReport

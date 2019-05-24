@@ -39,8 +39,8 @@ namespace RKCIUIAutomation.Page
         /// <returns></returns>
         public static string GetEnvVarPrefix(string varKey = "")
         {
-            string testName = BaseUtility.GetTestName();
-            string tcNumber = BaseUtility.GetTestCaseNumber();
+            string testName = BaseUtil.GetTestName();
+            string tcNumber = BaseUtil.GetTestCaseNumber();
             var prefix = $"{tcNumber}{testName}{BaseClass.testEnv}{BaseClass.tenantName}";
             var key = varKey.HasValue()
                 ? $"{prefix}_{varKey}"
@@ -75,8 +75,8 @@ namespace RKCIUIAutomation.Page
         /// <param name="logMsg"></param>
         public static void InjectTestStatus(TestStatus status, string logMsg)
         {
-            BaseUtility.CreateVar($"_msgKey", logMsg);
-            BaseUtility.CreateVar($"_statusKey", status.ToString());
+            BaseUtil.CreateVar($"_msgKey", logMsg);
+            BaseUtil.CreateVar($"_statusKey", status.ToString());
         }
 
         /// <summary>
@@ -86,7 +86,6 @@ namespace RKCIUIAutomation.Page
         /// <returns></returns>
         public static List<object> CheckForTestStatusInjection(this TestContext.ResultAdapter result)
         {
-            //PageHelper pageHelper = new PageHelper();
             List<object> testResults = new List<object>();
 
             try
@@ -100,10 +99,10 @@ namespace RKCIUIAutomation.Page
                 string injStatus = string.Empty;
                 string injMsg = string.Empty;
 
-                if (BaseUtility.HashKeyExists(injStatusKey))
+                if (BaseUtil.HashKeyExists(injStatusKey))
                 {
-                    injStatus = BaseUtility.GetVar(injStatusKey, true);
-                    injMsg = BaseUtility.GetVar(injMsgKey, true);
+                    injStatus = BaseUtil.GetVar(injStatusKey, true);
+                    injMsg = BaseUtil.GetVar(injMsgKey, true);
 
                     switch (injStatus)
                     {
@@ -139,6 +138,5 @@ namespace RKCIUIAutomation.Page
 
             return testResults;
         }
-
     }
 }
