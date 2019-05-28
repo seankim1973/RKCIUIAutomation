@@ -138,7 +138,7 @@ namespace RKCIUIAutomation.Base
             string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
             string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
             string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Staging}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.SGWay}");
+            string _tenantName = Parameters.Get("Tenant", $"{TenantName.LAX}");
             string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
             string _gridAddress = Parameters.Get("GridAddress", "");
             bool _hiptest = Parameters.Get("Hiptest", false);
@@ -203,9 +203,8 @@ namespace RKCIUIAutomation.Base
 
         private void InitWebDriverInstance()
         {
-            //List<string> tenantComponents = new List<string>();
-
-            IProjectProperties props = SetTenantComponents(tenantName);
+            IProjectProperties props = Factory.ProjProperty;
+            props.ConfigTenantComponents(tenantName);
 
             if (props.TenantComponents.Contains(testComponent1))
             {

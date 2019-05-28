@@ -5,7 +5,7 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Workflows;
 using System.Collections.Generic;
 using System.Threading;
-using static RKCIUIAutomation.Config.ProjectProperties;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Test.CommentReview
 {

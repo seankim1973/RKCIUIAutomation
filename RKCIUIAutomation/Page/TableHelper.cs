@@ -24,11 +24,11 @@ namespace RKCIUIAutomation.Page
 
         //public void ClickCommentTabNumber(int commentNumber) => Kendo.ClickCommentTab(commentNumber);
 
-        public void ClickTab(Enum tblTabEnum) => Kendo().ClickTableTab(tblTabEnum.GetString());
+        public void ClickTab(Enum tblTabEnum) => Kendo.ClickTableTab(tblTabEnum.GetString());
 
-        public void ClickTab(string tblTabName) => Kendo().ClickTableTab(tblTabName);
+        public void ClickTab(string tblTabName) => Kendo.ClickTableTab(tblTabName);
 
-        public void RefreshTable() => Kendo().Reload();
+        public void RefreshTable() => Kendo.Reload();
 
         public int GetTableRowCount(bool isMultiTabGrid = true)
             => PageAction.GetElementsCount(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}//tbody/tr"));
@@ -45,13 +45,13 @@ namespace RKCIUIAutomation.Page
 
         public void GoToLastPage() => PageAction.JsClickElement(GetGoToTblPgBtn_ByLocator(TableButton.Last));
 
-        public int GetCurrentPageNumber() => Kendo().GetCurrentPageNumber();
+        public int GetCurrentPageNumber() => Kendo.GetCurrentPageNumber();
 
-        public void GoToPageNumber(int pageNumber) => Kendo().GoToTablePage(pageNumber);
+        public void GoToPageNumber(int pageNumber) => Kendo.GoToTablePage(pageNumber);
 
-        public int GetCurrentViewItemsPerPageSize() => Kendo().GetPageSize();
+        public int GetCurrentViewItemsPerPageSize() => Kendo.GetPageSize();
 
-        public void SetViewItemsPerPageSize(int newSize) => Kendo().ChangePageSize(newSize);
+        public void SetViewItemsPerPageSize(int newSize) => Kendo.ChangePageSize(newSize);
 
         /// <summary>
         /// ColumnName enumerator and FilterValue is required.
@@ -72,7 +72,7 @@ namespace RKCIUIAutomation.Page
             FilterLogic filterLogic = FilterLogic.And,
             string additionalFilterValue = null,
             FilterOperator additionalFilterOperator = FilterOperator.EqualTo
-            ) => Kendo().FilterTableGrid(
+            ) => Kendo.FilterTableGrid(
                 columnName.GetString(),
                 filterValue,
                 filterOperator,
@@ -83,16 +83,16 @@ namespace RKCIUIAutomation.Page
                 );
 
         public void ClearTableFilters(TableType tableType = TableType.Unknown)
-            => Kendo().RemoveFilters(tableType);
+            => Kendo.RemoveFilters(tableType);
 
         public void SortColumnAscending(Enum columnName, TableType tableType = TableType.Unknown)
-            => Kendo().Sort(columnName.GetString(), SortType.Ascending, tableType);
+            => Kendo.Sort(columnName.GetString(), SortType.Ascending, tableType);
 
         public void SortColumnDescending(Enum columnName, TableType tableType = TableType.Unknown)
-            => Kendo().Sort(columnName.GetString(), SortType.Descending, tableType);
+            => Kendo.Sort(columnName.GetString(), SortType.Descending, tableType);
 
         public void SortColumnToDefault(Enum columnName, TableType tableType = TableType.Unknown)
-            => Kendo().Sort(columnName.GetString(), SortType.Default, tableType);
+            => Kendo.Sort(columnName.GetString(), SortType.Default, tableType);
 
         #endregion Kendo Grid Public Methods
 
@@ -428,7 +428,7 @@ namespace RKCIUIAutomation.Page
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
                 PageAction.WaitForLoading();
-                string gridId = Kendo().GetGridID(tableType);
+                string gridId = Kendo.GetGridID(tableType);
                 By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
                 string gridType = PageAction.GetAttribute(gridParentDivLocator, "class");
 
@@ -439,7 +439,7 @@ namespace RKCIUIAutomation.Page
                         break;
                     case TableType.MultiTab:
                         isMultiTabGrid = true;
-                        currentTabName = Kendo().GetCurrentTableTabName();//GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
+                        currentTabName = Kendo.GetCurrentTableTabName();//GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
                         activeTblTab = "//div[@class='k-content k-state-active']";
                         noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
                         tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");

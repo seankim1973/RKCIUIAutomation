@@ -134,8 +134,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                     {
                         PageAction.VerifyPageIsLoaded(true, false);
 
-                        ConfigUtils Configs = new ConfigUtils();
-                        string[] userAcct = Configs.GetUser(userType);
+                        string[] userAcct = ConfigUtil.GetUser(userType);
                         IList<By> loginFields = new List<By>
                         {
                             field_Email,
@@ -163,7 +162,7 @@ namespace RKCIUIAutomation.Page.PageObjects
 
                                 if (userAcctIndex == 1)
                                 {
-                                    webElem.SendKeys(Configs.GetDecryptedPW(credential));
+                                    webElem.SendKeys(ConfigUtil.GetDecryptedPW(credential));
                                 }
                                 else
                                 {

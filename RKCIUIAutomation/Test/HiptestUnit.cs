@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
+using static RKCIUIAutomation.Base.Factory;
+
 
 namespace RKCIUIAutomation.Test.Hiptest
 {

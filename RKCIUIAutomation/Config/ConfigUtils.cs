@@ -13,14 +13,13 @@ using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Config
 {
-    public class ConfigUtils : ProjectProperties, IConfigUtils
+    public class ConfigUtils : BaseClass, IConfigUtils
     {
         public ConfigUtils()
         {
         }
 
-        WebDriverFactory wdFactory = new WebDriverFactory();
-        public ConfigUtils(IWebDriver driver) => wdFactory.Driver = driver;
+        public ConfigUtils(IWebDriver driver) => this.Driver = driver;
 
         public TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg)
         => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nunitArg);
@@ -86,10 +85,10 @@ namespace RKCIUIAutomation.Config
             return collection[key];
         }
 
-        internal string GetEncryptedPW(string decryptedPW)
+        public string GetEncryptedPW(string decryptedPW)
             => Encrypt(decryptedPW);
 
-        internal string GetDecryptedPW(string encryptedPW)
+        public string GetDecryptedPW(string encryptedPW)
             => Decrypt(encryptedPW);
 
         private string GetCryptoHash() => GetValueFromConfigManager(userTypeKey: "Hash");

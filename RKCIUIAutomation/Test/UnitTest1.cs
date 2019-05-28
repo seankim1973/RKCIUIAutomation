@@ -681,10 +681,9 @@ namespace RKCIUIAutomation.UnitTest
         {
             string pw = "";
 
-            ConfigUtils configUtils = new ConfigUtils();
-            var encrypted = configUtils.GetEncryptedPW(pw);
+            var encrypted = ConfigUtil.GetEncryptedPW(pw);
             Console.WriteLine($"ENCRYPTED : {encrypted}");
-            var decrypted = configUtils.GetDecryptedPW(encrypted);
+            var decrypted = ConfigUtil.GetDecryptedPW(encrypted);
             Console.WriteLine($"DECRYPTED : {decrypted}");
             Assert.True(decrypted.Equals(pw));
         }

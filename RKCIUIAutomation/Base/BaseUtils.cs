@@ -134,6 +134,8 @@ namespace RKCIUIAutomation.Base
 
         public string CaptureScreenshot(string fileName = "")
         {
+            IWebDriver _driver = Driver;
+
             string uniqueFileName = string.Empty;
             string fullFilePath = string.Empty;
             string klovPath = string.Empty;
@@ -150,19 +152,19 @@ namespace RKCIUIAutomation.Base
                     {
                         klovPath = @"\\10.1.1.207\errorscreenshots\";
 
-                        ImpersonateUser impersonateUser = new ImpersonateUser(driver);
+                        ImpersonateUser impersonateUser = new ImpersonateUser(_driver);
                         impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
                     }
                     else if (testPlatform == TestPlatform.GridLocal)
                     {
                         klovPath = @"C:\Automation\klov\errorscreenshots\";
-                        var screenshot = driver.TakeScreenshot();
+                        var screenshot = _driver.TakeScreenshot();
                         screenshot.SaveAsFile($"{klovPath}{uniqueFileName}");
                     }
                 }
                 else
                 {
-                    var screenshot = driver.TakeScreenshot();
+                    var screenshot = _driver.TakeScreenshot();
                     screenshot.SaveAsFile(fullFilePath);
                 }
             }

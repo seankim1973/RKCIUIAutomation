@@ -22,7 +22,6 @@ namespace RKCIUIAutomation.Tools
         private static Lazy<List<KeyValuePair<string, List<int>>>> _suiteTestCaseDataset;
         private List<KeyValuePair<string, List<int>>> SuiteTestCaseDataset { get { return _suiteTestCaseDataset.Value; } set { } }
 
-        private static ConfigUtils config = new ConfigUtils();
         private static readonly string _accessToken;
         private static readonly string _clientId;
         private static readonly string _userId;
@@ -39,10 +38,10 @@ namespace RKCIUIAutomation.Tools
         {
             _lazy = new Lazy<HipTestApi>(() => new HipTestApi());
 
-            _accessToken = config.GetHipTestCreds(HipTestKey.HipTest_Token);
-            _clientId = config.GetHipTestCreds(HipTestKey.HipTest_ClientID);
-            _userId = config.GetHipTestCreds(HipTestKey.HipTest_UID);
-            _userPw = config.GetHipTestCreds(HipTestKey.HipTest_PWD);
+            _accessToken = ConfigUtil.GetHipTestCreds(HipTestKey.HipTest_Token);
+            _clientId = ConfigUtil.GetHipTestCreds(HipTestKey.HipTest_ClientID);
+            _userId = ConfigUtil.GetHipTestCreds(HipTestKey.HipTest_UID);
+            _userPw = ConfigUtil.GetHipTestCreds(HipTestKey.HipTest_PWD);
         }
 
         public enum HipTestKey
@@ -79,9 +78,9 @@ namespace RKCIUIAutomation.Tools
 
                 request
                     .AddHeader("Accept", "application/vnd.api+json; version=1")
-                    .AddHeader("access-token", config.GetDecryptedPW(_accessToken))
-                    .AddHeader("client", config.GetDecryptedPW(_clientId))
-                    .AddHeader("uid", config.GetDecryptedPW(_userId));
+                    .AddHeader("access-token", ConfigUtil.GetDecryptedPW(_accessToken))
+                    .AddHeader("client", ConfigUtil.GetDecryptedPW(_clientId))
+                    .AddHeader("uid", ConfigUtil.GetDecryptedPW(_userId));
                 return request;
             }
             catch (Exception e)

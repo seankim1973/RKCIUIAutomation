@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
+using RKCIUIAutomation.Config;
 using System;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.Factory;
@@ -8,7 +9,7 @@ using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page
 {
-    public class PageHelper : BaseUtils, IPageHelper
+    public class PageHelper : ProjectProperties, IPageHelper
     {
         public PageHelper()
         {

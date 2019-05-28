@@ -17,6 +17,7 @@ namespace RKCIUIAutomation.Test
         internal const string TestCaseNumber = "TC#";
         internal const string Priority = "Priority";
 
+        /*
         public ITableHelper TableHelper => new TableHelper(driver);
 
         public ITestDetails TestDetails => new TestDetails(driver);
@@ -56,5 +57,6 @@ namespace RKCIUIAutomation.Test
         public IQaRcrdCtrl_QaDIR_WF WF_QaRcrdCtrl_QaDIR => new QaRcrdCtrl_QaDIR_WF().SetClass<IQaRcrdCtrl_QaDIR_WF>(driver);
 
         #endregion Workflow SetClass method calls
+        */
     }
 }

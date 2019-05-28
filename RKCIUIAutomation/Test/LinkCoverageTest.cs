@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Page.Workflows;
+using static RKCIUIAutomation.Base.Factory;
+
 
 namespace RKCIUIAutomation.Test.LinkCoverage
 {

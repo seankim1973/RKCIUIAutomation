@@ -13,19 +13,19 @@ namespace RKCIUIAutomation.Config
         void ConfigTenantComponents(TenantName tenantName);
     }
 
-    public class ProjectProperties : IProjectProperties
+    public class ProjectProperties : BaseUtils, IProjectProperties
     {
+        TenantName _tenantName;
+
         public ProjectProperties()
         {
         }
 
-        WebDriverFactory wdFactory = new WebDriverFactory();
-
-        public ProjectProperties(IWebDriver driver) => wdFactory.Driver = driver;
+        public ProjectProperties(IWebDriver driver) => Driver = driver;
 
         public ProjectProperties(TenantName tenantName)
         {
-            ConfigTenantComponents(tenantName);
+            _tenantName = tenantName;
         }
 
         private static readonly List<string> commonComponents = new List<string>

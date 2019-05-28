@@ -223,7 +223,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_All();
             AddAssertionToList(VerifyPageHeader("Lab Tests"));
             NavigateToPage.QARecordControl_QA_Test_Retest_Report();
@@ -305,7 +305,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.OV_Create_OV_Test();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.OV_OV_Test();
             AddAssertionToList(VerifyPageHeader("OV Tests"));
 
@@ -501,7 +501,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QCRecordControl_QC_Test_Original_Report();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QCRecordControl_QC_Test_All();
             AddAssertionToList(VerifyPageHeader("Lab Tests"));
             NavigateToPage.QCRecordControl_QC_Test_Correction_Report();
@@ -643,7 +643,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
             AddAssertionToList(VerifyPageHeader("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();
@@ -734,7 +734,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
             AddAssertionToList(VerifyPageHeader("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();
@@ -790,7 +790,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
             AddAssertionToList(VerifyPageHeader("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();

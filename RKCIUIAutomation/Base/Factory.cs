@@ -23,40 +23,29 @@ namespace RKCIUIAutomation.Base
         private static ILog _logger(string loggerName = "") => LogManager.GetLogger(loggerName);
         public static readonly ILog log = _logger();
 
-        private static KendoGrid _Kendo() => new KendoGrid(driver);
-        public static IKendoGrid Kendo() => _Kendo();
-
-        //private static Action _Action() => new Action();
-        public static IAction PageAction => new Action(driver);
-
-        //private static BaseUtils _BaseUtils => new BaseUtils();
-        public static IBaseUtils BaseUtil => new BaseUtils(driver);
+        public static IBaseUtils BaseUtil => new BaseUtils();
         public static IBaseUtils SetReportPath(TenantName tenantName) => new BaseUtils(tenantName);
         public static IBaseUtils SetGridAddress(TestPlatform testPlatform, string gridAddress) => new BaseUtils(testPlatform, gridAddress);
 
-        //private static ConfigUtils _ConfigUtils() => 
-        public static IConfigUtils ConfigUtil => new ConfigUtils(driver);
+        public static IConfigUtils ConfigUtil => new ConfigUtils();
 
-        //private static TableHelper _TableHelper() => new TableHelper();
-        public static ITableHelper GridHelper => new TableHelper(driver);
+        public static IProjectProperties ProjProperty => new ProjectProperties();
 
-        //private static TestUtils _TestUtils() => 
-        public static ITestUtils TestUtility => new TestUtils(driver);
+        public static IAction PageAction => new Action(driver);
 
-        //private static PageHelper _PageHelper() => new PageHelper();
+        public static IKendoGrid Kendo => new KendoGrid(driver);
+
         public static IPageHelper PgHelper => new PageHelper(driver);
 
-        //private static ProjectProperties _ProjectProperties() => new ProjectProperties();
-        public static IProjectProperties Props => new ProjectProperties(driver);
-        public static IProjectProperties SetTenantComponents(TenantName tenantName) => new ProjectProperties(tenantName);
-       
+        public static ITestUtils TestUtility => new TestUtils(driver);
+
         public static IReportLogger Report => new ReportLogger(driver);
 
+        public static ITableHelper GridHelper => new TableHelper(driver);
+        
         //PageObject Classes
 
-        //public static ITableHelper TableHelper => new TableHelper(driver);
-
-        public static ITestDetails TestDetails => new TestDetails(driver);
+        public static ITestDetails TestDetailsPg => new TestDetails();
 
         public static void LoginAs(UserType user) => LoginPage.LoginUser(user);
 

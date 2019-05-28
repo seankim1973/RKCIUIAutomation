@@ -10,7 +10,7 @@ using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
 {
-    public class DriverOptionsFactory : ProjectProperties
+    public class DriverOptionsFactory
     {
         [ThreadStatic]
         private DriverOptions Options;

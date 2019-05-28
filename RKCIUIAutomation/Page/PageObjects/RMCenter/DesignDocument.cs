@@ -567,7 +567,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             {
                 CR_Workflow workflow = CR_Workflow.CreateComment;
                 workflow = ConvertToType<CR_Workflow>(tableTabOrWorkflow);
-                documentStatus = Kendo().GetCurrentTableTabName();
+                documentStatus = Kendo.GetCurrentTableTabName();
             }
         }
 
@@ -1195,7 +1195,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual void ClickCommentTabNumber(int commentTabNumber)
         {
             WaitForActiveCommentTab();
-            Kendo().ClickCommentTab(commentTabNumber);
+            Kendo.ClickCommentTab(commentTabNumber);
         }
 
         public abstract void EnterDesignDocTitleAndNumber();
