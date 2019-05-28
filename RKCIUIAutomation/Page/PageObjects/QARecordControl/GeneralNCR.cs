@@ -63,7 +63,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("QualityManager")] QC_Manager,
             [StringValue("QualityManagerApprovedDate")] QCManagerApprovedDate,
             [StringValue("QualityManagerSignature")] QCManager_SignBtn,
-            [StringValue("ContainmentActionSignature")] ContainmentActionManager_SignBtn
+            [StringValue("CQCM")] CQC_Manager,
+            [StringValue("CQCMDate")] CQCManagerApprovedDate,
+            [StringValue("CQCMSignature")] CQCManager_SignBtn,
+            [StringValue("ContainmentActionSignature")] ContainmentActionManager_SignBtn,
+            [StringValue("OMQM")] OMQ_Manager,
+            [StringValue("OMQMDate")] OMQManagerApprovedDate,
+            [StringValue("OMQMSignature")] OMQManager_SignBtn
         }
 
         public enum TableTab
@@ -131,6 +137,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("OwnerApproval_")] Owner_Approval_NA,
             [StringValue("OwnerApproval_True")] Owner_Approval_Yes,
             [StringValue("OwnerApproval_False")] Owner_Approval_No,
+            [StringValue("CQCMApproval_")] CQCMApproval_NA,
+            [StringValue("CQCMApproval_True")] CQCMApproval_Yes,
+            [StringValue("CQCMApproval_False")] CQCMApproval_No,
             [StringValue("AsBuiltRequired")] ChkBox_As_Built_Required,
             [StringValue("ActionCorrect")] ChkBox_Correct_Rework,
             [StringValue("ActionReplace")] ChkBox_Replace,
@@ -144,7 +153,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Owner,
             IQF_Manager,
             QC_Manager,
-            EngineerOfRecord
+            EngineerOfRecord,
+            Operations_Manager,
+            CQC_Manager
         }
 
         [ThreadStatic]
@@ -583,28 +594,40 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             RadioBtnsAndCheckboxes approvalField = Approve
                 ? RadioBtnsAndCheckboxes.Engineer_Approval_Yes
                 : RadioBtnsAndCheckboxes.Engineer_Approval_No;
+            bool isApprovalRequired = false;
 
             switch (reviewer)
             {
                 case Reviewer.EngineerOfRecord:
+                    isApprovalRequired = true;
                     break;
-
                 case Reviewer.Owner:
                     signBtn = InputFields.Owner_SignBtn;
                     reviewerField = InputFields.Owner_Review;
                     approvalField = Approve
                         ? RadioBtnsAndCheckboxes.Owner_Approval_Yes
                         : RadioBtnsAndCheckboxes.Owner_Approval_No;
+                    isApprovalRequired = true;
                     break;
-
                 case Reviewer.IQF_Manager:
                     signBtn = InputFields.IQFManager_SignBtn;
                     reviewerField = InputFields.IQF_Manager;
                     break;
-
                 case Reviewer.QC_Manager:
                     signBtn = InputFields.QCManager_SignBtn;
                     reviewerField = InputFields.QC_Manager;
+                    break;
+                case Reviewer.CQC_Manager:
+                    signBtn = InputFields.CQCManager_SignBtn;
+                    reviewerField = InputFields.CQC_Manager;
+                    approvalField = Approve
+                        ? RadioBtnsAndCheckboxes.CQCMApproval_Yes
+                        : RadioBtnsAndCheckboxes.CQCMApproval_No;
+                    isApprovalRequired = true;
+                    break;
+                case Reviewer.Operations_Manager:
+                    signBtn = InputFields.OMQManager_SignBtn;
+                    reviewerField = InputFields.OMQ_Manager;
                     break;
             }
 
@@ -614,10 +637,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             GeneralNCR_Base.ClickBtn_Sign(signBtn);
             ClickBtn_SignaturePanel_OK();
 
-            if (reviewer == Reviewer.EngineerOfRecord || reviewer == Reviewer.Owner)
-            {
-                PageAction.SelectRadioBtnOrChkbox(approvalField);
-            }
+            if (isApprovalRequired)
+                SelectRadioBtnOrChkbox(approvalField);
         }
 
         public virtual void ClickTab_All_NCRs()
@@ -989,6 +1010,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                     case Reviewer.QC_Manager:
                         reviewerId = InputFields.QC_Manager;
+                        break;
+
+                    case Reviewer.Operations_Manager:
+                        reviewerId = InputFields.OMQ_Manager;
                         break;
                 }
 

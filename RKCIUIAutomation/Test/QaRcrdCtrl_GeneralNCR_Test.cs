@@ -161,12 +161,11 @@ namespace RKCIUIAutomation.Test.NCR
         public void Revise_Ncr_Document_ConcessionRequest_ConcessionDiviation()
         {
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
-            LogoutToLoginPage();
-            WF_QaRcrdCtrl_GeneralNCR.Review_and_Approve_NCR(UserType.NCRMgr, ncrDescription);
+            
             //WF_QaRcrdCtrl_GeneralNCR.Return_ToResolutionDisposition_FromDeveloperConcurrence(ncrDescription);
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(ncrDescription, false);
-            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
+            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription, true);
 
             //WF_QaRcrdCtrl_GeneralNCR.Return_ToDeveloperConcurrence_FromDOTApproval(ncrDescription);
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(ncrDescription);
@@ -359,15 +358,12 @@ namespace RKCIUIAutomation.Test.NCR
         public void Close_Ncr_Document_ConcessionRequest_ConcessionDeviation()
         {
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
-            LogoutToLoginPage();
-            WF_QaRcrdCtrl_GeneralNCR.Review_and_Approve_NCR(UserType.NCRMgr, ncrDescription);
-            //WF_QaRcrdCtrl_GeneralNCR.CloseNCR_ConcessionRequest_ConcessionDeviation(ncrDescription);
+
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(ncrDescription);
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
             WF_QaRcrdCtrl_GeneralNCR.CloseNCR_in_VerificationAndClosure(ncrDescription);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsClosed(ncrDescription), "VerifyNCRDocIsClosed");
-            //Assert.True(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsClosed(ncrDescription));
             AssertAll();
         }
     }
@@ -411,12 +407,10 @@ namespace RKCIUIAutomation.Test.NCR
         public void Revise_Ncr_Document_ConcessionRequest_ConcessionDiviation()
         {
             string ncrDescription = WF_QaRcrdCtrl_GeneralNCR.Create_and_SaveForward_NCR(UserType.NCRTech);
-            LogoutToLoginPage();
-            WF_QaRcrdCtrl_GeneralNCR.Review_and_Approve_NCR(UserType.NCRMgr, ncrDescription);
-            //WF_QaRcrdCtrl_GeneralNCR.Return_ToResolutionDisposition_FromDeveloperConcurrence(ncrDescription);
+
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(ncrDescription, false);
-            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription);
+            WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromResolutionDisposition_ToDeveloperConcurrence(ncrDescription, true);
 
             //WF_QaRcrdCtrl_GeneralNCR.Return_ToDeveloperConcurrence_FromDOTApproval(ncrDescription);
             WF_QaRcrdCtrl_GeneralNCR.SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(ncrDescription);
@@ -507,39 +501,36 @@ namespace RKCIUIAutomation.Test.NCR
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Repair), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Repair)");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
-            Report.Step("STEP:  edit in Developer Concurrence tab and verify preivously selected required fields -------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
+            Report.Step("------  edit in Developer Concurrence tab and verify preivously selected required fields -------");
+            WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInDevConcurrence(ncrDescription);
             GridHelper.ClickEditBtnForRow();
             AddAssertionToList(VerifyDDListSelectedValue(InputFields.Concession_Request, "Concession Deviation"), "VerifyDDListSelectedValue(InputFields.Concession_Request, \"Concession Deviation\")");
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required)");
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Accept_As_Is), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Accept_As_Is)");
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Repair), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Repair)");
 
-            Report.Step("STEP:  provide signature for Engineer of Record then click Cancel  -------");
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord);
+            Report.Step("------  provide signature for Engineer of Record then click Cancel  -------");
+            WF_QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(TableTab.Developer_Concurrence);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
             Report.Step("STEP:  edit in Developer Concurrence tab and verify signatature for Eng of Record is empty -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.EngineerOfRecord, true), "VerifySignatureField(Reviewer.EngineerOfRecord, true)");
-            AddAssertionToList(VerifyInputField(InputFields.Engineer_of_Record, true), "VerifyInputField(InputFields.Engineer_of_Record, true)");
-            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_NA), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_NA)");
+            WF_QaRcrdCtrl_GeneralNCR.VerifySignatureNCR(TableTab.Developer_Concurrence, ncrDescription, true);
+            
 
-            Report.Step("STEP:  provide signature, name and select Approval 'Yes' rdoBtn then click SaveOnly  -------");
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord);
+            Report.Step("------  provide signature, name and select Approval 'Yes' rdoBtn then click SaveOnly  -------");
+            WF_QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(TableTab.Developer_Concurrence);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             Report.Step("STEP:  edit in Developer Concurrence tab and verify signature value attribute is not empty, name field is not empty, approval rdoBtn is selected then click saveFwd  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.EngineerOfRecord), "VerifySignatureField(Reviewer.EngineerOfRecord)");
-            AddAssertionToList(VerifyInputField(InputFields.Engineer_of_Record), "VerifyInputField(InputFields.Engineer_of_Record)");
-            AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_Yes), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Engineer_Approval_Yes)");
+            WF_QaRcrdCtrl_GeneralNCR.VerifySignatureNCR(TableTab.Developer_Concurrence, ncrDescription, false);
+            
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
-            Report.Step("STEP:  edit in DOT Approval tab and provide signature for DOT Review then click Cancel -------");
-            AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(ncrDescription), "VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence");
+            WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInLAWAConcurrence(ncrDescription);
             GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Owner);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
@@ -563,13 +554,12 @@ namespace RKCIUIAutomation.Test.NCR
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Owner_Approval_Yes), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Owner_Approval_Yes)");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
-            Report.Step("STEP:  edit in Verification and Closure tab then click Revise btn  -------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInVerificationAndClosure(ncrDescription);
+
             GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
 
-            Report.Step("STEP:  edit in Resolution/Disposition tab and verify Concession Request DDL is set to 'Concession Deviation' from previous selection -------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
+            WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInResolutionAndDisposition(ncrDescription);
             GridHelper.ClickEditBtnForRow();
             AddAssertionToList(VerifyDDListSelectedValue(InputFields.Concession_Request, "Concession Deviation"), "VerifyDDListSelectedValue(InputFields.Concession_Request)");
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required)");
@@ -589,8 +579,7 @@ namespace RKCIUIAutomation.Test.NCR
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Replace), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Replace)");
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
-            Report.Step("STEP:  edit in Verification and Closure tab and verify previously selected required fields -------");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
+            WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInVerificationAndClosure(ncrDescription);
             GridHelper.ClickEditBtnForRow();
             AddAssertionToList(VerifyDDListSelectedValue(InputFields.Concession_Request, "Return to Conformance"), "VerifyDDListSelectedValue(InputFields.Concession_Request, \"Return to Conformance\")");
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_As_Built_Required)");
@@ -606,20 +595,13 @@ namespace RKCIUIAutomation.Test.NCR
             GridHelper.ClickEditBtnForRow();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.IQF_Manager, true), "VerifySignatureField(Reviewer.IQF_Manager, true)");
 
-            Report.Step("STEP:  enter signature and name for IQF Mgr and QC Mgr then click SaveOnly  -------");
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
-            QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
+            WF_QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(TableTab.Verification_and_Closure);
+            
 
             Report.Step("STEP:  edit in Verification and Closure and verify signatures' element value and name field is not empty then click Close  -------");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             GridHelper.ClickEditBtnForRow();
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.IQF_Manager), "VerifySignatureField(Reviewer.IQF_Manager)");
-            AddAssertionToList(VerifyInputField(InputFields.IQF_Manager), "VerifyInputField(InputFields.IQF_Manager)");
-            AddAssertionToList(VerifyInputField(InputFields.IQFManagerDate), "VerifyInputField(InputFields.IQFManagerDate)");
-            AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifySignatureField(Reviewer.QC_Manager), "VerifySignatureField(Reviewer.QC_Manager)");
-            AddAssertionToList(VerifyInputField(InputFields.QC_Manager), "VerifyInputField(InputFields.QC_Manager)");
-            AddAssertionToList(VerifyInputField(InputFields.QCManagerApprovedDate), "VerifyInputField(InputFields.QCManagerApprovedDate)");
+            WF_QaRcrdCtrl_GeneralNCR.VerifySignatureNCR(TableTab.Verification_and_Closure, ncrDescription);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
 
             Report.Step("------  verify ncr is closed  -------");
