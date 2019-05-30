@@ -3,12 +3,11 @@ using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Threading;
-using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 using RKCIUIAutomation.Test;
 using System.Collections.Generic;
 using System.Linq;
+using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 using static RKCIUIAutomation.Page.Workflows.DesignDocumentWF;
-using static RKCIUIAutomation.Page.Action;
 using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
@@ -30,6 +29,52 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             designDocDetailsHeaders = GetDesignDocDetailsHeadersList();
             designDocCreatePgEntryFields = GetDesignDocCreatePgEntryFieldsList();
         }
+
+        /// <summary>
+        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
+        /// </summary>
+        public override T SetClass<T>(IWebDriver driver)
+        {
+            IDesignDocument instance = new DesignDocument(driver);
+
+            if (tenantName == TenantName.SGWay)
+            {
+                log.Info($"###### using DesignDocument_SGWay instance ###### ");
+                instance = new DesignDocument_SGWay(driver);
+            }
+            else if (tenantName == TenantName.SH249)
+            {
+                log.Info($"###### using  DesignDocument_SH249 instance ###### ");
+                instance = new DesignDocument_SH249(driver);
+            }
+            else if (tenantName == TenantName.Garnet)
+            {
+                log.Info($"###### using  DesignDocument_Garnet instance ###### ");
+                instance = new DesignDocument_Garnet(driver);
+            }
+            else if (tenantName == TenantName.GLX)
+            {
+                log.Info($"###### using  DesignDocument_GLX instance ###### ");
+                instance = new DesignDocument_GLX(driver);
+            }
+            else if (tenantName == TenantName.I15South)
+            {
+                log.Info($"###### using  DesignDocument_I15South instance ###### ");
+                instance = new DesignDocument_I15South(driver);
+            }
+            else if (tenantName == TenantName.I15Tech)
+            {
+                log.Info($"###### using DesignDocument_I15Tech instance ###### ");
+                instance = new DesignDocument_I15Tech(driver);
+            }
+            else if (tenantName == TenantName.LAX)
+            {
+                log.Info($"###### using DesignDocument_LAX instance ###### ");
+                instance = new DesignDocument_LAX(driver);
+            }
+            return (T)instance;
+        }
+
 
         public override void ScrollToLastColumn()
             => PageAction.ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][last()]"));
@@ -760,55 +805,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     #region Common Workflow Implementation class
 
-    public abstract class DesignDocument_Impl : TestBase, IDesignDocument
+    public abstract class DesignDocument_Impl : PageBase, IDesignDocument
     {
-        /// <summary>
-        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
-        /// </summary>
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private IDesignDocument SetPageClassBasedOnTenant(IWebDriver driver)
-        {
-            IDesignDocument instance = new DesignDocument(driver);
-
-            if (tenantName == TenantName.SGWay)
-            {
-                log.Info($"###### using DesignDocument_SGWay instance ###### ");
-                instance = new DesignDocument_SGWay(driver);
-            }
-            else if (tenantName == TenantName.SH249)
-            {
-                log.Info($"###### using  DesignDocument_SH249 instance ###### ");
-                instance = new DesignDocument_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                log.Info($"###### using  DesignDocument_Garnet instance ###### ");
-                instance = new DesignDocument_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                log.Info($"###### using  DesignDocument_GLX instance ###### ");
-                instance = new DesignDocument_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                log.Info($"###### using  DesignDocument_I15South instance ###### ");
-                instance = new DesignDocument_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                log.Info($"###### using DesignDocument_I15Tech instance ###### ");
-                instance = new DesignDocument_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                log.Info($"###### using DesignDocument_LAX instance ###### ");
-                instance = new DesignDocument_LAX(driver);
-            }
-            return instance;
-        }
-
         #region Page element By Locators
         public By UploadNewDesignDoc_ByLocator
             => By.XPath("//a[text()='Upload New Design Document']");

@@ -18,28 +18,7 @@ namespace RKCIUIAutomation.Page.PageObjects
 
         public LoginPage(IWebDriver driver) => this.Driver = driver;
 
-    }
-
-    #endregion LoginPage Generic class
-
-    #region LoginPage Interface class
-
-    public interface ILoginPage
-    {
-        void LoginUser(UserType userType);
-
-        void ToggleRememberMeChkbox();
-    }
-
-    #endregion LoginPage Interface class
-
-    #region LoginPage Common Implementation class
-
-    public abstract class LoginPage_Impl : PageBase, ILoginPage
-    {
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private ILoginPage SetPageClassBasedOnTenant(IWebDriver driver)
+        public override T SetClass<T>(IWebDriver driver)
         {
             ILoginPage instance = new LoginPage(driver);
 
@@ -78,7 +57,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                 Report.Info($"###### using LoginPage_LAX instance ###### ");
                 instance = new LoginPage_LAX(driver);
             }
-            return instance;
+            return (T)instance;
         }
 
         internal readonly By field_Email = By.Name("Email");
@@ -88,7 +67,7 @@ namespace RKCIUIAutomation.Page.PageObjects
         internal int userAcctIndex = 0;
         internal string credential = string.Empty;
 
-        public bool AlreadyLoggedIn()
+        public override bool AlreadyLoggedIn()
         {
             bool result = false;
             IWebElement elem = null;
@@ -119,7 +98,7 @@ namespace RKCIUIAutomation.Page.PageObjects
             return result;
         }
 
-        public virtual void LoginUser(UserType userType)
+        public override void LoginUser(UserType userType)
         {
             PageAction.WaitForPageReady();
             bool alreadyLoggedIn = AlreadyLoggedIn();
@@ -220,9 +199,33 @@ namespace RKCIUIAutomation.Page.PageObjects
             }
         }
 
-        public virtual void ToggleRememberMeChkbox()
+        public override void ToggleRememberMeChkbox()
             => PageAction.ClickElement(chkbx_RememberMe);
 
+    }
+
+    #endregion LoginPage Generic class
+
+    #region LoginPage Interface class
+
+    public interface ILoginPage
+    {
+        bool AlreadyLoggedIn();
+
+        void LoginUser(UserType userType);
+
+        void ToggleRememberMeChkbox();
+    }
+
+    #endregion LoginPage Interface class
+
+    #region LoginPage Common Implementation class
+
+    public abstract class LoginPage_Impl : PageBase, ILoginPage
+    {
+        public abstract bool AlreadyLoggedIn();
+        public abstract void LoginUser(UserType userType);
+        public abstract void ToggleRememberMeChkbox();
     }
 
     #endregion LoginPage Common Implementation class

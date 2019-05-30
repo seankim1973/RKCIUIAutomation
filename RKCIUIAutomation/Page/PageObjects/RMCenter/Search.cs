@@ -1,15 +1,11 @@
-﻿using OpenQA.Selenium;
+﻿using System;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Test;
 using System.Collections.Generic;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.ProjectCorrespondenceLog;
-using System;
 using ColumnName = RKCIUIAutomation.Page.PageObjects.RMCenter.Search.ColumnName;
-using RKCIUIAutomation.Base;
-using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
-using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -27,6 +23,49 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             tenantSearchCriteriaFields = SetTenantSearchCriteriaFields();
             tenantSearchGridColumnNames = SetTenantSearchGridColumnNames();
         }
+
+        public override T SetClass<T>(IWebDriver driver)
+        {
+            ISearch instance = new Search(driver);
+
+            if (tenantName == TenantName.SGWay)
+            {
+                log.Info($"###### using Search_SGWay instance ###### ");
+                instance = new Search_SGWay(driver);
+            }
+            else if (tenantName == TenantName.SH249)
+            {
+                log.Info($"###### using Search_SH249 instance ###### ");
+                instance = new Search_SH249(driver);
+            }
+            else if (tenantName == TenantName.Garnet)
+            {
+                log.Info($"###### using Search_Garnet instance ###### ");
+                instance = new Search_Garnet(driver);
+            }
+            else if (tenantName == TenantName.GLX)
+            {
+                log.Info($"###### using Search_GLX instance ###### ");
+                instance = new Search_GLX(driver);
+            }
+            else if (tenantName == TenantName.I15South)
+            {
+                log.Info($"###### using Search_I15South instance ###### ");
+                instance = new Search_I15South(driver);
+            }
+            else if (tenantName == TenantName.I15Tech)
+            {
+                log.Info($"###### using Search_I15Tech instance ###### ");
+                instance = new Search_I15Tech(driver);
+            }
+            else if (tenantName == TenantName.LAX)
+            {
+                log.Info($"###### using Search_LAX instance ###### ");
+                instance = new Search_LAX(driver);
+            }
+            return (T)instance;
+        }
+
 
         [ThreadStatic]
         public static IList<SearchCriteria> tenantSearchCriteriaFields;
@@ -74,16 +113,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override void EnterDate_From(string fromDate)
-            => EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalDate_From), fromDate);
+            => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalDate_From), fromDate);
 
         public override void EnterDate_To(string toDate)
-            => EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalDate_To), toDate);
+            => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalDate_To), toDate);
 
         public override void ClickBtn_Search()
-            => JsClickElement(By.Id("SearchButton"));
+            => PageAction.JsClickElement(By.Id("SearchButton"));
 
         public override void ClickBtn_Clear()
-            => JsClickElement(By.Id("ClearButton"));
+            => PageAction.JsClickElement(By.Id("ClearButton"));
 
         public override bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList)
         {
@@ -103,8 +142,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     {
                         PopulateCriteriaByType(criteria, kvPair.Value);
                         ClickBtn_Search();
-                        WaitForLoading();
-                        bool searchResult = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableType.Single);
+                        PageAction.WaitForLoading();
+                        bool searchResult = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableHelper.TableType.Single);
                         resultsList.Add(searchResult);
 
                         logMsg = $"Search by Criteria '{criteria}'";
@@ -112,7 +151,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         TestUtility.AddAssertionToList(searchResult, logMsg);
 
                         ClickBtn_Clear();
-                        WaitForLoading();
+                        PageAction.WaitForLoading();
                     }
                 }
 
@@ -192,7 +231,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 }
                 else
                 {
-                    EnterText(By.Id(criteria.GetString()), fieldValue);
+                    PageAction.EnterText(By.Id(criteria.GetString()), fieldValue);
                 }
             }
             else if (fieldType.Equals(DATE))
@@ -205,7 +244,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 fieldValue = criteria.Equals(SearchCriteria.DocumentType)
                     ? $"-- {fieldValue}"
                     : fieldValue;
-                ExpandAndSelectFromDDList(criteria, fieldValue, true, fieldType.Equals(MULTIDDL) ? true : false);
+                PageAction.ExpandAndSelectFromDDList(criteria, fieldValue, true, fieldType.Equals(MULTIDDL) ? true : false);
             }
         }
 
@@ -269,64 +308,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     #region Search Common Implementation class
 
-    public abstract class Search_Impl : TestBase, ISearch
+    public abstract class Search_Impl : PageBase, ISearch
     {
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private ISearch SetPageClassBasedOnTenant(IWebDriver driver)
-        {
-            ISearch instance = new Search(driver);
-
-            if (tenantName == TenantName.SGWay)
-            {
-                log.Info($"###### using Search_SGWay instance ###### ");
-                instance = new Search_SGWay(driver);
-            }
-            else if (tenantName == TenantName.SH249)
-            {
-                log.Info($"###### using Search_SH249 instance ###### ");
-                instance = new Search_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                log.Info($"###### using Search_Garnet instance ###### ");
-                instance = new Search_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                log.Info($"###### using Search_GLX instance ###### ");
-                instance = new Search_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                log.Info($"###### using Search_I15South instance ###### ");
-                instance = new Search_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                log.Info($"###### using Search_I15Tech instance ###### ");
-                instance = new Search_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                log.Info($"###### using Search_LAX instance ###### ");
-                instance = new Search_LAX(driver);
-            }
-            return instance;
-        }
-
         //Page workflow common to all tenants
-        public virtual void SelectDDL_DocumentType<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.DocumentType, itemIndexOrName);
+        public virtual void SelectDDL_DocumentType<T>(T itemIndexOrName) => PageAction.ExpandAndSelectFromDDList(SearchCriteria.DocumentType, itemIndexOrName);
 
-        public virtual void SelectDDL_Status<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.Status, itemIndexOrName);
+        public virtual void SelectDDL_Status<T>(T itemIndexOrName) => PageAction.ExpandAndSelectFromDDList(SearchCriteria.Status, itemIndexOrName);
 
-        public virtual void EnterText_Title(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.Title), text);
+        public virtual void EnterText_Title(string text) => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.Title), text);
 
-        public virtual void EnterText_TransmittalNumber(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalNumber), text);
+        public virtual void EnterText_TransmittalNumber(string text) => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.TransmittalNumber), text);
 
-        public virtual void EnterText_From(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.From), text);
+        public virtual void EnterText_From(string text) => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.From), text);
 
-        public virtual void EnterText_Attention(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.Attention), text);
+        public virtual void EnterText_Attention(string text) => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.Attention), text);
 
         public abstract void EnterDate_From(string fromDate);
 
@@ -338,18 +333,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         //Not used in tenant(s): GLX & LAX
         public virtual void EnterCriteria_Number(string text)
-            => EnterText(GetTextInputFieldByLocator(SearchCriteria.Number), $"{text.ReplaceSpacesWithUnderscores()}0000");
+            => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.Number), $"{text.ReplaceSpacesWithUnderscores()}0000");
 
         //For I15SB, SH249, SG
         public virtual void EnterCriteria_MSLNumber(string text)
-            => EnterText(GetTextInputFieldByLocator(SearchCriteria.Owner_MSLNumber), text);
+            => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.Owner_MSLNumber), text);
 
         //Used only in GLX
-        public virtual void SelectDDL_Category<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.Category, itemIndexOrName);
+        public virtual void SelectDDL_Category<T>(T itemIndexOrName) => PageAction.ExpandAndSelectFromDDList(SearchCriteria.Category, itemIndexOrName);
 
-        public virtual void SelectDDL_SegmentArea<T>(T itemIndexOrName) => ExpandAndSelectFromDDList(SearchCriteria.SegmentArea, itemIndexOrName);
+        public virtual void SelectDDL_SegmentArea<T>(T itemIndexOrName) => PageAction.ExpandAndSelectFromDDList(SearchCriteria.SegmentArea, itemIndexOrName);
 
-        public virtual void EnterText_OriginatorDocumentRef(string text) => EnterText(GetTextInputFieldByLocator(SearchCriteria.OriginatorDocumentRef), text);
+        public virtual void EnterText_OriginatorDocumentRef(string text) => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.OriginatorDocumentRef), text);
 
 
         public abstract bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList);
@@ -489,7 +484,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             => log.Info("Search Criteria field 'Number' does not exist for Tenant GLX");
 
         public override void EnterCriteria_MSLNumber(string text)
-            => EnterText(GetTextInputFieldByLocator(SearchCriteria.MSLNo), text);
+            => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.MSLNo), text);
 
         public override void PopulateAllSearchCriteriaFields()
         {

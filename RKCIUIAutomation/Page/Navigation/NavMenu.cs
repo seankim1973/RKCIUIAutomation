@@ -6,7 +6,12 @@ using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Navigation
 {
-    public class NavMenu : PageBase
+    public interface INavMenu
+    {
+        void Menu<T>(T navEnum);
+    }
+
+    public class NavMenu : BaseClass, INavMenu
     {
         public NavMenu()
         {

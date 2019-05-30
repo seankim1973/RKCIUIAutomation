@@ -19,7 +19,7 @@ using RKCIUIAutomation.Test;
 
 namespace RKCIUIAutomation.Page
 {
-    public class Action : PageBase, IAction
+    public class Action : BaseClass, IAction
     {
         public Action()
         {

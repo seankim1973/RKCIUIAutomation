@@ -31,6 +31,52 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             expectedEntryFieldsForTblColumns = GetTenantEntryFieldsForTableColumns();
         }
 
+        /// <summary>
+        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
+        /// </summary>
+        public override T SetClass<T>(IWebDriver driver)
+        {
+            IProjectCorrespondenceLog instance = new ProjectCorrespondenceLog(driver);
+
+            if (tenantName == TenantName.SGWay)
+            {
+                log.Info($"###### using ProjectCorrespondenceLog_SGWay instance ###### ");
+                instance = new ProjectCorrespondenceLog_SGWay(driver);
+            }
+            else if (tenantName == TenantName.SH249)
+            {
+                log.Info($"###### using  ProjectCorrespondenceLog_SH249 instance ###### ");
+                instance = new ProjectCorrespondenceLog_SH249(driver);
+            }
+            else if (tenantName == TenantName.Garnet)
+            {
+                log.Info($"###### using  ProjectCorrespondenceLog_Garnet instance ###### ");
+                instance = new ProjectCorrespondenceLog_Garnet(driver);
+            }
+            else if (tenantName == TenantName.GLX)
+            {
+                log.Info($"###### using  ProjectCorrespondenceLog_GLX instance ###### ");
+                instance = new ProjectCorrespondenceLog_GLX(driver);
+            }
+            else if (tenantName == TenantName.I15South)
+            {
+                log.Info($"###### using  ProjectCorrespondenceLog_I15South instance ###### ");
+                instance = new ProjectCorrespondenceLog_I15South(driver);
+            }
+            else if (tenantName == TenantName.I15Tech)
+            {
+                log.Info($"###### using ProjectCorrespondenceLog_I15Tech instance ###### ");
+                instance = new ProjectCorrespondenceLog_I15Tech(driver);
+            }
+            else if (tenantName == TenantName.LAX)
+            {
+                log.Info($"###### using ProjectCorrespondenceLog_LAX instance ###### ");
+                instance = new ProjectCorrespondenceLog_LAX(driver);
+            }
+            return (T)instance;
+        }
+
+
         //GLX and LAX - StringValue[0] = table tab name, StringValue[1] = Table content reference id
         public enum TableTab
         {
@@ -186,7 +232,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             => PopulateFieldValue(EntryField.AllowResharing, "");
 
         public override void ClickBtn_AddAccessItem()
-            => ClickElement(By.Id("AddAccessItem"));
+            => PageAction.ClickElement(By.Id("AddAccessItem"));
 
         #endregion //Entry field override Action methods
 
@@ -195,7 +241,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             => GetVar(fieldEnum);
 
         private IList<string> GetAccessGroupsList()
-            => GetTextForElements(By.XPath("//div[@id='AccessGroups']//ul/li/span[2]"));
+            => PageAction.GetTextForElements(By.XPath("//div[@id='AccessGroups']//ul/li/span[2]"));
 
         public string GetValueFromEntryField(EntryField entryField)
         {
@@ -205,7 +251,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
             {
-                fieldValue = GetAttribute(By.Id($"{entryField.GetString()}"), "value");
+                fieldValue = PageAction.GetAttribute(By.Id($"{entryField.GetString()}"), "value");
             }
             else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
             {
@@ -217,12 +263,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     }
                     else
                     {
-                        fieldValue = GetTextFromDDL(entryField);
+                        fieldValue = PageAction.GetTextFromDDL(entryField);
                     }
                 }
                 else
                 {
-                    fieldValue = string.Join("::", GetTextFromMultiSelectDDL(entryField).ToArray());
+                    fieldValue = string.Join("::", PageAction.GetTextFromMultiSelectDDL(entryField).ToArray());
                 }
             }
 
@@ -292,7 +338,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                     int argValueLength = ((string)argValue).Length;
 
                                     By inputLocator = GetInputFieldByLocator(entryField);
-                                    int elemMaxLength = int.Parse(GetAttribute(inputLocator, "maxlength"));
+                                    int elemMaxLength = int.Parse(PageAction.GetAttribute(inputLocator, "maxlength"));
 
                                     argValue = argValueLength > elemMaxLength
                                         ? ((string)argValue).Substring(0, elemMaxLength)
@@ -303,7 +349,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                             fieldValue = (string)argValue;
                         }
 
-                        EnterText(By.Id(entryField.GetString()), fieldValue);
+                        PageAction.EnterText(By.Id(entryField.GetString()), fieldValue);
                     }
                     else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
                     {
@@ -311,29 +357,29 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                             ? 1
                             : argValue;
 
-                        ExpandAndSelectFromDDList(entryField, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
+                        PageAction.ExpandAndSelectFromDDList(entryField, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
 
                         if (fieldType.Equals(DDL))
                         {
                             if (entryField.Equals(EntryField.Access))
                             {
-                                SelectRadioBtnOrChkbox(EntryField.AllowResharing);
+                                PageAction.SelectRadioBtnOrChkbox(EntryField.AllowResharing);
                                 ClickBtn_AddAccessItem();
                                 fieldValue = string.Join("::", GetAccessGroupsList().ToArray());
                             }
                             else
                             {
-                                fieldValue = GetTextFromDDL(entryField);
+                                fieldValue = PageAction.GetTextFromDDL(entryField);
                             }
                         }
                         else
                         {
-                            fieldValue = string.Join("::", GetTextFromMultiSelectDDL(entryField).ToArray());
+                            fieldValue = string.Join("::", PageAction.GetTextFromMultiSelectDDL(entryField).ToArray());
                         }
                     }
                     else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
                     {
-                        SelectRadioBtnOrChkbox(entryField);
+                        PageAction.SelectRadioBtnOrChkbox(entryField);
                     }
                 }
                 else
@@ -351,11 +397,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override bool VerifyTransmissionDetailsRequiredFields()
         {
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
 
             //reqFieldLocators = ProjCorrespondenceLog.GetTenantRequiredFieldLocators();
             IList<string> actualReqFields = new List<string>();
-            actualReqFields = GetAttributes(reqFieldLocators, "data-valmsg-for");
+            actualReqFields = PageAction.GetAttributes(reqFieldLocators, "data-valmsg-for");
 
             //tenantExpectedRequiredFields = ProjCorrespondenceLog.GetTenantRequiredFieldsList();
 
@@ -366,7 +412,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 expectedReqFields.Add(field.GetString());
             }
 
-            return VerifyExpectedList(actualReqFields, expectedReqFields, "VerifyTransmissionDetailsRequiredFields");
+            return PageAction.VerifyExpectedList(actualReqFields, expectedReqFields, "VerifyTransmissionDetailsRequiredFields");
         }
 
         private ColumnName GetMatchingColumnNameForEntryField(EntryField entryField)
@@ -451,7 +497,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            result = VerifyExpectedList(actualValuesInTableList, expectedValuesInTableList, "VerifyTableColumnValues");
+            result = PageAction.VerifyExpectedList(actualValuesInTableList, expectedValuesInTableList, "VerifyTableColumnValues");
 
             return result;
         }
@@ -514,10 +560,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     : " NOT";
 
                 Report.Info($"Column '{column}' in the grid was{logMsg} filtered successfully by value {value}", isDisplayed);
-                AddAssertionToList(isDisplayed, $"VerifyTransmittalLogIsDisplayedByGridColumnFilter [Column : {column}]");
+                TestUtility.AddAssertionToList(isDisplayed, $"VerifyTransmittalLogIsDisplayedByGridColumnFilter [Column : {column}]");
 
                 GridHelper.ClearTableFilters(tenantTableType);
-                WaitForPageReady();
+                PageAction.WaitForPageReady();
             }
 
             result = resultsList.Contains(false)
@@ -532,7 +578,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             bool isDisplayed = false;
 
             GridHelper.ClickTab(tableTab);
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
             isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber,
                 ProjCorrespondenceLog.VerifyIsMultiTabGrid()
                     ? TableType.MultiTab
@@ -553,7 +599,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             try
             {
-                WaitForPageReady();
+                PageAction.WaitForPageReady();
 
                 foreach (EntryField entryField in tenantAllEntryFields)
                 {
@@ -562,7 +608,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
                     {
                         expectedValue = "selected";
-                        actualValue = VerifyChkBoxRdoBtnSelection(entryField) ? "selected" : "Not Selected";
+                        actualValue = PageAction.VerifyChkBoxRdoBtnSelection(entryField) ? "selected" : "Not Selected";
                     }
                     else
                     {
@@ -580,7 +626,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            result = VerifyExpectedList(actualValuesList, expectedValuesList, "VerifyTransmissionDetailsPageValues");
+            result = PageAction.VerifyExpectedList(actualValuesList, expectedValuesList, "VerifyTransmissionDetailsPageValues");
             return result;
         }
 
@@ -588,22 +634,22 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             int totalTabCount = remainingTblTabs.Count;
 
-            ClickSaveForward();
-            AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_DetailsPageValues()");
+            PageAction.ClickSaveForward();
+            TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_DetailsPageValues()");
 
             for (int i = 0; i < totalTabCount; i++)
             {
                 TableTab currentTab = remainingTblTabs[i];
 
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(currentTab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed under table ({currentTab})");
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTableColumnValues(), $"VerifyTableColumnValues under table {currentTab}");
+                TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(currentTab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed under table ({currentTab})");
+                TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTableColumnValues(), $"VerifyTableColumnValues under table {currentTab}");
                 ProjCorrespondenceLog.ClickViewBtnForTransmissionsRow();
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTransmissionDetailsPageValues(), $"VerifyTransmissionDetailsPageValues under table ({currentTab})");
+                TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTransmissionDetailsPageValues(), $"VerifyTransmissionDetailsPageValues under table ({currentTab})");
 
                 int currentTabCount = i + 1;
                 if (currentTabCount < totalTabCount)
                 {
-                    ClickSaveForward();
+                    PageAction.ClickSaveForward();
                 }
             }
         }
@@ -612,32 +658,32 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             int totalTabCount = remainingTblTabs.Count;
 
-            AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
+            TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
             ProjCorrespondenceLog.ClickViewBtnForTransmissionsRow();
-            ClickSaveForward();
-            AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
+            PageAction.ClickSaveForward();
+            TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
 
             for (int i = 0; i < totalTabCount; i++)
             {
                 TableTab currentTab = remainingTblTabs[i];
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(currentTab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
+                TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(currentTab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
                 GridHelper.ClearTableFilters();
                 ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayedByGridColumnFilter();
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
+                TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
 
                 int currentTabCount = i + 1;
                 if (currentTabCount < totalTabCount)
                 {
                     ProjCorrespondenceLog.ClickViewBtnForTransmissionsRow();
-                    ClickSaveForward();
-                    AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
+                    PageAction.ClickSaveForward();
+                    TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
                 }
             }
         }
 
         public override bool VerifyTransmittalLocationBySearch()
         {
-            ClickElement(By.Id("SearchButton"));
+            PageAction.ClickElement(By.Id("SearchButton"));
             bool isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnName.Title, "RFC A - MOT Segment 1 Phase 0", TableType.Single);
 
             return isDisplayed;
@@ -657,21 +703,21 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void LogintoCorrespondenceLogPage(UserType userType)
         {
             LoginAs(userType);
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
             NavigateToPage.RMCenter_Project_Correspondence_Log();
-            AddAssertionToList_VerifyPageHeader("Transmissions", "LogintoCorrespondenceLogPage()");
+            TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "LogintoCorrespondenceLogPage()");
         }
 
         public override string CreateNewAndPopulateFields()
         {
-            ClickNew();
-            WaitForPageReady();
-            ClickSaveForward();
-            AddAssertionToList(VerifyTransmissionDetailsRequiredFields(), "VerifyTransmissionDetailsRequiredFields");
+            PageAction.ClickNew();
+            PageAction.WaitForPageReady();
+            PageAction.ClickSaveForward();
+            TestUtility.AddAssertionToList(VerifyTransmissionDetailsRequiredFields(), "VerifyTransmissionDetailsRequiredFields");
             string transmittalNumber = PopulateAllFields();
-            UploadFile();
-            ClickSave();
-            AddAssertionToList_VerifyPageHeader("Transmissions", "CreateNewAndPopulateFields()");
+            PageAction.UploadFile();
+            PageAction.ClickSave();
+            TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "CreateNewAndPopulateFields()");
             return transmittalNumber;
         }
 
@@ -795,56 +841,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     #region Common Workflow Implementation class
 
-    public abstract class ProjectCorrespondenceLog_Impl : TestBase, IProjectCorrespondenceLog
+    public abstract class ProjectCorrespondenceLog_Impl : PageBase, IProjectCorrespondenceLog
     {
-        /// <summary>
-        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
-        /// </summary>
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private IProjectCorrespondenceLog SetPageClassBasedOnTenant(IWebDriver driver)
-        {
-            IProjectCorrespondenceLog instance = new ProjectCorrespondenceLog(driver);
-
-            if (tenantName == TenantName.SGWay)
-            {
-                log.Info($"###### using ProjectCorrespondenceLog_SGWay instance ###### ");
-                instance = new ProjectCorrespondenceLog_SGWay(driver);
-            }
-            else if (tenantName == TenantName.SH249)
-            {
-                log.Info($"###### using  ProjectCorrespondenceLog_SH249 instance ###### ");
-                instance = new ProjectCorrespondenceLog_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                log.Info($"###### using  ProjectCorrespondenceLog_Garnet instance ###### ");
-                instance = new ProjectCorrespondenceLog_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                log.Info($"###### using  ProjectCorrespondenceLog_GLX instance ###### ");
-                instance = new ProjectCorrespondenceLog_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                log.Info($"###### using  ProjectCorrespondenceLog_I15South instance ###### ");
-                instance = new ProjectCorrespondenceLog_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                log.Info($"###### using ProjectCorrespondenceLog_I15Tech instance ###### ");
-                instance = new ProjectCorrespondenceLog_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                log.Info($"###### using ProjectCorrespondenceLog_LAX instance ###### ");
-                instance = new ProjectCorrespondenceLog_LAX(driver);
-            }
-            return instance;
-        }
-
-
         #region //Entry field abstract Actions
         public abstract void IterrateOverRemainingTableTabs_GridColumnFilters(string transmittalNumber, IList<TableTab> remainingTblTabs);
         public abstract void IterrateOverRemainingTableTabs_DetailsPageValues(string transmittalNumber, IList<TableTab> remainingTblTabs);
@@ -887,7 +885,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract bool VerifyTransmissionDetailsRequiredFields();
         public abstract bool VerifyTransmissionDetailsPageValues();
         #endregion //Entry field abstract Actions
-
 
         //Table Grid Type - returns true if table has multiple tabs
         //Returns false valid for I15SB, I15Tech, SH249, & SG
@@ -1052,7 +1049,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void LogintoCorrespondenceLogPage(UserType userType)
         {
             LoginAs(userType);
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
             NavigateToPage.RMCenter_Project_Transmittal_Log();
         }
 
@@ -1138,7 +1135,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void LogintoCorrespondenceLogPage(UserType userType)
         {
             LoginAs(userType);
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
             NavigateToPage.RMCenter_Project_Transmittal_Log();
         }
 

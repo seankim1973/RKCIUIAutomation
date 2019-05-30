@@ -17,6 +17,52 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
         public DailyInspectionReport(IWebDriver driver) => this.Driver = driver;
 
+        /// <summary>
+        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
+        /// </summary>
+        public override T SetClass<T>(IWebDriver driver)
+        {
+            IDailyInspectionReport instance = new DailyInspectionReport(driver);
+
+            if (tenantName == TenantName.SGWay)
+            {
+                log.Info($"###### using DailyInspectionReport_SGWay instance ###### ");
+                instance = new DailyInspectionReport_SGWay(driver);
+            }
+            else if (tenantName == TenantName.SH249)
+            {
+                log.Info($"###### using DailyInspectionReport_SH249 instance ###### ");
+                instance = new DailyInspectionReport_SH249(driver);
+            }
+            else if (tenantName == TenantName.Garnet)
+            {
+                log.Info($"###### using DailyInspectionReport_Garnet instance ###### ");
+                instance = new DailyInspectionReport_Garnet(driver);
+            }
+            else if (tenantName == TenantName.GLX)
+            {
+                log.Info($"###### using DailyInspectionReport_GLX instance ###### ");
+                instance = new DailyInspectionReport_GLX(driver);
+            }
+            else if (tenantName == TenantName.I15South)
+            {
+                log.Info($"###### using DailyInspectionReport_I15South instance ###### ");
+                instance = new DailyInspectionReport_I15South(driver);
+            }
+            else if (tenantName == TenantName.I15Tech)
+            {
+                log.Info($"###### using DailyInspectionReport_I15Tech instance ###### ");
+                instance = new DailyInspectionReport_I15Tech(driver);
+            }
+            else if (tenantName == TenantName.LAX)
+            {
+                log.Info($"###### using DailyInspectionReport_LAX instance ###### ");
+                instance = new DailyInspectionReport_LAX(driver);
+            }
+            return (T)instance;
+        }
+
+
         public enum ColumnName
         {
             [StringValue("DIRNO")] DIR_No,
@@ -173,53 +219,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
     public abstract class DailyInspectionReport_Impl : PageBase, IDailyInspectionReport
     {
-        /// <summary>
-        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
-        /// </summary>
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        public IDailyInspectionReport SetPageClassBasedOnTenant(IWebDriver driver)
-        {
-            IDailyInspectionReport instance = new DailyInspectionReport(driver);
-
-            if (tenantName == TenantName.SGWay)
-            {
-                log.Info($"###### using DailyInspectionReport_SGWay instance ###### ");
-                instance = new DailyInspectionReport_SGWay(driver);
-            }
-            else if (tenantName == TenantName.SH249)
-            {
-                log.Info($"###### using DailyInspectionReport_SH249 instance ###### ");
-                instance = new DailyInspectionReport_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                log.Info($"###### using DailyInspectionReport_Garnet instance ###### ");
-                instance = new DailyInspectionReport_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                log.Info($"###### using DailyInspectionReport_GLX instance ###### ");
-                instance = new DailyInspectionReport_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                log.Info($"###### using DailyInspectionReport_I15South instance ###### ");
-                instance = new DailyInspectionReport_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                log.Info($"###### using DailyInspectionReport_I15Tech instance ###### ");
-                instance = new DailyInspectionReport_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                log.Info($"###### using DailyInspectionReport_LAX instance ###### ");
-                instance = new DailyInspectionReport_LAX(driver);
-            }
-            return instance;
-        }
-
         public abstract void ClickBtn_Clear();
         public abstract void ClickBtn_Search();
         public abstract void EnterText_DIR_Number(string dirNumber);

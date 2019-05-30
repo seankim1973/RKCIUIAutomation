@@ -304,7 +304,6 @@
     <Compile Include="Config\ProjectProperties.cs" />
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\Action.cs" />
-    <Compile Include="Page\PageObjects\LabFieldTests\ITestDetails.cs" />
     <Compile Include="Page\StaticHelpers.cs" />
     <Compile Include="Page\IAction.cs" />
     <Compile Include="Page\IKendoGrid.cs" />
