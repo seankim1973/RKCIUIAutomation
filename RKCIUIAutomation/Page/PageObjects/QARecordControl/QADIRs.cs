@@ -735,7 +735,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             string logMsg = string.Empty;
             string nonFixedFailedDirNumber = string.Empty;
             bool modalIsDisplayed = false;
-            IAction pgAction = PageAction;
+            IPageInteraction pgAction = PageAction;
 
             try
             {

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using static RKCIUIAutomation.Page.Action;
+using static RKCIUIAutomation.Page.PageInteraction;
 
 namespace RKCIUIAutomation.Page
 {
-    public interface IAction
+    public interface IPageInteraction
     {
+        void EnterSignature();
         string AcceptAlertMessage();
         void ClearText(By elementByLocator);
         void ClickCancel();
@@ -47,7 +48,7 @@ namespace RKCIUIAutomation.Page
         void RefreshWebPage();
         IWebElement ScrollToElement<T>(T elementOrLocator);
         void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true);
-        string SetPageTitleVar(int timeOutInSeconds = 10, int pollingInterval = 500);
+        string GetPageTitle(int timeOutInSeconds = 10, int pollingInterval = 500);
         string UploadFile(string fileName = "");
         bool VerifyActiveModalTitle(string expectedModalTitle);
         bool VerifyAlertMessage(string expectedMessage);

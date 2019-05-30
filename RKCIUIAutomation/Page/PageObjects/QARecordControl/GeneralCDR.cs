@@ -313,6 +313,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ClickBtn_SaveForward();
             PageAction.WaitForPageReady();
         }
+
         public override IList<string> GetRequiredFieldIDs()
         {
             List<string> RequiredFieldIDs = new List<string>

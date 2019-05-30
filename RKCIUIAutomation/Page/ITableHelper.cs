@@ -5,6 +5,8 @@ namespace RKCIUIAutomation.Page
 {
     public interface ITableHelper
     {
+        void ClickCommentTab(int commentNumber);
+        string GetCurrentTableTabName();
         string GetPdfHref<T>(T textInColumnForRowOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false);
         void ClearTableFilters(TableHelper.TableType tableType = TableHelper.TableType.Unknown);
         void ClickButtonForRow<T>(TableHelper.TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false);

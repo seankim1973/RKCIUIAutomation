@@ -207,6 +207,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         internal static readonly By exportToExcel_ByLocator = By.XPath("//div[@class='k-content k-state-active']//button[text()='Export to Excel']");
 
+        public override string ExpectedPageHeader { get; set; } = "List of NCR Reports";
+
         internal void ActionConfirmation(SubmitButtons submitButton, bool tenantHasAlert = true, bool acceptAlert = true)
         {
             try
@@ -419,6 +421,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             PageAction.EnterText(PgHelper.GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer.ToString()}");
 
             ClickBtn_Sign(signBtn);
+            PageAction.EnterSignature();
             ClickBtn_SignaturePanel_OK();
 
             if (isApprovalRequired)
@@ -907,6 +910,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     public interface IGeneralNCR
     {
+        string ExpectedPageHeader { get; set; }
+
         void ClickBtn_Sign_RecordEngineer();
 
         void ClickBtn_Sign_Owner();
@@ -1128,6 +1133,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     public abstract class GeneralNCR_Impl : PageBase, IGeneralNCR
     {
+        public abstract string ExpectedPageHeader { get; set; }
         public abstract void ClickBtn_Approve();
         public abstract void ClickBtn_Cancel();
         public abstract void ClickBtn_Close();

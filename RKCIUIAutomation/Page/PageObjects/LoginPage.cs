@@ -107,7 +107,7 @@ namespace RKCIUIAutomation.Page.PageObjects
             {
                 if (!alreadyLoggedIn)
                 {
-                    pageTitle = PageAction.SetPageTitleVar();
+                    pageTitle = PageAction.GetPageTitle();
 
                     if (pageTitle.Contains("Log in"))
                     {
@@ -173,7 +173,7 @@ namespace RKCIUIAutomation.Page.PageObjects
             {
                 try
                 {
-                    pageTitle = PageAction.SetPageTitleVar();
+                    pageTitle = PageAction.GetPageTitle();
 
                     if (pageTitle.Contains("Log in"))
                     {

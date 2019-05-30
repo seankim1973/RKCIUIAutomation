@@ -31,9 +31,7 @@ namespace RKCIUIAutomation.Base
 
         public static IProjectProperties ProjProperty => new ProjectProperties();
 
-        public static IAction PageAction => new Action(driver);
-
-        public static IKendoGrid Kendo => new KendoGrid(driver);
+        public static IPageInteraction PageAction => new PageInteraction(driver);
 
         public static IPageHelper PgHelper => new PageHelper(driver);
 

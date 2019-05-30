@@ -4,13 +4,11 @@ namespace RKCIUIAutomation.Page
 {
     public interface IKendoGrid
     {
-        KendoGrid GetInstance();
         void ChangePageSize(int newSize, TableHelper.TableType tableType = TableHelper.TableType.Unknown);
         void ClickCommentTab(int commentNumber);
         void ClickTableTab(string tblTabName);
         void FilterTableGrid(string columnName, string filterValue, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo, TableHelper.TableType tableType = TableHelper.TableType.Unknown);
         int GetCurrentPageNumber(TableHelper.TableType tableType = TableHelper.TableType.Unknown);
-        string GetCurrentTableTabName();
         string GetGridID(TableHelper.TableType tableType);
         List<T> GetItems<T>(TableHelper.TableType tableType = TableHelper.TableType.Unknown) where T : class;
         int GetPageSize(TableHelper.TableType tableType = TableHelper.TableType.Unknown);

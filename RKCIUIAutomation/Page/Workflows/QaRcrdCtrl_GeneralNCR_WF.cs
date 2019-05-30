@@ -6,6 +6,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralNCR;
 using static RKCIUIAutomation.Base.Factory;
+using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -61,11 +62,13 @@ namespace RKCIUIAutomation.Page.Workflows
 
         internal void NavigateToGeneralNcrPage()
         {
-            if (!driver.Title.Contains("NCR List"))
+            string pgTitle = GetPageTitle();
+            if (!pgTitle.Contains("NCR List"))
             {
                 NavigateToPage.QARecordControl_General_NCR();
                 QaRcrdCtrl_GeneralNCR.ClickTab_Creating_Revise();
-                Assert.True(VerifyPageHeader("List of NCR Reports"));
+                AddAssertion_VerifyNCRPageHeader("NavigateToGeneralNcrPage()");
+                //Assert.True(VerifyPageHeader("List of NCR Reports"));
             }
         }
 
@@ -301,12 +304,13 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void VerifyNCRDocIsDisplayedInResolutionAndDisposition(string ncrDescription)
             => AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
 
-
+        public override void AddAssertion_VerifyNCRPageHeader(string methodName)
+            => AddAssertionToList_VerifyPageHeader(QaRcrdCtrl_GeneralNCR.ExpectedPageHeader, methodName);
     }
 
     public interface IQaRcrdCtrl_GeneralNCR_WF
     {
-
+        void AddAssertion_VerifyNCRPageHeader(string methodName);
         /// <summary>
         /// Verifies Required field error labels in a new document then populates required fields and clicks Save & Forward button
         /// <para>Returns unique NCR document description string value</para>
@@ -343,6 +347,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public abstract class QaRcrdCtrl_GeneralNCR_WF_Impl : TestBase, IQaRcrdCtrl_GeneralNCR_WF
     {
+        public abstract void AddAssertion_VerifyNCRPageHeader(string methodName);
         public abstract void CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(string ncrDescription);
         public abstract void CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(string ncrDescription);
         public abstract void CloseNCR_CQMReview_Disapprove(UserType user, string ncrDescription);
@@ -364,7 +369,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public abstract void VerifyNCRDocIsDisplayedInVerificationAndClosure(string ncrDescription);
         public abstract void VerifySignatureNCR(TableTab tabName, string ncrDescription, bool shouldBeEmpty = false);
     }
-
+    
 
     internal class QaRcrdCtrl_GeneralNCR_WF_GLX : QaRcrdCtrl_GeneralNCR_WF
     {

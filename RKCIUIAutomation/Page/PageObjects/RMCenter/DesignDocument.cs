@@ -252,7 +252,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void CreateDocument()
         {
-            IAction pgAction = PageAction;
+            IPageInteraction pgAction = PageAction;
             pgAction.WaitForPageReady();
             pgAction.ClickElement(UploadNewDesignDoc_ByLocator);
 
@@ -612,7 +612,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             {
                 CR_Workflow workflow = CR_Workflow.CreateComment;
                 workflow = ConvertToType<CR_Workflow>(tableTabOrWorkflow);
-                documentStatus = Kendo.GetCurrentTableTabName();
+                documentStatus = GridHelper.GetCurrentTableTabName();
             }
         }
 
@@ -1193,7 +1193,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual void ClickCommentTabNumber(int commentTabNumber)
         {
             WaitForActiveCommentTab();
-            Kendo.ClickCommentTab(commentTabNumber);
+            GridHelper.ClickCommentTab(commentTabNumber);
         }
 
         public abstract void EnterDesignDocTitleAndNumber();

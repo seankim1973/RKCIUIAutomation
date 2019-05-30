@@ -303,9 +303,9 @@
     <Compile Include="Config\ImpersonateUser.cs" />
     <Compile Include="Config\ProjectProperties.cs" />
     <Compile Include="Config\Properties.cs" />
-    <Compile Include="Page\Action.cs" />
+    <Compile Include="Page\PageInteraction.cs" />
     <Compile Include="Page\StaticHelpers.cs" />
-    <Compile Include="Page\IAction.cs" />
+    <Compile Include="Page\IPageInteraction.cs" />
     <Compile Include="Page\IKendoGrid.cs" />
     <Compile Include="Page\IPageHelper.cs" />
     <Compile Include="Page\ITableHelper.cs" />

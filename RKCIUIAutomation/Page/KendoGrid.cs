@@ -11,21 +11,10 @@ namespace RKCIUIAutomation.Page
 {
     extern alias newtJson;
 
-    public class KendoGrid : Action, IKendoGrid
+    public class KendoGrid : PageInteraction, IKendoGrid
     {
-        KendoGrid _Kendo { get; set; }
-        public KendoGrid GetInstance()
-        {
-            if (_Kendo == null)
-            {
-                _Kendo = new KendoGrid();
-            }
-
-            return _Kendo;
-        }
         public KendoGrid()
         {
-            _Kendo = new KendoGrid();
         }
 
         public KendoGrid(IWebDriver driver) => this.Driver = driver;
@@ -41,14 +30,11 @@ namespace RKCIUIAutomation.Page
             Report.Step($"Clicked Comment {commentNumber} tab : {tabSelect}");
         }
 
-        public string GetCurrentTableTabName()
-            => GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
-
         public void ClickTableTab(string tblTabName)
         {
             try
             {
-                string currentTabName = GetCurrentTableTabName();
+                string currentTabName = GridHelper.GetCurrentTableTabName();
 
                 if (!tblTabName.Equals(currentTabName))
                 {
@@ -406,4 +392,5 @@ namespace RKCIUIAutomation.Page
         public FilterOperator AdditionalFilterOperator { get; internal set; }
         public string AdditionalFilterValue { get; internal set; }
     }
+
 }

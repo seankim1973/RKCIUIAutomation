@@ -14,13 +14,13 @@ using OpenQA.Selenium.Support.UI;
 
 namespace RKCIUIAutomation.Test
 {
-    public class TestUtils : PageHelper, ITestUtils, IAction
+    public class TestUtils : PageHelper, ITestUtils, IPageInteraction
     {   
         public TestUtils()
         {
         }
 
-        public IAction _pgAction { get; set; } = PageAction;
+        public IPageInteraction _pgAction { get; set; } = PageAction;
 
         public TestUtils(IWebDriver driver) => this.Driver = driver;
 
@@ -365,7 +365,7 @@ namespace RKCIUIAutomation.Test
             _pgAction.EnterText(elementByLocator, text, clearField);
         }
 
-        public void ExecuteJsAction(Page.Action.JSAction jsAction, By elementByLocator)
+        public void ExecuteJsAction(Page.PageInteraction.JSAction jsAction, By elementByLocator)
         {
             _pgAction.ExecuteJsAction(jsAction, elementByLocator);
         }
@@ -480,9 +480,9 @@ namespace RKCIUIAutomation.Test
             _pgAction.SelectRadioBtnOrChkbox(chkbxOrRadioBtn, toggleChkBoxIfAlreadyChecked);
         }
 
-        public string SetPageTitleVar(int timeOutInSeconds = 10, int pollingInterval = 500)
+        public string GetPageTitle(int timeOutInSeconds = 10, int pollingInterval = 500)
         {
-            return _pgAction.SetPageTitleVar(timeOutInSeconds, pollingInterval);
+            return _pgAction.GetPageTitle(timeOutInSeconds, pollingInterval);
         }
 
         public string UploadFile(string fileName = "")
@@ -565,19 +565,24 @@ namespace RKCIUIAutomation.Test
             _pgAction.WaitForElement(elementByLocator, timeOutInSeconds, pollingInterval);
         }
 
-        public void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 500)
+        public void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 1000)
         {
             _pgAction.WaitForElementToClear(locator, timeOutInSeconds, pollingInterval);
         }
 
-        public void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500)
+        public void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 1000)
         {
             _pgAction.WaitForLoading(timeOutInSeconds, pollingInterval);
         }
 
-        public void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000)
+        public void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 5000)
         {
             _pgAction.WaitForPageReady(timeOutInSeconds, pollingInterval);
+        }
+
+        public void EnterSignature()
+        {
+            _pgAction.EnterSignature();
         }
     }
 }
