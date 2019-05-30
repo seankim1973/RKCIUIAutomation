@@ -301,277 +301,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return ncrIsClosed;
         }
 
-    #endregion NCR Generic class
-
-    #region workflow interface class
-
-    public interface IGeneralNCR
-    {
-        void ClickBtn_Sign_RecordEngineer();
-
-        void ClickBtn_Sign_Owner();
-
-        void ClickBtn_Sign_IQFManager();
-
-        void ClickBtn_Sign_QCManager();
-
-        void ClickBtn_SignaturePanel_OK();
-
-        void ClickBtn_SignaturePanel_Clear();
-
-        /// <summary>
-        /// Clicks Sign button, clicks OK button on signature panel, enters review field and date.
-        /// <para>Selects Approval radio button (defaults to 'Yes'), when EngineerOfRecord or Owner is provided as Reviewer agrument.</para>
-        /// </summary>
-        /// <param name="reviewer"></param>
-        /// <param name="Approve"></param>
-        void SignDateApproveNCR(Reviewer reviewer, bool Approve = true);
-
-        void ClickBtn_New();
-
-        void ClickBtn_ExportToExcel();
-
-        void ClickBtn_Cancel();
-
-        void ClickBtn_Revise();
-
-        void ClickBtn_Approve();
-
-        void ClickBtn_DisapproveClose();
-
-        void ClickBtn_SaveOnly();
-
-        void ClickBtn_SaveForward();
-
-        void ClickBtn_KickBack();
-
-        void ClickBtn_Close();
-
-        void ClickTab_All_NCRs();
-
-        void ClickTab_Closed_NCR();
-
-        void ClickTab_CQM_Review();
-
-        void ClickTab_Review();
-
-        void ClickTab_Creating_Revise();
-
-        void ClickTab_Developer_Concurrence();
-
-        void ClickTab_DOT_Approval();
-
-        void ClickTab_LAWA_Concurrence();
-
-        void ClickTab_Engineer_Concurrence();
-
-        void ClickTab_Originator_Concurrence();
-
-        void ClickTab_Owner_Concurrence();
-
-        void ClickTab_QC_Review();
-
-        void ClickTab_Resolution_Disposition();
-
-        void ClickTab_Review_Assign_NCR();
-
-        void ClickTab_Revise();
-
-        void ClickTab_To_Be_Closed();
-
-        void ClickTab_Verification();
-
-        void ClickTab_Verification_and_Closure();
-
-        void FilterDescription(string description = "");
-
-        void SortTable_Descending();
-
-        void SortTable_Ascending();
-
-        void SortTable_ToDefault();
-
-        void SelectRdoBtn_TypeOfNCR_Level1();
-
-        void SelectRdoBtn_TypeOfNCR_Level2();
-
-        void SelectRdoBtn_TypeOfNCR_Level3();
-
-        void SelectRdoBtn_OwnerApproval_Yes();
-
-        void SelectRdoBtn_OwnerApproval_No();
-
-        void SelectRdoBtn_OwnerApproval_NA();
-
-        void SelectRdoBtn_EngOfRecordApproval_Yes();
-
-        void SelectRdoBtn_EngOfRecordApproval_No();
-
-        void SelectRdoBtn_EngOfRecordApproval_NA();
-
-        void SelectChkbox_AsBuiltRequired(bool toggleChkboxIfAlreadySelected = true);
-
-        void SelectChkbox_RcmndDisposition_CorrectRework(bool toggleChkboxIfAlreadySelected = true);
-
-        void SelectChkbox_RcmndDisposition_Replace(bool toggleChkboxIfAlreadySelected = true);
-
-        void SelectChkbox_RcmndDisposition_AcceptAsIs(bool toggleChkboxIfAlreadySelected = true);
-
-        void SelectChkbox_RcmndDisposition_Repair(bool toggleChkboxIfAlreadySelected = true);
-
-        void SelectDDL_Originator(int selectionIndexOrName = 1);
-
-        void SelectDDL_ResponsibleManager(int selectionIndexOrName = 1);
-
-        void SelectDDL_Foreman(int selectionIndex = 1);
-
-        void SelectDDL_Specification(int selectionIndex = 1);
-
-        void SelectDDL_Location(int selectionIndex = 1);
-
-        void SelectDDL_Area(int selectionIndex = 1);
-
-        void SelectDDL_Segment(int selectionIndex = 1);
-
-        void SelectDDL_TrackNo(int selectionIndex = 1);
-
-        void SelectDDL_Roadway(int selectionIndex = 1);
-
-        void SelectDDL_Feature(int selectionIndex = 2);
-
-        void SelectDDL_SubFeature(int selectionIndex = 1);
-
-        void SelectDDL_PreparedBy(int selectionIndex = 1);
-
-        void PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ReturnToConformance();
-
-        void PopulateRelatedFields_And_SelectDDL_forConcessionRequest_ConcessionDeviation();
-
-        void EnterIssuedDate(string shortDate = "1/1/9999");
-
-        void EnterForemanNotificationDate(string dateTime = "1/1/9999 12:00 AM");
-
-        void EnterManagerNotificationDate(string dateTime = "1/1/9999 12:00 AM");
-
-        void EnterResponsibleManager(string mgrName);
-
-        string EnterDescription(string description = "", bool tempDescription = false);
-
-        string EnterDescriptionOfNCR(string description = "", bool tempDescription = false);
-
-        string EnterRootCauseOfTheProblem(string description = "", bool tempDescription = false);
-
-        void EnterCorrectiveActionPlanToResolveNonconformance(string actionPlanText = "");
-
-        void EnterRepairPlan(string repairPlanText = "");
-
-        void EnterEngineerOfRecord(string engOfRecordText = "");
-
-        void EnterRecordEngineerApprovedDate();
-
-        void EnterOwnerReview(string ownerReviewText = "");
-
-        void EnterOwnerApprovedDate();
-
-        void EnterIQFManager(string iqfMgrText = "");
-
-        void EnterIQFManagerApprovedDate();
-
-        void EnterQCManager(string qcMgrText = "");
-
-        void EnterQCManagerApprovedDate();
-
-        void EnterCQCM();
-
-        void EnterCQCMDate();
-
-        void EnterCQAM();
-
-        void EnterCQAMDate();
-
-        void EnterPreparedByDate();
-
-        void PopulateRequiredFields();
-
-        void PopulateRequiredFieldsAndSaveForward();
-
-        void PopulateRequiredFieldsAndSaveOnly();
-
-        bool VerifyReqFieldErrorLabelsForNewDoc();
-
-        /// <summary>
-        /// Clicks specified table tab, filters table by NCR Description column, then verifies NCR document is shown.
-        /// <para>Method will get unique NCR Description value, based on [ThreadStatic] NcrDescKey if, NCRDescription string is not supplied.</para>
-        /// </summary>
-        /// <param name="tableTab"></param>
-        /// <param name="ncrDescription"></param>
-        /// <returns>Return true if NCR document is shown in the tab specified</returns>
-        bool VerifyNCRDocIsDisplayed(TableTab tableTab, string ncrDescription = "");
-
-        bool VerifyNCRDocIsClosed(string ncrDescription = "");
-
-        bool VerifyReqFieldErrorLabelForTypeOfNCR();
-
-        bool VerifySignatureField(Reviewer reviewer, bool shouldBeEmpty = false);
-
-        string GetNCRDocDescription(bool tempDescription = false);
-
-        IList<string> GetExpectedRequiredFieldIDs();
-    }
-
-    #endregion workflow interface class
-
-    #region Common Workflow Implementation class
-
-    public abstract class GeneralNCR_Impl : PageBase, IGeneralNCR
-    {
-        /// <summary>
-        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
-        /// </summary>
-        public T SetClass<T>(IWebDriver driver)
+        internal void PopulateRequiredFieldsAndSave(bool SaveForward)
         {
-            IGeneralNCR instance = new GeneralNCR(driver);
+            PopulateRequiredFields();
+            PageAction.UploadFile("test.xlsx");
 
-            if (tenantName == TenantName.SGWay)
+            if (SaveForward)
             {
-                log.Info($"###### using GeneralNCR_SGWay instance ###### ");
-                instance = new GeneralNCR_SGWay(driver);
+                ClickBtn_SaveForward();
             }
-            else if (tenantName == TenantName.SH249)
+            else
             {
-                log.Info($"###### using  GeneralNCR_SH249 instance ###### ");
-                instance = new GeneralNCR_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                log.Info($"###### using  GeneralNCR_Garnet instance ###### ");
-                instance = new GeneralNCR_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                log.Info($"###### using  GeneralNCR_GLX instance ###### ");
-                instance = new GeneralNCR_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                log.Info($"###### using  GeneralNCR_I15South instance ###### ");
-                instance = new GeneralNCR_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                log.Info($"###### using GeneralNCR_I15Tech instance ###### ");
-                instance = new GeneralNCR_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                log.Info($"###### using GeneralNCR_LAX instance ###### ");
-                instance = new GeneralNCR_LAX(driver);
+                ClickBtn_SaveOnly();
             }
 
-            return (T)instance;
+            PageAction.WaitForPageReady();
         }
-
-        internal GeneralNCR GeneralNCR_Base => new GeneralNCR();
 
         public override void FilterDescription(string description = "")
             => GridHelper.FilterTableColumnByValue(ColumnName.Description, description.HasValue()
@@ -1153,25 +898,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override bool VerifyNCRDocIsClosed(string description = "")
             => CheckNCRisClosed(description, TableTab.All_NCRs);
 
-        internal void PopulateRequiredFieldsAndSave(bool SaveForward)
-        {
-            PopulateRequiredFields();
-            PageAction.UploadFile("test.xlsx");
-
-            if (SaveForward)
-            {
-                ClickBtn_SaveForward();
-            }
-            else
-            {
-                ClickBtn_SaveOnly();
-            }
-
-            PageAction.WaitForPageReady();
-        }
     }
 
     #endregion NCR Generic class
+
 
     #region workflow interface class
 
@@ -1393,6 +1123,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     #endregion workflow interface class
 
+
     #region Common Workflow Implementation class
 
     public abstract class GeneralNCR_Impl : PageBase, IGeneralNCR
@@ -1501,6 +1232,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     #endregion Common Workflow Implementation class
 
+
     /// <summary>
     /// Tenant specific implementation of DesignDocument Comment Review
     /// </summary>
@@ -1518,6 +1250,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     }
 
     #endregion Implementation specific to Garnet
+
 
     #region Implementation specific to GLX
 
@@ -1568,6 +1301,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     #endregion Implementation specific to GLX
 
+
     #region Implementation specific to I15South
 
     public class GeneralNCR_I15South : GeneralNCR
@@ -1612,6 +1346,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     #endregion Implementation specific to I15South
 
+
     #region Implementation specific to I15Tech
 
     public class GeneralNCR_I15Tech : GeneralNCR
@@ -1623,6 +1358,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     #endregion Implementation specific to I15Tech
 
+
     #region Implementation specific to LAX
 
     public class GeneralNCR_LAX : GeneralNCR
@@ -1633,6 +1369,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     }
 
     #endregion Implementation specific to LAX
+
 
     #region Implementation specific to SH249 - SimpleWF
 
@@ -1681,6 +1418,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     }
 
     #endregion Implementation specific to SH249 - SimpleWF
+
 
     #region Implementation specific to SGWay - SimpleWF
 
