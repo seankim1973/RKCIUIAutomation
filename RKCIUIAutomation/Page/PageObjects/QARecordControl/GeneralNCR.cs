@@ -70,6 +70,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("Originator")] Originator,
             [StringValue("CrewForeman")] Foreman,
             [StringValue("Specification")] Specification,
+            [StringValue("SpecificationId")] SpecificationId,
+            [StringValue("SpecSectionId")] SpecSectionParagraph,
             [StringValue("StructureId")] Location,
             [StringValue("AreaId")] Area,
             [StringValue("SegmentId")] Segment,
@@ -548,6 +550,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override void SelectDDL_Specification(int selectionIndex = 1)
             => PageAction.ExpandAndSelectFromDDList(InputFields.Specification, selectionIndex);
 
+        public override void SelectDDL_SpecSectionParagraph(int selectionIndex = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.SpecSectionParagraph, selectionIndex);
+
         public override void SelectDDL_Location(int selectionIndex = 1)
             => PageAction.ExpandAndSelectFromDDList(InputFields.Location, selectionIndex);
 
@@ -661,7 +666,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                   ? repairPlanText
                   : "RKCIUIAutomation Repair Plan To Repair Issue If Applicable.");
 
-        //I15Tech, LAX
+        //I15Tech
         public override IList<string> GetExpectedRequiredFieldIDs()
         {
             IList<string> RequiredFieldIDs = new List<string>
@@ -672,10 +677,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.ForemanNotificationDate.GetString(),
                 InputFields.ResponsibleManager.GetString(),
                 InputFields.ManagerNotificationDate.GetString(),
-                $"{InputFields.Specification.GetString()}Id",
+                InputFields.SpecificationId.GetString(),
                 InputFields.Area.GetString(),
                 InputFields.Roadway.GetString(),
-                InputFields.Description_of_Nonconformance.GetString()
+                InputFields.Description_of_Nonconformance.GetString(),
             };
 
             return RequiredFieldIDs;
@@ -847,7 +852,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return errorLabelIsDisplayed;
         }
 
-        //I15Tech, LAX
+        //I15Tech
         public override void PopulateRequiredFields()
         {
             EnterIssuedDate();
@@ -900,6 +905,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override bool VerifyNCRDocIsClosed(string description = "")
             => CheckNCRisClosed(description, TableTab.All_NCRs);
+
 
     }
 
@@ -1031,6 +1037,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void SelectDDL_Foreman(int selectionIndex = 1);
 
         void SelectDDL_Specification(int selectionIndex = 1);
+
+        void SelectDDL_SpecSectionParagraph(int selectionIndex = 1);
 
         void SelectDDL_Location(int selectionIndex = 1);
 
@@ -1213,6 +1221,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void SelectDDL_Roadway(int selectionIndex = 1);
         public abstract void SelectDDL_Segment(int selectionIndex = 1);
         public abstract void SelectDDL_Specification(int selectionIndex = 1);
+        public abstract void SelectDDL_SpecSectionParagraph(int selectionIndex = 1);
         public abstract void SelectDDL_SubFeature(int selectionIndex = 1);
         public abstract void SelectDDL_TrackNo(int selectionIndex = 1);
         public abstract void SelectRdoBtn_EngOfRecordApproval_NA();
@@ -1326,7 +1335,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 InputFields.ForemanNotificationDate.GetString(),
                 InputFields.ResponsibleManager.GetString(),
                 InputFields.ManagerNotificationDate.GetString(),
-                $"{InputFields.Specification.GetString()}Id",
+                InputFields.SpecificationId.GetString(),
                 InputFields.Segment.GetString(),
                 InputFields.Roadway.GetString(),
                 InputFields.Description_of_Nonconformance.GetString(),
@@ -1372,6 +1381,44 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public GeneralNCR_LAX(IWebDriver driver) : base(driver)
         {
         }
+
+        public override IList<string> GetExpectedRequiredFieldIDs()
+        {
+            IList<string> RequiredFieldIDs = new List<string>
+            {
+                InputFields.IssuedDate.GetString(),
+                InputFields.Originator.GetString(),
+                InputFields.Foreman.GetString(),
+                InputFields.ForemanNotificationDate.GetString(),
+                InputFields.ResponsibleManager.GetString(),
+                InputFields.ManagerNotificationDate.GetString(),
+                InputFields.SpecificationId.GetString(),
+                InputFields.SpecSectionParagraph.GetString(),
+                InputFields.Area.GetString(),
+                InputFields.Roadway.GetString(),
+                InputFields.Description_of_Nonconformance.GetString()
+            };
+
+            return RequiredFieldIDs;
+        }
+
+        public override void PopulateRequiredFields()
+        {
+            EnterIssuedDate();
+            SelectDDL_Originator();
+            SelectDDL_Foreman();
+            EnterForemanNotificationDate();
+            EnterResponsibleManager("Bhoomi Purohit");
+            EnterManagerNotificationDate();
+            SelectDDL_Specification();
+            SelectDDL_SpecSectionParagraph();
+            SelectDDL_Area();
+            SelectDDL_Roadway();
+            EnterDescription();
+        }
+
+        public override void SelectDDL_Specification(int selectionIndex = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.SpecificationId, selectionIndex);
     }
 
     #endregion Implementation specific to LAX
