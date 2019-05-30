@@ -487,9 +487,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         /// <summary>
         /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
         /// </summary>
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private IGeneralNCR SetPageClassBasedOnTenant(IWebDriver driver)
+        public T SetClass<T>(IWebDriver driver)
         {
             IGeneralNCR instance = new GeneralNCR(driver);
 
@@ -529,7 +527,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 instance = new GeneralNCR_LAX(driver);
             }
 
-            return instance;
+            return (T)instance;
         }
 
         internal GeneralNCR GeneralNCR_Base => new GeneralNCR();
@@ -638,7 +636,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             ClickBtn_SignaturePanel_OK();
 
             if (isApprovalRequired)
-                SelectRadioBtnOrChkbox(approvalField);
+                PageAction.SelectRadioBtnOrChkbox(approvalField);
         }
 
         public virtual void ClickTab_All_NCRs()

@@ -232,9 +232,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public abstract class DesignDocumentWF_Impl : TestBase, IDesignDocumentWF
     {
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private IDesignDocumentWF SetPageClassBasedOnTenant(IWebDriver driver)
+        public T SetClass<T>(IWebDriver driver)
         {
             IDesignDocumentWF instance = new DesignDocumentWF(driver);
 
@@ -273,7 +271,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 log.Info($"###### using DesignDocumentWF_LAX instance ###### ");
                 instance = new DesignDocumentWF_LAX(driver);
             }
-            return instance;
+            return (T)instance;
         }
 
         public virtual void FilterTableAndEditDoc(string docNumber = "")

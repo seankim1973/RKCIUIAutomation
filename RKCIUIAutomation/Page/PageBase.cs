@@ -18,7 +18,7 @@ using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page
 {
-    public class PageBase : BaseClass
+    public class PageBase : BaseUtils
     {
         public PageBase()
         {
