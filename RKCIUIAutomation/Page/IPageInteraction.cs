@@ -23,7 +23,7 @@ namespace RKCIUIAutomation.Page
         void CloseActiveModalWindow();
         void ConfirmActionDialog(bool confirmYes = true);
         string DismissAlertMessage();
-        bool ElementIsDisplayed(By elementByLocator);
+        bool CheckIfElementIsDisplayed(By elementByLocator);
         void EnterText(By elementByLocator, string text, bool clearField = true);
         void ExecuteJsAction(JSAction jsAction, By elementByLocator);
         void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false, bool isMultiSelectDDList = false);

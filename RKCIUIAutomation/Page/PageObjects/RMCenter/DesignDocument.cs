@@ -305,7 +305,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             designDocTitle = GetVar("DsgnDocTtl");
             designDocNumber = GetVar("DsgnDocNumb");
-            Console.WriteLine($"#####Title: {designDocTitle}\nNumber: {designDocNumber}");
+            log.Debug($"#####Title: {designDocTitle}\nNumber: {designDocNumber}");
         }
 
         public override void EnterDesignDocTitleAndNumber()
@@ -1105,7 +1105,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         private bool VerifyRequiredFieldErrorMsg(string errorMsg)
-            => PageAction.ElementIsDisplayed(By.XPath($"//li[text()='{errorMsg}']"));
+            => PageAction.CheckIfElementIsDisplayed(By.XPath($"//li[text()='{errorMsg}']"));
 
         public virtual bool VerifyTitleFieldErrorMsgIsDisplayed()
             => VerifyRequiredFieldErrorMsg("Submittal Title is required.");
@@ -1183,7 +1183,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     }
                     else
                     {
-                        activeTabNotDisplayed = PageAction.ElementIsDisplayed(By.XPath("//div[@class='k-content k-state-active']"));
+                        activeTabNotDisplayed = PageAction.CheckIfElementIsDisplayed(By.XPath("//div[@class='k-content k-state-active']"));
                     }
                 }
                 while (activeTabNotDisplayed);

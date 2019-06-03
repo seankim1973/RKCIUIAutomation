@@ -16,6 +16,7 @@ using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.StaticHelpers;
 using RKCIUIAutomation.Test;
+using static RKCIUIAutomation.Page.PageInteraction;
 
 namespace RKCIUIAutomation.Page
 {
@@ -147,9 +148,9 @@ namespace RKCIUIAutomation.Page
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                 wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(locator));
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //log.Error(e.Message);
+                log.Error(e.Message);
             }
         }
 
@@ -166,7 +167,8 @@ namespace RKCIUIAutomation.Page
 
                 foreach (string className in classNames)
                 {
-                    WaitForElementToClear(By.ClassName(className), timeOutInSeconds, pollingInterval);
+                    By loadingLocator = By.ClassName(className);
+                    WaitForElementToClear(loadingLocator, timeOutInSeconds, pollingInterval);
                 }
             }
             catch (Exception)
@@ -309,20 +311,6 @@ namespace RKCIUIAutomation.Page
 
         public override string GetAttribute(By elementByLocator, string attributeName)
             => GetElement(elementByLocator)?.GetAttribute(attributeName);            
-
-        //public override IList<string> GetAttributes(By elementByLocator, string attributeName)
-        //{
-        //    IList<IWebElement> elements = GetElements(elementByLocator);
-        //    IList<string> attributes = new List<string>();
-
-        //    foreach (IWebElement elem in elements)
-        //    {
-        //        string attrib = elem.GetAttribute(attributeName);
-        //        attributes.Add(attrib);
-        //    }
-
-        //    return attributes;
-        //}
 
         public override IList<string> GetAttributes<T>(T elementByLocator, string attributeName)
         {
@@ -635,7 +623,7 @@ namespace RKCIUIAutomation.Page
                 log.Info($"Entered {filePath}' for file upload");
 
                 By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
-                bool uploadStatus = ElementIsDisplayed(uploadStatusLabel);
+                bool uploadStatus = CheckIfElementIsDisplayed(uploadStatusLabel);
 
                 Report.Info($"File Upload {(uploadStatus ? "Successful" : "Failed")}.", uploadStatus);
             }
@@ -932,7 +920,7 @@ namespace RKCIUIAutomation.Page
             return isDisplayed;
         }
 
-        public override bool ElementIsDisplayed(By elementByLocator)
+        public override bool CheckIfElementIsDisplayed(By elementByLocator)
         {
             IWebElement elem = null;
 
@@ -1038,12 +1026,9 @@ namespace RKCIUIAutomation.Page
                     Report.Error(GetText(stackTraceTagByLocator));
                 }
 
-                //Console.WriteLine($"##### IsPageLoadedSuccessfully - IsPageLoaded: {isPageLoaded}");
-
                 string logMsg = isPageLoaded 
                     ? $"!!! Page Error - {pageErrElement.Text}<br>{pageUrl}"
                     : $"!!! Error at {pageUrl}";
-                //Console.WriteLine($"##### IsPageLoadedSuccessfully - LogMsg: {logMsg}");
 
                 logMsgKey = "logMsgKey";
                 BaseUtil.CreateVar(logMsgKey, logMsg);
@@ -1536,6 +1521,9 @@ namespace RKCIUIAutomation.Page
             return elem;
         }
 
+        readonly By logInLinkLocator = By.XPath("//header//a[contains(text(),'Login')]");
+        readonly By logOutLinkLocator = By.XPath("//header//a[contains(text(),'Log out')]");
+
         public override void LogoutToLoginPage()
         {
             Thread.Sleep(3000);
@@ -1546,10 +1534,19 @@ namespace RKCIUIAutomation.Page
         }
 
         public override void ClickLoginLink()
-            => JsClickElement(By.XPath("//header//a[contains(text(),'Login')]"));
+            => JsClickElement(logInLinkLocator);
 
         public override void ClickLogoutLink()
-            => JsClickElement(By.XPath("//header//a[contains(text(),'Log out')]"));
+        {
+            bool loggedOutSuccessfully = false;
+
+            do
+            {
+                JsClickElement(logOutLinkLocator);
+                loggedOutSuccessfully = CheckIfElementIsDisplayed(logInLinkLocator);
+            }
+            while (!loggedOutSuccessfully);
+        }
 
         public override string GetCurrentUser()
         {
@@ -1582,7 +1579,7 @@ namespace RKCIUIAutomation.Page
 
     }
 
-    public abstract class PageInteraction_Impl : BaseClass, IPageInteraction
+    public abstract class PageInteraction_Impl : ProjectProperties, IPageInteraction
     {
         public abstract string AcceptAlertMessage();
         public abstract void ClearText(By elementByLocator);
@@ -1598,10 +1595,10 @@ namespace RKCIUIAutomation.Page
         public abstract void CloseActiveModalWindow();
         public abstract void ConfirmActionDialog(bool confirmYes = true);
         public abstract string DismissAlertMessage();
-        public abstract bool ElementIsDisplayed(By elementByLocator);
+        public abstract bool CheckIfElementIsDisplayed(By elementByLocator);
         public abstract void EnterSignature();
         public abstract void EnterText(By elementByLocator, string text, bool clearField = true);
-        public abstract void ExecuteJsAction(PageInteraction.JSAction jsAction, By elementByLocator);
+        public abstract void ExecuteJsAction(JSAction jsAction, By elementByLocator);
         public abstract void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false, bool isMultiSelectDDList = false);
         public abstract void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false);
         public abstract string GetAttribute(By elementByLocator, string attributeName);

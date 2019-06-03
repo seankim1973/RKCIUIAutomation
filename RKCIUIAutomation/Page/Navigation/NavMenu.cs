@@ -11,7 +11,7 @@ namespace RKCIUIAutomation.Page.Navigation
         void Menu<T>(T navEnum);
     }
 
-    public class NavMenu : BaseClass, INavMenu
+    public class NavMenu : BaseUtils, INavMenu
     {
         public NavMenu()
         {

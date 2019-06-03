@@ -12,12 +12,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using static RKCIUIAutomation.Tools.HipTest;
 using static RKCIUIAutomation.Base.Factory;
+using RKCIUIAutomation.Page;
 
 namespace RKCIUIAutomation.Tools
 {
     extern alias newtJson;
 
-    public class HipTestApi : TestBase
+    public class HipTestApi :  BaseUtils
     {
         private static Lazy<List<KeyValuePair<string, List<int>>>> _suiteTestCaseDataset;
         private List<KeyValuePair<string, List<int>>> SuiteTestCaseDataset { get { return _suiteTestCaseDataset.Value; } set { } }

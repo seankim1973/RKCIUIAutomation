@@ -9,7 +9,7 @@ using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page
 {
-    public class PageHelper : ProjectProperties, IPageHelper
+    public class PageHelper : PageInteraction, IPageHelper
     {
         public PageHelper()
         {

@@ -7,9 +7,9 @@ using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
 {
-    public class ExtentManager : BaseClass
+    public class ExtentManager : BaseUtils
     {
-        public static readonly string reportFilePath = $"{BaseUtils.ExtentReportPath}\\extent_{tenantName.ToString()}.html";
+        public static readonly string reportFilePath = $"{ExtentReportPath}\\extent_{tenantName.ToString()}.html";
 
         private static readonly Lazy<ExtentReports> _lazy;
 
@@ -23,7 +23,7 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
-                Directory.CreateDirectory(BaseUtils.ExtentReportPath);
+                Directory.CreateDirectory(ExtentReportPath);
                 HtmlReporter = new ExtentHtmlReporter(reportFilePath);
                 HtmlReporter = GetHtmlReporter();
 
@@ -53,7 +53,7 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
-                HtmlReporter.LoadConfig($"{BaseUtils.CodeBasePath}\\extent-config.xml");
+                HtmlReporter.LoadConfig($"{CodeBasePath}\\extent-config.xml");
             }
             catch (Exception e)
             {

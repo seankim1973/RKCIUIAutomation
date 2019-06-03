@@ -461,7 +461,7 @@ namespace RKCIUIAutomation.Page
 
                 if (noRecordsExpected)
                 {
-                    noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
+                    noRecordsMsgDisplayed = PageAction.CheckIfElementIsDisplayed(noRecordsMsgLocator);
 
                     if (noRecordsMsgDisplayed)
                     {
@@ -472,7 +472,7 @@ namespace RKCIUIAutomation.Page
                     {
                         if (tblRowElems.Any())
                         {
-                            var recordRowDisplayed = PageAction.ElementIsDisplayed(recordRowLocator);
+                            var recordRowDisplayed = PageAction.CheckIfElementIsDisplayed(recordRowLocator);
                             if (recordRowDisplayed)
                             {
                                 logMsg = $"No Records are Expected, but found {tblRowElems.Count} record";
@@ -489,7 +489,7 @@ namespace RKCIUIAutomation.Page
                     if (tblRowElems.Any())
                     {
                         Report.Step($"Searching for record: {recordNameOrNumber}");
-                        isDisplayedAsExpected = PageAction.ElementIsDisplayed(recordRowLocator);
+                        isDisplayedAsExpected = PageAction.CheckIfElementIsDisplayed(recordRowLocator);
 
                         string contains = filterOperator == FilterOperator.Contains ? "Containing Value: " : "";
                         logMsg = isDisplayedAsExpected
@@ -498,7 +498,7 @@ namespace RKCIUIAutomation.Page
                     }
                     else
                     {
-                        noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
+                        noRecordsMsgDisplayed = PageAction.CheckIfElementIsDisplayed(noRecordsMsgLocator);
                         if (noRecordsMsgDisplayed)
                         {
                             logMsg = "Expected Record, but 'No Record Located' message is displayed";
@@ -510,7 +510,7 @@ namespace RKCIUIAutomation.Page
             {
                 log.Error(e.StackTrace);
 
-                noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
+                noRecordsMsgDisplayed = PageAction.CheckIfElementIsDisplayed(noRecordsMsgLocator);
                 isDisplayedAsExpected = noRecordsExpected
                     ? noRecordsMsgDisplayed
                         ? true
@@ -644,7 +644,7 @@ namespace RKCIUIAutomation.Page
         //TODO: Horizontal scroll in table (i.e. QA Search>ProctorCurveSummary)
     }
 
-    public abstract class TableHelper_Impl : BaseClass, ITableHelper
+    public abstract class TableHelper_Impl : BaseUtils, ITableHelper
     {
         public abstract void ClearTableFilters(TableHelper.TableType tableType = TableHelper.TableType.Unknown);
         public abstract void ClickButtonForRow<T>(TableHelper.TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false);

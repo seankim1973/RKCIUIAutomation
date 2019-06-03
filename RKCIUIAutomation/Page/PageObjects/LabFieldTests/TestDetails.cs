@@ -59,7 +59,7 @@ namespace RKCIUIAutomation.Page.PageObjects.LabFieldTests
         readonly By TestDetailsFormByLocator = By.Id("StartDiv");
 
         public override bool VerifyTestDetailsFormIsDisplayed()
-            => PageAction.ElementIsDisplayed(TestDetailsFormByLocator);
+            => PageAction.CheckIfElementIsDisplayed(TestDetailsFormByLocator);
     }
 
     public interface ITestDetails

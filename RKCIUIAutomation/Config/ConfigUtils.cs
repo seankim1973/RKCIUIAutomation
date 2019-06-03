@@ -6,14 +6,12 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Security.Cryptography;
 using System.Text;
-using static RKCIUIAutomation.Base.BaseUtils;
 using static RKCIUIAutomation.Tools.HipTestApi;
-using static RKCIUIAutomation.Base.WebDriverFactory;
 using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Config
 {
-    public class ConfigUtils : BaseClass, IConfigUtils
+    public class ConfigUtils : BaseUtils, IConfigUtils
     {
         public ConfigUtils()
         {
