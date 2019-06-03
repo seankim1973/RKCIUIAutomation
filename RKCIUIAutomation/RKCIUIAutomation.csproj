@@ -286,19 +286,30 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\BaseClass.cs" />
-    <Compile Include="Base\BaseHooks.cs" />
+    <Compile Include="Base\BaseHelper.cs" />
+    <Compile Include="Base\BaseHook.cs" />
+    <Compile Include="Base\Factory.cs" />
     <Compile Include="Base\BaseUtils.cs" />
     <Compile Include="Base\DriverOptionsFactory.cs" />
     <Compile Include="Base\ExtentManager.cs" />
     <Compile Include="Base\ExtentTestManager.cs" />
+    <Compile Include="Base\IBaseUtils.cs" />
+    <Compile Include="Base\IReportLogger.cs" />
+    <Compile Include="Base\ReportLogger.cs" />
     <Compile Include="Base\RestUtils.cs" />
     <Compile Include="Base\WebDriverFactory.cs" />
     <Compile Include="Base\ZaleniumService.cs" />
     <Compile Include="Config\ConfigUtils.cs" />
+    <Compile Include="Config\IConfigUtils.cs" />
     <Compile Include="Config\ImpersonateUser.cs" />
     <Compile Include="Config\ProjectProperties.cs" />
     <Compile Include="Config\Properties.cs" />
-    <Compile Include="Page\Action.cs" />
+    <Compile Include="Page\PageInteraction.cs" />
+    <Compile Include="Page\StaticHelpers.cs" />
+    <Compile Include="Page\IPageInteraction.cs" />
+    <Compile Include="Page\IKendoGrid.cs" />
+    <Compile Include="Page\IPageHelper.cs" />
+    <Compile Include="Page\ITableHelper.cs" />
     <Compile Include="Page\KendoGrid.cs" />
     <Compile Include="Page\Navigation\PageNavigation.cs" />
     <Compile Include="Page\Navigation\NavMenu.cs" />
@@ -377,13 +388,13 @@
     <Compile Include="Page\PageObjects\RMCenter\ProjectCorrespondenceLog.cs" />
     <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\RFCManagement.cs" />
-    <Compile Include="Page\PageObjects\RMCenter\ReviewReviseSubmittals.cs" />
     <Compile Include="Page\PageObjects\RMCenter\Search.cs" />
     <Compile Include="Page\PageObjects\RMCenter\SubmittalDetails.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadDEVSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadOwnerSubmittal.cs" />
     <Compile Include="Page\PageObjects\RMCenter\UploadQASubmittal.cs" />
     <Compile Include="Page\PageObjects\LabFieldTests\TestDetails.cs" />
+    <Compile Include="Page\StringValueAttribute.cs" />
     <Compile Include="Page\Workflows\DesignDocumentWF.cs" />
     <Compile Include="Page\TableHelper.cs" />
     <Compile Include="Page\Workflows\QaRcrdCtrl_GeneralCDR_WF.cs" />
@@ -402,6 +413,8 @@
     <Compile Include="Page\Workflows\LinkCoverageWF.cs" />
     <Compile Include="Test\CommentReview_Test.cs" />
     <Compile Include="Test\HiptestUnit.cs" />
+    <Compile Include="Test\ITestBase.cs" />
+    <Compile Include="Test\ITestUtils.cs" />
     <Compile Include="Test\LinkCoverageTest.cs" />
     <Compile Include="Test\MSUnitTest.cs" />
     <Compile Include="Test\QaRcrdCtrl_GeneralCDR_Test.cs" />

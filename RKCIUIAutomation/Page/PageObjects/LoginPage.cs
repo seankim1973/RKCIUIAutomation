@@ -4,7 +4,7 @@ using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.PageObjects
 {
@@ -18,67 +18,46 @@ namespace RKCIUIAutomation.Page.PageObjects
 
         public LoginPage(IWebDriver driver) => this.Driver = driver;
 
-    }
-
-    #endregion LoginPage Generic class
-
-    #region LoginPage Interface class
-
-    public interface ILoginPage
-    {
-        void LoginUser(UserType userType);
-
-        void ToggleRememberMeChkbox();
-    }
-
-    #endregion LoginPage Interface class
-
-    #region LoginPage Common Implementation class
-
-    public abstract class LoginPage_Impl : PageBase, ILoginPage
-    {
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private ILoginPage SetPageClassBasedOnTenant(IWebDriver driver)
+        public override T SetClass<T>(IWebDriver driver)
         {
             ILoginPage instance = new LoginPage(driver);
 
             if (tenantName == TenantName.SGWay)
             {
-                LogInfo($"###### using LoginPage_SGWay instance ###### ");
+                Report.Info($"###### using LoginPage_SGWay instance ###### ");
                 instance = new LoginPage_SGWay(driver);
             }
             else if (tenantName == TenantName.SH249)
             {
-                LogInfo($"###### using LoginPage_SH249 instance ###### ");
+                Report.Info($"###### using LoginPage_SH249 instance ###### ");
                 instance = new LoginPage_SH249(driver);
             }
             else if (tenantName == TenantName.Garnet)
             {
-                LogInfo($"###### using LoginPage_Garnet instance ###### ");
+                Report.Info($"###### using LoginPage_Garnet instance ###### ");
                 instance = new LoginPage_Garnet(driver);
             }
             else if (tenantName == TenantName.GLX)
             {
-                LogInfo($"###### using LoginPage_GLX instance ###### ");
+                Report.Info($"###### using LoginPage_GLX instance ###### ");
                 instance = new LoginPage_GLX(driver);
             }
             else if (tenantName == TenantName.I15South)
             {
-                LogInfo($"###### using LoginPage_I15South instance ###### ");
+                Report.Info($"###### using LoginPage_I15South instance ###### ");
                 instance = new LoginPage_I15South(driver);
             }
             else if (tenantName == TenantName.I15Tech)
             {
-                LogInfo($"###### using LoginPage_I15Tech instance ###### ");
+                Report.Info($"###### using LoginPage_I15Tech instance ###### ");
                 instance = new LoginPage_I15Tech(driver);
             }
             else if (tenantName == TenantName.LAX)
             {
-                LogInfo($"###### using LoginPage_LAX instance ###### ");
+                Report.Info($"###### using LoginPage_LAX instance ###### ");
                 instance = new LoginPage_LAX(driver);
             }
-            return instance;
+            return (T)instance;
         }
 
         internal readonly By field_Email = By.Name("Email");
@@ -88,7 +67,7 @@ namespace RKCIUIAutomation.Page.PageObjects
         internal int userAcctIndex = 0;
         internal string credential = string.Empty;
 
-        public bool AlreadyLoggedIn()
+        public override bool AlreadyLoggedIn()
         {
             bool result = false;
             IWebElement elem = null;
@@ -119,23 +98,22 @@ namespace RKCIUIAutomation.Page.PageObjects
             return result;
         }
 
-        public virtual void LoginUser(UserType userType)
+        public override void LoginUser(UserType userType)
         {
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
             bool alreadyLoggedIn = AlreadyLoggedIn();
 
             try
             {
                 if (!alreadyLoggedIn)
                 {
-                    pageTitle = SetPageTitleVar();
+                    pageTitle = PageAction.GetPageTitle();
 
                     if (pageTitle.Contains("Log in"))
                     {
-                        VerifyPageIsLoaded(true, false);
+                        PageAction.VerifyPageIsLoaded(true, false);
 
-                        ConfigUtils Configs = new ConfigUtils();
-                        string[] userAcct = Configs.GetUser(userType);
+                        string[] userAcct = ConfigUtil.GetUser(userType);
                         IList<By> loginFields = new List<By>
                         {
                             field_Email,
@@ -163,7 +141,7 @@ namespace RKCIUIAutomation.Page.PageObjects
 
                                 if (userAcctIndex == 1)
                                 {
-                                    webElem.SendKeys(Configs.GetDecryptedPW(credential));
+                                    webElem.SendKeys(ConfigUtil.GetDecryptedPW(credential));
                                 }
                                 else
                                 {
@@ -173,18 +151,18 @@ namespace RKCIUIAutomation.Page.PageObjects
                             }
                             catch (Exception e)
                             {
-                                LogError($"Exception occured while waiting for element - {field}", true, e);
-                                throw e;
+                                Report.Error($"Exception occured while waiting for element - {field}", true, e);
+                                throw;
                             }
                         }
 
-                        LogStep($"Using account : {userAcct[0]}");
-                        ClickElement(btn_Login);
+                        Report.Step($"Using account : {userAcct[0]}");
+                        PageAction.ClickElement(btn_Login);
                     }
                 }
                 else
                 {
-                    LogStep("Already Logged In");
+                    Report.Step("Already Logged In");
                 }
             }
             catch (Exception e)
@@ -195,13 +173,13 @@ namespace RKCIUIAutomation.Page.PageObjects
             {
                 try
                 {
-                    pageTitle = SetPageTitleVar();
+                    pageTitle = PageAction.GetPageTitle();
 
                     if (pageTitle.Contains("Log in"))
                     {
                         bool invalidLoginErrorDisplayed = false;
 
-                        IWebElement invalidLoginError = GetElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+                        IWebElement invalidLoginError = PageAction.GetElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
                         invalidLoginErrorDisplayed = invalidLoginError.Displayed;
 
                         if (invalidLoginError != null && invalidLoginErrorDisplayed)
@@ -209,7 +187,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                             string logMsg = invalidLoginError.Text;
 
                             var ex = new Exception(logMsg.HasValue() ? logMsg : "Invalid Login Error is Displayed!!!");
-                            LogError(logMsg, true);
+                            Report.Error(logMsg, true);
                             throw ex;
                         }
                     }
@@ -221,9 +199,33 @@ namespace RKCIUIAutomation.Page.PageObjects
             }
         }
 
-        public virtual void ToggleRememberMeChkbox()
-            => ClickElement(chkbx_RememberMe);
+        public override void ToggleRememberMeChkbox()
+            => PageAction.ClickElement(chkbx_RememberMe);
 
+    }
+
+    #endregion LoginPage Generic class
+
+    #region LoginPage Interface class
+
+    public interface ILoginPage
+    {
+        bool AlreadyLoggedIn();
+
+        void LoginUser(UserType userType);
+
+        void ToggleRememberMeChkbox();
+    }
+
+    #endregion LoginPage Interface class
+
+    #region LoginPage Common Implementation class
+
+    public abstract class LoginPage_Impl : PageBase, ILoginPage
+    {
+        public abstract bool AlreadyLoggedIn();
+        public abstract void LoginUser(UserType userType);
+        public abstract void ToggleRememberMeChkbox();
     }
 
     #endregion LoginPage Common Implementation class

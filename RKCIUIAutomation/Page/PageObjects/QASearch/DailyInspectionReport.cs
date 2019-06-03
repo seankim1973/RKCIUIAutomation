@@ -3,8 +3,9 @@ using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using System;
-using static RKCIUIAutomation.Page.PageObjects.QASearch.DailyInspectionReport;
+//using static RKCIUIAutomation.Page.PageObjects.QASearch.DailyInspectionReport;
 using static RKCIUIAutomation.Page.TableHelper;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.PageObjects.QASearch
 {
@@ -15,6 +16,52 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
         }
 
         public DailyInspectionReport(IWebDriver driver) => this.Driver = driver;
+
+        /// <summary>
+        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
+        /// </summary>
+        public override T SetClass<T>(IWebDriver driver)
+        {
+            IDailyInspectionReport instance = new DailyInspectionReport(driver);
+
+            if (tenantName == TenantName.SGWay)
+            {
+                log.Info($"###### using DailyInspectionReport_SGWay instance ###### ");
+                instance = new DailyInspectionReport_SGWay(driver);
+            }
+            else if (tenantName == TenantName.SH249)
+            {
+                log.Info($"###### using DailyInspectionReport_SH249 instance ###### ");
+                instance = new DailyInspectionReport_SH249(driver);
+            }
+            else if (tenantName == TenantName.Garnet)
+            {
+                log.Info($"###### using DailyInspectionReport_Garnet instance ###### ");
+                instance = new DailyInspectionReport_Garnet(driver);
+            }
+            else if (tenantName == TenantName.GLX)
+            {
+                log.Info($"###### using DailyInspectionReport_GLX instance ###### ");
+                instance = new DailyInspectionReport_GLX(driver);
+            }
+            else if (tenantName == TenantName.I15South)
+            {
+                log.Info($"###### using DailyInspectionReport_I15South instance ###### ");
+                instance = new DailyInspectionReport_I15South(driver);
+            }
+            else if (tenantName == TenantName.I15Tech)
+            {
+                log.Info($"###### using DailyInspectionReport_I15Tech instance ###### ");
+                instance = new DailyInspectionReport_I15Tech(driver);
+            }
+            else if (tenantName == TenantName.LAX)
+            {
+                log.Info($"###### using DailyInspectionReport_LAX instance ###### ");
+                instance = new DailyInspectionReport_LAX(driver);
+            }
+            return (T)instance;
+        }
+
 
         public enum ColumnName
         {
@@ -80,88 +127,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
             [StringValue("CancelButton")] AddQuery_Cancel,
         }
-    }
 
-    public interface IDailyInspectionReport
-    {
-        bool VerifyDirIsDisplayed(string dirNumber);
+        public override void ClickBtn_Search() => PageAction.JsClickElement(By.Id(Buttons.Search.GetString()));
 
-        bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B");
+        public override void ClickBtn_Clear() => PageAction.JsClickElement(By.Id(Buttons.Clear.GetString()));
 
-        bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B");
+        public override void EnterText_DIR_Number(string dirNumber) => PageAction.EnterText(By.Id(SearchCriteria.DIR_No.GetString()), dirNumber);
 
-        void ClickBtn_Search();
-
-        void ClickBtn_Clear();
-
-        void EnterText_DIR_Number(string dirNumber);
-
-    }
-
-    public abstract class DailyInspectionReport_Impl : TestBase, IDailyInspectionReport
-    {
-        /// <summary>
-        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
-        /// </summary>
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        public IDailyInspectionReport SetPageClassBasedOnTenant(IWebDriver driver)
-        {
-            IDailyInspectionReport instance = new DailyInspectionReport(driver);
-
-            if (tenantName == TenantName.SGWay)
-            {
-                log.Info($"###### using DailyInspectionReport_SGWay instance ###### ");
-                instance = new DailyInspectionReport_SGWay(driver);
-            }
-            else if (tenantName == TenantName.SH249)
-            {
-                log.Info($"###### using DailyInspectionReport_SH249 instance ###### ");
-                instance = new DailyInspectionReport_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                log.Info($"###### using DailyInspectionReport_Garnet instance ###### ");
-                instance = new DailyInspectionReport_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                log.Info($"###### using DailyInspectionReport_GLX instance ###### ");
-                instance = new DailyInspectionReport_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                log.Info($"###### using DailyInspectionReport_I15South instance ###### ");
-                instance = new DailyInspectionReport_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                log.Info($"###### using DailyInspectionReport_I15Tech instance ###### ");
-                instance = new DailyInspectionReport_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                log.Info($"###### using DailyInspectionReport_LAX instance ###### ");
-                instance = new DailyInspectionReport_LAX(driver);
-            }
-            return instance;
-        }
-
-        public virtual void ClickBtn_Search() => JsClickElement(By.Id(Buttons.Search.GetString()));
-
-        public virtual void ClickBtn_Clear() => JsClickElement(By.Id(Buttons.Clear.GetString()));
-
-        public virtual void EnterText_DIR_Number(string dirNumber) => EnterText(By.Id(SearchCriteria.DIR_No.GetString()), dirNumber);
-
-        public virtual bool VerifyDirIsDisplayed(string dirNumber)
+        public override bool VerifyDirIsDisplayed(string dirNumber)
         {
             bool isDisplayed = false;
 
             try
             {
-                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, dirNumber, TableType.Single);
+                isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnName.DIR_No, dirNumber, TableType.Single);
                 string logMsg = isDisplayed ? "Found" : "Unable to find";
-                LogInfo($"{logMsg} DIR record number {dirNumber}.", isDisplayed);
+                Report.Info($"{logMsg} DIR record number {dirNumber}.", isDisplayed);
             }
             catch (Exception e)
             {
@@ -185,23 +166,23 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
 
                 if (usingSearch)
                 {
-                    QaSearch_DIR.EnterText_DIR_Number(dirNumber);
-                    QaSearch_DIR.ClickBtn_Search();
+                    EnterText_DIR_Number(dirNumber);
+                    ClickBtn_Search();
                 }
 
-                bool isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(dirNumber);
+                bool isDisplayed = VerifyDirIsDisplayed(dirNumber);
 
                 if (isDisplayed && dirRevision)
                 {
-                    isDisplayed = QaSearch_DIR.VerifyDirIsDisplayed(expectedRevision);
+                    isDisplayed = VerifyDirIsDisplayed(expectedRevision);
                 }
 
                 if (isDisplayed)
                 {
-                    actualWorkflow = GetColumnValueForRow(dirNumber, "Workflow Location", false);
+                    actualWorkflow = GridHelper.GetColumnValueForRow(dirNumber, "Workflow Location", false);
                     string logMsg = string.IsNullOrEmpty(actualWorkflow) ? "not found." : $"Workflow Location displayed as: {actualWorkflow}";
                     wfLocationsMatch = actualWorkflow.Equals(expectedWorkflow.GetString()) ? true : false;
-                    LogInfo($"DIR Number {dirNumber}, {logMsg}", wfLocationsMatch);
+                    Report.Info($"DIR Number {dirNumber}, {logMsg}", wfLocationsMatch);
                 }
             }
             catch (Exception e)
@@ -212,11 +193,38 @@ namespace RKCIUIAutomation.Page.PageObjects.QASearch
             return wfLocationsMatch;
         }
 
-        public virtual bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B")
+        public override bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B")
             => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow, true, dirRevision, expectedRevision);
 
-        public virtual bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B")
+        public override bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B")
             => CheckIfWorkflowLocationsMatch(dirNumber, expectedWorkflow, dirRevision, false, expectedRevision);
+
+    }
+
+    public interface IDailyInspectionReport
+    {
+        bool VerifyDirIsDisplayed(string dirNumber);
+
+        bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B");
+
+        bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B");
+
+        void ClickBtn_Search();
+
+        void ClickBtn_Clear();
+
+        void EnterText_DIR_Number(string dirNumber);
+
+    }
+
+    public abstract class DailyInspectionReport_Impl : PageBase, IDailyInspectionReport
+    {
+        public abstract void ClickBtn_Clear();
+        public abstract void ClickBtn_Search();
+        public abstract void EnterText_DIR_Number(string dirNumber);
+        public abstract bool VerifyDirIsDisplayed(string dirNumber);
+        public abstract bool VerifyDirWorkflowLocationBySearch(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B");
+        public abstract bool VerifyDirWorkflowLocationByTblFilter(string dirNumber, WorkflowLocation expectedWorkflow = WorkflowLocation.Closed, bool dirRevision = false, string expectedRevision = "B");
     }
 
     public class DailyInspectionReport_Garnet : DailyInspectionReport

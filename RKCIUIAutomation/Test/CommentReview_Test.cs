@@ -5,6 +5,7 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Workflows;
 using System.Collections.Generic;
 using System.Threading;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Test.CommentReview
 {
@@ -20,6 +21,7 @@ namespace RKCIUIAutomation.Test.CommentReview
         public void CommentReviewRegularComment()
         {
             WF_DesignDocCommentReview.TCWF_CommentReviewRegularComment();
+            AssertAll();
         }
     }
 
@@ -29,12 +31,13 @@ namespace RKCIUIAutomation.Test.CommentReview
         [Test]
         [Category(Component.DesignDoc_CommentReview)]
         [Property(Component2, Component.CommentReview_NoComment)]
-        [Property(TestCaseNumber, 123456)]
+        [Property(TestCaseNumber, 675207)]
         [Property(Priority, "Priority 1")]
         [Description("Verify Comment Review No Comment")]
         public void CommentReviewNoComment()
         {
             WF_DesignDocCommentReview.TCWF_CommentReviewNoComment();
+            AssertAll();
         }
     }
 

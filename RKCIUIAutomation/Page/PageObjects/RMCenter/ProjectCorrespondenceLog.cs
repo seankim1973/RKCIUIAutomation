@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.ProjectCorrespondenceLog;
+using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -16,9 +18,64 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public ProjectCorrespondenceLog()
         {
+            tenantAllEntryFieldKeyValuePairs = GetTenantEntryFieldKVPairsList();
         }
 
-        public ProjectCorrespondenceLog(IWebDriver driver) => this.Driver = driver;
+        public ProjectCorrespondenceLog(IWebDriver driver)
+        {
+            this.Driver = driver;
+            tenantTableTabs = GetTenantTableTabsList();
+            reqFieldLocators = GetTenantRequiredFieldLocators();
+            tenantAllEntryFields = GetTenantAllEntryFieldsList();
+            tenantExpectedRequiredFields = GetTenantRequiredFieldsList();
+            expectedEntryFieldsForTblColumns = GetTenantEntryFieldsForTableColumns();
+        }
+
+        /// <summary>
+        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
+        /// </summary>
+        public override T SetClass<T>(IWebDriver driver)
+        {
+            IProjectCorrespondenceLog instance = new ProjectCorrespondenceLog(driver);
+
+            if (tenantName == TenantName.SGWay)
+            {
+                log.Info($"###### using ProjectCorrespondenceLog_SGWay instance ###### ");
+                instance = new ProjectCorrespondenceLog_SGWay(driver);
+            }
+            else if (tenantName == TenantName.SH249)
+            {
+                log.Info($"###### using  ProjectCorrespondenceLog_SH249 instance ###### ");
+                instance = new ProjectCorrespondenceLog_SH249(driver);
+            }
+            else if (tenantName == TenantName.Garnet)
+            {
+                log.Info($"###### using  ProjectCorrespondenceLog_Garnet instance ###### ");
+                instance = new ProjectCorrespondenceLog_Garnet(driver);
+            }
+            else if (tenantName == TenantName.GLX)
+            {
+                log.Info($"###### using  ProjectCorrespondenceLog_GLX instance ###### ");
+                instance = new ProjectCorrespondenceLog_GLX(driver);
+            }
+            else if (tenantName == TenantName.I15South)
+            {
+                log.Info($"###### using  ProjectCorrespondenceLog_I15South instance ###### ");
+                instance = new ProjectCorrespondenceLog_I15South(driver);
+            }
+            else if (tenantName == TenantName.I15Tech)
+            {
+                log.Info($"###### using ProjectCorrespondenceLog_I15Tech instance ###### ");
+                instance = new ProjectCorrespondenceLog_I15Tech(driver);
+            }
+            else if (tenantName == TenantName.LAX)
+            {
+                log.Info($"###### using ProjectCorrespondenceLog_LAX instance ###### ");
+                instance = new ProjectCorrespondenceLog_LAX(driver);
+            }
+            return (T)instance;
+        }
+
 
         //GLX and LAX - StringValue[0] = table tab name, StringValue[1] = Table content reference id
         public enum TableTab
@@ -30,34 +87,34 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public enum EntryField
         {
-            [StringValue("DocumentDate", "DATE")] Date,
-            [StringValue("TransmittalNo", "TXT")] TransmittalNumber,
-            [StringValue("SecurityClassificationId", "DDL")] SecurityClassification,
-            [StringValue("Title", "TXT")] Title,
-            [StringValue("From", "TXT")] From,
-            [StringValue("AgencyFromId", "DDL")] AgencyFrom,
-            [StringValue("Attention", "TXT")] Attention,
-            [StringValue("AgencyToId", "DDL")] AgencyAttention,
-            [StringValue("DocumentTypeCatogoryId", "DDL")] DocumentCategory,
-            [StringValue("DocumentTypeId", "DDL")] DocumentType,
-            [StringValue("OriginatorDocumentRef", "TXT")] OriginatorDocumentRef,
-            [StringValue("Revision", "TXT")] Revision,
-            [StringValue("SelectedTransmittedIds", "MULTIDDL")] Transmitted,
-            [StringValue("SegmentId", "DDL")] Segment_Area,
-            [StringValue("DesignPackagesIdsNcr", "MULTIDDL")] DesignPackages,
-            [StringValue("CdrlNumber", "TXT")] CDRL,
-            [StringValue("ResponseRequiredRadioButton_True", "RDOBTN")] ResponseRequired_Yes,
-            [StringValue("ResponseRequiredRadioButton_False", "RDOBTN")] ResponseRequired_No,
-            [StringValue("ResponseRequiredDate", "FUTUREDATE")] ResponseRequiredBy_Date,
-            [StringValue("OwnerReponseId", "DDL")] OwnerResponse,
-            [StringValue("OwnerResponseBy", "TXT")] OwnerResponseBy,
-            [StringValue("OwnerResponseDate", "DATE")] OwnerResponseDate,
-            [StringValue("SectionId", "DDL")] SpecSection,
-            [StringValue("MSLNo", "TXT")] MSLNumber,
-            [StringValue("AvailableAccessItems", "DDL")] Access,
-            [StringValue("ViaId", "DDL")] Via,
-            [StringValue("AllowReshare", "CHKBOX")] AllowResharing,
-            [StringValue("TransmissionFiles", "UPLOAD")] Attachments
+            [StringValue("DocumentDate", DATE)] Date,
+            [StringValue("TransmittalNo", TEXT)] TransmittalNumber,
+            [StringValue("SecurityClassificationId", DDL)] SecurityClassification,
+            [StringValue("Title", TEXT)] Title,
+            [StringValue("From", TEXT)] From,
+            [StringValue("AgencyFromId", DDL)] AgencyFrom,
+            [StringValue("Attention", TEXT)] Attention,
+            [StringValue("AgencyToId", DDL)] AgencyAttention,
+            [StringValue("DocumentTypeCatogoryId", DDL)] DocumentCategory,
+            [StringValue("DocumentTypeId", DDL)] DocumentType,
+            [StringValue("OriginatorDocumentRef", TEXT)] OriginatorDocumentRef,
+            [StringValue("Revision", TEXT)] Revision,
+            [StringValue("SelectedTransmittedIds", MULTIDDL)] Transmitted,
+            [StringValue("SegmentId", DDL)] Segment_Area,
+            [StringValue("DesignPackagesIdsNcr", MULTIDDL)] DesignPackages,
+            [StringValue("CdrlNumber", TEXT)] CDRL,
+            [StringValue("ResponseRequiredRadioButton_True", RDOBTN)] ResponseRequired_Yes,
+            [StringValue("ResponseRequiredRadioButton_False", RDOBTN)] ResponseRequired_No,
+            [StringValue("ResponseRequiredDate", FUTUREDATE)] ResponseRequiredBy_Date,
+            [StringValue("OwnerReponseId", DDL)] OwnerResponse,
+            [StringValue("OwnerResponseBy", TEXT)] OwnerResponseBy,
+            [StringValue("OwnerResponseDate", DATE)] OwnerResponseDate,
+            [StringValue("SectionId", DDL)] SpecSection,
+            [StringValue("MSLNo", TEXT)] MSLNumber,
+            [StringValue("AvailableAccessItems", DDL)] Access,
+            [StringValue("ViaId", DDL)] Via,
+            [StringValue("AllowReshare", CHKBOX)] AllowResharing,
+            [StringValue("TransmissionFiles", UPLOAD)] Attachments
         }
 
         public enum ColumnName
@@ -175,7 +232,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             => PopulateFieldValue(EntryField.AllowResharing, "");
 
         public override void ClickBtn_AddAccessItem()
-            => ClickElement(By.Id("AddAccessItem"));
+            => PageAction.ClickElement(By.Id("AddAccessItem"));
 
         #endregion //Entry field override Action methods
 
@@ -184,7 +241,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             => GetVar(fieldEnum);
 
         private IList<string> GetAccessGroupsList()
-            => GetTextForElements(By.XPath("//div[@id='AccessGroups']//ul/li/span[2]"));
+            => PageAction.GetTextForElements(By.XPath("//div[@id='AccessGroups']//ul/li/span[2]"));
 
         public string GetValueFromEntryField(EntryField entryField)
         {
@@ -194,7 +251,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
             {
-                fieldValue = GetAttribute(By.Id($"{entryField.GetString()}"), "value");
+                fieldValue = PageAction.GetAttribute(By.Id($"{entryField.GetString()}"), "value");
             }
             else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
             {
@@ -206,12 +263,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     }
                     else
                     {
-                        fieldValue = GetTextFromDDL(entryField);
+                        fieldValue = PageAction.GetTextFromDDL(entryField);
                     }
                 }
                 else
                 {
-                    fieldValue = string.Join("::", GetTextFromMultiSelectDDL(entryField).ToArray());
+                    fieldValue = string.Join("::", PageAction.GetTextFromMultiSelectDDL(entryField).ToArray());
                 }
             }
 
@@ -276,12 +333,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 }
                                 else
                                 {
-                                    argValue = GetVarForEntryField(entryField);
-
+                                    //argValue = GetVarForEntryField(entryField);
+                                    argValue = GetVar(entryField);
                                     int argValueLength = ((string)argValue).Length;
 
                                     By inputLocator = GetInputFieldByLocator(entryField);
-                                    int elemMaxLength = int.Parse(GetAttribute(inputLocator, "maxlength"));
+                                    int elemMaxLength = int.Parse(PageAction.GetAttribute(inputLocator, "maxlength"));
 
                                     argValue = argValueLength > elemMaxLength
                                         ? ((string)argValue).Substring(0, elemMaxLength)
@@ -292,7 +349,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                             fieldValue = (string)argValue;
                         }
 
-                        EnterText(By.Id(entryField.GetString()), fieldValue);
+                        PageAction.EnterText(By.Id(entryField.GetString()), fieldValue);
                     }
                     else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
                     {
@@ -300,34 +357,34 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                             ? 1
                             : argValue;
 
-                        ExpandAndSelectFromDDList(entryField, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
+                        PageAction.ExpandAndSelectFromDDList(entryField, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
 
                         if (fieldType.Equals(DDL))
                         {
                             if (entryField.Equals(EntryField.Access))
                             {
-                                SelectRadioBtnOrChkbox(EntryField.AllowResharing);
+                                PageAction.SelectRadioBtnOrChkbox(EntryField.AllowResharing);
                                 ClickBtn_AddAccessItem();
                                 fieldValue = string.Join("::", GetAccessGroupsList().ToArray());
                             }
                             else
                             {
-                                fieldValue = GetTextFromDDL(entryField);
+                                fieldValue = PageAction.GetTextFromDDL(entryField);
                             }
                         }
                         else
                         {
-                            fieldValue = string.Join("::", GetTextFromMultiSelectDDL(entryField).ToArray());
+                            fieldValue = string.Join("::", PageAction.GetTextFromMultiSelectDDL(entryField).ToArray());
                         }
                     }
                     else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
                     {
-                        SelectRadioBtnOrChkbox(entryField);
+                        PageAction.SelectRadioBtnOrChkbox(entryField);
                     }
                 }
                 else
                 {
-                    LogError($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
+                    log.Error($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
                 }
             }
             catch (Exception e)
@@ -340,13 +397,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override bool VerifyTransmissionDetailsRequiredFields()
         {
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
 
-            reqFieldLocators = ProjCorrespondenceLog.SetTenantRequiredFieldLocators();
+            //reqFieldLocators = ProjCorrespondenceLog.GetTenantRequiredFieldLocators();
             IList<string> actualReqFields = new List<string>();
-            actualReqFields = GetAttributes(reqFieldLocators, "data-valmsg-for");
+            actualReqFields = PageAction.GetAttributes(reqFieldLocators, "data-valmsg-for");
 
-            tenantExpectedRequiredFields = ProjCorrespondenceLog.SetTenantRequiredFieldsList();
+            //tenantExpectedRequiredFields = ProjCorrespondenceLog.GetTenantRequiredFieldsList();
 
             IList<string> expectedReqFields = new List<string>();
 
@@ -355,7 +412,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 expectedReqFields.Add(field.GetString());
             }
 
-            return VerifyExpectedList(actualReqFields, expectedReqFields, "VerifyTransmissionDetailsRequiredFields");
+            return PageAction.VerifyExpectedList(actualReqFields, expectedReqFields, "VerifyTransmissionDetailsRequiredFields");
         }
 
         private ColumnName GetMatchingColumnNameForEntryField(EntryField entryField)
@@ -411,24 +468,24 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             IList<string> expectedValuesInTableList = new List<string>();
             IList<string> actualValuesInTableList = new List<string>();
 
-            expectedEntryFieldsForTblColumns = ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
+            //expectedEntryFieldsForTblColumns = ProjCorrespondenceLog.GetTenantEntryFieldsForTableColumns();
 
             try
             {
                 foreach (EntryField colEntryField in expectedEntryFieldsForTblColumns)
                 {
-                    var expectedType = colEntryField.GetType();
+                    //var expectedType = colEntryField.GetType();
                     var entryFieldType = colEntryField.GetString(true);
 
                     ColumnName columnName = GetMatchingColumnNameForEntryField(colEntryField);
                     var expectedValue = (from kvp in tenantAllEntryFieldKeyValuePairs where kvp.Key == colEntryField select kvp.Value).FirstOrDefault();
-                    expectedValueInTable = expectedType.Equals(entryFieldType == DATE) || expectedType.Equals(entryFieldType == FUTUREDATE)
+                    expectedValueInTable = entryFieldType.Equals(DATE) || entryFieldType.Equals(FUTUREDATE)
                         ? GetShortDate(expectedValue, true)
                         : colEntryField.Equals(EntryField.DocumentType) || colEntryField.Equals(EntryField.Via)
                             ? expectedValue.ReplaceSpacesWithUnderscores()
                             : expectedValue;
 
-                    actualValueInTable = GetColumnValueForRow("", columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
+                    actualValueInTable = GridHelper.GetColumnValueForRow("", columnName, ProjCorrespondenceLog.VerifyIsMultiTabGrid()).Trim();
                     Console.WriteLine($"COLUMN NAME: {columnName.ToString()} :: ACTUAL VALUE: {actualValueInTable}");
                     string exptedFieldName = $"Field Name : [{colEntryField.ToString()}]";
                     expectedValuesInTableList.Add($"{exptedFieldName}::{expectedValueInTable}");
@@ -440,7 +497,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            result = VerifyExpectedList(actualValuesInTableList, expectedValuesInTableList, "VerifyTableColumnValues");
+            result = PageAction.VerifyExpectedList(actualValuesInTableList, expectedValuesInTableList, "VerifyTableColumnValues");
 
             return result;
         }
@@ -449,8 +506,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             string transmittalNumber = string.Empty;
 
-            tenantAllEntryFields = ProjCorrespondenceLog.SetTenantAllEntryFieldsList();
-            tenantAllEntryFieldKeyValuePairs = new List<KeyValuePair<EntryField, string>>();
+            //tenantAllEntryFields = ProjCorrespondenceLog.GetTenantAllEntryFieldsList();
+            //tenantAllEntryFieldKeyValuePairs = new List<KeyValuePair<EntryField, string>>();
 
             foreach (EntryField field in tenantAllEntryFields)
             {
@@ -465,8 +522,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override bool VerifyTransmittalLogIsDisplayed(string transmittalNumber, bool noRecordExpected = false)
-            => VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber,
-                ProjCorrespondenceLog.VerifyIsMultiTabGrid()
+            => GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber,
+                VerifyIsMultiTabGrid()
                     ? TableType.MultiTab
                     : TableType.Single,
                 noRecordExpected);
@@ -477,11 +534,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             string logMsg = string.Empty;
             IList<bool> resultsList = new List<bool>();
 
-            expectedEntryFieldsForTblColumns = ProjCorrespondenceLog.SetTenantEntryFieldsForTableColumns();
+            //expectedEntryFieldsForTblColumns = ProjCorrespondenceLog.GetTenantEntryFieldsForTableColumns();
 
             foreach (EntryField entryField in expectedEntryFieldsForTblColumns)
             {
-                TableType tenantTableType = ProjCorrespondenceLog.VerifyIsMultiTabGrid()
+                TableType tenantTableType = VerifyIsMultiTabGrid()
                     ? TableType.MultiTab
                     : TableType.Single;
 
@@ -494,7 +551,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     ? value.ReplaceSpacesWithUnderscores()
                     : value;
 
-                bool isDisplayed = VerifyRecordIsDisplayed(column, value, tenantTableType);
+                bool isDisplayed = GridHelper.VerifyRecordIsDisplayed(column, value, tenantTableType);
 
                 resultsList.Add(isDisplayed);
 
@@ -502,11 +559,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     ? ""
                     : " NOT";
 
-                LogInfo($"Column '{column}' in the grid was{logMsg} filtered successfully by value {value}", isDisplayed);
-                AddAssertionToList(isDisplayed, $"VerifyTransmittalLogIsDisplayedByGridColumnFilter [Column : {column}]");
+                Report.Info($"Column '{column}' in the grid was{logMsg} filtered successfully by value {value}", isDisplayed);
+                TestUtility.AddAssertionToList(isDisplayed, $"VerifyTransmittalLogIsDisplayedByGridColumnFilter [Column : {column}]");
 
-                ClearTableFilters(tenantTableType);
-                WaitForPageReady();
+                GridHelper.ClearTableFilters(tenantTableType);
+                PageAction.WaitForPageReady();
             }
 
             result = resultsList.Contains(false)
@@ -520,9 +577,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             bool isDisplayed = false;
 
-            ClickTab(tableTab);
-            WaitForPageReady();
-            isDisplayed = VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber,
+            GridHelper.ClickTab(tableTab);
+            PageAction.WaitForPageReady();
+            isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber,
                 ProjCorrespondenceLog.VerifyIsMultiTabGrid()
                     ? TableType.MultiTab
                     : TableType.Single,
@@ -542,7 +599,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             try
             {
-                WaitForPageReady();
+                PageAction.WaitForPageReady();
 
                 foreach (EntryField entryField in tenantAllEntryFields)
                 {
@@ -551,7 +608,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
                     {
                         expectedValue = "selected";
-                        actualValue = VerifyChkBoxRdoBtnSelection(entryField) ? "selected" : "Not Selected";
+                        actualValue = PageAction.VerifyChkBoxRdoBtnSelection(entryField) ? "selected" : "Not Selected";
                     }
                     else
                     {
@@ -569,7 +626,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            result = VerifyExpectedList(actualValuesList, expectedValuesList, "VerifyTransmissionDetailsPageValues");
+            result = PageAction.VerifyExpectedList(actualValuesList, expectedValuesList, "VerifyTransmissionDetailsPageValues");
             return result;
         }
 
@@ -577,22 +634,22 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             int totalTabCount = remainingTblTabs.Count;
 
-            ClickSaveForward();
-            AssertToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_DetailsPageValues()");
+            PageAction.ClickSaveForward();
+            TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_DetailsPageValues()");
 
             for (int i = 0; i < totalTabCount; i++)
             {
                 TableTab currentTab = remainingTblTabs[i];
 
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(currentTab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed under table ({currentTab})");
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTableColumnValues(), $"VerifyTableColumnValues under table {currentTab}");
+                TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(currentTab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed under table ({currentTab})");
+                TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTableColumnValues(), $"VerifyTableColumnValues under table {currentTab}");
                 ProjCorrespondenceLog.ClickViewBtnForTransmissionsRow();
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTransmissionDetailsPageValues(), $"VerifyTransmissionDetailsPageValues under table ({currentTab})");
+                TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTransmissionDetailsPageValues(), $"VerifyTransmissionDetailsPageValues under table ({currentTab})");
 
                 int currentTabCount = i + 1;
                 if (currentTabCount < totalTabCount)
                 {
-                    ClickSaveForward();
+                    PageAction.ClickSaveForward();
                 }
             }
         }
@@ -601,40 +658,112 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             int totalTabCount = remainingTblTabs.Count;
 
-            AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
+            TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
             ProjCorrespondenceLog.ClickViewBtnForTransmissionsRow();
-            ClickSaveForward();
-            AssertToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
+            PageAction.ClickSaveForward();
+            TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
 
             for (int i = 0; i < totalTabCount; i++)
             {
                 TableTab currentTab = remainingTblTabs[i];
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(currentTab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
-                ClearTableFilters();
+                TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(currentTab, transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
+                GridHelper.ClearTableFilters();
                 ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayedByGridColumnFilter();
-                AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
+                TestUtility.AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLogIsDisplayed(transmittalNumber), $"VerifyTransmittalLogIsDisplayed");
 
                 int currentTabCount = i + 1;
                 if (currentTabCount < totalTabCount)
                 {
                     ProjCorrespondenceLog.ClickViewBtnForTransmissionsRow();
-                    ClickSaveForward();
-                    AssertToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
+                    PageAction.ClickSaveForward();
+                    TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "IterrateOverRemainingTableTabs_GridColumnFilters()");
                 }
             }
         }
 
         public override bool VerifyTransmittalLocationBySearch()
         {
-            ClickElement(By.Id("SearchButton"));
-            bool isDisplayed = VerifyRecordIsDisplayed(ColumnName.Title, "RFC A - MOT Segment 1 Phase 0", TableType.Single);
+            PageAction.ClickElement(By.Id("SearchButton"));
+            bool isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnName.Title, "RFC A - MOT Segment 1 Phase 0", TableType.Single);
 
             return isDisplayed;
         }
+
+        public override IList<KeyValuePair<EntryField, string>> GetTenantEntryFieldKVPairsList()
+        {
+            if (tenantAllEntryFieldKeyValuePairs == null)
+            {
+                tenantAllEntryFieldKeyValuePairs = new List<KeyValuePair<EntryField, string>>() { };
+            }
+            return tenantAllEntryFieldKeyValuePairs;
+        }
+
+        public override bool VerifyIsMultiTabGrid() => false;
+
+        public override void LogintoCorrespondenceLogPage(UserType userType)
+        {
+            LoginAs(userType);
+            PageAction.WaitForPageReady();
+            NavigateToPage.RMCenter_Project_Correspondence_Log();
+            TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "LogintoCorrespondenceLogPage()");
+        }
+
+        public override string CreateNewAndPopulateFields()
+        {
+            PageAction.ClickNew();
+            PageAction.WaitForPageReady();
+            PageAction.ClickSaveForward();
+            TestUtility.AddAssertionToList(VerifyTransmissionDetailsRequiredFields(), "VerifyTransmissionDetailsRequiredFields");
+            string transmittalNumber = PopulateAllFields();
+            PageAction.UploadFile();
+            PageAction.ClickSave();
+            TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "CreateNewAndPopulateFields()");
+            return transmittalNumber;
+        }
+
+        public override void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber)
+        {
+            Report.Step($"Test step skipped for {tenantName} - tenant does not have tabbed table grid");
+        }
+
+        public override void VerifyTransmissionDetailsGridFilterInRemainingTableTabs(string transmittalNumber)
+        {
+            Report.Step($"Test step skipped for {tenantName} - tenant does not have tabbed table grid");
+        }
+
+        //For tenants I15SB, I15Tech, SG, SH249
+        public override void ClickViewBtnForTransmissionsRow()
+            => GridHelper.ClickViewBtnForRow("", false, false);
+
+        public override IList<By> GetTenantRequiredFieldLocators()
+        {
+            if (reqFieldLocators == null)
+            {
+                reqFieldLocators = new List<By>()
+                {
+                    By.XPath("//span[contains(text(),'Required')]"),
+                };
+            }
+            return reqFieldLocators;
+        }
+
+        public override IList<EntryField> GetTenantRequiredFieldsList()
+            => tenantExpectedRequiredFields;
+
+        public override IList<EntryField> GetTenantAllEntryFieldsList()
+            => tenantAllEntryFields;
+
+        public override IList<EntryField> GetTenantEntryFieldsForTableColumns()
+            => expectedEntryFieldsForTblColumns;
+
+        public override IList<TableTab> GetTenantTableTabsList()
+            => tenantTableTabs;
     }
 
     public interface IProjectCorrespondenceLog
     {
+        IList<KeyValuePair<EntryField, string>> GetTenantEntryFieldKVPairsList();
+
         void ClickViewBtnForTransmissionsRow();
 
         void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber);
@@ -657,15 +786,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         /// <returns></returns>
         string CreateNewAndPopulateFields();
 
-        IList<By> SetTenantRequiredFieldLocators();
+        IList<By> GetTenantRequiredFieldLocators();
 
-        IList<EntryField> SetTenantRequiredFieldsList();
+        IList<EntryField> GetTenantRequiredFieldsList();
 
-        IList<EntryField> SetTenantAllEntryFieldsList();
+        IList<EntryField> GetTenantAllEntryFieldsList();
 
-        IList<EntryField> SetTenantEntryFieldsForTableColumns();
+        IList<EntryField> GetTenantEntryFieldsForTableColumns();
 
-        IList<TableTab> SetTenantTableTabsList();
+        IList<TableTab> GetTenantTableTabsList();
 
         void LogintoCorrespondenceLogPage(UserType userType);
 
@@ -712,56 +841,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     #region Common Workflow Implementation class
 
-    public abstract class ProjectCorrespondenceLog_Impl : TestBase, IProjectCorrespondenceLog
+    public abstract class ProjectCorrespondenceLog_Impl : PageBase, IProjectCorrespondenceLog
     {
-        /// <summary>
-        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
-        /// </summary>
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private IProjectCorrespondenceLog SetPageClassBasedOnTenant(IWebDriver driver)
-        {
-            IProjectCorrespondenceLog instance = new ProjectCorrespondenceLog(driver);
-
-            if (tenantName == TenantName.SGWay)
-            {
-                log.Info($"###### using ProjectCorrespondenceLog_SGWay instance ###### ");
-                instance = new ProjectCorrespondenceLog_SGWay(driver);
-            }
-            else if (tenantName == TenantName.SH249)
-            {
-                log.Info($"###### using  ProjectCorrespondenceLog_SH249 instance ###### ");
-                instance = new ProjectCorrespondenceLog_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                log.Info($"###### using  ProjectCorrespondenceLog_Garnet instance ###### ");
-                instance = new ProjectCorrespondenceLog_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                log.Info($"###### using  ProjectCorrespondenceLog_GLX instance ###### ");
-                instance = new ProjectCorrespondenceLog_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                log.Info($"###### using  ProjectCorrespondenceLog_I15South instance ###### ");
-                instance = new ProjectCorrespondenceLog_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                log.Info($"###### using ProjectCorrespondenceLog_I15Tech instance ###### ");
-                instance = new ProjectCorrespondenceLog_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                log.Info($"###### using ProjectCorrespondenceLog_LAX instance ###### ");
-                instance = new ProjectCorrespondenceLog_LAX(driver);
-            }
-            return instance;
-        }
-
-
         #region //Entry field abstract Actions
         public abstract void IterrateOverRemainingTableTabs_GridColumnFilters(string transmittalNumber, IList<TableTab> remainingTblTabs);
         public abstract void IterrateOverRemainingTableTabs_DetailsPageValues(string transmittalNumber, IList<TableTab> remainingTblTabs);
@@ -805,69 +886,25 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract bool VerifyTransmissionDetailsPageValues();
         #endregion //Entry field abstract Actions
 
-
         //Table Grid Type - returns true if table has multiple tabs
         //Returns false valid for I15SB, I15Tech, SH249, & SG
-        public virtual bool VerifyIsMultiTabGrid() => false;
+        public abstract bool VerifyIsMultiTabGrid();
+        public abstract void LogintoCorrespondenceLogPage(UserType userType);
+        public abstract IList<EntryField> GetTenantRequiredFieldsList();
+        public abstract IList<EntryField> GetTenantAllEntryFieldsList();
+        public abstract IList<EntryField> GetTenantEntryFieldsForTableColumns();
+        public abstract IList<TableTab> GetTenantTableTabsList();
 
-        public virtual void LogintoCorrespondenceLogPage(UserType userType)
-        {
-            LoginAs(userType);
-            WaitForPageReady();
-            NavigateToPage.RMCenter_Project_Correspondence_Log();
-            AssertToList_VerifyPageHeader("Transmissions", "LogintoCorrespondenceLogPage()");
-        }
-
-        public virtual IList<EntryField> SetTenantRequiredFieldsList()
-            => tenantExpectedRequiredFields;
-
-        public virtual IList<EntryField> SetTenantAllEntryFieldsList()
-            => tenantAllEntryFields;
-
-        public virtual IList<EntryField> SetTenantEntryFieldsForTableColumns()
-            => expectedEntryFieldsForTblColumns;
-
-        public virtual IList<TableTab> SetTenantTableTabsList()
-            => tenantTableTabs = new List<TableTab>() { };
-
-        public virtual string CreateNewAndPopulateFields()
-        {
-            ClickNew();
-            WaitForPageReady();
-            ClickSaveForward();
-            AddAssertionToList(VerifyTransmissionDetailsRequiredFields(), "VerifyTransmissionDetailsRequiredFields");
-            string transmittalNumber = PopulateAllFields();
-            UploadFile();
-            ClickSave();
-            AssertToList_VerifyPageHeader("Transmissions", "CreateNewAndPopulateFields()");
-            return transmittalNumber;
-        }
-
-        public virtual void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber)
-        {
-            LogInfo($"Test step skipped for {tenantName} - tenant does not have tabbed table grid");
-        }
-
-        public virtual void VerifyTransmissionDetailsGridFilterInRemainingTableTabs(string transmittalNumber)
-        {
-            LogInfo($"Test step skipped for {tenantName} - tenant does not have tabbed table grid");
-        }
+        public abstract string CreateNewAndPopulateFields();
+        public abstract void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber);
+        public abstract void VerifyTransmissionDetailsGridFilterInRemainingTableTabs(string transmittalNumber);
 
         //For tenants I15SB, I15Tech, SG, SH249
-        public virtual void ClickViewBtnForTransmissionsRow()
-            => ClickViewBtnForRow("", false, false);
-
-        public virtual IList<By> SetTenantRequiredFieldLocators()
-        {
-            return reqFieldLocators = new List<By>()
-            {
-                By.XPath("//span[contains(text(),'Required')]"),
-            };
-        }
-
-        public abstract bool VerifyTransmittalLogIsDisplayedByGridColumnFilter();
-
+        public abstract void ClickViewBtnForTransmissionsRow();
+        public abstract IList<By> GetTenantRequiredFieldLocators();
         public abstract bool VerifyTransmittalLocationBySearch();
+        public abstract bool VerifyTransmittalLogIsDisplayedByGridColumnFilter();
+        public abstract IList<KeyValuePair<EntryField, string>> GetTenantEntryFieldKVPairsList();
     }
 
     #endregion Common Workflow Implementation class
@@ -899,82 +936,100 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override bool VerifyIsMultiTabGrid() => true;
 
         public override void ClickViewBtnForTransmissionsRow()
-            => ClickViewBtnForRow("", true, false);
+            => GridHelper.ClickViewBtnForRow("", true, false);
 
-        public override IList<EntryField> SetTenantRequiredFieldsList()
+        public override IList<EntryField> GetTenantRequiredFieldsList()
         {
-            return tenantExpectedRequiredFields = new List<EntryField>()
+            if (tenantExpectedRequiredFields == null)
             {
-                EntryField.Date,
-                EntryField.SecurityClassification,
-                EntryField.Title,
-                EntryField.DocumentType,
-                EntryField.Transmitted,
-                EntryField.Attachments
-            };
+                tenantExpectedRequiredFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.SecurityClassification,
+                    EntryField.Title,
+                    EntryField.DocumentType,
+                    EntryField.Transmitted,
+                    EntryField.Attachments
+                };
+            }
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFieldsList()
+        public override IList<EntryField> GetTenantAllEntryFieldsList()
         {
-            return tenantAllEntryFields = new List<EntryField>()
+            if (tenantAllEntryFields == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.SecurityClassification,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.AgencyFrom,
-                EntryField.Attention,
-                EntryField.AgencyAttention,
-                EntryField.DocumentCategory,
-                EntryField.DocumentType,
-                EntryField.OriginatorDocumentRef,
-                EntryField.Revision,
-                EntryField.Transmitted,
-                EntryField.Segment_Area,
-                EntryField.DesignPackages,
-                EntryField.CDRL,
-                EntryField.ResponseRequired_Yes,
-                EntryField.ResponseRequiredBy_Date,
-                EntryField.SpecSection,
-                EntryField.MSLNumber,
-                EntryField.Access
-            };
+                tenantAllEntryFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.SecurityClassification,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.AgencyFrom,
+                    EntryField.Attention,
+                    EntryField.AgencyAttention,
+                    EntryField.DocumentCategory,
+                    EntryField.DocumentType,
+                    EntryField.OriginatorDocumentRef,
+                    EntryField.Revision,
+                    EntryField.Transmitted,
+                    EntryField.Segment_Area,
+                    EntryField.DesignPackages,
+                    EntryField.CDRL,
+                    EntryField.ResponseRequired_Yes,
+                    EntryField.ResponseRequiredBy_Date,
+                    EntryField.SpecSection,
+                    EntryField.MSLNumber,
+                    EntryField.Access
+                };
+            }
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
+        public override IList<EntryField> GetTenantEntryFieldsForTableColumns()
         {
-            return expectedEntryFieldsForTblColumns = new List<EntryField>()
+            if (expectedEntryFieldsForTblColumns == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentType,
-                EntryField.OriginatorDocumentRef,
-                EntryField.Revision,
-                EntryField.Transmitted,
-                EntryField.MSLNumber
-            };
+                expectedEntryFieldsForTblColumns = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentType,
+                    EntryField.OriginatorDocumentRef,
+                    EntryField.Revision,
+                    EntryField.Transmitted,
+                    EntryField.MSLNumber
+                };
+            }
+            return expectedEntryFieldsForTblColumns;
         }
 
-        public override IList<TableTab> SetTenantTableTabsList()
-            => tenantTableTabs = new List<TableTab>()
+        public override IList<TableTab> GetTenantTableTabsList()
+        {
+            if (tenantTableTabs == null)
             {
-                TableTab.PendingTransmissions,
-                TableTab.TransmittedRecords
-            };
+                tenantTableTabs = new List<TableTab>()
+                {
+                    TableTab.PendingTransmissions,
+                    TableTab.TransmittedRecords
+                };
+            }
+            return tenantTableTabs;
+        }
 
         public override void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber)
         {
-            tenantTableTabs = SetTenantTableTabsList();
+            //tenantTableTabs = GetTenantTableTabsList();
             IterrateOverRemainingTableTabs_DetailsPageValues(transmittalNumber, tenantTableTabs);
         }
 
         public override void VerifyTransmissionDetailsGridFilterInRemainingTableTabs(string transmittalNumber)
         {
-            tenantTableTabs = SetTenantTableTabsList();
+            //tenantTableTabs = GetTenantTableTabsList();
             IterrateOverRemainingTableTabs_GridColumnFilters(transmittalNumber, tenantTableTabs);
         }
 
@@ -994,58 +1049,74 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void LogintoCorrespondenceLogPage(UserType userType)
         {
             LoginAs(userType);
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
             NavigateToPage.RMCenter_Project_Transmittal_Log();
         }
 
-        public override IList<By> SetTenantRequiredFieldLocators()
+        public override IList<By> GetTenantRequiredFieldLocators()
         {
-            return reqFieldLocators = new List<By>()
+            if (reqFieldLocators == null)
             {
-                By.XPath("//span[contains(text(),'Required')]"),
-                By.XPath("//span[contains(text(),'required')]")
-            };
+                reqFieldLocators = new List<By>()
+                {
+                    By.XPath("//span[contains(text(),'Required')]"),
+                    By.XPath("//span[contains(text(),'required')]")
+                };
+            }
+            return reqFieldLocators;
         }
 
-        public override IList<EntryField> SetTenantRequiredFieldsList()
+        public override IList<EntryField> GetTenantRequiredFieldsList()
         {
-            return tenantExpectedRequiredFields = new List<EntryField>()
+            if (tenantExpectedRequiredFields == null)
             {
-                EntryField.Date,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.DocumentType,
-                EntryField.Via,
-                EntryField.Attachments
-            };
+                tenantExpectedRequiredFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.DocumentType,
+                    EntryField.Via,
+                    EntryField.Attachments
+                };
+            }
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFieldsList()
+        public override IList<EntryField> GetTenantAllEntryFieldsList()
         {
-            return tenantAllEntryFields = new List<EntryField>()
+            if (tenantAllEntryFields == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentType,
-                EntryField.Via
-            };
+                tenantAllEntryFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentType,
+                    EntryField.Via
+                };
+            }
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
+        public override IList<EntryField> GetTenantEntryFieldsForTableColumns()
         {
-            return expectedEntryFieldsForTblColumns = new List<EntryField>()
+            if (expectedEntryFieldsForTblColumns == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentType,
-                EntryField.Via
-            };
+                expectedEntryFieldsForTblColumns = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentType,
+                    EntryField.Via
+                };
+            }
+            return expectedEntryFieldsForTblColumns;
         }
 
     }
@@ -1059,66 +1130,81 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public ProjectCorrespondenceLog_SGWay(IWebDriver driver) : base(driver)
         {
-
         }
 
         public override void LogintoCorrespondenceLogPage(UserType userType)
         {
             LoginAs(userType);
-            WaitForPageReady();
+            PageAction.WaitForPageReady();
             NavigateToPage.RMCenter_Project_Transmittal_Log();
         }
 
-        public override IList<By> SetTenantRequiredFieldLocators()
+        public override IList<By> GetTenantRequiredFieldLocators()
         {
-            return reqFieldLocators = new List<By>()
+            if (reqFieldLocators == null)
             {
-                By.XPath("//span[contains(text(),'Required')]"),
-                By.XPath("//span[contains(text(),'required')]")
-            };
+                reqFieldLocators = new List<By>()
+                {
+                    By.XPath("//span[contains(text(),'Required')]"),
+                    By.XPath("//span[contains(text(),'required')]")
+                };
+            }
+            return reqFieldLocators;
         }
 
-        public override IList<EntryField> SetTenantRequiredFieldsList()
+        public override IList<EntryField> GetTenantRequiredFieldsList()
         {
-            return tenantExpectedRequiredFields = new List<EntryField>()
+            if (tenantExpectedRequiredFields == null)
             {
-                EntryField.Date,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentType,
-                EntryField.Attachments
-            };
+                tenantExpectedRequiredFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentType,
+                    EntryField.Attachments
+                };
+            }
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFieldsList()
+        public override IList<EntryField> GetTenantAllEntryFieldsList()
         {
-            return tenantAllEntryFields = new List<EntryField>()
+            if (tenantAllEntryFields == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentType,
-                EntryField.MSLNumber,
-                EntryField.Via
-            };
+                tenantAllEntryFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentType,
+                    EntryField.MSLNumber,
+                    EntryField.Via
+                };
+            }
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
+        public override IList<EntryField> GetTenantEntryFieldsForTableColumns()
         {
-            return expectedEntryFieldsForTblColumns = new List<EntryField>()
+            if (expectedEntryFieldsForTblColumns == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentType,
-                EntryField.MSLNumber,
-                EntryField.Via
-            };
+                expectedEntryFieldsForTblColumns = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentType,
+                    EntryField.MSLNumber,
+                    EntryField.Via
+                };
+            }
+            return expectedEntryFieldsForTblColumns;
         }
 
     }
@@ -1134,45 +1220,57 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override IList<EntryField> SetTenantRequiredFieldsList()
+        public override IList<EntryField> GetTenantRequiredFieldsList()
         {
-            return tenantExpectedRequiredFields = new List<EntryField>()
+            if (tenantExpectedRequiredFields == null)
             {
-                EntryField.Date,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                //EntryField.DocumentCategory,
-                EntryField.DocumentType,
-                EntryField.Attachments
-            };
+                tenantExpectedRequiredFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    //EntryField.DocumentCategory,
+                    EntryField.DocumentType,
+                    EntryField.Attachments
+                };
+            }
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFieldsList()
+        public override IList<EntryField> GetTenantAllEntryFieldsList()
         {
-            return tenantAllEntryFields = new List<EntryField>()
+            if (tenantAllEntryFields == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentCategory,
-                EntryField.DocumentType
-            };
+                tenantAllEntryFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentCategory,
+                    EntryField.DocumentType
+                };
+            }
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
+        public override IList<EntryField> GetTenantEntryFieldsForTableColumns()
         {
-            return expectedEntryFieldsForTblColumns = new List<EntryField>()
+            if (expectedEntryFieldsForTblColumns == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentType
-            };
+                expectedEntryFieldsForTblColumns = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentType
+                };
+            }
+            return expectedEntryFieldsForTblColumns;
         }
 
     }
@@ -1189,48 +1287,60 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<EntryField> SetTenantRequiredFieldsList()
+        public override IList<EntryField> GetTenantRequiredFieldsList()
         {
-            return tenantExpectedRequiredFields = new List<EntryField>()
+            if (tenantExpectedRequiredFields == null)
             {
-                EntryField.Date,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                //EntryField.DocumentCategory,
-                EntryField.DocumentType,
-                EntryField.Attachments,
-                EntryField.Transmitted
-            };
+                tenantExpectedRequiredFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    //EntryField.DocumentCategory,
+                    EntryField.DocumentType,
+                    EntryField.Attachments,
+                    EntryField.Transmitted
+                };
+            }
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFieldsList()
+        public override IList<EntryField> GetTenantAllEntryFieldsList()
         {
-            return tenantAllEntryFields = new List<EntryField>()
+            if (tenantAllEntryFields == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentCategory,
-                EntryField.DocumentType,
-                EntryField.Transmitted
-            };
+                tenantAllEntryFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentCategory,
+                    EntryField.DocumentType,
+                    EntryField.Transmitted
+                };
+            }
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
+        public override IList<EntryField> GetTenantEntryFieldsForTableColumns()
         {
-            return expectedEntryFieldsForTblColumns = new List<EntryField>()
+            if (expectedEntryFieldsForTblColumns == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentType,
-                EntryField.Transmitted
-            };
+                expectedEntryFieldsForTblColumns = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentType,
+                    EntryField.Transmitted
+                };
+            }
+            return expectedEntryFieldsForTblColumns;
         }
 
     }
@@ -1249,74 +1359,92 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override bool VerifyIsMultiTabGrid() => true;
 
         public override void ClickViewBtnForTransmissionsRow()
-            => ClickViewBtnForRow("", true, false);
+            => GridHelper.ClickViewBtnForRow("", true, false);
 
-        public override IList<EntryField> SetTenantRequiredFieldsList()
+        public override IList<EntryField> GetTenantRequiredFieldsList()
         {
-            return tenantExpectedRequiredFields = new List<EntryField>()
+            if (tenantExpectedRequiredFields == null)
             {
-                EntryField.Date,
-                EntryField.SecurityClassification,
-                EntryField.Title,
-                EntryField.DocumentType,
-                EntryField.Transmitted,
-                EntryField.Attachments
-            };
+                tenantExpectedRequiredFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.SecurityClassification,
+                    EntryField.Title,
+                    EntryField.DocumentType,
+                    EntryField.Transmitted,
+                    EntryField.Attachments
+                };
+            }
+            return tenantExpectedRequiredFields;
         }
 
-        public override IList<EntryField> SetTenantAllEntryFieldsList()
+        public override IList<EntryField> GetTenantAllEntryFieldsList()
         {
-            return tenantAllEntryFields = new List<EntryField>()
+            if (tenantAllEntryFields == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.SecurityClassification,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.AgencyFrom,
-                EntryField.Attention,
-                EntryField.AgencyAttention,
-                EntryField.DocumentCategory,
-                EntryField.DocumentType,
-                EntryField.OriginatorDocumentRef,
-                EntryField.Revision,
-                EntryField.Transmitted,
-                EntryField.Segment_Area,
-                EntryField.Access
-            };
+                tenantAllEntryFields = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.SecurityClassification,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.AgencyFrom,
+                    EntryField.Attention,
+                    EntryField.AgencyAttention,
+                    EntryField.DocumentCategory,
+                    EntryField.DocumentType,
+                    EntryField.OriginatorDocumentRef,
+                    EntryField.Revision,
+                    EntryField.Transmitted,
+                    EntryField.Segment_Area,
+                    EntryField.Access
+                };
+            }
+            return tenantAllEntryFields;
         }
 
-        public override IList<EntryField> SetTenantEntryFieldsForTableColumns()
+        public override IList<EntryField> GetTenantEntryFieldsForTableColumns()
         {
-            return expectedEntryFieldsForTblColumns = new List<EntryField>()
+            if (expectedEntryFieldsForTblColumns == null)
             {
-                EntryField.Date,
-                EntryField.TransmittalNumber,
-                EntryField.Title,
-                EntryField.From,
-                EntryField.Attention,
-                EntryField.DocumentType,
-                EntryField.OriginatorDocumentRef,
-                EntryField.Revision,
-                EntryField.Transmitted,
-            };
+                expectedEntryFieldsForTblColumns = new List<EntryField>()
+                {
+                    EntryField.Date,
+                    EntryField.TransmittalNumber,
+                    EntryField.Title,
+                    EntryField.From,
+                    EntryField.Attention,
+                    EntryField.DocumentType,
+                    EntryField.OriginatorDocumentRef,
+                    EntryField.Revision,
+                    EntryField.Transmitted,
+                };
+            }
+            return expectedEntryFieldsForTblColumns;
         }
 
-        public override IList<TableTab> SetTenantTableTabsList()
-            => tenantTableTabs = new List<TableTab>()
+        public override IList<TableTab> GetTenantTableTabsList()
+        {
+            if (tenantTableTabs == null)
             {
-                TableTab.TransmittedRecords
-            };
+                tenantTableTabs = new List<TableTab>()
+                {
+                    TableTab.TransmittedRecords
+                };
+            }
+            return tenantTableTabs;
+        }
 
         public override void VerifyTransmissionDetailsPageValuesInRemainingTableTabs(string transmittalNumber)
         {
-            tenantTableTabs = SetTenantTableTabsList();
+            //tenantTableTabs = GetTenantTableTabsList();
             IterrateOverRemainingTableTabs_DetailsPageValues(transmittalNumber, tenantTableTabs);
         }
 
         public override void VerifyTransmissionDetailsGridFilterInRemainingTableTabs(string transmittalNumber)
         {
-            tenantTableTabs = SetTenantTableTabsList();
+            //tenantTableTabs = GetTenantTableTabsList();
             IterrateOverRemainingTableTabs_GridColumnFilters(transmittalNumber, tenantTableTabs);
         }
 

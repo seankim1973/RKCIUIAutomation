@@ -2,10 +2,16 @@
 using OpenQA.Selenium.Interactions;
 using RKCIUIAutomation.Base;
 using System;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Navigation
 {
-    public class NavMenu : PageBase
+    public interface INavMenu
+    {
+        void Menu<T>(T navEnum);
+    }
+
+    public class NavMenu : BaseUtils, INavMenu
     {
         public NavMenu()
         {
@@ -20,7 +26,6 @@ namespace RKCIUIAutomation.Page.Navigation
             Enum childOfSubMenuEnum = null;
             Enum subOfChildMenuEnum = null;
 
-            BaseUtils baseUtils = new BaseUtils();
             Type reflectedPageType = null;
             By clickLocator = null;
             IWebElement element;
@@ -176,38 +181,38 @@ namespace RKCIUIAutomation.Page.Navigation
                     mainNavEnum = MainNav.Menu.ELVIS;
                 }
 
-                JsHover(GetMainNavMenuByLocator(mainNavEnum));
+                PageAction.JsHover(PgHelper.GetMainNavMenuByLocator(mainNavEnum));
                 builder = new Actions(driver);
 
                 if (subOfMainNavEnum != null)
                 {
-                    By subOfMainNavLocator = GetNavMenuByLocator(subOfMainNavEnum, mainNavEnum);
+                    By subOfMainNavLocator = PgHelper.GetNavMenuByLocator(subOfMainNavEnum, mainNavEnum);
                     element = driver.FindElement(subOfMainNavLocator);
                     builder.MoveToElement(element).Perform();
 
                     if (childOfSubMenuEnum != null)
                     {
-                        By childOfSubMenuLocator = GetNavMenuByLocator(childOfSubMenuEnum, subOfMainNavEnum);
+                        By childOfSubMenuLocator = PgHelper.GetNavMenuByLocator(childOfSubMenuEnum, subOfMainNavEnum);
                         element = driver.FindElement(childOfSubMenuLocator);
                         builder.MoveToElement(element).Perform();
 
                         if (subOfChildMenuEnum != null)
                         {
-                            By subOfChildMenuLocator = GetNavMenuByLocator(subOfChildMenuEnum, childOfSubMenuEnum);
+                            By subOfChildMenuLocator = PgHelper.GetNavMenuByLocator(subOfChildMenuEnum, childOfSubMenuEnum);
                             element = driver.FindElement(subOfChildMenuLocator);
                             builder.MoveToElement(element).Perform();
                         }
                     }
 
-                    clickLocator = GetNavMenuByLocator(baseUtils.ConvertToType<Enum>(navEnum));
+                    clickLocator = PgHelper.GetNavMenuByLocator(BaseUtil.ConvertToType<Enum>(navEnum));
                 }
                 else
                 {
-                    clickLocator = GetNavMenuByLocator(baseUtils.ConvertToType<Enum>(navEnum), baseUtils.ConvertToType<Enum>(mainNavEnum));
+                    clickLocator = PgHelper.GetNavMenuByLocator(BaseUtil.ConvertToType<Enum>(navEnum), BaseUtil.ConvertToType<Enum>(mainNavEnum));
                 }
 
-                JsClickElement(clickLocator);
-                WaitForPageReady();
+                PageAction.JsClickElement(clickLocator);
+                PageAction.WaitForPageReady();
             }
             catch (Exception e)
             {

@@ -1,11 +1,7 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.PageObjects.RMCenter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static RKCIUIAutomation.Base.Factory;
+
 
 namespace RKCIUIAutomation.Test.CorrespondenceLog
 {
@@ -55,12 +51,9 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
             ProjCorrespondenceLog.LogintoCorrespondenceLogPage(UserType.TransmissionsGeneral);
             //CreateNewAndPopulateFields() method will create a new Transmission entry and build data to be used in RM Center Search - refer to method summary
             string transmittalNumber = ProjCorrespondenceLog.CreateNewAndPopulateFields();
-
+            var tenantKVPairsList = ProjCorrespondenceLog.GetTenantEntryFieldKVPairsList();
             NavigateToPage.RMCenter_Search();
-            RMCenterSearch.VerifySearchResultByCriteria(transmittalNumber);
-            //Loop through fields to find Transmittal textbox, enter value and Search
-            //Siri - this method belongs in the RMCenter.Search class
-            //AddAssertionToList(ProjCorrespondenceLog.VerifyTransmittalLocationBySearch());
+            RMCenterSearch.VerifySearchResultByCriteria(transmittalNumber, tenantKVPairsList);
             AssertAll();
         }
     }

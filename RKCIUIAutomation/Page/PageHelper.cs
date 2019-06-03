@@ -1,14 +1,15 @@
 ﻿using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
+using RKCIUIAutomation.Config;
 using System;
-using System.Reflection;
 using System.Text.RegularExpressions;
+using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page
 {
-    public class PageHelper : BaseClass
+    public class PageHelper : PageInteraction, IPageHelper
     {
         public PageHelper()
         {
@@ -23,9 +24,7 @@ namespace RKCIUIAutomation.Page
         public const string MULTIDDL = "MULTIDDL";
         public const string RDOBTN = "RDOBTN";
         public const string CHKBOX = "CHKBOX";
-
-        public static PageBaseHelper PgBaseHelper
-            => new PageBaseHelper();
+        public const string UPLOAD = "UPLOAD";
 
         public static string GetMaxShortDate()
             => DateTime.MaxValue.Date.ToShortDateString();
@@ -69,57 +68,20 @@ namespace RKCIUIAutomation.Page
             return date;
         }
 
-        public static string GetFutureShortDate(string shortDate = "")
+        private static string ModifyShortDate(string shortDate, double daysToModifyDateBy)
         {
-            string currentDate = GetShortDate(shortDate);
+            DateTime dateValue = DateTime.TryParse(shortDate, out dateValue)
+                ? dateValue.AddDays(daysToModifyDateBy)
+                : DateTime.Now.AddDays(daysToModifyDateBy);
 
-            string[] splitShortDate = Regex.Split(currentDate, "/");
-            int mm = int.Parse(splitShortDate[0]);
-            int dd = int.Parse(splitShortDate[1]);
-            int yyyy = int.Parse(splitShortDate[2]);
-
-            yyyy = dd > 27 && mm == 12
-                ? yyyy + 1
-                : yyyy;
-
-            mm = dd > 27
-                ? mm == 12
-                    ? 1
-                    : mm + 1
-                : mm;
-
-            dd = dd > 27
-                ? 1
-                : dd + 1;
-
-            return $"{mm}/{dd}/{yyyy}";
+            return dateValue.ToShortDateString();
         }
 
-        public static string GetPastShortDate(string shortDate = "")
-        {
-            string currentDate = GetShortDate(shortDate);
+        public static string GetFutureShortDate(string shortDate = "", double daysToAdd = 1)
+            => ModifyShortDate(shortDate, daysToAdd);
 
-            string[] splitShortDate = Regex.Split(currentDate, "/");
-            int mm = int.Parse(splitShortDate[0]);
-            int dd = int.Parse(splitShortDate[1]);
-            int yyyy = int.Parse(splitShortDate[2]);
-
-            yyyy = dd == 1 && mm == 1
-                ? yyyy - 1
-                : yyyy;
-
-            mm = dd == 1
-                ? mm == 1
-                    ? 12
-                    : mm - 1
-                : mm;
-
-            dd = dd == 1
-                ? 27
-                : dd - 1;
-
-            return $"{mm}/{dd}/{yyyy}";
-        }
+        public static string GetPastShortDate(string shortDate = "", double daysToSubtract = 1)
+            => ModifyShortDate(shortDate, -daysToSubtract);
 
         public static string GetShortTime()
             => DateTime.Now.ToShortTimeString();
@@ -145,11 +107,9 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListFieldXpath<T>(T ddListID)
         {
-            BaseUtils baseUtils = new BaseUtils();
-
             string _ddListID = (ddListID.GetType() == typeof(string))
-                ? baseUtils.ConvertToType<string>(ddListID)
-                : baseUtils.ConvertToType<Enum>(ddListID).GetString();
+                ? BaseUtil.ConvertToType<string>(ddListID)
+                : BaseUtil.ConvertToType<Enum>(ddListID).GetString();
 
             string _ddFieldXpath = _ddListID.Contains("Time")
                 ? $"//span[@aria-controls='{_ddListID}_timeview']"
@@ -160,11 +120,9 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListFieldExpandArrowXpath<T>(T ddListID, bool isMultiSelectDDList = false)
         {
-            BaseUtils baseUtils = new BaseUtils();
-
             string _ddListID = (ddListID.GetType() == typeof(string))
-                ? baseUtils.ConvertToType<string>(ddListID)
-                : baseUtils.ConvertToType<Enum>(ddListID).GetString();
+                ? BaseUtil.ConvertToType<string>(ddListID)
+                : BaseUtil.ConvertToType<Enum>(ddListID).GetString();
 
             string _ddArrowXpath = isMultiSelectDDList
                 ? $"//select[@id='{_ddListID}']/parent::div"
@@ -188,16 +146,7 @@ namespace RKCIUIAutomation.Page
             => parentNavEnum == null
                 ? $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']"
                 : $"//a[contains(text(),'{parentNavEnum.GetString()}')]/following-sibling::ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
-        //{
-        //    if (parentNavEnum == null)
-        //    {
-        //        return $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
-        //    }
-        //    else
-        //    {
-        //        return $"//a[contains(text(),'{parentNavEnum.GetString()}')]/following-sibling::ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
-        //    }
-        //}
+
 
         private string SetInputFieldXpath<T>(T inputFieldLabelOrID)
         {
@@ -206,12 +155,12 @@ namespace RKCIUIAutomation.Page
 
             if (inputFieldLabelOrID is string)
             {
-                argValue = ConvertToType<string>(inputFieldLabelOrID);
+                argValue = BaseUtil.ConvertToType<string>(inputFieldLabelOrID);
                 argValue = $"//label[contains(text(),'{(string)argValue}')]/following::input[1]";
             }
             else if(inputFieldLabelOrID is Enum)
             {
-                argValue = ConvertToType<Enum>(inputFieldLabelOrID);               
+                argValue = BaseUtil.ConvertToType<Enum>(inputFieldLabelOrID);               
                 argValue = $"//input[@id='{((Enum)argValue).GetString()}']";
             }
 
@@ -229,11 +178,9 @@ namespace RKCIUIAutomation.Page
         /// <returns></returns>
         private string SetDDListItemsXpath<T, I>(T ddListID, I itemIndexOrName, bool useContains = false)
         {
-            BaseUtils baseUtils = new BaseUtils();
-
             string _ddListID = ddListID.GetType() == typeof(string)
-                ? baseUtils.ConvertToType<string>(ddListID)
-                : baseUtils.ConvertToType<Enum>(ddListID).GetString();
+                ? BaseUtil.ConvertToType<string>(ddListID)
+                : BaseUtil.ConvertToType<Enum>(ddListID).GetString();
 
             string ddListXPath = _ddListID.Contains("Time")
                 ? $"//ul[@id='{_ddListID}_timeview']"
@@ -243,14 +190,14 @@ namespace RKCIUIAutomation.Page
 
             if (itemIndexOrName.GetType().Equals(typeof(string)))
             {
-                var argName = baseUtils.ConvertToType<string>(itemIndexOrName);
+                var argName = BaseUtil.ConvertToType<string>(itemIndexOrName);
                 itemValueXPath = useContains
                     ? $"contains(text(),'{argName}')"
                     : $"text()='{argName}'";
             }
             else if (itemIndexOrName.GetType().Equals(typeof(int)))
             {
-                int itemIndex = baseUtils.ConvertToType<int>(itemIndexOrName);
+                int itemIndex = BaseUtil.ConvertToType<int>(itemIndexOrName);
                 itemIndex = _ddListID.Contains("Time")
                     ? itemIndex + 1
                     : itemIndex;
@@ -304,7 +251,7 @@ namespace RKCIUIAutomation.Page
 
         public By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
             => isMultiSelectDDList
-                ? By.XPath($"//select[@id='{ConvertToType<Enum>(ddListID).GetString()}']/parent::div")
+                ? By.XPath($"//select[@id='{BaseUtil.ConvertToType<Enum>(ddListID).GetString()}']/parent::div")
                 : By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
 
         /// <summary>
@@ -335,47 +282,14 @@ namespace RKCIUIAutomation.Page
 
             if (argType == typeof(string))
             {
-                buttonVal = ConvertToType<string>(buttonName);
+                buttonVal = BaseUtil.ConvertToType<string>(buttonName);
             }
             else if (argType == typeof(Enum))
             {
-                buttonVal = ConvertToType<Enum>(buttonName).GetString();
+                buttonVal = BaseUtil.ConvertToType<Enum>(buttonName).GetString();
             }
 
             return By.XPath(SetInputButtonXpath(buttonVal));
         }
-    }
-
-    public static class EnumHelper
-    {
-        public static string GetString(this Enum value, bool getValue2 = false)
-        {
-            string output = null;
-
-            try
-            {
-                Type type = value.GetType();
-                FieldInfo fi = type.GetField(value.ToString());
-                StringValueAttribute[] attrs = fi.GetCustomAttributes(typeof(StringValueAttribute), false) as StringValueAttribute[];
-                output = (getValue2) ? attrs[0].Value2 : attrs[0].Value;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            return output;
-        }
-    }
-
-    public class StringValueAttribute : Attribute
-    {
-        public StringValueAttribute(string value, string value2 = "")
-        {
-            Value = value;
-            Value2 = value2;
-        }
-
-        public string Value { get; }
-        public string Value2 { get; }
     }
 }

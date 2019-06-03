@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Threading;
 using static RKCIUIAutomation.Base.BaseUtils;
 using static RKCIUIAutomation.Base.BaseClass;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
 {
@@ -18,6 +19,9 @@ namespace RKCIUIAutomation.Base
     [Parallelizable]
     public class WebDriverFactory : DriverOptionsFactory
     {
+        [ThreadStatic]
+        public static IWebDriver driver;
+
         public IWebDriver Driver
         {
             get => driverThread.Value;

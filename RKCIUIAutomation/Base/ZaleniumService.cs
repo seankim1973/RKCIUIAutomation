@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Web.Script.Serialization;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
 {
@@ -38,7 +39,7 @@ namespace RKCIUIAutomation.Base
                 }
                 catch (Exception e)
                 {
-                    LogError(e.Message);
+                    log.Error(e.Message);
                     throw;
                 }
             }
@@ -46,7 +47,6 @@ namespace RKCIUIAutomation.Base
 
         public bool ZaleniumIsRunning()
         {
-            BaseUtils baseUtils = new BaseUtils();
             string zaleniumBaseUrl = "http://10.1.1.207:4444";
             string zaleniumStatus = "wd/hub/status";
 
@@ -62,7 +62,7 @@ namespace RKCIUIAutomation.Base
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                log.Error(e.Message);
             }
 
             return isRunning;

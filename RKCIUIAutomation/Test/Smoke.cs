@@ -5,6 +5,7 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Workflows;
 using System.Collections.Generic;
 using System.Threading;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Test.Smoke
 {
@@ -22,7 +23,7 @@ namespace RKCIUIAutomation.Test.Smoke
 
             List<string> pageUrls = new List<string>();
             pageUrls = GetNavMenuUrlList();
-            LogInfo($"URL Count: {pageUrls.Count}");
+            Report.Info($"URL Count: {pageUrls.Count}");
 
             int loopCount = 0;
 
@@ -31,7 +32,7 @@ namespace RKCIUIAutomation.Test.Smoke
                 loopCount++;
                 AddAssertionToList(VerifyUrlIsLoaded(url), $"Verify URL is Loaded - {url}");
             }
-            LogInfo($"Assertion Loop Count: {loopCount}");
+            Report.Info($"Assertion Loop Count: {loopCount}");
             AssertAll();
         }
     }

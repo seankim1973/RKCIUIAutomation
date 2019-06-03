@@ -10,6 +10,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
+using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
@@ -23,6 +24,49 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public QADIRs(IWebDriver driver) => this.Driver = driver;
+
+        public override T SetClass<T>(IWebDriver driver)
+        {
+            IQADIRs instance = new QADIRs(driver);
+
+            if (tenantName == TenantName.SGWay)
+            {
+                log.Info($"###### using QADIRs_SGWay instance ###### ");
+                instance = new QADIRs_SGWay(driver);
+            }
+            else if (tenantName == TenantName.SH249)
+            {
+                log.Info($"###### using QADIRs_SH249 instance ###### ");
+                instance = new QADIRs_SH249(driver);
+            }
+            else if (tenantName == TenantName.Garnet)
+            {
+                log.Info($"###### using QADIRs_Garnet instance ###### ");
+                instance = new QADIRs_Garnet(driver);
+            }
+            else if (tenantName == TenantName.GLX)
+            {
+                log.Info($"###### using QADIRs_GLX instance ###### ");
+                instance = new QADIRs_GLX(driver);
+            }
+            else if (tenantName == TenantName.I15South)
+            {
+                log.Info($"###### using QADIRs_I15South instance ###### ");
+                instance = new QADIRs_I15South(driver);
+            }
+            else if (tenantName == TenantName.I15Tech)
+            {
+                log.Info($"###### using QADIRs_I15Tech instance ###### ");
+                instance = new QADIRs_I15Tech(driver);
+            }
+            else if (tenantName == TenantName.LAX)
+            {
+                log.Info($"###### using QADIRs_LAX instance ###### ");
+                instance = new QADIRs_LAX(driver);
+            }
+            return (T)instance;
+        }
+
 
         public enum InputFields
         {
@@ -149,9 +193,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         [ThreadStatic]
         internal static string dirNumberKey;
 
-        internal void StoreDirNumber()
+        public override void SetDirNumber()
         {
-            dirNumber = GetAttribute(By.Id("DIRNO"), "value");
+            dirNumber = PageAction.GetAttribute(By.Id("DIRNO"), "value");
             dirNumberKey = $"DIR_varKey";
             CreateVar(dirNumberKey, dirNumber);
             log.Debug($"#####Stored DIR Number - KEY: {dirNumberKey} || VALUE: {GetVar(dirNumberKey)}");
@@ -179,7 +223,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return id;
         }
 
-        internal IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern)
+        public override IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern)
         {
             IList<string> trimmedList = null;
 
@@ -247,7 +291,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             {
                                 id = id.SplitCamelCase();
 
-                                if (id.Equals("SpecSection"))
+                                if (id.Equals("SpecSection") || id.Equals("Spec Section"))
                                 {
                                     id = $"{id} Paragraph";
                                 }
@@ -275,7 +319,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return trimmedList;
         }
 
-        internal bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs)
+        public override bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs)
         {
             int expectedCount = 0;
             int actualCount = 0;
@@ -311,13 +355,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 }
                 else
                 {
-                    LogInfo($"Expected and Actual Required Field Counts DO NOT MATCH:" +
+                    Report.Info($"Expected and Actual Required Field Counts DO NOT MATCH:" +
                         $"<br>Expected Count: {expectedCount}<br>Actual Count: {actualCount}", countsMatch);
                 }
 
                 reqFieldsMatch = results.Contains(false) ? false : true;
                 idTable[tblRowIndex + 1] = new string[2] { "Total Required Fields:", (results.Count).ToString() };
-                LogInfo(idTable, reqFieldsMatch);
+                Report.Info(idTable, reqFieldsMatch);
             }
             catch (Exception e)
             {
@@ -327,17 +371,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return reqFieldsMatch;
         }
 
-        internal void CloseErrorSummaryPopupMsg()
-            => JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
+        public override void CloseErrorSummaryPopupMsg()
+            => PageAction.JsClickElement(By.XPath("//span[@id='ErrorSummaryWindow_wnd_title']/following-sibling::div/a[@aria-label='Close']"));
 
-        internal IList<string> GetErrorSummaryIDs()
+        public override IList<string> GetErrorSummaryIDs()
         {
             IList<string> errorElements = null;
             IList<string> extractedFieldNames = null;
 
             try
             {
-                errorElements = GetTextForElements(By.XPath("//div[contains(@class,'validation-summary-errors')]/ul/li"));
+                errorElements = PageAction.GetTextForElements(By.XPath("//div[contains(@class,'validation-summary-errors')]/ul/li"));
                 extractedFieldNames = new List<string>();
 
                 foreach (string error in errorElements)
@@ -388,12 +432,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-                weekStart = GetText(locator(1));
-                weekEnd = GetText(locator(2));
-                newDirCountOrPkgNum = GetText(locator(3));
+                weekStart = PageAction.GetText(locator(1));
+                weekEnd = PageAction.GetText(locator(2));
+                newDirCountOrPkgNum = PageAction.GetText(locator(3));
                 newDIRsOrDIRsToString = pkgsTab.Equals(TableTab.Create_Packages)
-                    ? GetText(locator(5))
-                    : GetText(locator(4));
+                    ? PageAction.GetText(locator(5))
+                    : PageAction.GetText(locator(4));
 
                 pkgData = new string[4]
                 {
@@ -406,13 +450,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
-                throw e;
+                throw;
             }
 
             return pkgData;
         }
 
-        internal void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1)
+        public override void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1)
         {
             try
             {
@@ -444,7 +488,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             break;
                     }
 
-                    AddAssertionToList(VerifyRecordIsDisplayed(columnName, columnValue, TableType.MultiTab, false), $"Verify Filter [{pkgsTab.ToString()} | {columnName.GetString()}] column Equals {columnValue}");
+                    TestUtility.AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(columnName, columnValue, TableType.MultiTab, false), $"Verify Filter [{pkgsTab.ToString()} | {columnName.GetString()}] column Equals {columnValue}");
 
                     if (columnName.Equals(PackagesColumnName.New_DIRs) || (columnName.Equals(PackagesColumnName.DIRs)))
                     {
@@ -456,7 +500,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         for (int a = 0; a < arrayDirNums.Length; a++)
                         {
                             columnValue = arrayDirNums[a];
-                            AddAssertionToList(VerifyRecordIsDisplayed(columnName, columnValue, TableType.MultiTab, false, FilterOperator.Contains), $"Verify Filter [{pkgsTab.ToString()} | {columnName.GetString()}] column Contains {columnValue}");
+                            TestUtility.AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(columnName, columnValue, TableType.MultiTab, false, FilterOperator.Contains), $"Verify Filter [{pkgsTab.ToString()} | {columnName.GetString()}] column Contains {columnValue}");
                         }
                     }
 
@@ -473,15 +517,15 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw e;
+                throw;
             }
         }
 
-        internal TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1)
+        public override TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1)
         {
             BaseUtils baseUtils = new BaseUtils();
             string colName = packagesColumnName.GetString(true);
-            string tblData = GetColumnValueForRow(rowIndex, colName);
+            string tblData = GridHelper.GetColumnValueForRow(rowIndex, colName);
 
             if (packagesColumnName == PackagesColumnName.New_DIRs || packagesColumnName == PackagesColumnName.DIRs)
             {
@@ -495,6 +539,870 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
+        public override bool VerifySpecSectionDescriptionAutoPopulatedData()
+        {
+            string specSectionParagraphText = PageAction.GetTextFromDDL(InputFields.Spec_Section_Paragraph);
+            string spectionDescriptionText = PageAction.GetText(By.Id(InputFields.Section_Description.GetString()));
+            bool valuesMatch = specSectionParagraphText.HasValue() && spectionDescriptionText.HasValue()
+                ? specSectionParagraphText.Contains(spectionDescriptionText)
+                : false;
+
+            Report.Info($"EXPECTED: {specSectionParagraphText}<br>ACTUAL: {spectionDescriptionText}", valuesMatch);
+            return valuesMatch;
+        }
+
+        public override void PopulateRequiredFields()
+        {
+        }
+
+        public override bool VerifyControlPointReqFieldErrors()
+            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedHoldPointReqFieldIDsList(), RequiredFieldType.ControlPoint);
+
+        public override bool VerifyEngineerCommentsReqFieldErrors()
+            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList(), RequiredFieldType.EngineerComments);
+
+        public override bool VerifyDirNumberExistsInDbError()
+        {
+            By errorLocator = By.Id("error");
+            IWebElement errorElem = null;
+            bool isDisplayed = false;
+            string logMsg = string.Empty;
+
+            try
+            {
+                errorElem = PageAction.GetElement(errorLocator);
+                isDisplayed = (bool)errorElem?.Displayed ? true : false;
+                logMsg = isDisplayed ? "" : " not";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            Report.Info($"'This DIR No. exists in the database' error message is{logMsg} displayed", isDisplayed);
+            return isDisplayed;
+        }
+
+        public override bool VerifyDirRevisionInDetailsPage(string expectedDirRev)
+        {
+            By revLocator = By.XPath("//label[contains(text(),'Revision')]/parent::div");
+            bool revAsExpected = false;
+            string actualDirRev = string.Empty;
+            string logMsg = string.Empty;
+
+            try
+            {
+                actualDirRev = PageAction.GetText(revLocator);
+                string[] splitActual = new string[2];
+                splitActual = Regex.Split(actualDirRev, "Revision\r\n");
+                actualDirRev = splitActual[1];
+                revAsExpected = actualDirRev.Equals(expectedDirRev);
+                var ifFalseLog = revAsExpected ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
+                logMsg = $"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual DIR Rev Matches Expected: {revAsExpected}";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            Report.Info($"{logMsg} ", revAsExpected);
+            return revAsExpected;
+        }
+
+        public override string GetDirNumber()
+            => dirNumber;
+
+        public override bool IsLoaded()
+            => driver.Title.Equals("DIR List - ELVIS PMC");
+
+        public override void ClickBtn_CreateNew()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_New));
+
+        public override void ClickBtn_CreateRevision()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_Revision));
+
+        public override void ClickBtn_Refresh()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Refresh, false));
+
+        public override void ClickBtn_Cancel()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
+
+        public override void ClickBtn_KickBack()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Kick_Back, false));
+
+        public override void ClickBtn_SubmitRevise()
+           => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Submit_Revise, false));
+
+        public override void ClickBtn_Send_To_Attachment()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Send_To_Attachment));
+
+        public override void ClickBtn_Save()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save));
+
+        public override void ClickBtn_Save_Forward()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Forward));
+
+        public override void ClickBtn_Save_Edit()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Edit));
+
+        public override void ClickBtn_Approve()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Approve));
+
+        public override void ClickBtn_Add()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Add));
+
+        public override void ClickBtn_Delete()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Delete));
+
+        public override void ClickBtn_NoError()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.No_Error));
+
+        public override void ClickBtn_Back_To_QC_Review()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review, false));
+
+        public override void ClickBtn_Back_To_Field()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_Field, false));
+
+        public override void ClickBtn_Revise()
+            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise, false));
+
+        public override void ClickBtn_Close_Selected()
+            => PageAction.JsClickElement(By.XPath("//button[text()='Close Selected']"));
+
+        public override void ClickBtn_View_Selected()
+            => PageAction.JsClickElement(By.XPath("//button[text()='View Selected']"));
+
+        public override void ClickTab_Create_Revise()
+            => GridHelper.ClickTab(TableTab.Create_Revise);
+
+        public override void ClickTab_QC_Review()
+            => GridHelper.ClickTab(TableTab.QC_Review);
+
+        public override void ClickTab_Authorization()
+            => GridHelper.ClickTab(TableTab.Authorization);
+
+        public override void ClickTab_Creating()
+            => GridHelper.ClickTab(TableTab.Creating);
+
+        public override void ClickTab_Attachments()
+            => GridHelper.ClickTab(TableTab.Attachments);
+
+        public override void ClickTab_Revise()
+            => GridHelper.ClickTab(TableTab.Revise);
+
+        public override void ClickTab_To_Be_Closed()
+            => GridHelper.ClickTab(TableTab.To_Be_Closed);
+
+        public override void ClickTab_Closed()
+            => GridHelper.ClickTab(TableTab.Closed);
+
+        public override void ClickTab_Create_Packages()
+            => GridHelper.ClickTab(TableTab.Create_Packages);
+
+        public override void ClickTab_Packages()
+            => GridHelper.ClickTab(TableTab.Packages);
+
+        public override void FilterDirNumber(string DirNumber)
+            => GridHelper.FilterTableColumnByValue(ColumnName.DIR_No, DirNumber);
+
+
+        //All SimpleWF Tenants have different required fields
+        public override IList<string> GetExpectedRequiredFieldIDsList()
+        {
+            IList<string> RequiredFieldIDs = new List<string>()
+            {
+                //InputFields.Time_Begin.GetString(),
+                //InputFields.Time_End.GetString(),
+                //InputFields.Area.GetString(),
+                //InputFields.Average_Temperature.GetString(),
+                //InputFields.Spec_Section.GetString(),
+                //InputFields.Section_Description.GetString(),
+                //InputFields.Feature.GetString(),
+                //InputFields.Crew_Foreman.GetString(),
+                //InputFields.Contractor.GetString(),
+                //"InspectionType",
+                //"InspectionPassFail",
+                //InputFields.Date_Ready.GetString(),
+                //InputFields.Date_Completed.GetString(),
+                //InputFields.Total_Inspection_Time.GetString()
+            };
+
+            return RequiredFieldIDs;
+        }
+
+        public override string CreatePreviousFailingReport()
+        {
+            string logMsg = string.Empty;
+            string nonFixedFailedDirNumber = string.Empty;
+            bool modalIsDisplayed = false;
+            IPageInteraction pgAction = PageAction;
+
+            try
+            {
+                pgAction.ClickElement(By.Id("lnkPreviousFailingReports"));
+                string modalXPath = "//div[contains(@style, 'opacity: 1')]";
+                IWebElement modal = pgAction.GetElement(By.XPath(modalXPath));
+                modalIsDisplayed = (bool)modal?.Displayed;
+
+                if (modalIsDisplayed)
+                {
+                    string firstNonFixedFailedDirXpath = $"{modalXPath}//div[@class='col-md-3'][1]//div[@class='checkbox-inline']/span";
+                    string nonfixedFailedDirVal = pgAction.GetText(By.XPath(firstNonFixedFailedDirXpath));
+                    string[] splitVal = new string[2];
+                    splitVal = Regex.Split(nonfixedFailedDirVal, "-");
+                    nonFixedFailedDirNumber = splitVal[0];
+                    string nonFixedFailedDirEntry = splitVal[1];
+
+                    string newBtnXPath = $"{modalXPath}//a[contains(@class,'k-grid-add')]";
+                    string previousDirNoFieldXPath = $"{modalXPath}//input[@id='DirNO']";
+                    string previousDirEntryFieldXPath = $"{modalXPath}//input[@id='EntryNo']";
+                    string updateBtnXPath = $"{modalXPath}//a[contains(text(),'Update')]";
+                    string modalCloseXPath = $"{modalXPath}//a[@aria-label='Close']";
+
+                    pgAction.JsClickElement(By.XPath(newBtnXPath));
+                    pgAction.EnterText(By.XPath(previousDirNoFieldXPath), nonFixedFailedDirNumber);
+                    pgAction.EnterText(By.XPath(previousDirEntryFieldXPath), nonFixedFailedDirEntry);
+                    pgAction.JsClickElement(By.XPath(updateBtnXPath));
+                    pgAction.JsClickElement(By.XPath(modalCloseXPath));
+
+                    logMsg = $"Entered Non-Fixed Failed DIR No. {nonFixedFailedDirNumber} and DIR Entry {nonFixedFailedDirEntry}";
+                }
+                else
+                {
+                    logMsg = "Previous Failing Report popup window is not displayed";
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            Report.Info(logMsg, modalIsDisplayed);
+            return nonFixedFailedDirNumber;
+        }
+
+        public override bool VerifyPreviousFailingDirEntry(string previousDirNumber)
+        {
+            bool isDisplayed = false;
+            string logMsg = string.Empty;
+
+            try
+            {
+                string previousFailedDirTblXPath = $"//div[@id='PreviousFailedReportListGrid0']";
+                By previousDirTblDataLocator = By.XPath($"{previousFailedDirTblXPath}//tbody/tr/td[text()='{previousDirNumber}']");
+                PageAction.ScrollToElement(By.XPath($"{previousFailedDirTblXPath}/ancestor::div[@id='border']/following-sibling::div[1]"));
+                isDisplayed = PageAction.CheckIfElementIsDisplayed(previousDirTblDataLocator);
+                logMsg = isDisplayed ? "displayed" : "did not display";
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            Report.Info($"Previous Failing DIR table {logMsg} DIR Number {previousDirNumber}", isDisplayed);
+            return isDisplayed;
+        }
+
+        public override void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Time_Begin, (int)shiftStartTime);
+
+        public override void SelectDDL_TimeEnd(TimeBlock shiftEndTime = TimeBlock.PM_04_00)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Time_End, (int)shiftEndTime);
+
+        public override void Enter_AverageTemp(int avgTemp = 80)
+        {
+            string avgTempFieldId = InputFields.Average_Temperature.GetString();
+            By clickLocator = By.XPath($"//input[@id='{avgTempFieldId}']/preceding-sibling::input");
+            By locator = By.XPath($"//input[@id='{avgTempFieldId}']");
+            PageAction.ClickElement(clickLocator);
+            PageAction.EnterText(locator, avgTemp.ToString(), false);
+        }
+
+        public override void SelectDDL_Area(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Area, ddListSelection);
+
+        public override void SelectDDL_SpecSection(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Spec_Section, ddListSelection);
+
+        public override void SelectDDL_SpecSectionParagraph(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Spec_Section_Paragraph, ddListSelection);
+
+        public override void SelectDDL_Division(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Division, ddListSelection);
+
+        public override void SelectDDL_BidItemCode(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Bid_Item_Code, ddListSelection);
+
+        public override void SelectDDL_Feature(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Feature, ddListSelection);
+
+        public override void SelectDDL_ControlPointNumber(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Control_Point_Number, ddListSelection);
+
+        public override void SelectDDL_HoldPointType(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Control_Point_Type, ddListSelection);
+
+        public override void SelectDDL_Contractor(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Contractor, ddListSelection);
+
+        public override void SelectDDL_Contractor<T>(T ddListSelection)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Contractor, ddListSelection);
+
+        public override void SelectDDL_Crew(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Crew, ddListSelection);
+
+        public override void SelectDDL_CrewForeman(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Crew_Foreman, ddListSelection);
+
+        public override bool VerifySectionDescription()
+        {
+            bool textMatch = false;
+
+            try
+            {
+                string sectionDesc = PageAction.GetText(GetTextAreaFieldByLocator(InputFields.Section_Description));
+                string specSectionDDListValue = PageAction.GetTextFromDDL(InputFields.Spec_Section);
+                specSectionDDListValue = specSectionDDListValue.Contains("-")
+                    ? Regex.Replace(specSectionDDListValue, "-", " - ")
+                    : specSectionDDListValue;
+
+                textMatch = sectionDesc.Equals(specSectionDDListValue);
+                Report.Info($"Spec Section DDList Selection: {specSectionDDListValue}<br>Section Description Text Value: {sectionDesc}", textMatch);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            return textMatch;
+        }
+
+        public override bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false)
+        {
+            bool isDisplayed = false;
+
+            try
+            {
+                GridHelper.ClickTab(tableTab);
+                string _dirNum = dirNumber.HasValue()
+                    ? dirNumber
+                    : GetDirNumber();
+
+                isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, TableType.MultiTab, noRecordsExpected);
+
+                string logMsg = isDisplayed ? "Found" : "Unable to find";
+                Report.Info($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", noRecordsExpected ? !isDisplayed : isDisplayed);
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            return isDisplayed;
+        }
+
+        public override IList<Enum> GetResultCheckBoxIDsList()
+        {
+            IList<Enum> resultChkBoxIDs = new List<Enum>()
+            {
+                RadioBtnsAndCheckboxes.Inspection_Result_P,
+                RadioBtnsAndCheckboxes.Inspection_Result_E,
+            };
+
+            return resultChkBoxIDs;
+        }
+
+        //I15SB, I15Tech
+        public override IList<Enum> GetDeficienciesRdoBtnIDsList()
+        {
+            IList<Enum> deficienciesRdoBtnIDs = new List<Enum>()
+            {
+                RadioBtnsAndCheckboxes.Deficiencies_Yes,
+                RadioBtnsAndCheckboxes.Deficiencies_CIF,
+                RadioBtnsAndCheckboxes.Deficiencies_CDR,
+                RadioBtnsAndCheckboxes.Deficiencies_NCR
+            };
+
+            return deficienciesRdoBtnIDs;
+        }
+
+        public override bool VerifyDeficiencySelectionPopupMessages()
+        {
+            IList<Enum> resultChkBoxIDs = QaRcrdCtrl_QaDIR.GetResultCheckBoxIDsList();
+
+            IList<Enum> deficienciesRdoBtnIDs = QaRcrdCtrl_QaDIR.GetDeficienciesRdoBtnIDsList();
+
+            string resultTypeMsg = string.Empty;
+            string expectedAlertMsg = string.Empty;
+            string alertMsg = string.Empty;
+            bool alertMsgMatch = false;
+            bool alertMsgExpected = false;
+            IList<bool> assertList = new List<bool>();
+
+            //Select Pass Result chkBx first, then Deficiency RdoBtn - "Since Pass checked, not allow to check any deficiency";
+            //Select Deficiency RdoBtn, then select Pass Result chkBx - "There is a deficiency checked in this entry, not allow to pass!"
+
+            //Select E Result chkBx first, then Deficiency RdoBtn - "Since Engineer Decision checked, not allow to check any deficiency"
+            //Select Deficiency RdoBtn, then select E Result chkBx - "There is a deficiency checked in this entry, not allow to make engineer decision!"
+
+            try
+            {
+                SelectRdoBtn_Deficiencies_No();
+                SelectChkbox_InspectionResult_P(false);
+
+                try
+                {
+                    foreach (Enum resultChkBox in resultChkBoxIDs)
+                    {
+                        PageAction.SelectRadioBtnOrChkbox(resultChkBox, false);
+
+                        foreach (Enum deficiencyRdoBtn in deficienciesRdoBtnIDs)
+                        {
+                            PageAction.SelectRadioBtnOrChkbox(deficiencyRdoBtn);
+                            resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "Pass" : "Engineer Decision";
+                            expectedAlertMsg = $"Since {resultTypeMsg} checked, not allow to check any deficiency";
+                            alertMsg = PageAction.AcceptAlertMessage(); //GetAlertMessage();
+                            alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
+                            assertList.Add(alertMsgMatch);
+                            Report.Info($"Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        }
+                    }
+                }
+                catch (UnhandledAlertException)
+                {
+                }
+
+                SelectChkbox_InspectionResult_P(false); //Ensures Pass Result checkbox is selected
+                SelectRdoBtn_Deficiencies_No();
+                SelectChkbox_InspectionResult_P(); //Unchecks Pass Result checkbox
+
+                try
+                {
+                    foreach (Enum deficiencyRdoBtn in deficienciesRdoBtnIDs)
+                    {
+                        PageAction.SelectRadioBtnOrChkbox(deficiencyRdoBtn);
+
+                        foreach (Enum resultChkBox in resultChkBoxIDs)
+                        {
+                            PageAction.SelectRadioBtnOrChkbox(resultChkBox, false);
+                            resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "pass" : "make engineer decision";
+                            expectedAlertMsg = $"There is a deficiency checked in this entry, not allow to {resultTypeMsg}!";
+                            alertMsg = PageAction.AcceptAlertMessage(); //GetAlertMessage();
+                            alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
+                            assertList.Add(alertMsgMatch);
+                            Report.Info($"Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
+                        }
+                    }
+                }
+                catch (UnhandledAlertException)
+                {
+                }
+
+                alertMsgExpected = assertList.Contains(false)
+                    ? false
+                    : true;
+            }
+            catch (UnhandledAlertException)
+            { }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            finally
+            {
+                SelectRdoBtn_Deficiencies_No();
+                SelectChkbox_InspectionResult_P();
+            }
+
+            return alertMsgExpected;
+        }
+
+        public override void SelectChkbox_InspectionType_I(bool toggleChkboxIfAlreadySelected = true)
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_I, toggleChkboxIfAlreadySelected);
+
+        public override void SelectChkbox_InspectionType_C(bool toggleChkboxIfAlreadySelected = true)
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_C, toggleChkboxIfAlreadySelected);
+
+        public override void SelectChkbox_InspectionType_P(bool toggleChkboxIfAlreadySelected = true)
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_P, toggleChkboxIfAlreadySelected);
+
+        public override void SelectChkbox_InspectionType_H(bool toggleChkboxIfAlreadySelected = true)
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_H, toggleChkboxIfAlreadySelected);
+
+        public override void SelectChkbox_InspectionType_R(bool toggleChkboxIfAlreadySelected = true)
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_R, toggleChkboxIfAlreadySelected);
+
+        public override void SelectChkbox_InspectionResult_P(bool toggleChkboxIfAlreadySelected = true)
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Result_P, toggleChkboxIfAlreadySelected);
+
+        public override void SelectChkbox_InspectionResult_E(bool toggleChkboxIfAlreadySelected = true)
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Result_E, toggleChkboxIfAlreadySelected);
+
+        public override void SelectChkbox_InspectionResult_F(bool toggleChkboxIfAlreadySelected = true)
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Result_F, toggleChkboxIfAlreadySelected);
+
+        public override void SelectChkbox_InspectionResult_NA(bool toggleChkboxIfAlreadySelected = true)
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Result_NA, toggleChkboxIfAlreadySelected);
+
+        public override void SelectRdoBtn_SendEmailForRevise_Yes()
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.SendEmailNotification_Yes);
+
+        public override void SelectRdoBtn_SendEmailForRevise_No()
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.SendEmailNotification_No);
+
+        public override void SelectRdoBtn_Deficiencies_Yes()
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Deficiencies_Yes);
+
+        public override void SelectRdoBtn_Deficiencies_No()
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Deficiencies_No);
+
+        public override void EnterText_DeficiencyDescription(string desc = "")
+            => PageAction.EnterText(GetTextAreaFieldByLocator(InputFields.Deficiency_Description),
+                desc = desc.Equals("") ? "RKCI Automation Deficiency Description" : desc);
+
+        public override void EnterText_SectionDescription(string desc = "")
+            => PageAction.EnterText(GetTextAreaFieldByLocator(InputFields.Section_Description),
+                desc = desc.Equals("") ? "RKCI Automation Section Description" : desc);
+
+        public override void EnterText_EngineerComments(string comment = "")
+            => PageAction.EnterText(GetTextAreaFieldByLocator(InputFields.Engineer_Comments),
+                comment = comment.Equals("") ? "RKCI Automation Engineer Comment" : comment);
+
+        public override void Enter_ReadyDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
+            => PageAction.EnterText(GetTextInputFieldByLocator(InputFields.Date_Ready), GetShortDateTime(shortDate, shortTime));
+
+        public override void Enter_CompletedDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
+            => PageAction.EnterText(GetTextInputFieldByLocator(InputFields.Date_Completed), GetShortDateTime(shortDate, shortTime));
+
+        public override void Enter_TotalInspectionTime()
+        {
+            string inspectTimeFieldId = InputFields.Total_Inspection_Time.GetString();
+            By clickLocator = By.XPath($"//input[@id='{inspectTimeFieldId}']/preceding-sibling::input");
+            By locator = By.XPath($"//input[@id='{inspectTimeFieldId}']");
+            PageAction.ClickElement(clickLocator);
+            PageAction.EnterText(locator, "24", false);
+        }
+
+        public override bool VerifyAndCloseDirLockedMessage()
+        {
+            By msgBodyLocator = By.Id("dirLockedPopup");
+            By msgTitleLocator = By.Id("dirLockedPopup_wnd_title");
+
+            string expectedMsg = "Since you created this inspection report, you are not allowed to do QC Review or DIR Approval!";
+            string actualMsg = PageAction.GetText(msgBodyLocator);
+
+            bool msgMatch = actualMsg.Equals(expectedMsg);
+            Report.Info($"Expected Msg: {expectedMsg}<br>Actual Msg: {actualMsg}", msgMatch);
+            PageAction.ClickElement(By.XPath("//span[@id='dirLockedPopup_wnd_title']/following-sibling::div/a"));
+            return msgMatch;
+        }
+
+        public override IList<string> GetExpectedHoldPointReqFieldIDsList()
+        {
+            IList<string> ControlPointReqFieldIDs = new List<string>()
+            {
+                InputFields.Control_Point_Number.GetString(),
+                InputFields.Control_Point_Type.GetString()
+            };
+
+            return ControlPointReqFieldIDs;
+        }
+
+        public override IList<string> GetExpectedEngineerCommentsReqFieldIDsList()
+        {
+            IList<string> EngineerCommentsReqFieldID = new List<string>()
+            {
+                InputFields.Engineer_Comments.GetString()
+            };
+
+            return EngineerCommentsReqFieldID;
+        }
+
+        public override bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, RequiredFieldType RequiredFieldType = RequiredFieldType.Default)
+        {
+            IList<bool> reqFieldAssertList = null;
+            IList<string> errorSummaryIDs = null;
+            bool requiredFieldsMatch = false;
+
+            try
+            {
+                errorSummaryIDs = new List<string>();
+                errorSummaryIDs = GetErrorSummaryIDs();
+
+                string reqFieldIdXPath = string.Empty;
+                string splitPattern = string.Empty;
+
+                switch (RequiredFieldType)
+                {
+                    case RequiredFieldType.ControlPoint:
+                        reqFieldIdXPath = "//span[contains(@aria-owns,'HoldPoint')]/input";
+                        splitPattern = "0__";
+                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedHoldPointReqFieldIDsList();
+                        break;
+
+                    case RequiredFieldType.EngineerComments:
+                        reqFieldIdXPath = $"//textarea[@id='{InputFields.Engineer_Comments.GetString()}']";
+                        splitPattern = "0__";
+                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList();
+                        break;
+
+                    default:
+                        reqFieldIdXPath = "//span[text()='*']";
+                        splitPattern = "0_";
+                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedRequiredFieldIDsList();
+                        break;
+                }
+
+                IList<string> trimmedActualIds = TrimInputFieldIDs(PageAction.GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
+
+                bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
+
+                if (actualMatchesExpected)
+                {
+                    reqFieldAssertList = new List<bool>();
+                    int actualIdCount = trimmedActualIds.Count;
+                    int expectedIdCount = expectedRequiredFieldIDs.Count;
+                    int errorSummaryIdCount = errorSummaryIDs.Count;
+                    bool countsMatch = actualIdCount.Equals(errorSummaryIdCount);
+                    Report.Info($"Expected ID Count: {expectedIdCount}<br>Actual ID Count: {actualIdCount}<br>Required Field Error Summary ID Count: {errorSummaryIdCount}", countsMatch);
+
+                    if (countsMatch)
+                    {
+                        bool summaryIDsContainID = false;
+
+                        foreach (string id in trimmedActualIds)
+                        {
+                            summaryIDsContainID = errorSummaryIDs.Contains(id);
+                            TestUtility.AddAssertionToList(summaryIDsContainID, $"{id} contained in Error Summary list");
+                            reqFieldAssertList.Add(summaryIDsContainID);
+                        }
+                    }
+                }
+
+                requiredFieldsMatch = reqFieldAssertList.Contains(false) ? false : true;
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+            finally
+            {
+                CloseErrorSummaryPopupMsg();
+            }
+
+            return requiredFieldsMatch;
+        }
+
+        public override void FilterTable_CreatePackagesTab(int indexOfRow = 1)
+            => Verify_Column_Filters_DirPackageTabs(TableTab.Create_Packages, indexOfRow);
+
+        public override void FilterTable_PackagesTab(int indexOfRow = 1)
+            => Verify_Column_Filters_DirPackageTabs(TableTab.Packages, indexOfRow);
+
+        public override string GetDirNumberForRow(string textInRowForAnyColumn)
+            => GridHelper.GetColumnValueForRow(textInRowForAnyColumn, "DIR №");
+
+        //GLX, SH249, SG
+        //NO REFRESH btn, use Save & Edit btn - LAX, I15SB, I15Tech
+        public override bool VerifyAutoSaveTimerRefresh()
+        {
+            Report.Step("STEP: VerifyAutoSaveTimerRefresh");
+
+            bool timerRefreshedAsExpected = false;
+            string preRefreshTime = string.Empty;
+            string postRefreshTime = string.Empty;
+
+            try
+            {
+                By clockAutoSaveLocator = By.XPath("//span[@id='clockAutoSave']");
+
+                Thread.Sleep(10000);
+                preRefreshTime = PageAction.GetText(clockAutoSaveLocator);
+                QaRcrdCtrl_QaDIR.RefreshAutoSaveTimer();
+                postRefreshTime = PageAction.GetText(clockAutoSaveLocator);
+
+                timerRefreshedAsExpected = int.Parse(Regex.Replace(postRefreshTime, ":", "")) > int.Parse(Regex.Replace(preRefreshTime, ":", ""));
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+                throw;
+            }
+
+            Report.Info($"PreRefresh Timer Value {preRefreshTime}<br>PostRefresh Timer Value {postRefreshTime}<br>AutoSave Timer Refreshed Successfully: {timerRefreshedAsExpected}", timerRefreshedAsExpected);
+            return timerRefreshedAsExpected;
+        }
+
+        //GLX, SH249, SG
+        public override void RefreshAutoSaveTimer()
+            => ClickBtn_Refresh();
+
+        public override bool Verify_Package_Download()
+        {
+            bool isEnabled = false;
+            bool fileDownloaded = false;
+            string logMsg = string.Empty;
+            string fileName = string.Empty;
+
+            try
+            {
+                for (int i = 1; i < 10; i++)
+                {
+                    By downloadBtnLocator = GridHelper.GetTableBtnLocator(TableButton.Download, i);
+                    isEnabled = PageAction.GetElement(downloadBtnLocator).Enabled;
+
+                    if (isEnabled)
+                    {
+                        fileName = $"{GridHelper.GetColumnValueForRow(i, PackagesColumnName.Package_Number.GetString(true))}.zip";
+                        string fullFilePath = $"C:\\Automation\\Downloads\\{fileName}";
+                        //delete if file already exists in download folder
+                        if (File.Exists(fullFilePath))
+                        {
+                            File.Delete(fullFilePath);
+                            Report.Step("Deleted existing file in the Downloads folder");
+                        }
+
+                        GridHelper.ClickDownloadBtnForRow(i);
+                        PageAction.WaitForPageReady();
+                        fileDownloaded = File.Exists(fullFilePath);
+                        //cleanup - delete downloaded file
+                        if (fileDownloaded)
+                        {
+                            File.Delete(fullFilePath);
+                            Report.Step("Deleted downloaded file in the Downloads folder");
+                        }
+
+                        break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                throw;
+            }
+            logMsg = fileDownloaded
+                ? "Success"
+                : "Failed";
+
+            Report.Info($"Download for DIR Package ({fileName}) {logMsg}", fileDownloaded);
+
+            return fileDownloaded;
+        }
+
+        public override string GetDirPackageWeekStartFromRow(int rowIndex = 1)
+            => GetDirPackagesDataForRow<string>(PackagesColumnName.Week_Start, rowIndex).Trim();
+
+        public override string GetDirPackageWeekEndFromRow(int rowIndex = 1)
+            => GetDirPackagesDataForRow<string>(PackagesColumnName.Week_End, rowIndex).Trim();
+
+        public override string GetDirPackageNewDirCountFromRow(int rowIndex = 1)
+            => GetDirPackagesDataForRow<string>(PackagesColumnName.New_DIR_Count, rowIndex).Trim();
+
+        public override string GetDirPackageNumberFromRow(int rowIndex = 1)
+            => GetDirPackagesDataForRow<string>(PackagesColumnName.Package_Number, rowIndex).Trim();
+
+        public override string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex = 1)
+            => GetDirPackagesDataForRow<string[]>(NewDIRsOrDIRs, rowIndex);
+
+        public override bool Verify_Package_Created(string weekStart, string[] dirNumbers)
+        {
+            bool pkgIsCreated = false;
+            try
+            {
+                QaRcrdCtrl_QaDIR.ClickTab_Packages();
+                string expectedPkgNum = CalculateDirPackageNumber(weekStart);
+                pkgIsCreated = GridHelper.VerifyRecordIsDisplayed(PackagesColumnName.Package_Number, expectedPkgNum);
+                string actualPkgNum = GetDirPackageNumberFromRow();
+
+                bool pkgNumAsExpected = actualPkgNum.Equals(expectedPkgNum);
+                string logMsg(string lineBrk) => pkgNumAsExpected
+                    ? $"Package Number is as expected {actualPkgNum}"
+                    : $"Package Number is not as expected!{lineBrk}EXPECTED: {expectedPkgNum}{lineBrk}ACTUAL: {actualPkgNum}";
+                Report.Info(logMsg("<br>"), pkgNumAsExpected);
+                TestUtility.AddAssertionToList(pkgNumAsExpected, logMsg("\n"));
+            }
+            catch (Exception e)
+            {
+                log.Error(e.Message);
+                throw;
+            }
+
+            return pkgIsCreated;
+        }
+
+        public override string CalculateDirPackageNumber(string weekStartDate)
+        {
+            string[] wkStartSplit = new string[] { };
+            wkStartSplit = Regex.Split(weekStartDate, "/");
+            string mm = wkStartSplit[0];
+            string dd = wkStartSplit[1];
+            string yyyy = wkStartSplit[2];
+            return $"IQF-DIR-{yyyy}{mm}{dd}-1";
+        }
+
+        public override void EnterText_InspectionDate(string inspectDate)
+            => PageAction.EnterText(By.Id(InputFields.Inspect_Date.GetString()), inspectDate);
+
+        public override string GetTechIdForDirUserAcct(bool selectUserFromDDList = false, UserType dirNoDDListTech = UserType.DIRTechQA)
+        {
+            if (selectUserFromDDList)
+            {
+                PageAction.ExpandAndSelectFromDDList("TechID", dirNoDDListTech.GetString(), true);
+            }
+
+            return PageAction.GetAttribute(By.Id("TechID"), "value");
+        }
+
+        public override void VerifyRecreateBtnIsDisplayed(string packageNumber, string newDirNumber)
+        {
+            string logMsg = string.Empty;
+            string btnIsDisplayedMsg = "Record was not displayed";
+            string dirsContainsMsg = string.Empty;
+            string trimedPkgNumber = packageNumber.TrimEnd('1', '2');
+            bool recreateBtnIsDisplayed = false;
+            bool dirNumbersContainsNewDIR = false;
+
+            bool recordIsDisplayed = GridHelper.VerifyRecordIsDisplayed(PackagesColumnName.Package_Number, trimedPkgNumber, TableType.MultiTab, false, FilterOperator.Contains);
+
+            TestUtility.AddAssertionToList(recordIsDisplayed, $"VerifyRecreateBtnIsDisplayed: Verify Record PackageNumber({packageNumber}) is displayed");
+
+            if (recordIsDisplayed)
+            {
+                recreateBtnIsDisplayed = PageAction.CheckIfElementIsDisplayed(GridHelper.GetTableBtnLocator(TableButton.Recreate_Package, 1, true, false));
+                btnIsDisplayedMsg = recreateBtnIsDisplayed
+                    ? ""
+                    : " NOT";
+                if (recreateBtnIsDisplayed)
+                {
+                    GridHelper.ClickRecreateBtnForRow();
+                    PageAction.AcceptAlertMessage();
+                    PageAction.AcceptAlertMessage();
+
+                    string pkgDIRs = GridHelper.GetColumnValueForRow(1, PackagesColumnName.DIRs.GetString(true));
+                    string newPkgNumber = GridHelper.GetColumnValueForRow(1, PackagesColumnName.Package_Number.GetString(true));
+
+                    List<string> dirNumbers = new List<string>(Regex.Split(pkgDIRs, ", "));
+                    dirNumbersContainsNewDIR = dirNumbers.Contains(newDirNumber);
+                    dirsContainsMsg = dirNumbersContainsNewDIR
+                        ? $""
+                        : $" DOES NOT";
+
+                    string expectedNewPkgNumber = $"{trimedPkgNumber}2";
+                    TestUtility.AddAssertionToList(newPkgNumber.Equals(expectedNewPkgNumber), $"VerifyRecreateBtnIsDisplayed: Verify Expected Package Number after Recreate");
+
+                }
+
+                logMsg = $"Recreate button is{btnIsDisplayedMsg} displayed.<br>New DIRs column{dirsContainsMsg} contain new DIR number {newDirNumber}.";
+            }
+
+            TestUtility.AddAssertionToList(recreateBtnIsDisplayed, $"VerifyRecreateBtnIsDisplayed: Verify Recreate button is displayed");
+            TestUtility.AddAssertionToList(dirNumbersContainsNewDIR, $"VerifyRecreateBtnIsDisplayed: Verify DIRs column shows new DIR");
+
+            Report.Info(logMsg, new bool[] { recreateBtnIsDisplayed, dirNumbersContainsNewDIR });
+        }
     }
 
     #endregion DIR/IDR/DWR Generic Class
@@ -706,914 +1614,132 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         string GetTechIdForDirUserAcct(bool selectUserFromDDList = false, UserType dirNoDDListTech = UserType.DIRTechQA);
 
         void VerifyRecreateBtnIsDisplayed(string packageNumber, string newDirNumber);
+
+        void CloseErrorSummaryPopupMsg();
+
+        IList<string> GetErrorSummaryIDs();
+
+        IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern);
+
+        bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs);
+
+        void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1);
+
+        TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1);
+
+        bool VerifySpecSectionDescriptionAutoPopulatedData();
     }
 
-    public abstract class QADIRs_Impl : TestBase, IQADIRs
+    public abstract class QADIRs_Impl : PageBase, IQADIRs
     {
-        /// <summary>
-        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Tenant'
-        /// </summary>
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        public IQADIRs SetPageClassBasedOnTenant(IWebDriver driver)
-        {
-            IQADIRs instance = new QADIRs(driver);
-
-            if (tenantName == TenantName.SGWay)
-            {
-                log.Info($"###### using QADIRs_SGWay instance ###### ");
-                instance = new QADIRs_SGWay(driver);
-            }
-            else if (tenantName == TenantName.SH249)
-            {
-                log.Info($"###### using QADIRs_SH249 instance ###### ");
-                instance = new QADIRs_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                log.Info($"###### using QADIRs_Garnet instance ###### ");
-                instance = new QADIRs_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                log.Info($"###### using QADIRs_GLX instance ###### ");
-                instance = new QADIRs_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                log.Info($"###### using QADIRs_I15South instance ###### ");
-                instance = new QADIRs_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                log.Info($"###### using QADIRs_I15Tech instance ###### ");
-                instance = new QADIRs_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                log.Info($"###### using QADIRs_LAX instance ###### ");
-                instance = new QADIRs_LAX(driver);
-            }
-            return instance;
-        }
-
-        QADIRs QaDIRs_Base => new QADIRs(Driver);
-
-        public virtual string GetDirNumber()
-            => GetVar(dirNumberKey);
-
-        public virtual void SetDirNumber()
-            => QaDIRs_Base.StoreDirNumber();
-
-        public virtual bool IsLoaded()
-            => Driver.Title.Equals("DIR List - ELVIS PMC");
-
-        public virtual void ClickBtn_CreateNew()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_New));
-
-        public virtual void ClickBtn_CreateRevision()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_Revision));
-
-        public virtual void ClickBtn_Refresh()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Refresh, false));
-
-        public virtual void ClickBtn_Cancel()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Cancel));
-
-        public virtual void ClickBtn_KickBack()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Kick_Back, false));
-
-        public virtual void ClickBtn_SubmitRevise()
-           => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Submit_Revise, false));
-
-        public virtual void ClickBtn_Send_To_Attachment()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Send_To_Attachment));
-
-        public virtual void ClickBtn_Save()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save));
-
-        public virtual void ClickBtn_Save_Forward()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Forward));
-
-        public virtual void ClickBtn_Save_Edit()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Save_Edit));
-        
-        public virtual void ClickBtn_Approve()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Approve));
-
-        public virtual void ClickBtn_Add()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Add));
-
-        public virtual void ClickBtn_Delete()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Delete));
-
-        public virtual void ClickBtn_NoError()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.No_Error));
-
-        public virtual void ClickBtn_Back_To_QC_Review()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_QC_Review, false));
-
-        public virtual void ClickBtn_Back_To_Field()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Back_To_Field, false));
-
-        public virtual void ClickBtn_Revise()
-            => JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Revise, false));
-
-        public virtual void ClickBtn_Close_Selected()
-            => JsClickElement(By.XPath("//button[text()='Close Selected']"));
-
-        public virtual void ClickBtn_View_Selected()
-            => JsClickElement(By.XPath("//button[text()='View Selected']"));
-
-        public virtual void ClickTab_Create_Revise()
-            => ClickTab(TableTab.Create_Revise);
-
-        public virtual void ClickTab_QC_Review()
-            => ClickTab(TableTab.QC_Review);
-
-        public virtual void ClickTab_Authorization()
-            => ClickTab(TableTab.Authorization);
-
-        public virtual void ClickTab_Creating()
-            => ClickTab(TableTab.Creating);
-
-        public virtual void ClickTab_Attachments()
-            => ClickTab(TableTab.Attachments);
-
-        public virtual void ClickTab_Revise()
-            => ClickTab(TableTab.Revise);
-
-        public virtual void ClickTab_To_Be_Closed()
-            => ClickTab(TableTab.To_Be_Closed);
-
-        public virtual void ClickTab_Closed()
-            => ClickTab(TableTab.Closed);
-
-        public virtual void ClickTab_Create_Packages()
-            => ClickTab(TableTab.Create_Packages);
-
-        public virtual void ClickTab_Packages()
-            => ClickTab(TableTab.Packages);
-
-        public virtual void FilterDirNumber(string DirNumber)
-            => FilterTableColumnByValue(ColumnName.DIR_No, DirNumber);
-
+        public abstract void SetDirNumber();
         //All SimpleWF Tenants have different required fields
-        public virtual void PopulateRequiredFields()
-        {
-            //SelectDDL_TimeBegin(TimeBlock.AM_06_00);
-            //SelectDDL_TimeEnd(TimeBlock.PM_04_00);
-            //Enter_AverageTemp(80);
-            //SelectDDL_Area();
-            //SelectDDL_SpecSection();
-            //SelectDDL_Feature();
-            //SelectDDL_Contractor();
-            //SelectDDL_CrewForeman();
-            //EnterText_SectionDescription(GetTextFromDDL(QADIRs.InputFields.Spec_Section));
-            //SelectChkbox_InspectionType_I();
-            //SelectChkbox_InspectionResult_P();
-            //Enter_ReadyDate();
-            //Enter_CompletedDate();
-            //Enter_TotalInspectionTime();
-            //SetDirNumber();
-        }
-
-        //All SimpleWF Tenants have different required fields
-        public virtual IList<string> GetExpectedRequiredFieldIDsList()
-        {
-            IList<string> RequiredFieldIDs = new List<string>()
-            {
-                //InputFields.Time_Begin.GetString(),
-                //InputFields.Time_End.GetString(),
-                //InputFields.Area.GetString(),
-                //InputFields.Average_Temperature.GetString(),
-                //InputFields.Spec_Section.GetString(),
-                //InputFields.Section_Description.GetString(),
-                //InputFields.Feature.GetString(),
-                //InputFields.Crew_Foreman.GetString(),
-                //InputFields.Contractor.GetString(),
-                //"InspectionType",
-                //"InspectionPassFail",
-                //InputFields.Date_Ready.GetString(),
-                //InputFields.Date_Completed.GetString(),
-                //InputFields.Total_Inspection_Time.GetString()
-            };
-
-            return RequiredFieldIDs;
-        }
-
-        public virtual string CreatePreviousFailingReport()
-        {
-            string logMsg = string.Empty;
-            string nonFixedFailedDirNumber = string.Empty;
-            bool modalIsDisplayed = false;
-
-            try
-            {
-                ClickElement(By.Id("lnkPreviousFailingReports"));
-                string modalXPath = "//div[contains(@style, 'opacity: 1')]";
-                IWebElement modal = GetElement(By.XPath(modalXPath));
-                modalIsDisplayed = (bool)modal?.Displayed;
-
-                if (modalIsDisplayed)
-                {
-                    string firstNonFixedFailedDirXpath = $"{modalXPath}//div[@class='col-md-3'][1]//div[@class='checkbox-inline']/span";
-                    string nonfixedFailedDirVal = GetText(By.XPath(firstNonFixedFailedDirXpath));
-                    string[] splitVal = new string[2];
-                    splitVal = Regex.Split(nonfixedFailedDirVal, "-");
-                    nonFixedFailedDirNumber = splitVal[0];
-                    string nonFixedFailedDirEntry = splitVal[1];
-
-                    string newBtnXPath = $"{modalXPath}//a[contains(@class,'k-grid-add')]";
-                    string previousDirNoFieldXPath = $"{modalXPath}//input[@id='DirNO']";
-                    string previousDirEntryFieldXPath = $"{modalXPath}//input[@id='EntryNo']";
-                    string updateBtnXPath = $"{modalXPath}//a[contains(text(),'Update')]";
-                    string modalCloseXPath = $"{modalXPath}//a[@aria-label='Close']";
-
-                    JsClickElement(By.XPath(newBtnXPath));
-                    EnterText(By.XPath(previousDirNoFieldXPath), nonFixedFailedDirNumber);
-                    EnterText(By.XPath(previousDirEntryFieldXPath), nonFixedFailedDirEntry);
-                    JsClickElement(By.XPath(updateBtnXPath));
-                    JsClickElement(By.XPath(modalCloseXPath));
-
-                    logMsg = $"Entered Non-Fixed Failed DIR No. {nonFixedFailedDirNumber} and DIR Entry {nonFixedFailedDirEntry}";
-                }
-                else
-                {
-                    logMsg = "Previous Failing Report popup window is not displayed";
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-                throw;
-            }
-
-            LogInfo(logMsg, modalIsDisplayed);
-            return nonFixedFailedDirNumber;
-        }
-
-        public virtual bool VerifyPreviousFailingDirEntry(string previousDirNumber)
-        {
-            bool isDisplayed = false;
-            string logMsg = string.Empty;
-
-            try
-            {
-                string previousFailedDirTblXPath = $"//div[@id='PreviousFailedReportListGrid0']";
-                By previousDirTblDataLocator = By.XPath($"{previousFailedDirTblXPath}//tbody/tr/td[text()='{previousDirNumber}']");
-                ScrollToElement(By.XPath($"{previousFailedDirTblXPath}/ancestor::div[@id='border']/following-sibling::div[1]"));
-                isDisplayed = ElementIsDisplayed(previousDirTblDataLocator);
-                logMsg = isDisplayed ? "displayed" : "did not display";
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-                throw;
-            }
-
-            LogInfo($"Previous Failing DIR table {logMsg} DIR Number {previousDirNumber}", isDisplayed);
-            return isDisplayed;
-        }
-
-        public virtual void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00)
-            => ExpandAndSelectFromDDList(InputFields.Time_Begin, (int)shiftStartTime);
-
-        public virtual void SelectDDL_TimeEnd(TimeBlock shiftEndTime = TimeBlock.PM_04_00)
-            => ExpandAndSelectFromDDList(InputFields.Time_End, (int)shiftEndTime);
-
-        public virtual void Enter_AverageTemp(int avgTemp = 80)
-        {
-            string avgTempFieldId = InputFields.Average_Temperature.GetString();
-            By clickLocator = By.XPath($"//input[@id='{avgTempFieldId}']/preceding-sibling::input");
-            By locator = By.XPath($"//input[@id='{avgTempFieldId}']");
-            ClickElement(clickLocator);
-            EnterText(locator, avgTemp.ToString(), false);
-        }
-
-        public virtual void SelectDDL_Area(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Area, ddListSelection);
-
-        public virtual void SelectDDL_SpecSection(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Spec_Section, ddListSelection);
-
-        public virtual void SelectDDL_SpecSectionParagraph(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Spec_Section_Paragraph, ddListSelection);
-
-        public virtual void SelectDDL_Division(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Division, ddListSelection);
-
-        public virtual void SelectDDL_BidItemCode(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Bid_Item_Code, ddListSelection);
-
-        public virtual void SelectDDL_Feature(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Feature, ddListSelection);
-
-        public virtual void SelectDDL_ControlPointNumber(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Control_Point_Number, ddListSelection);
-
-        public virtual void SelectDDL_HoldPointType(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Control_Point_Type, ddListSelection);
-
-        public virtual void SelectDDL_Contractor(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Contractor, ddListSelection);
-
-        public virtual void SelectDDL_Contractor<T>(T ddListSelection)
-            => ExpandAndSelectFromDDList(InputFields.Contractor, ddListSelection);
-
-        public virtual void SelectDDL_Crew(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Crew, ddListSelection);
-
-        public virtual void SelectDDL_CrewForeman(int ddListSelection = 1)
-            => ExpandAndSelectFromDDList(InputFields.Crew_Foreman, ddListSelection);
-
-        public virtual bool VerifySectionDescription()
-        {
-            bool textMatch = false;
-
-            try
-            {
-                string sectionDesc = GetText(GetTextAreaFieldByLocator(InputFields.Section_Description));
-                string specSectionDDListValue = GetTextFromDDL(InputFields.Spec_Section);
-                specSectionDDListValue = specSectionDDListValue.Contains("-")
-                    ? Regex.Replace(specSectionDDListValue, "-", " - ")
-                    : specSectionDDListValue;
-
-                textMatch = sectionDesc.Equals(specSectionDDListValue);
-                LogInfo($"Spec Section DDList Selection: {specSectionDDListValue}<br>Section Description Text Value: {sectionDesc}", textMatch);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-            return textMatch;
-        }
-
-        public virtual bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false)
-        {
-            bool isDisplayed = false;
-
-            try
-            {
-                ClickTab(tableTab);
-                string _dirNum = dirNumber.HasValue()
-                    ? dirNumber
-                    : GetDirNumber();
-
-                isDisplayed = VerifyRecordIsDisplayed(ColumnName.DIR_No, _dirNum, TableType.MultiTab, noRecordsExpected);
-
-                string logMsg = isDisplayed ? "Found" : "Unable to find";
-                LogInfo($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", noRecordsExpected ? !isDisplayed : isDisplayed);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-                throw;
-            }
-
-            return isDisplayed;
-        }
-
-        public virtual IList<Enum> GetResultCheckBoxIDsList()
-        {
-            IList<Enum> resultChkBoxIDs = new List<Enum>()
-            {
-                RadioBtnsAndCheckboxes.Inspection_Result_P,
-                RadioBtnsAndCheckboxes.Inspection_Result_E,
-            };
-
-            return resultChkBoxIDs;
-        }
-
-        //I15SB, I15Tech
-        public virtual IList<Enum> GetDeficienciesRdoBtnIDsList()
-        {
-            IList<Enum> deficienciesRdoBtnIDs = new List<Enum>()
-            {
-                RadioBtnsAndCheckboxes.Deficiencies_Yes,
-                RadioBtnsAndCheckboxes.Deficiencies_CIF,
-                RadioBtnsAndCheckboxes.Deficiencies_CDR,
-                RadioBtnsAndCheckboxes.Deficiencies_NCR
-            };
-
-            return deficienciesRdoBtnIDs;
-        }
-
-        public virtual bool VerifyDeficiencySelectionPopupMessages()
-        {
-            IList<Enum> resultChkBoxIDs = QaRcrdCtrl_QaDIR.GetResultCheckBoxIDsList();
-
-            IList<Enum> deficienciesRdoBtnIDs = QaRcrdCtrl_QaDIR.GetDeficienciesRdoBtnIDsList();
-
-            string resultTypeMsg = string.Empty;
-            string expectedAlertMsg = string.Empty;
-            string alertMsg = string.Empty;
-            bool alertMsgMatch = false;
-            bool alertMsgExpected = false;
-            IList<bool> assertList = new List<bool>();
-
-            //Select Pass Result chkBx first, then Deficiency RdoBtn - "Since Pass checked, not allow to check any deficiency";
-            //Select Deficiency RdoBtn, then select Pass Result chkBx - "There is a deficiency checked in this entry, not allow to pass!"
-
-            //Select E Result chkBx first, then Deficiency RdoBtn - "Since Engineer Decision checked, not allow to check any deficiency"
-            //Select Deficiency RdoBtn, then select E Result chkBx - "There is a deficiency checked in this entry, not allow to make engineer decision!"
-
-            try
-            {
-                SelectRdoBtn_Deficiencies_No();
-                SelectChkbox_InspectionResult_P(false);
-
-                foreach (Enum resultChkBox in resultChkBoxIDs)
-                {
-                    SelectRadioBtnOrChkbox(resultChkBox, false);
-
-                    foreach (Enum deficiencyRdoBtn in deficienciesRdoBtnIDs)
-                    {
-                        SelectRadioBtnOrChkbox(deficiencyRdoBtn);
-                        resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "Pass" : "Engineer Decision";
-                        expectedAlertMsg = $"Since {resultTypeMsg} checked, not allow to check any deficiency";
-                        alertMsg = AcceptAlertMessage(); //GetAlertMessage();
-                        alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
-                        assertList.Add(alertMsgMatch);
-                        LogInfo($"Selected : Result ( {resultTypeMsg} ) - Deficiency ( {deficiencyRdoBtn.ToString()} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
-                    }
-                }
-
-                SelectChkbox_InspectionResult_P(false); //Ensures Pass Result checkbox is selected
-                SelectRdoBtn_Deficiencies_No();
-                SelectChkbox_InspectionResult_P(); //Unchecks Pass Result checkbox
-
-                foreach (Enum deficiencyRdoBtn in deficienciesRdoBtnIDs)
-                {
-                    SelectRadioBtnOrChkbox(deficiencyRdoBtn);
-
-                    foreach (Enum resultChkBox in resultChkBoxIDs)
-                    {
-                        SelectRadioBtnOrChkbox(resultChkBox, false);
-                        resultTypeMsg = resultChkBox.Equals(RadioBtnsAndCheckboxes.Inspection_Result_P) ? "pass" : "make engineer decision";
-                        expectedAlertMsg = $"There is a deficiency checked in this entry, not allow to {resultTypeMsg}!";
-                        alertMsg = AcceptAlertMessage(); //GetAlertMessage();
-                        alertMsgMatch = alertMsg.Equals(expectedAlertMsg);
-                        assertList.Add(alertMsgMatch);
-                        LogInfo($"Selected : Deficiency ( {deficiencyRdoBtn.ToString()} ) - Result ( {resultTypeMsg} )<br>Expected Alert Msg: {expectedAlertMsg}<br>Actual Alert Msg: {alertMsg}", alertMsgMatch);
-                    }
-                }
-
-                alertMsgExpected = assertList.Contains(false)
-                    ? false
-                    : true;
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-            finally
-            {
-                SelectRdoBtn_Deficiencies_No();
-                SelectChkbox_InspectionResult_P();
-            }
-
-            return alertMsgExpected;
-        }
-
-        public virtual void SelectChkbox_InspectionType_I(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_I, toggleChkboxIfAlreadySelected);
-
-        public virtual void SelectChkbox_InspectionType_C(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_C, toggleChkboxIfAlreadySelected);
-
-        public virtual void SelectChkbox_InspectionType_P(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_P, toggleChkboxIfAlreadySelected);
-
-        public virtual void SelectChkbox_InspectionType_H(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_H, toggleChkboxIfAlreadySelected);
-
-        public virtual void SelectChkbox_InspectionType_R(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_R, toggleChkboxIfAlreadySelected);
-
-        public virtual void SelectChkbox_InspectionResult_P(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Result_P, toggleChkboxIfAlreadySelected);
-
-        public virtual void SelectChkbox_InspectionResult_E(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Result_E, toggleChkboxIfAlreadySelected);
-
-        public virtual void SelectChkbox_InspectionResult_F(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Result_F, toggleChkboxIfAlreadySelected);
-
-        public virtual void SelectChkbox_InspectionResult_NA(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Result_NA, toggleChkboxIfAlreadySelected);
-
-        public virtual void SelectRdoBtn_SendEmailForRevise_Yes()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.SendEmailNotification_Yes);
-
-        public virtual void SelectRdoBtn_SendEmailForRevise_No()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.SendEmailNotification_No);
-
-        public virtual void SelectRdoBtn_Deficiencies_Yes()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Deficiencies_Yes);
-
-        public virtual void SelectRdoBtn_Deficiencies_No()
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Deficiencies_No);
-
-        public virtual void EnterText_DeficiencyDescription(string desc = "")
-            => EnterText(GetTextAreaFieldByLocator(InputFields.Deficiency_Description),
-                desc = desc.Equals("") ? "RKCI Automation Deficiency Description" : desc);
-
-        public virtual void EnterText_SectionDescription(string desc = "")
-            => EnterText(GetTextAreaFieldByLocator(InputFields.Section_Description),
-                desc = desc.Equals("") ? "RKCI Automation Section Description" : desc);
-
-        public virtual void EnterText_EngineerComments(string comment = "")
-            => EnterText(GetTextAreaFieldByLocator(InputFields.Engineer_Comments),
-                comment = comment.Equals("") ? "RKCI Automation Engineer Comment" : comment);
-
-        public virtual void Enter_ReadyDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
-            => EnterText(GetTextInputFieldByLocator(InputFields.Date_Ready), GetShortDateTime(shortDate, shortTime));
-
-        public virtual void Enter_CompletedDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
-            => EnterText(GetTextInputFieldByLocator(InputFields.Date_Completed), GetShortDateTime(shortDate, shortTime));
-
-        public virtual void Enter_TotalInspectionTime()
-        {
-            string inspectTimeFieldId = InputFields.Total_Inspection_Time.GetString();
-            By clickLocator = By.XPath($"//input[@id='{inspectTimeFieldId}']/preceding-sibling::input");
-            By locator = By.XPath($"//input[@id='{inspectTimeFieldId}']");
-            ClickElement(clickLocator);
-            EnterText(locator, "24", false);
-        }
-
-        public virtual bool VerifyAndCloseDirLockedMessage()
-        {
-            By msgBodyLocator = By.Id("dirLockedPopup");
-            By msgTitleLocator = By.Id("dirLockedPopup_wnd_title");
-
-            string expectedMsg = "Since you created this inspection report, you are not allowed to do QC Review or DIR Approval!";
-            string actualMsg = GetText(msgBodyLocator);
-
-            bool msgMatch = actualMsg.Equals(expectedMsg);
-            LogInfo($"Expected Msg: {expectedMsg}<br>Actual Msg: {actualMsg}", msgMatch);
-            ClickElement(By.XPath("//span[@id='dirLockedPopup_wnd_title']/following-sibling::div/a"));
-            return msgMatch;
-        }
-
-        public virtual IList<string> GetExpectedHoldPointReqFieldIDsList()
-        {
-            IList<string> ControlPointReqFieldIDs = new List<string>()
-            {
-                InputFields.Control_Point_Number.GetString(),
-                InputFields.Control_Point_Type.GetString()
-            };
-
-            return ControlPointReqFieldIDs;
-        }
-
-        public virtual IList<string> GetExpectedEngineerCommentsReqFieldIDsList()
-        {
-            IList<string> EngineerCommentsReqFieldID = new List<string>()
-            {
-                InputFields.Engineer_Comments.GetString()
-            };
-
-            return EngineerCommentsReqFieldID;
-        }
-
-        public virtual bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, RequiredFieldType RequiredFieldType = RequiredFieldType.Default)
-        {
-            IList<bool> reqFieldAssertList = null;
-            IList<string> errorSummaryIDs = null;
-            bool requiredFieldsMatch = false;
-
-            try
-            {
-                errorSummaryIDs = new List<string>();
-                errorSummaryIDs = QaDIRs_Base.GetErrorSummaryIDs();
-
-                string reqFieldIdXPath = string.Empty;
-                string splitPattern = string.Empty;
-
-                switch (RequiredFieldType)
-                {
-                    case RequiredFieldType.ControlPoint:
-                        reqFieldIdXPath = "//span[contains(@aria-owns,'HoldPoint')]/input";
-                        splitPattern = "0__";
-                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedHoldPointReqFieldIDsList();
-                        break;
-
-                    case RequiredFieldType.EngineerComments:
-                        reqFieldIdXPath = $"//textarea[@id='{InputFields.Engineer_Comments.GetString()}']";
-                        splitPattern = "0__";
-                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList();
-                        break;
-
-                    default:
-                        reqFieldIdXPath = "//span[text()='*']";
-                        splitPattern = "0_";
-                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedRequiredFieldIDsList();
-                        break;
-                }
-
-                IList<string> trimmedActualIds = QaDIRs_Base.TrimInputFieldIDs(GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
-
-                bool actualMatchesExpected = QaDIRs_Base.VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
-
-                if (actualMatchesExpected)
-                {
-                    reqFieldAssertList = new List<bool>();
-                    int actualIdCount = trimmedActualIds.Count;
-                    int expectedIdCount = expectedRequiredFieldIDs.Count;
-                    int errorSummaryIdCount = errorSummaryIDs.Count;
-                    bool countsMatch = actualIdCount.Equals(errorSummaryIdCount);
-                    LogInfo($"Expected ID Count: {expectedIdCount}<br>Actual ID Count: {actualIdCount}<br>Required Field Error Summary ID Count: {errorSummaryIdCount}", countsMatch);
-
-                    if (countsMatch)
-                    {
-                        bool summaryIDsContainID = false;
-
-                        foreach (string id in trimmedActualIds)
-                        {
-                            summaryIDsContainID = errorSummaryIDs.Contains(id);
-                            AddAssertionToList(summaryIDsContainID, $"{id} contained in Error Summary list");
-                            reqFieldAssertList.Add(summaryIDsContainID);
-                        }
-                    }
-                }
-
-                requiredFieldsMatch = reqFieldAssertList.Contains(false) ? false : true;
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-            finally
-            {
-                QaDIRs_Base.CloseErrorSummaryPopupMsg();
-            }
-
-            return requiredFieldsMatch;
-        }
-
-        public virtual bool VerifyControlPointReqFieldErrors()
-            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedHoldPointReqFieldIDsList(), RequiredFieldType.ControlPoint);
-
-        public virtual bool VerifyEngineerCommentsReqFieldErrors()
-            => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList(), RequiredFieldType.EngineerComments);
-
-        public virtual bool VerifyDirNumberExistsInDbError()
-        {
-            By errorLocator = By.Id("error");
-            IWebElement errorElem = null;
-            bool isDisplayed = false;
-            string logMsg = string.Empty;
-
-            try
-            {
-                errorElem = GetElement(errorLocator);
-                isDisplayed = (bool)errorElem?.Displayed ? true : false;
-                logMsg = isDisplayed ? "" : " not";
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-
-            LogInfo($"'This DIR No. exists in the database' error message is{logMsg} displayed", isDisplayed);
-            return isDisplayed;
-        }
-
-        public virtual bool VerifyDirRevisionInDetailsPage(string expectedDirRev)
-        {
-            By revLocator = By.XPath("//label[contains(text(),'Revision')]/parent::div");
-            bool revAsExpected = false;
-            string actualDirRev = string.Empty;
-            string logMsg = string.Empty;
-
-            try
-            {
-                actualDirRev = GetText(revLocator);
-                string[] splitActual = new string[2];
-                splitActual = Regex.Split(actualDirRev, "Revision\r\n");
-                actualDirRev = splitActual[1];
-                revAsExpected = actualDirRev.Equals(expectedDirRev);
-                var ifFalseLog = revAsExpected ? "" : $"<br>Actual DIR Rev: {actualDirRev}";
-                logMsg = $"Expected DIR Rev: {expectedDirRev}{ifFalseLog}<br>Actual DIR Rev Matches Expected: {revAsExpected}";
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-
-            LogInfo($"{logMsg} ", revAsExpected);
-            return revAsExpected;
-        }
-
-        public virtual void FilterTable_CreatePackagesTab(int indexOfRow = 1)
-            => QaDIRs_Base.Verify_Column_Filters_DirPackageTabs(TableTab.Create_Packages, indexOfRow);
-
-        public virtual void FilterTable_PackagesTab(int indexOfRow = 1)
-            => QaDIRs_Base.Verify_Column_Filters_DirPackageTabs(TableTab.Packages, indexOfRow);
-
-        public virtual string GetDirNumberForRow(string textInRowForAnyColumn)
-            => GetColumnValueForRow(textInRowForAnyColumn, "DIR №");
-
-        //GLX, SH249, SG
-        //NO REFRESH btn, use Save & Edit btn - LAX, I15SB, I15Tech
-        public virtual bool VerifyAutoSaveTimerRefresh()
-        {
-            LogDebug("---> VerifyAutoSaveTimerRefresh <---");
-
-            bool timerRefreshedAsExpected = false;
-            string preRefreshTime = string.Empty;
-            string postRefreshTime = string.Empty;
-
-            try
-            {
-                By clockAutoSaveLocator = By.XPath("//span[@id='clockAutoSave']");
-
-                Thread.Sleep(10000);
-                preRefreshTime = GetText(clockAutoSaveLocator);
-                QaRcrdCtrl_QaDIR.RefreshAutoSaveTimer();
-                postRefreshTime = GetText(clockAutoSaveLocator);
-
-                timerRefreshedAsExpected = int.Parse(Regex.Replace(postRefreshTime, ":", "")) > int.Parse(Regex.Replace(preRefreshTime, ":", ""));
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-                throw;
-            }
-
-            LogInfo($"PreRefresh Timer Value {preRefreshTime}<br>PostRefresh Timer Value {postRefreshTime}<br>AutoSave Timer Refreshed Successfully: {timerRefreshedAsExpected}", timerRefreshedAsExpected);
-            return timerRefreshedAsExpected;
-        }
-
-        //GLX, SH249, SG
-        public virtual void RefreshAutoSaveTimer()
-            => ClickBtn_Refresh();
-
-        public virtual bool Verify_Package_Download()
-        {
-            bool isEnabled = false;
-            bool fileDownloaded = false;
-            string logMsg = string.Empty;
-            string fileName = string.Empty;
-
-            try
-            {
-                for (int i = 1; i < 10; i++)
-                {
-                    By downloadBtnLocator = GetTableBtnLocator(TableButton.Download, i);
-                    isEnabled = GetElement(downloadBtnLocator).Enabled;
-
-                    if (isEnabled)
-                    {
-                        fileName = $"{GetColumnValueForRow(i, PackagesColumnName.Package_Number.GetString(true))}.zip";
-                        string fullFilePath = $"C:\\Automation\\Downloads\\{fileName}";
-                        //delete if file already exists in download folder
-                        if (File.Exists(fullFilePath))
-                        {
-                            File.Delete(fullFilePath);
-                            LogStep("Deleted existing file in the Downloads folder");
-                        }
-
-                        ClickDownloadBtnForRow(i);
-                        WaitForPageReady();
-                        fileDownloaded = File.Exists(fullFilePath);
-                        //cleanup - delete downloaded file
-                        if (fileDownloaded)
-                        {
-                            File.Delete(fullFilePath);
-                            LogStep("Deleted downloaded file in the Downloads folder");
-                        }
-
-                        break;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-                throw e;
-            }
-            logMsg = fileDownloaded
-                ? "Success"
-                : "Failed";
-
-            LogInfo($"Download for DIR Package ({fileName}) {logMsg}", fileDownloaded);
-
-            return fileDownloaded;
-        }
-
-        public virtual string GetDirPackageWeekStartFromRow(int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_Start, rowIndex).Trim();
-
-        public virtual string GetDirPackageWeekEndFromRow(int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Week_End, rowIndex).Trim();
-
-        public virtual string GetDirPackageNewDirCountFromRow(int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.New_DIR_Count, rowIndex).Trim();
-
-        public virtual string GetDirPackageNumberFromRow(int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string>(PackagesColumnName.Package_Number, rowIndex).Trim();
-
-        public virtual string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex = 1)
-            => QaDIRs_Base.GetDirPackagesDataForRow<string[]>(NewDIRsOrDIRs, rowIndex);
-
-        public virtual bool Verify_Package_Created(string weekStart, string[] dirNumbers)
-        {
-            bool pkgIsCreated = false;
-            try
-            {
-                QaRcrdCtrl_QaDIR.ClickTab_Packages();
-                string expectedPkgNum = CalculateDirPackageNumber(weekStart);
-                pkgIsCreated = VerifyRecordIsDisplayed(PackagesColumnName.Package_Number, expectedPkgNum);
-                string actualPkgNum = GetDirPackageNumberFromRow();
-
-                bool pkgNumAsExpected = actualPkgNum.Equals(expectedPkgNum);
-                string logMsg(string lineBrk) => pkgNumAsExpected
-                    ? $"Package Number is as expected {actualPkgNum}"
-                    : $"Package Number is not as expected!{lineBrk}EXPECTED: {expectedPkgNum}{lineBrk}ACTUAL: {actualPkgNum}";
-                LogInfo(logMsg("<br>"), pkgNumAsExpected);
-                AddAssertionToList(pkgNumAsExpected, logMsg("\n"));
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-                throw e;
-            }
-            
-            return pkgIsCreated;
-        }
-
-        public virtual string CalculateDirPackageNumber(string weekStartDate)
-        {
-            string[] wkStartSplit = new string[] { };
-            wkStartSplit = Regex.Split(weekStartDate, "/");
-            string mm = wkStartSplit[0];
-            string dd = wkStartSplit[1];
-            string yyyy = wkStartSplit[2];
-            return $"IQF-DIR-{yyyy}{mm}{dd}-1";
-        }
-
-        public virtual void EnterText_InspectionDate(string inspectDate)
-            => EnterText(By.Id(InputFields.Inspect_Date.GetString()), inspectDate);
-
-        public virtual string GetTechIdForDirUserAcct(bool selectUserFromDDList = false, UserType dirNoDDListTech = UserType.DIRTechQA)
-        {
-            if (selectUserFromDDList)
-            {
-                ExpandAndSelectFromDDList("TechID", dirNoDDListTech.GetString(), true);
-            }
-
-            return GetAttribute(By.Id("TechID"), "value");
-        }
-
-        public virtual void VerifyRecreateBtnIsDisplayed(string packageNumber, string newDirNumber)
-        {
-            string logMsg = string.Empty;
-            string btnIsDisplayedMsg = "Record was not displayed";
-            string dirsContainsMsg = string.Empty;
-            string trimedPkgNumber = packageNumber.TrimEnd('1', '2');
-            bool recreateBtnIsDisplayed = false;
-            bool dirNumbersContainsNewDIR = false;
-
-            bool recordIsDisplayed = VerifyRecordIsDisplayed(PackagesColumnName.Package_Number, trimedPkgNumber, TableType.MultiTab, false, FilterOperator.Contains);
-
-            AddAssertionToList(recordIsDisplayed, $"VerifyRecreateBtnIsDisplayed: Verify Record PackageNumber({packageNumber}) is displayed");
-
-            if (recordIsDisplayed)
-            {
-                recreateBtnIsDisplayed = ElementIsDisplayed(GetTableBtnLocator(TableButton.Recreate_Package, 1, true, false));
-                btnIsDisplayedMsg = recreateBtnIsDisplayed
-                    ? ""
-                    : " NOT";
-                if (recreateBtnIsDisplayed)
-                {
-                    ClickRecreateBtnForRow();
-                    AcceptAlertMessage();
-                    AcceptAlertMessage();
-
-                    string pkgDIRs = GetColumnValueForRow(1, PackagesColumnName.DIRs.GetString(true));
-                    string newPkgNumber = GetColumnValueForRow(1, PackagesColumnName.Package_Number.GetString(true));
-
-                    List<string> dirNumbers = new List<string>(Regex.Split(pkgDIRs, ", "));
-                    dirNumbersContainsNewDIR = dirNumbers.Contains(newDirNumber);
-                    dirsContainsMsg = dirNumbersContainsNewDIR
-                        ? $""
-                        : $" DOES NOT";
-
-                    string expectedNewPkgNumber = $"{trimedPkgNumber}2";
-                    AddAssertionToList(newPkgNumber.Equals(expectedNewPkgNumber), $"VerifyRecreateBtnIsDisplayed: Verify Expected Package Number after Recreate");
-
-                }
-
-                logMsg = $"Recreate button is{btnIsDisplayedMsg} displayed.<br>New DIRs column{dirsContainsMsg} contain new DIR number {newDirNumber}.";
-            }
-
-            AddAssertionToList(recreateBtnIsDisplayed, $"VerifyRecreateBtnIsDisplayed: Verify Recreate button is displayed");
-            AddAssertionToList(dirNumbersContainsNewDIR, $"VerifyRecreateBtnIsDisplayed: Verify DIRs column shows new DIR");
-
-            LogInfo(logMsg, new bool[] { recreateBtnIsDisplayed, dirNumbersContainsNewDIR });
-        }
+        public abstract void PopulateRequiredFields();
+        public abstract IList<string> GetErrorSummaryIDs();
+        public abstract IList<string> TrimInputFieldIDs(IList<string> fieldIdList, string splitPattern);
+        public abstract bool VerifyExpectedRequiredFields(IList<string> actualRequiredFieldIDs, IList<string> expectedRequiredFieldIDs);
+        public abstract void CloseErrorSummaryPopupMsg();
+        public abstract void Verify_Column_Filters_DirPackageTabs(TableTab pkgsTab, int indexOfRow = 1);
+        public abstract TOut GetDirPackagesDataForRow<TOut>(PackagesColumnName packagesColumnName, int rowIndex = 1);
+        public abstract bool VerifySpecSectionDescriptionAutoPopulatedData();
+        public abstract bool VerifyControlPointReqFieldErrors();
+        public abstract bool VerifyEngineerCommentsReqFieldErrors();
+        public abstract bool VerifyDirNumberExistsInDbError();
+        public abstract bool VerifyDirRevisionInDetailsPage(string expectedDirRev);
+        public abstract bool IsLoaded();
+        public abstract void ClickBtn_CreateNew();
+        public abstract void ClickBtn_CreateRevision();
+        public abstract void ClickBtn_Refresh();
+        public abstract void ClickBtn_Cancel();
+        public abstract void ClickBtn_KickBack();
+        public abstract void ClickBtn_SubmitRevise();
+        public abstract void ClickBtn_Send_To_Attachment();
+        public abstract void ClickBtn_Save();
+        public abstract void ClickBtn_Save_Forward();
+        public abstract void ClickBtn_Save_Edit();
+        public abstract void ClickBtn_Approve();
+        public abstract void ClickBtn_Add();
+        public abstract void ClickBtn_Delete();
+        public abstract void ClickBtn_NoError();
+        public abstract void ClickBtn_Revise();
+        public abstract void ClickBtn_Back_To_QC_Review();
+        public abstract void ClickBtn_Back_To_Field();
+        public abstract void ClickBtn_Close_Selected();
+        public abstract void ClickBtn_View_Selected();
+        public abstract void FilterTable_CreatePackagesTab(int indexOfRow = 1);
+        public abstract void FilterTable_PackagesTab(int indexOfRow = 1);
+        public abstract void FilterDirNumber(string DirNumber);
+        public abstract string GetDirNumber();
+        public abstract void SelectDDL_TimeBegin(TimeBlock shiftStartTime = TimeBlock.AM_06_00);
+        public abstract void SelectDDL_TimeEnd(TimeBlock shiftEndTime = TimeBlock.PM_04_00);
+        public abstract void Enter_AverageTemp(int avgTemp = 80);
+        public abstract void SelectDDL_Area(int ddListSelection = 1);
+        public abstract void SelectDDL_SpecSection(int ddListSelection = 1);
+        public abstract void SelectDDL_SpecSectionParagraph(int ddListSelection = 1);
+        public abstract void SelectDDL_Division(int ddListSelection = 1);
+        public abstract void SelectDDL_BidItemCode(int ddListSelection = 1);
+        public abstract void SelectDDL_Feature(int ddListSelection = 1);
+        public abstract void SelectDDL_ControlPointNumber(int ddListSelection = 1);
+        public abstract void SelectDDL_HoldPointType(int ddListSelection = 1);
+        public abstract void SelectDDL_Contractor(int ddListSelection = 1);
+        public abstract void SelectDDL_Contractor<T>(T ddListSelection);
+        public abstract void SelectDDL_Crew(int ddListSelection = 1);
+        public abstract void SelectDDL_CrewForeman(int ddListSelection = 1);
+        public abstract void SelectChkbox_InspectionType_I(bool toggleChkboxIfAlreadySelected = true);
+        public abstract void SelectChkbox_InspectionType_C(bool toggleChkboxIfAlreadySelected = true);
+        public abstract void SelectChkbox_InspectionType_P(bool toggleChkboxIfAlreadySelected = true);
+        public abstract void SelectChkbox_InspectionType_H(bool toggleChkboxIfAlreadySelected = true);
+        public abstract void SelectChkbox_InspectionType_R(bool toggleChkboxIfAlreadySelected = true);
+        public abstract void SelectChkbox_InspectionResult_P(bool toggleChkboxIfAlreadySelected = true);
+        public abstract void SelectChkbox_InspectionResult_E(bool toggleChkboxIfAlreadySelected = true);
+        public abstract void SelectChkbox_InspectionResult_F(bool toggleChkboxIfAlreadySelected = true);
+        public abstract void SelectChkbox_InspectionResult_NA(bool toggleChkboxIfAlreadySelected = true);
+        public abstract void SelectRdoBtn_SendEmailForRevise_Yes();
+        public abstract void SelectRdoBtn_SendEmailForRevise_No();
+        public abstract void SelectRdoBtn_Deficiencies_Yes();
+        public abstract void SelectRdoBtn_Deficiencies_No();
+        public abstract void ClickTab_Create_Revise();
+        public abstract void ClickTab_QC_Review();
+        public abstract void ClickTab_Authorization();
+        public abstract void ClickTab_Creating();
+        public abstract void ClickTab_Attachments();
+        public abstract void ClickTab_Revise();
+        public abstract void ClickTab_To_Be_Closed();
+        public abstract void ClickTab_Closed();
+        public abstract void ClickTab_Create_Packages();
+        public abstract void ClickTab_Packages();
+        public abstract void EnterText_DeficiencyDescription(string desc = "");
+        public abstract void EnterText_SectionDescription(string desc = "");
+        public abstract void EnterText_EngineerComments(string comment = "");
+        public abstract void Enter_ReadyDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00);
+        public abstract void Enter_CompletedDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00);
+        public abstract void Enter_TotalInspectionTime();
+        public abstract IList<string> GetExpectedRequiredFieldIDsList();
+        public abstract bool VerifyAndCloseDirLockedMessage();
+        public abstract bool VerifySectionDescription();
+        public abstract IList<Enum> GetResultCheckBoxIDsList();
+        public abstract IList<Enum> GetDeficienciesRdoBtnIDsList();
+        public abstract bool VerifyDeficiencySelectionPopupMessages();
+        public abstract bool VerifyDirIsDisplayed(TableTab tableTab, string dirNumber = "", bool noRecordsExpected = false);
+        public abstract IList<string> GetExpectedHoldPointReqFieldIDsList();
+        public abstract IList<string> GetExpectedEngineerCommentsReqFieldIDsList();
+        public abstract bool VerifyReqFieldErrorsForNewDir(IList<string> expectedRequiredFieldIDs = null, RequiredFieldType requiredFieldType = RequiredFieldType.Default);
+        public abstract string CreatePreviousFailingReport();
+        public abstract bool VerifyPreviousFailingDirEntry(string previousDirNumber);
+        public abstract string GetDirNumberForRow(string textInRowForAnyColumn);
+        public abstract bool VerifyAutoSaveTimerRefresh();
+        public abstract void RefreshAutoSaveTimer();
+        public abstract bool Verify_Package_Download();
+        public abstract bool Verify_Package_Created(string weekStart, string[] dirNumbers);
+        public abstract string GetDirPackageWeekStartFromRow(int rowIndex = 1);
+        public abstract string GetDirPackageWeekEndFromRow(int rowIndex = 1);
+        public abstract string GetDirPackageNewDirCountFromRow(int rowIndex = 1);
+        public abstract string GetDirPackageNumberFromRow(int rowIndex = 1);
+        public abstract string[] GetDirPackageDirNumbersFromRow(PackagesColumnName NewDIRsOrDIRs, int rowIndex = 1);
+        public abstract string CalculateDirPackageNumber(string weekStartDate);
+        public abstract void EnterText_InspectionDate(string inspectDate);
+        public abstract string GetTechIdForDirUserAcct(bool selectUserFromDDList = false, UserType dirNoDDListTech = UserType.DIRTechQA);
+        public abstract void VerifyRecreateBtnIsDisplayed(string packageNumber, string newDirNumber);
     }
 
     //Tenant Specific Classes
@@ -1691,25 +1817,25 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override void Enter_ReadyDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
         {
             shortDate = shortDate.Equals("") ? GetShortDate() : shortDate;
-            EnterText(GetTextInputFieldByLocator(InputFields.DateOnly_Ready), shortDate);
-            ExpandAndSelectFromDDList(InputFields.TimeOnly_Ready, (int)shortTime);
+            PageAction.EnterText(GetTextInputFieldByLocator(InputFields.DateOnly_Ready), shortDate);
+            PageAction.ExpandAndSelectFromDDList(InputFields.TimeOnly_Ready, (int)shortTime);
         }
 
         public override void Enter_CompletedDateTime(string shortDate = "", TimeBlock shortTime = TimeBlock.AM_12_00)
         {
             shortDate = shortDate.Equals("") ? GetShortDate() : shortDate;
-            EnterText(GetTextInputFieldByLocator(InputFields.DateOnly_Completed), shortDate);
-            ExpandAndSelectFromDDList(InputFields.TimeOnly_Completed, (int)shortTime);
+            PageAction.EnterText(GetTextInputFieldByLocator(InputFields.DateOnly_Completed), shortDate);
+            PageAction.ExpandAndSelectFromDDList(InputFields.TimeOnly_Completed, (int)shortTime);
         }
 
         public override void SelectChkbox_InspectionType_I(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_I_forSG, toggleChkboxIfAlreadySelected);
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_I_forSG, toggleChkboxIfAlreadySelected);
 
         public override void SelectChkbox_InspectionType_P(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_P_forSG, toggleChkboxIfAlreadySelected);
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_P_forSG, toggleChkboxIfAlreadySelected);
 
         public override void SelectChkbox_InspectionType_R(bool toggleChkboxIfAlreadySelected = true)
-            => SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_R_forSG, toggleChkboxIfAlreadySelected);
+            => PageAction.SelectRadioBtnOrChkbox(RadioBtnsAndCheckboxes.Inspection_Type_R_forSG, toggleChkboxIfAlreadySelected);
 
         public override void PopulateRequiredFields()
         {
@@ -1728,7 +1854,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_TotalInspectionTime();
 
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
+            TestUtility.AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_HoldPointType();
         }
 
@@ -1784,7 +1910,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_CompletedDateTime();
             Enter_TotalInspectionTime();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
+            TestUtility.AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             SelectDDL_Feature();
         }
@@ -1834,7 +1960,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             Enter_CompletedDateTime();
             Enter_TotalInspectionTime();
             ClickBtn_Save_Forward();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
+            TestUtility.AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyControlPointReqFieldErrors(), "VerifyControlPointReqFieldErrors");
             SelectDDL_ControlPointNumber();
             SelectDDL_Feature();
         }
@@ -1938,9 +2064,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Area();
             SelectDDL_SpecSection();
             SelectDDL_SpecSectionParagraph();
-            string specSectionParagraphText = GetTextFromDDL(InputFields.Spec_Section_Paragraph);
-            string spectionDescriptionText = GetText(GetTextAreaFieldByLocator(InputFields.Section_Description));
-            AddAssertionToList(specSectionParagraphText.Equals(spectionDescriptionText));
+            TestUtility.AddAssertionToList(VerifySpecSectionDescriptionAutoPopulatedData(), "VerifySpecSectionDescriptionAutoPopulatedData");
             SelectDDL_Feature();
             SelectDDL_Contractor("LINXS");
             SelectDDL_CrewForeman();

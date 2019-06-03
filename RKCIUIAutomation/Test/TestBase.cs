@@ -7,6 +7,7 @@ using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using RKCIUIAutomation.Page.PageObjects.QASearch;
 using RKCIUIAutomation.Page.PageObjects.RMCenter;
 using RKCIUIAutomation.Page.Workflows;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Test
 {
@@ -16,57 +17,46 @@ namespace RKCIUIAutomation.Test
         internal const string TestCaseNumber = "TC#";
         internal const string Priority = "Priority";
 
-        public TableHelper TableHelper
-            => new TableHelper(Driver);
+        /*
+        public ITableHelper TableHelper => new TableHelper(driver);
 
-        public TestDetails TestDetails
-            => new TestDetails(Driver);
+        public ITestDetails TestDetails => new TestDetails(driver);
 
-        public void LoginAs(UserType user)
-            => LoginPage.LoginUser(user);
+        public void LoginAs(UserType user) => LoginPage.LoginUser(user);
 
-        private ILoginPage LoginPage
-            => new LoginPage().SetClass<ILoginPage>(Driver);
+        public ILoginPage LoginPage => new LoginPage().SetClass<ILoginPage>(driver);
 
-        public IPageNavigation NavigateToPage
-            => new PageNavigation().SetClass<IPageNavigation>(Driver);
+        public IPageNavigation NavigateToPage => new PageNavigation().SetClass<IPageNavigation>(driver);
 
-        public ISearch RMCenterSearch
-            => new Search().SetClass<ISearch>(Driver);
+        public ISearch RMCenterSearch => new Search().SetClass<ISearch>(driver);
 
-        public IDesignDocument DesignDocCommentReview
-            => new DesignDocument().SetClass<IDesignDocument>(Driver);
+        public IDesignDocument DesignDocCommentReview => new DesignDocument().SetClass<IDesignDocument>(driver);
 
-        public IGeneralNCR QaRcrdCtrl_GeneralNCR
-            => new GeneralNCR().SetClass<IGeneralNCR>(Driver);
+        public IGeneralNCR QaRcrdCtrl_GeneralNCR => new GeneralNCR().SetClass<IGeneralNCR>(driver);
 
-        public IGeneralCDR QaRcrdCtrl_GeneralCDR
-            => new GeneralCDR().SetClass<IGeneralCDR>(Driver);
+        public IGeneralCDR QaRcrdCtrl_GeneralCDR => new GeneralCDR().SetClass<IGeneralCDR>(driver);
 
-        public IQADIRs QaRcrdCtrl_QaDIR
-            => new QADIRs().SetClass<IQADIRs>(Driver);
+        public IQADIRs QaRcrdCtrl_QaDIR => new QADIRs().SetClass<IQADIRs>(driver);
 
-        public IDailyInspectionReport QaSearch_DIR
-            => new DailyInspectionReport().SetClass<IDailyInspectionReport>(Driver);
+        public IDailyInspectionReport QaSearch_DIR => new DailyInspectionReport().SetClass<IDailyInspectionReport>(driver);
 
-        public IInspectionDeficiencyLogReport QaSearch_InspctDefncyLogRprt
-            => new InspectionDeficiencyLogReport().SetClass<IInspectionDeficiencyLogReport>(Driver);
+        public IInspectionDeficiencyLogReport QaSearch_InspctDefncyLogRprt => new InspectionDeficiencyLogReport().SetClass<IInspectionDeficiencyLogReport>(driver);
 
-        public IProjectCorrespondenceLog ProjCorrespondenceLog
-            => new ProjectCorrespondenceLog().SetClass<IProjectCorrespondenceLog>(Driver);
+        public IProjectCorrespondenceLog ProjCorrespondenceLog => new ProjectCorrespondenceLog().SetClass<IProjectCorrespondenceLog>(driver);
 
         #region Workflow SetClass method calls
 
-        public ILinkCoverageWF WF_LinkCoverage => new LinkCoverageWF().SetClass<ILinkCoverageWF>(Driver);
+        public ILinkCoverageWF WF_LinkCoverage => new LinkCoverageWF().SetClass<ILinkCoverageWF>(driver);
 
-        public IDesignDocumentWF WF_DesignDocCommentReview => new DesignDocumentWF().SetClass<IDesignDocumentWF>(Driver);
+        public IDesignDocumentWF WF_DesignDocCommentReview => new DesignDocumentWF().SetClass<IDesignDocumentWF>(driver);
 
-        public IQaRcrdCtrl_GeneralNCR_WF WF_QaRcrdCtrl_GeneralNCR => new QaRcrdCtrl_GeneralNCR_WF().SetClass<IQaRcrdCtrl_GeneralNCR_WF>(Driver);
+        public IQaRcrdCtrl_GeneralNCR_WF WF_QaRcrdCtrl_GeneralNCR => new QaRcrdCtrl_GeneralNCR_WF().SetClass<IQaRcrdCtrl_GeneralNCR_WF>(driver);
 
-        public IQaRcrdCtrl_GeneralCDR_WF WF_QaRcrdCtrl_GeneralCDR => new QaRcrdCtrl_GeneralCDR_WF().SetClass<IQaRcrdCtrl_GeneralCDR_WF>(Driver);
+        public IQaRcrdCtrl_GeneralCDR_WF WF_QaRcrdCtrl_GeneralCDR => new QaRcrdCtrl_GeneralCDR_WF().SetClass<IQaRcrdCtrl_GeneralCDR_WF>(driver);
 
-        public IQaRcrdCtrl_QaDIR_WF WF_QaRcrdCtrl_QaDIR => new QaRcrdCtrl_QaDIR_WF().SetClass<IQaRcrdCtrl_QaDIR_WF>(Driver);
+        public IQaRcrdCtrl_QaDIR_WF WF_QaRcrdCtrl_QaDIR => new QaRcrdCtrl_QaDIR_WF().SetClass<IQaRcrdCtrl_QaDIR_WF>(driver);
 
         #endregion Workflow SetClass method calls
+        */
     }
 }

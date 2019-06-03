@@ -7,6 +7,7 @@ using System;
 using System.Threading;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 using static RKCIUIAutomation.Page.Workflows.DesignDocumentWF;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -20,35 +21,33 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public enum CR_Workflow
         {
-            CreateComment,
-            EnterComment,
-            ForwardComment,
-            EnterComment_DOT,
-            ForwardComment_DOT,
-            EnterResponse,
-            ForwardResponse,
-            EnterResolution,
-            ForwardResolution,
-            ClosingComment, 
-            ForwardClosingComment
+            [StringValue("")] CreateComment,
+            [StringValue("Requires Comment")] EnterComment,
+            [StringValue("")] ForwardComment,
+            [StringValue("")] EnterComment_DOT,
+            [StringValue("")] ForwardComment_DOT,
+            [StringValue("")] EnterResponse,
+            [StringValue("")] ForwardResponse,
+            [StringValue("Requires Resolution")] EnterResolution,
+            [StringValue("")] ForwardResolution,
+            [StringValue("Requires Closing")] ClosingComment,
+            [StringValue("")] ForwardClosingComment
         }
 
         private bool AlreadyInDesignDocumentPage()
             => VerifyPageHeader("Design Document");
-        
-        public override void LoginToDesignDocuments(CR_Workflow workflow)
+            
+        // IQF User - AtCRCreate@rkci.com - CreateComment & EnterComment(SG & SH249)
+        // IQF Records Mgr - CreateComment(SG & SH249) & FwdComment(SH249)
+        // DOT User - ATCRComment @rkci.com - EnterComment
+        // DOT Admin - ATCRCommentAdmin@rkci.com - FwdComment
+        // IQF Admin - FwdComment(SG) & EnterResolution(SG)
+        // *Dev User - ATCRResponse@rkci.com - EnterResponse
+        // *Dev Admin - ATCRResponseAdmin@rkci.com - FwdResponse    
+        // *Dev User - ATCRVerify@rkci.com       
+        // *Dev Admin - ATCRVerifyAdmin@rkci.com
+        public override void LogIntoDesignDocumentsPage(CR_Workflow workflow)
         {
-            /**
-            // IQF User - AtCRCreate@rkci.com - CreateComment & EnterComment(SG & SH249)
-            // IQF Records Mgr - CreateComment(SG & SH249) & FwdComment(SH249)
-            // DOT User - ATCRComment @rkci.com - EnterComment
-            // DOT Admin - ATCRCommentAdmin@rkci.com - FwdComment
-            // IQF Admin - FwdComment(SG) & EnterResolution(SG)
-            // *Dev User - ATCRResponse@rkci.com - EnterResponse
-            // *Dev Admin - ATCRResponseAdmin@rkci.com - FwdResponse    
-            // *Dev User - ATCRVerify@rkci.com       
-            // *Dev Admin - ATCRVerifyAdmin@rkci.com
-            */
             var currentTenant = tenantName;
             UserType userAcct = UserType.Bhoomi;
 
@@ -81,6 +80,36 @@ namespace RKCIUIAutomation.Page.Workflows
                     }
                     break;
 
+                case TenantName.SH249:
+                    switch (workflow)
+                    {
+                        case CR_Workflow.CreateComment:
+                            userAcct = UserType.IQFRecordsMgr;
+                            break;
+                        case CR_Workflow.EnterComment:
+                            userAcct = UserType.IQFUser;
+                            break;
+                        case CR_Workflow.ForwardComment:
+                            userAcct = UserType.IQFRecordsMgr;
+                            break;
+                        case CR_Workflow.EnterResponse:
+                            userAcct = UserType.IQFAdmin;
+                            break;
+                        case CR_Workflow.ForwardResponse:
+                            userAcct = UserType.IQFAdmin;
+                            break;
+                        case CR_Workflow.EnterResolution:
+                            userAcct = UserType.IQFAdmin;
+                            break;
+                        case CR_Workflow.ForwardResolution:
+                            userAcct = UserType.IQFAdmin;
+                            break;
+                        case CR_Workflow.ClosingComment:
+                            userAcct = UserType.IQFAdmin;
+                            break;
+                    }
+                    break;
+
                 case TenantName.SGWay:
                     switch (workflow)
                     {
@@ -104,36 +133,6 @@ namespace RKCIUIAutomation.Page.Workflows
                             break;
                         case CR_Workflow.ForwardResponse:
                             userAcct = UserType.DEVAdmin;
-                            break;
-                        case CR_Workflow.EnterResolution:
-                            userAcct = UserType.IQFAdmin;
-                            break;
-                        case CR_Workflow.ForwardResolution:
-                            userAcct = UserType.IQFAdmin;
-                            break;
-                        case CR_Workflow.ClosingComment:
-                            userAcct = UserType.IQFAdmin;
-                            break;
-                    }
-                    break;
-
-                case TenantName.SH249:
-                    switch (workflow)
-                    {
-                        case CR_Workflow.CreateComment:
-                            userAcct = UserType.IQFRecordsMgr;
-                            break;
-                        case CR_Workflow.EnterComment:
-                            userAcct = UserType.IQFUser;
-                            break;
-                        case CR_Workflow.ForwardComment:
-                            userAcct = UserType.IQFRecordsMgr;
-                            break;
-                        case CR_Workflow.EnterResponse:
-                            userAcct = UserType.IQFAdmin;
-                            break;
-                        case CR_Workflow.ForwardResponse:
-                            userAcct = UserType.IQFAdmin;
                             break;
                         case CR_Workflow.EnterResolution:
                             userAcct = UserType.IQFAdmin;
@@ -184,20 +183,29 @@ namespace RKCIUIAutomation.Page.Workflows
                 NavigateToPage.RMCenter_Design_Documents();
             }
 
+            DesignDocCommentReview.SetDesignDocStatus(workflow);
+
             WaitForPageReady();
         }
 
+        public override void CreateCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment)
+        {
+            LogIntoDesignDocumentsPage(workflowType);
+            AddAssertionToList_VerifyPageHeader("Design Document", "CreateCommentReviewDocument");
+            //AddAssertionToList(VerifyPageHeader("Design Document"), "VerifyPageTitle(\"Design Document\")");
+            DesignDocCommentReview.CreateDocument();
+        }
     }
 
     public interface IDesignDocumentWF
     {
-        void LoginToDesignDocuments(CR_Workflow workflowType);
+        void LogIntoDesignDocumentsPage(CR_Workflow workflowType);
 
         void TCWF_CommentReviewRegularComment();
 
         void TCWF_CommentReviewNoComment();
 
-        void CreateDesignDocCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment);
+        void CreateCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment);
 
         void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment);
 
@@ -224,9 +232,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public abstract class DesignDocumentWF_Impl : TestBase, IDesignDocumentWF
     {
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private IDesignDocumentWF SetPageClassBasedOnTenant(IWebDriver driver)
+        public T SetClass<T>(IWebDriver driver)
         {
             IDesignDocumentWF instance = new DesignDocumentWF(driver);
 
@@ -265,30 +271,24 @@ namespace RKCIUIAutomation.Page.Workflows
                 log.Info($"###### using DesignDocumentWF_LAX instance ###### ");
                 instance = new DesignDocumentWF_LAX(driver);
             }
-            return instance;
+            return (T)instance;
         }
-
-        //internal DesignDocumentWF DesignDocWF => new DesignDocumentWF(Driver);
 
         public virtual void FilterTableAndEditDoc(string docNumber = "")
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
-            ClickEnterBtnForRow();
+            GridHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.VerifyDesignDocDetailsHeader();
             DesignDocCommentReview.WaitForActiveCommentTab();
         }
 
         //All Tenants
-        public virtual void CreateDesignDocCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment)
-        {
-            LoginToDesignDocuments(workflowType);
-            AddAssertionToList(VerifyPageHeader("Design Document"), "VerifyPageTitle(\"Design Document\")");
-            DesignDocCommentReview.CreateDocument();
-        }
+        public abstract void CreateCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment);
 
         //Garnet and GLX
         public virtual void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             FilterTableAndEditDoc();
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
         }
@@ -296,14 +296,14 @@ namespace RKCIUIAutomation.Page.Workflows
         //Garnet and GLX
         public virtual void EnterNoComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             FilterTableAndEditDoc();
             DesignDocCommentReview.EnterNoComment();
         }
 
         public virtual void ForwardComment(CR_Workflow workflowType = CR_Workflow.ForwardComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_SaveForward();
             DesignDocCommentReview.WaitForActiveCommentTab();
@@ -312,7 +312,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void ForwardResponseComment(CR_Workflow workflowType = CR_Workflow.ForwardResponse)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Response();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -320,7 +320,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public virtual void EnterResponseAndDisagreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Response();
             FilterTableAndEditDoc();
             EnterResponseCommentAndDisagreeResponseCode();
@@ -338,10 +338,10 @@ namespace RKCIUIAutomation.Page.Workflows
         //Garnet
         public virtual void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResolution)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
-            DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentResolutionInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField.CommentResolutionInput);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             Thread.Sleep(2000);
@@ -351,14 +351,14 @@ namespace RKCIUIAutomation.Page.Workflows
         public virtual void EnterResponseCommentAndDisagreeResponseCode()
         {
             // Login as user to make response comment (All tenants - DevUser)
-            DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentResponseInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField.CommentResponseInput);
             DesignDocCommentReview.SelectDisagreeResponseCode(); //agree then different workflow
             DesignDocCommentReview.ClickBtn_SaveOnly();
         }
 
         public virtual void EnterResponseAndAgreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Response();
             FilterTableAndEditDoc();
             DesignDocCommentReview.EnterResponseCommentAndAgreeResponseCode();
@@ -377,33 +377,33 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         public virtual void TCWF_CommentReviewRegularComment()
         {
-            LogInfo("--------------------------1.Login As IQF User and Create Document----------------------");
-            CreateDesignDocCommentReviewDocument();//UserType.IQFUser
+            Report.Step("STEP: 1.Login As IQF User and Create Document", true);
+            CreateCommentReviewDocument();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2.Login As DOT User and Enter Regular Comment----------------------");
+            Report.Step("STEP: 2.Login As DOT User and Enter Regular Comment", true);
             EnterRegularComment(CR_Workflow.EnterComment_DOT);//UserType.DOTUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Login As DOT Admin and Forward Comment----------------------");
+            Report.Step("STEP: 3. Login As DOT Admin and Forward Comment", true);
             ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------4.Login As DEV User, Enter Response and Disagree Response Code----------------------");
+            Report.Step("STEP: 4.Login As DEV User, Enter Response and Disagree Response Code", true);
             EnterResponseAndDisagreeResponseCode();//UserType.DEVUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------5. Login As DEV Admin and Forward Response Comment----------------------");
+            Report.Step("STEP: 5. Login As DEV Admin and Forward Response Comment", true);
             ForwardResponseComment();//UserType.DEVAdmin
 
-            LogInfo("--------------------------6. DEV Admin enters Resolution='Disagree workflow'----------------------");
+            Report.Step("STEP: 6. DEV Admin enters Resolution='Disagree workflow'", true);
             EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
 
-            LogInfo("--------------------------7. DEV Admin forwards Resolution='Disagree workflow'----------------------");
+            Report.Step("STEP: 7. DEV Admin forwards Resolution='Disagree workflow'", true);
             ForwardResolutionCommentAndCodeForDisagreeResponse();
 
-            LogInfo("--------------------------8. DEV Admin verifies if record in closed tab ----------------------");
-            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
+            Report.Step("STEP: 8. DEV Admin verifies if record in closed tab", true);
+            DesignDocCommentReview.VerifyItemStatusIsClosed();
         }
 
         /// <summary>
@@ -411,22 +411,23 @@ namespace RKCIUIAutomation.Page.Workflows
         /// </summary>
         public virtual void TCWF_CommentReviewNoComment()
         {
-            LogInfo("--------------------------1.Login As IQF User and Create Document----------------------");
-            CreateDesignDocCommentReviewDocument();//UserType.IQFUser
+            Report.Step("STEP: 1.Login As IQF User and Create Document", true);
+            CreateCommentReviewDocument();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2.Login As DOT User and enter no comment----------------------");
+            Report.Step("STEP: 2.Login As DOT User and enter no comment", true);
             EnterNoComment(CR_Workflow.EnterComment_DOT);//UserType.DOTUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Login As DOT Admin and Forward Comment----------------------");
+            Report.Step("STEP: 3. Login As DOT Admin and Forward Comment", true);
             ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
 
-            LogInfo("--------------------------4. DEV Admin verifies if record in closed tab ----------------------");
-            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
+            Report.Step("STEP: 4. DEV Admin verifies if record in closed tab", true);
+            DesignDocCommentReview.VerifyItemStatusIsClosed();
         }
 
-        public abstract void LoginToDesignDocuments(CR_Workflow workflowType);
+        public abstract void LogIntoDesignDocumentsPage(CR_Workflow workflowType);
+
     }
 
     internal class DesignDocumentWF_GLX : DesignDocumentWF
@@ -444,10 +445,10 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResolution)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Pending_Resolution();
             FilterTableAndEditDoc();
-            DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentResolutionInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField.CommentResolutionInput);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             Thread.Sleep(2000);
@@ -470,53 +471,53 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void TCWF_CommentReviewRegularComment()
         {
-            LogInfo("--------------------------1. Log in as IQF RecordsManager'----------------------");
-            CreateDesignDocCommentReviewDocument();//UserType.IQFRecordsMgr
+            Report.Step("STEP: 1. Log in as IQF RecordsManager", true);
+            CreateCommentReviewDocument();//UserType.IQFRecordsMgr
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as IQF User, enters Comments----------------------");
+            Report.Step("STEP: 2. Log in as IQF User, enters Comments", true);
             EnterRegularComment();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as IQF Admin, forwards Comments----------------------");
+            Report.Step("STEP: 3. Log in as IQF Admin, forwards Comments", true);
             ForwardComment();//UserType.IQFRecordsMgr  //Workaround: using IQF Rcrds Mgr, instead of IQF Admin
 
-            LogInfo("-------------------------4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode----------------------");
+            Report.Step("STEP: 4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode", true);
             EnterResponseCommentAndDisagreeResponseCode();
 
-            LogInfo("--------------------------5. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+            Report.Step("STEP: 5. Log in as IQF Admin, Enters,forwards closing comment", true);
             EnterClosingCommentAndCode();
 
-            LogInfo("--------------------------6. IQF Admin verifies if record in closed tab ----------------------");
-            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
+            Report.Step("STEP: 6. IQF Admin verifies if record in closed tab", true);
+            DesignDocCommentReview.VerifyItemStatusIsClosed();
         }
 
         public override void TCWF_CommentReviewNoComment()
         {
-            LogInfo("--------------------------1. Log in as IQF RecordsManager'----------------------");
-            CreateDesignDocCommentReviewDocument();//UserType.IQFRecordsMgr
+            Report.Step("STEP: 1. Log in as IQF RecordsManager", true);
+            CreateCommentReviewDocument();//UserType.IQFRecordsMgr
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as IQF User, enter no Comments----------------------");
+            Report.Step("STEP: 2. Log in as IQF User, enter no Comments", true);
             EnterNoComment();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as IQF Admin, forwards Comments----------------------");
+            Report.Step("STEP: 3. Log in as IQF Admin, forwards Comments", true);
             ForwardComment();//UserType.IQFRecordsMgr  //Workaround: using IQF Rcrds Mgr, instead of IQF Admin
 
             //LogInfo("-------------------------4. Log in as IQF Admin, Enters,forwards Response and Resolution stampcode----------------------");
             //EnterResponseCommentAndDisagreeResponseCode();
 
-            LogInfo("--------------------------4. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+            Report.Step("STEP: 4. Log in as IQF Admin, Enters,forwards closing comment", true);
             EnterClosingCommentAndCode();
 
-            LogInfo("--------------------------5. IQF Admin verifies if record in closed tab ----------------------");
-            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
+            Report.Step("STEP: 5. IQF Admin verifies if record in closed tab", true);
+            DesignDocCommentReview.VerifyItemStatusIsClosed();
         }
 
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Comment();
             FilterTableAndEditDoc();
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
@@ -524,7 +525,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterNoComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Comment();
             FilterTableAndEditDoc();
             DesignDocCommentReview.EnterNoComment();
@@ -532,11 +533,12 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void ForwardComment(CR_Workflow workflowType = CR_Workflow.ForwardComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Comment();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ScrollToLastColumn();
             DesignDocCommentReview.ClickBtn_SaveForward();
+            WaitForPageReady();
         }
 
         public override void EnterResponseCommentAndDisagreeResponseCode()
@@ -546,8 +548,8 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentResponseInput);
-            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentResolutionInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField_InTable.CommentResponseInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField_InTable.CommentResolutionInput);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_Update();
             WaitForPageReady();
@@ -561,19 +563,20 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickTab_Requires_Closing();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentClosingInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField_InTable.CommentClosingInput);
             DesignDocCommentReview.SelectDDL_ClosingStamp();
             DesignDocCommentReview.ClickBtn_Update();
             DesignDocCommentReview.ClickBtn_SaveForward();
 
-            log.Warn("!!!Clicked BackToList button - workaround for bug EPA-2887!!!");
-            DesignDocCommentReview.ClickBtn_BackToList();
+            //log.Warn("!!!Clicked BackToList button - workaround for bug EPA-2887!!!");
+            //DesignDocCommentReview.ClickBtn_BackToList();
         }
 
         public override void FilterTableAndEditDoc(string docNumber = "")
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
-            ClickEnterBtnForRow();
+            GridHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.VerifyDesignDocDetailsHeader();
         }
     }
 
@@ -585,111 +588,111 @@ namespace RKCIUIAutomation.Page.Workflows
         
         public override void TCWF_CommentReviewRegularComment()
         {
-            LogInfo("--------------------------1. Log in as IQFRMgr and Create Document----------------------");
-            CreateDesignDocCommentReviewDocument();//UserType.IQFRecordsMgr
+            Report.Step("STEP: 1. Log in as IQFRMgr and Create Document", true);
+            CreateCommentReviewDocument();//UserType.IQFRecordsMgr
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as DOT User, enters Comments----------------------");
+            Report.Step("STEP: 2. Log in as DOT User, enters Comments", true);
             EnterRegularComment(CR_Workflow.EnterComment_DOT);//UserType.DOTUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as IQF User, enters Comments----------------------");
+            Report.Step("STEP: 3. Log in as IQF User, enters Comments", true);
             EnterRegularComment();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------4. Log in as DOT Admin, forwards Comments----------------------");
+            Report.Step("STEP: 4. Log in as DOT Admin, forwards Comments", true);
             ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------5. Log in as IQF Admin, forwards Comments----------------------");
+            Report.Step("STEP: 5. Log in as IQF Admin, forwards Comments", true);
             ForwardComment();//UserType.IQFAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------6. Log in as DEV User, enters Response and Disagree Response Code----------------------");
+            Report.Step("STEP: 6. Log in as DEV User, enters Response and Disagree Response Code", true);
             EnterResponseAndDisagreeResponseCode();//UserType.DEVUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------7. Log in as DEV Admin, forwards Response Comments----------------------");
+            Report.Step("STEP: 7. Log in as DEV Admin, forwards Response Comments", true);
             ForwardResponseComment();//UserType.DEVAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------8. Log in as IQF Admin, Add Resolution Comment for Disagree workflow ----------------------");
+            Report.Step("STEP: 8. Log in as IQF Admin, Add Resolution Comment for Disagree workflow", true);
             EnterResolutionCommentAndResolutionCodeforDisagreeResponse();//UserType.IQFAdmin
 
-            LogInfo("--------------------------9. Log in as IQF Admin, forwards Resolution----------------------");
+            Report.Step("STEP: 9. Log in as IQF Admin, forwards Resolution", true);
             ForwardResolutionCommentAndCodeForDisagreeResponse();
 
-            LogInfo("--------------------------10. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+            Report.Step("STEP: 10. Log in as IQF Admin, Enters,forwards closing comment", true);
             EnterAndForwardClosingComment();
 
-            LogInfo("--------------------------11. IQF Admin verifies if record in closed tab ----------------------");
-            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
+            Report.Step("STEP: 11. IQF Admin verifies if record in closed tab", true);
+            DesignDocCommentReview.VerifyItemStatusIsClosed();
         }
         
         public override void TCWF_CommentReviewNoComment()
         {
-            LogInfo("--------------------------No comment Workflow begins----------------------");
-            LogInfo("--------------------------1. Log in as IQFRM'----------------------");
-            CreateDesignDocCommentReviewDocument();//UserType.IQFRecordsMgr
+            Report.Step("STEP: 1. Log in as IQFRM", true);
+            CreateCommentReviewDocument();//UserType.IQFRecordsMgr
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as DOT User, enter no Comments----------------------");
+            Report.Step("STEP: 2. Log in as DOT User, enter no Comments", true);
             EnterNoComment(CR_Workflow.EnterComment_DOT);//UserType.DOTUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as IQF User, enter no Comments----------------------");
+            Report.Step("STEP: 3. Log in as IQF User, enter no Comments", true);
             EnterNoComment();//UserType.IQFUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------4. Log in as DOT Admin, forwards Comments----------------------");
+            Report.Step("STEP: 4. Log in as DOT Admin, forwards Comments", true);
             ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------5. Log in as IQF Admin, forwards Comments----------------------");
+            Report.Step("STEP: 5. Log in as IQF Admin, forwards Comments", true);
             ForwardComment();//UserType.IQFAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------6. Log in as DEV User, enters Response and Agree Response Code----------------------");
+            Report.Step("STEP: 6. Log in as DEV User, enters Response and Agree Response Code", true);
             EnterResponseAndAgreeResponseCode();//UserType.DEVUser
             LogoutToLoginPage();
 
-            LogInfo("--------------------------7. Log in as DEV Admin, forwards Response Comments----------------------");
+            Report.Step("STEP: 7. Log in as DEV Admin, forwards Response Comments", true);
             ForwardResponseComment();//UserType.DEVAdmin
             LogoutToLoginPage();
 
-            LogInfo("--------------------------8. Log in as IQF Admin, Enters,forwards closing comment----------------------");
+            Report.Step("STEP: 8. Log in as IQF Admin, Enters,forwards closing comment", true);
             EnterAndForwardClosingComment();//UserType.IQFAdmin
 
-            LogInfo("--------------------------9. IQF Admin verifies if record in closed tab ----------------------");
-            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
+            Report.Step("STEP: 9. IQF Admin verifies if record in closed tab", true);
+            DesignDocCommentReview.VerifyItemStatusIsClosed();
         }
-
+        
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             FilterTableAndEditDoc();
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
         }
 
         public override void EnterNoComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             FilterTableAndEditDoc();
             DesignDocCommentReview.EnterNoComment();
         }
 
         public override void ForwardComment(CR_Workflow workflowType = CR_Workflow.ForwardComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Comment();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_SaveForward();
             Thread.Sleep(2000);
+            WaitForPageReady();
         }
 
         public override void ForwardResponseComment(CR_Workflow workflowType = CR_Workflow.ForwardResponse)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Response();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -697,7 +700,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterResponseAndDisagreeResponseCode(CR_Workflow workflowType = CR_Workflow.EnterResponse)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Response();
             FilterTableAndEditDoc();
             EnterResponseCommentAndDisagreeResponseCode();
@@ -705,15 +708,15 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResolution)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
-            DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentResolutionInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField.CommentResolutionInput);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             int commentTabNumber = 2;
             DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
-            DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentResolutionInput, commentTabNumber);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField.CommentResolutionInput, commentTabNumber);
             DesignDocCommentReview.SelectDisagreeResolutionCode(commentTabNumber);
             DesignDocCommentReview.ClickBtn_SaveOnly();
             DesignDocCommentReview.ClickBtn_BackToList();
@@ -728,19 +731,19 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
-            DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentResponseInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField.CommentResponseInput);
             DesignDocCommentReview.SelectDisagreeResponseCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             int commentTabNumber = 2;
             DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
-            DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentResponseInput, commentTabNumber);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField.CommentResponseInput, commentTabNumber);
             DesignDocCommentReview.SelectDisagreeResponseCode(commentTabNumber);
             DesignDocCommentReview.ClickBtn_SaveOnly();
         }
 
         public override void EnterAndForwardClosingComment(CR_Workflow workflowType = CR_Workflow.ClosingComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Pending_Closing();
             FilterTableAndEditDoc();
             EnterClosingCommentAndCode();
@@ -749,12 +752,12 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void EnterClosingCommentAndCode()
         {
             WaitForPageReady();
-            DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentClosingInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField.CommentClosingInput);
             DesignDocCommentReview.SelectDDL_ClosingStamp();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             int commentTabNumber = 2;
             DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
-            DesignDocCommentReview.EnterTextInCommentField(CommentType.CommentClosingInput, commentTabNumber);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField.CommentClosingInput, commentTabNumber);
             DesignDocCommentReview.SelectDDL_ClosingStamp(commentTabNumber);
             DesignDocCommentReview.ClickBtn_SaveOnly();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -785,12 +788,13 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void FilterTableAndEditDoc(string docNumber = "")
         {
             DesignDocCommentReview.FilterDocNumber(docNumber);
-            ClickEnterBtnForRow();
+            GridHelper.ClickEnterBtnForRow();
+            DesignDocCommentReview.VerifyDesignDocDetailsHeader();
         }
 
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Comment();
             FilterTableAndEditDoc();
             DesignDocCommentReview.EnterRegularCommentAndDrawingPageNo();
@@ -798,23 +802,21 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void ForwardComment(CR_Workflow workflowType = CR_Workflow.ForwardComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Comment();
             FilterTableAndEditDoc();
-
-            DesignDocument ddBase = new DesignDocument();
-            ddBase.ScrollToLastColumn();
-            
+            DesignDocCommentReview.ScrollToLastColumn();            
             DesignDocCommentReview.ClickBtn_SaveForward();
+            WaitForPageReady();
         }
 
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
-            LoginToDesignDocuments(CR_Workflow.EnterResponse);
+            LogIntoDesignDocumentsPage(CR_Workflow.EnterResponse);
             DesignDocCommentReview.ClickTab_Response();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.CommentResponseInput);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField_InTable.CommentResponseInput);
             DesignDocCommentReview.SelectDisagreeResponseCode(3);
             WaitForPageReady();
             //DesignDocCommentReview.ClickBtn_SaveForward();
@@ -822,7 +824,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void ForwardResponseComment(CR_Workflow workflowType = CR_Workflow.ForwardResponse)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Response();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
@@ -831,18 +833,18 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterAndForwardClosingComment(CR_Workflow workflowType = CR_Workflow.ClosingComment)
         {
-            LoginToDesignDocuments(workflowType);
+            LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Verification();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.VerifiedBy);
-            DesignDocCommentReview.EnterTextInCommentField(PkgComments_TblHeader.VerifiedDate);
-            DesignDocCommentReview.EnterTextInCommentField(CommentType_InTable.VerificationNotes);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField_InTable.VerifiedBy);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField_InTable.VerifiedDate);
+            DesignDocCommentReview.EnterTextInCommentField(CommentEntryField_InTable.VerificationNotes);
             DesignDocCommentReview.SelectDDL_VerificationCode();
             WaitForPageReady();
             LogoutToLoginPage();
 
-            LoginToDesignDocuments(CR_Workflow.ForwardClosingComment);
+            LogIntoDesignDocumentsPage(CR_Workflow.ForwardClosingComment);
             DesignDocCommentReview.ClickTab_Verification();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
@@ -851,31 +853,31 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void TCWF_CommentReviewRegularComment()
         {
-            LogInfo("--------------------------1. Log in as ATCRCreate User, upload and forward to comment'----------------------");
-            CreateDesignDocCommentReviewDocument();
+            Report.Step("STEP: 1. Log in as ATCRCreate User, upload and forward to comment", true);
+            CreateCommentReviewDocument();
             LogoutToLoginPage();
 
-            LogInfo("--------------------------2. Log in as ATCRComment User, enters Comment----------------------");
+            Report.Step("STEP: 2. Log in as ATCRComment User, enters Comment", true);
             EnterRegularComment();
             LogoutToLoginPage();
 
-            LogInfo("--------------------------3. Log in as ATCRComment Admin, forwards Comments to response----------------------");
+            Report.Step("STEP: 3. Log in as ATCRComment Admin, forwards Comments to response", true);
             ForwardComment();
             LogoutToLoginPage();
 
-            LogInfo("-------------------------4. Log in as ATCRResponse User, enters Response and Resolution stampcode to verification----------------------");
+            Report.Step("STEP: 4. Log in as ATCRResponse User, enters Response and Resolution stampcode to verification", true);
             EnterResponseCommentAndDisagreeResponseCode();
             LogoutToLoginPage();
 
-            LogInfo("-------------------------5. Log in as ATCRResponse Admin, enters Response and Resolution stampcode to verification----------------------");
+            Report.Step("STEP: 5. Log in as ATCRResponse Admin, enters Response and Resolution stampcode to verification", true);
             ForwardResponseComment();
             LogoutToLoginPage();
 
-            LogInfo("--------------------------8. Log in as Enter Closing Comment as ATCRVerify and forward as ATCRVerify Admin (Resolution='Disagree workflow')----------------------");
+            Report.Step("STEP: 6. Log in as ATCRVerify, enter Closing Comment and forward as ATCRVerify Admin (Resolution='Disagree workflow')", true);
             EnterAndForwardClosingComment();
 
-            LogInfo("--------------------------9. ATCRVerify Admin verifies if record in closed tab ----------------------");
-            Assert.True(DesignDocCommentReview.VerifyItemStatusIsClosed());
+            Report.Step("STEP: 7. ATCRVerify Admin verifies if record in closed tab", true);
+            DesignDocCommentReview.VerifyItemStatusIsClosed();
         }
     }
 }

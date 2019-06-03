@@ -3,6 +3,7 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Test;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralCDR;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -13,10 +14,111 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         public QaRcrdCtrl_GeneralCDR_WF(IWebDriver driver) => this.Driver = driver;
+
+        public override void AddAssertion_VerifyCDRPageHeader(string methodName)
+            => AddAssertionToList_VerifyPageHeader("List of CDR Reports", methodName);
+
+        /// <summary>
+        /// Verifies Required field error labels in a new document then populates required fields and clicks Save & Forward button
+        /// <para>Returns unique CDR document description string value</para>
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public override string CreateAndSaveForwardCDRDocument(UserType user)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            AddAssertion_VerifyCDRPageHeader("CreateAndSaveForwardCDRDocument()");
+            QaRcrdCtrl_GeneralCDR.ClickBtn_New();
+            QaRcrdCtrl_GeneralCDR.PopulateRequiredFieldsAndSaveForward();
+            return QaRcrdCtrl_GeneralCDR.GetCDRDocDescription();
+        }
+
+        public override void ReviewCDRDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            AddAssertion_VerifyCDRPageHeader("ReviewCDRDocument()");
+            QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            GridHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+        }
+
+        public override void DispositionCDRDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            AddAssertion_VerifyCDRPageHeader("DispositionCDRDocument()");
+            QaRcrdCtrl_GeneralCDR.ClickTab_Disposition();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            GridHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+        }
+
+        public override void KickBackToDispositionCDR(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            AddAssertion_VerifyCDRPageHeader("KickBackToDispositionCDR()");
+            QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            GridHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_Disposition();
+        }
+        public override void KickBackToQCReviewCDR(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            AddAssertion_VerifyCDRPageHeader("KickBackToQCReviewCDR()");
+            QaRcrdCtrl_GeneralCDR.ClickTab_Disposition();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            GridHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_QC_Review();
+        }
+
+        public override void ReviewAndApproveCDRDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            AddAssertion_VerifyCDRPageHeader("ReviewAndApproveCDRDocument()");
+            QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            GridHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            GridHelper.ClickEditBtnForRow();
+        }
+
+        public override void ReviewAndReviseCDRDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            AddAssertion_VerifyCDRPageHeader("ReviewAndReviseCDRDocument()");
+            QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            GridHelper.ClickEditBtnForRow();
+
+            QaRcrdCtrl_GeneralCDR.ClickBtn_Revise();
+        }
+
+        public override void CloseDocument(UserType user, string cdrDescription)
+        {
+            LoginAs(user);
+            NavigateToPage.QARecordControl_General_CDR();
+            AddAssertion_VerifyCDRPageHeader("CloseDocument()");
+            QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
+            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
+            GridHelper.ClickEditBtnForRow();
+            QaRcrdCtrl_GeneralCDR.ClickBtn_CloseCDR();
+        }
+
     }
 
     public interface IQaRcrdCtrl_GeneralCDR_WF
     {
+        void AddAssertion_VerifyCDRPageHeader(string methodName);
+
         /// <summary>
         /// Verifies Required field error labels in a new document then populates required fields and clicks Save & Forward button
         /// <para>Returns unique CDR document description string value</para>
@@ -42,9 +144,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public abstract class QaRcrdCtrl_GeneralCDR_WF_Impl : TestBase, IQaRcrdCtrl_GeneralCDR_WF
     {
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private IQaRcrdCtrl_GeneralCDR_WF SetPageClassBasedOnTenant(IWebDriver driver)
+        public T SetClass<T>(IWebDriver driver)
         {
             IQaRcrdCtrl_GeneralCDR_WF instance = new QaRcrdCtrl_GeneralCDR_WF(driver);
 
@@ -83,113 +183,22 @@ namespace RKCIUIAutomation.Page.Workflows
                 log.Info($"###### using QaRcrdCtrl_GeneralCDR_WF_LAX instance ###### ");
                 instance = new QaRcrdCtrl_GeneralCDR_WF_LAX(driver);
             }
-            return instance;
+            return (T)instance;
         }
 
-        /// <summary>
-        /// Verifies Required field error labels in a new document then populates required fields and clicks Save & Forward button
-        /// <para>Returns unique CDR document description string value</para>
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        public virtual string CreateAndSaveForwardCDRDocument(UserType user)
-        {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_CDR();
-            AddAssertionToList(VerifyPageHeader("List of CDR Reports"), "VerifyPageTitle");
-            QaRcrdCtrl_GeneralCDR.ClickBtn_New();
-            QaRcrdCtrl_GeneralCDR.PopulateRequiredFieldsAndSaveForward();
-            return QaRcrdCtrl_GeneralCDR.GetCDRDocDescription();
-        }
-
-        public virtual void ReviewCDRDocument(UserType user, string cdrDescription)
-        {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageHeader("List of CDR Reports"));
-            QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
-            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
-        }
-
-        public virtual void DispositionCDRDocument(UserType user, string cdrDescription)
-        {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageHeader("List of CDR Reports"));
-            QaRcrdCtrl_GeneralCDR.ClickTab_Disposition();
-            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
-        }
-
-        public virtual void KickBackToDispositionCDR(UserType user, string cdrDescription)
-        {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageHeader("List of CDR Reports"));
-            QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
-            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_Disposition();
-        }
-        public virtual void KickBackToQCReviewCDR(UserType user, string cdrDescription)
-        {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageHeader("List of CDR Reports"));
-            QaRcrdCtrl_GeneralCDR.ClickTab_Disposition();
-            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_QC_Review();
-        }
-
-        public virtual void ReviewAndApproveCDRDocument(UserType user, string cdrDescription)
-        {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageHeader("List of CDR Reports"));
-            QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
-            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
-
-            QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
-           
-           
-            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
-        }
-
-        public virtual void ReviewAndReviseCDRDocument(UserType user, string cdrDescription)
-        {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageHeader("List of CDR Reports"));
-            QaRcrdCtrl_GeneralCDR.ClickTab_QC_Review();
-            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
-
-            QaRcrdCtrl_GeneralCDR.ClickBtn_Revise();
-
-
-        }
-
-        public virtual void CloseDocument(UserType user, string cdrDescription)
-        {
-            LoginAs(user);
-            NavigateToPage.QARecordControl_General_CDR();
-            Assert.True(VerifyPageHeader("List of CDR Reports"));
-            QaRcrdCtrl_GeneralCDR.ClickTab_To_Be_Closed();
-            QaRcrdCtrl_GeneralCDR.FilterDescription(cdrDescription);
-            TableHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralCDR.ClickBtn_CloseCDR();
-        }
+        public abstract void AddAssertion_VerifyCDRPageHeader(string methodName);
+        public abstract string CreateAndSaveForwardCDRDocument(UserType user);
+        public abstract void ReviewCDRDocument(UserType user, string cdrDescription);
+        public abstract void DispositionCDRDocument(UserType user, string cdrDescription);
+        public abstract void ReviewAndApproveCDRDocument(UserType user, string cdrDescription);
+        public abstract void KickBackToDispositionCDR(UserType user, string cdrDescription);
+        public abstract void KickBackToQCReviewCDR(UserType user, string cdrDescription);
+        public abstract void ReviewAndReviseCDRDocument(UserType user, string cdrDescription);
+        public abstract void CloseDocument(UserType user, string cdrDescription);
     }
+    
 
-
-
-internal class QaRcrdCtrl_GeneralCDR_WF_GLX : QaRcrdCtrl_GeneralCDR_WF
+    internal class QaRcrdCtrl_GeneralCDR_WF_GLX : QaRcrdCtrl_GeneralCDR_WF
     {
         public QaRcrdCtrl_GeneralCDR_WF_GLX(IWebDriver driver) : base(driver)
         {

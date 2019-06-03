@@ -6,6 +6,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public SubmittalDetails(IWebDriver driver) => this.Driver = driver;
 
+        public override T SetClass<T>(IWebDriver driver)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public enum DDListID
         {
             [StringValue("SubmittalActionId")] Action,
@@ -42,5 +47,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public static By Btn_ActionBy_Filter { get; } = By.XPath("//th[@data-title='Action By']/a[1]");
         public static By Btn_ActionBy_Column { get; } = By.XPath("//th[@data-title='Action By']/a[2]");
         public static By Form_ColumnFilterBox { get; } = By.XPath("//form[@data-role='popup'][contains(@style,'display: block;')]");
+
     }
 }

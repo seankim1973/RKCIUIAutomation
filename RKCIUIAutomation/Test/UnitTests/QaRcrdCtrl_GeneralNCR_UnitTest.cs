@@ -4,6 +4,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.Workflows;
 using System.Collections.Generic;
 using System.Threading;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Test.UnitTests
 {
@@ -17,7 +18,7 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Description("NCR UnitTest for Garnet")]
         public void NCR_UnitTest_Garnet()
         {
-            LogInfo("Unit test for Garnet");
+            Report.Info("Unit test for Garnet");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_General_NCR();
             QaRcrdCtrl_GeneralNCR.ClickTab_Review_Assign_NCR();
@@ -42,7 +43,7 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Description("NCR UnitTest for GLX")]
         public void NCR_UnitTest_GLX()
         {
-            LogInfo("Unit test for GLX");
+            Report.Info("Unit test for GLX");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_General_NCR();
             QaRcrdCtrl_GeneralNCR.ClickTab_CQM_Review();
@@ -66,10 +67,10 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Description("NCR UserAccts")]
         public void UserName()
         {
-            LogInfo($"Testing, UserAccts for {tenantName}");
+            Report.Info($"Testing, UserAccts for {tenantName}");
             //LoginAs(UserType.IQFRecordsMgr);
             DesignDocumentWF ddwf = new DesignDocumentWF();
-            ddwf.LoginToDesignDocuments(DesignDocumentWF.CR_Workflow.CreateComment);
+            ddwf.LogIntoDesignDocumentsPage(DesignDocumentWF.CR_Workflow.CreateComment);
 
             string CurrentUser = GetCurrentUser();
             Assert.True(CurrentUser == "AT_CR Comment");
@@ -92,11 +93,11 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Description("NCR FilterAndSort")]
         public void NCR_FilterAndSort()
         {
-            LogInfo($"Testing, UserAccts for {tenantName}");
+            Report.Info($"Testing, UserAccts for {tenantName}");
             LoginAs(UserType.NCRMgr);
             NavigateToPage.QARecordControl_General_NCR();
             QaRcrdCtrl_GeneralNCR.FilterDescription();
-            ClearTableFilters();
+            GridHelper.ClearTableFilters();
             QaRcrdCtrl_GeneralNCR.SortTable_Descending();
             Thread.Sleep(2000);
             QaRcrdCtrl_GeneralNCR.SortTable_Ascending();
@@ -115,7 +116,7 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Description("NCR UserAccts")]
         public void NCR_RequiredFieldIDs()
         {
-            LogInfo($"Testing, UserAccts for {tenantName}");
+            Report.Info($"Testing, UserAccts for {tenantName}");
             LoginAs(UserType.NCRMgr);
             NavigateToPage.QARecordControl_General_NCR();
             QaRcrdCtrl_GeneralNCR.ClickBtn_New();
