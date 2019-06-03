@@ -4,6 +4,7 @@ using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
 using RKCIUIAutomation.Page.PageObjects.QAField;
 using RKCIUIAutomation.Test;
 using System;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -20,108 +21,14 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common pageObjects and workflows are inherited from abstract _Impl class
         /// </summary>
-    }
 
-    #endregion LinkCoverage Generic class
-
-    #region Workflow Interface class
-
-    public interface ILinkCoverageWF
-    {
-        void _NavigateToVerifyProjectConfigurationMenu();
-
-        void _NavigateToVerifyQALabMenu();
-
-        void _NavigateToOVMenu();
-
-        void _NavigateToVerifyQARecordControlMenu();
-
-        void _NavigateToVerifyQAEngineerMenu();
-
-        void _NavigateToReportsAndNoticesMenu();
-
-        void _NavigateToQASearchMenu();
-
-        void _NavigateToQAFieldMenu();
-
-        void _NavigateToControlPointMenu();
-
-        void _NavigateToOwnerMenu();
-
-        void _NavigateToMaterialMixCodeMenu();
-
-        void _NavigateToRMCenterMenu();
-
-        void _NavigateToRFIMenu();
-
-        void _NavigateToVerifyQCLabMenu();
-
-        void _NavigateToVerifyQCRecordControlMenu();
-
-        void _NavigateToVerifyQCEngineerMenu();
-
-        void _NavigateToQCSearchMenu();
-    }
-
-    #endregion Workflow Interface class
-
-    #region Common Workflow Implementation class
-
-    public abstract class LinkCoverageWF_Impl : TestBase, ILinkCoverageWF
-    {
-        /// <summary>
-        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
-        /// </summary>
-        public T SetClass<T>(IWebDriver driver) => (T)SetPageClassBasedOnTenant(driver);
-
-        private ILinkCoverageWF SetPageClassBasedOnTenant(IWebDriver driver)
-        {
-            ILinkCoverageWF instance = new LinkCoverageWF(driver);
-
-            if (tenantName == TenantName.SGWay)
-            {
-                log.Info($"###### using LinkCoverage_SGWay instance ###### ");
-                instance = new LinkCoverageWF_SGWay(driver);
-            }
-            else if (tenantName == TenantName.SH249)
-            {
-                log.Info($"###### using LinkCoverage_SH249 instance ###### ");
-                instance = new LinkCoverageWF_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                log.Info($"###### using LinkCoverage_Garnet instance ###### ");
-                instance = new LinkCoverageWF_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                log.Info($"###### using LinkCoverage_GLX instance ###### ");
-                instance = new LinkCoverageWF_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                log.Info($"###### using LinkCoverage_I15South instance ###### ");
-                instance = new LinkCoverageWF_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                log.Info($"###### using LinkCoverage_I15Tech instance ###### ");
-                instance = new LinkCoverageWF_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                log.Info($"###### using LinkCoverage_LAX instance ###### ");
-                instance = new LinkCoverageWF_LAX(driver);
-            }
-            return instance;
-        }
 
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
-        public virtual void _NavigateToVerifyProjectConfigurationMenu()
+        public override void _NavigateToVerifyProjectConfigurationMenu()
         {
-            LogInfo($"Project Configuration component test - This test should run");
+            Report.Step($"Project Configuration component test - This test should run");
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.My_Details();
@@ -193,7 +100,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public virtual void _NavigateToVerifyQALabMenu()
+        public override void _NavigateToVerifyQALabMenu()
         {
             LoginAs(UserType.Bhoomi);
 
@@ -218,11 +125,11 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants:
         /// </summary>
-        public virtual void _NavigateToVerifyQARecordControlMenu()
+        public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_All();
             AddAssertionToList(VerifyPageHeader("Lab Tests"));
             NavigateToPage.QARecordControl_QA_Test_Retest_Report();
@@ -261,9 +168,9 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
-        public virtual void _NavigateToVerifyQAEngineerMenu()
+        public override void _NavigateToVerifyQAEngineerMenu()
         {
-            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
+            Report.Step($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QAEngineer_QA_Test_Lab_Supervisor_Review();
             AddAssertionToList(VerifyPageHeader("Lab Supervisor Review"));
@@ -281,7 +188,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// TODO - implement common workflow
         /// </summary>
-        public virtual void _NavigateToReportsAndNoticesMenu()
+        public override void _NavigateToReportsAndNoticesMenu()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QARecordControl_General_NCR(); //TODO: Is this correct?
@@ -299,12 +206,12 @@ namespace RKCIUIAutomation.Page.Workflows
         /// Common workflow method for Tenants:I15South, I15Tech, & SH249
         /// </summary>
 
-        public virtual void _NavigateToOVMenu()
+        public override void _NavigateToOVMenu()
         {
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.OV_Create_OV_Test();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.OV_OV_Test();
             AddAssertionToList(VerifyPageHeader("OV Tests"));
 
@@ -314,7 +221,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public virtual void _NavigateToQASearchMenu()
+        public override void _NavigateToQASearchMenu()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QASearch_QA_Tests();
@@ -345,7 +252,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public virtual void _NavigateToQAFieldMenu()
+        public override void _NavigateToQAFieldMenu()
         {
             LoginAs(UserType.Bhoomi);
 
@@ -389,7 +296,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public virtual void _NavigateToControlPointMenu()
+        public override void _NavigateToControlPointMenu()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Control_Point_Scheduler();
@@ -404,7 +311,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public virtual void _NavigateToOwnerMenu()
+        public override void _NavigateToOwnerMenu()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.Owner_DIRs();
@@ -421,7 +328,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, & SH249
         /// </summary>
-        public virtual void _NavigateToMaterialMixCodeMenu()
+        public override void _NavigateToMaterialMixCodeMenu()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.MaterialMixCodes_Mix_Design_PCC();
@@ -463,7 +370,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX
         /// </summary>
-        public virtual void _NavigateToRFIMenu()
+        public override void _NavigateToRFIMenu()
         {
             LoginAs(UserType.Bhoomi);
 
@@ -478,7 +385,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX only
         /// </summary>
-        public virtual void _NavigateToVerifyQCLabMenu()
+        public override void _NavigateToVerifyQCLabMenu()
         {
             LoginAs(UserType.Bhoomi);
 
@@ -496,11 +403,11 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX only
         /// </summary>
-        public virtual void _NavigateToVerifyQCRecordControlMenu()
+        public override void _NavigateToVerifyQCRecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QCRecordControl_QC_Test_Original_Report();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QCRecordControl_QC_Test_All();
             AddAssertionToList(VerifyPageHeader("Lab Tests"));
             NavigateToPage.QCRecordControl_QC_Test_Correction_Report();
@@ -515,9 +422,9 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// TODO - implement common workflow: GLX only
         /// </summary>
-        public virtual void _NavigateToVerifyQCEngineerMenu()
+        public override void _NavigateToVerifyQCEngineerMenu()
         {
-            LogInfo($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
+            Report.Step($"Testing module, DIR, NCR, CDR and trackers component - This test should run");
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QCEngineer_QC_Test_Lab_Supervisor_Review();
             AddAssertionToList(VerifyPageHeader("Lab Supervisor Review"));
@@ -530,7 +437,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX only
         /// </summary>
-        public virtual void _NavigateToQCSearchMenu()
+        public override void _NavigateToQCSearchMenu()
         {
             LoginAs(UserType.Bhoomi);
             NavigateToPage.QCSearch_QC_Tests_Search();
@@ -548,7 +455,7 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants: GLX, I15South, I15Tech, SGWay, & SH249
         /// </summary>
-        public virtual void _NavigateToRMCenterMenu()
+        public override void _NavigateToRMCenterMenu()
         {
             LoginAs(UserType.Bhoomi);
 
@@ -581,6 +488,117 @@ namespace RKCIUIAutomation.Page.Workflows
             ClickCancel();
             AssertAll();
         }
+    }
+
+    #endregion LinkCoverage Generic class
+
+    #region Workflow Interface class
+
+    public interface ILinkCoverageWF
+    {
+        void _NavigateToVerifyProjectConfigurationMenu();
+
+        void _NavigateToVerifyQALabMenu();
+
+        void _NavigateToOVMenu();
+
+        void _NavigateToVerifyQARecordControlMenu();
+
+        void _NavigateToVerifyQAEngineerMenu();
+
+        void _NavigateToReportsAndNoticesMenu();
+
+        void _NavigateToQASearchMenu();
+
+        void _NavigateToQAFieldMenu();
+
+        void _NavigateToControlPointMenu();
+
+        void _NavigateToOwnerMenu();
+
+        void _NavigateToMaterialMixCodeMenu();
+
+        void _NavigateToRMCenterMenu();
+
+        void _NavigateToRFIMenu();
+
+        void _NavigateToVerifyQCLabMenu();
+
+        void _NavigateToVerifyQCRecordControlMenu();
+
+        void _NavigateToVerifyQCEngineerMenu();
+
+        void _NavigateToQCSearchMenu();
+    }
+
+    #endregion Workflow Interface class
+
+    #region Common Workflow Implementation class
+
+    public abstract class LinkCoverageWF_Impl : TestBase, ILinkCoverageWF
+    {
+        /// <summary>
+        /// Method to instantiate page class based on NUNit3-Console cmdLine parameter 'Project'
+        /// </summary>
+        public T SetClass<T>(IWebDriver driver)
+        {
+            ILinkCoverageWF instance = new LinkCoverageWF(driver);
+
+            if (tenantName == TenantName.SGWay)
+            {
+                log.Info($"###### using LinkCoverage_SGWay instance ###### ");
+                instance = new LinkCoverageWF_SGWay(driver);
+            }
+            else if (tenantName == TenantName.SH249)
+            {
+                log.Info($"###### using LinkCoverage_SH249 instance ###### ");
+                instance = new LinkCoverageWF_SH249(driver);
+            }
+            else if (tenantName == TenantName.Garnet)
+            {
+                log.Info($"###### using LinkCoverage_Garnet instance ###### ");
+                instance = new LinkCoverageWF_Garnet(driver);
+            }
+            else if (tenantName == TenantName.GLX)
+            {
+                log.Info($"###### using LinkCoverage_GLX instance ###### ");
+                instance = new LinkCoverageWF_GLX(driver);
+            }
+            else if (tenantName == TenantName.I15South)
+            {
+                log.Info($"###### using LinkCoverage_I15South instance ###### ");
+                instance = new LinkCoverageWF_I15South(driver);
+            }
+            else if (tenantName == TenantName.I15Tech)
+            {
+                log.Info($"###### using LinkCoverage_I15Tech instance ###### ");
+                instance = new LinkCoverageWF_I15Tech(driver);
+            }
+            else if (tenantName == TenantName.LAX)
+            {
+                log.Info($"###### using LinkCoverage_LAX instance ###### ");
+                instance = new LinkCoverageWF_LAX(driver);
+            }
+            return (T)instance;
+        }
+
+        public abstract void _NavigateToControlPointMenu();
+        public abstract void _NavigateToMaterialMixCodeMenu();
+        public abstract void _NavigateToOVMenu();
+        public abstract void _NavigateToOwnerMenu();
+        public abstract void _NavigateToQAFieldMenu();
+        public abstract void _NavigateToQASearchMenu();
+        public abstract void _NavigateToQCSearchMenu();
+        public abstract void _NavigateToReportsAndNoticesMenu();
+        public abstract void _NavigateToRFIMenu();
+        public abstract void _NavigateToRMCenterMenu();
+        public abstract void _NavigateToVerifyProjectConfigurationMenu();
+        public abstract void _NavigateToVerifyQAEngineerMenu();
+        public abstract void _NavigateToVerifyQALabMenu();
+        public abstract void _NavigateToVerifyQARecordControlMenu();
+        public abstract void _NavigateToVerifyQCEngineerMenu();
+        public abstract void _NavigateToVerifyQCLabMenu();
+        public abstract void _NavigateToVerifyQCRecordControlMenu();
     }
 
     #endregion Common Workflow Implementation class
@@ -642,7 +660,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
             AddAssertionToList(VerifyPageHeader("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();
@@ -733,7 +751,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
             AddAssertionToList(VerifyPageHeader("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();
@@ -789,7 +807,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LoginAs(UserType.Bhoomi);
 
             NavigateToPage.QARecordControl_QA_Test_Original_Report();
-            AddAssertionToList(TestDetails.VerifyTestDetailsFormIsDisplayed());
+            AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.QARecordControl_QA_Test_Correction_Report();
             AddAssertionToList(VerifyPageHeader("Create Correction Test Report"));
             NavigateToPage.QARecordControl_QA_Test_All();

@@ -1,18 +1,23 @@
 ﻿using OpenQA.Selenium;
-using RKCIUIAutomation.Test;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
     public class ReviewReviseSubmittal : ReviewReviseSubmittal_Impl
     {
         public ReviewReviseSubmittal(IWebDriver driver) => this.Driver = driver;
+
+        public override T SetClass<T>(IWebDriver driver)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     public interface IReviewReviseSubmittal
     {
     }
 
-    public abstract class ReviewReviseSubmittal_Impl : TestBase, IReviewReviseSubmittal
+    public abstract class ReviewReviseSubmittal_Impl : PageBase, IReviewReviseSubmittal
     {
     }
 

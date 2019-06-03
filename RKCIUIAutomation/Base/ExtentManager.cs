@@ -3,13 +3,13 @@ using AventStack.ExtentReports.Reporter;
 using RKCIUIAutomation.Config;
 using System;
 using System.IO;
-using static RKCIUIAutomation.Base.BaseClass;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
 {
     public class ExtentManager : BaseUtils
     {
-        public static readonly string reportFilePath = $"{extentReportPath}\\extent_{tenantName.ToString()}.html";
+        public static readonly string reportFilePath = $"{ExtentReportPath}\\extent_{tenantName.ToString()}.html";
 
         private static readonly Lazy<ExtentReports> _lazy;
 
@@ -23,7 +23,7 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
-                Directory.CreateDirectory(extentReportPath);
+                Directory.CreateDirectory(ExtentReportPath);
                 HtmlReporter = new ExtentHtmlReporter(reportFilePath);
                 HtmlReporter = GetHtmlReporter();
 
@@ -53,7 +53,7 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
-                HtmlReporter.LoadConfig($"{GetCodeBasePath()}\\extent-config.xml");
+                HtmlReporter.LoadConfig($"{CodeBasePath}\\extent-config.xml");
             }
             catch (Exception e)
             {

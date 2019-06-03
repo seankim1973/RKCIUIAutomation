@@ -1,5 +1,6 @@
 ﻿using RestSharp;
 using System;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
 {
@@ -25,7 +26,7 @@ namespace RKCIUIAutomation.Base
             }
             catch (Exception e)
             {
-                LogError(e.Message);
+                Report.Error(e.Message);
             }
 
             return json;

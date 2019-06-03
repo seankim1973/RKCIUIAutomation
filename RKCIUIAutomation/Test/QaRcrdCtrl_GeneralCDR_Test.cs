@@ -2,11 +2,10 @@
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.GeneralCDR;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Test.CDR
 {
-
-
     [TestFixture]//complete, updated hiptest
     public class Verify_CDR_SimpleWF_End_To_End : TestBase
     {
@@ -19,49 +18,49 @@ namespace RKCIUIAutomation.Test.CDR
         public void CDR_SimpleWF_End_To_End()
         {
             string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.CDRTech);
-            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));
-            ClickEditBtnForRow();
-            LogInfo("------------send to revise from Review------------");
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription), "VerifyCDRDocIsDisplayed TableTab: QC_Review");
+            GridHelper.ClickEditBtnForRow();
+            Report.Step("STEP:------------send to revise from Review------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_Revise();
-            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription));
-            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription), "VerifyCDRDocIsDisplayed TableTab: Revise");
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------cancel, edit/saveonly in Revise------------");
+            Report.Step("STEP:------------cancel, edit/saveonly in Revise------------");
             QaRcrdCtrl_GeneralCDR.EnterDescription("New CDR Description", true);
             QaRcrdCtrl_GeneralCDR.ClickBtn_Cancel();
-            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription));
-            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription), "VerifyCDRDocIsDisplayed TableTab: Revise");
+            GridHelper.ClickEditBtnForRow();
             cdrDescription = QaRcrdCtrl_GeneralCDR.EnterDescription();
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveOnly();
-            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription));
-            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription), "VerifyCDRDocIsDisplayed TableTab: Revise");
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------save&fwd in Review------------");
+            Report.Step("STEP:------------save&fwd in Review------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));
-            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription), "VerifyCDRDocIsDisplayed TableTab: QC_Review");
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------save&fwd in ToBeClosed------------");
+            Report.Step("STEP:------------save&fwd in ToBeClosed------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
-            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription), "VerifyCDRDocIsDisplayed TableTab: To_Be_Closed");
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------send Back to QC Review from ToBeClosed------------");
+            Report.Step("STEP:------------send Back to QC Review from ToBeClosed------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_QC_Review();
-            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription));
-            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription), "VerifyCDRDocIsDisplayed TableTab: QC_Review");
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------save&fwd from QC Review to ToBeClosed------------");
+            Report.Step("STEP:------------save&fwd from QC Review to ToBeClosed------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
-            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
-            ClickEditBtnForRow();
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription), "VerifyCDRDocIsDisplayed TableTab: To_Be_Closed");
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------verify closed in Closed tab------------");
+            Report.Step("STEP:------------verify closed in Closed tab------------");
             //QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
             //AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription));
             //ClickEditBtnForRow();
             QaRcrdCtrl_GeneralCDR.ClickBtn_CloseCDR();
-            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Closed_DN, cdrDescription));
+            AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Closed_DN, cdrDescription), "VerifyCDRDocIsDisplayed TableTab: Closed_DN");
             AssertAll();
         }
     }
@@ -79,57 +78,57 @@ namespace RKCIUIAutomation.Test.CDR
         {
             string cdrDescription = WF_QaRcrdCtrl_GeneralCDR.CreateAndSaveForwardCDRDocument(UserType.CDRTech);
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.QC_Review)");
-            ClickEditBtnForRow();
-            LogInfo("------------send to revise from Review------------");
+            GridHelper.ClickEditBtnForRow();
+            Report.Step("STEP:------------send to revise from Review------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_Revise();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.Revise)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------cancel, edit/saveonly in Revise------------");
+            Report.Step("STEP:------------cancel, edit/saveonly in Revise------------");
             QaRcrdCtrl_GeneralCDR.EnterDescription("New CDR Description", true);
             QaRcrdCtrl_GeneralCDR.ClickBtn_Cancel();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.Revise)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             cdrDescription = QaRcrdCtrl_GeneralCDR.EnterDescription();
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveOnly();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Revise, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.Revise)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------save&fwd in Review------------");
+            Report.Step("STEP:------------save&fwd in Review------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.QC_Review)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------save&fwd in Disposition------------");
+            Report.Step("STEP:------------save&fwd in Disposition------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.Disposition)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
 
-            LogInfo("------------save&fwd in ToBeClosed------------");
+            Report.Step("STEP:------------save&fwd in ToBeClosed------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------send Back to Disposition from ToBeClosed------------");
+            Report.Step("STEP:------------send Back to Disposition from ToBeClosed------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_Disposition();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.Disposition)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------send back to QC review from Disposition------------");
+            Report.Step("STEP:------------send back to QC review from Disposition------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_Back_To_QC_Review();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.QC_Review, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.QC_Review)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------save&fwd in Disposition------------");
+            Report.Step("STEP:------------save&fwd in Disposition------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Disposition, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.Disposition)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
 
-            LogInfo("------------verify closed in Closed tab------------");
+            Report.Step("STEP:------------verify closed in Closed tab------------");
             QaRcrdCtrl_GeneralCDR.ClickBtn_SaveForward();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.To_Be_Closed)");
-            ClickEditBtnForRow();
+            GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralCDR.ClickBtn_CloseCDR();
             AddAssertionToList(QaRcrdCtrl_GeneralCDR.VerifyCDRDocIsDisplayed(TableTab.Closed_DN, cdrDescription), "VerifyCDRDocIsDisplayed(TableTab.Closed_DN)");
             AssertAll();

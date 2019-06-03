@@ -5,6 +5,7 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Workflows;
 using System.Collections.Generic;
 using System.Threading;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Test.CommentReview
 {
@@ -20,6 +21,7 @@ namespace RKCIUIAutomation.Test.CommentReview
         public void CommentReviewRegularComment()
         {
             WF_DesignDocCommentReview.TCWF_CommentReviewRegularComment();
+            AssertAll();
         }
     }
 
@@ -35,6 +37,7 @@ namespace RKCIUIAutomation.Test.CommentReview
         public void CommentReviewNoComment()
         {
             WF_DesignDocCommentReview.TCWF_CommentReviewNoComment();
+            AssertAll();
         }
     }
 

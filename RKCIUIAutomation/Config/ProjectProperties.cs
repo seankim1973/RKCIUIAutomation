@@ -1,17 +1,33 @@
-﻿using RKCIUIAutomation.Base;
+﻿using OpenQA.Selenium;
+using RKCIUIAutomation.Base;
+using RKCIUIAutomation.Page;
 using System;
 using System.Collections.Generic;
-using static RKCIUIAutomation.Base.BaseUtils;
+using static RKCIUIAutomation.Base.WebDriverFactory;
 
 namespace RKCIUIAutomation.Config
 {
     public interface IProjectProperties
     {
         List<string> TenantComponents { get; set; }
+        void ConfigTenantComponents(TenantName tenantName);
     }
 
-    public class ProjectProperties : WebDriverFactory, IProjectProperties
+    public class ProjectProperties : BaseUtils, IProjectProperties
     {
+        TenantName _tenantName;
+
+        public ProjectProperties()
+        {
+        }
+
+        public ProjectProperties(IWebDriver driver) => Driver = driver;
+
+        public ProjectProperties(TenantName tenantName)
+        {
+            _tenantName = tenantName;
+        }
+
         private static readonly List<string> commonComponents = new List<string>
         {
             Component.Link_Coverage,
@@ -74,7 +90,6 @@ namespace RKCIUIAutomation.Config
             public const string OV_Test = "OV_Test";
             public const string QAField = "QAField";
 
-
             //Tenant Specific Components
             public const string Garnet = "Garnet";
             public const string GLX = "GLX";
@@ -86,7 +101,7 @@ namespace RKCIUIAutomation.Config
             
         }
 
-        public static List<string> SetTenantComponents(TenantName tenantName)
+        public void ConfigTenantComponents(TenantName tenantName)
         {
             IProjectProperties instance = null;
 
@@ -124,7 +139,7 @@ namespace RKCIUIAutomation.Config
             List<string> components = new List<string>();
             components.AddRange(commonComponents);
             components.AddRange(instance.TenantComponents);
-            return components;
+            TenantComponents = components;
         }
     }
 

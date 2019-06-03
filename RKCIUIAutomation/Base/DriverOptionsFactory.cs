@@ -6,7 +6,7 @@ using OpenQA.Selenium.Safari;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
 using System;
-using static RKCIUIAutomation.Base.BaseUtils;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
 {
@@ -67,11 +67,9 @@ namespace RKCIUIAutomation.Base
     {
         internal static void AddBrowserCapabilities<T>(this T options, BrowserType browser, string testDetails)
         {
-            BaseUtils baseUtils = new BaseUtils();
-
             if (browser == BrowserType.Chrome)
             {
-                ChromeOptions chromeOptions = baseUtils.ConvertToType<ChromeOptions>(options);
+                ChromeOptions chromeOptions = BaseUtil.ConvertToType<ChromeOptions>(options);
                 chromeOptions.PageLoadStrategy = PageLoadStrategy.None;
                 chromeOptions.AddArgument("no-sandbox");
                 chromeOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
@@ -80,7 +78,7 @@ namespace RKCIUIAutomation.Base
             }
             else if (browser == BrowserType.Firefox)
             {
-                FirefoxOptions firefoxOptions = baseUtils.ConvertToType<FirefoxOptions>(options);
+                FirefoxOptions firefoxOptions = BaseUtil.ConvertToType<FirefoxOptions>(options);
                 firefoxOptions.PageLoadStrategy = PageLoadStrategy.None;
                 firefoxOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
                 firefoxOptions.AddAdditionalCapability("zal:name", testDetails, true);
@@ -88,7 +86,7 @@ namespace RKCIUIAutomation.Base
             }
             else
             {
-                DriverOptions _options = baseUtils.ConvertToType<DriverOptions>(options);
+                DriverOptions _options = BaseUtil.ConvertToType<DriverOptions>(options);
                 _options.PageLoadStrategy = PageLoadStrategy.None;
                 _options.AddAdditionalCapability("zal:tz", "America/Chicago");
                 _options.AddAdditionalCapability("zal:name", testDetails);

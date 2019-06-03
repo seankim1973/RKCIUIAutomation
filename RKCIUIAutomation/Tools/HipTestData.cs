@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using static RKCIUIAutomation.Base.BaseUtils;
+using static RKCIUIAutomation.Base.Factory;
 
 #pragma warning disable IDE1006 // Naming Styles
 

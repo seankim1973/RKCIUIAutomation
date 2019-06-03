@@ -2,88 +2,149 @@
 using AventStack.ExtentReports.MarkupUtils;
 using log4net;
 using log4net.Core;
+using MiniGuids;
 using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page;
+using RKCIUIAutomation.Tools;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using static RKCIUIAutomation.Base.BaseClass;
+using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Page.StaticHelpers;
 
 namespace RKCIUIAutomation.Base
 {
-    public class BaseUtils : ConfigUtils
+    public class BaseUtils : BaseClass, IBaseUtils
     {
-        public static readonly ILog log = LogManager.GetLogger("");
-        public static string extentReportPath = string.Empty;
-        public static string fullTempFileName = string.Empty;
-        private static string fileName = string.Empty;
-        private static string dateString = string.Empty;
-        private static string baseTempFolder = string.Empty;
-        private static string screenshotSavePath = string.Empty;
+        [ThreadStatic]
+        internal static Hashtable Hashtable;
+
+        private enum TestContextProperty
+        {
+            TestName,
+            TestClass,
+            TestComponent1,
+            TestComponent2,
+            TestDescription,
+            TestPriority,
+            TestCaseNumber
+        }
+
+        public static string CurrentTenantName { get; private set; }
+        public static string DateString { get; private set; }
+        public static string CodeBasePath { get; private set; }
+        public static string BaseTempFolder { get; private set; }
+        public static string ExtentReportPath { get; private set; }
+        public static string ScreenshotSavePath { get; private set; }
 
         public BaseUtils()
         {
-            baseTempFolder = $"{GetCodeBasePath()}\\Temp";
-            fileName = BaseClass.tenantName.ToString();
-            dateString = GetDateString();
         }
+
+        public BaseUtils(TenantName tenantName)
+            => DetermineReportFilePath(tenantName);
+
+        public BaseUtils(TestPlatform testPlatform, string gridAddress)
+            => ConfigGridAddress(testPlatform, gridAddress);
 
         public BaseUtils(IWebDriver driver) => this.Driver = driver;
 
-        private string SetWinTempFolder()
+        public void SetCodeBasePath()
         {
-            string cTemp = "C:\\Temp";
-            if (!File.Exists(cTemp))
+            if (!CodeBasePath.HasValue())
             {
-                Directory.CreateDirectory(cTemp);
+                Directory.SetCurrentDirectory(Directory.GetParent(TestContext.CurrentContext.TestDirectory).ToString());
+                CodeBasePath = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
+            }
+        }
+
+        public void SetExtentReportPath()
+        {
+            if (!ExtentReportPath.HasValue())
+            {
+                ExtentReportPath = $"{CodeBasePath}\\Report";
+            }
+        }
+
+        //private string SetWinTempFolder()
+        //{
+        //    string cTemp = "C:\\Temp";
+        //    if (!File.Exists(cTemp))
+        //    {
+        //        Directory.CreateDirectory(cTemp);
+        //    }
+
+        //    return cTemp;
+        //}
+
+        public string GetDateString()
+        {
+            if (!DateString.HasValue())
+            {
+                string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
+                string month = shortDate[0];
+                string date = shortDate[1];
+
+                month = (month.Length > 1) ? month : $"0{month}";
+                date = (date.Length > 1) ? date : $"0{date}";
+                DateString = $"{month}{date}{shortDate[2]}";
             }
 
-            return cTemp;
+            return DateString;
         }
 
-        private string GetDateString()
+        public void SetScreenshotSavePath()
         {
-            string[] shortDate = (DateTime.Today.ToShortDateString()).Split('/');
-            string month = shortDate[0];
-            string date = shortDate[1];
-
-            month = (month.Length > 1) ? month : $"0{month}";
-            date = (date.Length > 1) ? date : $"0{date}";
-
-            return $"{month}{date}{shortDate[2]}";
+            if (!ScreenshotSavePath.HasValue())
+            {
+                ScreenshotSavePath = $"{ExtentReportPath}\\errorscreenshots\\";
+            }
         }
 
-        public static void DetermineReportFilePath()
+        public string GetBaseTempFolder()
         {
-            extentReportPath = $"{GetCodeBasePath()}\\Report";
-            screenshotSavePath = $"{extentReportPath}\\errorscreenshots\\";
+            if (!BaseTempFolder.HasValue())
+            {
+                BaseTempFolder = $"{CodeBasePath}\\Temp";
+            }
+
+            return BaseTempFolder;
         }
 
-        public static string GetCodeBasePath()
+        public string GetTenantName()
         {
-            Directory.SetCurrentDirectory(Directory.GetParent(TestContext.CurrentContext.TestDirectory).ToString());
-            string baseDir = Directory.GetParent(Directory.GetCurrentDirectory()).ToString();
-            return baseDir;
+            if (!CurrentTenantName.HasValue())
+            {
+                CurrentTenantName = tenantName.ToString();
+            }
+            return CurrentTenantName;
         }
 
-        public string CaptureScreenshot(string fileName)
+        public void DetermineReportFilePath(TenantName tenantName)
         {
+            SetCodeBasePath();
+            SetExtentReportPath();
+            SetScreenshotSavePath();
+        }
+
+        public string CaptureScreenshot(string fileName = "")
+        {
+            IWebDriver _driver = Driver;
+
             string uniqueFileName = string.Empty;
             string fullFilePath = string.Empty;
             string klovPath = string.Empty;
 
             try
             {
-                Directory.CreateDirectory(screenshotSavePath);
-                uniqueFileName = $"{fileName}{DateTime.Now.Second}_{tenantName.ToString()}.png";
-                fullFilePath = $"{screenshotSavePath}{uniqueFileName}";
+                Directory.CreateDirectory(ScreenshotSavePath);
+                uniqueFileName = $"{(fileName.HasValue() ? fileName : GetTestName())}{DateTime.Now.Second}_{GetTenantName()}.png";
+                fullFilePath = $"{ScreenshotSavePath}{uniqueFileName}";
 
                 if (reporter == Reporter.Klov)
                 {
@@ -91,21 +152,20 @@ namespace RKCIUIAutomation.Base
                     {
                         klovPath = @"\\10.1.1.207\errorscreenshots\";
 
-                        ImpersonateUser impersonateUser = new ImpersonateUser(driver);
+                        ImpersonateUser impersonateUser = new ImpersonateUser(_driver);
                         impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
                     }
                     else if (testPlatform == TestPlatform.GridLocal)
                     {
                         klovPath = @"C:\Automation\klov\errorscreenshots\";
-                        var screenshot = driver.TakeScreenshot();
+                        var screenshot = _driver.TakeScreenshot();
                         screenshot.SaveAsFile($"{klovPath}{uniqueFileName}");
                     }
                 }
                 else
                 {
-                    var screenshot = driver.TakeScreenshot();
+                    var screenshot = _driver.TakeScreenshot();
                     screenshot.SaveAsFile(fullFilePath);
-
                 }
             }
             catch (Exception e)
@@ -116,339 +176,38 @@ namespace RKCIUIAutomation.Base
             return uniqueFileName;
         }
 
-        public string SetGridAddress(TestPlatform platform, string gridIPv4Hostname = "")
+        public void ConfigGridAddress(TestPlatform platform, string gridIPv4Hostname = "")
         {
-            string gridIPv4 = gridIPv4Hostname.Equals("")
+            GridVmIP = gridIPv4Hostname.Equals("")
                 ? platform == TestPlatform.GridLocal || platform == TestPlatform.Local
                     ? "127.0.0.1"
                     : "10.1.1.207"
                 : gridIPv4Hostname;
-
-            return gridIPv4;
         }
-
-        //ExtentReports Loggers
-
-        private static void LevelLogger(Level logLevel, string logDetails)
-        {
-            if (logLevel == Level.Debug)
-            {
-                log.Debug(logDetails);
-            }
-            else if (logLevel == Level.Warn)
-            {
-                log.Warn(logDetails);
-            }
-            else if (logLevel == Level.Error)
-            {
-                log.Error(logDetails);
-            }
-            else
-            {
-                log.Info(logDetails);
-            }
-        }
-
-        private static void CheckForLineBreaksInLogMsg(Level logLevel, string logDetails, Exception e = null)
-        {
-            if (logDetails.Contains("<br>"))
-            {
-                string[] detailsBr = Regex.Split(logDetails, "<br>");
-                for (int i = 0; i < detailsBr.Length; i++)
-                {
-                    string detail = detailsBr[i];
-                    LevelLogger(logLevel, detail);
-                }
-            }
-            else
-            {
-                LevelLogger(logLevel, logDetails);
-            }
-
-            if (e != null)
-            {
-                testInstance.Error(CreateReportMarkupCodeBlock(e));
-                LevelLogger(Level.Error, e.StackTrace);
-            }
-        }
-
-        public void LogAssertIgnore(string msg)
-        {
-            testInstance.Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
-            CheckForLineBreaksInLogMsg(Level.Debug, msg);
-        }
-
-        public void LogFail(string details, Exception e = null)
-        {
-            testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
-            CheckForLineBreaksInLogMsg(Level.Error, details, e);
-        }
-
-        public void LogError(string details, bool takeScreenshot = true, Exception e = null)
-        {
-            if (takeScreenshot)
-            {
-                LogErrorWithScreenshot(details, ExtentColor.Red, e);
-            }
-            else
-            {
-                testInstance.Error(CreateReportMarkupLabel(details, ExtentColor.Red));
-                CheckForLineBreaksInLogMsg(Level.Error, details, e);
-            }
-        }
-
-        public void LogDebug(string details, Exception exception = null)
-        {
-            if (details.Contains(">>>") || details.Contains("Unable"))
-            {
-                testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Orange));
-            }
-            else if (details.Contains("--->"))
-            {
-                testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Indigo));
-            }
-            else
-                testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
-
-            CheckForLineBreaksInLogMsg(Level.Debug, details, exception);
-        }
-
-        public void LogErrorWithScreenshot(string details = "", ExtentColor color = ExtentColor.Red, Exception e = null)
-        {
-            string localScreenshotPath = @"C:\Automation\klov\errorscreenshots\";
-            string screenshotName = CaptureScreenshot(GetTestName());
-            var screenshotRefPath = reporter == Reporter.Klov
-                ? testPlatform == TestPlatform.GridLocal
-                    ? $"http://127.0.0.1/errorscreenshots/{screenshotName}"
-                    : $"http://10.1.1.207/errorscreenshots/{screenshotName}"
-                : $"{localScreenshotPath}{screenshotName}";
-            var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRefPath}\" class=\"step-img\" src=\"{screenshotRefPath}\" data-src=\"{screenshotRefPath}\" width=\"200\">";
-
-            testInstance = reporter == Reporter.Klov
-                ? color.Equals(ExtentColor.Red)
-                    ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
-                    : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color))
-                : color.Equals(ExtentColor.Red)
-                    ? testInstance.Error($"Test Failed: <br> {details}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotRefPath, screenshotName).Build())
-                    : testInstance.Warning($"Test Failed: <br> {details}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotRefPath, screenshotName).Build());
-
-            CheckForLineBreaksInLogMsg(Level.Error, details, e);
-        }
-
-        public static void LogInfo(string details)
-        {
-            if (details.Contains("<br>"))
-            {
-                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
-            }
-            else if (details.Contains("#####"))
-            {
-                testInstance.Info(CreateReportMarkupLabel(details));
-            }
-            else if (details.Contains(">>>"))
-            {
-                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
-            }
-            else if (details.Contains("Found"))
-            {
-                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Green));
-            }
-            else if (details.Contains("skipped"))
-            {
-                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Yellow));
-            }
-            else
-            {
-                testInstance.Info(details);
-            }
-
-            CheckForLineBreaksInLogMsg(Level.Info, details);
-        }
-
-        public void LogInfo(string[][] detailsList, bool assertion)
-        {
-            IMarkup markupTable = MarkupHelper.CreateTable(detailsList);
-            testInstance = assertion
-                ? testInstance.Pass(markupTable)
-                : testInstance.Fail(markupTable);
-        }
-
-
-        [ThreadStatic]
-        private static Cookie cookie;
-
-        public void LogStep(string testStep, bool logInfo = false)
-        {
-            try
-            {
-                string logMsg = $"TestStep: {testStep}";
-                testInstance.Info(CreateReportMarkupLabel(logMsg, ExtentColor.Grey));
-                CheckForLineBreaksInLogMsg(Level.Info, logMsg);
-                cookie = new Cookie("zaleniumMessage", testStep);
-                driver.Manage().Cookies.AddCookie(cookie);
-
-                if (logInfo)
-                {
-                    LogInfo(testStep);
-                }
-            }
-            catch (UnableToSetCookieException)
-            {
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-            }
-        }
-
-        public void LogInfo<T>(string details, T assertion, Exception e = null)
-        {
-            object resultObj = null;
-            int resultGauge = 0;
-            Type assertionType = assertion.GetType();
-            BaseUtils baseUtils = new BaseUtils();
-
-            if (assertionType == typeof(bool))
-            {
-                resultObj = baseUtils.ConvertToType<bool>(assertion);
-                resultGauge = (bool)resultObj
-                    ? resultGauge + 1
-                    : resultGauge - 1;
-            }
-            else if (assertionType == typeof(bool[]))
-            {
-                resultObj = baseUtils.ConvertToType<bool[]>(assertion);
-                resultObj = new bool[] { };
-
-                foreach (bool obj in (bool[])resultObj)
-                {
-                    resultGauge = obj
-                        ? resultGauge + 1
-                        : resultGauge - 1;
-                }
-            }
-
-            if (resultGauge >= 1)
-            {
-                testInstance.Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
-                CheckForLineBreaksInLogMsg(Level.Info, details);
-            }
-            else if (resultGauge <= -1)
-            {
-                LogErrorWithScreenshot(details);
-            }
-            else if (resultGauge == 0)
-            {
-                LogErrorWithScreenshot(details, ExtentColor.Orange);
-            }
-
-            if (e != null)
-            {
-                log.Error(e.StackTrace);
-            }
-        }
-
-        public enum ValidationType
-        {
-            Value,
-            Selection
-        }
-
-        //TODO: Generic Result Calculator and Logger
-        public void GetResults<T>(Enum element, ValidationType validationType, T expected, T actual)
-        {
-            string expectedHeader = string.Empty;
-            string actualHeader = string.Empty;
-
-            switch (validationType)
-            {
-                case ValidationType.Value:
-                    expectedHeader = "Expected Value";
-                    actualHeader = "Actual Value";
-                    break;
-
-                case ValidationType.Selection:
-                    expectedHeader = "(Expected) Should Be Selected";
-                    actualHeader = "(Actual) Is Selected";
-                    break;
-            }
-
-            bool isResultExpected = actual.Equals(expected)
-                ? true
-                : false;
-
-            string[] resultLogMsg = isResultExpected
-                ? new string[]
-                {
-                    "meets",
-                    " and"
-                }
-                : new string[]
-                {
-                    "does not meet",
-                    ", but"
-                };
-
-            Type argType = expected.GetType();
-            BaseUtils baseUtils = new BaseUtils();
-            string Should = string.Empty;
-            string Is = string.Empty;
-
-            if (argType == typeof(string))
-            {
-                baseUtils.ConvertToType<string>(expected);
-                baseUtils.ConvertToType<string>(actual);
-
-                Should = isResultExpected ? "" : "";
-            }
-            else if (argType == typeof(int))
-            {
-                baseUtils.ConvertToType<int>(expected);
-                baseUtils.ConvertToType<int>(actual);
-            }
-            else if (argType == typeof(bool))
-            {
-                Should = baseUtils.ConvertToType<bool>(expected)
-                    ? "Should be selected"
-                    : "Should Not be selected";
-                Is = baseUtils.ConvertToType<bool>(actual)
-                    ? "Is selected"
-                    : "Is Not selected";
-            }
-
-            string logMsg = $" [Result {resultLogMsg[0]} expectations] {Should}{resultLogMsg[1]} {Is}";
-            LogInfo($"{expectedHeader}: {expected}<br>{actualHeader}: {actual}<br>{element.ToString()} {logMsg} ", isResultExpected);
-        }
-
-        private static IMarkup CreateReportMarkupLabel(string details, ExtentColor extentColor = ExtentColor.Blue)
-            => MarkupHelper.CreateLabel(details, extentColor);
-
-        private static IMarkup CreateReportMarkupCodeBlock(Exception e)
-            => MarkupHelper.CreateCodeBlock($"Exception: {e.StackTrace}");
 
         //Helper methods to gather Test Context Details
-        public static string GetTestName()
+        public string GetTestName()
             => GetTestContextProperty(TestContextProperty.TestName);
 
-        public static string GetTestComponent1()
+        public string GetTestComponent1()
             => GetTestContextProperty(TestContextProperty.TestComponent1);
 
-        public static string GetTestComponent2()
+        public string GetTestComponent2()
             => GetTestContextProperty(TestContextProperty.TestComponent2);
 
-        public static string GetTestDescription()
+        public string GetTestDescription()
             => GetTestContextProperty(TestContextProperty.TestDescription);
 
-        public static string GetTestPriority()
+        public string GetTestPriority()
             => GetTestContextProperty(TestContextProperty.TestPriority);
 
-        public static string GetTestCaseNumber()
+        public string GetTestCaseNumber()
             => GetTestContextProperty(TestContextProperty.TestCaseNumber);
 
-        public static string GetTestClassName()
+        public string GetTestClassName()
             => GetTestContextProperty(TestContextProperty.TestClass);
 
-        private static string GetTestContextProperty(TestContextProperty testContextProperty)
+        private string GetTestContextProperty(TestContextProperty testContextProperty)
         {
             TestContext.TestAdapter testInstance = TestContext.CurrentContext.Test;
             string context = string.Empty;
@@ -486,17 +245,6 @@ namespace RKCIUIAutomation.Base
             return prop.ToString();
         }
 
-        private enum TestContextProperty
-        {
-            TestName,
-            TestClass,
-            TestComponent1,
-            TestComponent2,
-            TestDescription,
-            TestPriority,
-            TestCaseNumber
-        }
-
         //Helper methods for working with files
         public static void RunExternalExecutible(string executible, string cmdLineArgument)
         {
@@ -508,51 +256,6 @@ namespace RKCIUIAutomation.Base
             };
 
             Process.Start(startInfo);
-        }
-
-        /// <summary>
-        /// Location to project Temp folder with Tenant name as filename
-        /// -- Specify file type extention (i.e. - .xml)
-        /// </summary>
-        public static void WriteToFile(string msg, string fileExt = ".txt", bool overwriteExisting = false)
-        {
-            try
-            {
-                fullTempFileName = $"{baseTempFolder}\\{fileName}({dateString})";
-
-                Directory.CreateDirectory(baseTempFolder);
-                string path = $"{fullTempFileName}{fileExt}";
-
-                if (overwriteExisting == true)
-                {
-                    if (File.Exists(path))
-                    {
-                        File.Delete(path);
-                    }
-                }
-
-                StreamWriter streamWriter = File.Exists(path) ? File.AppendText(path) : File.CreateText(path);
-                using (StreamWriter sw = streamWriter)
-                {
-                    if (msg.HasValue())
-                    {
-                        if (msg.Contains("<br>"))
-                        {
-                            string[] message = Regex.Split(msg, "<br>");
-                            sw.WriteLine(message[0]);
-                            sw.WriteLine(message[1]);
-                        }
-                        else
-                        {
-                            sw.WriteLine(msg);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-            }
         }
 
         public OutType ConvertToType<OutType>(object objToConvert)
@@ -568,119 +271,81 @@ namespace RKCIUIAutomation.Base
                 throw;
             }
         }
-    }
 
-    public static class BaseHelper
-    {
-        private static PageBaseHelper pgbHelper = new PageBaseHelper();
+        private Hashtable GetHashTable() => Hashtable ?? new Hashtable();
 
-        /// <summary>
-        /// Returns string value [EnvPrefix_varKey] when varKey argument is provided, otherwise returns string value [EnvPrefix]
-        /// <para>[EnvPrefix] consists of [TestCase Number, Test Name, Test Env, Tenant Name]</para>
-        /// </summary>
-        /// <param name="varKey"></param>
-        /// <returns></returns>
-        public static string GetEnvVarPrefix(string varKey = "")
+        public string GenerateRandomGuid()
         {
-            string testName = BaseUtils.GetTestName();
-            string tcNumber = BaseUtils.GetTestCaseNumber();
-            var prefix = $"{tcNumber}{testName}{testEnv}{tenantName}";
-            var key = varKey.HasValue()
-                ? $"{prefix}_{varKey}"
-                : prefix;
-
-            return key;
+            MiniGuid guid = MiniGuid.NewGuid();
+            return guid;
         }
 
-        public static string SplitCamelCase(this string str, bool removeUnderscore = true)
+        public void CreateVar<T>(T key, string value = "", bool withPrefix = true)
         {
-            string value = (removeUnderscore == true) ? Regex.Replace(str, @"_", "") : str;
-            return Regex.Replace(Regex.Replace(value, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
-        }
-
-        public static string ReplaceSpacesWithUnderscores(this string str)
-            => Regex.Replace(str, @" ", "_");
-
-        public static void AssignReportCategories(this ExtentTest testInstance, string[] category)
-        {
-            for (int i = 0; i < category.Length; i++)
-            {
-                testInstance
-                    .AssignCategory(category[i]);
-            }
-        }
-
-        /// <summary>
-        /// Allows for test cases to continue running when an error, which is not related to the objective of the test case, occurs but impacts the overall result of the test case.
-        /// Used in conjection with CheckForTestStatusInjection method, which is part of the TearDown attribute in the BaseClass.
-        /// </summary>
-        /// <param name="status"></param>
-        /// <param name="logMsg"></param>
-        public static void InjectTestStatus(TestStatus status, string logMsg)
-        {
-            pgbHelper.CreateVar($"_msgKey", logMsg);
-            pgbHelper.CreateVar($"_statusKey", status.ToString());
-        }
-
-        /// <summary>
-        /// Used in conjunction with InjectTestStatus method.
-        /// </summary>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public static List<object> CheckForTestStatusInjection(this TestContext.ResultAdapter result)
-        {
-            PageHelper pageHelper = new PageHelper();
-            List<object> testResults = new List<object>();
-
             try
             {
-                TestStatus _testStatus = TestStatus.Inconclusive;
+                string logMsg = string.Empty;
+                string argKey = BaseUtil.ConvertToType<string>(key);
+                argKey = withPrefix
+                    ? GetEnvVarPrefix(argKey)
+                    : argKey;
 
-                //var prefix = GetEnvVarPrefix();
-                var injStatusKey = GetEnvVarPrefix("_statusKey");
-                var injMsgKey = GetEnvVarPrefix("_msgKey");
+                value = value.HasValue()
+                    ? value
+                    : GenerateRandomGuid();
 
-                string injStatus = string.Empty;
-                string injMsg = string.Empty;
+                Hashtable = GetHashTable();
 
-                if (pgbHelper.HashKeyExists(injStatusKey))
+                if (!HashKeyExists(argKey))
                 {
-                    injStatus = pgbHelper.GetVar(injStatusKey, true);
-                    injMsg = pgbHelper.GetVar(injMsgKey, true);
-
-                    switch (injStatus)
-                    {
-                        case "Warning":
-                            _testStatus = TestStatus.Warning;
-                            break;
-
-                        case "Failed":
-                            _testStatus = TestStatus.Failed;
-                            break;
-
-                        case "Skipped":
-                            _testStatus = TestStatus.Skipped;
-                            break;
-
-                        default:
-                            _testStatus = TestStatus.Inconclusive;
-                            break;
-                    }
+                    Hashtable.Add(argKey, value);
+                    logMsg = "Created";
                 }
                 else
                 {
-                    _testStatus = result.Outcome.Status;
+                    Hashtable[argKey] = value;
+                    logMsg = "Updated";
                 }
 
-                testResults.Add(_testStatus);
-                testResults.Add(injMsg);
+                log.Debug($"{logMsg} HashTable - Key: {argKey} : Value: {value}");
             }
             catch (Exception e)
             {
-                BaseUtils.log.Error(e.StackTrace);
+                log.Error($"Error occured while adding to HashTable \n{e.Message}");
+                throw;
             }
-            
-            return testResults;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public string GetVar<T>(T key, bool keyIncludesPrefix = false)
+        {
+            string argKey = ConvertToType<string>(key);
+            argKey = keyIncludesPrefix
+                ? argKey
+                : GetEnvVarPrefix(argKey);
+
+            if (!HashKeyExists(argKey))
+            {
+                CreateVar(argKey, "", false);
+            }
+
+            Hashtable = GetHashTable();
+            var varValue = Hashtable[argKey].ToString();
+            log.Debug($"#####GetVar Key: {argKey} has Value: {varValue}");
+
+            return varValue;
+        }
+
+        public bool HashKeyExists(string key)
+        {
+            Hashtable = GetHashTable();
+            return Hashtable.ContainsKey(key);
         }
     }
+
 }

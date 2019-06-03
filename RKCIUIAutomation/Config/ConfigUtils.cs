@@ -6,20 +6,12 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Security.Cryptography;
 using System.Text;
-using static RKCIUIAutomation.Base.BaseUtils;
 using static RKCIUIAutomation.Tools.HipTestApi;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Config
 {
-    public interface IConfigUtils
-    {
-        string GetHipTestCreds(HipTestKey credType);
-        string GetSiteUrl(TestEnv testEnv, TenantName tenant);
-        TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg);
-        string[] GetUser(UserType userType);
-    }
-
-    public class ConfigUtils : ProjectProperties, IConfigUtils
+    public class ConfigUtils : BaseUtils, IConfigUtils
     {
         public ConfigUtils()
         {
@@ -91,10 +83,10 @@ namespace RKCIUIAutomation.Config
             return collection[key];
         }
 
-        internal string GetEncryptedPW(string decryptedPW)
+        public string GetEncryptedPW(string decryptedPW)
             => Encrypt(decryptedPW);
 
-        internal string GetDecryptedPW(string encryptedPW)
+        public string GetDecryptedPW(string encryptedPW)
             => Decrypt(encryptedPW);
 
         private string GetCryptoHash() => GetValueFromConfigManager(userTypeKey: "Hash");

@@ -12,149 +12,55 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using static NUnit.Framework.TestContext;
+using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Page.StaticHelpers;
 
 namespace RKCIUIAutomation.Base
 {
     [TestFixture]
     [Parallelizable]
-    public class BaseClass : BaseUtils, IConfigUtils, IProjectProperties
+    public class BaseClass : BaseHook
     {
-        [ThreadStatic]
-        public static IWebDriver driver;
+        public BaseClass()
+        {
+        }
 
-        [ThreadStatic]
-        public static string pageTitle;
-
-        #region ExtentReports Details
-
-        [ThreadStatic]
-        public static ExtentReports reportInstance;
-
-        [ThreadStatic]
-        public static ExtentTest parentTest;
-
-        [ThreadStatic]
-        public static ExtentTest testInstance;
-
-        [ThreadStatic]
-        public static TestStatus testStatus;
-
-        #endregion ExtentReports Details
-
-        #region HipTest Details
-
-        [ThreadStatic]
-        public HipTestApi hipTestInstance;
-
-        [ThreadStatic]
-        public int hipTestRunId;
-
-        [ThreadStatic]
-        public string[] hipTestRunDetails;
-
-        [ThreadStatic]
-        public List<int> hipTestRunTestCaseIDs;
-
-        [ThreadStatic]
-        public List<KeyValuePair<int, List<int>>> hipTestRunData;
-
-        [ThreadStatic]
-        public List<KeyValuePair<int, KeyValuePair<TestStatus, string>>> hipTestResults;
-
-        #endregion HipTest Details
-
-        #region Test Environment Details
-
-        [ThreadStatic]
-        public static TestPlatform testPlatform;
-
-        [ThreadStatic]
-        public static BrowserType browserType;
-
-        [ThreadStatic]
-        public static TestEnv testEnv;
-
-        [ThreadStatic]
-        public static TenantName tenantName;
-
-        [ThreadStatic]
-        public static Reporter reporter;
-
-        [ThreadStatic]
-        public static string siteUrl;
-
-        [ThreadStatic]
-        public static bool hiptest;
-
-        [ThreadStatic]
-        public static string GridVmIP;
-
-        #endregion Test Environment Details
-
-        #region TestCase Details
-
-        [ThreadStatic]
-        private static string testName;
-
-        [ThreadStatic]
-        private static string testSuite;
-
-        [ThreadStatic]
-        private static string testPriority;
-
-        [ThreadStatic]
-        private static string testCaseNumber;
-
-        [ThreadStatic]
-        private static string testComponent1;
-
-        [ThreadStatic]
-        internal static string testComponent2;
-
-        [ThreadStatic]
-        private static string testDescription;
-
-        [ThreadStatic]
-        private static string[] testRunDetails;
-
-        [ThreadStatic]
-        private Cookie cookie = null;
-
-        [ThreadStatic]
-        internal static string testDetails;
-
-        #endregion TestCase Details
-
-        //private ConfigUtils Configs = new ConfigUtils();
-
-        internal static string tmpDevEnvIP = "http://10.0.70.68:3000";
-
+        readonly TestPlatform defaultTestPlatform = TestPlatform.GridLocal;
+        readonly BrowserType defaultBrowserType = BrowserType.Chrome;
+        readonly TestEnv defaultTestEnvironment = TestEnv.Staging;         
+        readonly TenantName defaultTenantName = TenantName.LAX;
+        readonly Reporter defaultReporter = Reporter.Klov;
+        readonly string defaultGridAddress = "";
+        readonly bool enableHipTest = false;
+        
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            string _testPlatform = Parameters.Get("Platform", $"{TestPlatform.GridLocal}");
-            string _browserType = Parameters.Get("Browser", $"{BrowserType.Chrome}");
-            string _testEnv = Parameters.Get("TestEnv", $"{TestEnv.Staging}");
-            string _tenantName = Parameters.Get("Tenant", $"{TenantName.SH249}");
-            string _reporter = Parameters.Get("Reporter", $"{Reporter.Klov}");
-            string _gridAddress = Parameters.Get("GridAddress", "");
-            bool _hiptest = Parameters.Get("Hiptest", false);
+            string _testPlatform = Parameters.Get("Platform", $"{defaultTestPlatform}");
+            string _browserType = Parameters.Get("Browser", $"{defaultBrowserType}");
+            string _testEnv = Parameters.Get("TestEnv", $"{defaultTestEnvironment}");
+            string _tenantName = Parameters.Get("Tenant", $"{defaultTenantName}");
+            string _reporter = Parameters.Get("Reporter", $"{defaultReporter}");
+            string _gridAddress = Parameters.Get("GridAddress", defaultGridAddress);
+            bool _hiptest = Parameters.Get("Hiptest", enableHipTest);
 
-            testPlatform = GetTestRunEnv<TestPlatform>(_testPlatform);
-            browserType = GetTestRunEnv<BrowserType>(_browserType);
-            testEnv = GetTestRunEnv<TestEnv>(_testEnv);
-            tenantName = GetTestRunEnv<TenantName>(_tenantName);
-            reporter = GetTestRunEnv<Reporter>(_reporter);
-            siteUrl = GetSiteUrl(testEnv, tenantName);
+            IConfigUtils config = ConfigUtil;
+            testPlatform = config.GetTestRunEnv<TestPlatform>(_testPlatform);
+            browserType = config.GetTestRunEnv<BrowserType>(_browserType);
+            testEnv = config.GetTestRunEnv<TestEnv>(_testEnv);
+            tenantName = config.GetTestRunEnv<TenantName>(_tenantName);
+            reporter = config.GetTestRunEnv<Reporter>(_reporter);
+            siteUrl = config.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
-            if (browserType == BrowserType.MicrosoftEdge && testPlatform != TestPlatform.Local)
-            {
-                testPlatform = TestPlatform.Windows;
-            }
+            testPlatform = browserType == BrowserType.MicrosoftEdge
+                ? testPlatform == TestPlatform.Local
+                    ? TestPlatform.Windows
+                    : testPlatform
+                : testPlatform;
 
-            DetermineReportFilePath();
-            GridVmIP = SetGridAddress(testPlatform, _gridAddress);
+            SetReportPath(tenantName);
+            SetGridAddress(testPlatform, _gridAddress);
 
             if (hiptest)
             {
@@ -162,68 +68,6 @@ namespace RKCIUIAutomation.Base
                 hipTestRunTestCaseIDs = new List<int>();
                 hipTestResults = new List<KeyValuePair<int, KeyValuePair<TestStatus, string>>>();
             }
-        }
-
-        private void GenerateTestRunDetails()
-        {
-            var _suite = Regex.Split(GetType().Namespace, "\\.");
-
-            testName = GetTestName();
-            testSuite = _suite[_suite.Length - 1];
-            testPriority = GetTestPriority();
-            testCaseNumber = GetTestCaseNumber();
-            testComponent1 = GetTestComponent1();
-            testComponent2 = GetTestComponent2();
-            testDescription = GetTestDescription();
-
-            testRunDetails = new string[]
-            {
-                testSuite,
-                testPriority,
-                testCaseNumber,
-                testComponent1,
-                testComponent2,
-                testEnv.ToString(),
-                tenantName.ToString()
-            };
-        }
-
-        private void InitExtentTestInstance()
-        {
-            reportInstance = ExtentManager.GetReportInstance();
-            testInstance = reportInstance.CreateTest($"Suite: {testSuite} | Tenant: {tenantName} | Env: {testEnv}<br>Test: {testName} | Hiptest TC# {testCaseNumber}");
-            //testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
-        }
-
-        private void InitWebDriverInstance()
-        {
-            List<string> tenantComponents = new List<string>();
-            tenantComponents = SetTenantComponents(tenantName);
-
-            if (tenantComponents.Contains(testComponent1))
-            {
-                if (tenantComponents.Contains(testComponent2) || !testComponent2.HasValue())
-                {
-                    testDetails = $"({testEnv}){tenantName} - {testName}";
-                    Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(45);
-                    Driver.Manage().Window.Maximize();
-                    Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
-
-                    LogTestDetails(testRunDetails);
-                    testInstance.AssignReportCategories(testRunDetails);
-                }
-                else
-                {
-                    SkipTest(testComponent2, testRunDetails);
-                }
-            }
-            else
-            {
-                SkipTest(testComponent1, testRunDetails);
-            }
-
-            driver = Driver;
         }
 
         [SetUp]
@@ -239,62 +83,6 @@ namespace RKCIUIAutomation.Base
             InitExtentTestInstance();
 
             InitWebDriverInstance();
-        }
-
-        private void SkipTest(string testComponent = "", string[] reportCategories = null)
-        {
-            try
-            {
-                reportCategories = reportCategories ?? testRunDetails;
-                var component = !testComponent2.HasValue()
-                    ? testComponent1
-                    : testComponent2;
-                testComponent = testComponent.HasValue()
-                    ? testComponent
-                    : component;
-
-                testInstance.AssignReportCategories(reportCategories);
-                string msg = $"TEST SKIPPED : Tenant {tenantName} does not have implementation of component ({testComponent}).";
-                LogAssertIgnore(msg);
-                BaseHelper.InjectTestStatus(TestStatus.Skipped, msg);
-                Assert.Ignore(msg);
-            }
-            catch (Exception e)
-            {
-                log.Debug(e.StackTrace);
-                throw;
-            }
-        }
-
-        private void LogTestDetails(string[] testDetails)
-        {
-            string _suite = testDetails[0];
-            string _priority = testDetails[1];
-            string _tcNumber = testDetails[2];
-            string _component1 = testDetails[3];
-            string _component2 = testDetails[4];
-            string _testEnv = testDetails[5];
-            string _tenantName = testDetails[6];
-
-            string components = !_component2.HasValue()
-                ? $": {_component1}"
-                : $"s: {_component1}, {_component2}";
-
-            log.Info($"################################################################");
-            log.Info($"#                   RKCI ELVIS UI Test Automation");
-            log.Info($"################################################################");
-            log.Info($"#  -->> Test Configuration <<--");
-            log.Info($"#  Tenant: {_tenantName}  TestEnv: {_testEnv}");
-            log.Info($"#  Site URL: {siteUrl}");
-            log.Info($"#  Browser: {browserType.ToString()}");
-            log.Info($"#");
-            log.Info($"#  -->> Test Case Details <<--");
-            log.Info($"#  Name: {testName}");
-            log.Info($"#  Description: {testDescription}");
-            log.Info($"#  TC#: {_tcNumber}, {_priority}");
-            log.Info($"#  Suite: {_suite}, Component{components}");
-            log.Info($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");
-            log.Info($"################################################################\n");
         }
 
         [TearDown]
@@ -315,7 +103,7 @@ namespace RKCIUIAutomation.Base
                                 ? ""
                                 : $"{injMsg}<br> ")
                             : $"<pre>{result.StackTrace}</pre>";
-                        string screenshotName = CaptureScreenshot(GetTestName());
+                        string screenshotName = BaseUtil.CaptureScreenshot();
 
                         if (reporter == Reporter.Klov)
                         {
