@@ -19,7 +19,7 @@ namespace RKCIUIAutomation.Base
     public class BaseHook : WebDriverFactory
     {
         [ThreadStatic]
-        public static string pageTitle;
+        public static string pageTitle = string.Empty;
 
         #region ExtentReports Details
 

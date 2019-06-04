@@ -71,17 +71,6 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        //private string SetWinTempFolder()
-        //{
-        //    string cTemp = "C:\\Temp";
-        //    if (!File.Exists(cTemp))
-        //    {
-        //        Directory.CreateDirectory(cTemp);
-        //    }
-
-        //    return cTemp;
-        //}
-
         public string GetDateString()
         {
             if (!DateString.HasValue())

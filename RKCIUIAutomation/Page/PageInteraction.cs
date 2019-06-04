@@ -485,7 +485,7 @@ namespace RKCIUIAutomation.Page
                     string logMsg = hasValue
                         ? $"Retrieved '{text}'"
                         : $"Unable to retrieve text";
-                    Report.Step($"{logMsg} from element - {elementByLocator}", false, hasValue);
+                    Report.Info($"{logMsg} from element - {elementByLocator}", hasValue);
                 }
             }
             catch (Exception e)

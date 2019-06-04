@@ -17,14 +17,15 @@ namespace RKCIUIAutomation.Page
 
         public PageHelper(IWebDriver driver) => this.Driver = driver;
 
-        public const string TEXT = "TXT";
         public const string DDL = "DDL";
+        public const string TEXT = "TXT";
         public const string DATE = "DATE";
-        public const string FUTUREDATE = "FUTUREDATE";
-        public const string MULTIDDL = "MULTIDDL";
         public const string RDOBTN = "RDOBTN";
         public const string CHKBOX = "CHKBOX";
         public const string UPLOAD = "UPLOAD";
+        public const string MULTIDDL = "MULTIDDL";
+        public const string FUTUREDATE = "FUTUREDATE";
+        public const string AUTOPOPULATED = "AUTOPOPULATED";
 
         public static string GetMaxShortDate()
             => DateTime.MaxValue.Date.ToShortDateString();

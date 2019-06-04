@@ -17,11 +17,6 @@ namespace RKCIUIAutomation.Base
 
         public DriverOptions DetermineDriverOptions(TestPlatform platform, BrowserType browser, string testDetails)
             => DetermineBrowser(browser, testDetails).DeterminePlatform(platform);
-        //{
-        //    Options = DetermineBrowser(browser, testDetails);
-        //    Options.DeterminePlatform(platform);
-        //    return Options;
-        //}
 
         private DriverOptions DetermineBrowser(BrowserType browser, string testDetails)
         {
