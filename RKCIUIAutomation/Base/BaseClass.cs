@@ -9,8 +9,6 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Threading;
 using static NUnit.Framework.TestContext;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.StaticHelpers;

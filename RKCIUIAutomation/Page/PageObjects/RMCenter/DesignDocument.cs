@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
-    #region Workflow Interface class
+    #region DesignDocument Interface class
 
     public interface IDesignDocument
     {
@@ -164,8 +164,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         string GetCurrentReviewerType();
     }
 
-    #endregion Workflow Interface class
-
+    #endregion DesignDocument Interface class
 
     #region DesignDocument Generic class
 
@@ -180,7 +179,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public DesignDocument(IWebDriver driver)
         {
             this.Driver = driver;
-            commentEntryFieldsList = GetCommentEntryFieldsList();
+            //commentEntryFieldsList = GetCommentEntryFieldsList();
             designDocDetailsHeadersList = GetDesignDocDetailsHeadersList();
             designDocCreatePgEntryFieldsList = GetDesignDocCreatePgEntryFieldsList();
         }
@@ -1158,8 +1157,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     #endregion DesignDocument Generic class
 
-
-    #region Common Workflow Implementation class
+    #region DesignDocument Implementation class
 
     public abstract class DesignDocument_Impl : PageBase, IDesignDocument
     {
@@ -1238,9 +1236,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void Workflow_ForwardResolutionCommentAndCodeForDisagreeResponse();
     }
 
-    #endregion Common Workflow Implementation class
+    #endregion DesignDocument Implementation class
 
-    
     // Tenant specific implementation of DesignDocument Comment Review
     #region Implementation specific to Garnet
 
@@ -1420,7 +1417,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             SelectRegularCommentReviewType();
             SelectCommentType();
-
             SelectCategory();
             SelectDiscipline();
             EnterTextInCommentField(CommentEntryField.CommentInput);
@@ -1763,5 +1759,4 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     }
 
     #endregion Implementation specific to LAX
-
 }

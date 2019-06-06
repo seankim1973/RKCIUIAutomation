@@ -427,8 +427,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public abstract class DesignDocumentWF_Impl : TestBase, IDesignDocumentWF
     {
-        //public abstract void CreateCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment);
-        //public abstract void LogIntoDesignDocumentsPage(CR_Workflow workflowType);
         public abstract void CreateCommentReviewDocument(CR_Workflow workflowType = CR_Workflow.CreateComment);
         public abstract void EnterAndForwardClosingComment(CR_Workflow workflowType = CR_Workflow.ClosingComment);
         public abstract void EnterClosingCommentAndCode();
