@@ -3,7 +3,6 @@ using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Threading;
-using RKCIUIAutomation.Test;
 using System.Collections.Generic;
 using System.Linq;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
@@ -13,15 +12,18 @@ using System.Text.RegularExpressions;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
-    #region DesignDocument Interface class
-
+    // DesignDocument Interface class
     public interface IDesignDocument
     {
+        IList<Enum> RegularCommentFieldsList { get; set; }
+
+        IList<Enum> NoCommentFieldsList { get; set; }
+
         IList<DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList();
 
         IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList();
 
-        IList<Enum> GetCommentEntryFieldsList();
+        IList<Enum> GetCommentEntryFieldsList(ReviewType reviewType);
 
         IList<KeyValuePair<DesignDocEntryFieldType, string>> GetDesignDocEntryFieldKeyValuePairs();
 
@@ -162,12 +164,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void SelectDDL_Discipline(int selectionIndex);
 
         string GetCurrentReviewerType();
+
     }
 
-    #endregion DesignDocument Interface class
 
-    #region DesignDocument Generic class
-
+    // DesignDocument Generic class
     public class DesignDocument : DesignDocument_Impl
     {
         public DesignDocument()
@@ -235,7 +236,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void ScrollToFirstColumn()
             => PageAction.ScrollToElement(By.XPath("//tbody/tr/td[@style='vertical-align: top;'][1]"));
 
-        public enum CommentType
+        public enum ReviewType
         {
             RegularComment,
             NoComment
@@ -395,6 +396,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public By Btn_ShowFileList_ByLocator => By.XPath("//button[contains(@class,'showFileList')]");
         public By Btn_PDF_ByLocator => By.Id("PdfExportLink");
         public By Btn_XLS_ByLocator => By.Id("CsvExportLink");
+
+        public override IList<Enum> RegularCommentFieldsList { get; set; }
+
+        public override IList<Enum> NoCommentFieldsList { get; set; }
 
         public override void CreateDocument()
         {
@@ -570,7 +575,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     }
                     else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
                     {
-                        if (entryField.Equals(DesignDocEntryFieldType.MaxReviewDays_DOT_Chkbox))
+                        if (entryField.Equals(DesignDocEntryFieldType.MaxReviewDays_QAF_Chkbox))
                         {
                             entryField = DesignDocEntryFieldType.MaxReviewDays_QAF;
                         }
@@ -584,7 +589,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                             entryField = DesignDocEntryFieldType.MaxReviewDays_Other;
                         }
 
-                        fieldValue = PageAction.GetText(GetTextInputFieldByLocator(entryField));
+                        fieldValue = PageAction.GetText(By.Id(entryField.GetString()));
                     }
                 }
             }
@@ -608,9 +613,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 kvPair = PopulateAndStoreEntryFieldValue(entryField, "");
                 createPgEntryFieldKeyValuePairs.Add(kvPair);
             }
-
-            //designDocTitle = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == DesignDocEntryField.Title select kvp.Value).FirstOrDefault();
-            //designDocNumber = (from kvp in createPgEntryFieldKeyValuePairs where kvp.Key == DesignDocEntryField.DocumentNumber select kvp.Value).FirstOrDefault();
         }
 
         private DesignDocEntryFieldType GetExpectedDesignDocEntryFieldTypeForDesignDocHeaderType(DesignDocHeaderType docHeader)
@@ -817,8 +819,28 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList()
             => designDocDetailsHeadersList;
 
-        public override IList<Enum> GetCommentEntryFieldsList()
-            => commentEntryFieldsList;
+        public override IList<Enum> GetCommentEntryFieldsList(ReviewType reviewType)
+        {
+            if (commentEntryFieldsList == null)
+            {
+                IList<Enum> fieldsList = null;
+
+                commentEntryFieldsList = new List<Enum> { };
+
+                if (reviewType == ReviewType.RegularComment)
+                {
+                    fieldsList = RegularCommentFieldsList;
+                }
+                else if (reviewType == ReviewType.NoComment)
+                {
+                    fieldsList = NoCommentFieldsList;
+                }
+
+                ((List<Enum>)commentEntryFieldsList).AddRange(fieldsList);
+            }
+
+            return commentEntryFieldsList;
+        }
 
         public override void SelectDDL_ReviewType(int selectionIndex)
             => PageAction.ExpandAndSelectFromDDList(CommentEntryField_InTable.ReviewType, selectionIndex);
@@ -1153,14 +1175,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             return userName[0];
         }
+
     }
 
-    #endregion DesignDocument Generic class
 
-    #region DesignDocument Implementation class
-
+    // DesignDocument Implementation class
     public abstract class DesignDocument_Impl : PageBase, IDesignDocument
     {
+        public abstract IList<Enum> RegularCommentFieldsList { get; set; }
+        public abstract IList<Enum> NoCommentFieldsList { get; set; }
         public abstract void ClickBtn_AddComment();
         public abstract void ClickBtn_BackToList();
         public abstract void ClickBtn_Cancel();
@@ -1195,7 +1218,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void EnterVerifiedDate(string shortDate = "01/01/2019");
         public abstract void FilterDocNumber(string filterByValue = "");
         public abstract IList<KeyValuePair<Enum, string>> GetCommentEntryFieldKeyValuePairs();
-        public abstract IList<Enum> GetCommentEntryFieldsList();
+        public abstract IList<Enum> GetCommentEntryFieldsList(ReviewType reviewType);
         public abstract string GetCurrentReviewerType();
         public abstract IList<DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList();
         public abstract IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList();
@@ -1236,7 +1259,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void Workflow_ForwardResolutionCommentAndCodeForDisagreeResponse();
     }
 
-    #endregion DesignDocument Implementation class
 
     // Tenant specific implementation of DesignDocument Comment Review
     #region Implementation specific to Garnet
@@ -1388,27 +1410,25 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return designDocDetailsHeadersList;
         }
 
-        //TODO
-        public override IList<Enum> GetCommentEntryFieldsList()
+        public override IList<Enum> RegularCommentFieldsList => new List<Enum>
         {
-            if (commentEntryFieldsList == null)
-            {
-                commentEntryFieldsList = new List<Enum>
-                {
-                    CommentEntryField.ReviewType,
-                    CommentEntryField.CommentType,
-                    CommentEntryField.Reviewer,
-                    CommentEntryField.ReviewedDate,
-                    CommentEntryField.Category,
-                    CommentEntryField.Discipline,
-                    CommentEntryField.CommentInput,
-                    CommentEntryField.ContractReferenceInput,
-                    CommentEntryField.DrawingPageNumberInput
-                };
-            }
+            CommentEntryField.ReviewType,
+            CommentEntryField.CommentType,
+            CommentEntryField.Reviewer,
+            CommentEntryField.ReviewedDate,
+            CommentEntryField.Category,
+            CommentEntryField.Discipline,
+            CommentEntryField.CommentInput,
+            CommentEntryField.ContractReferenceInput,
+            CommentEntryField.DrawingPageNumberInput
+        };
 
-            return commentEntryFieldsList;
-        }
+        public override IList<Enum> NoCommentFieldsList => new List<Enum>()
+        {
+            CommentEntryField.ReviewType,
+            CommentEntryField.Reviewer,
+            CommentEntryField.ReviewedDate
+        };
 
         public override string GetHeaderValue(DesignDocHeaderType docHeader)
             => PageAction.GetText(By.XPath($"//label[contains(text(),'{docHeader.GetString()}')]/parent::div/following-sibling::div[1]"));
@@ -1517,25 +1537,23 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return designDocDetailsHeadersList;
         }
 
-        public override IList<Enum> GetCommentEntryFieldsList()
+        public override IList<Enum> RegularCommentFieldsList => new List<Enum>
         {
-            if (commentEntryFieldsList == null)
-            {
-                commentEntryFieldsList = new List<Enum>
-                {
-                    CommentEntryField_InTable.ReviewType,
-                    CommentEntryField_InTable.DrawingPageNumberInput,
-                    CommentEntryField_InTable.ContractReferenceInput,
-                    CommentEntryField_InTable.CommentInput,
-                    CommentEntryField_InTable.Discipline,
-                    CommentEntryField_InTable.Category,
-                    CommentEntryField_InTable.CommentType,
-                    CommentEntryField_InTable.Reviewer
-                };
-            }
+            CommentEntryField_InTable.ReviewType,
+            CommentEntryField_InTable.DrawingPageNumberInput,
+            CommentEntryField_InTable.ContractReferenceInput,
+            CommentEntryField_InTable.CommentInput,
+            CommentEntryField_InTable.Discipline,
+            CommentEntryField_InTable.Category,
+            CommentEntryField_InTable.CommentType,
+            CommentEntryField_InTable.Reviewer
+        };
 
-            return commentEntryFieldsList;
-        }
+        public override IList<Enum> NoCommentFieldsList => new List<Enum>
+        {
+            CommentEntryField_InTable.ReviewType
+        };
+
 
         public override void EnterNoComment()
         {
@@ -1668,24 +1686,16 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return designDocDetailsHeadersList;
         }
 
-        public override IList<Enum> GetCommentEntryFieldsList()
+        public override IList<Enum> RegularCommentFieldsList => new List<Enum>
         {
-            if (commentEntryFieldsList == null)
-            {
-                commentEntryFieldsList = new List<Enum>
-                {
-                    CommentEntryField_InTable.CommentType,
-                    CommentEntryField_InTable.ReviewerName,
-                    CommentEntryField_InTable.Org,
-                    CommentEntryField_InTable.ContractReferenceInput,
-                    CommentEntryField_InTable.CommentInput,
-                    CommentEntryField_InTable.DrawingPageNumberInput,
-                    CommentEntryField_InTable.Discipline
-                };
-            }
-
-            return commentEntryFieldsList;
-        }
+            CommentEntryField_InTable.CommentType,
+            CommentEntryField_InTable.ReviewerName,
+            CommentEntryField_InTable.Org,
+            CommentEntryField_InTable.ContractReferenceInput,
+            CommentEntryField_InTable.CommentInput,
+            CommentEntryField_InTable.DrawingPageNumberInput,
+            CommentEntryField_InTable.Discipline
+        };
 
         public override void EnterRegularCommentAndDrawingPageNo()
         {
@@ -1729,8 +1739,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void SelectRegularCommentReviewType(int selectionIndex = 3)
             => PageAction.ExpandAndSelectFromDDList(CommentEntryField_InTable.ReviewType, selectionIndex);
 
-        public override void SelectNoCommentReviewType(int selectionIndex = 1)
-            => PageAction.ExpandAndSelectFromDDList(CommentEntryField_InTable.ReviewType, selectionIndex);
+        //public override void SelectNoCommentReviewType(int selectionIndex = 1)
+        //    => PageAction.ExpandAndSelectFromDDList(CommentEntryField_InTable.ReviewType, selectionIndex);
 
         public override void SelectCommentType(int selectionIndex = 1)
             => PageAction.ExpandAndSelectFromDDList(CommentEntryField_InTable.DocType, selectionIndex);

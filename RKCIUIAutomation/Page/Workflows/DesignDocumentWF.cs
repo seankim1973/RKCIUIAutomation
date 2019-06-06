@@ -651,15 +651,15 @@ namespace RKCIUIAutomation.Page.Workflows
             LogoutToLoginPage();
 
             Report.Step("STEP: 2. Log in as DOT User, enter no Comments");
-            EnterNoComment(CR_Workflow.EnterComment_DOT);//UserType.DOTUser
+            EnterNoComment(CR_Workflow.EnterComment_DOT);//UserType.DOTUser - store data for DOT User
             LogoutToLoginPage();
 
             Report.Step("STEP: 3. Log in as IQF User, enter no Comments");
-            EnterNoComment();//UserType.IQFUser
+            EnterNoComment();//UserType.IQFUser - store data for verification for IQF User & verify data in comments tab 1 (DOTUser data - readonly)
             LogoutToLoginPage();
 
             Report.Step("STEP: 4. Log in as DOT Admin, forwards Comments");
-            ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
+            ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin - verify data in comments tab 1 (DOTUser data - editable data)
             LogoutToLoginPage();
 
             Report.Step("STEP: 5. Log in as IQF Admin, forwards Comments");
