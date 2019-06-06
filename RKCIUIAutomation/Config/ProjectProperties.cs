@@ -158,7 +158,8 @@ namespace RKCIUIAutomation.Config
                 Component.DIR_WF_Simple_QA,
                 Component.DIR_WF_Simple_QC,
                 Component.DesignDoc_CommentReview,
-                Component.CommentReview_RegularComment
+                Component.CommentReview_RegularComment,
+                Component.Control_Point
             };
         }
     }
@@ -219,7 +220,8 @@ namespace RKCIUIAutomation.Config
                 Component.NCR,
                 Component.NCR_WF_Complex,
                 Component.DIR,
-                Component.DIR_WF_Simple_QA
+                Component.DIR_WF_Simple_QA,
+                Component.Control_Point
             };
         }
     }
@@ -238,7 +240,9 @@ namespace RKCIUIAutomation.Config
                 Component.NCR,
                 Component.NCR_WF_Complex,
                 Component.DIR,
-                Component.DIR_WF_Simple_QA
+                Component.DIR_WF_Simple_QA,
+                Component.Control_Point
+
             };
         }
     }

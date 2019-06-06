@@ -890,6 +890,7 @@ namespace RKCIUIAutomation.Page.Navigation
     {
         public PageNavigation_I15Tech(IWebDriver driver) : base(driver)
         {
+
         }
     }
 
@@ -915,6 +916,9 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public override void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_DIR);
 
+        public override void Control_Point_Log() => Navigate.Menu(NavMenu.CheckPoint.Menu.Check_Point_Log);
+
+        public override void Control_Point_Scheduler() => Navigate.Menu(NavMenu.CheckPoint.Menu.Check_Point_Scheduler);
 
         public override void QALab_Technician_Random() => Navigate.Menu(NavMenu.Lab.Menu.Technician_Random);
 

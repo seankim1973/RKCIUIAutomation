@@ -1403,11 +1403,10 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                (GetElement(PgHelper.GetButtonByLocator("Cancel"))
-                    ?? GetElement(PgHelper.GetInputButtonByLocator("Cancel"))
-                    ?? GetElement(By.Id("CancelSubmittal"))
-                    ).Click();
+                IWebElement cancelBtnElem = null;
+                cancelBtnElem = GetElement(By.XPath($"//a[text()='Cancel']")) ?? GetElement(By.XPath($"//input[text()='Cancel']")) ?? GetElement(By.Id("CancelSubmittal"));
 
+                cancelBtnElem.Click();
                 Report.Step("Clicked Cancel");
                 WaitForPageReady();
             }

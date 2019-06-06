@@ -33,7 +33,7 @@ namespace RKCIUIAutomation.Base
 
         public static IPageInteraction PageAction => new PageInteraction(driver);
 
-        public static IPageHelper PgHelper => new PageHelper(driver);
+        public static IPageHelper PgHelper => new PageHelper();
 
         public static ITestUtils TestUtility => new TestUtils(driver);
 
