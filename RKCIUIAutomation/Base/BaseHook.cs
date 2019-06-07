@@ -166,7 +166,7 @@ namespace RKCIUIAutomation.Base
                 {
                     testDetails = $"({testEnv}){tenantName} - {testName}";
                     Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(90);
+                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 

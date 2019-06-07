@@ -136,21 +136,20 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
-                throw;
+                log.Error($"WaitForElement - {elementByLocator} : {e.Message}");
             }
         }
 
-        public override void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 500)
+        public override void WaitForElementToClear(By elementByLocator, int timeOutInSeconds = 60, int pollingInterval = 500)
         {
             try
             {
                 WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(locator));
+                wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(elementByLocator));
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error($"WaitForElementToClear [{elementByLocator}]: {e.Message}");
             }
         }
 
@@ -225,7 +224,7 @@ namespace RKCIUIAutomation.Page
             { }
             catch (Exception e)
             {
-                log.Warn($"Error in WaitForPageReady method : {e.Message}");
+                log.Warn($"WaitForPageReady : {e.Message}");
             }
 
         }
@@ -254,7 +253,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return elem;
@@ -273,7 +272,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return elements;
@@ -357,7 +356,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return attributes;
@@ -411,9 +410,8 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                //log.Error(e.StackTrace);
-                log.Error("Exception Message: " + e.Message + ", StackTrace: " + e.StackTrace);
-                throw e;
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 
@@ -619,7 +617,8 @@ namespace RKCIUIAutomation.Page
                 ScrollToElement(By.XPath("//h4[text()='Attachments']"));
                 IWebElement uploadInputElem = GetElement(By.XPath("//input[@id='UploadFiles_0_']"));
                 uploadInputElem.SendKeys(filePath);
-                WaitForLoading();
+                //WaitForLoading();
+                PageAction.WaitForPageReady();
                 log.Info($"Entered {filePath}' for file upload");
 
                 By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
@@ -1404,16 +1403,21 @@ namespace RKCIUIAutomation.Page
             try
             {
                 IWebElement cancelBtnElem = null;
-                cancelBtnElem = GetElement(By.XPath($"//a[text()='Cancel']")) ?? GetElement(By.XPath($"//input[text()='Cancel']")) ?? GetElement(By.Id("CancelSubmittal"));
+                cancelBtnElem = GetElement(PgHelper.GetButtonByLocator("Cancel"))
+                    ?? GetElement(PgHelper.GetInputButtonByLocator("Cancel"))
+                    ?? GetElement(By.Id("CancelSubmittal"));
 
-                cancelBtnElem.Click();
-                Report.Step("Clicked Cancel");
+                if (cancelBtnElem != null)
+                {
+                    cancelBtnElem.Click();
+                    Report.Step("Clicked Cancel");
+                }
+                
                 WaitForPageReady();
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw;
             }
         }
 
@@ -1459,23 +1463,29 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
+                IWebElement newBtnElem = null;
+
                 if (multipleBtnInstances)
                 {
-                    ClickElement(By.XPath("//div[@class='k-content k-state-active']//a[text()='New']"));
+                    newBtnElem = GetElement(By.XPath("//div[@class='k-content k-state-active']//a[text()='New']"));
                 }
                 else
                 {
-                    (GetElement(PgHelper.GetButtonByLocator("New"))
-                        ?? GetElement(PgHelper.GetInputButtonByLocator("Create New"))
-                        ).Click();
+                    newBtnElem = GetElement(PgHelper.GetButtonByLocator("New"))
+                        ?? GetElement(PgHelper.GetInputButtonByLocator("Create New"));
                 }
-                Report.Step("Clicked New");
+
+                if(newBtnElem != null)
+                {
+                    newBtnElem.Click();
+                    Report.Step("Clicked New");
+                }
+                
                 WaitForPageReady();
             }
             catch (Exception e)
             {
                 log.Error(e.Message);
-                throw;
             }
         }
 
@@ -1491,16 +1501,16 @@ namespace RKCIUIAutomation.Page
             {
                 if (argType == typeof(By))
                 {
-                    By locator = BaseUtil.ConvertToType<By>(elementOrLocator);
+                    By locator = ConvertToType<By>(elementOrLocator);
                     elem = GetElement(locator);
                 }
                 else if (argType == typeof(IWebElement))
                 {
-                    elem = BaseUtil.ConvertToType<IWebElement>(elementOrLocator);
+                    elem = ConvertToType<IWebElement>(elementOrLocator);
                 }
                 else if (argType == typeof(string))
                 {
-                    string locatorString = BaseUtil.ConvertToType<string>(elementOrLocator);
+                    string locatorString = ConvertToType<string>(elementOrLocator);
                     elem = GetElement(By.Id(locatorString)) ?? GetElement(By.XPath(locatorString));
                 }
 
@@ -1514,7 +1524,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return elem;

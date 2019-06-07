@@ -303,7 +303,6 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.Control_Point_Scheduler();
             AddAssertionToList(VerifyPageHeader("Control Point List"));
             ClickNew();
-            //Thread.Sleep(3000);
             ClickCancel();
             NavigateToPage.Control_Point_Log();
             AddAssertionToList(VerifyPageHeader("Control Point Log Search"));
