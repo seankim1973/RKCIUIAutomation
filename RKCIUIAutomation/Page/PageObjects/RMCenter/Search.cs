@@ -142,7 +142,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     {
                         PopulateCriteriaByType(criteria, kvPair.Value);
                         ClickBtn_Search();
-                        PageAction.WaitForLoading();
+                        //PageAction.WaitForLoading();
+                        PageAction.WaitForPageReady();
                         bool searchResult = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableHelper.TableType.Single);
                         resultsList.Add(searchResult);
 
@@ -151,7 +152,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         TestUtility.AddAssertionToList(searchResult, logMsg);
 
                         ClickBtn_Clear();
-                        PageAction.WaitForLoading();
+                        //PageAction.WaitForLoading();
+                        PageAction.WaitForPageReady();
                     }
                 }
 
