@@ -4,6 +4,7 @@ using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
 using RKCIUIAutomation.Page.PageObjects.QAField;
 using RKCIUIAutomation.Test;
 using System;
+using System.Threading;
 using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Workflows
@@ -337,7 +338,7 @@ namespace RKCIUIAutomation.Page.Workflows
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Mix_Design_HMA();
             AddAssertionToList(VerifyPageHeader("Hma Mix Design"));
-            VerifyPageIsLoaded();
+           // VerifyPageIsLoaded();
             ClickNew();
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Sieve_Analyses_JMF();

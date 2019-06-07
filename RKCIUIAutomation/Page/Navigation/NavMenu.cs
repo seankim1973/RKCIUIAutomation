@@ -558,9 +558,9 @@ namespace RKCIUIAutomation.Page.Navigation
             public enum Menu
             {
                 [StringValue("Mix Design - PCC")] Mix_Design_PCC,
-                [StringValue("Mix Design - HMA")] Mix_Design_HMA,
-                [StringValue("Sieve Analyses - JMF")] Sieve_Analyses_JMF,
-                [StringValue("Sieve Analyses - IOC")] Sieve_Analyses_IOC,
+                [StringValue("Mix Design - HMA")] Mix_Design_HMA, 
+                [StringValue("Sieve Analysis - JMF")] Sieve_Analyses_JMF,
+                [StringValue("Sieve Analysis - IOC")] Sieve_Analyses_IOC,
                 [StringValue("Material Code - Concrete Aggregate")] Material_Code_Concrete_Aggregate,
                 [StringValue("Material Code - Base Aggregate")] Material_Code_Base_Aggregate,
                 [StringValue("Material Code - HMA Aggregate")] Material_Code_HMA_Aggregate,
@@ -577,7 +577,17 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Control Point Log")] Control_Point_Log
             }
         }
+        
+        //Check Point Menu Navigation Enums
 
+        public class CheckPoint
+        {
+            public enum Menu
+            {
+                [StringValue("Check Point Scheduler")] Check_Point_Scheduler,
+                [StringValue("Check Point Log")] Check_Point_Log
+            }
+        }
         //Record Control Menu Navigation Enums
         public class RecordControl
         {

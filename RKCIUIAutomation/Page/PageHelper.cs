@@ -282,11 +282,11 @@ namespace RKCIUIAutomation.Page
 
             if (argType == typeof(string))
             {
-                buttonVal = BaseUtil.ConvertToType<string>(buttonName);
+                buttonVal = ConvertToType<string>(buttonName);
             }
             else if (argType == typeof(Enum))
             {
-                buttonVal = BaseUtil.ConvertToType<Enum>(buttonName).GetString();
+                buttonVal = ConvertToType<Enum>(buttonName).GetString();
             }
 
             return By.XPath(SetInputButtonXpath(buttonVal));
