@@ -469,7 +469,7 @@ namespace RKCIUIAutomation.Page
                 //element = GetElement(elementByLocator);
                 element = ScrollToElement(elementByLocator);
 
-                if (element.Displayed)
+                if (element.Displayed || element.Enabled)
                 {
                     text = element.Text;
                     hasValue = text.HasValue();
