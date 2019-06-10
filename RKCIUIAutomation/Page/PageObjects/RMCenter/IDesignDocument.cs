@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using OpenQA.Selenium;
+using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
     public interface IDesignDocument
     {
         By BackToListBtn_ByLocator { get; }
-        //By BackToListBtn_InTable_ByLocator { get; }
         By Btn_Cancel_ByLocator { get; }
         By Btn_Forward_ByLocator { get; }
         By Btn_PDF_ByLocator { get; }
@@ -15,8 +15,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         By Btn_ShowFileList_ByLocator { get; }
         By Btn_XLS_ByLocator { get; }
         By CancelBtnUploadPage_ByLocator { get; }
-        IList<Enum> NoCommentFieldsList { get; set; }
-        IList<Enum> RegularCommentFieldsList { get; set; }
+        IList<CommentFieldType> NoCommentFieldsList { get; set; }
+        IList<CommentFieldType> RegularCommentFieldsList { get; set; }
         By SaveForwardBtn_ByLocator { get; }
         By SaveForwardBtnUploadPage_ByLocator { get; }
         By SaveOnlyBtn_ByLocator { get; }
@@ -54,17 +54,17 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void EnterRegularCommentAndDrawingPageNo();
         void EnterResponseCommentAndAgreeResponseCode();
         void EnterResponseCommentAndDisagreeResponseCode();
-        string EnterTextInCommentField(Enum commentField, int commentTabNumber = 1);
+        string EnterTextInCommentField(CommentFieldType commentField, int commentTabNumber = 1);
         void EnterVerifiedDate(string shortDate = "01/01/2019");
         void FilterDocNumber(string filterByValue = "");
-        IList<KeyValuePair<Enum, string>> GetCommentEntryFieldKeyValuePairs();
-        IList<Enum> GetCommentEntryFieldsList(DesignDocument.ReviewType reviewType);
+        IList<KeyValuePair<CommentFieldType, string>> GetCommentEntryFieldKeyValuePairs();
+        IList<CommentFieldType> GetCommentEntryFieldsList(ReviewType reviewType);
         string GetCurrentReviewerType();
-        IList<DesignDocument.DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList();
-        IList<DesignDocument.DesignDocHeaderType> GetDesignDocDetailsHeadersList();
-        IList<KeyValuePair<DesignDocument.DesignDocEntryFieldType, string>> GetDesignDocEntryFieldKeyValuePairs();
+        IList<DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList();
+        IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList();
+        IList<KeyValuePair<DesignDocEntryFieldType, string>> GetDesignDocEntryFieldKeyValuePairs();
         string GetDesignDocStatus();
-        string GetHeaderValue(DesignDocument.DesignDocHeaderType docHeader);
+        string GetHeaderValue(DesignDocHeaderType docHeader);
         void PopulateAllCreatePgEntryFields();
         void ScrollToFirstColumn();
         void ScrollToLastColumn();
@@ -85,7 +85,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void SelectNoCommentReviewType(int commentTabNumber = 1);
         void SelectOrganization(int selectionIndex = 1);
         void SelectRegularCommentReviewType(int commentTabNumber = 1);
-        void SelectTab(DesignDocument.TableTab tableTab);
+        void SelectTab(TableTab tableTab);
         T SetClass<T>(IWebDriver driver);
         void SetDesignDocStatus<T>(T tableTabOrWorkflow);
         void SortTable_Ascending();

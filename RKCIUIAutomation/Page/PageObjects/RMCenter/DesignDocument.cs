@@ -146,8 +146,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("DocumentId")] Action
         }
 
+        /// <summary>
+        /// DDL, TEXT, AUTOPOPULATED
+        /// </summary>
         public enum CommentFieldType
         {
+            //Legacy Comment Entry Fields in Comment Tab
             [StringValue("Comment_ReviewTypeId_", DDL)] ReviewType,
             [StringValue("Comment_ResponseCodeId_", DDL)] ResponseCode,
             [StringValue("Comment_ResolutionStampId_", DDL)] ResolutionStamp,
@@ -163,7 +167,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Comment_ClosingComment_", TEXT)] CommentClosingInput,
             [StringValue("Comment_ReviewerId_", AUTOPOPULATED)] Reviewer,
             [StringValue("Comment_ReviewedDate_", AUTOPOPULATED)] ReviewedDate,
-
+            
             //Comment Entry Fields in Grid View
             [StringValue("CommentType", DDL)] DocType_InTable,
             [StringValue("CommentType", DDL)] CommentType_InTable,
@@ -215,10 +219,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         internal static IList<KeyValuePair<DesignDocEntryFieldType, string>> createPgEntryFieldKeyValuePairs;
 
         [ThreadStatic]
-        internal static IList<Enum> commentEntryFieldsList;
+        internal static IList<CommentFieldType> commentEntryFieldsList;
 
         [ThreadStatic]
-        internal static IList<KeyValuePair<Enum, string>> commentEntryFieldKeyValuePairs;
+        internal static IList<KeyValuePair<CommentFieldType, string>> commentEntryFieldKeyValuePairs;
 
         //Page element By Locators
         public override By UploadNewDesignDoc_ByLocator => By.XPath("//a[text()='Upload New Design Document']");
@@ -236,9 +240,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override By Btn_PDF_ByLocator => By.Id("PdfExportLink");
         public override By Btn_XLS_ByLocator => By.Id("CsvExportLink");
 
-        public override IList<Enum> RegularCommentFieldsList { get; set; }
+        public override IList<CommentFieldType> RegularCommentFieldsList { get; set; }
 
-        public override IList<Enum> NoCommentFieldsList { get; set; }
+        public override IList<CommentFieldType> NoCommentFieldsList { get; set; }
 
         public override void CreateDocument()
         {
@@ -316,7 +320,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void ClickBtn_Cancel()
             => Click_UniqueTblBtn("k-grid-cancel");
 
-        private KeyValuePair<DesignDocEntryFieldType, string> PopulateAndStoreEntryFieldValue<T>(DesignDocEntryFieldType entryField, T indexOrText, bool useContains = false)
+        private KeyValuePair<DesignDocEntryFieldType, string> PopulateAndStoreDesignDocEntryFieldValue<T>(DesignDocEntryFieldType entryField, T indexOrText, bool useContains = false)
         {
             string fieldType = entryField.GetString(true);
             Type argType = indexOrText.GetType();
@@ -445,7 +449,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             foreach (DesignDocEntryFieldType entryField in designDocCreatePgEntryFieldsList)
             {
                 KeyValuePair<DesignDocEntryFieldType, string> kvPair = new KeyValuePair<DesignDocEntryFieldType, string>();
-                kvPair = PopulateAndStoreEntryFieldValue(entryField, "");
+                kvPair = PopulateAndStoreDesignDocEntryFieldValue(entryField, "");
                 createPgEntryFieldKeyValuePairs.Add(kvPair);
             }
         }
@@ -632,11 +636,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return createPgEntryFieldKeyValuePairs;
         }
 
-        public override IList<KeyValuePair<Enum, string>> GetCommentEntryFieldKeyValuePairs()
+        public override IList<KeyValuePair<CommentFieldType, string>> GetCommentEntryFieldKeyValuePairs()
         {
             if (commentEntryFieldKeyValuePairs == null)
             {
-                commentEntryFieldKeyValuePairs = new List<KeyValuePair<Enum, string>>();
+                commentEntryFieldKeyValuePairs = new List<KeyValuePair<CommentFieldType, string>>();
             }
 
             return commentEntryFieldKeyValuePairs;
@@ -680,70 +684,58 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
                 if (isValidArg)
                 {
-                    if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+                    if (fieldType.Equals(TEXT))
                     {
                         if (!((string)argValue).HasValue())
                         {
-                            if (fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+                            int argValueLength = ((string)argValue).Length;
+
+                            By inputLocator = GetInputFieldByLocator(commentFieldType);
+                            int elemMaxLength = 0;
+
+                            try
                             {
-                                argValue = fieldType.Equals(DATE)
-                                    ? GetShortDate()
-                                    : GetFutureShortDate();
+                                elemMaxLength = int.Parse(PageAction.GetAttribute(inputLocator, "maxlength"));
                             }
-                            else
+                            catch (Exception)
                             {
-                                int argValueLength = ((string)argValue).Length;
-
-                                By inputLocator = GetInputFieldByLocator(commentFieldType);
-                                int elemMaxLength = 0;
-
-                                try
-                                {
-                                    elemMaxLength = int.Parse(PageAction.GetAttribute(inputLocator, "maxlength"));
-                                }
-                                catch (Exception)
-                                {
-                                }
-
-                                argValue = elemMaxLength > 0 && argValueLength > elemMaxLength
-                                    ? ((string)argValue).Substring(0, elemMaxLength)
-                                    : argValue;
+                                log.Debug($"Element {inputLocator} does not have a maxlength attribute.");
                             }
+
+                            argValue = elemMaxLength > 0 && argValueLength > elemMaxLength
+                                ? ((string)argValue).Substring(0, elemMaxLength)
+                                : argValue;
 
                             fieldValue = (string)argValue;
                         }
 
                         PageAction.EnterText(By.Id(commentFieldType.GetString()), fieldValue);
                     }
-                    else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
+                    else if (fieldType.Equals(DDL))
                     {
-                        argValue = ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
-                        ? 1
-                        : argValue;
-
-                        PageAction.ExpandAndSelectFromDDList(commentFieldType, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
-
-                        if (fieldType.Equals(DDL))
+                        if ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
                         {
-                            fieldValue = PageAction.GetTextFromDDL(commentFieldType);
+                            argValue = 1;
+                        }
+
+                        PageAction.ExpandAndSelectFromDDList(commentFieldType, argValue, useContains);
+                    }
+                    else if (fieldType.Equals(AUTOPOPULATED))
+                    {
+                        if (commentFieldType.Equals(CommentFieldType.Reviewer))
+                        {
+                            argValue = GetTextFromDDL(commentFieldType);
                         }
                         else
                         {
-                            fieldValue = string.Join("::", PageAction.GetTextFromMultiSelectDDL(commentFieldType).ToArray());
-                        }
-                    }
-                    else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
-                    {
-                        if (commentFieldType.Equals(CommentFieldType.Reviewer) || commentFieldType.Equals(CommentFieldType.ReviewedDate))
-                        {
-                            fieldValue = PageAction.GetText(By.Id(commentFieldType.GetString()));
+                            argValue = GetText(By.Id(commentFieldType.GetString()));
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -752,13 +744,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
 
-        public override IList<Enum> GetCommentEntryFieldsList(ReviewType reviewType)
+        public override IList<CommentFieldType> GetCommentEntryFieldsList(ReviewType reviewType)
         {
             if (commentEntryFieldsList == null)
             {
-                IList<Enum> fieldsList = null;
+                IList<CommentFieldType> fieldsList = null;
 
-                commentEntryFieldsList = new List<Enum> { };
+                commentEntryFieldsList = new List<CommentFieldType> { };
 
                 if (reviewType == ReviewType.RegularComment)
                 {
@@ -769,7 +761,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     fieldsList = NoCommentFieldsList;
                 }
 
-                ((List<Enum>)commentEntryFieldsList).AddRange(fieldsList);
+                ((List<CommentFieldType>)commentEntryFieldsList).AddRange(fieldsList);
             }
 
             return commentEntryFieldsList;
@@ -878,7 +870,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
         }
 
-        public override string EnterTextInCommentField(Enum commentField, int commentTabNumber = 1)
+        public override string EnterTextInCommentField(CommentFieldType commentField, int commentTabNumber = 1)
         {
             string commentValue = "Comment 123";
             By entryFieldLocator = null;
@@ -1116,8 +1108,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     // DesignDocument Implementation class
     public abstract class DesignDocument_Impl : PageBase, IDesignDocument
     {
-        public abstract IList<Enum> RegularCommentFieldsList { get; set; }
-        public abstract IList<Enum> NoCommentFieldsList { get; set; }
+        public abstract IList<CommentFieldType> RegularCommentFieldsList { get; set; }
+        public abstract IList<CommentFieldType> NoCommentFieldsList { get; set; }
         public abstract By BackToListBtn_ByLocator { get; }
         public abstract By Btn_Cancel_ByLocator { get; }
         public abstract By Btn_Forward_ByLocator { get; }
@@ -1163,11 +1155,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void EnterRegularCommentAndDrawingPageNo();
         public abstract void EnterResponseCommentAndAgreeResponseCode();
         public abstract void EnterResponseCommentAndDisagreeResponseCode();
-        public abstract string EnterTextInCommentField(Enum commentType, int commentTabNumber = 1);
+        public abstract string EnterTextInCommentField(CommentFieldType commentType, int commentTabNumber = 1);
         public abstract void EnterVerifiedDate(string shortDate = "01/01/2019");
         public abstract void FilterDocNumber(string filterByValue = "");
-        public abstract IList<KeyValuePair<Enum, string>> GetCommentEntryFieldKeyValuePairs();
-        public abstract IList<Enum> GetCommentEntryFieldsList(ReviewType reviewType);
+        public abstract IList<KeyValuePair<CommentFieldType, string>> GetCommentEntryFieldKeyValuePairs();
+        public abstract IList<CommentFieldType> GetCommentEntryFieldsList(ReviewType reviewType);
         public abstract string GetCurrentReviewerType();
         public abstract IList<DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList();
         public abstract IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList();
@@ -1361,7 +1353,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return designDocDetailsHeadersList;
         }
 
-        public override IList<Enum> RegularCommentFieldsList => new List<Enum>
+        public override IList<CommentFieldType> RegularCommentFieldsList => new List<CommentFieldType>
         {
             CommentFieldType.ReviewType,
             CommentFieldType.CommentType,
@@ -1374,7 +1366,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             CommentFieldType.DrawingPageNumberInput
         };
 
-        public override IList<Enum> NoCommentFieldsList => new List<Enum>
+        public override IList<CommentFieldType> NoCommentFieldsList => new List<CommentFieldType>
         {
             CommentFieldType.ReviewType,
             CommentFieldType.Reviewer,
@@ -1488,7 +1480,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return designDocDetailsHeadersList;
         }
 
-        public override IList<Enum> RegularCommentFieldsList => new List<Enum>
+        public override IList<CommentFieldType> RegularCommentFieldsList => new List<CommentFieldType>
         {
             CommentFieldType.ReviewType_InTable,
             CommentFieldType.DrawingPageNumberInput_InTable,
@@ -1500,7 +1492,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             CommentFieldType.Reviewer_InTable
         };
 
-        public override IList<Enum> NoCommentFieldsList => new List<Enum>
+        public override IList<CommentFieldType> NoCommentFieldsList => new List<CommentFieldType>
         {
             CommentFieldType.ReviewType_InTable
         };
@@ -1631,7 +1623,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return designDocDetailsHeadersList;
         }
 
-        public override IList<Enum> RegularCommentFieldsList => new List<Enum>
+        public override IList<CommentFieldType> RegularCommentFieldsList => new List<CommentFieldType>
         {
             CommentFieldType.CommentType_InTable,
             CommentFieldType.ReviewerName_InTable,
