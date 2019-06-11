@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using MiniGuids;
 using NUnit.Framework.Interfaces;
+using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
@@ -297,6 +298,8 @@ namespace RKCIUIAutomation.Sandbox
             Assert.AreEqual(expected, actual);
             bool nostringEnumVal =TableBtns.NoStringValueEnum.Equals("NoStringValueEnum");
             Console.WriteLine($"nostringEnumVal : {nostringEnumVal}");
+
+            Console.WriteLine(TableBtns.Report_View.ToString());
         }
 
 
@@ -952,17 +955,37 @@ namespace RKCIUIAutomation.Sandbox
             string text1 = "";
             string text2 = "Test";
 
-            bool text1HasValue = text1.HasValue();
-            bool text2HasValue = text2.HasValue();
-
+            bool text1HasValue = text1.HasValue();           
             Console.WriteLine($"text1HasValue : {text1HasValue}");
+            Assert.IsFalse(text1HasValue);
+
+            text1HasValue = text1.HasValue();
             Console.WriteLine($"!text1HasValue : {!text1HasValue}");
+            Assert.IsTrue(!text1HasValue);
+
+            text1HasValue = text1.HasValue();
             Console.WriteLine($"text1HasValue Eq True : {text1HasValue.Equals(true)}");
+            Assert.IsFalse(text1HasValue.Equals(true));
 
+            text1HasValue = text1.HasValue();
+            Console.WriteLine($"!text1HasValue Eq True : {!text1HasValue.Equals(true)}");
+            Assert.IsFalse(text1HasValue.Equals(true));
 
+            bool text2HasValue = text2.HasValue();
             Console.WriteLine($"text2HasValue : {text2HasValue}");
+            Assert.IsTrue(text2HasValue);
+
+            text2HasValue = text2.HasValue();
             Console.WriteLine($"!text2HasValue : {!text2HasValue}");
-            Console.WriteLine($"!text2HasValue Eq True : {text2HasValue.Equals(true)}");
+            Assert.IsFalse(!text2HasValue);
+
+            text2HasValue = text2.HasValue();
+            Console.WriteLine($"text2HasValue Eq True : {text2HasValue.Equals(true)}");
+            Assert.IsTrue(text2HasValue.Equals(true));
+
+            text2HasValue = text2.HasValue();
+            Console.WriteLine($"!text2HasValue Eq True : {!text2HasValue.Equals(true)}");
+            Assert.IsTrue(text2HasValue.Equals(true));
 
         }
     }

@@ -9,7 +9,7 @@ using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page
 {
-    public class PageHelper : PageInteraction, IPageHelper
+    public class PageHelper : PageHelper_Impl
     {
         public PageHelper()
         {
@@ -26,6 +26,11 @@ namespace RKCIUIAutomation.Page
         public const string MULTIDDL = "MULTIDDL";
         public const string FUTUREDATE = "FUTUREDATE";
         public const string AUTOPOPULATED = "AUTOPOPULATED";
+
+        /// <summary>
+        /// Returns XPath in string format - //div[@class='k-content k-state-active']
+        /// </summary>
+        public static string ActiveContentXPath => "//div[@class='k-content k-state-active']";
 
         public static string GetMaxShortDate()
             => DateTime.MaxValue.Date.ToShortDateString();
@@ -148,7 +153,6 @@ namespace RKCIUIAutomation.Page
                 ? $"//ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']"
                 : $"//a[contains(text(),'{parentNavEnum.GetString()}')]/following-sibling::ul[@class='dropdown-menu']/li/a[text()='{navEnum.GetString()}']";
 
-
         private string SetInputFieldXpath<T>(T inputFieldLabelOrID)
         {
             Type argType = inputFieldLabelOrID.GetType();
@@ -156,12 +160,12 @@ namespace RKCIUIAutomation.Page
 
             if (inputFieldLabelOrID is string)
             {
-                argValue = BaseUtil.ConvertToType<string>(inputFieldLabelOrID);
+                argValue = ConvertToType<string>(inputFieldLabelOrID);
                 argValue = $"//label[contains(text(),'{(string)argValue}')]/following::input[1]";
             }
             else if(inputFieldLabelOrID is Enum)
             {
-                argValue = BaseUtil.ConvertToType<Enum>(inputFieldLabelOrID);               
+                argValue = ConvertToType<Enum>(inputFieldLabelOrID);               
                 argValue = $"//input[@id='{((Enum)argValue).GetString()}']";
             }
 
@@ -223,7 +227,8 @@ namespace RKCIUIAutomation.Page
         private string SetInputButtonXpath(string buttonName)
             => $"//input[@value='{buttonName}']";
 
-        public By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true)
+
+        public override By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true)
         {
             string submitTypeXPath = submitType 
                 ? "[@type='submit']"
@@ -232,25 +237,28 @@ namespace RKCIUIAutomation.Page
             return locator;
         }
 
-        public By GetMainNavMenuByLocator(Enum navEnum)
+        public override By GetMainNavMenuByLocator(Enum navEnum)
             => By.XPath(SetMainNavMenuXpath(navEnum));
 
-        public By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null)
+        public override By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null)
             => By.XPath(SetNavMenuXpath(navEnum, parentNavEnum));
 
-        public By GetInputFieldByLocator<T>(T inputFieldLabelOrID)
+        public override By GetInputFieldByLocator<T>(T inputFieldLabelOrID)
             => By.XPath(SetInputFieldXpath(inputFieldLabelOrID));
 
-        public By GetDDListByLocator(Enum ddListID)
+        public override By GetDDListByLocator(Enum ddListID)
             => By.XPath(SetDDListFieldXpath(ddListID));
 
-        public By GetDDListCurrentSelectionByLocator(Enum ddListID)
+        public override By GetDDListCurrentSelectionByLocator(Enum ddListID)
             => By.XPath(SetDDListCurrentSelectionXpath(ddListID));
 
-        public By GetMultiSelectDDListCurrentSelectionByLocator(Enum multiSelectDDListID)
+        public override By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID)
+            => By.XPath($"{ActiveContentXPath}{SetDDListCurrentSelectionXpath(ddListID)}");
+
+        public override By GetMultiSelectDDListCurrentSelectionByLocator(Enum multiSelectDDListID)
             => By.XPath(SetMultiSelectDDListCurrentSelectionXpath(multiSelectDDListID));
 
-        public By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
+        public override By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
             => isMultiSelectDDList
                 ? By.XPath($"//select[@id='{BaseUtil.ConvertToType<Enum>(ddListID).GetString()}']/parent::div")
                 : By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
@@ -264,19 +272,19 @@ namespace RKCIUIAutomation.Page
         /// <param name="itemIndexOrName"></param>
         /// <param name="useContains"></param>
         /// <returns></returns>
-        public By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContains = false)
+        public override By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContains = false)
             => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName, useContains));
 
-        public By GetTextInputFieldByLocator(Enum inputEnum)
+        public override By GetTextInputFieldByLocator(Enum inputEnum)
             => By.XPath(SetTextInputFieldByLocator(inputEnum));
 
-        public By GetTextAreaFieldByLocator(Enum textAreaEnum)
+        public override By GetTextAreaFieldByLocator(Enum textAreaEnum)
             => By.XPath(SetTextAreaFieldByLocator(textAreaEnum));
 
-        public By GetButtonByLocator(string buttonName)
+        public override By GetButtonByLocator(string buttonName)
             => By.XPath(SetButtonXpath(buttonName));
 
-        public By GetInputButtonByLocator<T>(T buttonName)
+        public override By GetInputButtonByLocator<T>(T buttonName)
         {
             Type argType = buttonName.GetType();
             string buttonVal = string.Empty;
@@ -292,5 +300,23 @@ namespace RKCIUIAutomation.Page
 
             return By.XPath(SetInputButtonXpath(buttonVal));
         }
+    }
+
+    public abstract class PageHelper_Impl : PageInteraction, IPageHelper
+    {
+        public abstract By GetButtonByLocator(string buttonName);
+        public abstract By GetDDListByLocator(Enum ddListID);
+        public abstract By GetDDListCurrentSelectionByLocator(Enum ddListID);
+        public abstract By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID);
+        public abstract By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContains = false);
+        public abstract By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false);
+        public abstract By GetInputButtonByLocator<T>(T buttonName);
+        public abstract By GetInputFieldByLocator<T>(T inputFieldLabelOrID);
+        public abstract By GetMainNavMenuByLocator(Enum navEnum);
+        public abstract By GetMultiSelectDDListCurrentSelectionByLocator(Enum multiSelectDDListID);
+        public abstract By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null);
+        public abstract By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true);
+        public abstract By GetTextAreaFieldByLocator(Enum textAreaEnum);
+        public abstract By GetTextInputFieldByLocator(Enum inputEnum);
     }
 }

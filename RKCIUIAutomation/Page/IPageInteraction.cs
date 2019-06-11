@@ -39,6 +39,7 @@ namespace RKCIUIAutomation.Page
         string GetText(By elementByLocator);
         IList<string> GetTextForElements(By elementByLocator);
         string GetTextFromDDL(Enum ddListID);
+        string GetTextFromDDListInActiveTab(Enum ddListID);
         IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID);
         string GetUserDownloadFolderPath();
         void JsClickElement(By elementByLocator);

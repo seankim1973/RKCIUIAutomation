@@ -320,7 +320,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void ClickBtn_Cancel()
             => Click_UniqueTblBtn("k-grid-cancel");
 
-        private KeyValuePair<DesignDocEntryFieldType, string> PopulateAndStoreDesignDocEntryFieldValue<T>(DesignDocEntryFieldType entryField, T indexOrText, bool useContains = false)
+        private KeyValuePair<DesignDocEntryFieldType, string> PopulateAndGetDesignDocEntryFieldKVPair<T>(DesignDocEntryFieldType entryField, T indexOrText, bool useContainsOperator = false)
         {
             string fieldType = entryField.GetString(true);
             Type argType = indexOrText.GetType();
@@ -347,13 +347,21 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 {
                     if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
                     {
-                        if (!((string)argValue).HasValue())
+                        bool argHasValue = ((string)argValue).HasValue();
+                        By inputLocator = GetInputFieldByLocator(entryField);
+
+                        if (!argHasValue)
                         {
                             if (fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
                             {
-                                argValue = fieldType.Equals(DATE)
-                                    ? GetShortDate()
-                                    : GetFutureShortDate();
+                                if (fieldType.Equals(DATE))
+                                {
+                                    argValue = GetShortDate();
+                                }
+                                else
+                                {
+                                    argValue = GetFutureShortDate();
+                                }
                             }
                             else
                             {
@@ -373,8 +381,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 }
 
                                 int argValueLength = ((string)argValue).Length;
-
-                                By inputLocator = GetInputFieldByLocator(entryField);
                                 int elemMaxLength = 0;
 
                                 try
@@ -383,25 +389,35 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 }
                                 catch (Exception)
                                 {
+                                    log.Debug($"Element {inputLocator} does not have a maxlength attribute.");
                                 }
-
-                                argValue = elemMaxLength > 0 && argValueLength > elemMaxLength
-                                    ? ((string)argValue).Substring(0, elemMaxLength)
-                                    : argValue;
+                                finally
+                                {
+                                    if (elemMaxLength > 0 && argValueLength > elemMaxLength)
+                                    {
+                                        argValue = ((string)argValue).Substring(0, elemMaxLength);
+                                    }
+                                }
                             }
-
-                            fieldValue = (string)argValue;
                         }
 
-                        PageAction.EnterText(By.Id(entryField.GetString()), fieldValue);
+                        PageAction.EnterText(inputLocator, (string)argValue);
+                        fieldValue = GetText(inputLocator);
                     }
                     else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
                     {
-                        argValue = ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
-                        ? 1
-                        : argValue;
+                        if (argType == typeof(string) && !((string)argValue).HasValue() || argType == typeof(int) && (int)argValue < 1)
+                        {
+                            argValue = 1;
+                        }
+                        else if (argType == typeof(string) && ((string)argValue).HasValue())
+                        {
+                            useContainsOperator = true;
+                        }
 
-                        PageAction.ExpandAndSelectFromDDList(entryField, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
+                        bool fieldIsMultiDDL = fieldType.Equals(MULTIDDL);
+
+                        PageAction.ExpandAndSelectFromDDList(entryField, argValue, useContainsOperator, fieldIsMultiDDL);
 
                         if (fieldType.Equals(DDL))
                         {
@@ -410,9 +426,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         else
                         {
                             fieldValue = string.Join("::", PageAction.GetTextFromMultiSelectDDL(entryField).ToArray());
-                        }                       
+                        }
                     }
-                    else if (fieldType.Equals(RDOBTN) || fieldType.Equals(CHKBOX))
+                    else if (fieldType.Equals(CHKBOX))
                     {
                         if (entryField.Equals(DesignDocEntryFieldType.MaxReviewDays_QAF_Chkbox))
                         {
@@ -431,13 +447,24 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         fieldValue = PageAction.GetText(By.Id(entryField.GetString()));
                     }
                 }
+                else
+                {
+                    string logMsg = $"Argument value type is not supported {indexOrText} : {argType}";
+                    log.Error(logMsg);
+                    throw new ArgumentException(logMsg);
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                log.Error(ex.InnerException.Message);
+                throw ex.InnerException;
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
-
+           
             return fieldValuePair = new KeyValuePair<DesignDocEntryFieldType, string>(entryField, fieldValue);
         }
 
@@ -449,7 +476,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             foreach (DesignDocEntryFieldType entryField in designDocCreatePgEntryFieldsList)
             {
                 KeyValuePair<DesignDocEntryFieldType, string> kvPair = new KeyValuePair<DesignDocEntryFieldType, string>();
-                kvPair = PopulateAndStoreDesignDocEntryFieldValue(entryField, "");
+                kvPair = PopulateAndGetDesignDocEntryFieldKVPair(entryField, "");
                 createPgEntryFieldKeyValuePairs.Add(kvPair);
             }
         }
@@ -659,10 +686,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             => designDocDetailsHeadersList;
 
         //TODO 
-        private KeyValuePair<CommentFieldType, string> PopulateAndStoreCommentFieldValue<T>(CommentFieldType commentFieldType, T indexOrText, bool useContains = false)
+        private KeyValuePair<CommentFieldType, string> PopulateAndGetCommentFieldKVPair<T>(CommentFieldType commentField, T inputTextORselectionIndex, int commentTabNumber = 1, bool useContainsOperator = false)
         {
-            string fieldType = commentFieldType.GetString(true);
-            Type argType = indexOrText.GetType();
+            bool isGridCommentFieldType = commentField.ToString().Contains("_InTable");
+
+            string fieldType = commentField.GetString(true);
+            Type argType = inputTextORselectionIndex.GetType();
             object argValue = null;
             bool isValidArg = false;
 
@@ -674,64 +703,64 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 if (argType == typeof(string))
                 {
                     isValidArg = true;
-                    argValue = ConvertToType<string>(indexOrText);
+                    argValue = ConvertToType<string>(inputTextORselectionIndex);
                 }
                 else if (argType == typeof(int))
                 {
                     isValidArg = true;
-                    argValue = ConvertToType<int>(indexOrText);
+                    argValue = ConvertToType<int>(inputTextORselectionIndex);
                 }
 
                 if (isValidArg)
                 {
                     if (fieldType.Equals(TEXT))
                     {
-                        if (!((string)argValue).HasValue())
+                        if (isGridCommentFieldType)
                         {
-                            int argValueLength = ((string)argValue).Length;
-
-                            By inputLocator = GetInputFieldByLocator(commentFieldType);
-                            int elemMaxLength = 0;
-
-                            try
-                            {
-                                elemMaxLength = int.Parse(PageAction.GetAttribute(inputLocator, "maxlength"));
-                            }
-                            catch (Exception)
-                            {
-                                log.Debug($"Element {inputLocator} does not have a maxlength attribute.");
-                            }
-
-                            argValue = elemMaxLength > 0 && argValueLength > elemMaxLength
-                                ? ((string)argValue).Substring(0, elemMaxLength)
-                                : argValue;
-
-                            fieldValue = (string)argValue;
-                        }
-
-                        PageAction.EnterText(By.Id(commentFieldType.GetString()), fieldValue);
-                    }
-                    else if (fieldType.Equals(DDL))
-                    {
-                        if ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
-                        {
-                            argValue = 1;
-                        }
-
-                        PageAction.ExpandAndSelectFromDDList(commentFieldType, argValue, useContains);
-                    }
-                    else if (fieldType.Equals(AUTOPOPULATED))
-                    {
-                        if (commentFieldType.Equals(CommentFieldType.Reviewer))
-                        {
-                            argValue = GetTextFromDDL(commentFieldType);
+                            fieldValue = EnterTextInCommentField(commentField);
                         }
                         else
                         {
-                            argValue = GetText(By.Id(commentFieldType.GetString()));
+                            fieldValue = EnterTextInCommentField(commentField, commentTabNumber);
+                        }
+                    }
+                    else if (fieldType.Equals(DDL))
+                    {
+                        if (isGridCommentFieldType)
+                        {
+                            ExpandAndSelectFromDDList(commentField, argValue, useContainsOperator);
+                            fieldValue = GetTextFromDDL(commentField);
+                        }
+                        else
+                        {
+                            ExpandAndSelectFromDDList(SetCommentStamp_XPath(commentField, commentTabNumber), (int)argValue, useContainsOperator);
+                            fieldValue = GetTextFromDDListInActiveTab(commentField);
+                        }
+                    }
+                    else if (fieldType.Equals(AUTOPOPULATED)) //SG only
+                    {
+                        if (commentField.Equals(CommentFieldType.Reviewer))
+                        {
+                            fieldValue = GetTextFromDDListInActiveTab(commentField);
+                        }
+                        else if(commentField.Equals(CommentFieldType.ReviewedDate))
+                        {
+                            By locator = By.XPath($"{ActiveContentXPath}//input[contains(@id,'{commentField.GetString()}')]");
+                            fieldValue = GetText(locator);
                         }
                     }
                 }
+                else
+                {
+                    string logMsg = $"Argument value type is not supported. {inputTextORselectionIndex} : {argType}";
+                    log.Error(logMsg);
+                    throw new ArgumentException(logMsg);
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                log.Error(ex.InnerException.Message);
+                throw ex.InnerException;
             }
             catch (Exception e)
             {
@@ -739,10 +768,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 throw;
             }
 
-            return fieldValuePair = new KeyValuePair<CommentFieldType, string>(commentFieldType, fieldValue);
-
+            return fieldValuePair = new KeyValuePair<CommentFieldType, string>(commentField, fieldValue);
         }
-
 
         public override IList<CommentFieldType> GetCommentEntryFieldsList(ReviewType reviewType)
         {
@@ -848,7 +875,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             PageAction.EnterText(GetTextInputFieldByLocator(CommentFieldType.VerifiedDate_InTable), shortDate);
         }
 
-
         /// <summary>
         /// Filters Number column using ThreadStatic value, designDocNumber, by default.
         /// </summary>
@@ -877,15 +903,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             try
             {
-                Type commentFieldEnum = commentField.GetType();
-
-                if (commentFieldEnum == typeof(CommentFieldType))
-                {
-                    entryFieldLocator = By.Id($"{commentField.GetString()}{commentTabNumber - 1}_");
-                }
-                else if (commentFieldEnum == typeof(CommentFieldType))
+                if (commentField.ToString().Contains("_InTable"))
                 {
                     entryFieldLocator = By.Id($"{commentField.GetString()}");
+                }
+                else
+                {
+                    entryFieldLocator = By.Id($"{commentField.GetString()}{commentTabNumber - 1}_");
                 }
 
                 PageAction.ScrollToElement(entryFieldLocator);
@@ -933,7 +957,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -943,6 +967,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void EnterRegularCommentAndDrawingPageNo()
         {
             //login as commenting user (SG- IQFuser, DoTuser | SH249-- IQFUser | Garenet and GLX-- DOTUser)
+            commentEntryFieldsList = GetCommentEntryFieldsList(ReviewType.RegularComment);
 
             SelectRegularCommentReviewType();
             EnterTextInCommentField(CommentFieldType.CommentInput);
