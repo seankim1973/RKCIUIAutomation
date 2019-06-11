@@ -509,7 +509,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
 
                 noRecordsMsgDisplayed = PageAction.CheckIfElementIsDisplayed(noRecordsMsgLocator);
                 isDisplayedAsExpected = noRecordsExpected

@@ -13,6 +13,7 @@ namespace RKCIUIAutomation.Page
         By GetButtonByLocator(string buttonName);
         By GetDDListByLocator(Enum ddListID);
         By GetDDListCurrentSelectionByLocator(Enum ddListID);
+        By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID);
         By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContains = false);
         By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false);
         

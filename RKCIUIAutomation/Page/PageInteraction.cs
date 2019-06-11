@@ -466,10 +466,9 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                //element = GetElement(elementByLocator);
                 element = ScrollToElement(elementByLocator);
 
-                if (element.Displayed)
+                if (element.Displayed || element.Enabled)
                 {
                     text = element.Text;
                     hasValue = text.HasValue();
@@ -483,7 +482,7 @@ namespace RKCIUIAutomation.Page
                     string logMsg = hasValue
                         ? $"Retrieved '{text}'"
                         : $"Unable to retrieve text";
-                    Report.Step($"{logMsg} from element - {elementByLocator}", false, hasValue);
+                    Report.Info($"{logMsg} from element - {elementByLocator}", hasValue);
                 }
             }
             catch (Exception e)
@@ -511,6 +510,9 @@ namespace RKCIUIAutomation.Page
 
         public override string GetTextFromDDL(Enum ddListID)
             => GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+
+        public override string GetTextFromDDListInActiveTab(Enum ddListID)
+            => GetText(PgHelper.GetDDListCurrentSelectionInActiveTabByLocator(ddListID));
 
         public override IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID)
             => GetTextForElements(PgHelper.GetMultiSelectDDListCurrentSelectionByLocator(multiSelectDDListID));
@@ -550,11 +552,11 @@ namespace RKCIUIAutomation.Page
         /// <typeparam name="T"></typeparam>
         /// <param name="ddListID"></param>
         /// <param name="itemIndexOrName"></param>
-        /// <param name="useContains"></param>
-        public override void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false, bool isMultiSelectDDList = false)
+        /// <param name="useContainsOperator"></param>
+        public override void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContainsOperator = false, bool isMultiSelectDDList = false)
         {
             ExpandDDL(ddListID, isMultiSelectDDList);
-            ClickElement(PgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName, useContains));
+            ClickElement(PgHelper.GetDDListItemsByLocator(ddListID, itemIndexOrName, useContainsOperator));
         }
 
         public override void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true)
@@ -1608,7 +1610,7 @@ namespace RKCIUIAutomation.Page
         public abstract void EnterSignature();
         public abstract void EnterText(By elementByLocator, string text, bool clearField = true);
         public abstract void ExecuteJsAction(JSAction jsAction, By elementByLocator);
-        public abstract void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false, bool isMultiSelectDDList = false);
+        public abstract void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContainsOperator = false, bool isMultiSelectDDList = false);
         public abstract void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false);
         public abstract string GetAttribute(By elementByLocator, string attributeName);
         public abstract IList<string> GetAttributes<T>(T elementByLocator, string attributeName);
@@ -1621,6 +1623,7 @@ namespace RKCIUIAutomation.Page
         public abstract string GetText(By elementByLocator);
         public abstract IList<string> GetTextForElements(By elementByLocator);
         public abstract string GetTextFromDDL(Enum ddListID);
+        public abstract string GetTextFromDDListInActiveTab(Enum ddListID);
         public abstract IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID);
         public abstract string GetUserDownloadFolderPath();
         public abstract void JsClickElement(By elementByLocator);

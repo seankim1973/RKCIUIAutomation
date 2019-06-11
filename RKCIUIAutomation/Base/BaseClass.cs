@@ -9,8 +9,6 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Threading;
 using static NUnit.Framework.TestContext;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.StaticHelpers;
@@ -28,7 +26,7 @@ namespace RKCIUIAutomation.Base
         readonly TestPlatform defaultTestPlatform = TestPlatform.GridLocal;
         readonly BrowserType defaultBrowserType = BrowserType.Chrome;
         readonly TestEnv defaultTestEnvironment = TestEnv.Staging;         
-        readonly TenantName defaultTenantName = TenantName.I15Tech;
+        readonly TenantName defaultTenantName = TenantName.SH249;
         readonly Reporter defaultReporter = Reporter.Klov;
         readonly string defaultGridAddress = "";
         readonly bool enableHipTest = false;
