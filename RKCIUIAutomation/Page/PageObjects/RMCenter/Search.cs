@@ -138,22 +138,25 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 {
                     criteria = GetMatchingSearchCriteriaForEntryField(kvPair.Key);
 
-                    if (!criteria.Equals(SearchCriteria.NoSelection))
+                    if (tenantSearchCriteriaFields.Contains(criteria))
                     {
-                        PopulateCriteriaByType(criteria, kvPair.Value);
-                        ClickBtn_Search();
-                        //PageAction.WaitForLoading();
-                        PageAction.WaitForPageReady();
-                        bool searchResult = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableHelper.TableType.Single);
-                        resultsList.Add(searchResult);
+                        if (!criteria.Equals(SearchCriteria.NoSelection))
+                        {
+                            PopulateCriteriaByType(criteria, kvPair.Value);
+                            ClickBtn_Search();
+                            //PageAction.WaitForLoading();
+                            PageAction.WaitForPageReady();
+                            bool searchResult = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableHelper.TableType.Single);
+                            resultsList.Add(searchResult);
 
-                        logMsg = $"Search by Criteria '{criteria}'";
-                        Report.Info($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
-                        TestUtility.AddAssertionToList(searchResult, logMsg);
+                            logMsg = $"Search by Criteria '{criteria}'";
+                            Report.Info($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
+                            TestUtility.AddAssertionToList(searchResult, logMsg);
 
-                        ClickBtn_Clear();
-                        //PageAction.WaitForLoading();
-                        PageAction.WaitForPageReady();
+                            ClickBtn_Clear();
+                            //PageAction.WaitForLoading();
+                            PageAction.WaitForPageReady();
+                        }
                     }
                 }
 
