@@ -30,7 +30,7 @@ namespace RKCIUIAutomation.Page
         void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false);
         string GetAttribute(By elementByLocator, string attributeName);
         IList<string> GetAttributes<T>(T elementByLocator, string attributeName);
-        string GetCurrentUser();
+        string GetCurrentUser(bool getFullName = false);
         IWebElement GetElement(By elementByLocator);
         IList<IWebElement> GetElements(By elementByLocator);
         int GetElementsCount(By elementByLocator);
@@ -68,6 +68,6 @@ namespace RKCIUIAutomation.Page
         void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500);
         void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 500);
         void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500);
-        void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000);
+        void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool checkForLoader = true);
     }
 }
