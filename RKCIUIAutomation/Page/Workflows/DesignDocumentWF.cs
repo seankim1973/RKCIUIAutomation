@@ -365,7 +365,7 @@ namespace RKCIUIAutomation.Page.Workflows
             ForwardResolutionCommentAndCodeForDisagreeResponse();
 
             Report.Step("STEP: 8. DEV Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.RegularComment);
         }
 
         /// <summary>
@@ -385,7 +385,7 @@ namespace RKCIUIAutomation.Page.Workflows
             ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
 
             Report.Step("STEP: 4. DEV Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.NoComment);
         }
 
     }
@@ -504,7 +504,7 @@ namespace RKCIUIAutomation.Page.Workflows
             EnterClosingCommentAndCode();
 
             Report.Step("STEP: 6. IQF Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.RegularComment);
         }
 
         public override void TCWF_CommentReviewNoComment()
@@ -527,7 +527,7 @@ namespace RKCIUIAutomation.Page.Workflows
             EnterClosingCommentAndCode();
 
             Report.Step("STEP: 5. IQF Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.NoComment);
         }
 
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
@@ -641,7 +641,7 @@ namespace RKCIUIAutomation.Page.Workflows
             EnterAndForwardClosingComment();
 
             Report.Step("STEP: 11. IQF Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.RegularComment);
         }
         
         public override void TCWF_CommentReviewNoComment()
@@ -678,7 +678,7 @@ namespace RKCIUIAutomation.Page.Workflows
             EnterAndForwardClosingComment();//UserType.IQFAdmin
 
             Report.Step("STEP: 9. IQF Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.NoComment);
         }
         
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
@@ -892,7 +892,7 @@ namespace RKCIUIAutomation.Page.Workflows
             EnterAndForwardClosingComment();
 
             Report.Step("STEP: 7. ATCRVerify Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.RegularComment);
         }
     }
 }

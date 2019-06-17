@@ -111,15 +111,36 @@ namespace RKCIUIAutomation.Page
             return $"{date} {time}";
         }
 
-        private string SetDDListFieldXpath<T>(T ddListID)
+        private string SetDDListFieldXpath<T>(T ddListID, bool useContainsOperator = false)
         {
             string _ddListID = (ddListID.GetType() == typeof(string))
                 ? BaseUtil.ConvertToType<string>(ddListID)
                 : BaseUtil.ConvertToType<Enum>(ddListID).GetString();
 
-            string _ddFieldXpath = _ddListID.Contains("Time")
-                ? $"//span[@aria-controls='{_ddListID}_timeview']"
-                : $"//span[@aria-owns='{_ddListID}_listbox']";
+            string _ddFieldXpath = string.Empty;
+
+            if (useContainsOperator)
+            {
+                if (_ddListID.Contains("Time"))
+                {
+                    _ddFieldXpath = $"//span[contains(@aria-controls,'{_ddListID}')]";
+                }
+                else
+                {
+                    _ddFieldXpath = $"//span[contains(@aria-owns,'{_ddListID}')]";
+                }
+            }
+            else
+            {
+                if (_ddListID.Contains("Time"))
+                {
+                    _ddFieldXpath = $"//span[@aria-controls='{_ddListID}_timeview']";
+                }
+                else
+                {
+                    _ddFieldXpath = $"//span[@aria-owns='{_ddListID}_listbox']";
+                }
+            }
 
             return _ddFieldXpath;
         }
@@ -139,8 +160,8 @@ namespace RKCIUIAutomation.Page
             return _ddArrowXpath;
         }
 
-        private string SetDDListCurrentSelectionXpath(Enum ddListID)
-            => $"{SetDDListFieldXpath(ddListID)}//span[@class='k-input']";
+        private string SetDDListCurrentSelectionXpath(Enum ddListID, bool useContainsOperator = false)
+            => $"{SetDDListFieldXpath(ddListID, useContainsOperator)}//span[@class='k-input']";
 
         private string SetMultiSelectDDListCurrentSelectionXpath(Enum multiSelectDDListID)
             => $"//ul[@id='{multiSelectDDListID.GetString()}_taglist']/li/span[1]";
@@ -252,8 +273,8 @@ namespace RKCIUIAutomation.Page
         public override By GetDDListCurrentSelectionByLocator(Enum ddListID)
             => By.XPath(SetDDListCurrentSelectionXpath(ddListID));
 
-        public override By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID)
-            => By.XPath($"{ActiveContentXPath}{SetDDListCurrentSelectionXpath(ddListID)}");
+        public override By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID, bool useContainsOperator = true)
+            => By.XPath($"{ActiveContentXPath}{SetDDListCurrentSelectionXpath(ddListID, useContainsOperator)}");
 
         public override By GetMultiSelectDDListCurrentSelectionByLocator(Enum multiSelectDDListID)
             => By.XPath(SetMultiSelectDDListCurrentSelectionXpath(multiSelectDDListID));
@@ -272,8 +293,8 @@ namespace RKCIUIAutomation.Page
         /// <param name="itemIndexOrName"></param>
         /// <param name="useContains"></param>
         /// <returns></returns>
-        public override By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContains = false)
-            => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName, useContains));
+        public override By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContainsOperator = false)
+            => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName, useContainsOperator));
 
         public override By GetTextInputFieldByLocator(Enum inputEnum)
             => By.XPath(SetTextInputFieldByLocator(inputEnum));
@@ -307,8 +328,8 @@ namespace RKCIUIAutomation.Page
         public abstract By GetButtonByLocator(string buttonName);
         public abstract By GetDDListByLocator(Enum ddListID);
         public abstract By GetDDListCurrentSelectionByLocator(Enum ddListID);
-        public abstract By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID);
-        public abstract By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContains = false);
+        public abstract By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID, bool useContainsOperator = true);
+        public abstract By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContainsOperator = false);
         public abstract By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false);
         public abstract By GetInputButtonByLocator<T>(T buttonName);
         public abstract By GetInputFieldByLocator<T>(T inputFieldLabelOrID);

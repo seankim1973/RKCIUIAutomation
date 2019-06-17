@@ -116,7 +116,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Trans. Date")] Trans_Date,
             [StringValue("Transmittal Date")] Transmittal_Date,
             [StringValue("Trans. N°")] Trans_No,
-            [StringValue("Transmittal N°")] Transmittal_No,
+            [StringValue("Transmittal №")] Transmittal_No,
             [StringValue("Review Deadline")] Review_Deadline,
             [StringValue("Remaining Days")] Remaining_Days
             //[StringValue("")] File_Name
@@ -593,6 +593,40 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             TestUtility.AddAssertionToList(PageAction.VerifyExpectedList(actualValueInHeaderList, expectedValueInHeaderList, reportName), reportName);
         }
 
+        public override void VerifyCommentFieldValues(ReviewType reviewType)
+        {
+            IList<string> expectedValueList = new List<string>();
+            IList<string> actualValueList = new List<string>();
+
+            commentEntryFieldsList = GetCommentEntryFieldsList(reviewType);
+
+            foreach (CommentFieldType commentField in commentEntryFieldsList)
+            {
+                By actualValueLocator = GetCommentFieldValueXPath_ByLocator(commentField);
+                string actualValue = GetText(actualValueLocator);
+                string expectedValue = (from kvp in commentEntryFieldKVPairsList where kvp.Key == commentField select kvp.Value).FirstOrDefault();
+
+                if (actualValue.Contains(":"))
+                {
+                    var splitActualValue = Regex.Split(actualValue, ":");
+                    actualValue = splitActualValue[1].Trim();
+                }
+
+                expectedValueList.Add($"{commentField}::{expectedValue}");
+                actualValueList.Add(actualValue);
+            }
+
+            TestUtility.AddAssertionToList(PageAction.VerifyExpectedList(actualValueList, expectedValueList, $"Review Type : {reviewType}"), "VerifyCommentFieldValues");
+        }
+
+        //LAX & SH249 - Grid Comment Entry role data
+        public override By GetCommentFieldValueXPath_ByLocator(CommentFieldType commentField)
+        {
+            int columnIndex = int.Parse(GetAttribute(By.XPath($"//th[@data-field='{commentField.GetString()}']"), "data-index"));
+            By locator = By.XPath($"//td[@style='vertical-align: top;'][{columnIndex - 2}]");
+            return locator;
+        }
+
         public override string GetHeaderValue(DesignDocHeaderType docHeader)
             => PageAction.GetText(By.XPath($"//label[contains(text(),'{docHeader.GetString()}')]/following-sibling::div[1]"));
 
@@ -673,12 +707,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return commentEntryFieldKVPairsList;
         }
 
-        public override void VerifyItemStatusIsClosed()
+        public override void VerifyItemStatusIsClosed(ReviewType reviewType)
         {
             ClickTab_Closed();
             TestUtility.AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber), $"VerifyItemStatusIsClosed");
+            GridHelper.ClickEnterBtnForRow();
+            VerifyCommentFieldValues(reviewType);
         }
 
+        
         public override IList<DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList()
             => designDocCreatePgEntryFieldsList;
 
@@ -695,7 +732,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         internal void PopulateFieldAndUpdateCommentFieldKVPairList<T>(CommentFieldType commentField, T inputTextORselectionIndex, int commentTabNumber = 1, bool useContainsOperator = false)
         {
-            bool isGridCommentFieldType = commentField.ToString().Contains("_InTable");
+            bool commentFieldTypeIsInGrid = commentField.ToString().Contains("_InTable");
 
             string fieldType = commentField.GetString(true);
             Type argType = inputTextORselectionIndex.GetType();
@@ -722,7 +759,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 {
                     if (fieldType.Equals(TEXT))
                     {
-                        if (isGridCommentFieldType)
+                        if (commentFieldTypeIsInGrid)
                         {
                             fieldValue = EnterCommentResponse(commentField);
                         }
@@ -739,7 +776,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         }
                         else if (fieldType.Equals(DDL))
                         {
-                            if (isGridCommentFieldType)
+                            if (commentFieldTypeIsInGrid)
                             {
                                 ExpandAndSelectFromDDList(commentField, argValue, useContainsOperator);
                                 fieldValue = GetTextFromDDL(commentField);
@@ -1072,9 +1109,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             try
             {
                 PageAction.WaitForPageReady();
-                Thread.Sleep(2500);
+                //Thread.Sleep(2500);
                 GridHelper.ClickTab(tableTab);
-                Thread.Sleep(2500);
+                //Thread.Sleep(2500);
                 PageAction.WaitForPageReady();
             }
             catch (Exception e)
@@ -1220,6 +1257,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void FilterDocNumber(string filterByValue = "");
         public abstract IList<KeyValuePair<CommentFieldType, string>> CreateCommentEntryFieldKVPairsList();
         public abstract IList<CommentFieldType> GetCommentEntryFieldsList(ReviewType reviewType);
+        public abstract By GetCommentFieldValueXPath_ByLocator(CommentFieldType commentField);
         public abstract string GetCurrentReviewerType();
         public abstract IList<DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList();
         public abstract IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList();
@@ -1251,8 +1289,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract void SortTable_Ascending();
         public abstract void SortTable_Descending();
         public abstract void VerifyDesignDocDetailsHeader();
+        public abstract void VerifyCommentFieldValues(ReviewType reviewType);
         public abstract bool VerifyDocumentNumberFieldErrorMsgIsDisplayed();
-        public abstract void VerifyItemStatusIsClosed();
+        public abstract void VerifyItemStatusIsClosed(ReviewType reviewType);
         public abstract bool VerifyTitleFieldErrorMsgIsDisplayed();
         public abstract bool VerifyUploadFileErrorMsgIsDisplayed();
         public abstract void WaitForActiveCommentTab();
@@ -1418,14 +1457,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override IList<CommentFieldType> RegularCommentFieldsList => new List<CommentFieldType>
         {
             CommentFieldType.ReviewType,
-            CommentFieldType.CommentType,
             CommentFieldType.Reviewer,
             CommentFieldType.ReviewedDate,
+            CommentFieldType.CommentType,
             CommentFieldType.Category,
             CommentFieldType.Discipline,
             CommentFieldType.CommentInput,
             CommentFieldType.ContractReferenceInput,
-            CommentFieldType.DrawingPageNumberInput
+            CommentFieldType.DrawingPageNumberInput,
+            CommentFieldType.CommentResponseInput,
+            CommentFieldType.ResponseCode,
+            CommentFieldType.CommentResolutionInput,
+            CommentFieldType.ResolutionStamp,
+            CommentFieldType.CommentClosingInput,
+            CommentFieldType.ClosingStamp
         };
 
         public override IList<CommentFieldType> NoCommentFieldsList => new List<CommentFieldType>
@@ -1437,6 +1482,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override string GetHeaderValue(DesignDocHeaderType docHeader)
             => PageAction.GetText(By.XPath($"//label[contains(text(),'{docHeader.GetString()}')]/parent::div/following-sibling::div[1]"));
+
+        public override By GetCommentFieldValueXPath_ByLocator(CommentFieldType commentField)
+            => By.XPath($"{ActiveContentXPath}//input[contains(@id,'{commentField.GetString()}')]/parent::div");
 
         public override void EnterRegularCommentAndDrawingPageNo()
         {

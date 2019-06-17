@@ -59,6 +59,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void FilterDocNumber(string filterByValue = "");
         IList<KeyValuePair<CommentFieldType, string>> CreateCommentEntryFieldKVPairsList();
         IList<CommentFieldType> GetCommentEntryFieldsList(ReviewType reviewType);
+        By GetCommentFieldValueXPath_ByLocator(CommentFieldType commentField);
         string GetCurrentReviewerType();
         IList<DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList();
         IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList();
@@ -91,8 +92,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void SortTable_Ascending();
         void SortTable_Descending();
         void VerifyDesignDocDetailsHeader();
+        void VerifyCommentFieldValues(ReviewType reviewType);
         bool VerifyDocumentNumberFieldErrorMsgIsDisplayed();
-        void VerifyItemStatusIsClosed();
+        void VerifyItemStatusIsClosed(ReviewType reviewType);
         bool VerifyTitleFieldErrorMsgIsDisplayed();
         bool VerifyUploadFileErrorMsgIsDisplayed();
         void WaitForActiveCommentTab();

@@ -66,8 +66,8 @@ namespace RKCIUIAutomation.Page
         bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false, bool forDIR = true, int dirEntryNumber = 1);
         bool VerifyUrlIsLoaded(string pageUrl);
         void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500);
-        void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 500);
-        void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500);
+        void WaitForElementToClear(By locator);
+        void WaitForLoading();
         void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool checkForLoader = true);
     }
 }

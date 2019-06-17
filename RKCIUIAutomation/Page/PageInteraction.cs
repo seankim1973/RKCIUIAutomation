@@ -145,53 +145,58 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public override void WaitForElementToClear(By elementByLocator, int timeOutInSeconds = 60, int pollingInterval = 500)
+        public override void WaitForElementToClear(By elementByLocator)
         {
             bool isDisplayed = false;
 
-            try
+            do
             {
-                driver.FindElement(elementByLocator);
-                isDisplayed = true;
-            }
-            catch (NoSuchElementException)
-            {
-                isDisplayed = false;
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-                throw;
-            }
-            finally
-            {
-                if (isDisplayed)
+                try
                 {
-                    WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                    wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(elementByLocator));
+                    driver.FindElement(elementByLocator);
+                    isDisplayed = true;
                 }
-            }
+                catch (NoSuchElementException)
+                {
+                    isDisplayed = false;
+                }
+                catch (Exception e)
+                {
+                    log.Error(e.Message);
+                    throw;
+                }
+
+            } while (isDisplayed);
+
+            //finally
+            //{
+            //    if (isDisplayed)
+            //    {
+            //        WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+            //        wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(elementByLocator));
+            //    }
+            //}
         }
 
-        public override void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500)
+        public override void WaitForLoading()
         {
             try
             {
-                //string[] classNames = new string[]
-                //{
-                //    "k-overlay",
-                //    "k-loading-mask",
-                //    "k-loading-image"
-                //};
+                string[] classNames = new string[]
+                {
+                    "k-overlay",
+                    //"k-loading-mask",
+                    "k-loading-image"
+                };
 
-                //foreach (string className in classNames)
-                //{
-                //    By loadingLocator = By.ClassName(className);
-                //    WaitForElementToClear(loadingLocator, timeOutInSeconds, pollingInterval);
-                //}
+                foreach (string className in classNames)
+                {
+                    By loadingLocator = By.ClassName(className);
+                    WaitForElementToClear(loadingLocator);
+                }
 
-                By loadingLocator = By.ClassName("k-loading-image");
-                WaitForElementToClear(loadingLocator, timeOutInSeconds, pollingInterval);
+                //By loadingLocator = By.ClassName("k-loading-image");
+                //WaitForElementToClear(loadingLocator);
             }
             catch (Exception)
             {
@@ -287,10 +292,13 @@ namespace RKCIUIAutomation.Page
             {
                 elem = driver.FindElement(elementByLocator);
             }
+            catch (NoSuchElementException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
-                throw;
             }
 
             return elem;
@@ -325,8 +333,8 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                ScrollToElement(elementByLocator);
-                elem = GetElement(elementByLocator);
+                elem = ScrollToElement(elementByLocator);
+                //elem = GetElement(elementByLocator);
                 elem?.Click();
 
                 bool elemNotNull = elem != null
@@ -969,11 +977,12 @@ namespace RKCIUIAutomation.Page
 
         public override bool CheckIfElementIsDisplayed(By elementByLocator)
         {
-            IWebElement elem = null;
+            bool isDisplayed = false;
 
             try
             {
-                elem = GetElement(elementByLocator);
+                IWebElement elem = GetElement(elementByLocator);
+                isDisplayed = true;
             }
             catch (NoSuchElementException nse)
             {
@@ -982,9 +991,10 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error($"Error in ElementIsDisplayed(): {e.StackTrace}");
+                throw;
             }
 
-            return elem.Displayed;
+            return isDisplayed;
         }
 
         public override bool VerifyPageHeader(string expectedPageHeading)
@@ -1720,8 +1730,8 @@ namespace RKCIUIAutomation.Page
         public abstract bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false, bool forDIR = true, int dirEntryNumber = 1);
         public abstract bool VerifyUrlIsLoaded(string pageUrl);
         public abstract void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500);
-        public abstract void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 500);
-        public abstract void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500);
+        public abstract void WaitForElementToClear(By locator);
+        public abstract void WaitForLoading();
         public abstract void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool checkForLoader = true);
     }
 }
