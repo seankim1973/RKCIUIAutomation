@@ -39,6 +39,11 @@ namespace RKCIUIAutomation.Page
         string GetText(By elementByLocator);
         IList<string> GetTextForElements(By elementByLocator);
         string GetTextFromDDL(Enum ddListID);
+        /// <summary>
+        /// Mouse click in main webpage body.
+        /// <para>(Example: clicks away from input field to initiate auto-save feature in Comment Grid in LAX)</para>
+        /// </summary>
+        void ClickInMainBodyAwayFromField();
         string GetTextFromDDListInActiveTab(Enum ddListID);
         IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID);
         string GetUserDownloadFolderPath();

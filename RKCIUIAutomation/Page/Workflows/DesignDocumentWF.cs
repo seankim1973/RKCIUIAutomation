@@ -831,10 +831,11 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickTab_Response();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput_InTable);
             DesignDocCommentReview.SelectDisagreeResponseCode(3);
+            DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput_InTable);
+            PageAction.ClickInMainBodyAwayFromField();
             WaitForPageReady();
-            //DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
         public override void ForwardResponseComment(CR_Workflow workflowType = CR_Workflow.ForwardResponse)
@@ -852,9 +853,10 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickTab_Verification();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.VerifiedBy_InTable);
-            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.VerifiedDate_InTable);
+
             DesignDocCommentReview.EnterCommentResponse(CommentFieldType.VerificationNotes_InTable);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.VerifiedDate_InTable);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.VerifiedBy_InTable);
             DesignDocCommentReview.SelectDDL_VerificationCode();
             WaitForPageReady();
             LogoutToLoginPage();
@@ -880,18 +882,18 @@ namespace RKCIUIAutomation.Page.Workflows
             ForwardComment();
             LogoutToLoginPage();
 
-            Report.Step("STEP: 4. Log in as ATCRResponse User, enters Response and Resolution stampcode to verification");
+            Report.Step("STEP: 4. Log in as ATCRResponse User, enters Response Comment and Disagree Response stampcode in Response workflow");
             EnterResponseCommentAndDisagreeResponseCode();
             LogoutToLoginPage();
 
-            Report.Step("STEP: 5. Log in as ATCRResponse Admin, enters Response and Resolution stampcode to verification");
+            Report.Step("STEP: 5. Log in as ATCRResponse Admin, forwards Response and Resolution stampcode to Verification workflow");
             ForwardResponseComment();
             LogoutToLoginPage();
 
-            Report.Step("STEP: 6. Log in as ATCRVerify, enter Closing Comment and forward as ATCRVerify Admin (Resolution='Disagree workflow')");
+            Report.Step("STEP: 6. Log in as ATCRVerify User and enters Closing Comment and forward as ATCRVerify Admin (Resolution='Disagree workflow')");
             EnterAndForwardClosingComment();
 
-            Report.Step("STEP: 7. ATCRVerify Admin verifies if record in closed tab");
+            Report.Step("STEP: 7. As ATCRVerify Admin, verifies if record in closed tab");
             DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.RegularComment);
         }
     }

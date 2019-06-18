@@ -54,13 +54,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void EnterRegularCommentAndDrawingPageNo();
         void EnterResponseCommentAndAgreeResponseCode();
         void EnterResponseCommentAndDisagreeResponseCode();
-        string EnterCommentResponse(CommentFieldType commentField, int commentTabNumber = 1);
+        string EnterCommentResponse(CommentFieldType commentField, int commentTabNumber = 1, bool updateKVPair = true);
         void EnterVerifiedDate(string shortDate = "01/01/2019");
         void FilterDocNumber(string filterByValue = "");
         IList<KeyValuePair<CommentFieldType, string>> CreateCommentEntryFieldKVPairsList();
         IList<CommentFieldType> GetCommentEntryFieldsList(ReviewType reviewType);
         By GetCommentFieldValueXPath_ByLocator(CommentFieldType commentField);
         string GetCurrentReviewerType();
+        string GetActiveCommentTabGroupName();
         IList<DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList();
         IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList();
         IList<KeyValuePair<DesignDocEntryFieldType, string>> CreateDesignDocEntryFieldKVPairsList();

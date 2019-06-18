@@ -125,6 +125,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error($"Error occured in method GetStandardWait : {e.Message}");
+                throw;
             }
 
             return wait;
@@ -139,9 +140,14 @@ namespace RKCIUIAutomation.Page
                 wait.Until(x => driver.FindElement(elementByLocator));
                 log.Debug($"...waiting for element: - {elementByLocator}");
             }
+            catch (NoSuchElementException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 log.Error($"WaitForElement - {elementByLocator} : {e.Message}");
+                throw;
             }
         }
 
@@ -286,10 +292,10 @@ namespace RKCIUIAutomation.Page
         public override IWebElement GetElement(By elementByLocator)
         {
             IWebElement elem = null;
-            WaitForElement(elementByLocator);
 
             try
             {
+                WaitForElement(elementByLocator);
                 elem = driver.FindElement(elementByLocator);
             }
             catch (NoSuchElementException)
@@ -299,6 +305,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
 
             return elem;
@@ -314,6 +321,10 @@ namespace RKCIUIAutomation.Page
                 elements = new List<IWebElement>();
                 elements = driver.FindElements(elementByLocator);
                 log.Info($"Getting list of WebElements: {elementByLocator}");
+            }
+            catch (NoSuchElementException)
+            {
+                throw;
             }
             catch (Exception e)
             {
@@ -531,9 +542,14 @@ namespace RKCIUIAutomation.Page
                     Report.Info($"{logMsg} from element - {elementByLocator}", hasValue);
                 }
             }
+            catch (NoSuchElementException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw;
             }
 
             return text;
@@ -554,8 +570,40 @@ namespace RKCIUIAutomation.Page
             return elementTextList;
         }
 
+        public override void ClickInMainBodyAwayFromField()
+        {
+            try
+            {
+                WaitForPageReady();
+                By mainBodyLocator = By.Id("main");
+                ClickElement(mainBodyLocator);
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
+        }
+
         public override string GetTextFromDDL(Enum ddListID)
-            => GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+        {
+            string textFromDDList = string.Empty;
+            try
+            {
+                textFromDDList = GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+            }
+            catch (NoSuchElementException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
+
+            return textFromDDList;
+        }
 
         public override string GetTextFromDDListInActiveTab(Enum ddListID)
             => GetText(PgHelper.GetDDListCurrentSelectionInActiveTabByLocator(ddListID));
@@ -1580,9 +1628,14 @@ namespace RKCIUIAutomation.Page
                     log.Info($"Scrolled to element - {elementOrLocator}");
                 }
             }
+            catch (NoSuchElementException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
 
             return elem;
@@ -1680,6 +1733,7 @@ namespace RKCIUIAutomation.Page
         public abstract void ClickLoginLink();
         public abstract void ClickLogoutLink();
         public abstract void ClickNew(bool multipleBtnInstances = false);
+        public abstract void ClickInMainBodyAwayFromField();
         public abstract void ClickSave();
         public abstract void ClickSaveForward();
         public abstract void ClickSubmitForward();
