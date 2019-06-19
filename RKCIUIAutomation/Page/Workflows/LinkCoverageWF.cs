@@ -215,7 +215,8 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.OV_OV_Test();
             AddAssertionToList(VerifyPageHeader("OV Tests"));
-
+            GridHelper.ClickEditBtnForRow();
+            ClickCancel();
             AssertAll();
         }
 
@@ -847,6 +848,18 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants:
         /// </summary>
+        /// 
+        public override void _NavigateToControlPointMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Control_Point_Scheduler();
+            AddAssertionToList(VerifyPageHeader("Check Point Scheduler"));
+            ClickNew();
+            ClickCancel();
+            NavigateToPage.Control_Point_Log();
+            AddAssertionToList(VerifyPageHeader("Check Point Log"));
+            AssertAll();
+        }
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);
