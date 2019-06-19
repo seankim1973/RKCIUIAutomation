@@ -100,7 +100,8 @@ namespace RKCIUIAutomation.Page.PageObjects
 
         public override void LoginUser(UserType userType)
         {
-            PageAction.WaitForPageReady();
+            PageAction.WaitForPageReady(60, 10000, false);
+
             bool alreadyLoggedIn = AlreadyLoggedIn();
 
             try

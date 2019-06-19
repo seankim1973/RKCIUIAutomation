@@ -512,13 +512,29 @@ namespace RKCIUIAutomation.Page
                 log.Error($"{e.Message}\n{e.StackTrace}");
 
                 noRecordsMsgDisplayed = PageAction.CheckIfElementIsDisplayed(noRecordsMsgLocator);
-                isDisplayedAsExpected = noRecordsExpected
-                    ? noRecordsMsgDisplayed
-                        ? true
-                        : false
-                    : noRecordsMsgDisplayed
-                        ? false
-                        : true;
+
+                if (noRecordsExpected)
+                {
+                    if (noRecordsMsgDisplayed)
+                    {
+                        isDisplayedAsExpected = true;
+                    }
+                    else
+                    {
+                        isDisplayedAsExpected = false;
+                    }
+                }
+                else
+                {
+                    if (noRecordsMsgDisplayed)
+                    {
+                        isDisplayedAsExpected = false;
+                    }
+                    else
+                    {
+                        isDisplayedAsExpected = true;
+                    }
+                }
             }
 
             Report.Info(logMsg, isDisplayedAsExpected);

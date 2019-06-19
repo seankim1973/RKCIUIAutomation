@@ -88,9 +88,12 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw;
             }
-
-            WaitForPageReady();
+            finally
+            {
+                WaitForPageReady();
+            }
         }
 
         public override void JsHover(By elementByLocator)
@@ -115,11 +118,14 @@ namespace RKCIUIAutomation.Page
                 wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
             }
-            catch (UnhandledAlertException)
-            { }
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
             catch (Exception e)
             {
                 log.Error($"Error occured in method GetStandardWait : {e.Message}");
+                throw;
             }
 
             return wait;
@@ -134,54 +140,83 @@ namespace RKCIUIAutomation.Page
                 wait.Until(x => driver.FindElement(elementByLocator));
                 log.Debug($"...waiting for element: - {elementByLocator}");
             }
+            catch (NoSuchElementException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 log.Error($"WaitForElement - {elementByLocator} : {e.Message}");
+                throw;
             }
         }
 
-        public override void WaitForElementToClear(By elementByLocator, int timeOutInSeconds = 60, int pollingInterval = 500)
+        public override void WaitForElementToClear(By elementByLocator)
         {
-            try
+            bool isDisplayed = false;
+
+            do
             {
-                WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(elementByLocator));
-            }
-            catch (Exception e)
-            {
-                log.Error($"WaitForElementToClear [{elementByLocator}]: {e.Message}");
-            }
+                try
+                {
+                    driver.FindElement(elementByLocator);
+                    isDisplayed = true;
+                }
+                catch (NoSuchElementException)
+                {
+                    isDisplayed = false;
+                }
+                catch (Exception e)
+                {
+                    log.Error(e.Message);
+                    throw;
+                }
+
+            } while (isDisplayed);
+
+            //finally
+            //{
+            //    if (isDisplayed)
+            //    {
+            //        WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+            //        wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(elementByLocator));
+            //    }
+            //}
         }
 
-        public override void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500)
+        public override void WaitForLoading()
         {
             try
             {
                 string[] classNames = new string[]
                 {
                     "k-overlay",
-                    "k-loading-mask",
+                    //"k-loading-mask",
                     "k-loading-image"
                 };
 
                 foreach (string className in classNames)
                 {
                     By loadingLocator = By.ClassName(className);
-                    WaitForElementToClear(loadingLocator, timeOutInSeconds, pollingInterval);
+                    WaitForElementToClear(loadingLocator);
                 }
+
+                //By loadingLocator = By.ClassName("k-loading-image");
+                //WaitForElementToClear(loadingLocator);
             }
             catch (Exception)
             {
-            }
-            finally
-            {
-                Thread.Sleep(1000);
+                throw;
             }
         }
 
-        public override void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000)
+        public override void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool checkForLoader = true)
         {
-            WaitForLoading();
+            if (checkForLoader)
+            {
+                WaitForLoading();
+            }
+
             IJavaScriptExecutor javaScriptExecutor = driver as IJavaScriptExecutor;
             bool pageIsReady = false;
 
@@ -189,11 +224,17 @@ namespace RKCIUIAutomation.Page
             {
                 try
                 {
-                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0");
+                    if ((bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"))
+                    {
+                        pageIsReady = true;
+                    }
                 }
                 catch (InvalidOperationException)
                 {
-                    pageIsReady = (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'");
+                    if((bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"))
+                    {
+                        pageIsReady = true;
+                    }
                 }
 
                 if (!pageIsReady)
@@ -205,8 +246,10 @@ namespace RKCIUIAutomation.Page
                         WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                         wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
                     }
-                    catch (UnhandledAlertException)
-                    { }
+                    catch (UnhandledAlertException ae)
+                    {
+                        log.Debug(ae.Message);
+                    }
                 }
             }
             catch (InvalidOperationException)
@@ -216,17 +259,20 @@ namespace RKCIUIAutomation.Page
                     WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                     wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
                 }
-                catch (UnhandledAlertException)
-                { }
-
+                catch (UnhandledAlertException ae)
+                {
+                    log.Debug(ae.Message);
+                }
             }
-            catch (UnhandledAlertException)
-            { }
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
             catch (Exception e)
             {
-                log.Warn($"WaitForPageReady : {e.Message}");
+                log.Debug($"WaitForPageReady : {e.Message}");
+                throw;
             }
-
         }
 
         public override void RefreshWebPage()
@@ -239,21 +285,27 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw;
             }
         }
 
         public override IWebElement GetElement(By elementByLocator)
         {
             IWebElement elem = null;
-            WaitForElement(elementByLocator);
 
             try
             {
+                WaitForElement(elementByLocator);
                 elem = driver.FindElement(elementByLocator);
+            }
+            catch (NoSuchElementException)
+            {
+                throw;
             }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
 
             return elem;
@@ -270,9 +322,14 @@ namespace RKCIUIAutomation.Page
                 elements = driver.FindElements(elementByLocator);
                 log.Info($"Getting list of WebElements: {elementByLocator}");
             }
+            catch (NoSuchElementException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
 
             return elements;
@@ -287,8 +344,8 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                ScrollToElement(elementByLocator);
-                elem = GetElement(elementByLocator);
+                elem = ScrollToElement(elementByLocator);
+                //elem = GetElement(elementByLocator);
                 elem?.Click();
 
                 bool elemNotNull = elem != null
@@ -485,9 +542,14 @@ namespace RKCIUIAutomation.Page
                     Report.Info($"{logMsg} from element - {elementByLocator}", hasValue);
                 }
             }
+            catch (NoSuchElementException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
+                throw;
             }
 
             return text;
@@ -508,8 +570,40 @@ namespace RKCIUIAutomation.Page
             return elementTextList;
         }
 
+        public override void ClickInMainBodyAwayFromField()
+        {
+            try
+            {
+                WaitForPageReady();
+                By mainBodyLocator = By.Id("main");
+                ClickElement(mainBodyLocator);
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
+        }
+
         public override string GetTextFromDDL(Enum ddListID)
-            => GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+        {
+            string textFromDDList = string.Empty;
+            try
+            {
+                textFromDDList = GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+            }
+            catch (NoSuchElementException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
+
+            return textFromDDList;
+        }
 
         public override string GetTextFromDDListInActiveTab(Enum ddListID)
             => GetText(PgHelper.GetDDListCurrentSelectionInActiveTabByLocator(ddListID));
@@ -596,8 +690,10 @@ namespace RKCIUIAutomation.Page
                     Report.Error($"Element {chkbxOrRadioBtn.ToString()}, is not selectable", true);
                 }
             }
-            catch (UnhandledAlertException)
-            { }
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
@@ -819,8 +915,10 @@ namespace RKCIUIAutomation.Page
 
                 Report.Step($"Confirmation Dialog: {actionMsg}");
             }
-            catch (UnhandledAlertException)
-            { }
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
             catch (Exception e)
             {
                 log.Debug(e.Message);
@@ -839,8 +937,10 @@ namespace RKCIUIAutomation.Page
                 alert.Accept();
                 Report.Step($"Accepted browser alert: '{alertMsg}'");
             }
-            catch (UnhandledAlertException)
-            { }
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
             catch (Exception e)
             {
                 log.Debug(e.Message);
@@ -861,8 +961,10 @@ namespace RKCIUIAutomation.Page
                 alert.Dismiss();
                 Report.Step($"Dismissed browser alert: '{alertMsg}'");
             }
-            catch (UnhandledAlertException)
-            { }
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
             catch (Exception e)
             {
                 log.Debug(e.Message);
@@ -923,11 +1025,12 @@ namespace RKCIUIAutomation.Page
 
         public override bool CheckIfElementIsDisplayed(By elementByLocator)
         {
-            IWebElement elem = null;
+            bool isDisplayed = false;
 
             try
             {
-                elem = GetElement(elementByLocator);
+                IWebElement elem = GetElement(elementByLocator);
+                isDisplayed = true;
             }
             catch (NoSuchElementException nse)
             {
@@ -936,9 +1039,10 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error($"Error in ElementIsDisplayed(): {e.StackTrace}");
+                throw;
             }
 
-            return elem.Displayed;
+            return isDisplayed;
         }
 
         public override bool VerifyPageHeader(string expectedPageHeading)
@@ -1524,9 +1628,14 @@ namespace RKCIUIAutomation.Page
                     log.Info($"Scrolled to element - {elementOrLocator}");
                 }
             }
+            catch (NoSuchElementException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
 
             return elem;
@@ -1559,27 +1668,51 @@ namespace RKCIUIAutomation.Page
             while (!loggedOutSuccessfully);
         }
 
-        public override string GetCurrentUser()
+        public override string GetCurrentUser(bool getFullName = false)
         {
             string userAcct = string.Empty;
+            string splitPattern = string.Empty;
+
             By locator = By.XPath("//a[@href='/Project/Account/']");
             
             try
             {
                 userAcct = GetText(locator);
-                userAcct = userAcct.Contains("Test")
-                    ? userAcct.Contains("X")
-                        ?Regex.Split((Regex.Split(userAcct, "Welcome Test ")[1]), "X")[0]
-                        :Regex.Split(userAcct, "Welcome Test ")[1]
-                    : userAcct.Contains("X")
-                        ? Regex.Split((Regex.Split(userAcct, "Welcome ")[1]), " X")[0]
-                        : Regex.Split(userAcct, "Welcome ")[1];
+                bool acctNameContainsX = userAcct.Contains("X");
+
+                if (userAcct.Contains("Test"))
+                {
+                    splitPattern = getFullName
+                        ? "Welcome "
+                        : "Welcome Test ";
+
+                    if (acctNameContainsX)
+                    {                        
+                        userAcct = Regex.Split((Regex.Split(userAcct, splitPattern)[1]), " X")[0];
+                    }
+                    else
+                    {
+                        userAcct = Regex.Split(userAcct, "Welcome Test ")[1];
+                    }
+                }
+                else
+                {
+                    if (acctNameContainsX)
+                    {
+                        userAcct = Regex.Split((Regex.Split(userAcct, "Welcome ")[1]), " X")[0];
+                    }
+                    else
+                    {
+                        userAcct = Regex.Split(userAcct, "Welcome ")[1];
+                    }
+                }
 
                 log.Info($"Getting current user: {userAcct}");
             }
             catch (Exception e)
             {
                 Report.Error(e.Message);
+                throw;
             }
 
             return userAcct;
@@ -1600,6 +1733,7 @@ namespace RKCIUIAutomation.Page
         public abstract void ClickLoginLink();
         public abstract void ClickLogoutLink();
         public abstract void ClickNew(bool multipleBtnInstances = false);
+        public abstract void ClickInMainBodyAwayFromField();
         public abstract void ClickSave();
         public abstract void ClickSaveForward();
         public abstract void ClickSubmitForward();
@@ -1614,7 +1748,7 @@ namespace RKCIUIAutomation.Page
         public abstract void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false);
         public abstract string GetAttribute(By elementByLocator, string attributeName);
         public abstract IList<string> GetAttributes<T>(T elementByLocator, string attributeName);
-        public abstract string GetCurrentUser();
+        public abstract string GetCurrentUser(bool getFullName = false);
         public abstract IWebElement GetElement(By elementByLocator);
         public abstract IList<IWebElement> GetElements(By elementByLocator);
         public abstract int GetElementsCount(By elementByLocator);
@@ -1650,8 +1784,8 @@ namespace RKCIUIAutomation.Page
         public abstract bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false, bool forDIR = true, int dirEntryNumber = 1);
         public abstract bool VerifyUrlIsLoaded(string pageUrl);
         public abstract void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500);
-        public abstract void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 500);
-        public abstract void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500);
-        public abstract void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000);
+        public abstract void WaitForElementToClear(By locator);
+        public abstract void WaitForLoading();
+        public abstract void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool checkForLoader = true);
     }
 }

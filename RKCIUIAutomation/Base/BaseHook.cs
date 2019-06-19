@@ -155,6 +155,10 @@ namespace RKCIUIAutomation.Base
             //testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
         }
 
+        /// <summary>
+        /// Default wait time is set to 1 Second and only used when searching for WebElements using driver.findElement();
+        /// <para>Interaction with WebElements should use helper methods in the PageInteraction class (e.g. ClickElement(), EnterText(), GetElement(), etc)</para>
+        /// </summary>
         internal void InitWebDriverInstance()
         {
             IProjectProperties props = Factory.ProjProperty;
@@ -166,7 +170,8 @@ namespace RKCIUIAutomation.Base
                 {
                     testDetails = $"({testEnv}){tenantName} - {testName}";
                     Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+                    //1 Second default ImplicitWait time - !!!DO NOT CHANGE!!!
+                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
                     Driver.Manage().Window.Maximize();
                     Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
 

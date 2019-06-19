@@ -30,7 +30,7 @@ namespace RKCIUIAutomation.Page
         void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false);
         string GetAttribute(By elementByLocator, string attributeName);
         IList<string> GetAttributes<T>(T elementByLocator, string attributeName);
-        string GetCurrentUser();
+        string GetCurrentUser(bool getFullName = false);
         IWebElement GetElement(By elementByLocator);
         IList<IWebElement> GetElements(By elementByLocator);
         int GetElementsCount(By elementByLocator);
@@ -39,6 +39,11 @@ namespace RKCIUIAutomation.Page
         string GetText(By elementByLocator);
         IList<string> GetTextForElements(By elementByLocator);
         string GetTextFromDDL(Enum ddListID);
+        /// <summary>
+        /// Mouse click in main webpage body.
+        /// <para>(Example: clicks away from input field to initiate auto-save feature in Comment Grid in LAX)</para>
+        /// </summary>
+        void ClickInMainBodyAwayFromField();
         string GetTextFromDDListInActiveTab(Enum ddListID);
         IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID);
         string GetUserDownloadFolderPath();
@@ -66,8 +71,8 @@ namespace RKCIUIAutomation.Page
         bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false, bool forDIR = true, int dirEntryNumber = 1);
         bool VerifyUrlIsLoaded(string pageUrl);
         void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500);
-        void WaitForElementToClear(By locator, int timeOutInSeconds = 60, int pollingInterval = 500);
-        void WaitForLoading(int timeOutInSeconds = 60, int pollingInterval = 500);
-        void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000);
+        void WaitForElementToClear(By locator);
+        void WaitForLoading();
+        void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool checkForLoader = true);
     }
 }

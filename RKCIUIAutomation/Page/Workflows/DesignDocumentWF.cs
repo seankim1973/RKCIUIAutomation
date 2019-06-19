@@ -303,7 +303,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentResolutionInput);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResolutionInput);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             Thread.Sleep(2000);
@@ -313,7 +313,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
             // Login as user to make response comment (All tenants - DevUser)
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentResponseInput);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput);
             DesignDocCommentReview.SelectDisagreeResponseCode(); //agree then different workflow
             DesignDocCommentReview.ClickBtn_SaveOnly();
         }
@@ -365,7 +365,7 @@ namespace RKCIUIAutomation.Page.Workflows
             ForwardResolutionCommentAndCodeForDisagreeResponse();
 
             Report.Step("STEP: 8. DEV Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.RegularComment);
         }
 
         /// <summary>
@@ -385,7 +385,7 @@ namespace RKCIUIAutomation.Page.Workflows
             ForwardComment(CR_Workflow.ForwardComment_DOT);//UserType.DOTAdmin
 
             Report.Step("STEP: 4. DEV Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.NoComment);
         }
 
     }
@@ -463,7 +463,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Pending_Resolution();
             FilterTableAndEditDoc();
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentResolutionInput);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResolutionInput);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             Thread.Sleep(2000);
@@ -504,7 +504,7 @@ namespace RKCIUIAutomation.Page.Workflows
             EnterClosingCommentAndCode();
 
             Report.Step("STEP: 6. IQF Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.RegularComment);
         }
 
         public override void TCWF_CommentReviewNoComment()
@@ -527,7 +527,7 @@ namespace RKCIUIAutomation.Page.Workflows
             EnterClosingCommentAndCode();
 
             Report.Step("STEP: 5. IQF Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.NoComment);
         }
 
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
@@ -563,8 +563,8 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentResponseInput_InTable);
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentResolutionInput_InTable);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput_InTable);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResolutionInput_InTable);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_Update();
             WaitForPageReady();
@@ -578,7 +578,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickTab_Requires_Closing();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentClosingInput_InTable);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentClosingInput_InTable);
             DesignDocCommentReview.SelectDDL_ClosingStamp();
             DesignDocCommentReview.ClickBtn_Update();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -641,7 +641,7 @@ namespace RKCIUIAutomation.Page.Workflows
             EnterAndForwardClosingComment();
 
             Report.Step("STEP: 11. IQF Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.RegularComment);
         }
         
         public override void TCWF_CommentReviewNoComment()
@@ -678,7 +678,7 @@ namespace RKCIUIAutomation.Page.Workflows
             EnterAndForwardClosingComment();//UserType.IQFAdmin
 
             Report.Step("STEP: 9. IQF Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.NoComment);
         }
         
         public override void EnterRegularComment(CR_Workflow workflowType = CR_Workflow.EnterComment)
@@ -726,12 +726,12 @@ namespace RKCIUIAutomation.Page.Workflows
             LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentResolutionInput);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResolutionInput);
             DesignDocCommentReview.SelectDisagreeResolutionCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             int commentTabNumber = 2;
             DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentResolutionInput, commentTabNumber);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResolutionInput, commentTabNumber);
             DesignDocCommentReview.SelectDisagreeResolutionCode(commentTabNumber);
             DesignDocCommentReview.ClickBtn_SaveOnly();
             DesignDocCommentReview.ClickBtn_BackToList();
@@ -746,12 +746,12 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentResponseInput);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput);
             DesignDocCommentReview.SelectDisagreeResponseCode();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             int commentTabNumber = 2;
             DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentResponseInput, commentTabNumber);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput, commentTabNumber);
             DesignDocCommentReview.SelectDisagreeResponseCode(commentTabNumber);
             DesignDocCommentReview.ClickBtn_SaveOnly();
         }
@@ -767,12 +767,12 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void EnterClosingCommentAndCode()
         {
             WaitForPageReady();
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentClosingInput);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentClosingInput);
             DesignDocCommentReview.SelectDDL_ClosingStamp();
             DesignDocCommentReview.ClickBtn_SaveOnly();
             int commentTabNumber = 2;
             DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentClosingInput, commentTabNumber);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentClosingInput, commentTabNumber);
             DesignDocCommentReview.SelectDDL_ClosingStamp(commentTabNumber);
             DesignDocCommentReview.ClickBtn_SaveOnly();
             DesignDocCommentReview.ClickBtn_SaveForward();
@@ -831,10 +831,11 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickTab_Response();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.CommentResponseInput_InTable);
             DesignDocCommentReview.SelectDisagreeResponseCode(3);
+            DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput_InTable);
+            PageAction.ClickInMainBodyAwayFromField();
             WaitForPageReady();
-            //DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
         public override void ForwardResponseComment(CR_Workflow workflowType = CR_Workflow.ForwardResponse)
@@ -852,9 +853,10 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickTab_Verification();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.VerifiedBy_InTable);
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.VerifiedDate_InTable);
-            DesignDocCommentReview.EnterTextInCommentField(CommentFieldType.VerificationNotes_InTable);
+
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.VerificationNotes_InTable);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.VerifiedDate_InTable);
+            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.VerifiedBy_InTable);
             DesignDocCommentReview.SelectDDL_VerificationCode();
             WaitForPageReady();
             LogoutToLoginPage();
@@ -880,19 +882,19 @@ namespace RKCIUIAutomation.Page.Workflows
             ForwardComment();
             LogoutToLoginPage();
 
-            Report.Step("STEP: 4. Log in as ATCRResponse User, enters Response and Resolution stampcode to verification");
+            Report.Step("STEP: 4. Log in as ATCRResponse User, enters Response Comment and Disagree Response stampcode in Response workflow");
             EnterResponseCommentAndDisagreeResponseCode();
             LogoutToLoginPage();
 
-            Report.Step("STEP: 5. Log in as ATCRResponse Admin, enters Response and Resolution stampcode to verification");
+            Report.Step("STEP: 5. Log in as ATCRResponse Admin, forwards Response and Resolution stampcode to Verification workflow");
             ForwardResponseComment();
             LogoutToLoginPage();
 
-            Report.Step("STEP: 6. Log in as ATCRVerify, enter Closing Comment and forward as ATCRVerify Admin (Resolution='Disagree workflow')");
+            Report.Step("STEP: 6. Log in as ATCRVerify User and enters Closing Comment and forward as ATCRVerify Admin (Resolution='Disagree workflow')");
             EnterAndForwardClosingComment();
 
-            Report.Step("STEP: 7. ATCRVerify Admin verifies if record in closed tab");
-            DesignDocCommentReview.VerifyItemStatusIsClosed();
+            Report.Step("STEP: 7. As ATCRVerify Admin, verifies if record in closed tab");
+            DesignDocCommentReview.VerifyItemStatusIsClosed(ReviewType.RegularComment);
         }
     }
 }
