@@ -246,9 +246,9 @@ namespace RKCIUIAutomation.Page
                         WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                         wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
                     }
-                    catch (UnhandledAlertException ae)
+                    catch (UnhandledAlertException)
                     {
-                        log.Debug(ae.Message);
+                        throw;
                     }
                 }
             }
@@ -259,9 +259,9 @@ namespace RKCIUIAutomation.Page
                     WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                     wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
                 }
-                catch (UnhandledAlertException ae)
+                catch (UnhandledAlertException)
                 {
-                    log.Debug(ae.Message);
+                    throw;
                 }
             }
             catch (UnhandledAlertException ae)
@@ -517,29 +517,31 @@ namespace RKCIUIAutomation.Page
 
         public override string GetText(By elementByLocator)
         {
+            bool textHasValue = false;
             IWebElement element = null;
             string text = string.Empty;
-            bool hasValue = false;
+            string logMsg = $"Unable to retrieve text";
 
             try
             {
                 element = ScrollToElement(elementByLocator);
 
-                if (element.Displayed || element.Enabled)
+                if ((bool)element?.Displayed || (bool)element?.Enabled)
                 {
                     text = element.Text;
-                    hasValue = text.HasValue();
 
-                    if (!hasValue)
+                    if (!text.HasValue())
                     {
                         text = element.GetAttribute("value");
-                        hasValue = text.HasValue();
                     }
 
-                    string logMsg = hasValue
-                        ? $"Retrieved '{text}'"
-                        : $"Unable to retrieve text";
-                    Report.Info($"{logMsg} from element - {elementByLocator}", hasValue);
+                    if (text.HasValue())
+                    {
+                        logMsg = $"Retrieved '{text}'";
+                        textHasValue = true;
+                    }
+
+                    Report.Info($"{logMsg} from element - {elementByLocator}", textHasValue);
                 }
             }
             catch (NoSuchElementException)
@@ -548,7 +550,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -588,6 +590,7 @@ namespace RKCIUIAutomation.Page
         public override string GetTextFromDDL(Enum ddListID)
         {
             string textFromDDList = string.Empty;
+
             try
             {
                 textFromDDList = GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
@@ -631,22 +634,11 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
         }
 
-        /// <summary>
-        /// Use (bool)useContains arg when selecting a DDList item with partial value for [T](string)itemIndexOrName
-        /// <para>
-        /// (bool)useContains arg defaults to false and is ignored if arg [T]itemIndexOrName is an Integer
-        /// </para>
-        /// </summary>
-        /// <typeparam name="E"></typeparam>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="ddListID"></param>
-        /// <param name="itemIndexOrName"></param>
-        /// <param name="useContainsOperator"></param>
         public override void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContainsOperator = false, bool isMultiSelectDDList = false)
         {
             ExpandDDL(ddListID, isMultiSelectDDList);
@@ -668,7 +660,7 @@ namespace RKCIUIAutomation.Page
                     if (toggleChkBoxIfAlreadyChecked)
                     {
                         JsClickElement(locator);
-                        Report.Info($"Selected: {chkbxOrRdoBtnNameAndId}");
+                        Report.Step($"Selected: {chkbxOrRdoBtnNameAndId}");
                     }
                     else
                     {
@@ -696,7 +688,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
         }
 
@@ -732,12 +724,6 @@ namespace RKCIUIAutomation.Page
             return fileName;
         }
 
-        /// <summary>
-        /// Provide string or IList<string> of expected file names to verify is seen in the Attachments section of the Details Page
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="expectedFileName"></param>
-        /// <returns></returns>
         public override bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false, bool forDIR = true, int dirEntryNumber = 1)
         {
             int actualCount = 0;
@@ -915,13 +901,14 @@ namespace RKCIUIAutomation.Page
 
                 Report.Step($"Confirmation Dialog: {actionMsg}");
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException)
             {
-                log.Debug(ae.Message);
+                throw;
             }
             catch (Exception e)
             {
-                log.Debug(e.Message);
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 
@@ -937,13 +924,13 @@ namespace RKCIUIAutomation.Page
                 alert.Accept();
                 Report.Step($"Accepted browser alert: '{alertMsg}'");
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException)
             {
-                log.Debug(ae.Message);
+                throw;
             }
             catch (Exception e)
             {
-                log.Debug(e.Message);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return alertMsg;
@@ -961,19 +948,19 @@ namespace RKCIUIAutomation.Page
                 alert.Dismiss();
                 Report.Step($"Dismissed browser alert: '{alertMsg}'");
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException)
             {
-                log.Debug(ae.Message);
+                throw;
             }
             catch (Exception e)
             {
-                log.Debug(e.Message);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return alertMsg;
         }
 
-        public override bool VerifyAlertMessage(string expectedMessage)
+        public override bool VerifyAndAcceptAlertMessage(string expectedMessage)
         {
             bool msgMatch = false;
 
@@ -986,10 +973,16 @@ namespace RKCIUIAutomation.Page
                     : false;
 
                 Report.Info($"## Expected Alert Message: {expectedMessage}<br>## Actual Alert Message: {actualAlertMsg}", msgMatch);
+
+                AcceptAlertMessage();
+            }
+            catch (UnhandledAlertException)
+            {
+                throw;
             }
             catch (Exception e)
             {
-                log.Debug(e.Message);
+                log.Debug($"{e.Message}\n{e.StackTrace}");
             }
 
             return msgMatch;
@@ -1029,16 +1022,18 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IWebElement elem = GetElement(elementByLocator);
-                isDisplayed = true;
+                if ((bool)GetElement(elementByLocator)?.Displayed)
+                {
+                    isDisplayed = true;
+                }
             }
             catch (NoSuchElementException nse)
             {
-                log.Debug($"NoSuchElementException in ElementIsDisplayed(): {nse.Message}");
+                log.Debug(nse.Message);
             }
             catch (Exception e)
             {
-                log.Error($"Error in ElementIsDisplayed(): {e.StackTrace}");
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -1061,13 +1056,21 @@ namespace RKCIUIAutomation.Page
                 {
                     if (!pageTitle.Contains("Home Page"))
                     {
-                        headingElem = driver.FindElement(By.XPath("//h3"))
-                            ?? driver.FindElement(By.XPath("//h2"))
-                            ?? driver.FindElement(By.XPath("//h4"));
+                        try
+                        {
+                            headingElem = driver.FindElement(By.XPath("//h3"))
+                                ?? driver.FindElement(By.XPath("//h2"))
+                                ?? driver.FindElement(By.XPath("//h4"));
+                        }
+                        catch (NoSuchElementException nse)
+                        {
+                            log.Debug(nse.Message);
+                        }
 
-                        isDisplayed = headingElem?.Displayed == true
-                            ? true
-                            : false;
+                        if ((bool)headingElem?.Displayed)
+                        {
+                            isDisplayed = true;
+                        }
 
                         if (isDisplayed)
                         {
@@ -1097,50 +1100,55 @@ namespace RKCIUIAutomation.Page
                     VerifyPageIsLoaded(false, false);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return pageHeadingsMatch;
         }
 
-        [ThreadStatic]
-        private string logMsgKey;
+        //[ThreadStatic]
+        //private string logMsgKey;
 
         private bool IsPageLoadedSuccessfully()
         {
             bool isPageLoaded = true;
+            string logMsg = string.Empty;
             string pageUrl = GetPageUrl();
-            //Console.WriteLine($"##### IsPageLoadedSuccessfully - Page URL: {pageUrl}");
+            IWebElement pageErrElement = null;
+
             try
             {
                 By serverErrorH1Tag = By.XPath("//h1[contains(text(),'Server Error')]");
                 By resourceNotFoundH2Tag = By.XPath("//h2/i[text()='The resource cannot be found.']");
                 By stackTraceTagByLocator = By.XPath("//b[text()='Stack Trace:']");
 
-                IWebElement pageErrElement = null;
+
                 pageErrElement = GetElement(serverErrorH1Tag)
                     ?? GetElement(resourceNotFoundH2Tag);
 
-                isPageLoaded = pageErrElement.Displayed
-                    ? false
-                    : true;
-
-                if (!isPageLoaded)
+                if ((bool)pageErrElement?.Displayed)
                 {
+                    isPageLoaded = false;
                     Report.Error(GetText(stackTraceTagByLocator));
+                    logMsg = $"!!! Error at {pageUrl}";
+                }
+                else
+                {
+                    logMsg = $"!!! Page Error - {pageErrElement.Text}<br>{pageUrl}";
                 }
 
-                string logMsg = isPageLoaded 
-                    ? $"!!! Page Error - {pageErrElement.Text}<br>{pageUrl}"
-                    : $"!!! Error at {pageUrl}";
-
-                logMsgKey = "logMsgKey";
-                BaseUtil.CreateVar(logMsgKey, logMsg);
+                //logMsgKey = "logMsgKey";
+                BaseUtil.CreateVar("logMsgKey", logMsg);
+            }
+            catch (NoSuchElementException nse)
+            {
+                log.Debug(nse.Message);
             }
             catch (Exception e)
             {
-                log.Error($"Error in IsPageLoadedSuccessfully() : {e.StackTrace}");
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return isPageLoaded;
@@ -1258,7 +1266,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 return false;
             }
         }
@@ -1307,42 +1315,53 @@ namespace RKCIUIAutomation.Page
 
         public override bool VerifyTextAreaField(Enum textAreaField, bool emptyFieldExpected = false)
         {
-            bool result = false;
+            
+            bool textAreaHasValue = false;
+            bool resultIsAsExpected = false;
+            string logMsg = string.Empty;
+            string expectedMsg = string.Empty;
+            string textAreaValue = string.Empty;
 
             try
             {
-                string text = GetText(PgHelper.GetTextAreaFieldByLocator(textAreaField));
+                textAreaValue = GetText(PgHelper.GetTextAreaFieldByLocator(textAreaField));
+                textAreaHasValue = textAreaValue.HasValue();
 
-                if (text.HasValue())
+                if (emptyFieldExpected)
                 {
-                    if (!emptyFieldExpected)
+                    if (textAreaHasValue)
                     {
-                        result = true;
+                        logMsg = "NOT ";
+                        expectedMsg = $"textArea [{textAreaField}] should be empty, but retrieved text: {textAreaValue}";
+                    }
+                    else
+                    {
+                        resultIsAsExpected = true;
+                        expectedMsg = $"textArea [{textAreaField} is empty]";
                     }
                 }
                 else
                 {
-                    if (emptyFieldExpected)
+                    if (textAreaHasValue)
                     {
-                        result = true;
+                        resultIsAsExpected = true;
+                        expectedMsg = $"retrieved text from textArea [{textAreaField}] : {textAreaValue}";
+                    }
+                    else
+                    {
+                        logMsg = "NOT ";
+                        expectedMsg = $"textArea [{textAreaField}] should have value, but is empty";
                     }
                 }
 
-                string expected = emptyFieldExpected 
-                    ? "text field should be empty" 
-                    : $"retrieved text: {text}";
-                string logMsg = result 
-                    ? "" 
-                    : "NOT ";
-
-                Report.Info($"Result is {logMsg}as expected:<br>{expected}", result);
+                Report.Info($"Result is {logMsg}as expected:<br>{expectedMsg}", resultIsAsExpected);
             }
             catch (Exception e)
             {
                 log.Error(e.StackTrace);
             }
 
-            return result;
+            return resultIsAsExpected;
         }
 
         public override bool VerifyExpectedList(IList<string> actualList, IList<string> expectedList, string verificationMethodName = "")
@@ -1770,7 +1789,7 @@ namespace RKCIUIAutomation.Page
         public abstract string GetPageTitle(int timeOutInSeconds = 10, int pollingInterval = 500);
         public abstract string UploadFile(string fileName = "");
         public abstract bool VerifyActiveModalTitle(string expectedModalTitle);
-        public abstract bool VerifyAlertMessage(string expectedMessage);
+        public abstract bool VerifyAndAcceptAlertMessage(string expectedMessage);
         public abstract bool VerifyChkBoxRdoBtnSelection(Enum rdoBtnOrChkBox, bool shouldBeSelected = true);
         public abstract bool VerifyDDListSelectedValue(Enum ddListId, string expectedDDListValue);
         public abstract bool VerifyExpectedList(IList<string> actualList, IList<string> expectedList, string verificationMethodName = "");

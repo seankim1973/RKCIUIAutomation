@@ -289,7 +289,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             PageAction.WaitForPageReady();
@@ -324,10 +324,41 @@ namespace RKCIUIAutomation.Page
             => ClickButtonForRow(TableButton.View, textInRowForAnyColumn, isMultiTabGrid, rowEndsWithChkbox);
 
         public override void ClickCreateBtnForRow(int textInRowForAnyColumn = 1, bool isMultiTabGrid = true)
-            => ClickButtonForRow(TableButton.Create_Package, textInRowForAnyColumn, isMultiTabGrid, true);
+        {
+            try
+            {
+                ClickButtonForRow(TableButton.Create_Package, textInRowForAnyColumn, isMultiTabGrid, true);
+                PageAction.AcceptAlertMessage();
+                PageAction.AcceptAlertMessage();
+            }
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+            }
+
+        }
 
         public override void ClickRecreateBtnForRow(int textInRowForAnyColumn = 1, bool isMultiTabGrid = true)
-            => ClickButtonForRow(TableButton.Recreate_Package, textInRowForAnyColumn, isMultiTabGrid, false);
+        {
+            try
+            {
+                ClickButtonForRow(TableButton.Recreate_Package, textInRowForAnyColumn, isMultiTabGrid, false);
+                PageAction.AcceptAlertMessage();
+                PageAction.AcceptAlertMessage();
+            }
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+            }
+        }
 
         public override void ClickDownloadBtnForRow(int rowIndex = 1, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
             => ClickButtonForRow(TableButton.Download, rowIndex, isMultiTabGrid, rowEndsWithChkbox);
@@ -336,7 +367,22 @@ namespace RKCIUIAutomation.Page
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         public override void ClickCloseDirBtnForRow(string dirNumber = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = true)
-            => ClickButtonForRow(TableButton.Action_Close_DIR, dirNumber, isMultiTabGrid, rowEndsWithChkbox);
+        {
+            try
+            {
+                ClickButtonForRow(TableButton.Action_Close_DIR, dirNumber, isMultiTabGrid, rowEndsWithChkbox);
+                PageAction.AcceptAlertMessage();
+                PageAction.AcceptAlertMessage();
+            }
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+            }
+        }
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.

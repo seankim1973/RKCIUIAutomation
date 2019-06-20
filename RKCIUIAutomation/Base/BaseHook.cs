@@ -113,8 +113,26 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         internal static string[] testRunDetails;
 
-        [ThreadStatic]
-        internal Cookie cookie = null;
+        //[ThreadStatic]
+        //internal static Cookie cookie = null;
+
+        public static void AddCookieToCurrentPage(string zaleniumCookieName, string cookieValue)
+        {
+            try
+            {
+                Cookie cookie = new Cookie(zaleniumCookieName, cookieValue);
+                driver.Manage().Cookies.AddCookie(cookie);
+            }
+            catch (UnableToSetCookieException ce)
+            {
+                log.Debug(ce.Message);
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
+        }
 
         [ThreadStatic]
         internal static string testDetails;
@@ -161,34 +179,56 @@ namespace RKCIUIAutomation.Base
         /// </summary>
         internal void InitWebDriverInstance()
         {
-            IProjectProperties props = Factory.ProjProperty;
-            props.ConfigTenantComponents(tenantName);
-
-            if (props.TenantComponents.Contains(testComponent1))
+            try
             {
-                if (props.TenantComponents.Contains(testComponent2) || !testComponent2.HasValue())
-                {
-                    testDetails = $"({testEnv}){tenantName} - {testName}";
-                    Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
-                    //1 Second default ImplicitWait time - !!!DO NOT CHANGE!!!
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
-                    Driver.Manage().Window.Maximize();
-                    Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+                IProjectProperties props = Factory.ProjProperty;
+                props.ConfigTenantComponents(tenantName);
 
-                    LogTestDetails(testRunDetails);
-                    testInstance.AssignReportCategories(testRunDetails);
+                if (props.TenantComponents.Contains(testComponent1))
+                {
+                    if (props.TenantComponents.Contains(testComponent2) || !testComponent2.HasValue())
+                    {
+                        testDetails = $"({testEnv}){tenantName} - {testName}";
+                        Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
+                        //1 Second default ImplicitWait time - !!!DO NOT CHANGE!!!
+                        Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
+                        Driver.Manage().Window.Maximize();
+                        Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+                        LogTestDetails(testRunDetails);
+                        testInstance.AssignReportCategories(testRunDetails);
+                    }
+                    else
+                    {
+                        SkipTest(testComponent2, testRunDetails);
+                    }
                 }
                 else
                 {
-                    SkipTest(testComponent2, testRunDetails);
+                    SkipTest(testComponent1, testRunDetails);
                 }
             }
-            else
+            catch (Exception e)
             {
-                SkipTest(testComponent1, testRunDetails);
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
-
-            driver = Driver;
+            finally
+            {
+                try
+                {
+                    driver = Driver;
+                    AddCookieToCurrentPage("zaleniumMessage", testDetails);
+                }
+                catch (UnhandledAlertException ae)
+                {
+                    log.Debug(ae.Message);
+                }
+                catch (Exception e)
+                {
+                    log.Error($"{e.Message}\n{e.StackTrace}");
+                    throw;
+                }
+            }
         }
 
         internal void SkipTest(string testComponent = "", string[] reportCategories = null)
