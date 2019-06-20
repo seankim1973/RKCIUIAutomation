@@ -1,15 +1,10 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.MarkupUtils;
-using log4net;
 using log4net.Core;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
@@ -21,9 +16,6 @@ namespace RKCIUIAutomation.Base
         }
 
         public ReportLogger(IWebDriver driver) => this.Driver = driver;
-
-        //[ThreadStatic]
-        //private static Cookie cookie;
 
         public enum ValidationType
         {
@@ -229,18 +221,16 @@ namespace RKCIUIAutomation.Base
 
         public void Step(string testStep, bool createStdOutLog = false, bool testResult = true)
         {
+            ExtentColor logLabelColor = ExtentColor.Grey;
+
             try
             {
                 string logMsg = $"TestStep: {testStep}";
 
-                ExtentColor logLabelColor = testResult
-                    ? ExtentColor.Grey
-                    : ExtentColor.Red;
-
-                testInstance.Info(CreateReportMarkupLabel(logMsg, logLabelColor));
-                CheckForLineBreaksInLogMsgForStdOutLogger(Level.Info, logMsg);
-                cookie = new Cookie("zaleniumMessage", testStep);
-                driver.Manage().Cookies.AddCookie(cookie);
+                if (!testResult)
+                {
+                    logLabelColor = ExtentColor.Red;
+                }
 
                 if (createStdOutLog)
                 {
@@ -260,13 +250,19 @@ namespace RKCIUIAutomation.Base
                         Info(testStep, testResult);
                     }
                 }
+
+                testInstance.Info(CreateReportMarkupLabel(logMsg, logLabelColor));
+                CheckForLineBreaksInLogMsgForStdOutLogger(Level.Info, logMsg);
+                AddCookieToCurrentPage("zaleniumMessage", testStep);
+                //driver.Manage().Cookies.AddCookie(cookie);
             }
             catch (UnableToSetCookieException)
             {
+                //log.Debug(ce.Message);
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
         }
 

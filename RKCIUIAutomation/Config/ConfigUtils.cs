@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using static RKCIUIAutomation.Tools.HipTestApi;
 using static RKCIUIAutomation.Base.Factory;
+using RestSharp.Extensions;
 
 namespace RKCIUIAutomation.Config
 {
@@ -16,6 +17,9 @@ namespace RKCIUIAutomation.Config
         public ConfigUtils()
         {
         }
+
+        [ThreadStatic]
+        static string _currentUserEmail = string.Empty;
 
         public ConfigUtils(IWebDriver driver) => this.Driver = driver;
 
@@ -40,12 +44,21 @@ namespace RKCIUIAutomation.Config
         }
 
         //return string array of username[0] and password[1]
-        public string[] GetUser(UserType userType)
+        public string[] GetUserCredentials(UserType userType)
         {
             string userKey = $"{userType}";
             string[] usernamePassword = GetValueFromConfigManager(userTypeKey: userKey).Split(',');
             return usernamePassword;
         }
+
+        public void SetCurrentUserEmail(UserType userType)
+        {
+            string[] credentials = GetUserCredentials(userType);
+            _currentUserEmail = credentials[0];
+        }
+
+        public string GetCurrentUserEmail()
+            => _currentUserEmail;
 
         public string GetHipTestCreds(HipTestKey credType)
             => GetValueFromConfigManager(hiptestKey: $"{credType}");

@@ -26,7 +26,7 @@ namespace RKCIUIAutomation.Base
         readonly TestPlatform defaultTestPlatform = TestPlatform.GridLocal;
         readonly BrowserType defaultBrowserType = BrowserType.Chrome;
         readonly TestEnv defaultTestEnvironment = TestEnv.Staging;         
-        readonly TenantName defaultTenantName = TenantName.SGWay;
+        readonly TenantName defaultTenantName = TenantName.LAX;
         readonly Reporter defaultReporter = Reporter.Klov;
         readonly string defaultGridAddress = "";
         readonly bool enableHipTest = false;
@@ -86,6 +86,8 @@ namespace RKCIUIAutomation.Base
         [TearDown]
         public void AfterTest()
         {
+            string zaleniumTestStatusCookieValue = string.Empty;
+
             try
             {
                 ResultAdapter result = CurrentContext.Result;
@@ -123,12 +125,12 @@ namespace RKCIUIAutomation.Base
                             testInstance.Fail($"Test Failed: <br> {stacktrace}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath, screenshotName).Build());
                         }
 
-                        cookie = new Cookie("zaleniumTestPassed", "false");
+                        zaleniumTestStatusCookieValue = "false";
                         break;
 
                     case TestStatus.Passed:
                         testInstance.Pass(MarkupHelper.CreateLabel("Test Passed", ExtentColor.Green));
-                        cookie = new Cookie("zaleniumTestPassed", "true");
+                        zaleniumTestStatusCookieValue = "true";
                         break;
 
                     case TestStatus.Skipped:
@@ -153,42 +155,57 @@ namespace RKCIUIAutomation.Base
             }
             finally
             {
-                if (driver != null)
+                try
                 {
-                    reportInstance.Flush();
-
-                    if (cookie != null)
+                    if (driver != null)
                     {
-                        driver.Manage().Cookies.AddCookie(cookie);
-                    }
+                        reportInstance.Flush();
 
-                    if (!driver.Title.Equals("Home Page"))
-                    {
-                        try
+                        AddCookieToCurrentPage("zaleniumTestPassed", zaleniumTestStatusCookieValue);
+
+                        if (!driver.Title.Equals("Home Page"))
                         {
                             driver.FindElement(By.XPath("//a[text()=' Log out']")).Click();
                         }
-                        catch (Exception)
-                        {
-                        }
-                    }
 
-                    DismissDriverInstance(driver);
+                        DismissDriverInstance(driver);
+                    }
                 }
+                catch (UnableToSetCookieException ce)
+                {
+                    log.Debug(ce.Message);
+                }
+                catch (NoSuchElementException nse)
+                {
+                    log.Debug(nse.Message);
+                }
+                catch (Exception e)
+                {
+                    log.Error($"{e.Message}\n{e.StackTrace}");
+                    throw;
+                }               
             }
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            if (hiptest)
+            try
             {
-                hipTestRunDetails = testRunDetails;
+                if (hiptest)
+                {
+                    hipTestRunDetails = testRunDetails;
 
-                hipTestRunId = hipTestInstance.CreateTestRun(hipTestRunTestCaseIDs, hipTestRunDetails);
-                hipTestRunData = hipTestInstance.BuildTestRunSnapshotData(hipTestRunId);
-                hipTestInstance.UpdateHipTestRunData(hipTestRunData, hipTestResults);
-                hipTestInstance.SyncTestRun(hipTestRunId);
+                    hipTestRunId = hipTestInstance.CreateTestRun(hipTestRunTestCaseIDs, hipTestRunDetails);
+                    hipTestRunData = hipTestInstance.BuildTestRunSnapshotData(hipTestRunId);
+                    hipTestInstance.UpdateHipTestRunData(hipTestRunData, hipTestResults);
+                    hipTestInstance.SyncTestRun(hipTestRunId);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
     }

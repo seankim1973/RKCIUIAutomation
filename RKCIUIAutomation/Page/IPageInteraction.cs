@@ -26,6 +26,17 @@ namespace RKCIUIAutomation.Page
         bool CheckIfElementIsDisplayed(By elementByLocator);
         void EnterText(By elementByLocator, string text, bool clearField = true);
         void ExecuteJsAction(JSAction jsAction, By elementByLocator);
+        /// <summary>
+        /// Use (bool)useContains arg when selecting a DDList item with partial value for [T](string)itemIndexOrName
+        /// <para>
+        /// (bool)useContains arg defaults to false and is ignored if arg [T]itemIndexOrName is an Integer
+        /// </para>
+        /// </summary>
+        /// <typeparam name="E"></typeparam>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ddListID"></param>
+        /// <param name="itemIndexOrName"></param>
+        /// <param name="useContainsOperator"></param>
         void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContains = false, bool isMultiSelectDDList = false);
         void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false);
         string GetAttribute(By elementByLocator, string attributeName);
@@ -57,7 +68,7 @@ namespace RKCIUIAutomation.Page
         string GetPageTitle(int timeOutInSeconds = 10, int pollingInterval = 500);
         string UploadFile(string fileName = "");
         bool VerifyActiveModalTitle(string expectedModalTitle);
-        bool VerifyAlertMessage(string expectedMessage);
+        bool VerifyAndAcceptAlertMessage(string expectedMessage);
         bool VerifyChkBoxRdoBtnSelection(Enum rdoBtnOrChkBox, bool shouldBeSelected = true);
         bool VerifyDDListSelectedValue(Enum ddListId, string expectedDDListValue);
         bool VerifyExpectedList(IList<string> actualList, IList<string> expectedList, string verificationMethodName = "");
@@ -68,6 +79,13 @@ namespace RKCIUIAutomation.Page
         bool VerifySchedulerIsDisplayed();
         bool VerifySuccessMessageIsDisplayed();
         bool VerifyTextAreaField(Enum textAreaField, bool emptyFieldExpected = false);
+
+        /// <summary>
+        /// Provide string or IList<string> of expected file names to verify is seen in the Attachments section of the Details Page
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="expectedFileName"></param>
+        /// <returns></returns>
         bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false, bool forDIR = true, int dirEntryNumber = 1);
         bool VerifyUrlIsLoaded(string pageUrl);
         void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500);

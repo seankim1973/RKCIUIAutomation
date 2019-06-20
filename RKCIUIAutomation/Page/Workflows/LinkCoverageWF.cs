@@ -273,8 +273,7 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.QAField_Weekly_Environmental_Monitoring();
             AddAssertionToList(VerifyPageHeader("Week Environmental Monitoring Reports"));
             ClickNew();
-            AddAssertionToList(VerifyAlertMessage("Week Ending Date is required!"));
-            AcceptAlertMessage();
+            AddAssertionToList(VerifyAndAcceptAlertMessage("Week Ending Date is required!"));
             EnterText(WeeklyEnvMonitoring.WeekEndingDateField, DateTime.Now.ToShortDateString()); //TODO - Create method
             ClickNew();
             ClickCancel();

@@ -312,7 +312,7 @@ namespace RKCIUIAutomation.Test.DIR
             //Create Revision of Closed DIR
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
             QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirNumberExistsInDbError(), "VerifyDirNumberExistsInDbError");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirNumberExistsInDbErrorIsDisplayed(), "VerifyDirNumberExistsInDbError");
             QaRcrdCtrl_QaDIR.ClickBtn_CreateRevision();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirRevisionInDetailsPage(expectedRevision), $"VerifyDirRevisionInDetailsPage - Expected Revision {expectedRevision}");
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
@@ -471,8 +471,6 @@ namespace RKCIUIAutomation.Test.DIR
             string[] newDIRs = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnName.New_DIRs, rowIndex);
 
             GridHelper.ClickCreateBtnForRow(rowIndex);
-            AcceptAlertMessage();
-            AcceptAlertMessage();
 
             bool pkgIsCreated = QaRcrdCtrl_QaDIR.Verify_Package_Created(weekStart, newDIRs);
             AddAssertionToList(pkgIsCreated, "Verify DIR Package Created Successfully");
@@ -522,8 +520,6 @@ namespace RKCIUIAutomation.Test.DIR
 
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, newDirNumber), "VerifyDirIsDisplayed in 'To Be Closed' tab");
             GridHelper.ClickCloseDirBtnForRow(newDirNumber);
-            AcceptAlertMessage();
-            AcceptAlertMessage();
 
             QaRcrdCtrl_QaDIR.ClickTab_Packages();
             QaRcrdCtrl_QaDIR.VerifyRecreateBtnIsDisplayed(packageNumber, newDirNumber);

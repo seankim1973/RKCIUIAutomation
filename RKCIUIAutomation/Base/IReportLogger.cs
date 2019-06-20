@@ -14,6 +14,6 @@ namespace RKCIUIAutomation.Base
         void Info(string details);
         void Info(string[][] detailsList, bool assertion);
         void Info<T>(string details, T assertion, Exception e = null);
-        void Step(string testStep, bool logInfo = false, bool testResult = true);
+        void Step(string testStep, bool createStdOutLog = false, bool testResult = true);
     }
 }

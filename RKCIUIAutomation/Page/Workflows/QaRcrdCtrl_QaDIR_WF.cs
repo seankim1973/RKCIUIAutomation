@@ -22,9 +22,9 @@ namespace RKCIUIAutomation.Page.Workflows
 
         internal void CreateNew_and_PopulateRequiredFields()
         {
-            Report.Step($"-->---> CreateNew_and_PopulateRequiredFields <---<--");
+            Report.Step($"CreateNew_and_PopulateRequiredFields", true);
 
-            QaRcrdCtrl_QaDIR.ClickBtn_CreateNew();
+            QaRcrdCtrl_QaDIR.ClickBtn_CreateNew(true);
             QaRcrdCtrl_QaDIR.SetDirNumber();
             QaRcrdCtrl_QaDIR.ClickBtn_Save();            
             string dirNumber = QaRcrdCtrl_QaDIR.GetDirNumber();
@@ -553,7 +553,7 @@ namespace RKCIUIAutomation.Page.Workflows
         //GLX,
         public override string Create_and_SaveForward_DIR()
         {
-            Report.Step($"---> Create_and_SaveForward_DIR <---");
+            Report.Step($"Create_and_SaveForward_DIR", true);
 
             CreateNew_and_PopulateRequiredFields();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
@@ -562,7 +562,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override string Create_and_SaveOnly_DIR()
         {
-            Report.Step($"---> Create_and_SaveOnly_DIR <---");
+            Report.Step($"Create_and_SaveOnly_DIR", true);
 
             CreateNew_and_PopulateRequiredFields();
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
@@ -571,7 +571,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override string[] Create_and_SaveForward_DIR_with_Failed_Inspection_and_PreviousFailingReports()
         {
-            Report.Step($"---> Create_and_SaveForward_Failed_Inspection_DIR_with_PreviousFailingReports <---");
+            Report.Step($"Create_and_SaveForward_Failed_Inspection_DIR_with_PreviousFailingReports", true);
 
             CreateNew_and_PopulateRequiredFields();
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
@@ -613,7 +613,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void Return_DIR_ForRevise_FromTab_then_Edit_inCreateRevise(TableTab kickBackfromTableTab, string dirNumber)
         {
-            Report.Step($"---> KickBack_DIR_ForRevise_From{kickBackfromTableTab.ToString()}Tab_then_Edit_inCreateReview <---");
+            Report.Step($"Workflow Step: KickBack_DIR_ForRevise_From{kickBackfromTableTab.ToString()}Tab_then_Edit_inCreateReview", true);
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(kickBackfromTableTab, dirNumber), "VerifyDirIsDisplayed");
             GridHelper.ClickEditBtnForRow();
             ClickBtn_KickBackOrRevise();
@@ -636,14 +636,14 @@ namespace RKCIUIAutomation.Page.Workflows
 
         private void Upload_Cancel_Verify_inAttachments(string dirNumber)
         {
-            Report.Step($"---> Upload_Cancel_Verify_inAttachments <---");
+            Report.Step($"Upload_Cancel_Verify_inAttachments", true);
 
             UploadFile();
         }
 
         public override void Modify_Cancel_Verify_inCreateRevise(string dirNumber)
         {
-            Report.Step($"---> Modify_Cancel_Verify_inCreateRevise <---");
+            Report.Step($"Modify_Cancel_Verify_inCreateRevise", true);
 
             QaRcrdCtrl_QaDIR.SelectChkbox_InspectionResult_F();
             QaRcrdCtrl_QaDIR.SelectRdoBtn_Deficiencies_Yes();
@@ -748,9 +748,13 @@ namespace RKCIUIAutomation.Page.Workflows
                             AcceptAlertMessage();
                             AcceptAlertMessage();
                         }
+                        catch (UnhandledAlertException ae)
+                        {
+                            log.Debug(ae.Message);
+                        }
                         catch (Exception e)
                         {
-                            log.Debug(e.Message);
+                            log.Error($"{e.Message}\n{e.StackTrace}");
                         }
                         finally
                         {
@@ -765,9 +769,13 @@ namespace RKCIUIAutomation.Page.Workflows
                             DismissAlertMessage();
                             DismissAlertMessage();
                         }
+                        catch (UnhandledAlertException ae)
+                        {
+                            log.Debug(ae.Message);
+                        }
                         catch (Exception e)
                         {
-                            log.Debug(e.Message);
+                            log.Error($"{e.Message}\n{e.StackTrace}");
                         }
                         finally
                         {

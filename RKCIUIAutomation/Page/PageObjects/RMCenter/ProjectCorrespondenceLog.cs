@@ -353,11 +353,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     }
                     else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
                     {
-                        argValue = ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
-                            ? 1
-                            : argValue;
+                        if ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
+                        {
+                            argValue = 1;
+                        }
 
-                        PageAction.ExpandAndSelectFromDDList(entryField, argValue, useContains, fieldType.Equals(MULTIDDL) ? true : false);
+                        bool isMultiselectDDList = false;
+
+                        if (fieldType.Equals(MULTIDDL))
+                        {
+                            isMultiselectDDList = true;
+                        }
+
+                        PageAction.ExpandAndSelectFromDDList(entryField, argValue, useContains, isMultiselectDDList);
 
                         if (fieldType.Equals(DDL))
                         {

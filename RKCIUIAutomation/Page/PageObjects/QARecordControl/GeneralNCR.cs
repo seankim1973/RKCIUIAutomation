@@ -222,9 +222,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     PageAction.ConfirmActionDialog(acceptAlert);
                 }
             }
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
         }
 

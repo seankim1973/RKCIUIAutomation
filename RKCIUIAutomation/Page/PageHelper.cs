@@ -204,32 +204,80 @@ namespace RKCIUIAutomation.Page
         /// <returns></returns>
         private string SetDDListItemsXpath<T, I>(T ddListID, I itemIndexOrName, bool useContains = false)
         {
-            string _ddListID = ddListID.GetType() == typeof(string)
-                ? BaseUtil.ConvertToType<string>(ddListID)
-                : BaseUtil.ConvertToType<Enum>(ddListID).GetString();
-
-            string ddListXPath = _ddListID.Contains("Time")
-                ? $"//ul[@id='{_ddListID}_timeview']"
-                : $"//div[@id='{_ddListID}-list']";
-
+            string invalidArgMsg = string.Empty;
+            string _ddListID = string.Empty;
+            string ddListXPath = string.Empty;
             string itemValueXPath = string.Empty;
 
-            if (itemIndexOrName.GetType().Equals(typeof(string)))
+            try
             {
-                var argName = BaseUtil.ConvertToType<string>(itemIndexOrName);
-                itemValueXPath = useContains
-                    ? $"contains(text(),'{argName}')"
-                    : $"text()='{argName}'";
-            }
-            else if (itemIndexOrName.GetType().Equals(typeof(int)))
-            {
-                int itemIndex = BaseUtil.ConvertToType<int>(itemIndexOrName);
-                itemIndex = _ddListID.Contains("Time")
-                    ? itemIndex + 1
-                    : itemIndex;
-                itemValueXPath = itemIndex.ToString();
-            }
+                object ddListIdType = ddListID.GetType();
+                object argValueType = itemIndexOrName.GetType();
 
+                if (ddListID.GetType().Equals(typeof(string)))
+                {
+                    _ddListID = BaseUtil.ConvertToType<string>(ddListID);
+                }
+                else if (ddListID is Enum)
+                {
+                    _ddListID = BaseUtil.ConvertToType<Enum>(ddListID).GetString();
+                }
+                else
+                {
+                    invalidArgMsg = $"parameter {ddListID} [ddListID] is type of {ddListID.GetType()}, but should be string or Enum type";
+                    throw new ArgumentException(invalidArgMsg);
+                }
+
+                if (_ddListID.Contains("Time"))
+                {
+                    ddListXPath = $"//ul[@id='{_ddListID}_timeview']";
+                }
+                else
+                {
+                    ddListXPath = $"//div[@id='{_ddListID}-list']";
+                }
+
+                if (argValueType.Equals(typeof(string)))
+                {
+                    string argValue = BaseUtil.ConvertToType<string>(itemIndexOrName);
+
+                    if (useContains)
+                    {
+                        itemValueXPath = $"contains(text(),'{argValue}')";
+                    }
+                    else
+                    {
+                        itemValueXPath = $"text()='{argValue}'";
+                    }
+                }
+                else if (argValueType.Equals(typeof(int)))
+                {
+                    int itemIndex = BaseUtil.ConvertToType<int>(itemIndexOrName);
+
+                    if (_ddListID.Contains("Time"))
+                    {
+                        itemIndex = itemIndex + 1;
+                    }
+
+                    itemValueXPath = itemIndex.ToString();
+                }
+                else
+                {
+                    invalidArgMsg = $"parameter {itemIndexOrName} [itemIndexOrName] is type of {itemIndexOrName.GetType()}, but should be string or int type";
+                    throw new ArgumentException(invalidArgMsg);
+                }
+            }
+            catch (ArgumentException ae)
+            {
+                log.Error($"Invalid input type: {ae.Message}\n{ae.StackTrace}");
+                throw;
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
+            
             return $"{ddListXPath}//li[{itemValueXPath}]";
         }
 
@@ -280,19 +328,21 @@ namespace RKCIUIAutomation.Page
             => By.XPath(SetMultiSelectDDListCurrentSelectionXpath(multiSelectDDListID));
 
         public override By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
-            => isMultiSelectDDList
-                ? By.XPath($"//select[@id='{BaseUtil.ConvertToType<Enum>(ddListID).GetString()}']/parent::div")
-                : By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
+        {
+            By expandDDListLocator = null;
 
-        /// <summary>
-        /// [bool] useContains arg defaults to false and is ignored if arg [I]itemIndexOrName is int type
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <typeparam name="I"></typeparam>
-        /// <param name="ddListID"></param>
-        /// <param name="itemIndexOrName"></param>
-        /// <param name="useContains"></param>
-        /// <returns></returns>
+            if (isMultiSelectDDList)
+            {
+                expandDDListLocator = By.XPath($"//select[@id='{BaseUtil.ConvertToType<Enum>(ddListID).GetString()}']/parent::div");
+            }
+            else
+            {
+                expandDDListLocator = By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
+            }
+
+            return expandDDListLocator;
+        }
+
         public override By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContainsOperator = false)
             => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName, useContainsOperator));
 

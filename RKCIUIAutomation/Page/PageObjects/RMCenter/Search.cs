@@ -246,10 +246,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
             else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
             {
-                fieldValue = criteria.Equals(SearchCriteria.DocumentType)
-                    ? $"-- {fieldValue}"
-                    : fieldValue;
-                PageAction.ExpandAndSelectFromDDList(criteria, fieldValue, true, fieldType.Equals(MULTIDDL) ? true : false);
+                if (criteria.Equals(SearchCriteria.DocumentType))
+                {
+                    fieldValue = $"-- {fieldValue}";
+                }
+
+                bool isMultiselectDDList = false;
+
+                if (fieldType.Equals(MULTIDDL))
+                {
+                    isMultiselectDDList = true;
+                }
+
+                PageAction.ExpandAndSelectFromDDList(criteria, fieldValue, true, isMultiselectDDList);
             }
         }
 

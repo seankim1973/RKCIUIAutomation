@@ -75,6 +75,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("TimeEnd1")] Time_End,
             [StringValue("DIREntries_0__AverageTemperature")] Average_Temperature,
             [StringValue("DIREntries_0__AreaID")] Area,
+            [StringValue("DIREntries_0__MultiStructureIDs")] Location,
+            [StringValue("fidDisplay")] FID,
             [StringValue("DIREntries_0__DivisionID")] Division, //SH249
             [StringValue("DIREntries_0__BidItemCodeID")] Bid_Item_Code, //SH249
             [StringValue("DIREntries_0__SectionId")] Spec_Section,
@@ -242,20 +244,40 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         id = split[1];
 
                         string[] newId = new string[2];
+
                         if (id.Contains("Id"))
                         {
                             newId = Regex.Split(id, "Id");
                             id = newId[0];
                         }
+                        else if (id.Contains("IDs"))
+                        {
+                            newId = Regex.Split(id, "IDs");
+                            id = newId[0];
+
+                            if (id.Equals("MultiStructure"))
+                            {
+                                id = "Location";
+                            }
+                        }
                         else if (id.Contains("HoldPoint"))
                         {
                             if (id.Equals("HoldPointTypeID"))
                             {
-                                bool complexWfTenant = tenantName == TenantName.SGWay || tenantName == TenantName.SH249 ? true : false;
-                                id = complexWfTenant ? "HoldPoint Type" : "ControlPoint No.";
+                                if (ProjProperty.TenantComponents.Contains(Component.DIR_WF_Complex))
+                                //if (tenantName == TenantName.SGWay || tenantName == TenantName.SH249)
+                                {
+                                    id = "HoldPoint Type";
+                                }
+                                else
+                                {
+                                    id = "ControlPoint No.";
+                                }
                             }
                             else
+                            {
                                 id = "ControlPoint Type";
+                            }
                         }
                         else if (id.Equals("EngineerComment"))
                         {
@@ -406,7 +428,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return extractedFieldNames;
@@ -561,7 +583,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override bool VerifyEngineerCommentsReqFieldErrors()
             => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList(), RequiredFieldType.EngineerComments);
 
-        public override bool VerifyDirNumberExistsInDbError()
+        public override bool VerifyDirNumberExistsInDbErrorIsDisplayed()
         {
             By errorLocator = By.Id("error");
             IWebElement errorElem = null;
@@ -571,12 +593,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 errorElem = PageAction.GetElement(errorLocator);
-                isDisplayed = (bool)errorElem?.Displayed ? true : false;
-                logMsg = isDisplayed ? "" : " not";
+
+                if ((bool)errorElem?.Displayed)
+                {
+                    isDisplayed = true;
+                }
+            }
+            catch (NoSuchElementException)
+            {
+                logMsg = " not";
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             Report.Info($"'This DIR No. exists in the database' error message is{logMsg} displayed", isDisplayed);
@@ -615,8 +644,33 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override bool IsLoaded()
             => driver.Title.Equals("DIR List - ELVIS PMC");
 
-        public override void ClickBtn_CreateNew()
-            => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_New));
+        public override void ClickBtn_CreateNew(bool useWorkaroundIfDirExists = false)
+        {
+            PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_New));
+
+            if (useWorkaroundIfDirExists)
+            {
+                if (VerifyDirNumberExistsInDbErrorIsDisplayed())
+                {
+                    try
+                    {
+                        GridHelper.FilterTableColumnByValue(ColumnName.Created_By, ConfigUtil.GetCurrentUserEmail());
+                    }
+                    catch (TimeoutException)
+                    {
+                        //TODO check database for closed DIR and set IsDeleted = 1
+                        throw;
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error($"{e.Message}\n{e.StackTrace}");
+                        throw;
+                    }
+                    
+                    GridHelper.ClickEditBtnForRow();
+                }
+            }
+        }
 
         public override void ClickBtn_CreateRevision()
             => PageAction.JsClickElement(GetSubmitButtonByLocator(SubmitButtons.Create_Revision));
@@ -774,7 +828,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -797,7 +851,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -834,6 +888,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override void SelectDDL_BidItemCode(int ddListSelection = 1)
             => PageAction.ExpandAndSelectFromDDList(InputFields.Bid_Item_Code, ddListSelection);
+
+        public override void SelectDDL_Location(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.Location, ddListSelection, false, true);
+
+        public override void SelectDDL_FID(int ddListSelection = 1)
+            => PageAction.ExpandAndSelectFromDDList(InputFields.FID, ddListSelection, false, true);
 
         public override void SelectDDL_Feature(int ddListSelection = 1)
             => PageAction.ExpandAndSelectFromDDList(InputFields.Feature, ddListSelection);
@@ -873,7 +933,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
             return textMatch;
         }
@@ -896,7 +956,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -970,8 +1030,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         }
                     }
                 }
-                catch (UnhandledAlertException)
+                catch (UnhandledAlertException ae)
                 {
+                    log.Debug(ae.Message);
+                }
+                catch (Exception e)
+                {
+                    log.Error($"{e.Message}\n{e.StackTrace}");
                 }
 
                 SelectChkbox_InspectionResult_P(false); //Ensures Pass Result checkbox is selected
@@ -996,19 +1061,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         }
                     }
                 }
-                catch (UnhandledAlertException)
+                catch (UnhandledAlertException ae)
                 {
+                    log.Debug(ae.Message);
+                }
+                catch (Exception e)
+                {
+                    log.Error($"{e.Message}\n{e.StackTrace}");
                 }
 
                 alertMsgExpected = assertList.Contains(false)
                     ? false
                     : true;
             }
-            catch (UnhandledAlertException)
-            { }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
             finally
             {
@@ -1139,19 +1207,26 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     case RequiredFieldType.ControlPoint:
                         reqFieldIdXPath = "//span[contains(@aria-owns,'HoldPoint')]/input";
                         splitPattern = "0__";
-                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedHoldPointReqFieldIDsList();
+                        if (expectedRequiredFieldIDs == null)
+                        {
+                            expectedRequiredFieldIDs = QaRcrdCtrl_QaDIR.GetExpectedHoldPointReqFieldIDsList();
+                        }
                         break;
-
                     case RequiredFieldType.EngineerComments:
                         reqFieldIdXPath = $"//textarea[@id='{InputFields.Engineer_Comments.GetString()}']";
                         splitPattern = "0__";
-                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList();
+                        if (expectedRequiredFieldIDs == null)
+                        {
+                            expectedRequiredFieldIDs = QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList();
+                        }
                         break;
-
                     default:
                         reqFieldIdXPath = "//span[text()='*']";
                         splitPattern = "0_";
-                        expectedRequiredFieldIDs = expectedRequiredFieldIDs ?? QaRcrdCtrl_QaDIR.GetExpectedRequiredFieldIDsList();
+                        if (expectedRequiredFieldIDs == null)
+                        {
+                            expectedRequiredFieldIDs = QaRcrdCtrl_QaDIR.GetExpectedRequiredFieldIDsList();
+                        }
                         break;
                 }
 
@@ -1181,11 +1256,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     }
                 }
 
-                requiredFieldsMatch = reqFieldAssertList.Contains(false) ? false : true;
+                if (!reqFieldAssertList.Contains(false))
+                {
+                    requiredFieldsMatch = true;
+                }
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
             finally
             {
@@ -1208,7 +1286,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         //NO REFRESH btn, use Save & Edit btn - LAX, I15SB, I15Tech
         public override bool VerifyAutoSaveTimerRefresh()
         {
-            Report.Step("STEP: VerifyAutoSaveTimerRefresh");
+            Report.Step("VerifyAutoSaveTimerRefresh");
 
             bool timerRefreshedAsExpected = false;
             string preRefreshTime = string.Empty;
@@ -1227,7 +1305,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -1378,8 +1456,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 if (recreateBtnIsDisplayed)
                 {
                     GridHelper.ClickRecreateBtnForRow();
-                    PageAction.AcceptAlertMessage();
-                    PageAction.AcceptAlertMessage();
 
                     string pkgDIRs = GridHelper.GetColumnValueForRow(1, PackagesColumnName.DIRs.GetString(true));
                     string newPkgNumber = GridHelper.GetColumnValueForRow(1, PackagesColumnName.Package_Number.GetString(true));
@@ -1412,7 +1488,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     {
         bool IsLoaded();
 
-        void ClickBtn_CreateNew();
+        void ClickBtn_CreateNew(bool useWorkaroundIfDirExists = false);
 
         void ClickBtn_CreateRevision();
 
@@ -1477,6 +1553,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void SelectDDL_Division(int ddListSelection = 1);
 
         void SelectDDL_BidItemCode(int ddListSelection = 1);
+
+        void SelectDDL_Location(int ddListSelection = 1);
+
+        void SelectDDL_FID(int ddListSelection = 1);
 
         void SelectDDL_Feature(int ddListSelection = 1);
 
@@ -1574,7 +1654,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyEngineerCommentsReqFieldErrors();
 
-        bool VerifyDirNumberExistsInDbError();
+        bool VerifyDirNumberExistsInDbErrorIsDisplayed();
 
         bool VerifyDirRevisionInDetailsPage(string expectedDirRev);
 
@@ -1644,10 +1724,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract bool VerifySpecSectionDescriptionAutoPopulatedData();
         public abstract bool VerifyControlPointReqFieldErrors();
         public abstract bool VerifyEngineerCommentsReqFieldErrors();
-        public abstract bool VerifyDirNumberExistsInDbError();
+        public abstract bool VerifyDirNumberExistsInDbErrorIsDisplayed();
         public abstract bool VerifyDirRevisionInDetailsPage(string expectedDirRev);
         public abstract bool IsLoaded();
-        public abstract void ClickBtn_CreateNew();
+        public abstract void ClickBtn_CreateNew(bool useWorkaroundIfDirExists = false);
         public abstract void ClickBtn_CreateRevision();
         public abstract void ClickBtn_Refresh();
         public abstract void ClickBtn_Cancel();
@@ -1678,6 +1758,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void SelectDDL_SpecSectionParagraph(int ddListSelection = 1);
         public abstract void SelectDDL_Division(int ddListSelection = 1);
         public abstract void SelectDDL_BidItemCode(int ddListSelection = 1);
+        public abstract void SelectDDL_Location(int ddListSelection = 1);
+        public abstract void SelectDDL_FID(int ddListSelection = 1);
         public abstract void SelectDDL_Feature(int ddListSelection = 1);
         public abstract void SelectDDL_ControlPointNumber(int ddListSelection = 1);
         public abstract void SelectDDL_HoldPointType(int ddListSelection = 1);
@@ -2065,6 +2147,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_SpecSection();
             SelectDDL_SpecSectionParagraph();
             TestUtility.AddAssertionToList(VerifySpecSectionDescriptionAutoPopulatedData(), "VerifySpecSectionDescriptionAutoPopulatedData");
+            SelectDDL_Location();
+            SelectDDL_FID();
             SelectDDL_Feature();
             SelectDDL_Contractor("LINXS");
             SelectDDL_CrewForeman();
@@ -2098,7 +2182,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 "Inspection Result",
                 InputFields.Date_Ready.GetString(),
                 InputFields.Date_Completed.GetString(),
-                InputFields.Total_Inspection_Time.GetString()
+                InputFields.Total_Inspection_Time.GetString(),
+                InputFields.Location.GetString()
             };
 
             return RequiredFieldIDs;
