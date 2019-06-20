@@ -123,6 +123,10 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     mainNavEnum = MainNav.Menu.Control_Point;
                 }
+                else if (reflectedPageType.Equals(typeof(CheckPoint)))
+                {
+                    mainNavEnum = MainNav.Menu.Check_Point;
+                }
                 else if (reflectedPageType.Equals(typeof(RMCenter)))
                 {
                     mainNavEnum = MainNav.Menu.RM_Center;
@@ -239,6 +243,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Owner")] Owner,
                 [StringValue("Material/Mix Codes")] Material_Mix_Codes,
                 [StringValue("Control Point")] Control_Point,
+                [StringValue("Check Point")] Check_Point,
                 [StringValue("RM Center")] RM_Center,
                 [StringValue("QA Inbox")] QA_Inbox,
                 [StringValue("DOT Inbox")] DOT_Inbox,
