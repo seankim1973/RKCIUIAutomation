@@ -140,10 +140,10 @@ namespace RKCIUIAutomation.Page
                 wait.Until(x => driver.FindElement(elementByLocator));
                 log.Debug($"...waiting for element: - {elementByLocator}");
             }
-            catch (NoSuchElementException)
-            {
-                throw;
-            }
+            //catch (NoSuchElementException)
+            //{
+            //    throw;
+            //}
             catch (Exception e)
             {
                 log.Error($"WaitForElement - {elementByLocator} : {e.Message}");

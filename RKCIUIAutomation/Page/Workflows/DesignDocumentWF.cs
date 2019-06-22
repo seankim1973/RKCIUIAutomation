@@ -235,7 +235,6 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogIntoDesignDocumentsPage(workflowType);
             AddAssertionToList_VerifyPageHeader("Design Document", "CreateCommentReviewDocument");
-            //AddAssertionToList(VerifyPageHeader("Design Document"), "VerifyPageTitle(\"Design Document\")");
             DesignDocCommentReview.CreateDocument();
         }
 

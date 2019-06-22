@@ -58,6 +58,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void EnterVerifiedDate(string shortDate = "01/01/2019");
         void FilterDocNumber(string filterByValue = "");
         IList<KeyValuePair<CommentFieldType, string>> CreateCommentEntryFieldKVPairsList();
+
+        /// <summary>
+        /// Returns a list of enums, based on ReviewType parameter, in order to provide an array of element IDs of column headers in the 'Review Complete' workflow grid, which is then used to create a list of actual values shown in the grid to compare against a list of expected values generated in previous test steps.
+        /// <para/> Element IDs for column headers are usually same as input field element IDs, but not always (i.e. VerifiedDate_InTable (VerifiedDateOffset) vs VerifiedDateHeader_InTable (VerifiedDate) - for LAX)
+        /// </summary>
+        /// <param name="reviewType"></param>
+        /// <returns></returns>
         IList<CommentFieldType> GetCommentEntryFieldsList(ReviewType reviewType);
         By GetCommentFieldValueXPath_ByLocator(CommentFieldType commentField);
         string GetCurrentReviewerType();
