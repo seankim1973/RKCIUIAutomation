@@ -1742,7 +1742,7 @@ namespace RKCIUIAutomation.Page
 
     }
 
-    public abstract class PageInteraction_Impl : ProjectProperties, IPageInteraction
+    public abstract class PageInteraction_Impl : TenantProperties, IPageInteraction
     {
         public abstract string AcceptAlertMessage();
         public abstract void ClearText(By elementByLocator);

@@ -302,7 +302,7 @@
     <Compile Include="Config\ConfigUtils.cs" />
     <Compile Include="Config\IConfigUtils.cs" />
     <Compile Include="Config\ImpersonateUser.cs" />
-    <Compile Include="Config\ProjectProperties.cs" />
+    <Compile Include="Config\TenantProperties.cs" />
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\PageInteraction.cs" />
     <Compile Include="Page\PageObjects\RMCenter\IDesignDocument.cs" />

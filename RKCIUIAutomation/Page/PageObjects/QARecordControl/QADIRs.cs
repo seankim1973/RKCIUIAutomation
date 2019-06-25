@@ -264,7 +264,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         {
                             if (id.Equals("HoldPointTypeID"))
                             {
-                                if (ProjProperty.TenantComponents.Contains(Component.DIR_WF_Complex))
+                                if (TenantProperty.TenantComponents.Contains(Component.DIR_WF_Complex))
                                 //if (tenantName == TenantName.SGWay || tenantName == TenantName.SH249)
                                 {
                                     id = "HoldPoint Type";

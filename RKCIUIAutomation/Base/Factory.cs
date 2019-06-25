@@ -29,7 +29,7 @@ namespace RKCIUIAutomation.Base
 
         public static IConfigUtils ConfigUtil => new ConfigUtils();
 
-        public static IProjectProperties ProjProperty => new ProjectProperties();
+        public static ITenantProperties TenantProperty => new TenantProperties();
 
         public static IPageInteraction PageAction => new PageInteraction(driver);
 

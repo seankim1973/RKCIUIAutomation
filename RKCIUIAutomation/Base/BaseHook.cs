@@ -181,7 +181,7 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
-                IProjectProperties props = Factory.ProjProperty;
+                ITenantProperties props = Factory.TenantProperty;
                 props.ConfigTenantComponents(tenantName);
 
                 if (props.TenantComponents.Contains(testComponent1))
