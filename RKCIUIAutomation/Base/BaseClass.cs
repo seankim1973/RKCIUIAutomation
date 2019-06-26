@@ -9,6 +9,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using static NUnit.Framework.TestContext;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.StaticHelpers;
@@ -26,7 +27,7 @@ namespace RKCIUIAutomation.Base
         readonly TestPlatform defaultTestPlatform = TestPlatform.GridLocal;
         readonly BrowserType defaultBrowserType = BrowserType.Chrome;
         readonly TestEnv defaultTestEnvironment = TestEnv.Staging;         
-        readonly TenantName defaultTenantName = TenantName.LAX;
+        readonly TenantName defaultTenantName = TenantName.SGWay;
         readonly Reporter defaultReporter = Reporter.Klov;
         readonly string defaultGridAddress = "";
         readonly bool enableHipTest = false;
@@ -81,6 +82,9 @@ namespace RKCIUIAutomation.Base
             InitExtentTestInstance();
 
             InitWebDriverInstance();
+
+            TestStopwatch = new Stopwatch();
+            TestStopwatch.Start();
         }
 
         [TearDown]
@@ -142,6 +146,8 @@ namespace RKCIUIAutomation.Base
                         break;
                 }
 
+                TestStopwatch.Stop();
+
                 if (hiptest)
                 {
                     var resultDesc = new KeyValuePair<TestStatus, string>(testStatus, testDescription);
@@ -159,9 +165,13 @@ namespace RKCIUIAutomation.Base
                 {
                     if (driver != null)
                     {
+                        Report.Info($"TOTAL TEST TIME: {TestStopwatch.Elapsed.ToString()}");
                         reportInstance.Flush();
 
-                        AddCookieToCurrentPage("zaleniumTestPassed", zaleniumTestStatusCookieValue);
+                        if (cookie != null)
+                        {
+                            AddCookieToCurrentPage("zaleniumTestPassed", zaleniumTestStatusCookieValue);
+                        }
 
                         if (!driver.Title.Equals("Home Page"))
                         {
@@ -182,7 +192,6 @@ namespace RKCIUIAutomation.Base
                 catch (Exception e)
                 {
                     log.Error($"{e.Message}\n{e.StackTrace}");
-                    throw;
                 }               
             }
         }
@@ -205,7 +214,6 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
-                throw;
             }
         }
     }

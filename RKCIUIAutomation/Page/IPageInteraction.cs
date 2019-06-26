@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using RKCIUIAutomation.Config;
 using static RKCIUIAutomation.Page.PageInteraction;
 
 namespace RKCIUIAutomation.Page
@@ -23,9 +24,10 @@ namespace RKCIUIAutomation.Page
         void CloseActiveModalWindow();
         void ConfirmActionDialog(bool confirmYes = true);
         string DismissAlertMessage();
-        bool CheckIfElementIsDisplayed(By elementByLocator);
+        bool ElementIsDisplayed(By elementByLocator);
         void EnterText(By elementByLocator, string text, bool clearField = true);
         void ExecuteJsAction(JSAction jsAction, By elementByLocator);
+
         /// <summary>
         /// Use (bool)useContains arg when selecting a DDList item with partial value for [T](string)itemIndexOrName
         /// <para>
@@ -50,6 +52,7 @@ namespace RKCIUIAutomation.Page
         string GetText(By elementByLocator);
         IList<string> GetTextForElements(By elementByLocator);
         string GetTextFromDDL(Enum ddListID);
+
         /// <summary>
         /// Mouse click in main webpage body.
         /// <para>(Example: clicks away from input field to initiate auto-save feature in Comment Grid in LAX)</para>
@@ -61,6 +64,7 @@ namespace RKCIUIAutomation.Page
         void JsClickElement(By elementByLocator);
         string JsGetPageTitle(string windowHandle = "");
         void JsHover(By elementByLocator);
+        void LoginAs(UserType user);
         void LogoutToLoginPage();
         void RefreshWebPage();
         IWebElement ScrollToElement<T>(T elementOrLocator);

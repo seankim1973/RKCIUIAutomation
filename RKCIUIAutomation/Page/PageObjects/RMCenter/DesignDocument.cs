@@ -2,21 +2,21 @@
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
-using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
+using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 using static RKCIUIAutomation.Page.Workflows.DesignDocumentWF;
-using static RKCIUIAutomation.Base.Factory;
-using System.Text.RegularExpressions;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
     public class DesignDocument : DesignDocument_Impl, IDesignDocument
     {
         public DesignDocument()
-        {            
-            createPgEntryFieldKVPairsList = CreateDesignDocEntryFieldKVPairsList();           
+        {
+            createPgEntryFieldKVPairsList = CreateDesignDocEntryFieldKVPairsList();
             commentEntryFieldKVPairsList = CreateCommentEntryFieldKVPairsList();
         }
 
@@ -167,7 +167,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Comment_ClosingComment_", TEXT)] CommentClosingInput,
             [StringValue("Comment_ReviewerId_", AUTOPOPULATED)] Reviewer,
             [StringValue("Comment_ReviewedDate_", AUTOPOPULATED)] ReviewedDate,
-            
+
             //Comment Entry Fields in Grid View
             [StringValue("CommentType", DDL)] DocType_InTable,
             [StringValue("CommentType", DDL)] CommentType_InTable,
@@ -189,6 +189,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("VerifierName", TEXT)] VerifiedBy_InTable,
             [StringValue("VerificationCode", DDL)] VerificationCode_InTable,
             [StringValue("VerifiedDateOffset", DATE)] VerifiedDate_InTable,
+            [StringValue("VerifiedDate", DATE)] VerifiedDateHeader_InTable,
             [StringValue("VerificationNotes", TEXT)] VerificationNotes_InTable
         }
 
@@ -466,7 +467,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
-           
+
             return fieldValuePair = new KeyValuePair<DesignDocEntryFieldType, string>(entryField, fieldValue);
         }
 
@@ -574,7 +575,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 else
                                 {
                                     expectedHeaderValue = $"{maxReviewDays} ({reviewerType})";
-                                }                               
+                                }
                             }
                         }
                     }
@@ -607,11 +608,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
                 commentEntryFieldsList = GetCommentEntryFieldsList(reviewType);
 
-                //TODO - Iterrate through comment tabs for SG
-
                 foreach (CommentFieldType commentField in commentEntryFieldsList)
                 {
                     string actualValue = GetGridCommentResponseColumnValue(commentField);
+
                     if (actualValue.Contains(":"))
                     {
                         var splitActualValue = Regex.Split(actualValue, ":");
@@ -671,18 +671,23 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         case TableTab.Pending_Comment://SG
                             documentStatus = "Pending Comment";
                             break;
+
                         case TableTab.Pending_Resolution://SG
                             documentStatus = "Pending Resolution";
                             break;
+
                         case TableTab.Requires_Resolution://SH249, SG
                             documentStatus = "Requires Resolution";
                             break;
+
                         case TableTab.Pending_Response://SG
                             documentStatus = "Pending Response";
                             break;
+
                         case TableTab.Pending_Closing://SG
                             documentStatus = "Pending Closing";
                             break;
+
                         case TableTab.Closed://LAX, SG, SH249
                             documentStatus = "Review Completed";
                             break;
@@ -734,11 +739,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList()
             => designDocDetailsHeadersList;
 
+        internal void OnlyUpdateCommentFieldKVPairList(CommentFieldType commentField)
+            => PopulateFieldAndUpdateCommentFieldKVPairList(commentField, "");
+
         internal void UpdateCommentFieldKVPairList(CommentFieldType commentField, string inputValue)
         {
             var fieldValuePair = new KeyValuePair<CommentFieldType, string>(commentField, inputValue);
             commentEntryFieldKVPairsList.Add(fieldValuePair);
-            log.Debug($"UPDATE COMMENT KVPList : KEY[{commentField}] - VALUE[{inputValue}]");
         }
 
         internal void PopulateFieldAndUpdateCommentFieldKVPairList<T>(CommentFieldType commentField, T inputTextORselectionIndex, int commentTabNumber = 1, bool useContainsOperator = false, bool updateKVPair = true)
@@ -815,7 +822,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 if (commentField.Equals(CommentFieldType.Reviewer))
                                 {
                                     fieldValue = GetTextFromDDListInActiveTab(commentField);
-
                                 }
                                 else if (commentField.Equals(CommentFieldType.ReviewedDate))
                                 {
@@ -824,13 +830,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 }
                             }
                         }
-
+                        
+                        //TEXT entry field types update KVPair List within the EnterCommentResponse() method using UpdateCommentFieldKVPairList() method
                         if (updateKVPair)
                         {
-                            //TEXT entry field types update KVPair List within the EnterCommentResponse() method using UpdateCommentFieldKVPairList() method
                             fieldValuePair = new KeyValuePair<CommentFieldType, string>(commentField, fieldValue);
                             commentEntryFieldKVPairsList.Add(fieldValuePair);
-                            log.Debug($"ADDED COMMENT KVPList : KEY[{commentField}] - VALUE[{fieldValue}]");
                         }
                     }
                 }
@@ -853,6 +858,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
         }
 
+        /// <summary>
+        /// Returns a list of enums, based on ReviewType parameter, in order to provide an array of element IDs of column headers in the 'Review Complete' workflow grid, which is then used to create a list of actual values shown in the grid to compare against a list of expected values generated in previous test steps.
+        /// <para/> Element IDs for column headers are usually same as input field element IDs, but not always (i.e. VerifiedDate_InTable (VerifiedDateOffset) vs VerifiedDateHeader_InTable (VerifiedDate) - for LAX)
+        /// </summary>
+        /// <param name="reviewType"></param>
+        /// <returns></returns>
         public override IList<CommentFieldType> GetCommentEntryFieldsList(ReviewType reviewType)
         {
             if (commentEntryFieldsList == null)
@@ -918,47 +929,36 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             => $"{inputFieldEnum.GetString()}{(commentTabIndex - 1).ToString()}_";
 
         public override void SelectRegularCommentReviewType(int commentTabNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.ReviewType, commentTabNumber), 3);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ReviewType, 3, commentTabNumber);
 
         public override void SelectNoCommentReviewType(int commentTabNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.ReviewType, commentTabNumber), 1);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ReviewType, 1, commentTabNumber);
 
         public override void SelectCommentType(int commentTabNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.CommentType, commentTabNumber), 1);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.CommentType, 1, commentTabNumber);
 
         public override void SelectDiscipline(int disciplineNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.Discipline, disciplineNumber), 1);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.Discipline, disciplineNumber);
 
         public override void SelectCategory(int categoryNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.Category, categoryNumber), 1);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.Category, categoryNumber);
 
         public override void SelectAgreeResolutionCode(int commentTabNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.ResolutionStamp, commentTabNumber), 1); //check the index, UI not working so need to confirm later
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResolutionStamp, 1, commentTabNumber);
 
         public override void SelectAgreeResponseCode(int commentTabNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.ResponseCode, commentTabNumber), 2); //check the index, UI not working so need to confirm later
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResponseCode, 2, commentTabNumber);
 
         public override void SelectDisagreeResponseCode(int commentTabNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.ResponseCode, commentTabNumber), 3);//check the index, UI not working so need to confirm later
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResponseCode, 3, commentTabNumber);
 
         public override void SelectDisagreeResolutionCode(int commentTabNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.ResolutionStamp, commentTabNumber), 2);//check the index, UI not working so need to confirm later
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResolutionStamp, 2, commentTabNumber);
 
         public override void SelectDDL_ClosingStamp(int commentTabNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.ClosingStamp, commentTabNumber), 1);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ClosingStamp, 1, commentTabNumber);
 
         public override void SelectOrganization(int selectionIndex = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(CommentFieldType.Org_InTable, selectionIndex);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.Org_InTable, selectionIndex);
 
         public override void SelectDDL_VerificationCode(int selectionIndex = 1)
@@ -975,7 +975,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 ? GetShortDate()
                 : shortDate;
 
-            //PageAction.EnterText(GetTextInputFieldByLocator(CommentFieldType.VerifiedDate_InTable), shortDate);
             PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.VerificationCode_InTable, shortDate);
         }
 
@@ -1018,7 +1017,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 else
                 {
                     entryFieldLocator = By.Id($"{commentField.GetString()}{commentTabNumber - 1}_");
-                    groupName = $"{GetActiveCommentTabGroupName()}_";
                 }
 
                 PageAction.ScrollToElement(entryFieldLocator);
@@ -1059,6 +1057,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         commentValue = PageAction.GetCurrentUser();
                     }
 
+                    if (!commentFieldTypeIsInGrid)
+                    {
+                        groupName = $"{GetActiveCommentTabGroupName()}_";
+                    }
+
                     commentValue = $"{groupName}{commentValue}";
                     PageAction.EnterText(entryFieldLocator, commentValue);
                 }
@@ -1092,6 +1095,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             //login as commenting user (SG- IQFuser, DoTuser | SH249-- IQFUser | Garenet and GLX-- DOTUser)
             SelectNoCommentReviewType();
+            OnlyUpdateCommentFieldKVPairList(CommentFieldType.Reviewer);
+            OnlyUpdateCommentFieldKVPairList(CommentFieldType.ReviewedDate);
             ClickBtn_SaveOnly();
         }
 
@@ -1134,7 +1139,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         private bool VerifyRequiredFieldErrorMsg(string errorMsg)
-            => PageAction.CheckIfElementIsDisplayed(By.XPath($"//li[text()='{errorMsg}']"));
+            => PageAction.ElementIsDisplayed(By.XPath($"//li[text()='{errorMsg}']"));
 
         public override bool VerifyTitleFieldErrorMsgIsDisplayed()
             => VerifyRequiredFieldErrorMsg("Submittal Title is required.");
@@ -1147,20 +1152,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void SelectTab(TableTab tableTab)
         {
-            try
-            {
-                PageAction.WaitForPageReady();
-                //Thread.Sleep(2500);
-                GridHelper.ClickTab(tableTab);
-                //Thread.Sleep(2500);
-                PageAction.WaitForPageReady();
-            }
-            catch (Exception e)
-            {
-                log.Error($"Error occured in SelectedTab() : {e.StackTrace}");
-                throw;
-            }
-
+            PageAction.WaitForPageReady();
+            GridHelper.ClickTab(tableTab);
+            PageAction.WaitForPageReady();
             SetDesignDocStatus(tableTab);
         }
 
@@ -1194,9 +1188,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void SortTable_Ascending() => GridHelper.SortColumnAscending(ColumnName.Action);
 
-        public override void WaitForActiveCommentTab()
+        public override void WaitForActiveCommentContentLoadToComplete()
         {
-            bool activeTabNotDisplayed = true;
+            By activeCommentTabContentLoadCompleteXPath = By.XPath("//ul[@class='k-reset k-tabstrip-items']/li[contains(@class,'k-state-active')]/span[contains(@class,'k-complete')]");
+            bool activeContentNotDisplayed = true;
+            WaitForPageReady();
 
             for (int i = 0; i > 30; i++)
             {
@@ -1204,23 +1200,26 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 {
                     if (i == 30)
                     {
-                        ElementNotVisibleException e = new ElementNotVisibleException();
-                        log.Error($"Comment tab is not visible: {e.Message}");
-                        throw e;
+                        Report.Error($"Comment tab is not visible");
+                        throw new ElementNotVisibleException();
                     }
                     else
                     {
-                        activeTabNotDisplayed = PageAction.CheckIfElementIsDisplayed(By.XPath("//div[@class='k-content k-state-active']"));
+                        if (PageAction.ElementIsDisplayed(activeCommentTabContentLoadCompleteXPath))
+                        {
+                            activeContentNotDisplayed = false;
+                        }
                     }
                 }
-                while (activeTabNotDisplayed);
+                while (activeContentNotDisplayed);
             }
         }
 
         public override void ClickCommentTabNumber(int commentTabNumber)
-        {
-            WaitForActiveCommentTab();
+        {           
             GridHelper.ClickCommentTab(commentTabNumber);
+            //Thread.Sleep(5000);
+            WaitForActiveCommentContentLoadToComplete();
         }
 
         public override string GetCurrentReviewerType()
@@ -1242,22 +1241,31 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override string GetActiveCommentTabGroupName()
         {
-            By activeCommentTabGroupName = By.XPath($"{ActiveContentXPath}//strong[text()='Group:']");
-            string groupName = GetText(activeCommentTabGroupName);
+            string groupName = string.Empty;
+            By activeCommentTabGroupName = By.XPath($"{ActiveContentXPath}//strong[text()='Group:']/parent::span");
 
-            if (groupName.Equals("Iqf") || groupName.Equals("IQF"))
+            try
             {
-                groupName = "IQF";
+                WaitForActiveCommentContentLoadToComplete();
+                groupName = GetText(activeCommentTabGroupName);
+
+                if (groupName.Contains("Iqf") || groupName.Contains("IQF"))
+                {
+                    groupName = "IQF";
+                }
+                else if (groupName.Contains("Dot") || groupName.Contains("DOT"))
+                {
+                    groupName = "DOT";
+                }
             }
-            else if (groupName.Equals("Dot") || groupName.Equals("DOT"))
+            catch (Exception)
             {
-                groupName = "DOT";
+                throw;
             }
 
             return groupName;
         }
     }
-
 
     // DesignDocument Implementation class
     public abstract class DesignDocument_Impl : PageBase, IDesignDocument
@@ -1280,85 +1288,166 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public abstract By UploadNewDesignDoc_ByLocator { get; }
 
         public abstract void ClickBtn_AddComment();
+
         public abstract void ClickBtn_BackToList();
+
         public abstract void ClickBtn_Cancel();
+
         public abstract void ClickBtn_CommentsTblRow_Delete(bool clickBtnForLatestRow = true, int rowID = 1);
+
         public abstract void ClickBtn_CommentsTblRow_Details(bool clickBtnForLatestRow = true, int rowID = 1);
+
         public abstract void ClickBtn_CommentsTblRow_Edit(bool clickBtnForLatestRow = true, int rowID = 1);
+
         public abstract void ClickBtn_CommentsTblRow_Files(bool clickBtnForLatestRow = true, int rowID = 1);
+
         public abstract void ClickBtn_SaveForward();
+
         public abstract void ClickBtn_SaveOnly();
+
         public abstract void ClickBtn_Update();
+
         public abstract void ClickCommentTabNumber(int commentTabNumber);
+
         public abstract void ClickTab_Closed();
+
         public abstract void ClickTab_Comment();
+
         public abstract void ClickTab_Creating();
+
         public abstract void ClickTab_Pending_Closing();
+
         public abstract void ClickTab_Pending_Comment();
+
         public abstract void ClickTab_Pending_Resolution();
+
         public abstract void ClickTab_Pending_Response();
+
         public abstract void ClickTab_Requires_Closing();
+
         public abstract void ClickTab_Requires_Comment();
+
         public abstract void ClickTab_Requires_Resolution();
+
         public abstract void ClickTab_Requires_Response();
+
         public abstract void ClickTab_Response();
+
         public abstract void ClickTab_Verification();
+
         public abstract void CreateDocument();
+
         public abstract void EnterDesignDocTitleAndNumber();
+
         public abstract void EnterNoComment();
+
         public abstract void EnterRegularCommentAndDrawingPageNo();
+
         public abstract void EnterResponseCommentAndAgreeResponseCode();
+
         public abstract void EnterResponseCommentAndDisagreeResponseCode();
+
         public abstract string EnterCommentResponse(CommentFieldType commentType, int commentTabNumber = 1, bool updateKVPair = true);
+
         public abstract void EnterVerifiedDate(string shortDate = "01/01/2019");
+
         public abstract void FilterDocNumber(string filterByValue = "");
+
         public abstract IList<KeyValuePair<CommentFieldType, string>> CreateCommentEntryFieldKVPairsList();
+
+        /// <summary>
+        /// Returns a list of enums, based on ReviewType parameter, in order to provide an array of element IDs of column headers in the 'Review Complete' workflow grid, which is then used to create a list of actual values shown in the grid to compare against a list of expected values generated in previous test steps.
+        /// <para/> Element IDs for column headers are usually same as input field element IDs, but not always (i.e. VerifiedDate_InTable (VerifiedDateOffset) vs VerifiedDateHeader_InTable (VerifiedDate) - for LAX)
+        /// </summary>
+        /// <param name="reviewType"></param>
+        /// <returns></returns>
         public abstract IList<CommentFieldType> GetCommentEntryFieldsList(ReviewType reviewType);
+
         public abstract By GetCommentFieldValueXPath_ByLocator(CommentFieldType commentField);
+
         public abstract string GetCurrentReviewerType();
+
         public abstract string GetActiveCommentTabGroupName();
+
         public abstract IList<DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList();
+
         public abstract IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList();
+
         public abstract IList<KeyValuePair<DesignDocEntryFieldType, string>> CreateDesignDocEntryFieldKVPairsList();
+
         public abstract string GetDesignDocStatus();
+
         public abstract string GetHeaderValue(DesignDocHeaderType docHeader);
+
         public abstract void PopulateAllCreatePgEntryFields();
+
         public abstract void ScrollToFirstColumn();
+
         public abstract void ScrollToLastColumn();
+
         public abstract void SelectAgreeResolutionCode(int commentTabNumber = 1);
+
         public abstract void SelectAgreeResponseCode(int commentTabNumber = 1);
+
         public abstract void SelectCategory(int categoryNumber = 1);
+
         public abstract void SelectCommentType(int commentTypeTabNumber = 1);
+
         public abstract void SelectDDL_Category(int selectionIndex);
+
         public abstract void SelectDDL_ClosingStamp(int commentTabNumber = 1);
+
         public abstract void SelectDDL_CommentType(int selectionIndex);
+
         public abstract void SelectDDL_Discipline(int selectionIndex);
+
         public abstract void SelectDDL_Reviewer<T>(T selectionIndexOrReviewerName, bool useContainsOperator);
+
         public abstract void SelectDDL_ReviewType(int selectionIndex);
+
         public abstract void SelectDDL_VerificationCode(int selectionIndex = 1);
+
         public abstract void SelectDisagreeResolutionCode(int commentTabNumber = 1);
+
         public abstract void SelectDisagreeResponseCode(int commentTabNumber = 1);
+
         public abstract void SelectDiscipline(int disciplineNumber = 1);
+
         public abstract void SelectNoCommentReviewType(int commentTabNumber);
+
         public abstract void SelectOrganization(int disciplineNumber = 1);
+
         public abstract void SelectRegularCommentReviewType(int commentTabNumber);
+
         public abstract void SelectTab(TableTab tableTab);
+
         public abstract void SetDesignDocStatus<T>(T tableTabOrWorkflow);
+
         public abstract void SortTable_Ascending();
+
         public abstract void SortTable_Descending();
+
         public abstract void VerifyDesignDocDetailsHeader();
+
         public abstract void VerifyCommentFieldValues(ReviewType reviewType);
+
         public abstract bool VerifyDocumentNumberFieldErrorMsgIsDisplayed();
+
         public abstract void VerifyItemStatusIsClosed(ReviewType reviewType);
+
         public abstract bool VerifyTitleFieldErrorMsgIsDisplayed();
+
         public abstract bool VerifyUploadFileErrorMsgIsDisplayed();
-        public abstract void WaitForActiveCommentTab();
+
+        public abstract void WaitForActiveCommentContentLoadToComplete();
+
         public abstract void Workflow_EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
+
         public abstract void Workflow_ForwardResolutionCommentAndCodeForDisagreeResponse();
     }
 
-
     // Tenant specific implementation of DesignDocument Comment Review
+
     #region Implementation specific to Garnet
 
     public class DesignDocument_Garnet : DesignDocument
@@ -1394,11 +1483,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override void SelectRegularCommentReviewType(int commentTabNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.ReviewType, commentTabNumber), 2);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ReviewType, 2, commentTabNumber);
 
         public override void SelectNoCommentReviewType(int commentTabNumber = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(SetCommentStamp_XPath(CommentFieldType.ReviewType, commentTabNumber), 3);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ReviewType, 3, commentTabNumber);
     }
 
@@ -1551,6 +1638,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void EnterRegularCommentAndDrawingPageNo()
         {
             SelectRegularCommentReviewType();
+            OnlyUpdateCommentFieldKVPairList(CommentFieldType.Reviewer);
+            OnlyUpdateCommentFieldKVPairList(CommentFieldType.ReviewedDate);
             SelectCommentType();
             SelectCategory();
             SelectDiscipline();
@@ -1598,6 +1687,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickBtn_SaveOnly();
         }
 
+        public override void VerifyItemStatusIsClosed(ReviewType reviewType)
+        {
+            ClickTab_Closed();
+            TestUtility.AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber), $"VerifyItemStatusIsClosed");
+            GridHelper.ClickEnterBtnForRow();
+
+            int totalCommentTabsCount = GetElementsCount(By.XPath("//ul[@class='k-reset k-tabstrip-items']/li"));
+            for (int i = 0; i > totalCommentTabsCount; i++)
+            {
+                ClickCommentTabNumber(i + 1);
+                VerifyCommentFieldValues(reviewType);
+            }
+        }
     }
 
     #endregion Implementation specific to SGWay
@@ -1635,7 +1737,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList()
         {
             if (designDocDetailsHeadersList == null)
-            { 
+            {
                 designDocDetailsHeadersList = new List<DesignDocHeaderType>
                 {
                     DesignDocHeaderType.Date,
@@ -1664,8 +1766,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             CommentFieldType.DrawingPageNumberInput_InTable,
             CommentFieldType.CommentResponseInput_InTable,
             CommentFieldType.CommentResolutionInput_InTable,
-            CommentFieldType.ResolutionStamp,
-            CommentFieldType.ClosingStamp
+            CommentFieldType.ResolutionStamp_InTable,
+            CommentFieldType.CommentClosingInput_InTable,
+            CommentFieldType.ClosingStamp_InTable
         };
 
         public override IList<CommentFieldType> NoCommentFieldsList => new List<CommentFieldType>
@@ -1675,7 +1778,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             CommentFieldType.CommentClosingInput_InTable,
             CommentFieldType.ClosingStamp_InTable
         };
-
 
         public override void EnterNoComment()
         {
@@ -1722,45 +1824,34 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override void SelectRegularCommentReviewType(int selectionIndex = 3)
-            //=> PageAction.ExpandAndSelectFromDDList(CommentFieldType.ReviewType_InTable, selectionIndex);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ReviewType_InTable, selectionIndex);
 
         public override void SelectNoCommentReviewType(int selectionIndex = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(CommentFieldType.ReviewType_InTable, selectionIndex);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ReviewType_InTable, selectionIndex);
 
         public override void SelectCommentType(int selectionIndex = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(CommentFieldType.CommentType_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.CommentType_InTable, selectionIndex);
 
         public override void SelectDiscipline(int selectionIndex = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(CommentFieldType.Discipline_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.Discipline_InTable, selectionIndex);
 
         public override void SelectCategory(int selectionIndex = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(CommentFieldType.Category_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.Category_InTable, selectionIndex);
 
         public override void SelectAgreeResolutionCode(int selectionIndex = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(CommentFieldType.ResolutionStamp_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResolutionStamp_InTable, selectionIndex);
 
         public override void SelectAgreeResponseCode(int selectionIndex = 2)
-           // => PageAction.ExpandAndSelectFromDDList(CommentFieldType.ResponseCode_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResponseCode_InTable, selectionIndex);
 
         public override void SelectDisagreeResponseCode(int selectionIndex = 3)
-            //=> PageAction.ExpandAndSelectFromDDList(CommentFieldType.ResponseCode_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResponseCode_InTable, selectionIndex);
 
         public override void SelectDisagreeResolutionCode(int selectionIndex = 2)
-            //=> PageAction.ExpandAndSelectFromDDList(CommentFieldType.ResolutionStamp_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResolutionStamp_InTable, selectionIndex);
 
         public override void SelectDDL_ClosingStamp(int selectionIndex = 1)
-            //=> PageAction.ExpandAndSelectFromDDList(CommentFieldType.ClosingStamp_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ClosingStamp_InTable, selectionIndex);
-
     }
 
     #endregion Implementation specific to SH249
@@ -1825,7 +1916,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             CommentFieldType.CommentResponseInput_InTable,
             CommentFieldType.VerificationCode_InTable,
             CommentFieldType.VerifiedBy_InTable,
-            CommentFieldType.VerifiedDate_InTable,
+            CommentFieldType.VerifiedDateHeader_InTable,
             CommentFieldType.VerificationNotes_InTable
         };
 
@@ -1857,39 +1948,30 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override void ClickBtn_SaveForward()
-        {
-            PageAction.JsClickElement(Table_ForwardBtn_ByLocator);
-            //PageAction.WaitForPageReady();
-        }
+            => PageAction.JsClickElement(Table_ForwardBtn_ByLocator);
 
         public override void SelectRegularCommentReviewType(int selectionIndex = 3)
-        //    => PageAction.ExpandAndSelectFromDDList(CommentFieldType.ReviewType_InTable, selectionIndex);
             => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ClosingStamp_InTable, selectionIndex);
 
         public override void SelectCommentType(int selectionIndex = 1)
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.DocType_InTable, selectionIndex);
 
         public override void SelectDiscipline(int selectionIndex = 1)
-        //    => PageAction.ExpandAndSelectFromDDList(CommentFieldType.Discipline_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.Discipline_InTable, selectionIndex);
 
         public override void SelectCategory(int selectionIndex = 1)
-        //    => PageAction.ExpandAndSelectFromDDList(CommentFieldType.Category_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.Category_InTable, selectionIndex);
 
         public override void SelectAgreeResolutionCode(int selectionIndex = 1)
-        //    => PageAction.ExpandAndSelectFromDDList(CommentFieldType.ResolutionStamp_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResolutionStamp_InTable, selectionIndex);
 
         private readonly CommentFieldType responseCodeType = CommentFieldType.ResponseCode_InTable;
-        
+
         //Response Code dropdown list in LAX is the only required field in Response workflow,
         //selecting response code triggers auto-save of the grid and blocks from reading text value of the field, causing an NoSuchElementException.
         public override void SelectAgreeResponseCode(int selectionIndex = 2)
         {
             PopulateFieldAndUpdateCommentFieldKVPairList(responseCodeType, selectionIndex, 1, false, false);
-            //By ddListSelectionColumn_Locator = GetCommentFieldValueXPath_ByLocator(responseCodeType);
-            //string responseCodeValue = GetText(ddListSelectionColumn_Locator);
             string responseCodeValue = GetGridCommentResponseColumnValue(responseCodeType);
             UpdateCommentFieldKVPairList(responseCodeType, responseCodeValue);
         }
@@ -1899,20 +1981,15 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void SelectDisagreeResponseCode(int selectionIndex = 3)
         {
             PopulateFieldAndUpdateCommentFieldKVPairList(responseCodeType, selectionIndex, 1, false, false);
-            //By ddListSelectionColumn_Locator = GetCommentFieldValueXPath_ByLocator(responseCodeType);
-            //string responseCodeValue = GetText(ddListSelectionColumn_Locator);
             string responseCodeValue = GetGridCommentResponseColumnValue(responseCodeType);
             UpdateCommentFieldKVPairList(responseCodeType, responseCodeValue);
         }
 
         public override void SelectDisagreeResolutionCode(int selectionIndex = 2)
-         //   => PageAction.ExpandAndSelectFromDDList(CommentFieldType.ResolutionStamp_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResolutionStamp_InTable, selectionIndex);
 
         public override void SelectDDL_ClosingStamp(int selectionIndex = 1)
-        //    => PageAction.ExpandAndSelectFromDDList(CommentFieldType.ClosingStamp_InTable, selectionIndex);
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ClosingStamp_InTable, selectionIndex);
-
     }
 
     #endregion Implementation specific to LAX

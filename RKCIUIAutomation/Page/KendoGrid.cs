@@ -53,7 +53,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
         }
@@ -73,31 +73,23 @@ namespace RKCIUIAutomation.Page
         private int GetElementIndex(By findElementsLocator, string matchValue)
         {
             int index = -1;
-            IList<IWebElement> elements;
+            IList<IWebElement> elements = new List<IWebElement>();
+            elements = GetElements(findElementsLocator);
 
-            try
+            for (int i = 0; i < elements.Count; i++)
             {
-                elements = new List<IWebElement>();
-                elements = GetElements(findElementsLocator);
+                string spanText = elements[i].Text;
+                bool match = spanText.Equals(matchValue)
+                    ? true
+                    : false;
 
-                for (int i = 0; i < elements.Count; i++)
+                if (match)
                 {
-                    string spanText = elements[i].Text;
-                    bool match = spanText.Equals(matchValue)
-                        ? true
-                        : false;
-
-                    if (match)
-                    {
-                        index = i;
-                        break;
-                    }
+                    index = i;
+                    break;
                 }
             }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
+
 
             if (index == -1)
             {
@@ -172,73 +164,53 @@ namespace RKCIUIAutomation.Page
             return items;
         }
 
-        public void FilterTableGrid(
-            string columnName,
-            string filterValue,
-            FilterOperator filterOperator = FilterOperator.EqualTo,
-            FilterLogic filterLogic = FilterLogic.And,
-            string additionalFilterValue = null,
-            FilterOperator additionalFilterOperator = FilterOperator.EqualTo,
-            TableType tableType = TableType.Unknown
-            ) => Filter( tableType,
-                new GridFilter(
-                    columnName,
-                    filterOperator,
-                    filterValue,
-                    filterLogic,
-                    additionalFilterValue,
-                    additionalFilterOperator
-                    )
-                );
+        public void FilterTableGrid(string columnName, string filterValue, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo, TableType tableType = TableType.Unknown)
+            => Filter( tableType, new GridFilter(columnName, filterOperator, filterValue, filterLogic, additionalFilterValue, additionalFilterOperator));
 
         private void Filter(TableType tableType, params GridFilter[] gridFilters)
         {
-            string columnName = null;
-            string filterValue = null;
-            string filterOperator = null;
-            string filterLogic = null;
-            string addnlFilterOperator = null;
-            string addnlFilterValue = null;
-            string filterScript = null;
+            string columnName = string.Empty;
+            string filterValue = string.Empty;
+            string filterLogic = string.Empty;
+            string filterScript = string.Empty;
+            string filterOperator = string.Empty;
+            string addnlFilterValue = string.Empty;
+            string addnlFilterOperator = string.Empty;
 
-            try
+            string addnlFilterLogMsg = string.Empty;
+
+            foreach (var currentFilter in gridFilters)
             {
-                foreach (var currentFilter in gridFilters)
+                filterLogic = currentFilter.FilterLogic.GetString();
+                string jsFilterBase = $"grid.dataSource.filter({{ logic: '{filterLogic}', filters: [";
+
+                filterValue = currentFilter.FilterValue;
+                columnName = currentFilter.ColumnName;
+                filterOperator = currentFilter.FilterOperator.GetString();
+                filterScript = $"{jsFilterBase}{{ field: '{columnName}', operator: '{filterOperator}', value: '{filterValue}' }}";
+
+                addnlFilterValue = currentFilter.AdditionalFilterValue;
+                addnlFilterOperator = currentFilter.AdditionalFilterOperator.GetString();
+
+                if (addnlFilterValue.HasValue())
                 {
-                    filterLogic = currentFilter.FilterLogic.GetString();
-                    string jsFilterBase = $"grid.dataSource.filter({{ logic: '{filterLogic}', filters: [";
-
-                    filterValue = currentFilter.FilterValue;
-                    columnName = currentFilter.ColumnName;
-                    filterOperator = currentFilter.FilterOperator.GetString();
-                    filterScript = $"{jsFilterBase}{{ field: '{columnName}', operator: '{filterOperator}', value: '{filterValue}' }}";
-
-                    addnlFilterValue = currentFilter.AdditionalFilterValue;
-                    addnlFilterOperator = currentFilter.AdditionalFilterOperator.GetString();
-
-                    filterScript = addnlFilterValue == null
-                        ? filterScript 
-                        : $"{filterScript},{{ field: '{columnName}', operator: '{addnlFilterOperator}', value: '{addnlFilterValue}' }}";
+                    filterScript = $"{filterScript},{{ field: '{columnName}', operator: '{addnlFilterOperator}', value: '{addnlFilterValue}' }}";
                 }
-
-                StringBuilder sb = new StringBuilder();
-
-                string gridRef = GetGridReference(tableType);
-
-                sb.Append($"{gridRef}{filterScript}] }});");
-                ExecuteJsScript(sb.ToString());
-
-                string addnlFilterLogMsg = addnlFilterValue == null
-                    ? string.Empty
-                    : $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}";
-
-                Report.Step($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilterLogMsg}");
             }
-            catch (Exception e)
+
+            StringBuilder sb = new StringBuilder();
+
+            string gridRef = GetGridReference(tableType);
+
+            sb.Append($"{gridRef}{filterScript}] }});");
+            ExecuteJsScript(sb.ToString());
+
+            if (addnlFilterValue.HasValue())
             {
-                log.Error(e.StackTrace);
-                throw;
+                addnlFilterLogMsg = $", Additional Filter - (Logic):{filterLogic}, (Operator):{addnlFilterOperator}, (Value):{addnlFilterValue}";
             }
+
+            Report.Step($"Filtered: (Column):{columnName}, (Operator):{filterOperator}, (Value):{filterValue} {addnlFilterLogMsg}");
         }
 
         public int GetCurrentPageNumber(TableType tableType = TableType.Unknown)
@@ -255,8 +227,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
-                throw;
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return pageNumber;

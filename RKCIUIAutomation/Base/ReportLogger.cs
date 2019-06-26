@@ -157,6 +157,10 @@ namespace RKCIUIAutomation.Base
             {
                 testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Yellow));
             }
+            else if (details.Contains("TOTAL TEST TIME:"))
+            {
+                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+            }
             else
             {
                 testInstance.Info(details);
@@ -260,9 +264,10 @@ namespace RKCIUIAutomation.Base
             {
                 //log.Debug(ce.Message);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Error($"{e.Message}\n{e.StackTrace}");
+                //log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 
