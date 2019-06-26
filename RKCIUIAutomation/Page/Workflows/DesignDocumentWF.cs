@@ -558,7 +558,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
             WaitForPageReady();
-            Thread.Sleep(10000); //workaround for delay after SaveForward from previous step
+            //Thread.Sleep(10000); //workaround for delay after SaveForward from previous step
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
@@ -573,7 +573,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void EnterClosingCommentAndCode()
         {
             WaitForPageReady();
-            Thread.Sleep(10000); //workaround for delay after SaveForward from previous step
+            //Thread.Sleep(10000); //workaround for delay after SaveForward from previous step
             DesignDocCommentReview.ClickTab_Requires_Closing();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();

@@ -113,29 +113,18 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         internal static string[] testRunDetails;
 
-        //[ThreadStatic]
-        //internal static Cookie cookie = null;
-
-        public static void AddCookieToCurrentPage(string zaleniumCookieName, string cookieValue)
-        {
-            try
-            {
-                Cookie cookie = new Cookie(zaleniumCookieName, cookieValue);
-                driver.Manage().Cookies.AddCookie(cookie);
-            }
-            catch (UnableToSetCookieException ce)
-            {
-                log.Debug(ce.Message);
-            }
-            catch (Exception e)
-            {
-                log.Error($"{e.Message}\n{e.StackTrace}");
-                throw;
-            }
-        }
+        [ThreadStatic]
+        internal static Cookie cookie = null;
 
         [ThreadStatic]
         internal static string testDetails;
+
+        public static void AddCookieToCurrentPage(string zaleniumCookieName, string cookieValue)
+        {
+            cookie = new Cookie(zaleniumCookieName, cookieValue);
+            driver.Manage().Cookies.AddCookie(cookie);
+        }
+
 
         #endregion TestCase Details
 
@@ -207,9 +196,9 @@ namespace RKCIUIAutomation.Base
                     SkipTest(testComponent1, testRunDetails);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Error($"{e.Message}\n{e.StackTrace}");
+                //log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
             finally
@@ -217,15 +206,19 @@ namespace RKCIUIAutomation.Base
                 try
                 {
                     driver = Driver;
-                    AddCookieToCurrentPage("zaleniumMessage", testDetails);
+
+                    if (cookie != null)
+                    {
+                        AddCookieToCurrentPage("zaleniumMessage", testDetails);
+                    }
                 }
                 catch (UnhandledAlertException ae)
                 {
                     log.Debug(ae.Message);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    log.Error($"{e.Message}\n{e.StackTrace}");
+                    //log.Error($"{e.Message}\n{e.StackTrace}");
                     throw;
                 }
             }
@@ -249,9 +242,8 @@ namespace RKCIUIAutomation.Base
                 StaticHelpers.InjectTestStatus(TestStatus.Skipped, msg);
                 Assert.Ignore(msg);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Debug(e.StackTrace);
                 throw;
             }
         }

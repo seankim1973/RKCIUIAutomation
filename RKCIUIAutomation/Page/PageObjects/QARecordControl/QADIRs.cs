@@ -846,7 +846,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 string previousFailedDirTblXPath = $"//div[@id='PreviousFailedReportListGrid0']";
                 By previousDirTblDataLocator = By.XPath($"{previousFailedDirTblXPath}//tbody/tr/td[text()='{previousDirNumber}']");
                 PageAction.ScrollToElement(By.XPath($"{previousFailedDirTblXPath}/ancestor::div[@id='border']/following-sibling::div[1]"));
-                isDisplayed = PageAction.CheckIfElementIsDisplayed(previousDirTblDataLocator);
+                isDisplayed = PageAction.ElementIsDisplayed(previousDirTblDataLocator);
                 logMsg = isDisplayed ? "displayed" : "did not display";
             }
             catch (Exception e)
@@ -1449,7 +1449,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             if (recordIsDisplayed)
             {
-                recreateBtnIsDisplayed = PageAction.CheckIfElementIsDisplayed(GridHelper.GetTableBtnLocator(TableButton.Recreate_Package, 1, true, false));
+                recreateBtnIsDisplayed = PageAction.ElementIsDisplayed(GridHelper.GetTableBtnLocator(TableButton.Recreate_Package, 1, true, false));
                 btnIsDisplayedMsg = recreateBtnIsDisplayed
                     ? ""
                     : " NOT";

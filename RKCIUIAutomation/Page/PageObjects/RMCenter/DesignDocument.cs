@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.DesignDocument;
 using static RKCIUIAutomation.Page.Workflows.DesignDocumentWF;
@@ -612,6 +613,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 foreach (CommentFieldType commentField in commentEntryFieldsList)
                 {
                     string actualValue = GetGridCommentResponseColumnValue(commentField);
+
                     if (actualValue.Contains(":"))
                     {
                         var splitActualValue = Regex.Split(actualValue, ":");
@@ -743,7 +745,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             var fieldValuePair = new KeyValuePair<CommentFieldType, string>(commentField, inputValue);
             commentEntryFieldKVPairsList.Add(fieldValuePair);
-            log.Debug($"UPDATE COMMENT KVPList : KEY[{commentField}] - VALUE[{inputValue}]");
         }
 
         internal void PopulateFieldAndUpdateCommentFieldKVPairList<T>(CommentFieldType commentField, T inputTextORselectionIndex, int commentTabNumber = 1, bool useContainsOperator = false, bool updateKVPair = true)
@@ -828,13 +829,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                 }
                             }
                         }
-
+                        
+                        //TEXT entry field types update KVPair List within the EnterCommentResponse() method using UpdateCommentFieldKVPairList() method
                         if (updateKVPair)
                         {
-                            //TEXT entry field types update KVPair List within the EnterCommentResponse() method using UpdateCommentFieldKVPairList() method
                             fieldValuePair = new KeyValuePair<CommentFieldType, string>(commentField, fieldValue);
                             commentEntryFieldKVPairsList.Add(fieldValuePair);
-                            log.Debug($"ADDED COMMENT KVPList : KEY[{commentField}] - VALUE[{fieldValue}]");
                         }
                     }
                 }
@@ -1144,7 +1144,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         private bool VerifyRequiredFieldErrorMsg(string errorMsg)
-            => PageAction.CheckIfElementIsDisplayed(By.XPath($"//li[text()='{errorMsg}']"));
+            => PageAction.ElementIsDisplayed(By.XPath($"//li[text()='{errorMsg}']"));
 
         public override bool VerifyTitleFieldErrorMsgIsDisplayed()
             => VerifyRequiredFieldErrorMsg("Submittal Title is required.");
@@ -1212,15 +1212,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             {
                 do
                 {
+                    Thread.Sleep(5000);
+
                     if (i == 30)
                     {
-                        ElementNotVisibleException e = new ElementNotVisibleException();
-                        log.Error($"Comment tab is not visible: {e.Message}");
-                        throw e;
+                        Report.Error($"Comment tab is not visible");
+                        throw new ElementNotVisibleException();
                     }
                     else
                     {
-                        activeTabNotDisplayed = PageAction.CheckIfElementIsDisplayed(By.XPath("//div[@class='k-content k-state-active']"));
+                        activeTabNotDisplayed = PageAction.ElementIsDisplayed(By.XPath("//div[@class='k-content k-state-active']"))
+                            ? false
+                            : true;
                     }
                 }
                 while (activeTabNotDisplayed);
@@ -1228,9 +1231,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         public override void ClickCommentTabNumber(int commentTabNumber)
-        {
-            WaitForActiveCommentTab();
+        {           
             GridHelper.ClickCommentTab(commentTabNumber);
+            WaitForActiveCommentTab();
         }
 
         public override string GetCurrentReviewerType()
@@ -1252,16 +1255,31 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override string GetActiveCommentTabGroupName()
         {
-            By activeCommentTabGroupName = By.XPath($"{ActiveContentXPath}//strong[text()='Group:']");
-            string groupName = GetText(activeCommentTabGroupName);
+            string groupName = string.Empty;
+            By activeCommentTabGroupName = By.XPath($"//li[contains(@class,'k-state-active')]/span[@class='k-link']");
 
-            if (groupName.Equals("Iqf") || groupName.Equals("IQF"))
+            try
             {
-                groupName = "IQF";
+                WaitForActiveCommentTab();
+                groupName = GetText(activeCommentTabGroupName);
+
+                string[] grpNameSplit = new string[] { };
+                grpNameSplit = (Regex.Split(groupName, "("));
+                groupName = grpNameSplit[1].TrimEnd(')');
+
+
+                if (groupName.Equals("Iqf") || groupName.Equals("IQF"))
+                {
+                    groupName = "IQF";
+                }
+                else if (groupName.Equals("Dot") || groupName.Equals("DOT"))
+                {
+                    groupName = "DOT";
+                }
             }
-            else if (groupName.Equals("Dot") || groupName.Equals("DOT"))
+            catch (Exception)
             {
-                groupName = "DOT";
+                throw;
             }
 
             return groupName;

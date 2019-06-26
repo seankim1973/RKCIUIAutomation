@@ -260,9 +260,10 @@ namespace RKCIUIAutomation.Base
             {
                 //log.Debug(ce.Message);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Error($"{e.Message}\n{e.StackTrace}");
+                //log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 

@@ -41,20 +41,9 @@ namespace RKCIUIAutomation.Page
         public override void ExecuteJsAction(JSAction jsAction, By elementByLocator)
         {
             IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
-
-            try
-            {
-                string javaScript = jsAction.GetString();
-                IWebElement element = GetElement(elementByLocator);
-                executor.ExecuteScript(javaScript, element);
-
-                log.Info($"{jsAction.ToString()}ed on javascript element: - {elementByLocator}");
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-                throw;
-            }
+            string javaScript = jsAction.GetString();
+            IWebElement element = GetElement(elementByLocator);
+            executor.ExecuteScript(javaScript, element);
         }
 
         public override string JsGetPageTitle(string windowHandle = "")
@@ -84,15 +73,14 @@ namespace RKCIUIAutomation.Page
             {
                 ScrollToElement(elementByLocator);
                 ExecuteJsAction(JSAction.Click, elementByLocator);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-                throw;
-            }
-            finally
-            {
+                Report.Step($"Clicked {elementByLocator}");
                 WaitForPageReady();
+            }
+            catch (UnableToSetCookieException)
+            { }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -295,16 +283,21 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                WaitForElement(elementByLocator);
                 elem = driver.FindElement(elementByLocator);
             }
             catch (NoSuchElementException)
             {
-                throw;
+                try
+                {
+                    WaitForElement(elementByLocator);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -317,14 +310,21 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                WaitForElement(elementByLocator);
                 elements = new List<IWebElement>();
                 elements = driver.FindElements(elementByLocator);
-                log.Info($"Getting list of WebElements: {elementByLocator}");
             }
             catch (NoSuchElementException)
             {
-                throw;
+                try
+                {
+                    WaitForElement(elementByLocator);
+                    elements = new List<IWebElement>();
+                    elements = driver.FindElements(elementByLocator);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
             catch (Exception e)
             {
@@ -712,7 +712,7 @@ namespace RKCIUIAutomation.Page
                 log.Info($"Entered {filePath}' for file upload");
 
                 By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
-                bool uploadStatus = CheckIfElementIsDisplayed(uploadStatusLabel);
+                bool uploadStatus = ElementIsDisplayed(uploadStatusLabel);
 
                 Report.Info($"File Upload {(uploadStatus ? "Successful" : "Failed")}.", uploadStatus);
             }
@@ -1016,7 +1016,7 @@ namespace RKCIUIAutomation.Page
             return isDisplayed;
         }
 
-        public override bool CheckIfElementIsDisplayed(By elementByLocator)
+        public override bool ElementIsDisplayed(By elementByLocator)
         {
             bool isDisplayed = false;
 
@@ -1644,16 +1644,10 @@ namespace RKCIUIAutomation.Page
                     Actions actions = new Actions(driver);
                     actions.MoveToElement(elem);
                     actions.Perform();
-                    log.Info($"Scrolled to element - {elementOrLocator}");
                 }
             }
-            catch (NoSuchElementException)
+            catch (Exception)
             {
-                throw;
-            }
-            catch (Exception e)
-            {
-                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -1662,6 +1656,9 @@ namespace RKCIUIAutomation.Page
 
         readonly By logInLinkLocator = By.XPath("//header//a[contains(text(),'Login')]");
         readonly By logOutLinkLocator = By.XPath("//header//a[contains(text(),'Log out')]");
+
+        public override void LoginAs(UserType user)
+            => LoginPage.LoginUser(user);
 
         public override void LogoutToLoginPage()
         {
@@ -1682,7 +1679,7 @@ namespace RKCIUIAutomation.Page
             do
             {
                 JsClickElement(logOutLinkLocator);
-                loggedOutSuccessfully = CheckIfElementIsDisplayed(logInLinkLocator);
+                loggedOutSuccessfully = ElementIsDisplayed(logInLinkLocator);
             }
             while (!loggedOutSuccessfully);
         }
@@ -1759,7 +1756,7 @@ namespace RKCIUIAutomation.Page
         public abstract void CloseActiveModalWindow();
         public abstract void ConfirmActionDialog(bool confirmYes = true);
         public abstract string DismissAlertMessage();
-        public abstract bool CheckIfElementIsDisplayed(By elementByLocator);
+        public abstract bool ElementIsDisplayed(By elementByLocator);
         public abstract void EnterSignature();
         public abstract void EnterText(By elementByLocator, string text, bool clearField = true);
         public abstract void ExecuteJsAction(JSAction jsAction, By elementByLocator);
@@ -1782,6 +1779,7 @@ namespace RKCIUIAutomation.Page
         public abstract void JsClickElement(By elementByLocator);
         public abstract string JsGetPageTitle(string windowHandle = "");
         public abstract void JsHover(By elementByLocator);
+        public abstract void LoginAs(UserType user);
         public abstract void LogoutToLoginPage();
         public abstract void RefreshWebPage();
         public abstract IWebElement ScrollToElement<T>(T elementOrLocator);

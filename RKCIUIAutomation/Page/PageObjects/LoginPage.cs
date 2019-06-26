@@ -72,27 +72,13 @@ namespace RKCIUIAutomation.Page.PageObjects
 
             try
             {
-                try
-                {
-                    elem = driver.FindElement(By.XPath("//a[contains(text(), 'Login')]"));
-                }
-                catch (NoSuchElementException)
-                {
-                    throw;
-                }
+                elem = GetElement(By.XPath("//a[contains(text(), 'Login')]"));
             }
             catch (NoSuchElementException)
             {
-                try
-                {
-                    elem = driver.FindElement(By.XPath("//a[contains(text(), 'Log out')]"));
-                    log.Debug($"Already logged in as {GetCurrentUser()}");
-                    isAlreadyLoggedIn = true;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                elem = GetElement(By.XPath("//a[contains(text(), 'Log out')]"));
+                log.Debug($"Already logged in as {GetCurrentUser()}");
+                isAlreadyLoggedIn = true;
             }
             catch (Exception e)
             {

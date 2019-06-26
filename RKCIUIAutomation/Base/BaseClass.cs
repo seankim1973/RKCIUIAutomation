@@ -26,7 +26,7 @@ namespace RKCIUIAutomation.Base
         readonly TestPlatform defaultTestPlatform = TestPlatform.GridLocal;
         readonly BrowserType defaultBrowserType = BrowserType.Chrome;
         readonly TestEnv defaultTestEnvironment = TestEnv.Staging;         
-        readonly TenantName defaultTenantName = TenantName.LAX;
+        readonly TenantName defaultTenantName = TenantName.SGWay;
         readonly Reporter defaultReporter = Reporter.Klov;
         readonly string defaultGridAddress = "";
         readonly bool enableHipTest = false;
@@ -161,7 +161,10 @@ namespace RKCIUIAutomation.Base
                     {
                         reportInstance.Flush();
 
-                        AddCookieToCurrentPage("zaleniumTestPassed", zaleniumTestStatusCookieValue);
+                        if (cookie != null)
+                        {
+                            AddCookieToCurrentPage("zaleniumTestPassed", zaleniumTestStatusCookieValue);
+                        }
 
                         if (!driver.Title.Equals("Home Page"))
                         {
@@ -182,7 +185,6 @@ namespace RKCIUIAutomation.Base
                 catch (Exception e)
                 {
                     log.Error($"{e.Message}\n{e.StackTrace}");
-                    throw;
                 }               
             }
         }
@@ -205,7 +207,6 @@ namespace RKCIUIAutomation.Base
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
-                throw;
             }
         }
     }

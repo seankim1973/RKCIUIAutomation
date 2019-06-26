@@ -42,7 +42,7 @@ namespace RKCIUIAutomation.Base
         public static ITableHelper GridHelper => new TableHelper(driver);
 
         //PageObject Classes
-        public static void LoginAs(UserType user) => LoginPage.LoginUser(user);
+        //public static void LoginAs(UserType user) => LoginPage.LoginUser(user);
 
         public static ITestDetails TestDetailsPg => new TestDetails().SetClass<ITestDetails>(driver);
 
