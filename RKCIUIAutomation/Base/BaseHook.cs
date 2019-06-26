@@ -8,6 +8,7 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -118,6 +119,9 @@ namespace RKCIUIAutomation.Base
 
         [ThreadStatic]
         internal static string testDetails;
+
+        [ThreadStatic]
+        internal Stopwatch TestStopwatch;
 
         public static void AddCookieToCurrentPage(string zaleniumCookieName, string cookieValue)
         {
@@ -278,5 +282,6 @@ namespace RKCIUIAutomation.Base
             log.Info($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");
             log.Info($"################################################################\n");
         }
+
     }
 }

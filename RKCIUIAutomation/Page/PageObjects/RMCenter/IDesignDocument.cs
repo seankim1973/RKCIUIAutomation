@@ -105,7 +105,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         void VerifyItemStatusIsClosed(ReviewType reviewType);
         bool VerifyTitleFieldErrorMsgIsDisplayed();
         bool VerifyUploadFileErrorMsgIsDisplayed();
-        void WaitForActiveCommentTab();
+        void WaitForActiveCommentContentLoadToComplete();
         void Workflow_EnterResolutionCommentAndResolutionCodeforDisagreeResponse();
         void Workflow_ForwardResolutionCommentAndCodeForDisagreeResponse();
     }

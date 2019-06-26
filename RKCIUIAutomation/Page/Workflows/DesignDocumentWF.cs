@@ -243,7 +243,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.FilterDocNumber(docNumber);
             GridHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.VerifyDesignDocDetailsHeader();
-            DesignDocCommentReview.WaitForActiveCommentTab();
+            DesignDocCommentReview.WaitForActiveCommentContentLoadToComplete();
         }
 
         //Garnet and GLX
@@ -267,7 +267,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LogIntoDesignDocumentsPage(workflowType);
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_SaveForward();
-            DesignDocCommentReview.WaitForActiveCommentTab();
+            DesignDocCommentReview.WaitForActiveCommentContentLoadToComplete();
             WaitForPageReady();
         }
 

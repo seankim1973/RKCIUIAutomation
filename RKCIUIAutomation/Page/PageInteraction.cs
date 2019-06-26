@@ -121,22 +121,10 @@ namespace RKCIUIAutomation.Page
 
         public override void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500)
         {
-            try
-            {
-                WaitForPageReady();
-                WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-                wait.Until(x => driver.FindElement(elementByLocator));
-                log.Debug($"...waiting for element: - {elementByLocator}");
-            }
-            //catch (NoSuchElementException)
-            //{
-            //    throw;
-            //}
-            catch (Exception e)
-            {
-                log.Error($"WaitForElement - {elementByLocator} : {e.Message}");
-                throw;
-            }
+            WaitForPageReady();
+            WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+            wait.Until(x => driver.FindElement(elementByLocator));
+            log.Debug($"...waiting for element: - {elementByLocator}");
         }
 
         public override void WaitForElementToClear(By elementByLocator)
@@ -287,14 +275,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (NoSuchElementException)
             {
-                try
-                {
-                    WaitForElement(elementByLocator);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                WaitForElement(elementByLocator);
             }
             catch (Exception)
             {
@@ -1018,26 +999,20 @@ namespace RKCIUIAutomation.Page
 
         public override bool ElementIsDisplayed(By elementByLocator)
         {
-            bool isDisplayed = false;
-
             try
             {
-                if ((bool)GetElement(elementByLocator)?.Displayed)
-                {
-                    isDisplayed = true;
-                }
+                GetElement(elementByLocator);
+                return true;
             }
-            catch (NoSuchElementException nse)
+            catch (NoSuchElementException)
             {
-                log.Debug(nse.Message);
+                return false;
             }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
-
-            return isDisplayed;
         }
 
         public override bool VerifyPageHeader(string expectedPageHeading)

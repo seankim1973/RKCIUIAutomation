@@ -157,6 +157,10 @@ namespace RKCIUIAutomation.Base
             {
                 testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Yellow));
             }
+            else if (details.Contains("TOTAL TEST TIME:"))
+            {
+                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+            }
             else
             {
                 testInstance.Info(details);
