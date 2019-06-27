@@ -1692,12 +1692,18 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickTab_Closed();
             TestUtility.AddAssertionToList(GridHelper.VerifyRecordIsDisplayed(ColumnName.Number, designDocNumber), $"VerifyItemStatusIsClosed");
             GridHelper.ClickEnterBtnForRow();
+            VerifyCommentFieldValues(reviewType);
 
             int totalCommentTabsCount = GetElementsCount(By.XPath("//ul[@class='k-reset k-tabstrip-items']/li"));
-            for (int i = 0; i > totalCommentTabsCount; i++)
+            Console.WriteLine($"TAB COUNT: {totalCommentTabsCount}");
+            if (totalCommentTabsCount > 1)
             {
-                ClickCommentTabNumber(i + 1);
-                VerifyCommentFieldValues(reviewType);
+                for (int i = 0 ; i < totalCommentTabsCount; i++)
+                {
+                    int tabNumber = i + 2;
+                    ClickCommentTabNumber(tabNumber);
+                    VerifyCommentFieldValues(reviewType);
+                }
             }
         }
     }
