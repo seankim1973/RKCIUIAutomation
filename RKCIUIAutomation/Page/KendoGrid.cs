@@ -27,7 +27,7 @@ namespace RKCIUIAutomation.Page
             string tabSelect = $"tab.select('{commentTabIndex.ToString()}');";
             jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
             ExecuteJsScript(jsToBeExecuted);
-            Report.Step($"Clicked Comment {commentNumber} tab : {tabSelect}");
+            Report.Step($"Clicked Tab 'Comment {commentTabIndex}' - JS: {tabSelect}");
         }
 
         public void ClickTableTab(string tblTabName)

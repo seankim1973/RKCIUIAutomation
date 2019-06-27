@@ -1008,11 +1008,6 @@ namespace RKCIUIAutomation.Page
             {
                 return false;
             }
-            catch (Exception e)
-            {
-                log.Error($"{e.Message}\n{e.StackTrace}");
-                throw;
-            }
         }
 
         public override bool VerifyPageHeader(string expectedPageHeading)
