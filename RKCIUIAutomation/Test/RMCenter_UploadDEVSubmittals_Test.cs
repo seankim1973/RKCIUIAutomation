@@ -1,8 +1,4 @@
 ﻿using NUnit.Framework;
-using RKCIUIAutomation.Base;
-using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page.PageObjects.RMCenter;
-using static RKCIUIAutomation.Config.ProjectProperties;
 
 namespace RKCIUIAutomation.Test.UploadSubmittals
 {
