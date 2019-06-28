@@ -58,18 +58,6 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        private void ExecuteJsScript(string jsToBeExecuted)
-        {
-            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
-            executor.ExecuteScript(jsToBeExecuted);
-        }
-
-        private object ExecuteJsScriptGet(string jsToBeExecuted)
-        {
-            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
-            return executor.ExecuteScript(jsToBeExecuted);
-        }
-
         private int GetElementIndex(By findElementsLocator, string matchValue)
         {
             int index = -1;

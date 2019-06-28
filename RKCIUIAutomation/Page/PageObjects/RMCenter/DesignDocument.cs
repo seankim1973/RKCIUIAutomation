@@ -653,6 +653,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void ClickCommentTabNumber(int commentTabNumber)
         {
+            PageAction.ScrollCommentTabInToView();
             GridHelper.ClickCommentTab(commentTabNumber);
             WaitForActiveCommentContentLoadToComplete();
         }
@@ -1022,7 +1023,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.Discipline_InTable, selectionIndex);
 
         public override void SelectDDL_Reviewer<T>(T selectionIndexOrReviewerName, bool useContainsOperator)
-                    => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.Reviewer_InTable, selectionIndexOrReviewerName, 1, useContainsOperator);
+            => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.Reviewer_InTable, selectionIndexOrReviewerName, useContainsOperator: useContainsOperator);
 
         public override void SelectDDL_ReviewType(int selectionIndex)
                     => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ReviewType_InTable, selectionIndex);
@@ -1277,36 +1278,40 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void WaitForActiveCommentContentLoadToComplete()
         {
+            string errMsg(int interval) => $"Comment tab did not load after {interval * 10} seconds.";
             By activeCommentTabContentLoadCompleteXPath = By.XPath("//ul[@class='k-reset k-tabstrip-items']/li[contains(@class,'k-state-active')]/span[contains(@class,'k-complete')]");
             bool activeContentNotDisplayed = true;
-            WaitForPageReady();
 
-            try
+            for (int i = 0; i < 30; i++)
             {
-                for (int i = 0; i < 30; i++)
+                do
                 {
-                    do
+                    if (i == 30)
                     {
-                        if (i == 30)
-                        {
-                            Report.Error($"Comment tab is not visible");
-                            throw new ElementNotVisibleException();
-                        }
-                        else
+                        Report.Error(errMsg(i));
+                        throw new ElementNotVisibleException(errMsg(i));
+                    }
+                    else
+                    {
+                        try
                         {
                             if (PageAction.ElementIsDisplayed(activeCommentTabContentLoadCompleteXPath))
                             {
                                 activeContentNotDisplayed = false;
                             }
                         }
+                        catch (NoSuchElementException)
+                        {
+                            if (i > 5)
+                            {
+                                log.Debug(errMsg(i));
+                            }
+
+                            continue;
+                        }
                     }
-                    while (activeContentNotDisplayed);
                 }
-            }
-            catch (Exception e)
-            {
-                log.Error($"{e.Message}\n{e.StackTrace}");
-                throw;
+                while (activeContentNotDisplayed);
             }
         }
 
@@ -1672,9 +1677,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickBtn_SaveOnly();
             int commentTabNumber = 2;
             ClickCommentTabNumber(commentTabNumber);
-            //OnlyUpdateCommentFieldKVPairList(CommentFieldType.ReviewType, commentTabNumber);
-            //OnlyUpdateCommentFieldKVPairList(CommentFieldType.Reviewer, commentTabNumber);
-            //OnlyUpdateCommentFieldKVPairList(CommentFieldType.ReviewedDate, commentTabNumber);
             EnterCommentResponse(CommentFieldType.CommentResponseInput, commentTabNumber);
             SelectAgreeResponseCode(commentTabNumber);
             ClickBtn_SaveOnly();
@@ -1687,9 +1689,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             ClickBtn_SaveOnly();
             int commentTabNumber = 2;
             ClickCommentTabNumber(commentTabNumber);
-            //OnlyUpdateCommentFieldKVPairList(CommentFieldType.ReviewType, commentTabNumber);
-            //OnlyUpdateCommentFieldKVPairList(CommentFieldType.Reviewer, commentTabNumber);
-            //OnlyUpdateCommentFieldKVPairList(CommentFieldType.ReviewedDate, commentTabNumber);
             EnterCommentResponse(CommentFieldType.CommentResponseInput, commentTabNumber);
             SelectDisagreeResponseCode(commentTabNumber);
             ClickBtn_SaveOnly();
@@ -1739,8 +1738,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             return designDocDetailsHeadersList;
         }
+
         public override string GetHeaderValue(DesignDocHeaderType docHeader)
             => PageAction.GetText(By.XPath($"//label[contains(text(),'{docHeader.GetString()}')]/parent::div/following-sibling::div[1]"));
+
         public override void VerifyItemStatusIsClosed(ReviewType reviewType)
         {
             ClickTab_Closed();
@@ -1759,6 +1760,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     VerifyCommentFieldValues(reviewType);
                 }
             }
+
+            PageAction.ScrollCommentTabInToView();
         }
 
         public override void Workflow_EnterResolutionCommentAndResolutionCodeforDisagreeResponse()
@@ -1820,6 +1823,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             PageAction.WaitForPageReady();
             ClickBtn_AddComment();
+            SelectDDL_Reviewer(PageAction.GetCurrentUser(true), true);
             SelectNoCommentReviewType();
             ClickBtn_Update();
         }
@@ -1895,6 +1899,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             return designDocDetailsHeadersList;
         }
+
         public override void SelectAgreeResolutionCode(int selectionIndex = 1)
         => PopulateFieldAndUpdateCommentFieldKVPairList(CommentFieldType.ResolutionStamp_InTable, selectionIndex);
 
