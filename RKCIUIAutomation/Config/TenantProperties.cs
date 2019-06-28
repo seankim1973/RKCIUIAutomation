@@ -1,9 +1,6 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Base;
-using RKCIUIAutomation.Page;
-using System;
 using System.Collections.Generic;
-using static RKCIUIAutomation.Base.WebDriverFactory;
 
 namespace RKCIUIAutomation.Config
 {
@@ -93,6 +90,7 @@ namespace RKCIUIAutomation.Config
             //Tenant Specific Components
             public const string Garnet = "Garnet";
             public const string GLX = "GLX";
+            public const string I15North = "I15North";
             public const string I15South = "I15South";
             public const string I15Tech = "I15Tech";
             public const string LAX = "LAX";
@@ -113,6 +111,10 @@ namespace RKCIUIAutomation.Config
 
                 case TenantName.GLX:
                     instance = new ProjectProperties_GLX();
+                    break;
+
+                case TenantName.I15North:
+                    instance = new ProjectProperties_I15NB();
                     break;
 
                 case TenantName.I15South:
@@ -202,6 +204,26 @@ namespace RKCIUIAutomation.Config
                 Component.DesignDoc_CommentReview,
                 Component.CommentReview_NoComment,
                 Component.CommentReview_RegularComment
+            };
+        }
+    }
+
+    public class ProjectProperties_I15NB : TenantProperties, ITenantProperties
+    {
+        public ProjectProperties_I15NB()
+        {
+            TenantComponents = new List<string>
+            {
+                Component.I15North,
+                Component.CDR,
+                Component.CDR_WF_Complex,
+                Component.OV_Test,
+                Component.QAField,
+                Component.NCR,
+                Component.NCR_WF_Complex,
+                Component.DIR,
+                Component.DIR_WF_Simple_QA,
+                Component.Control_Point
             };
         }
     }
