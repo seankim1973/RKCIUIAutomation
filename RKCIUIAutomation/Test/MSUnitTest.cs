@@ -121,7 +121,7 @@ namespace RKCIUIAutomation.Sandbox
         //[TestMethod]
         public void MSUnitTest2()
         {
-            IProjectProperties props = new ProjectProperties();
+            ITenantProperties props = new TenantProperties();
             List<string> components = props.TenantComponents;
             int componentCount = components.Count;
 
@@ -133,7 +133,7 @@ namespace RKCIUIAutomation.Sandbox
             }
 
             Assert.IsTrue(componentCount.Equals(4));
-            Assert.IsFalse(components.Contains(ProjectProperties.Component.DIR));
+            Assert.IsFalse(components.Contains(TenantProperties.Component.DIR));
         }
 
         //[TestMethod]

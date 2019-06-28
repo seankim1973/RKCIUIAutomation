@@ -65,42 +65,21 @@ namespace RKCIUIAutomation.Page.PageObjects
         internal readonly By chkbx_RememberMe = By.Name("RememberMe");
         internal readonly By btn_Login = By.XPath("//input[@type='submit']");
 
-        public override bool AlreadyLoggedIn()
+        public override bool LogOutLinkIsDisplayed()
         {
-            bool isAlreadyLoggedIn = false;
-            IWebElement elem = null;
-
             try
             {
-                try
-                {
-                    elem = driver.FindElement(By.XPath("//a[contains(text(), 'Login')]"));
-                }
-                catch (NoSuchElementException)
-                {
-                    throw;
-                }
+                IWebElement elem = GetElement(By.XPath("//a[contains(text(), 'Log out')]"));
+                return true;
             }
             catch (NoSuchElementException)
             {
-                try
-                {
-                    elem = driver.FindElement(By.XPath("//a[contains(text(), 'Log out')]"));
-                    log.Debug($"Already logged in as {GetCurrentUser()}");
-                    isAlreadyLoggedIn = true;
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                return false;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
-
-            return isAlreadyLoggedIn;
         }
 
         public override void LoginUser(UserType userType)
@@ -108,65 +87,47 @@ namespace RKCIUIAutomation.Page.PageObjects
             try
             {
                 PageAction.WaitForPageReady(60, 10000, false);
-                bool alreadyLoggedIn = AlreadyLoggedIn();
+                pageTitle = PageAction.GetPageTitle();
 
-                if (!alreadyLoggedIn)
+                if (pageTitle.Contains("Log in"))
                 {
-                    pageTitle = PageAction.GetPageTitle();
+                    PageAction.VerifyPageIsLoaded(true, false);
 
-                    if (pageTitle.Contains("Log in"))
-                    {
-                        PageAction.VerifyPageIsLoaded(true, false);
+                    string credential = string.Empty;
+                    string[] userAcct = ConfigUtil.GetUserCredentials(userType);
 
-                        string credential = string.Empty;
-                        string[] userAcct = ConfigUtil.GetUserCredentials(userType);
-
-                        IList<By> loginFields = new List<By>
+                    IList<By> loginFields = new List<By>
                         {
                             field_Email,
                             field_Password
                         };
 
-                        foreach (By field in loginFields)
+                    foreach (By field in loginFields)
+                    {
+                        log.Info($"...waiting for element {field}");
+                        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2))
                         {
-                            log.Info($"...waiting for element {field}");
-                            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2))
-                            {
-                                PollingInterval = TimeSpan.FromMilliseconds(250)
-                            };
-                            wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
-                            wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
-                            IWebElement webElem = wait.Until(x => x.FindElement(field));
+                            PollingInterval = TimeSpan.FromMilliseconds(250)
+                        };
+                        wait.IgnoreExceptionTypes(typeof(NoSuchElementException));
+                        wait.IgnoreExceptionTypes(typeof(ElementNotVisibleException));
+                        IWebElement webElem = wait.Until(x => x.FindElement(field));
 
-                            if (field == field_Email)
-                            {
-                                credential = userAcct[0];
-                                Report.Step($"Using account : {credential}");
-                            }
-                            else
-                            {
-                                credential = ConfigUtil.GetDecryptedPW(userAcct[1]);
-                            }
-
-                            webElem.SendKeys(credential);
+                        if (field == field_Email)
+                        {
+                            credential = userAcct[0];
+                            Report.Step($"Using account : {credential}");
                         }
-                                                
-                        PageAction.ClickElement(btn_Login);
+                        else
+                        {
+                            credential = ConfigUtil.GetDecryptedPW(userAcct[1]);
+                        }
+
+                        webElem.SendKeys(credential);
                     }
-                }
-                else
-                {
-                    Report.Step("Already Logged In");
-                }
-            }
-            catch (Exception e)
-            {
-                log.Error($"{e.Message}\n{e.StackTrace}");
-            }
-            finally
-            {
-                try
-                {
+
+                    PageAction.ClickElement(btn_Login);
+
                     pageTitle = PageAction.GetPageTitle();
 
                     if (pageTitle.Contains("Log in"))
@@ -177,7 +138,7 @@ namespace RKCIUIAutomation.Page.PageObjects
 
                         try
                         {
-                            invalidLoginError = PageAction.GetElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
+                            invalidLoginError = driver.FindElement(By.XPath("//div[@class='validation-summary-errors text-danger']/ul/li"));
                         }
                         catch (NoSuchElementException)
                         {
@@ -195,6 +156,7 @@ namespace RKCIUIAutomation.Page.PageObjects
                                 logMsg = "Invalid Login Error is Displayed!!!";
                             }
 
+                            Report.Error(logMsg, true);
                             throw new InvalidOperationException(logMsg);
                         }
                     }
@@ -203,15 +165,14 @@ namespace RKCIUIAutomation.Page.PageObjects
                         ConfigUtil.SetCurrentUserEmail(userType);
                     }
                 }
-                catch (InvalidOperationException ioe)
+                else if (LogOutLinkIsDisplayed())
                 {
-                    Report.Error(ioe.Message, true);
-                    throw;
+                    Report.Step($"Already Logged in as {GetCurrentUser()}");
                 }
-                catch (Exception e)
-                {
-                    log.Error($"ERROR in LoginAs method : {e.StackTrace}");
-                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -226,7 +187,7 @@ namespace RKCIUIAutomation.Page.PageObjects
 
     public interface ILoginPage
     {
-        bool AlreadyLoggedIn();
+        bool LogOutLinkIsDisplayed();
 
         void LoginUser(UserType userType);
 
@@ -239,7 +200,7 @@ namespace RKCIUIAutomation.Page.PageObjects
 
     public abstract class LoginPage_Impl : PageBase, ILoginPage
     {
-        public abstract bool AlreadyLoggedIn();
+        public abstract bool LogOutLinkIsDisplayed();
         public abstract void LoginUser(UserType userType);
         public abstract void ToggleRememberMeChkbox();
     }

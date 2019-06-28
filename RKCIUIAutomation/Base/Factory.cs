@@ -29,7 +29,7 @@ namespace RKCIUIAutomation.Base
 
         public static IConfigUtils ConfigUtil => new ConfigUtils();
 
-        public static IProjectProperties ProjProperty => new ProjectProperties();
+        public static ITenantProperties TenantProperty => new TenantProperties();
 
         public static IPageInteraction PageAction => new PageInteraction(driver);
 
@@ -42,7 +42,7 @@ namespace RKCIUIAutomation.Base
         public static ITableHelper GridHelper => new TableHelper(driver);
 
         //PageObject Classes
-        public static void LoginAs(UserType user) => LoginPage.LoginUser(user);
+        //public static void LoginAs(UserType user) => LoginPage.LoginUser(user);
 
         public static ITestDetails TestDetailsPg => new TestDetails().SetClass<ITestDetails>(driver);
 

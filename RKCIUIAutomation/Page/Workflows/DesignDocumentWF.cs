@@ -235,7 +235,6 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogIntoDesignDocumentsPage(workflowType);
             AddAssertionToList_VerifyPageHeader("Design Document", "CreateCommentReviewDocument");
-            //AddAssertionToList(VerifyPageHeader("Design Document"), "VerifyPageTitle(\"Design Document\")");
             DesignDocCommentReview.CreateDocument();
         }
 
@@ -244,7 +243,7 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.FilterDocNumber(docNumber);
             GridHelper.ClickEnterBtnForRow();
             DesignDocCommentReview.VerifyDesignDocDetailsHeader();
-            DesignDocCommentReview.WaitForActiveCommentTab();
+            DesignDocCommentReview.WaitForActiveCommentContentLoadToComplete();
         }
 
         //Garnet and GLX
@@ -268,7 +267,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LogIntoDesignDocumentsPage(workflowType);
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_SaveForward();
-            DesignDocCommentReview.WaitForActiveCommentTab();
+            DesignDocCommentReview.WaitForActiveCommentContentLoadToComplete();
             WaitForPageReady();
         }
 
@@ -559,7 +558,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void EnterResponseCommentAndDisagreeResponseCode()
         {
             WaitForPageReady();
-            Thread.Sleep(10000); //workaround for delay after SaveForward from previous step
+            //Thread.Sleep(10000); //workaround for delay after SaveForward from previous step
             DesignDocCommentReview.ClickTab_Requires_Resolution();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();
@@ -574,7 +573,7 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void EnterClosingCommentAndCode()
         {
             WaitForPageReady();
-            Thread.Sleep(10000); //workaround for delay after SaveForward from previous step
+            //Thread.Sleep(10000); //workaround for delay after SaveForward from previous step
             DesignDocCommentReview.ClickTab_Requires_Closing();
             FilterTableAndEditDoc();
             DesignDocCommentReview.ClickBtn_CommentsTblRow_Edit();

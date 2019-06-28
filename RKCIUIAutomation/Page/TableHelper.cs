@@ -64,23 +64,8 @@ namespace RKCIUIAutomation.Page
         /// <param name="filterLogic"></param>
         /// <param name="additionalFilterValue"></param>
         /// <param name="additionalFilterOperator"></param>
-        public override void FilterColumn(
-            Enum columnName,
-            string filterValue,
-            TableType tableType = TableType.Unknown,
-            FilterOperator filterOperator = FilterOperator.EqualTo,
-            FilterLogic filterLogic = FilterLogic.And,
-            string additionalFilterValue = null,
-            FilterOperator additionalFilterOperator = FilterOperator.EqualTo
-            ) => Kendo.FilterTableGrid(
-                columnName.GetString(),
-                filterValue,
-                filterOperator,
-                filterLogic,
-                additionalFilterValue,
-                additionalFilterOperator,
-                tableType
-                );
+        public override void FilterColumn(Enum columnName, string filterValue, TableType tableType = TableType.Unknown, FilterOperator filterOperator = FilterOperator.EqualTo, FilterLogic filterLogic = FilterLogic.And, string additionalFilterValue = null, FilterOperator additionalFilterOperator = FilterOperator.EqualTo)
+            => Kendo.FilterTableGrid(columnName.GetString(), filterValue, filterOperator, filterLogic, additionalFilterValue, additionalFilterOperator, tableType);
 
         public override void ClearTableFilters(TableType tableType = TableType.Unknown)
             => Kendo.RemoveFilters(tableType);
@@ -288,6 +273,8 @@ namespace RKCIUIAutomation.Page
                 PageAction.JsClickElement(locator);
                 Report.Step($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
             }
+            catch (UnableToSetCookieException)
+            { }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
@@ -447,14 +434,13 @@ namespace RKCIUIAutomation.Page
             try
             {
                 PageAction.WaitForPageReady();
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-            finally
-            {
                 FilterColumn(columnName, recordNameOrNumber, tableType, filterOperator);
+            }
+            catch (UnableToSetCookieException)
+            { }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -509,7 +495,7 @@ namespace RKCIUIAutomation.Page
 
                 if (noRecordsExpected)
                 {
-                    noRecordsMsgDisplayed = PageAction.CheckIfElementIsDisplayed(noRecordsMsgLocator);
+                    noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
 
                     if (noRecordsMsgDisplayed)
                     {
@@ -520,7 +506,7 @@ namespace RKCIUIAutomation.Page
                     {
                         if (tblRowElems.Any())
                         {
-                            var recordRowDisplayed = PageAction.CheckIfElementIsDisplayed(recordRowLocator);
+                            var recordRowDisplayed = PageAction.ElementIsDisplayed(recordRowLocator);
                             if (recordRowDisplayed)
                             {
                                 logMsg = $"No Records are Expected, but found {tblRowElems.Count} record";
@@ -537,7 +523,7 @@ namespace RKCIUIAutomation.Page
                     if (tblRowElems.Any())
                     {
                         Report.Step($"Searching for record: {recordNameOrNumber}");
-                        isDisplayedAsExpected = PageAction.CheckIfElementIsDisplayed(recordRowLocator);
+                        isDisplayedAsExpected = PageAction.ElementIsDisplayed(recordRowLocator);
 
                         string contains = filterOperator == FilterOperator.Contains ? "Containing Value: " : "";
                         logMsg = isDisplayedAsExpected
@@ -546,7 +532,7 @@ namespace RKCIUIAutomation.Page
                     }
                     else
                     {
-                        noRecordsMsgDisplayed = PageAction.CheckIfElementIsDisplayed(noRecordsMsgLocator);
+                        noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
                         if (noRecordsMsgDisplayed)
                         {
                             logMsg = "Expected Record, but 'No Record Located' message is displayed";
@@ -558,7 +544,7 @@ namespace RKCIUIAutomation.Page
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
 
-                noRecordsMsgDisplayed = PageAction.CheckIfElementIsDisplayed(noRecordsMsgLocator);
+                noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
 
                 if (noRecordsExpected)
                 {

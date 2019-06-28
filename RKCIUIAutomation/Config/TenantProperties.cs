@@ -7,23 +7,23 @@ using static RKCIUIAutomation.Base.WebDriverFactory;
 
 namespace RKCIUIAutomation.Config
 {
-    public interface IProjectProperties
+    public interface ITenantProperties
     {
         List<string> TenantComponents { get; set; }
         void ConfigTenantComponents(TenantName tenantName);
     }
 
-    public class ProjectProperties : BaseUtils, IProjectProperties
+    public class TenantProperties : BaseUtils, ITenantProperties
     {
-        TenantName _tenantName;
+        TenantName _tenantName { get; set; }
 
-        public ProjectProperties()
+        public TenantProperties()
         {
         }
 
-        public ProjectProperties(IWebDriver driver) => Driver = driver;
+        public TenantProperties(IWebDriver driver) => Driver = driver;
 
-        public ProjectProperties(TenantName tenantName)
+        public TenantProperties(TenantName tenantName)
         {
             _tenantName = tenantName;
         }
@@ -103,7 +103,7 @@ namespace RKCIUIAutomation.Config
 
         public void ConfigTenantComponents(TenantName tenantName)
         {
-            IProjectProperties instance = null;
+            ITenantProperties instance = null;
 
             switch (tenantName)
             {
@@ -143,7 +143,7 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_LAX : ProjectProperties, IProjectProperties
+    public class ProjectProperties_LAX : TenantProperties, ITenantProperties
     {
         public ProjectProperties_LAX()
         {
@@ -164,7 +164,7 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_SH249 : ProjectProperties, IProjectProperties
+    public class ProjectProperties_SH249 : TenantProperties, ITenantProperties
     {
         public ProjectProperties_SH249()
         {
@@ -185,7 +185,7 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_SGWay : ProjectProperties, IProjectProperties
+    public class ProjectProperties_SGWay : TenantProperties, ITenantProperties
     {
         public ProjectProperties_SGWay()
         {
@@ -206,7 +206,7 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_I15SB : ProjectProperties, IProjectProperties
+    public class ProjectProperties_I15SB : TenantProperties, ITenantProperties
     {
         public ProjectProperties_I15SB()
         {
@@ -226,7 +226,7 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_I15Tech : ProjectProperties, IProjectProperties
+    public class ProjectProperties_I15Tech : TenantProperties, ITenantProperties
     {
         public ProjectProperties_I15Tech()
         {
@@ -247,7 +247,7 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_GLX : ProjectProperties, IProjectProperties
+    public class ProjectProperties_GLX : TenantProperties, ITenantProperties
     {
         public ProjectProperties_GLX()
         {
@@ -266,7 +266,7 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_Garnet : ProjectProperties, IProjectProperties
+    public class ProjectProperties_Garnet : TenantProperties, ITenantProperties
     {
         public ProjectProperties_Garnet()
         {

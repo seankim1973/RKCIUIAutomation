@@ -8,6 +8,7 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -113,29 +114,21 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         internal static string[] testRunDetails;
 
-        //[ThreadStatic]
-        //internal static Cookie cookie = null;
-
-        public static void AddCookieToCurrentPage(string zaleniumCookieName, string cookieValue)
-        {
-            try
-            {
-                Cookie cookie = new Cookie(zaleniumCookieName, cookieValue);
-                driver.Manage().Cookies.AddCookie(cookie);
-            }
-            catch (UnableToSetCookieException ce)
-            {
-                log.Debug(ce.Message);
-            }
-            catch (Exception e)
-            {
-                log.Error($"{e.Message}\n{e.StackTrace}");
-                throw;
-            }
-        }
+        [ThreadStatic]
+        internal static Cookie cookie = null;
 
         [ThreadStatic]
         internal static string testDetails;
+
+        [ThreadStatic]
+        internal Stopwatch TestStopwatch;
+
+        public static void AddCookieToCurrentPage(string zaleniumCookieName, string cookieValue)
+        {
+            cookie = new Cookie(zaleniumCookieName, cookieValue);
+            driver.Manage().Cookies.AddCookie(cookie);
+        }
+
 
         #endregion TestCase Details
 
@@ -181,7 +174,7 @@ namespace RKCIUIAutomation.Base
         {
             try
             {
-                IProjectProperties props = Factory.ProjProperty;
+                ITenantProperties props = Factory.TenantProperty;
                 props.ConfigTenantComponents(tenantName);
 
                 if (props.TenantComponents.Contains(testComponent1))
@@ -207,9 +200,9 @@ namespace RKCIUIAutomation.Base
                     SkipTest(testComponent1, testRunDetails);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Error($"{e.Message}\n{e.StackTrace}");
+                //log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
             finally
@@ -217,15 +210,19 @@ namespace RKCIUIAutomation.Base
                 try
                 {
                     driver = Driver;
-                    AddCookieToCurrentPage("zaleniumMessage", testDetails);
+
+                    if (cookie != null)
+                    {
+                        AddCookieToCurrentPage("zaleniumMessage", testDetails);
+                    }
                 }
                 catch (UnhandledAlertException ae)
                 {
                     log.Debug(ae.Message);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    log.Error($"{e.Message}\n{e.StackTrace}");
+                    //log.Error($"{e.Message}\n{e.StackTrace}");
                     throw;
                 }
             }
@@ -249,9 +246,8 @@ namespace RKCIUIAutomation.Base
                 StaticHelpers.InjectTestStatus(TestStatus.Skipped, msg);
                 Assert.Ignore(msg);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Debug(e.StackTrace);
                 throw;
             }
         }
@@ -286,5 +282,6 @@ namespace RKCIUIAutomation.Base
             log.Info($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");
             log.Info($"################################################################\n");
         }
+
     }
 }
