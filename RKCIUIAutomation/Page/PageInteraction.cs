@@ -1568,7 +1568,7 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                (GetElement(By.XPath("//button[text()='Save & Forward']"))
+                (GetElement(By.XPath("//button[text()='Submit & Forward']"))
                     ?? GetElement(By.Id("SaveForwardSubmittal"))
                     ?? GetElement(By.Id("SaveForwardItem"))
                     ).Click();

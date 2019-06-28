@@ -421,6 +421,8 @@
     <Compile Include="Test\QaRcrdCtrl_GeneralCDR_Test.cs" />
     <Compile Include="Test\QaRcrdCtrl_QaDIR_Test.cs" />
     <Compile Include="Test\RMCenter_CorrespondenceLog_Test.cs" />
+    <Compile Include="Test\RMCenter_UploadQASubmittals_Test.cs" />
+    <Compile Include="Test\RMCenter_UploadDEVSubmittals_Test.cs" />
     <Compile Include="Test\Smoke.cs" />
     <Compile Include="Test\TestBase.cs" />
     <Compile Include="Test\TestUtils.cs" />

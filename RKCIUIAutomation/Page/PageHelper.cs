@@ -19,6 +19,7 @@ namespace RKCIUIAutomation.Page
 
         public const string DDL = "DDL";
         public const string TEXT = "TXT";
+        public const string NUMBER = "NUMBER";
         public const string DATE = "DATE";
         public const string RDOBTN = "RDOBTN";
         public const string CHKBOX = "CHKBOX";
