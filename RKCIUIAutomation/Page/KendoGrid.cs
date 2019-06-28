@@ -27,7 +27,7 @@ namespace RKCIUIAutomation.Page
             string tabSelect = $"tab.select('{commentTabIndex.ToString()}');";
             jsToBeExecuted = $"{jsToBeExecuted}{tabSelect}";
             ExecuteJsScript(jsToBeExecuted);
-            Report.Step($"Clicked Comment {commentNumber} tab : {tabSelect}");
+            Report.Step($"Clicked Tab 'Comment {commentTabIndex}' - JS: {tabSelect}");
         }
 
         public void ClickTableTab(string tblTabName)
@@ -56,18 +56,6 @@ namespace RKCIUIAutomation.Page
                 log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
-        }
-
-        private void ExecuteJsScript(string jsToBeExecuted)
-        {
-            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
-            executor.ExecuteScript(jsToBeExecuted);
-        }
-
-        private object ExecuteJsScriptGet(string jsToBeExecuted)
-        {
-            IJavaScriptExecutor executor = driver as IJavaScriptExecutor;
-            return executor.ExecuteScript(jsToBeExecuted);
         }
 
         private int GetElementIndex(By findElementsLocator, string matchValue)

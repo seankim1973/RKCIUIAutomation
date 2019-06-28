@@ -63,6 +63,9 @@ namespace RKCIUIAutomation.Page
         string GetUserDownloadFolderPath();
         void JsClickElement(By elementByLocator);
         string JsGetPageTitle(string windowHandle = "");
+        void ScrollCommentTabInToView();
+        void ScrollPageToBottom();
+        void ScrollPageToTop();
         void JsHover(By elementByLocator);
         void LoginAs(UserType user);
         void LogoutToLoginPage();

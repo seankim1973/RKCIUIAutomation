@@ -216,7 +216,7 @@ namespace RKCIUIAutomation.Test
                         }
                         catch (Exception e)
                         {
-                            Report.Error(e.StackTrace);
+                            Report.Error($"{e.Message}\n{e.StackTrace}");
                         }
                     }
 
