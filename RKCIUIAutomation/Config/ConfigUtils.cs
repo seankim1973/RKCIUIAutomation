@@ -23,8 +23,8 @@ namespace RKCIUIAutomation.Config
 
         public ConfigUtils(IWebDriver driver) => this.Driver = driver;
 
-        public TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg)
-        => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nunitArg);
+        public TestRunEnv GetTestRunEnv<TestRunEnv>(string nUnitParam)
+        => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nUnitParam);
 
         public string GetSiteUrl(TestEnv testEnv, TenantName tenant)
         {

@@ -16,6 +16,7 @@ namespace RKCIUIAutomation.Config
     {
         Garnet,
         GLX,
+        I15North,
         I15South,
         I15Tech,
         LAX,
