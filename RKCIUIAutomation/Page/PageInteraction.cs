@@ -193,10 +193,13 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                Report.Error(e.StackTrace);
+                Report.Error(e.Message);
                 throw;
             }
         }
+
+        public override void ClickElementByID(Enum elementIdEnum)
+            => ClickElement(By.Id(elementIdEnum.GetString()));
 
         public override void ClickInMainBodyAwayFromField()
         {
@@ -1731,6 +1734,7 @@ namespace RKCIUIAutomation.Page
         public abstract void ClickCancel();
         public abstract void ClickCreate();
         public abstract void ClickElement(By elementByLocator);
+        public abstract void ClickElementByID(Enum elementIdEnum);
         public abstract void ClickInMainBodyAwayFromField();
         public abstract void ClickLoginLink();
         public abstract void ClickLogoutLink();

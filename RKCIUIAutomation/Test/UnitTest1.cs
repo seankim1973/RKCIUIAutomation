@@ -652,7 +652,7 @@ namespace RKCIUIAutomation.UnitTest
             NavigateToPage.QCRecordControl_QC_DIRs();
             string dirNumber = "RKLIZ1181017";
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(QADIRs.TableTab.Create_Revise, dirNumber));
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(QADIRs.GridTabType.Create_Revise, dirNumber));
         }
     }
 

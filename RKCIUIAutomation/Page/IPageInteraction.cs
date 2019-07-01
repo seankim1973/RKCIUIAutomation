@@ -15,6 +15,7 @@ namespace RKCIUIAutomation.Page
         void ClickCancel();
         void ClickCreate();
         void ClickElement(By elementByLocator);
+        void ClickElementByID(Enum elementIdEnum);
         void ClickLoginLink();
         void ClickLogoutLink();
         void ClickNew(bool multipleBtnInstances = false);

@@ -1,14 +1,9 @@
 ﻿using NUnit.Framework;
-using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page.PageObjects.QASearch;
-using System;
-using System.Text.RegularExpressions;
-using System.Threading;
-//using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 using static RKCIUIAutomation.Base.Factory;
-using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 using static RKCIUIAutomation.Page.TableHelper;
+using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 
 namespace RKCIUIAutomation.Test.DIR
 {
@@ -111,8 +106,8 @@ namespace RKCIUIAutomation.Test.DIR
             string dirNumber = WF_QaRcrdCtrl_QaDIR.Create_and_SaveForward_DIR();
             LogoutToLoginPage();
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA, true);
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(TableTab.QC_Review, dirNumber, false), "Verify DIR is Displayed after dismissing delete dialog");
-            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(TableTab.QC_Review, dirNumber, true), "Verify DIR is not Displayed after accepting delete dialog");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(GridTabType.QC_Review, dirNumber, false), "Verify DIR is Displayed after dismissing delete dialog");
+            AddAssertionToList(WF_QaRcrdCtrl_QaDIR.Verify_DIR_Delete(GridTabType.QC_Review, dirNumber, true), "Verify DIR is not Displayed after accepting delete dialog");
             AssertAll();
         }
     }
@@ -213,7 +208,7 @@ namespace RKCIUIAutomation.Test.DIR
 
             //ComplexWF portion (QaRecordControl menu)
             NavigateToPage.QARecordControl_QA_DIRs();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
             GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Back_To_Field();
             NavigateToPage.QAField_QA_DIRs();
@@ -225,55 +220,55 @@ namespace RKCIUIAutomation.Test.DIR
 
             //Modify_Upload_and_VerifyCancel_VerifySave_inAttachments
             NavigateToPage.QARecordControl_QA_DIRs();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
             GridHelper.ClickEditBtnForRow();
             string fileName = UploadFile();
             AddAssertionToList(VerifyUploadedFileNames(fileName, true), "VerifyUploadedFileNames Before 'Edit DIR, Cancel' - (Expected) File 'test.xlsx' should be seen");
             QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
             GridHelper.ClickEditBtnForRow();
             AddAssertionToList(VerifyUploadedFileNames(""), "VerifyUploadedFileNames After 'Edit DIR, Cancel' - (Expected) No files are seen");
             fileName = UploadFile();
             QaRcrdCtrl_QaDIR.ClickBtn_Save();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
             GridHelper.ClickEditBtnForRow();
             AddAssertionToList(VerifyUploadedFileNames(fileName), "VerifyUploadedFileNames After 'Edit DIR, Save' - (Expected) File 'test.xlsx' should be seen");
 
             WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();//1
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Revise, dirNumber), "VerifyDirIsDisplayed in (QaRecordControl) Revise Tab after (clicked 'Revise' from Attachments)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Revise, dirNumber), "VerifyDirIsDisplayed in (QaRecordControl) Revise Tab after (clicked 'Revise' from Attachments)");
             GridHelper.ClickEditBtnForRow();
             AddAssertionToList(VerifyUploadedFileNames(fileName), "VerifyUploadedFileNames After 'Return DIR for Revise' - (Expected) File 'test.xlsx' should be seen");
 
             QaRcrdCtrl_QaDIR.ClickBtn_Send_To_Attachment();//2
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab after (clicked 'Send To Attachments' from Revise)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab after (clicked 'Send To Attachments' from Revise)");
             GridHelper.ClickEditBtnForRow();
 
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();//3
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review Tab after (clicked 'Save Forward' from Attachments)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review Tab after (clicked 'Save Forward' from Attachments)");
             GridHelper.ClickEditBtnForRow();
 
             WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();//4
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Revise, dirNumber), "VerifyDirIsDisplayed in (QaRecordControl) Revise Tab after (clicked 'Revise' from QC Review)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Revise, dirNumber), "VerifyDirIsDisplayed in (QaRecordControl) Revise Tab after (clicked 'Revise' from QC Review)");
             GridHelper.ClickEditBtnForRow();
 
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();//5
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review Tab after (clicked 'Save Forward' from Revise)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review Tab after (clicked 'Save Forward' from Revise)");
             GridHelper.ClickEditBtnForRow();
 
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();//6
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review)");
             GridHelper.ClickEditBtnForRow(dirNumber, true, true);
 
             WF_QaRcrdCtrl_QaDIR.ClickBtn_KickBackOrRevise();//7
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Revise, dirNumber), "VerifyDirIsDisplayed in (QaRecordControl) Revise Tab after (clicked 'Revise' from To Be Closed)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Revise, dirNumber), "VerifyDirIsDisplayed in (QaRecordControl) Revise Tab after (clicked 'Revise' from To Be Closed)");
             GridHelper.ClickEditBtnForRow();
 
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();//8
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review Tab after (clicked 'Save Forward' from Revise - 2ndRound)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review Tab after (clicked 'Save Forward' from Revise - 2ndRound)");
             GridHelper.ClickEditBtnForRow();
 
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();//9
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review - 2ndRound)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review - 2ndRound)");
             GridHelper.ToggleCheckBoxForRow(dirNumber);
 
             QaRcrdCtrl_QaDIR.ClickBtn_Close_Selected();
@@ -383,17 +378,17 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(dirNumber);
 
             NavigateToPage.QARecordControl_QA_DIRs();
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Attachments, dirNumber), "VerifyDirIsDisplayed in Attachments Tab");
             GridHelper.ClickEditBtnForRow();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyPreviousFailingDirEntry(previousFailedDirNumber), $"VerifyPreviousFailingDirEntry in Attachments: {previousFailedDirNumber}");
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review Tab after (clicked 'Save Forward' from Attachments)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.QC_Review, dirNumber), "VerifyDirIsDisplayed in QC Review Tab after (clicked 'Save Forward' from Attachments)");
             GridHelper.ClickEditBtnForRow();
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyPreviousFailingDirEntry(previousFailedDirNumber), $"VerifyPreviousFailingDirEntry in QaRcrdCtrl_QcReview: {previousFailedDirNumber}");
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review)");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.To_Be_Closed, dirNumber), "VerifyDirIsDisplayed in To Be Closed Tab after (clicked 'No Error' from QC Review)");
             GridHelper.ClickEditBtnForRow(dirNumber, true, true);
             AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyPreviousFailingDirEntry(previousFailedDirNumber), $"VerifyPreviousFailingDirEntry in ToBeClosed: {previousFailedDirNumber}");
             QaRcrdCtrl_QaDIR.ClickBtn_Cancel();
@@ -466,9 +461,9 @@ namespace RKCIUIAutomation.Test.DIR
             int rowIndex = 1;
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
             QaRcrdCtrl_QaDIR.ClickTab_Create_Packages();
-            GridHelper.SortColumnAscending(PackagesColumnName.Week_Start); //sort to have oldest Week Start date on top
+            GridHelper.SortColumnAscending(PackagesColumnNameType.Week_Start); //sort to have oldest Week Start date on top
             string weekStart = QaRcrdCtrl_QaDIR.GetDirPackageWeekStartFromRow(rowIndex).Trim();
-            string[] newDIRs = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnName.New_DIRs, rowIndex);
+            string[] newDIRs = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnNameType.New_DIRs, rowIndex);
 
             GridHelper.ClickCreateBtnForRow(rowIndex);
 
@@ -498,7 +493,7 @@ namespace RKCIUIAutomation.Test.DIR
 
             string weekStartDate = QaRcrdCtrl_QaDIR.GetDirPackageWeekStartFromRow();
             string packageNumber = QaRcrdCtrl_QaDIR.GetDirPackageNumberFromRow();
-            string[] dirNumbers = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnName.DIRs);
+            string[] dirNumbers = QaRcrdCtrl_QaDIR.GetDirPackageDirNumbersFromRow(PackagesColumnNameType.DIRs);
             LogoutToLoginPage();
 
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRTechQA);
@@ -510,15 +505,15 @@ namespace RKCIUIAutomation.Test.DIR
             WF_QaRcrdCtrl_QaDIR.Verify_DIR_then_Approve_inAuthorization(newDirNumber);
 
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Attachments, newDirNumber), "VerifyDirIsDisplayed in 'Attachments' tab");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Attachments, newDirNumber), "VerifyDirIsDisplayed in 'Attachments' tab");
             GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.ClickBtn_Save_Forward();
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.QC_Review, newDirNumber), "VerifyDirIsDisplayed in 'QC Review' tab");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.QC_Review, newDirNumber), "VerifyDirIsDisplayed in 'QC Review' tab");
             GridHelper.ClickEditBtnForRow();
             WF_QaRcrdCtrl_QaDIR.ClickBtn_ApproveOrNoError();
 
-            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.To_Be_Closed, newDirNumber), "VerifyDirIsDisplayed in 'To Be Closed' tab");
+            AddAssertionToList(QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.To_Be_Closed, newDirNumber), "VerifyDirIsDisplayed in 'To Be Closed' tab");
             GridHelper.ClickCloseDirBtnForRow(newDirNumber);
 
             QaRcrdCtrl_QaDIR.ClickTab_Packages();

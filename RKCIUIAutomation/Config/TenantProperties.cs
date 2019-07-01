@@ -36,6 +36,7 @@ namespace RKCIUIAutomation.Config
             Component.Project_Configuration,
             Component.Search,
             Component.Submittals,
+            Component.TestMethods,
             Component.Correspondence_Log
         };
 
@@ -77,7 +78,7 @@ namespace RKCIUIAutomation.Config
             public const string RFC = "RFC";
             public const string RFI = "RFI";
             public const string Search = "Search";
-            public const string Testing_Module = "Testing_Module";
+            public const string TestMethods = "TestMethods";
             public const string User_Mgmt = "User_Mgmt";
             public const string Submittals = "Submittals";
             public const string Guide_Schedule = "Guide_Schedule";

@@ -19,6 +19,7 @@ namespace RKCIUIAutomation.Page
 
         public const string DDL = "DDL";
         public const string TEXT = "TXT";
+        public const string NUMBER = "NUMBER";
         public const string DATE = "DATE";
         public const string RDOBTN = "RDOBTN";
         public const string CHKBOX = "CHKBOX";
@@ -26,6 +27,9 @@ namespace RKCIUIAutomation.Page
         public const string MULTIDDL = "MULTIDDL";
         public const string FUTUREDATE = "FUTUREDATE";
         public const string AUTOPOPULATED = "AUTOPOPULATED";
+        public const string AUTOPOPULATED_DDL = "AUTOPOPULATED_DDL";
+        public const string AUTOPOPULATED_TEXT = "AUTOPOPULATED_TXT";
+        public const string AUTOPOPULATED_DATE = "AUTOPOPULATED_DATE";
 
         /// <summary>
         /// Returns XPath in string format - //div[@class='k-content k-state-active']
