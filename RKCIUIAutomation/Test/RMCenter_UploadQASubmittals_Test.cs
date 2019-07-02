@@ -26,8 +26,6 @@ namespace RKCIUIAutomation.Test.UploadSubmittals
             UploadQASubmittal.PopulateFields(2);
             ClickSubmitForward();
 
-            //Go to RMCenter > ReviewReviewSubmittal
-            NavigateToPage.RMCenter_Review_Revise_Submittal();
             //Filter record by Number
             AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(submittalNumber), "VerifySubmittalNumberIsDisplayed - ReviseReviewSubmittal");
             //Click on Edit

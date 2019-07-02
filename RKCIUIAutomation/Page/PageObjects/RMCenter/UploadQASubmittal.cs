@@ -258,13 +258,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 var kvpFromEntry = new KeyValuePair<EntryField, string>();
                 kvpFromEntry = PopulateFieldValue(field, string.Empty);
 
-                if(field.Equals(EntryField.SubmittalNo))
-                    submittalNumber =  kvpFromEntry.Value;
-
                 log.Debug($"Added KeyValPair to expected table column values./nEntry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
             }
 
-            return submittalNumber;
+            return PageAction.GetAttribute(By.Id("SubmittalNo"), "value"); ;
         }
 
         #endregion
