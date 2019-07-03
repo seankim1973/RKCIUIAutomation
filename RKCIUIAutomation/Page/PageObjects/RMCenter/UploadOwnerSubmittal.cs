@@ -1,6 +1,9 @@
 ﻿using OpenQA.Selenium;
-using RKCIUIAutomation.Base;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
+using System;
+using System.Collections.Generic;
+using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -8,17 +11,13 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public UploadOwnerSubmittal()
         {
-            //tenantAllEntryFieldKeyValuePairs = GetTenantEntryFieldKVPairsList();
         }
 
         public UploadOwnerSubmittal(IWebDriver driver)
         {
             this.Driver = driver;
-            //tenantTableTabs = GetTenantTableTabsList();
-            //reqFieldLocators = GetTenantRequiredFieldLocators();
-            //tenantAllEntryFields = GetTenantAllEntryFieldsList();
-            //tenantExpectedRequiredFields = GetTenantRequiredFieldsList();
-            //expectedEntryFieldsForTblColumns = GetTenantEntryFieldsForTableColumns();
+            tenantRoundOneRequiredFields = GetTenantRoundOneRequiredFields();
+            tenantRoundTwoRequiredFields = GetTenantRoundTwoRequiredFields();
         }
 
         /// <summary>
@@ -28,41 +27,32 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             IUploadOwnerSubmittal instance = new UploadOwnerSubmittal(driver);
 
-            if (tenantName == TenantName.SGWay)
+            switch (tenantName)
             {
-                Factory.log.Info($"###### using UploadOwnerSubmittal_SGWay instance ###### ");
-                instance = new UploadOwnerSubmittal_SGWay(driver);
+                case TenantName.SGWay:
+                    log.Info($"###### using UploadOwnerSubmittal_SGWay instance ###### ");
+                    instance = new UploadOwnerSubmittal_SGWay(driver);
+                    break;
+                case TenantName.SH249:
+                    log.Info($"###### using UploadOwnerSubmittal_SH249 instance ###### ");
+                    instance = new UploadOwnerSubmittal_SH249(driver);
+                    break;
+                case TenantName.I15South:
+                    log.Info($"###### using UploadOwnerSubmittal_I15South instance ###### ");
+                    instance = new UploadOwnerSubmittal_I15South(driver);
+                    break;
+                case TenantName.I15Tech:
+                    log.Info($"###### using UploadOwnerSubmittal_I15Tech instance ###### ");
+                    instance = new UploadOwnerSubmittal_I15Tech(driver);
+                    break;
+                case TenantName.LAX:
+                    log.Info($"###### using UploadOwnerSubmittal_LAX instance ###### ");
+                    instance = new UploadOwnerSubmittal_LAX(driver);
+                    break;
+                default:
+                    break;
             }
-            else if (tenantName == TenantName.SH249)
-            {
-                Factory.log.Info($"###### using  UploadOwnerSubmittal_SH249 instance ###### ");
-                instance = new UploadOwnerSubmittal_SH249(driver);
-            }
-            else if (tenantName == TenantName.Garnet)
-            {
-                Factory.log.Info($"###### using  UploadOwnerSubmittal_Garnet instance ###### ");
-                instance = new UploadOwnerSubmittal_Garnet(driver);
-            }
-            else if (tenantName == TenantName.GLX)
-            {
-                Factory.log.Info($"###### using  UploadOwnerSubmittal_GLX instance ###### ");
-                instance = new UploadOwnerSubmittal_GLX(driver);
-            }
-            else if (tenantName == TenantName.I15South)
-            {
-                Factory.log.Info($"###### using  UploadOwnerSubmittal_I15South instance ###### ");
-                instance = new UploadOwnerSubmittal_I15South(driver);
-            }
-            else if (tenantName == TenantName.I15Tech)
-            {
-                Factory.log.Info($"###### using UploadOwnerSubmittal_I15Tech instance ###### ");
-                instance = new UploadOwnerSubmittal_I15Tech(driver);
-            }
-            else if (tenantName == TenantName.LAX)
-            {
-                Factory.log.Info($"###### using UploadOwnerSubmittal_LAX instance ###### ");
-                instance = new UploadOwnerSubmittal_LAX(driver);
-            }
+
             return (T)instance;
         }
 
@@ -76,86 +66,209 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public enum EntryField
         {
-            [StringValue("DocumentDate", DATE)] Date,
-            [StringValue("TransmittalNo", TEXT)] TransmittalNumber,
-            [StringValue("SecurityClassificationId", DDL)] SecurityClassification,
-            [StringValue("Title", TEXT)] Title,
-            [StringValue("From", TEXT)] From,
-            [StringValue("AgencyFromId", DDL)] AgencyFrom,
-            [StringValue("Attention", TEXT)] Attention,
-            [StringValue("AgencyToId", DDL)] AgencyAttention,
-            [StringValue("DocumentTypeCatogoryId", DDL)] DocumentCategory,
-            [StringValue("DocumentTypeId", DDL)] DocumentType,
-            [StringValue("OriginatorDocumentRef", TEXT)] OriginatorDocumentRef,
-            [StringValue("Revision", TEXT)] Revision,
-            [StringValue("SelectedTransmittedIds", MULTIDDL)] Transmitted,
-            [StringValue("SegmentId", DDL)] Segment_Area,
-            [StringValue("DesignPackagesIdsNcr", MULTIDDL)] DesignPackages,
-            [StringValue("CdrlNumber", TEXT)] CDRL,
-            [StringValue("ResponseRequiredRadioButton_True", RDOBTN)] ResponseRequired_Yes,
-            [StringValue("ResponseRequiredRadioButton_False", RDOBTN)] ResponseRequired_No,
-            [StringValue("ResponseRequiredDate", FUTUREDATE)] ResponseRequiredBy_Date,
-            [StringValue("OwnerReponseId", DDL)] OwnerResponse,
-            [StringValue("OwnerResponseBy", TEXT)] OwnerResponseBy,
-            [StringValue("OwnerResponseDate", DATE)] OwnerResponseDate,
-            [StringValue("SectionId", DDL)] SpecSection,
-            [StringValue("MSLNo", TEXT)] MSLNumber,
-            [StringValue("AvailableAccessItems", DDL)] Access,
-            [StringValue("ViaId", DDL)] Via,
-            [StringValue("AllowReshare", CHKBOX)] AllowResharing,
-            [StringValue("TransmissionFiles", UPLOAD)] Attachments
+            [StringValue("SubmittalNo", TEXT)] SubmittalNo,
+            [StringValue("SubmittalTitle", TEXT)] SubmittalTitle,
+            [StringValue("SubmittalActionId", DDL)] SubmittalActionId,
+            [StringValue("SegmentId", DDL)] SegmentId,
+            [StringValue("FeatureId", DDL)] FeatureId,
+            [StringValue("GradeId", DDL)] GradeId,
+            [StringValue("SpecificationId", DDL)] SpecificationId,
+            [StringValue("Quantity", NUMBER)] Quantity,
+            [StringValue("QuantityUnitId", DDL)] QuantityUnitId,
+            [StringValue("UploadFiles", UPLOAD)] Attachments
         }
 
         public enum ColumnName
         {
-            [StringValue("Id")] ID,
-            [StringValue("MSLNo")] MSLNumber,
-            [StringValue("TransmittalNo")] TransmittalNumber,
-            [StringValue("DocumentDateDisplay")] Date,
-            [StringValue("Attention")] Attention,
-            [StringValue("From")] From,
-            [StringValue("Title")] Title,
-            [StringValue("DocumentType.Key")] DocumentType,
-            [StringValue("OriginatorDocumentRef")] OriginatorRef,
-            [StringValue("Revision")] Revision,
-            [StringValue("TransmittedTypeNames")] TransmittedTypes,
-            [StringValue("ViaId")] Via,
+            [StringValue("submittalNo")] SubmittalNumber,
+            [StringValue("Number")] Number
         }
+
+        [ThreadStatic]
+        internal static IList<EntryField> tenantRoundOneRequiredFields;
+
+        [ThreadStatic]
+        internal static IList<EntryField> tenantRoundTwoRequiredFields;
+
+        public virtual IList<EntryField> GetTenantRoundOneRequiredFields()
+        {
+            return tenantRoundOneRequiredFields = new List<EntryField>()
+            {
+                EntryField.SubmittalTitle
+            };
+        }
+
+        public virtual IList<EntryField> GetTenantRoundTwoRequiredFields()
+        {
+            return tenantRoundTwoRequiredFields = new List<EntryField>()
+            {
+                EntryField.SubmittalActionId,
+                EntryField.Attachments
+            };
+        }
+
+
+        public bool VerifySubmittalNumberIsDisplayed(string submittalNumber, bool isSearch = false)
+        {
+            return GridHelper.VerifyRecordIsDisplayed(
+                isSearch ? ColumnName.Number : ColumnName.SubmittalNumber,
+                submittalNumber,
+                TableHelper.TableType.Single
+            );
+        }
+
+        #region #endregion Common Workflow Implementation class
+
+        public virtual void LogintoQASubmittal(UserType userType)
+        {
+            LoginAs(userType);
+            PageAction.WaitForPageReady();
+            NavigateToPage.RMCenter_Upload_Owner_Submittal();
+            TestUtility.AddAssertionToList_VerifyPageHeader("Submittal Details", "LogintoQASubmittal()");
+        }
+
+        private KeyValuePair<EntryField, string> PopulateFieldValue<T>(EntryField entryField, T indexOrText, bool useContains = false)
+        {
+            string fieldType = entryField.GetString(true);
+            Type argType = indexOrText.GetType();
+            object argValue = null;
+            bool isValidArg = false;
+
+            KeyValuePair<EntryField, string> fieldValuePair;
+            string fieldValue = string.Empty;
+
+            try
+            {
+                if (argType == typeof(string))
+                {
+                    isValidArg = true;
+                    argValue = ConvertToType<string>(indexOrText);
+                }
+                else if (argType == typeof(int))
+                {
+                    isValidArg = true;
+                    argValue = ConvertToType<int>(indexOrText);
+                }
+
+                if (isValidArg)
+                {
+                    switch (fieldType)
+                    {
+                        case TEXT:
+                        case DATE:
+                        case FUTUREDATE:
+                            if (!((string)argValue).HasValue())
+                            {
+                                if (fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
+                                {
+                                    argValue = fieldType.Equals(DATE)
+                                        ? GetShortDate()
+                                        : GetFutureShortDate();
+                                }
+                                else
+                                {
+                                    //argValue = GetVarForEntryField(entryField);
+                                    argValue = GetVar(entryField);
+                                    int argValueLength = ((string)argValue).Length;
+
+                                    By inputLocator = GetInputFieldByLocator(entryField);
+                                    int elemMaxLength = int.Parse(PageAction.GetAttribute(inputLocator, "maxlength"));
+
+                                    argValue = argValueLength > elemMaxLength
+                                        ? ((string)argValue).Substring(0, elemMaxLength)
+                                        : argValue;
+                                }
+
+                                fieldValue = (string)argValue;
+                            }
+
+                            PageAction.EnterText(By.Id(entryField.GetString()), fieldValue);
+
+                            break;
+
+                        case DDL:
+                        case MULTIDDL:
+                            if ((argType == typeof(string) && !((string)argValue).HasValue()) || (int)argValue < 1)
+                            {
+                                argValue = 1;
+                            }
+
+                            bool isMultiselectDDList = false;
+
+                            if (fieldType.Equals(MULTIDDL))
+                            {
+                                isMultiselectDDList = true;
+                            }
+
+                            PageAction.ExpandAndSelectFromDDList(entryField, argValue, useContains, isMultiselectDDList);
+
+                            break;
+
+                        case RDOBTN:
+                        case CHKBOX:
+                            PageAction.SelectRadioBtnOrChkbox(entryField);
+
+                            break;
+
+                        case UPLOAD:
+                            PageAction.UploadFile();
+
+                            break;
+                        case NUMBER:
+                            string xpath = string.Format("//input[contains(@id, '{0}')]/preceding-sibling::input", entryField);
+                            Driver.FindElement(By.XPath(xpath)).SendKeys("1");
+
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    log.Error($"Argument type ({argType}) is not supported : {indexOrText.ToString()}");
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error(e.StackTrace);
+            }
+
+            return fieldValuePair = new KeyValuePair<EntryField, string>(entryField, fieldValue);
+        }
+
+        public virtual string PopulateFields(int round)
+        {
+            var requiredFields = round.Equals(1) ? tenantRoundOneRequiredFields : tenantRoundTwoRequiredFields;
+            string submittalNumber = string.Empty;
+
+            foreach (EntryField field in requiredFields)
+            {
+                var kvpFromEntry = new KeyValuePair<EntryField, string>();
+                kvpFromEntry = PopulateFieldValue(field, string.Empty);
+
+                log.Debug($"Added KeyValPair to expected table column values./nEntry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
+            }
+
+            return PageAction.GetAttribute(By.Id("SubmittalNo"), "value"); ;
+        }
+
+        #endregion
 
     }
 
     public interface IUploadOwnerSubmittal
     {
-
+        IList<UploadOwnerSubmittal.EntryField> GetTenantRoundOneRequiredFields();
+        IList<UploadOwnerSubmittal.EntryField> GetTenantRoundTwoRequiredFields();
+        void LogintoQASubmittal(UserType userType);
+        string PopulateFields(int round);
+        bool VerifySubmittalNumberIsDisplayed(string submittalNumber, bool isSearch = false);
     }
 
     /// <summary>
     /// Tenant specific implementation of UploadOwnerSubmittal
     /// </summary>
-
-    #region Implementation specific to Garnet
-
-    public class UploadOwnerSubmittal_Garnet : UploadOwnerSubmittal
-    {
-        public UploadOwnerSubmittal_Garnet(IWebDriver driver) : base(driver)
-        {
-        }
-    }
-
-    #endregion Implementation specific to Garnet
-
-
-    #region Implementation specific to GLX
-
-    public class UploadOwnerSubmittal_GLX : UploadOwnerSubmittal
-    {
-        public UploadOwnerSubmittal_GLX(IWebDriver driver) : base(driver)
-        {
-        }
-    }
-
-    #endregion Implementation specific to GLX
-
 
     #region Implementation specific to SH249
 
@@ -163,6 +276,24 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public UploadOwnerSubmittal_SH249(IWebDriver driver) : base(driver)
         {
+        }
+
+        public override IList<EntryField> GetTenantRoundOneRequiredFields()
+        {
+            return tenantRoundOneRequiredFields = new List<EntryField>()
+            {
+                EntryField.SubmittalNo,
+                EntryField.SubmittalTitle
+            };
+        }
+
+        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
+        {
+            return tenantRoundTwoRequiredFields = new List<EntryField>()
+            {
+                EntryField.SubmittalActionId,
+                EntryField.Attachments
+            };
         }
     }
 
@@ -174,7 +305,23 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class UploadOwnerSubmittal_SGWay : UploadOwnerSubmittal
     {
         public UploadOwnerSubmittal_SGWay(IWebDriver driver) : base(driver)
+        { }
+
+        public override IList<EntryField> GetTenantRoundOneRequiredFields()
         {
+            return tenantRoundOneRequiredFields = new List<EntryField>()
+            {
+                EntryField.SubmittalTitle
+            };
+        }
+
+        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
+        {
+            return tenantRoundTwoRequiredFields = new List<EntryField>()
+            {
+                EntryField.SubmittalActionId,
+                EntryField.Attachments
+            };
         }
     }
 
@@ -186,7 +333,23 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class UploadOwnerSubmittal_I15South : UploadOwnerSubmittal
     {
         public UploadOwnerSubmittal_I15South(IWebDriver driver) : base(driver)
+        { }
+
+        public override IList<EntryField> GetTenantRoundOneRequiredFields()
         {
+            return tenantRoundOneRequiredFields = new List<EntryField>()
+            {
+                EntryField.SubmittalTitle
+            };
+        }
+
+        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
+        {
+            return tenantRoundTwoRequiredFields = new List<EntryField>()
+            {
+                EntryField.SubmittalActionId,
+                EntryField.Attachments
+            };
         }
     }
 
@@ -198,7 +361,23 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class UploadOwnerSubmittal_I15Tech : UploadOwnerSubmittal
     {
         public UploadOwnerSubmittal_I15Tech(IWebDriver driver) : base(driver)
+        { }
+
+        public override IList<EntryField> GetTenantRoundOneRequiredFields()
         {
+            return tenantRoundOneRequiredFields = new List<EntryField>()
+            {
+                EntryField.SubmittalTitle
+            };
+        }
+
+        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
+        {
+            return tenantRoundTwoRequiredFields = new List<EntryField>()
+            {
+                EntryField.SubmittalActionId,
+                EntryField.Attachments
+            };
         }
     }
 

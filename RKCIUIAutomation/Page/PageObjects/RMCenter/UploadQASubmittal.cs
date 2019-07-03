@@ -11,7 +11,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public UploadQASubmittal()
         {
-            //tenantAllEntryFieldKeyValuePairs = GetTenantEntryFieldKVPairsList();
         }
 
         public UploadQASubmittal(IWebDriver driver)
@@ -19,12 +18,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             this.Driver = driver;
             tenantRoundOneRequiredFields = GetTenantRoundOneRequiredFields();
             tenantRoundTwoRequiredFields = GetTenantRoundTwoRequiredFields();
-
-            //tenantTableTabs = GetTenantTableTabsList();
-            //reqFieldLocators = GetTenantRequiredFieldLocators();
-            //tenantAllEntryFields = GetTenantAllEntryFieldsList();
-            //tenantExpectedRequiredFields = GetTenantRequiredFieldsList();
-            //expectedEntryFieldsForTblColumns = GetTenantEntryFieldsForTableColumns();
         }
 
         /// <summary>
@@ -61,14 +54,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
 
             return (T)instance;
-        }
-
-        //GLX and LAX - StringValue[0] = table tab name, StringValue[1] = Table content reference id
-        public enum TableTab
-        {
-            [StringValue("Unsent Transmissions", "TransmissionGridNew")] UnsentTransmissions,
-            [StringValue("Pending Transmissions", "TransmissionGridPending")] PendingTransmissions,
-            [StringValue("Transmitted Records", "TransmissionGridForwarded")] TransmittedRecords
         }
 
         public enum EntryField
