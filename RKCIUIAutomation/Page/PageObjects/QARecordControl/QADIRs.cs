@@ -583,33 +583,50 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override bool VerifyEngineerCommentsReqFieldErrors()
             => QaRcrdCtrl_QaDIR.VerifyReqFieldErrorsForNewDir(QaRcrdCtrl_QaDIR.GetExpectedEngineerCommentsReqFieldIDsList(), RequiredFieldType.EngineerComments);
 
-        public override bool VerifyDirNumberExistsInDbErrorIsDisplayed()
+        public override bool VerifyDirNumberExistsInDbErrorIsDisplayed(bool errorIsExpected = false)
         {
-            By errorLocator = By.Id("error");
-            IWebElement errorElem = null;
-            bool isDisplayed = false;
+            bool result = false;
+            bool errorIsDisplayed = false;
             string logMsg = string.Empty;
+            By errorLocator = By.Id("error");
+            IWebElement elem = null;
 
             try
             {
-                errorElem = PageAction.GetElement(errorLocator);
+                elem = PageAction.GetElement(errorLocator);
+                errorIsDisplayed = elem.Displayed;
 
-                if ((bool)errorElem?.Displayed)
+                if (errorIsExpected) //error is displayed
                 {
-                    isDisplayed = true;
+                    logMsg = "'This DIR No. exists in the database' error message is displayed as expected.";
+                    result = true;
+                }
+                else
+                {
+                    logMsg = "'This DIR No. exists in the database' error message is displayed but is not expected.";
+
                 }
             }
-            catch (NoSuchElementException)
+            catch (NoSuchElementException) //error is not displayed
             {
-                logMsg = " not";
-            }
-            catch (Exception e)
-            {
-                log.Error($"{e.Message}\n{e.StackTrace}");
-            }
+                if (errorIsExpected)
+                {
+                    logMsg = "'This DIR No. exists in the database' error message is expected, but is not displayed";
+                }
+                else
+                {
+                    logMsg = "'This DIR No. exists in the database' error message is not displayed as expected.";
+                    result = true;
+                }
 
-            Report.Info($"'This DIR No. exists in the database' error message is{logMsg} displayed", isDisplayed);
-            return isDisplayed;
+                throw;
+            }
+            finally
+            {
+                Report.Info(logMsg, result);
+            }
+          
+            return errorIsDisplayed;
         }
 
         public override bool VerifyDirRevisionInDetailsPage(string expectedDirRev)
@@ -646,29 +663,52 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override void ClickBtn_CreateNew(bool useWorkaroundIfDirExists = false)
         {
-            PageAction.JsClickElement(GetSubmitButtonByLocator(ButtonType.Create_New));
+            bool errorIsDisplayed = false;
+            string logMsg = string.Empty;
 
-            if (useWorkaroundIfDirExists)
+            try
             {
-                if (VerifyDirNumberExistsInDbErrorIsDisplayed())
+                PageAction.JsClickElement(GetSubmitButtonByLocator(ButtonType.Create_New));
+
+                if (useWorkaroundIfDirExists)
                 {
+                    logMsg = "Workaround is enabled for when 'This DIR No. exists in database' error is displayed.";
+
                     try
                     {
-                        GridHelper.FilterTableColumnByValue(ColumnNameType.Created_By, ConfigUtil.GetCurrentUserEmail());
+                        VerifyDirNumberExistsInDbErrorIsDisplayed();
+                        errorIsDisplayed = true;
                     }
-                    catch (TimeoutException)
+                    catch (NoSuchElementException)
                     {
-                        //TODO check database for closed DIR and set IsDeleted = 1
-                        throw;
+                        logMsg = $"{logMsg}\nNo error is displayed. Test will continue normally without using workaround.";
+                        Report.Info($"{logMsg}");
                     }
-                    catch (Exception e)
+
+                    if (errorIsDisplayed)
                     {
-                        log.Error($"{e.Message}\n{e.StackTrace}");
-                        throw;
+                        try
+                        {
+                            string currentUserEmail = ConfigUtil.GetCurrentUserEmail();
+                            GridHelper.FilterTableColumnByValue(ColumnNameType.Created_By, currentUserEmail);
+                            GridHelper.VerifyNoRecordMessageIsDisplayed();
+                            //TODO check database for closed DIR and set IsDeleted = 1
+                            logMsg = $"{logMsg}\nCould not edit any existing records, because filtering grid by current user email returned no records.";
+                            Report.Error(logMsg);
+                            throw new ArgumentException(logMsg);
+                        }
+                        catch (NoSuchElementException)
+                        {
+                            GridHelper.ClickEditBtnForRow();
+                            Report.Debug($"{logMsg}\nFiltered grid by current user email and continuing test with old existing record.");
+                        }
                     }
-                    
-                    GridHelper.ClickEditBtnForRow();
                 }
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 
@@ -940,19 +980,41 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override bool VerifyDirIsDisplayed(GridTabType tableTab, string dirNumber = "", bool noRecordsExpected = false)
         {
+            bool resultIsAsExpected = false;
             bool isDisplayed = false;
+            string logMsg = string.Empty;
 
             try
             {
                 GridHelper.ClickTab(tableTab);
-                string _dirNum = dirNumber.HasValue()
-                    ? dirNumber
-                    : GetDirNumber();
 
-                isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnNameType.DIR_No, _dirNum, TableType.MultiTab, noRecordsExpected);
+                if (!dirNumber.HasValue())
+                {
+                    dirNumber = GetDirNumber();
+                }
 
-                string logMsg = isDisplayed ? "Found" : "Unable to find";
-                Report.Info($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {_dirNum}.", noRecordsExpected ? !isDisplayed : isDisplayed);
+                isDisplayed = GridHelper.VerifyRecordIsDisplayed(ColumnNameType.DIR_No, dirNumber, TableType.MultiTab, noRecordsExpected);
+
+                if (isDisplayed)
+                {
+                    logMsg = "Found";
+
+                    if (!noRecordsExpected)
+                    {
+                        resultIsAsExpected = true;
+                    }
+                }
+                else
+                {
+                    logMsg = "Unable to find";
+
+                    if (noRecordsExpected)
+                    {
+                        resultIsAsExpected = true;
+                    }
+                }
+
+                Report.Info($"{logMsg} record under {tableTab.GetString()} tab with DIR Number: {dirNumber}.", resultIsAsExpected);
             }
             catch (Exception e)
             {
@@ -960,7 +1022,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 throw;
             }
 
-            return isDisplayed;
+            return resultIsAsExpected;
         }
 
         public override IList<Enum> GetResultCheckBoxIDsList()
@@ -1654,7 +1716,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         bool VerifyEngineerCommentsReqFieldErrors();
 
-        bool VerifyDirNumberExistsInDbErrorIsDisplayed();
+        bool VerifyDirNumberExistsInDbErrorIsDisplayed(bool errorIsExpected = false);
 
         bool VerifyDirRevisionInDetailsPage(string expectedDirRev);
 
@@ -1724,7 +1786,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract bool VerifySpecSectionDescriptionAutoPopulatedData();
         public abstract bool VerifyControlPointReqFieldErrors();
         public abstract bool VerifyEngineerCommentsReqFieldErrors();
-        public abstract bool VerifyDirNumberExistsInDbErrorIsDisplayed();
+        public abstract bool VerifyDirNumberExistsInDbErrorIsDisplayed(bool errorIsExpected = false);
         public abstract bool VerifyDirRevisionInDetailsPage(string expectedDirRev);
         public abstract bool IsLoaded();
         public abstract void ClickBtn_CreateNew(bool useWorkaroundIfDirExists = false);

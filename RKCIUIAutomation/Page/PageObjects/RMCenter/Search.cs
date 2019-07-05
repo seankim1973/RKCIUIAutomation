@@ -124,7 +124,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void ClickBtn_Clear()
             => PageAction.JsClickElement(By.Id("ClearButton"));
 
-        public override bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList)
+        public override bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryFieldType, string>> entryFieldValuesList)
         {
             bool isDisplayed = false;
             string logMsg = string.Empty;
@@ -134,7 +134,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 SearchCriteria criteria;              
                 IList<bool> resultsList = new List<bool>();
 
-                foreach (KeyValuePair<EntryField, string> kvPair in entryFieldValuesList)
+                foreach (KeyValuePair<EntryFieldType, string> kvPair in entryFieldValuesList)
                 {
                     criteria = GetMatchingSearchCriteriaForEntryField(kvPair.Key);
 
@@ -172,46 +172,46 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return isDisplayed;
         }
 
-        private SearchCriteria GetMatchingSearchCriteriaForEntryField(EntryField entryField)
+        private SearchCriteria GetMatchingSearchCriteriaForEntryField(EntryFieldType entryField)
         {
             SearchCriteria criteria = SearchCriteria.NoSelection;
 
             switch (entryField)
             {
-                case EntryField.Attention:
+                case EntryFieldType.Attention:
                     criteria = SearchCriteria.Attention;
                     break;
-                case EntryField.Date:
+                case EntryFieldType.Date:
                     criteria = SearchCriteria.TransmittalDate_From;
                     break;
-                case EntryField.DesignPackages:
+                case EntryFieldType.DesignPackages:
                     criteria = SearchCriteria.DesignPackages;
                     break;
-                case EntryField.DocumentType:
+                case EntryFieldType.DocumentType:
                     criteria = SearchCriteria.DocumentType;
                     break;
-                case EntryField.DocumentCategory:
+                case EntryFieldType.DocumentCategory:
                     criteria = SearchCriteria.Category;
                     break;
-                case EntryField.From:
+                case EntryFieldType.From:
                     criteria = SearchCriteria.From;
                     break;
-                case EntryField.MSLNumber:
+                case EntryFieldType.MSLNumber:
                     criteria = SearchCriteria.MSLNo;
                     break;
-                case EntryField.OriginatorDocumentRef:
+                case EntryFieldType.OriginatorDocumentRef:
                     criteria = SearchCriteria.OriginatorDocumentRef;
                     break;
-                case EntryField.Segment_Area:
+                case EntryFieldType.Segment_Area:
                     criteria = SearchCriteria.SegmentArea;
                     break;
-                case EntryField.SpecSection:
+                case EntryFieldType.SpecSection:
                     criteria = SearchCriteria.SpecSection;
                     break;
-                case EntryField.Title:
+                case EntryFieldType.Title:
                     criteria = SearchCriteria.Title;
                     break;
-                case EntryField.TransmittalNumber:
+                case EntryFieldType.TransmittalNumber:
                     criteria = SearchCriteria.TransmittalNumber;
                     break;
             }
@@ -274,7 +274,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         IList<ColumnName> SetTenantSearchGridColumnNames();
 
-        bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList);
+        bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryFieldType, string>> entryFieldValuesList);
 
         void ClickBtn_Search();
 
@@ -361,7 +361,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual void EnterText_OriginatorDocumentRef(string text) => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.OriginatorDocumentRef), text);
 
 
-        public abstract bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList);
+        public abstract bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryFieldType, string>> entryFieldValuesList);
 
         public abstract void ClickBtn_Search();
 

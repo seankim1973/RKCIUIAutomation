@@ -438,6 +438,7 @@
     <Compile Include="Tools\JiraUtil.cs" />
     <Compile Include="Tools\NUnitClass.cs" />
     <Compile Include="Tools\TestResultUtil.cs" />
+    <Compile Include="Tools\VpnUtility.cs" />
     <Compile Include="Tools\XMLUtil.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -216,15 +216,23 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 PageAction.JsClickElement(PgHelper.GetSubmitButtonByLocator(submitButton));
+            }
+            catch (UnhandledAlertException e)
+            {
+                Report.Debug($"Alert Message: {e.Message}");
 
                 if (tenantHasAlert)
                 {
-                    PageAction.ConfirmActionDialog(acceptAlert);
+                    try
+                    {
+                        PageAction.ConfirmActionDialog(acceptAlert);
+                    }
+                    catch (UnhandledAlertException ee)
+                    {
+                        PageAction.ConfirmActionDialog(acceptAlert);
+                        Report.Debug($"Second Alert Message: {ee.Message}");
+                    }
                 }
-            }
-            catch (UnhandledAlertException ae)
-            {
-                log.Debug(ae.Message);
             }
             catch (Exception e)
             {
@@ -381,57 +389,64 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override void SignDateApproveNCR(Reviewer reviewer, bool Approve = true)
         {
-            InputFields signBtn = InputFields.RecordEngineer_SignBtn;
-            InputFields reviewerField = InputFields.Engineer_of_Record;
-            RadioBtnsAndCheckboxes approvalField = Approve
-                ? RadioBtnsAndCheckboxes.Engineer_Approval_Yes
-                : RadioBtnsAndCheckboxes.Engineer_Approval_No;
-            bool isApprovalRequired = false;
-
-            switch (reviewer)
+            try
             {
-                case Reviewer.EngineerOfRecord:
-                    isApprovalRequired = true;
-                    break;
-                case Reviewer.Owner:
-                    signBtn = InputFields.Owner_SignBtn;
-                    reviewerField = InputFields.Owner_Review;
-                    approvalField = Approve
-                        ? RadioBtnsAndCheckboxes.Owner_Approval_Yes
-                        : RadioBtnsAndCheckboxes.Owner_Approval_No;
-                    isApprovalRequired = true;
-                    break;
-                case Reviewer.IQF_Manager:
-                    signBtn = InputFields.IQFManager_SignBtn;
-                    reviewerField = InputFields.IQF_Manager;
-                    break;
-                case Reviewer.QC_Manager:
-                    signBtn = InputFields.QCManager_SignBtn;
-                    reviewerField = InputFields.QC_Manager;
-                    break;
-                case Reviewer.CQC_Manager:
-                    signBtn = InputFields.CQCManager_SignBtn;
-                    reviewerField = InputFields.CQC_Manager;
-                    approvalField = Approve
-                        ? RadioBtnsAndCheckboxes.CQCMApproval_Yes
-                        : RadioBtnsAndCheckboxes.CQCMApproval_No;
-                    isApprovalRequired = true;
-                    break;
-                case Reviewer.Operations_Manager:
-                    signBtn = InputFields.OMQManager_SignBtn;
-                    reviewerField = InputFields.OMQ_Manager;
-                    break;
+                InputFields signBtn = InputFields.RecordEngineer_SignBtn;
+                InputFields reviewerField = InputFields.Engineer_of_Record;
+                RadioBtnsAndCheckboxes approvalField = Approve
+                    ? RadioBtnsAndCheckboxes.Engineer_Approval_Yes
+                    : RadioBtnsAndCheckboxes.Engineer_Approval_No;
+                bool isApprovalRequired = false;
+
+                switch (reviewer)
+                {
+                    case Reviewer.EngineerOfRecord:
+                        isApprovalRequired = true;
+                        break;
+                    case Reviewer.Owner:
+                        signBtn = InputFields.Owner_SignBtn;
+                        reviewerField = InputFields.Owner_Review;
+                        approvalField = Approve
+                            ? RadioBtnsAndCheckboxes.Owner_Approval_Yes
+                            : RadioBtnsAndCheckboxes.Owner_Approval_No;
+                        isApprovalRequired = true;
+                        break;
+                    case Reviewer.IQF_Manager:
+                        signBtn = InputFields.IQFManager_SignBtn;
+                        reviewerField = InputFields.IQF_Manager;
+                        break;
+                    case Reviewer.QC_Manager:
+                        signBtn = InputFields.QCManager_SignBtn;
+                        reviewerField = InputFields.QC_Manager;
+                        break;
+                    case Reviewer.CQC_Manager:
+                        signBtn = InputFields.CQCManager_SignBtn;
+                        reviewerField = InputFields.CQC_Manager;
+                        approvalField = Approve
+                            ? RadioBtnsAndCheckboxes.CQCMApproval_Yes
+                            : RadioBtnsAndCheckboxes.CQCMApproval_No;
+                        isApprovalRequired = true;
+                        break;
+                    case Reviewer.Operations_Manager:
+                        signBtn = InputFields.OMQManager_SignBtn;
+                        reviewerField = InputFields.OMQ_Manager;
+                        break;
+                }
+               
+                PageAction.EnterText(PgHelper.GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer.ToString()}");
+
+                Thread.Sleep(2000);
+                ClickBtn_Sign(signBtn);
+                PageAction.EnterSignature();
+                ClickBtn_SignaturePanel_OK();
+
+                if (isApprovalRequired)
+                    PageAction.SelectRadioBtnOrChkbox(approvalField);
             }
-
-            Thread.Sleep(5000);
-            PageAction.EnterText(PgHelper.GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer.ToString()}");
-
-            ClickBtn_Sign(signBtn);
-            PageAction.EnterSignature();
-            ClickBtn_SignaturePanel_OK();
-
-            if (isApprovalRequired)
-                PageAction.SelectRadioBtnOrChkbox(approvalField);
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+            }
         }
 
         public override void ClickTab_All_NCRs()
@@ -1423,6 +1438,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override void SelectDDL_Specification(int selectionIndex = 1)
             => PageAction.ExpandAndSelectFromDDList(InputFields.SpecificationId, selectionIndex);
+
+        public override void ClickTab_Creating_Revise()
+            => GridHelper.ClickTab(TableTab.Revise);
     }
 
     #endregion Implementation specific to LAX

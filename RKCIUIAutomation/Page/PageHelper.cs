@@ -303,9 +303,13 @@ namespace RKCIUIAutomation.Page
 
         public override By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true)
         {
-            string submitTypeXPath = submitType 
-                ? "[@type='submit']"
-                : "";
+            string submitTypeXPath = string.Empty;
+
+            if (submitType)
+            {
+                submitTypeXPath = "[@type='submit']";
+            }
+
             By locator = By.XPath($"//input{submitTypeXPath}[@value='{buttonValue.GetString()}']");
             return locator;
         }

@@ -26,7 +26,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
             QaRcrdCtrl_QaDIR.ClickBtn_CreateNew(true);
             QaRcrdCtrl_QaDIR.SetDirNumber();
-            QaRcrdCtrl_QaDIR.ClickBtn_Save();            
+            QaRcrdCtrl_QaDIR.ClickBtn_Save();
             string dirNumber = QaRcrdCtrl_QaDIR.GetDirNumber();
             AddAssertionToList(WF_QaRcrdCtrl_QaDIR.VerifyDirIsDisplayedInCreate(dirNumber), "VerifyDirIsDisplayedInCreate as DIRTech");
             GridHelper.ClickEditBtnForRow();
@@ -653,7 +653,7 @@ namespace RKCIUIAutomation.Page.Workflows
             GridHelper.ClickEditBtnForRow();
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnCheckboxType.Inspection_Result_P), "VerifyChkBoxRdoBtnSelection Inspection_Result_P");
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnCheckboxType.Deficiencies_No), "VerifyChkBoxRdoBtnSelection AnyDeficiencies_No");
-            AddAssertionToList(VerifyTextAreaField(InputFieldType.Deficiency_Description, true), "VerifyTextAreaField Deficiency_Description - Should Be Empty");
+            AddAssertionToList(VerifyTextAreaField(InputFieldType.Deficiency_Description, false), "VerifyTextAreaField Deficiency_Description - Should Be Empty");
         }
 
         public override void Modify_Save_Verify_and_SaveForward_inCreateRevise(string dirNumber)

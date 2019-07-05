@@ -36,7 +36,7 @@ namespace RKCIUIAutomation.Page
         string GetGridTypeXPath(bool isMultiTabGrid);
         int GetTableRowCount(bool isMultiTabGrid = true);
         By GetTblRowBtn_ByLocator<T>(TableHelper.TableButton tblRowBtn, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false);
-        By GetTblRow_ByLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false);
+        By GetTblRowElementByLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false);
         string GetXPathForTblRowBasedOnTextInRowOrRowIndex<T>(T textInRowForAnyColumnOrRowIndex, bool useContainsOperator = false);
         void GoToFirstPage();
         void GoToLastPage();
@@ -51,6 +51,7 @@ namespace RKCIUIAutomation.Page
         void SortColumnToDefault(Enum columnName, TableHelper.TableType tableType = TableHelper.TableType.Unknown);
         void ToggleCheckBoxForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true);
         bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, TableHelper.TableType tableType = TableHelper.TableType.Unknown, bool noRecordsExpected = false, FilterOperator filterOperator = FilterOperator.EqualTo);
+        bool VerifyNoRecordMessageIsDisplayed(TableHelper.TableType tableType = TableHelper.TableType.Unknown);
         bool VerifyViewPdfReport(string textInRowForAnyColumn = "", bool isMultiViewPDF = false, bool selectNoneForMultiView = false, string expectedReportUrl = "");
     }
 }
