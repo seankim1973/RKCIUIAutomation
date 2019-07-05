@@ -373,7 +373,7 @@
     <Compile Include="Page\PageObjects\QARecordControl\GirderTracker.cs" />
     <Compile Include="Page\PageObjects\QARecordControl\MPLTracker.cs" />
     <Compile Include="Page\PageObjects\QARecordControl\QADIRs.cs" />
-    <Compile Include="Page\PageObjects\QARecordControl\QATest_All.cs" />
+    <Compile Include="Page\PageObjects\QARecordControl\QATestAll.cs" />
     <Compile Include="Page\PageObjects\QARecordControl\QATest_OriginalReport.cs" />
     <Compile Include="Page\PageObjects\QARecordControl\RetainingWallBackFillQtyTkr.cs" />
     <Compile Include="Page\PageObjects\QASearch\DailyInspectionReport.cs" />
@@ -423,6 +423,7 @@
     <Compile Include="Test\RMCenter_CorrespondenceLog_Test.cs" />
     <Compile Include="Test\Smoke.cs" />
     <Compile Include="Test\TestBase.cs" />
+    <Compile Include="Test\TestMethods_Test.cs" />
     <Compile Include="Test\TestUtils.cs" />
     <Compile Include="Test\UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -437,6 +438,7 @@
     <Compile Include="Tools\JiraUtil.cs" />
     <Compile Include="Tools\NUnitClass.cs" />
     <Compile Include="Tools\TestResultUtil.cs" />
+    <Compile Include="Tools\VpnUtility.cs" />
     <Compile Include="Tools\XMLUtil.cs" />
   </ItemGroup>
   <ItemGroup />

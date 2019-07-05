@@ -67,17 +67,18 @@ namespace RKCIUIAutomation.Page
             for (int i = 0; i < elements.Count; i++)
             {
                 string spanText = elements[i].Text;
-                bool match = spanText.Equals(matchValue)
-                    ? true
-                    : false;
 
-                if (match)
+                if (spanText.Equals(matchValue))
+                {
+                    index = i;
+                    break;
+                }
+                else if (spanText.Contains(matchValue))
                 {
                     index = i;
                     break;
                 }
             }
-
 
             if (index == -1)
             {

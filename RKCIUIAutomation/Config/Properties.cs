@@ -74,7 +74,9 @@ namespace RKCIUIAutomation.Config
         [StringValue("AT_CR Response Admin")] CR_ResponseAdmin,
         [StringValue("AT_CR Verify")] CR_Verify,
         [StringValue("AT_CR Verify Admin")] CR_VerifyAdmin,
-        [StringValue("AT_Transmissions General")] TransmissionsGeneral
+        [StringValue("AT_Transmissions General")] TransmissionsGeneral,
+        [StringValue("AT_TestTech")] TestTech,
+        [StringValue("AT_TestTechMgr")] TestTechMgr,
     }
 
     public enum UserGroup

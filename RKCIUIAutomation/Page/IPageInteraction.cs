@@ -15,6 +15,7 @@ namespace RKCIUIAutomation.Page
         void ClickCancel();
         void ClickCreate();
         void ClickElement(By elementByLocator);
+        void ClickElementByID(Enum elementIdEnum);
         void ClickLoginLink();
         void ClickLogoutLink();
         void ClickNew(bool multipleBtnInstances = false);
@@ -44,12 +45,12 @@ namespace RKCIUIAutomation.Page
         string GetAttribute(By elementByLocator, string attributeName);
         IList<string> GetAttributes<T>(T elementByLocator, string attributeName);
         string GetCurrentUser(bool getFullName = false);
-        IWebElement GetElement(By elementByLocator);
-        IList<IWebElement> GetElements(By elementByLocator);
+        IWebElement GetElement(By elementByLocator, bool waitForLoading = true);
+        IList<IWebElement> GetElements(By elementByLocator, bool waitForLoading = true);
         int GetElementsCount(By elementByLocator);
         string GetPageUrl(int timeOutInSeconds = 10, int pollingInterval = 500);
         WebDriverWait GetStandardWait(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500);
-        string GetText(By elementByLocator);
+        string GetText(By elementByLocator, bool shouldReturnValue = true);
         IList<string> GetTextForElements(By elementByLocator);
         string GetTextFromDDL(Enum ddListID);
 
@@ -85,7 +86,7 @@ namespace RKCIUIAutomation.Page
         void VerifyPageIsLoaded(bool checkingLoginPage = false, bool continueTestIfPageNotLoaded = true);
         bool VerifySchedulerIsDisplayed();
         bool VerifySuccessMessageIsDisplayed();
-        bool VerifyTextAreaField(Enum textAreaField, bool emptyFieldExpected = false);
+        bool VerifyTextAreaField(Enum textAreaField, bool textFieldShouldHaveValue = true);
 
         /// <summary>
         /// Provide string or IList<string> of expected file names to verify is seen in the Attachments section of the Details Page
@@ -95,9 +96,9 @@ namespace RKCIUIAutomation.Page
         /// <returns></returns>
         bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false, bool forDIR = true, int dirEntryNumber = 1);
         bool VerifyUrlIsLoaded(string pageUrl);
-        void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500);
+        void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500, bool waitForLoading = true);
         void WaitForElementToClear(By locator);
         void WaitForLoading();
-        void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool checkForLoader = true);
+        void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool waitForLoading = true);
     }
 }

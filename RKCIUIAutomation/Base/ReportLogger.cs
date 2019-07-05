@@ -225,15 +225,22 @@ namespace RKCIUIAutomation.Base
 
         public void Step(string testStep, bool createStdOutLog = false, bool testResult = true)
         {
+            string logMsg = string.Empty;
             ExtentColor logLabelColor = ExtentColor.Grey;
 
             try
             {
-                string logMsg = $"TestStep: {testStep}";
+                logMsg = $"TestStep: {testStep}";
 
                 if (!testResult)
                 {
                     logLabelColor = ExtentColor.Red;
+                }
+
+                if (testStep.Contains("Workflow:"))
+                {
+                    logLabelColor = ExtentColor.Purple;
+                    logMsg = testStep;
                 }
 
                 if (createStdOutLog)
@@ -258,15 +265,9 @@ namespace RKCIUIAutomation.Base
                 testInstance.Info(CreateReportMarkupLabel(logMsg, logLabelColor));
                 CheckForLineBreaksInLogMsgForStdOutLogger(Level.Info, logMsg);
                 AddCookieToCurrentPage("zaleniumMessage", testStep);
-                //driver.Manage().Cookies.AddCookie(cookie);
-            }
-            catch (UnableToSetCookieException)
-            {
-                //log.Debug(ce.Message);
             }
             catch (Exception)
             {
-                //log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
         }

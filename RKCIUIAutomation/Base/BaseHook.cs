@@ -125,8 +125,15 @@ namespace RKCIUIAutomation.Base
 
         public static void AddCookieToCurrentPage(string zaleniumCookieName, string cookieValue)
         {
-            cookie = new Cookie(zaleniumCookieName, cookieValue);
-            driver.Manage().Cookies.AddCookie(cookie);
+            try
+            {
+                cookie = new Cookie(zaleniumCookieName, cookieValue);
+                driver.Manage().Cookies.AddCookie(cookie);
+            }
+            catch (UnableToSetCookieException)
+            {
+                log.Debug(cookieValue);
+            }
         }
 
 

@@ -164,7 +164,8 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.Message);
+                Report.Error(e.Message);
+                throw;
             }
         }
 
@@ -193,10 +194,13 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                Report.Error(e.StackTrace);
+                Report.Error(e.Message);
                 throw;
             }
         }
+
+        public override void ClickElementByID(Enum elementIdEnum)
+            => ClickElement(By.Id(elementIdEnum.GetString()));
 
         public override void ClickInMainBodyAwayFromField()
         {
@@ -255,6 +259,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error(e.Message);
+                throw;
             }
         }
 
@@ -324,13 +329,8 @@ namespace RKCIUIAutomation.Page
 
                 Report.Step($"Confirmation Dialog: {actionMsg}");
             }
-            catch (UnhandledAlertException)
+            catch (Exception)
             {
-                throw;
-            }
-            catch (Exception e)
-            {
-                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
         }
@@ -374,60 +374,44 @@ namespace RKCIUIAutomation.Page
 
         public override void EnterSignature()
         {
-            try
-            {
-                IWebElement signCanvas = GetElement(By.XPath("//canvas"));
-                Actions drawOnCanvas = new Actions(driver);
-                drawOnCanvas
-                    //.Click(signCanvas)
-                    .MoveToElement(signCanvas, 8, 8)
-                    .ClickAndHold(signCanvas)
-                    .MoveByOffset(50, 10)
-                    .MoveByOffset(-10, -50)
-                    .MoveByOffset(-50, -10)
-                    .Release(signCanvas)
-                    .Build();
-                drawOnCanvas.Perform();
-            }
-            catch (Exception e)
-            {
-                log.Error($"{e.Message}\n{e.StackTrace}");
-            }
+            IWebElement signCanvas = GetElement(By.Id("mycanvas"), false);
 
+            Actions drawOnCanvas = new Actions(driver);
+            drawOnCanvas
+                //.Click(signCanvas)
+                .MoveToElement(signCanvas, 8, 8)
+                .ClickAndHold(signCanvas)
+                .MoveByOffset(50, 10)
+                .MoveByOffset(-10, -50)
+                .MoveByOffset(-50, -10)
+                .Release(signCanvas)
+                .Build();
+            drawOnCanvas.Perform();
         }
 
         public override void EnterText(By elementByLocator, string text, bool clearField = true)
         {
+            IWebElement textField = null;
             string logMsg = string.Empty;
 
             try
             {
-                IWebElement textField = GetElement(elementByLocator);
-                bool validField = textField != null;
+                textField = GetElement(elementByLocator);
 
-                if (validField)
+                if (clearField)
                 {
-                    if (clearField)
-                    {
-                        textField.Clear();
-                    }
-
-                    textField.Click();
-                    textField.SendKeys(text);
-
-                    logMsg = $"Entered '{text}' in field - {elementByLocator}";
-                    Report.Step(logMsg);
-                }
-                else
-                {
-                    logMsg = $"Element: {elementByLocator} is null";
+                    textField.Clear();
                 }
 
-                Report.Info(logMsg, validField);
+                textField.Click();
+                textField.SendKeys(text);
+
+                logMsg = $"Entered '{text}' in field - {elementByLocator}";
+                Report.Step(logMsg);
             }
             catch (Exception e)
             {
-                log.Error($"{e.Message}\n{e.StackTrace}");
+                Report.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
         }
@@ -575,7 +559,7 @@ namespace RKCIUIAutomation.Page
             return userAcct;
         }
 
-        public override IWebElement GetElement(By elementByLocator)
+        public override IWebElement GetElement(By elementByLocator, bool waitForLoading = true)
         {
             IWebElement elem = null;
 
@@ -585,7 +569,8 @@ namespace RKCIUIAutomation.Page
             }
             catch (NoSuchElementException)
             {
-                WaitForElement(elementByLocator);
+                WaitForElement(elementByLocator, waitForLoading: waitForLoading);
+                elem = driver.FindElement(elementByLocator);
             }
             catch (Exception)
             {
@@ -595,31 +580,21 @@ namespace RKCIUIAutomation.Page
             return elem;
         }
 
-        public override IList<IWebElement> GetElements(By elementByLocator)
+        public override IList<IWebElement> GetElements(By elementByLocator, bool waitForLoading = true)
         {
-            IList<IWebElement> elements = null;
+            IList<IWebElement> elements = new List<IWebElement>();
 
             try
             {
-                elements = new List<IWebElement>();
                 elements = driver.FindElements(elementByLocator);
             }
             catch (NoSuchElementException)
             {
-                try
-                {
-                    WaitForElement(elementByLocator);
-                    elements = new List<IWebElement>();
-                    elements = driver.FindElements(elementByLocator);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                WaitForElement(elementByLocator, waitForLoading: waitForLoading);
+                elements = driver.FindElements(elementByLocator);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -701,9 +676,10 @@ namespace RKCIUIAutomation.Page
             return wait;
         }
 
-        public override string GetText(By elementByLocator)
+        public override string GetText(By elementByLocator, bool shouldReturnValue = true)
         {
             bool textHasValue = false;
+            bool resultIsAsExpected = false;
             IWebElement element = null;
             string text = string.Empty;
             string logMsg = $"Unable to retrieve text";
@@ -715,28 +691,46 @@ namespace RKCIUIAutomation.Page
                 if ((bool)element?.Displayed || (bool)element?.Enabled)
                 {
                     text = element.Text;
+                    textHasValue = text.HasValue();
 
-                    if (!text.HasValue())
+                    if (!textHasValue)
                     {
                         text = element.GetAttribute("value");
+                        textHasValue = text.HasValue();
                     }
 
-                    if (text.HasValue())
+                    if (textHasValue)
                     {
                         logMsg = $"Retrieved '{text}'";
-                        textHasValue = true;
+
+                        if (shouldReturnValue)
+                        {
+                            logMsg = $"{logMsg} [As Expected]";
+                            resultIsAsExpected = true;
+                        }
+                        else
+                        {
+                            logMsg = $"Unexpectedly, {logMsg}";
+                        }
+                    }
+                    else
+                    {
+                        if (!shouldReturnValue)
+                        {
+                            logMsg = $"{logMsg} [As Expected]";
+                            resultIsAsExpected = true;
+                        }
+                        else
+                        {
+                            logMsg = $"Unexpectedly, {logMsg}";
+                        }
                     }
 
-                    Report.Info($"{logMsg} from element - {elementByLocator}", textHasValue);
+                    Report.Info($"{logMsg} from element - {elementByLocator}", resultIsAsExpected);
                 }
             }
-            catch (NoSuchElementException)
+            catch (Exception)
             {
-                throw;
-            }
-            catch (Exception e)
-            {
-                log.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
 
@@ -795,13 +789,14 @@ namespace RKCIUIAutomation.Page
                 ScrollToElement(elementByLocator);
                 ExecuteJsAction(JSAction.Click, elementByLocator);
                 Report.Step($"Clicked {elementByLocator}");
-                WaitForPageReady();
             }
             catch (UnableToSetCookieException)
-            { }
-            catch (Exception)
             {
-                throw;
+                log.Debug($"TestStep: Clicked {elementByLocator}");
+            }
+            finally
+            {
+                WaitForPageReady(waitForLoading: false);
             }
         }
 
@@ -891,6 +886,7 @@ namespace RKCIUIAutomation.Page
 
                 if (elem != null)
                 {
+                    WaitForPageReady(waitForLoading:false);
                     Actions actions = new Actions(driver);
                     actions.MoveToElement(elem);
                     actions.Perform();
@@ -912,7 +908,7 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IWebElement element = GetElement(locator);
+                IWebElement element = GetElement(locator, false);
 
                 if (element.Enabled)
                 {
@@ -953,31 +949,41 @@ namespace RKCIUIAutomation.Page
 
         public override string UploadFile(string fileName = "")
         {
-            fileName = fileName.HasValue()
-                ? fileName
-                : "test.xlsx";
+            string filePath = string.Empty;
 
-            string filePath = (testPlatform == TestPlatform.Local)
-                ? $"{BaseUtils.CodeBasePath}\\UploadFiles\\{fileName}"
-                : $"/home/seluser/UploadFiles/{fileName}";
+            if (!fileName.HasValue())
+            {
+                fileName = "test.xlsx";
+            }
+
+            if (testPlatform == TestPlatform.Local)
+            {
+                filePath = $"{CodeBasePath}\\UploadFiles\\{fileName}";                
+            }
+            else
+            {
+                filePath = $"/home/seluser/UploadFiles/{fileName}";
+            }
 
             try
             {
-                ScrollToElement(By.XPath("//h4[text()='Attachments']"));
-                IWebElement uploadInputElem = GetElement(By.XPath("//input[@id='UploadFiles_0_']"));
-                uploadInputElem.SendKeys(filePath);
-                //WaitForLoading();
                 PageAction.WaitForPageReady();
-                log.Info($"Entered {filePath}' for file upload");
-
+                ScrollToElement(By.XPath("//div[contains(@class, 'k-upload k-header')]"));
+                driver.FindElement(By.XPath("//input[@id='UploadFiles_0_']")).SendKeys(filePath);
+                Report.Step($"Entered {filePath}' for file upload");
+                PageAction.WaitForPageReady();
+            }
+            catch (Exception e)
+            {
+                Report.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
+            finally
+            {
                 By uploadStatusLabel = By.XPath("//strong[@class='k-upload-status k-upload-status-total']");
                 bool uploadStatus = ElementIsDisplayed(uploadStatusLabel);
 
                 Report.Info($"File Upload {(uploadStatus ? "Successful" : "Failed")}.", uploadStatus);
-            }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
             }
 
             return fileName;
@@ -1359,7 +1365,7 @@ namespace RKCIUIAutomation.Page
             return isDisplayed;
         }
 
-        public override bool VerifyTextAreaField(Enum textAreaField, bool emptyFieldExpected = false)
+        public override bool VerifyTextAreaField(Enum textAreaField, bool textFieldShouldHaveValue = true)
         {
 
             bool textAreaHasValue = false;
@@ -1370,33 +1376,34 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                textAreaValue = GetText(PgHelper.GetTextAreaFieldByLocator(textAreaField));
+                textAreaValue = GetText(PgHelper.GetTextAreaFieldByLocator(textAreaField), textFieldShouldHaveValue);
                 textAreaHasValue = textAreaValue.HasValue();
+                string logMsgTextArea = $"textArea [{textAreaField}]";
 
-                if (emptyFieldExpected)
+                if (textAreaHasValue)
                 {
-                    if (textAreaHasValue)
+                    if (textFieldShouldHaveValue)
                     {
-                        logMsg = "NOT ";
-                        expectedMsg = $"textArea [{textAreaField}] should be empty, but retrieved text: {textAreaValue}";
+                        resultIsAsExpected = true;
+                        expectedMsg = $"retrieved text from {logMsgTextArea} : {textAreaValue}";                       
                     }
                     else
                     {
-                        resultIsAsExpected = true;
-                        expectedMsg = $"textArea [{textAreaField} is empty]";
+                        logMsg = "NOT ";
+                        expectedMsg = $"{logMsgTextArea} should be empty, but retrieved text: {textAreaValue}";
                     }
                 }
                 else
                 {
-                    if (textAreaHasValue)
+                    if (textFieldShouldHaveValue)
                     {
-                        resultIsAsExpected = true;
-                        expectedMsg = $"retrieved text from textArea [{textAreaField}] : {textAreaValue}";
+                        logMsg = "NOT ";
+                        expectedMsg = $"{logMsgTextArea} should have value, but is empty";
                     }
                     else
                     {
-                        logMsg = "NOT ";
-                        expectedMsg = $"textArea [{textAreaField}] should have value, but is empty";
+                        resultIsAsExpected = true;
+                        expectedMsg = $"{logMsgTextArea} is empty [As Expected]";
                     }
                 }
 
@@ -1404,7 +1411,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return resultIsAsExpected;
@@ -1595,12 +1602,19 @@ namespace RKCIUIAutomation.Page
             return isLoaded;
         }
 
-        public override void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500)
+        public override void WaitForElement(By elementByLocator, int timeOutInSeconds = 20, int pollingInterval = 500, bool waitForLoading = true)
         {
-            WaitForPageReady();
-            WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-            wait.Until(x => driver.FindElement(elementByLocator));
-            log.Debug($"...waiting for element: - {elementByLocator}");
+            try
+            {
+                WaitForPageReady(waitForLoading: waitForLoading);
+                WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
+                wait.Until(x => driver.FindElement(elementByLocator));
+                log.Debug($"...waiting for element: - {elementByLocator}");
+            }
+            catch (WebDriverTimeoutException)
+            {
+                throw new NoSuchElementException();
+            }
         }
 
         public override void WaitForElementToClear(By elementByLocator)
@@ -1618,39 +1632,32 @@ namespace RKCIUIAutomation.Page
                 {
                     isDisplayed = false;
                 }
-                catch (Exception e)
+                catch (Exception )
                 {
-                    log.Error(e.Message);
                     throw;
                 }
 
             } while (isDisplayed);
-
-            //finally
-            //{
-            //    if (isDisplayed)
-            //    {
-            //        WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
-            //        wait.Until(x => ExpectedConditions.InvisibilityOfElementLocated(elementByLocator));
-            //    }
-            //}
         }
 
         public override void WaitForLoading()
         {
             try
             {
-                string[] classNames = new string[]
+                IList<By> loadingElems = new List<By>()
                 {
-                    "k-overlay",
-                    "k-loading-image"
+                    By.ClassName("k-loading-image"),
+                    By.XPath("//div[@id='overlay_div'][@style='display: block;']")
                 };
 
-                foreach (string className in classNames)
+                foreach (By elem in loadingElems)
                 {
-                    By loadingLocator = By.ClassName(className);
-                    WaitForElementToClear(loadingLocator);
+                    WaitForElementToClear(elem);
                 }
+            }
+            catch (UnhandledAlertException e)
+            {
+                Report.Debug($"Alert Message Displayed: {e.Message}");
             }
             catch (Exception)
             {
@@ -1658,9 +1665,9 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public override void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool checkForLoader = true)
+        public override void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool waitForLoading = true)
         {
-            if (checkForLoader)
+            if (waitForLoading)
             {
                 WaitForLoading();
             }
@@ -1689,36 +1696,35 @@ namespace RKCIUIAutomation.Page
                 {
                     log.Debug("...waiting for page to be in Ready state");
 
-                    try
-                    {
+                    //try
+                    //{
                         WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                         wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
-                    }
-                    catch (UnhandledAlertException)
-                    {
-                        throw;
-                    }
+                    //}
+                    //catch (UnhandledAlertException)
+                    //{
+                    //    throw;
+                    //}
                 }
             }
             catch (InvalidOperationException)
             {
-                try
-                {
+                //try
+                //{
                     WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                     wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
-                }
-                catch (UnhandledAlertException)
-                {
-                    throw;
-                }
+                //}
+                //catch (UnhandledAlertException)
+                //{
+                //    throw;
+                //}
             }
-            catch (UnhandledAlertException ae)
+            //catch (UnhandledAlertException ae)
+            //{
+            //    log.Debug(ae.Message);
+            //}
+            catch (Exception)
             {
-                log.Debug(ae.Message);
-            }
-            catch (Exception e)
-            {
-                log.Debug($"WaitForPageReady : {e.Message}");
                 throw;
             }
         }
@@ -1731,6 +1737,7 @@ namespace RKCIUIAutomation.Page
         public abstract void ClickCancel();
         public abstract void ClickCreate();
         public abstract void ClickElement(By elementByLocator);
+        public abstract void ClickElementByID(Enum elementIdEnum);
         public abstract void ClickInMainBodyAwayFromField();
         public abstract void ClickLoginLink();
         public abstract void ClickLogoutLink();
@@ -1750,13 +1757,13 @@ namespace RKCIUIAutomation.Page
         public abstract string GetAttribute(By elementByLocator, string attributeName);
         public abstract IList<string> GetAttributes<T>(T elementByLocator, string attributeName);
         public abstract string GetCurrentUser(bool getFullName = false);
-        public abstract IWebElement GetElement(By elementByLocator);
-        public abstract IList<IWebElement> GetElements(By elementByLocator);
+        public abstract IWebElement GetElement(By elementByLocator, bool waitForLoading = true);
+        public abstract IList<IWebElement> GetElements(By elementByLocator, bool waitForLoading = true);
         public abstract int GetElementsCount(By elementByLocator);
         public abstract string GetPageTitle(int timeOutInSeconds = 10, int pollingInterval = 500);
         public abstract string GetPageUrl(int timeOutInSeconds = 10, int pollingInterval = 500);
         public abstract WebDriverWait GetStandardWait(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500);
-        public abstract string GetText(By elementByLocator);
+        public abstract string GetText(By elementByLocator, bool shouldReturnValue = true);
         public abstract IList<string> GetTextForElements(By elementByLocator);
         public abstract string GetTextFromDDL(Enum ddListID);
         public abstract string GetTextFromDDListInActiveTab(Enum ddListID);
@@ -1785,12 +1792,12 @@ namespace RKCIUIAutomation.Page
         public abstract void VerifyPageIsLoaded(bool checkingLoginPage = false, bool continueTestIfPageNotLoaded = true);
         public abstract bool VerifySchedulerIsDisplayed();
         public abstract bool VerifySuccessMessageIsDisplayed();
-        public abstract bool VerifyTextAreaField(Enum textAreaField, bool emptyFieldExpected = false);
+        public abstract bool VerifyTextAreaField(Enum textAreaField, bool textFieldShouldHaveValue = true);
         public abstract bool VerifyUploadedFileNames<T>(T expectedFileName, bool beforeSubmitBtnAction = false, bool forDIR = true, int dirEntryNumber = 1);
         public abstract bool VerifyUrlIsLoaded(string pageUrl);
-        public abstract void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500);
+        public abstract void WaitForElement(By elementByLocator, int timeOutInSeconds = 10, int pollingInterval = 500, bool waitForLoading = true);
         public abstract void WaitForElementToClear(By locator);
         public abstract void WaitForLoading();
-        public abstract void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool checkForLoader = true);
+        public abstract void WaitForPageReady(int timeOutInSeconds = 60, int pollingInterval = 10000, bool waitForLoading = true);
     }
 }
