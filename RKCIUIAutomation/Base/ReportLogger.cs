@@ -247,25 +247,28 @@ namespace RKCIUIAutomation.Base
                 {
                     if (testResult)
                     {
-                        Info(testStep);
+                        Info(logMsg);
                     }
                     else
                     {
-                        Info(testStep, testResult);
+                        Info(logMsg, testResult);
                     }
                 }
                 else
                 {
                     if (testResult.Equals(false))
                     {
-                        Info(testStep, testResult);
+                        Info(logMsg, testResult);
                     }
                 }
 
                 testInstance.Info(CreateReportMarkupLabel(logMsg, logLabelColor));
                 CheckForLineBreaksInLogMsgForStdOutLogger(Level.Info, logMsg);
-                AddCookieToCurrentPage("zaleniumMessage", testStep);
+                AddCookieToCurrentPage("zaleniumMessage", logMsg);
             }
+            //catch (UnableToSetCookieException)
+            //{
+            //}
             catch (Exception)
             {
                 throw;

@@ -226,10 +226,12 @@ namespace RKCIUIAutomation.Page
 
         public override string GetColumnValueForRow<T, C>(T textInRowForAnyColumnOrRowIndex, C getValueFromColumnName, bool isMultiTabGrid = true)
         {
-            Type cArgType = getValueFromColumnName.GetType();
-            string columnDataTypeXPath = string.Empty;
-            string rowXPath = string.Empty;           
             object cArgObj = null;
+            string colValue = string.Empty;
+            string rowXPath = string.Empty;
+            string columnDataTypeXPath = string.Empty;
+
+            Type cArgType = getValueFromColumnName.GetType();
 
             try
             {
@@ -252,13 +254,14 @@ namespace RKCIUIAutomation.Page
                 int xPathIndex = int.Parse(dataIndex) + 1;
 
                 rowXPath = $"{gridTypeXPath}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
+                colValue = PageAction.GetText(By.XPath(rowXPath));
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
-            return PageAction.GetText(By.XPath(rowXPath));
+            return colValue;
         }
 
         public override void ClickButtonForRow<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
@@ -279,11 +282,14 @@ namespace RKCIUIAutomation.Page
                 By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
                 PageAction.JsClickElement(locator);
                 Report.Step($"{logMsgBasedOnBtnType[0]} {tableButton} {logMsgBasedOnBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
-                PageAction.WaitForPageReady();
             }
             catch (Exception)
             {
                 throw;
+            }
+            finally
+            {
+                PageAction.WaitForPageReady();
             }
         }
 
