@@ -532,7 +532,7 @@ namespace RKCIUIAutomation.Test.NCR
 
             WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInLAWAConcurrence(ncrDescription);
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Owner);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.Owner);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
             Report.Step("STEP:  edit in DOT Approval tab and verify signatature for DOT Review is empty  -------");
@@ -543,7 +543,7 @@ namespace RKCIUIAutomation.Test.NCR
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Owner_Approval_NA), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.Owner_Approval_NA)");
 
             Report.Step("STEP:  provide signature, name and select Approval 'Yes' rdoBtn then click SaveOnly  -------");
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Owner);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.Owner);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             Report.Step("STEP:  edit in DOT Approval tab and verify signature value attribute is not empty, name field is not empty, approval rdoBtn is selected then click saveFwd  -------");
@@ -587,7 +587,7 @@ namespace RKCIUIAutomation.Test.NCR
             AddAssertionToList(VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Replace), "VerifyChkBoxRdoBtnSelection(RadioBtnsAndCheckboxes.ChkBox_Replace)");
 
             Report.Step("STEP:  provide signature for IQF Mgr then click cancel  -------");
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.IQF_Manager);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Cancel();
 
             Report.Step("STEP:  edit in Verification and Closure and verify signature is empty for IQF Mgr -------");

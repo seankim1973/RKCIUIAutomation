@@ -43,6 +43,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 log.Info($"###### using  GeneralNCR_GLX instance ###### ");
                 instance = new GeneralNCR_GLX(driver);
             }
+            else if (tenantName == TenantName.I15North)
+            {
+                log.Info($"###### using  GeneralNCR_I15North instance ###### ");
+                instance = new GeneralNCR_I15North(driver);
+            }
             else if (tenantName == TenantName.I15South)
             {
                 log.Info($"###### using  GeneralNCR_I15South instance ###### ");
@@ -238,6 +243,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
             }
+            finally
+            {
+                WaitForPageReady();
+            }
         }
 
         internal void ClickBtn_Sign(InputFields signBtnType)
@@ -387,7 +396,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override void ClickBtn_SignaturePanel_Clear()
             => PageAction.JsClickElement(SignaturePanelBtnXPathLocator("Clear"));
 
-        public override void SignDateApproveNCR(Reviewer reviewer, bool Approve = true)
+        public override void SignDateApproveNcrByReviewer(Reviewer reviewer, bool Approve = true)
         {
             try
             {
@@ -784,15 +793,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-
-                IWebElement NcrTypeInputElem = PageAction.GetElement(By.Id(InputFields.Type_of_NCR.GetString()));
-                errorLabelIsDisplayed = NcrTypeInputElem.FindElement(By.XPath("//preceding-sibling::span[@data-valmsg-for='NcrType']")).Displayed
-                    ? true
-                    : false;
+                errorLabelIsDisplayed = PageAction.VerifyRequiredFieldErrorLabelIsDisplayed(InputFields.Type_of_NCR);
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return errorLabelIsDisplayed;
@@ -955,7 +960,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         /// </summary>
         /// <param name="reviewer"></param>
         /// <param name="Approve"></param>
-        void SignDateApproveNCR(Reviewer reviewer, bool Approve = true);
+        void SignDateApproveNcrByReviewer(Reviewer reviewer, bool Approve = true);
 
         void ClickBtn_New();
 
@@ -1252,7 +1257,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void SelectRdoBtn_TypeOfNCR_Level1();
         public abstract void SelectRdoBtn_TypeOfNCR_Level2();
         public abstract void SelectRdoBtn_TypeOfNCR_Level3();
-        public abstract void SignDateApproveNCR(Reviewer reviewer, bool Approve = true);
+        public abstract void SignDateApproveNcrByReviewer(Reviewer reviewer, bool Approve = true);
         public abstract void SortTable_Ascending();
         public abstract void SortTable_Descending();
         public abstract void SortTable_ToDefault();
@@ -1336,6 +1341,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     #endregion Implementation specific to GLX
 
 
+    #region Implementation specific to I15North
+
+    public class GeneralNCR_I15North : GeneralNCR
+    {
+        public GeneralNCR_I15North(IWebDriver driver) : base(driver)
+        {
+        }
+
+        public override void ClickTab_Creating_Revise()
+            => ClickTab_Revise();
+    }
+    #endregion Implementation specific to I15North
+
     #region Implementation specific to I15South
 
     public class GeneralNCR_I15South : GeneralNCR
@@ -1376,6 +1394,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Roadway();
             EnterDescription();
         }
+
+        public override void ClickTab_Creating_Revise()
+            => ClickTab_Revise();
     }
 
     #endregion Implementation specific to I15South
@@ -1388,6 +1409,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public GeneralNCR_I15Tech(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void ClickTab_Creating_Revise()
+            => ClickTab_Revise();
     }
 
     #endregion Implementation specific to I15Tech

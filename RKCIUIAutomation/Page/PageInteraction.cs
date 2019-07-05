@@ -313,7 +313,10 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
+                //IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
+                WebDriverWait wait = GetStandardWait(driver);
+                IAlert alert = wait.Until(ExpectedConditions.AlertIsPresent());
+
                 alert = driver.SwitchTo().Alert();
 
                 if (confirmYes)
@@ -328,6 +331,10 @@ namespace RKCIUIAutomation.Page
                 }
 
                 Report.Step($"Confirmation Dialog: {actionMsg}");
+            }
+            catch (WebDriverTimeoutException)
+            {
+                log.Debug("Attempted to find Alert Dialog, but was not present.");
             }
             catch (Exception)
             {
@@ -790,10 +797,9 @@ namespace RKCIUIAutomation.Page
                 ExecuteJsAction(JSAction.Click, elementByLocator);
                 Report.Step($"Clicked {elementByLocator}");
             }
-            catch (UnableToSetCookieException)
-            {
-                log.Debug($"TestStep: Clicked {elementByLocator}");
-            }
+            //catch (UnableToSetCookieException)
+            //{
+            //}
             finally
             {
                 WaitForPageReady(waitForLoading: false);
@@ -1346,6 +1352,45 @@ namespace RKCIUIAutomation.Page
             }
         }
 
+        public override bool VerifyRequiredFieldErrorLabelIsDisplayed<T>(T fieldInputIdEnumOrString)
+        {
+            Type argType = fieldInputIdEnumOrString.GetType();
+            string inputFieldId = string.Empty;
+            string logMsg = string.Empty;
+            bool isDisplayed = false;
+
+            if (fieldInputIdEnumOrString is Enum)
+            {
+                inputFieldId = ConvertToType<Enum>(fieldInputIdEnumOrString).GetString();
+            }
+            else if (argType.Equals(typeof(string)))
+            {
+                inputFieldId = ConvertToType<string>(fieldInputIdEnumOrString);
+            }
+            else
+            {
+                throw new ArgumentException($"Unsupported argument type was provided [{argType}].\nSupported argument types are type of string OR Enum (with StringValueAttribute) of the input field ID.");
+            }
+
+            try
+            {
+                PageAction.GetElement(By.XPath($"//input[@id='{inputFieldId}']/preceding-sibling::span[text()='Required']"));
+                isDisplayed = true;
+            }
+            catch (NoSuchElementException)
+            {
+                logMsg = "not ";
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            Report.Info($"Required field error label is {logMsg}displayed.", isDisplayed);
+
+            return isDisplayed;
+        }
+
         public override bool VerifySchedulerIsDisplayed() //TODO - move to Early Break Calendar class when more test cases are created
         {
             IWebElement scheduler = GetElement(By.Id("scheduler"));
@@ -1790,6 +1835,7 @@ namespace RKCIUIAutomation.Page
         public abstract bool VerifyInputField(Enum inputField, bool shouldFieldBeEmpty = false);
         public abstract bool VerifyPageHeader(string expectedPageHeading);
         public abstract void VerifyPageIsLoaded(bool checkingLoginPage = false, bool continueTestIfPageNotLoaded = true);
+        public abstract bool VerifyRequiredFieldErrorLabelIsDisplayed<T>(T fieldInputIdEnumOrString);
         public abstract bool VerifySchedulerIsDisplayed();
         public abstract bool VerifySuccessMessageIsDisplayed();
         public abstract bool VerifyTextAreaField(Enum textAreaField, bool textFieldShouldHaveValue = true);
