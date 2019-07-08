@@ -26,6 +26,7 @@ namespace RKCIUIAutomation.Page
         public const string UPLOAD = "UPLOAD";
         public const string MULTIDDL = "MULTIDDL";
         public const string FUTUREDATE = "FUTUREDATE";
+        public const string XPATH_TEXT = "XPATH";
         public const string AUTOPOPULATED = "AUTOPOPULATED";
         public const string AUTOPOPULATED_DDL = "AUTOPOPULATED_DDL";
         public const string AUTOPOPULATED_TEXT = "AUTOPOPULATED_TXT";

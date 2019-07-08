@@ -1,21 +1,25 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
+using System;
+using System.Collections.Generic;
 using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll;
+using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll_Common;
 using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 {
-    public class QATestAll : QATestAll_Impl
+    public class QATestAll_Common : QATestAll
     {
-        public QATestAll()
+        public QATestAll_Common()
         {
         }
 
-        public QATestAll(IWebDriver driver) => this.Driver = driver;
+        public QATestAll_Common(IWebDriver driver) => this.Driver = driver;
 
         public override T SetClass<T>(IWebDriver driver)
         {
-            IQATestAll instance = new QATestAll(driver);
+            IQATestAll instance = new QATestAll_Common(driver);
             if (tenantName == TenantName.LAX)
             {
                 log.Info($"###### using QATestAll_LAX instance ###### ");
@@ -50,6 +54,12 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return (T)instance;
         }
 
+        [ThreadStatic]
+        public IList<TestDetails_InputFieldType> allInputFieldTypeList;
+
+        [ThreadStatic]
+        public IList<TestDetails_InputFieldType> requiredFieldsList;
+
         public enum NewTest_InputFieldType
         {
             [StringValue("SelectedTechName", DDL)] TechnicianName,
@@ -62,10 +72,16 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public enum TestDetails_InputFieldType
         {
             [StringValue("StatusFlowName", AUTOPOPULATED)] WorkflowType,
-            //[StringValue("")] LIN,
+            [StringValue("//div[contains(@class, 'SmallerLabelForId')]", XPATH_TEXT)] LotId,
+            [StringValue("LinBase", AUTOPOPULATED_TEXT)] LIN,
+            [StringValue("//label[contains(text(),'Revision')]/following-sibling::div", XPATH_TEXT)] Revision,
+            [StringValue("Lot_LabId", AUTOPOPULATED_TEXT)] LabId,
+            [StringValue("//input[@id='Lot_ReportTypeId']/parent::span", XPATH_TEXT),] ReportType,
+            [StringValue("SampleByDiv", AUTOPOPULATED_TEXT)] SampleBy,
+            [StringValue("SampleDateDiv", AUTOPOPULATED_TEXT)] SampleDate,
             [StringValue("SequenceNumber", AUTOPOPULATED_TEXT)] LIN_SN,
             [StringValue("Lot_MaterialId", DDL)] MaterialCode,
-            [StringValue("Lot_GradeId", AUTOPOPULATED_DDL)] GrdeClassType,
+            [StringValue("Lot_GradeId", AUTOPOPULATED_DDL)] GradeClassType,
             [StringValue("Lot_MaterialDescription", AUTOPOPULATED_TEXT)] MaterialDescription,
             [StringValue("Lot_SupplierId", AUTOPOPULATED_DDL)] Supplier,
             [StringValue("Lot_SegmentId", DDL)] Segment,
@@ -93,7 +109,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("StationLimitEndOffsetDirection_-1")] RadioBtn_SublotStationLimits_EndOffset_L,
             [StringValue("StationLimitEndOffsetDirection_1")] RadioBtn_SublotStationLimits_EndOffset_R,
             [StringValue("StationOffsetDirection_-1")] RadioBtn_Station_Offset_L,
-            [StringValue("StationOffsetDirection_R")] RadioBtn_Station_Offset_R,
+            [StringValue("StationOffsetDirection_R")] RadioBtn_Station_Offset_R
         }
 
         public enum ButtonType
@@ -105,7 +121,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("ViewSelectedTest_PendingClose")] ViewSelected,
             [StringValue("CancelTest")] Cancel,
             [StringValue("SubmitTest")] Save,
-            [StringValue("SubmitTestAndContinue")] SavedEdit,
+            [StringValue("SubmitTestAndContinue")] SaveEdit,
+            [StringValue("AddRemoveTestMethodsButton")] AddRemoveTestMethods,
+            [StringValue("ReviewReviseToSupervisor")] ToSupervisor
         }
 
         public enum GridTabType
@@ -128,8 +146,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("RevisedDate")] RevisedDate,
             [StringValue("RevisedBy")] RevisedBy
         }
-
-
 
         public override void ClickBtn_CreateNew()
             => ClickElementByID(ButtonType.CreateNew);
@@ -159,23 +175,49 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             => GridHelper.ClickTab(GridTabType.PendingClosing);
 
         public override void ClickBtn_Cancel()
-        {
-            throw new System.NotImplementedException();
-        }
+            => ClickElementByID(ButtonType.Cancel);
 
         public override void ClickBtn_Save()
-        {
-            throw new System.NotImplementedException();
-        }
+            => ClickElementByID(ButtonType.Save);
 
         public override void ClickBtn_SaveEdit()
-        {
-            throw new System.NotImplementedException();
-        }
+            => ClickElementByID(ButtonType.SaveEdit);
 
         public override void PopulateFieldAndUpdateKVPairsList()
         {
             throw new System.NotImplementedException();
+        }
+
+        //I15SB, 
+        public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
+        {
+            return requiredFieldsList = new List<TestDetails_InputFieldType>()
+            {
+                TestDetails_InputFieldType.MaterialCode,
+                TestDetails_InputFieldType.GradeClassType,
+                TestDetails_InputFieldType.Supplier,
+                TestDetails_InputFieldType.Segment,
+                TestDetails_InputFieldType.Roadway,
+                TestDetails_InputFieldType.Feature,
+                TestDetails_InputFieldType.Structure,
+                TestDetails_InputFieldType.SampleType
+            };
+        }
+
+        public override IList<TestDetails_InputFieldType> GetAllInputFieldTypeList()
+        {
+            return allInputFieldTypeList = new List<TestDetails_InputFieldType>()
+            {
+                TestDetails_InputFieldType.WorkflowType,
+                TestDetails_InputFieldType.LIN,
+                TestDetails_InputFieldType.LIN_SN,
+                TestDetails_InputFieldType.Revision,
+                TestDetails_InputFieldType.LabId,
+                TestDetails_InputFieldType.ReportType,
+                TestDetails_InputFieldType.SampleBy,
+                TestDetails_InputFieldType.SampleDate,
+                TestDetails_InputFieldType.MaterialCode,
+            };
         }
     }
 
@@ -187,7 +229,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Cancel();
         void ClickBtn_Save();
         void ClickBtn_SaveEdit();
-
+        IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList();
+        IList<TestDetails_InputFieldType> GetAllInputFieldTypeList();
         void PopulateFieldAndUpdateKVPairsList();
 
         void SelectTab_FieldRevise();
@@ -200,7 +243,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     }
 
-    public abstract class QATestAll_Impl : PageBase, IQATestAll
+    public abstract class QATestAll : QATestAllBase_Common, IQATestAll
     {
         public abstract void ClickBtn_Cancel();
         public abstract void ClickBtn_CreateNew();
@@ -208,6 +251,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void ClickBtn_CreateRevision();
         public abstract void ClickBtn_Save();
         public abstract void ClickBtn_SaveEdit();
+        public abstract IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList();
+        public abstract IList<TestDetails_InputFieldType> GetAllInputFieldTypeList();
         public abstract void PopulateFieldAndUpdateKVPairsList();
         public abstract void SelectTab_Authorization();
         public abstract void SelectTab_FieldRevise();
@@ -217,45 +262,61 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void SelectTab_PendingClosing();
     }
 
-    public class QATestAll_LAX : QATestAll
+    public class QATestAll_LAX : QATestAll_Common
     {
         public QATestAll_LAX(IWebDriver driver) : base(driver)
         {
         }
+        public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
+            => requiredFieldsList;
     }
 
-    public class QATestAll_SH249 : QATestAll
+    public class QATestAll_SH249 : QATestAll_Common
     {
         public QATestAll_SH249(IWebDriver driver) : base(driver)
         {
         }
-    }
+        public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
+            => requiredFieldsList;
+        }
 
-    public class QATestAll_SGWay : QATestAll
+    public class QATestAll_SGWay : QATestAll_Common
     {
         public QATestAll_SGWay(IWebDriver driver) : base(driver)
         {
         }
+
+        public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
+            => requiredFieldsList;
     }
 
-    public class QATestAll_I15North : QATestAll
+    public class QATestAll_I15North : QATestAll_Common
     {
         public QATestAll_I15North(IWebDriver driver) : base(driver)
         {
         }
+
+        public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
+            => requiredFieldsList;
     }
 
-    public class QATestAll_I15South : QATestAll
+    public class QATestAll_I15South : QATestAll_Common
     {
         public QATestAll_I15South(IWebDriver driver) : base(driver)
         {
         }
+
+        public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
+            => requiredFieldsList;
     }
 
-    public class QATestAll_I15Tech : QATestAll
+    public class QATestAll_I15Tech : QATestAll_Common
     {
         public QATestAll_I15Tech(IWebDriver driver) : base(driver)
         {
         }
+
+        public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
+            => requiredFieldsList;
     }
 }

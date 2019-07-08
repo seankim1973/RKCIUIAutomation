@@ -67,6 +67,8 @@ namespace RKCIUIAutomation.Base
                 hipTestRunTestCaseIDs = new List<int>();
                 hipTestResults = new List<KeyValuePair<int, KeyValuePair<TestStatus, string>>>();
             }
+
+            //InitExtentReportInstance();
         }
 
         [SetUp]

@@ -166,11 +166,19 @@ namespace RKCIUIAutomation.Base
             };
         }
 
+        //internal void InitExtentReportInstance()
+        //{
+        //    reportInstance = ExtentManager.GetReportInstance();
+        //    testInstance = reportInstance.CreateTest($"Tenant: {tenantName}");
+        //}
+
         internal void InitExtentTestInstance()
         {
             reportInstance = ExtentManager.GetReportInstance();
             testInstance = reportInstance.CreateTest($"Suite: {testSuite} | Tenant: {tenantName} | Env: {testEnv} | Test: {testName} | Hiptest TC# {testCaseNumber}");
-            //testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
+
+            //testInstance = testInstance.CreateNode($"Suite: {testSuite}");
+            //.CreateNode($"Env: {testEnv} | Test: {testName} | Hiptest TC# {testCaseNumber}");
         }
 
         /// <summary>
