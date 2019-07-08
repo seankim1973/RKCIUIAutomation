@@ -55,10 +55,13 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         [ThreadStatic]
+        public IList<KeyValuePair<TestDetails_InputFieldType, string>> testDetailsKVPairsList;
+
+        [ThreadStatic]
         public IList<TestDetails_InputFieldType> allInputFieldTypeList;
 
         [ThreadStatic]
-        public IList<TestDetails_InputFieldType> requiredFieldsList;
+        public IList<TestDetails_InputFieldType> requiredInputFieldTypeList;
 
         public enum NewTest_InputFieldType
         {
@@ -191,7 +194,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         //I15SB, 
         public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
         {
-            return requiredFieldsList = new List<TestDetails_InputFieldType>()
+            return requiredInputFieldTypeList = new List<TestDetails_InputFieldType>()
             {
                 TestDetails_InputFieldType.MaterialCode,
                 TestDetails_InputFieldType.GradeClassType,
@@ -243,7 +246,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
     }
 
-    public abstract class QATestAll : QATestAllBase_Common, IQATestAll
+    public abstract class QATestAll : PageBase, IQATestAll
     {
         public abstract void ClickBtn_Cancel();
         public abstract void ClickBtn_CreateNew();
@@ -268,7 +271,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
         public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
-            => requiredFieldsList;
+            => requiredInputFieldTypeList;
     }
 
     public class QATestAll_SH249 : QATestAll_Common
@@ -277,7 +280,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
         public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
-            => requiredFieldsList;
+            => requiredInputFieldTypeList;
         }
 
     public class QATestAll_SGWay : QATestAll_Common
@@ -287,7 +290,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
-            => requiredFieldsList;
+            => requiredInputFieldTypeList;
     }
 
     public class QATestAll_I15North : QATestAll_Common
@@ -297,7 +300,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
-            => requiredFieldsList;
+            => requiredInputFieldTypeList;
     }
 
     public class QATestAll_I15South : QATestAll_Common
@@ -307,7 +310,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
-            => requiredFieldsList;
+            => requiredInputFieldTypeList;
     }
 
     public class QATestAll_I15Tech : QATestAll_Common
@@ -317,6 +320,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         }
 
         public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
-            => requiredFieldsList;
+            => requiredInputFieldTypeList;
     }
 }

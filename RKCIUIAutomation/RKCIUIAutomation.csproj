@@ -305,7 +305,6 @@
     <Compile Include="Config\TenantProperties.cs" />
     <Compile Include="Config\Properties.cs" />
     <Compile Include="Page\PageInteraction.cs" />
-    <Compile Include="Page\PageObjects\QARecordControl\QATestAll_Base.cs" />
     <Compile Include="Page\PageObjects\RMCenter\IDesignDocument.cs" />
     <Compile Include="Page\StaticHelpers.cs" />
     <Compile Include="Page\IPageInteraction.cs" />
