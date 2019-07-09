@@ -30,17 +30,38 @@ namespace RKCIUIAutomation.Test.TestMethods
             IList<WorkflowType> collection = new List<WorkflowType>()
             {
                 WorkflowType.E1,
+                WorkflowType.E2,
+                WorkflowType.E3,
                 WorkflowType.F1,
+                WorkflowType.F2,
+                WorkflowType.F3,
                 WorkflowType.A1
             };
 
             foreach (var item in collection)
             {
                 QATestMethod.CreateNewTestRecord(item);
-                string reportType = GetText(By.XPath(TestDetails_InputFieldType.ReportType.GetString()));
-                AddAssertionToList(reportType == "Original", $"Report Type value = Original for WorkflowType {item}");
+
+                //Populate Required Fields
+                //Click Add/Remove Test Methods
+
+                IList<IWebElement> availTestInputs = new List<IWebElement>();
+                availTestInputs = driver.FindElements(By.XPath("//input[@class='k-checkbox TestMethodSelection']"));
+
+                foreach (var elem in availTestInputs)
+                {
+                    string label = elem.FindElement(By.XPath("./parent::span/following-sibling::span")).Text;
+                    string identifier = elem.GetAttribute("identifier");
+                    Console.WriteLine($"{label}\nIdentifier Attribute : {identifier}");
+                }
+
                 QATestMethod.ClickBtn_Cancel(); 
             }
+
+            //Populate Required Fields
+            //Click Add/Remove Test Methods
+            //Get List of Available Tests by attribute 'identifier'
+            //XPath to Input elem - //div[@id='AvailableTestsWindow']//input[@class='k-checkbox TestMethodSelection']
 
             AssertAll();
         }
