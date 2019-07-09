@@ -7,8 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.TableHelper;
-using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll;
-
+using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll_Common;
+using OpenQA.Selenium;
+using RKCIUIAutomation.Page;
 
 namespace RKCIUIAutomation.Test.TestMethods
 {
@@ -25,9 +26,21 @@ namespace RKCIUIAutomation.Test.TestMethods
         public void LabA_Create_Save_Lab_Test_Method_Header()
         {
             LoginAs(UserType.TestTech);
-            WaitForPageReady();
-            NavigateToPage.QARecordControl_QA_Test_All();
-            AddAssertionToList_VerifyPageHeader("QA Test Reports");
+
+            IList<WorkflowType> collection = new List<WorkflowType>()
+            {
+                WorkflowType.E1,
+                WorkflowType.F1,
+                WorkflowType.A1
+            };
+
+            foreach (var item in collection)
+            {
+                QATestMethod.CreateNewTestRecord(item);
+                string reportType = GetText(By.XPath(TestDetails_InputFieldType.ReportType.GetString()));
+                AddAssertionToList(reportType == "Original", $"Report Type value = Original for WorkflowType {item}");
+                QATestMethod.ClickBtn_Cancel(); 
+            }
 
             AssertAll();
         }

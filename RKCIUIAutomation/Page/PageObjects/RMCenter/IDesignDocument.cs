@@ -57,8 +57,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         string EnterCommentResponse(CommentFieldType commentField, int commentTabNumber = 1, bool updateKVPair = true);
         void EnterVerifiedDate(string shortDate = "01/01/2019");
         void FilterDocNumber(string filterByValue = "");
-        IList<KeyValuePair<CommentFieldType, string>> CreateCommentEntryFieldKVPairsList();
-        IList<KeyValuePair<string, string>> CreateCommentEntryFieldStringKVPairsList();
+        IList<KeyValuePair<CommentFieldType, string>> GetCommentEntryFieldKVPairsList();
+        IList<KeyValuePair<string, string>> GetCommentEntryFieldStringKVPairsList();
 
         /// <summary>
         /// Returns a list of enums, based on ReviewType parameter, in order to provide an array of element IDs of column headers in the 'Review Complete' workflow grid, which is then used to create a list of actual values shown in the grid to compare against a list of expected values generated in previous test steps.
@@ -72,7 +72,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         string GetActiveCommentTabGroupName();
         IList<DesignDocEntryFieldType> GetDesignDocCreatePgEntryFieldsList();
         IList<DesignDocHeaderType> GetDesignDocDetailsHeadersList();
-        IList<KeyValuePair<DesignDocEntryFieldType, string>> CreateDesignDocEntryFieldKVPairsList();
+        IList<KeyValuePair<DesignDocEntryFieldType, string>> GetDesignDocEntryFieldKVPairsList();
         string GetDesignDocStatus();
         string GetHeaderValue(DesignDocHeaderType docHeader);
         void PopulateAllCreatePgEntryFields();

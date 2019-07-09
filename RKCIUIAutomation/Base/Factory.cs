@@ -67,7 +67,7 @@ namespace RKCIUIAutomation.Base
         public static IProjectCorrespondenceLog ProjCorrespondenceLog => new ProjectCorrespondenceLog().SetClass<IProjectCorrespondenceLog>(driver);
 
         public static IQATestAll QATestMethod
-            => new QATestAllBase_Common().SetClass<IQATestAll>(driver);
+            => new QATestAll_Common().SetClass<IQATestAll>(driver);
 
         #region Workflow SetClass method calls
 
