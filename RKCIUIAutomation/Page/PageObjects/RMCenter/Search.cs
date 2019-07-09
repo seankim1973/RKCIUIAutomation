@@ -172,6 +172,41 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return isDisplayed;
         }
 
+        public override bool VerifySearchResultByCriteria(KeyValuePair<string, string> valuePair, SearchCriteria name)
+        {
+            bool isDisplayed = false;
+            string logMsg = string.Empty;
+
+            try
+            {
+                IList<bool> resultsList = new List<bool>();
+
+                PopulateCriteriaByType(SearchCriteria.Title, valuePair.Key);
+                ClickBtn_Search();
+                //PageAction.WaitForLoading();
+                PageAction.WaitForPageReady();
+                bool searchResult = GridHelper.VerifyRecordIsDisplayed(ColumnName.Number, valuePair.Value, TableHelper.TableType.Single);
+                resultsList.Add(searchResult);
+
+                logMsg = $"Search by Criteria '{SearchCriteria.Title.ToString()}'";
+                Report.Info($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
+                TestUtility.AddAssertionToList(searchResult, logMsg);
+
+                ClickBtn_Clear();
+                PageAction.WaitForPageReady();
+
+                isDisplayed = resultsList.Contains(false)
+                    ? false
+                    : true;
+            }
+            catch (Exception)
+            {
+                log.Error(logMsg);
+            }
+
+            return isDisplayed;
+        }
+
         private SearchCriteria GetMatchingSearchCriteriaForEntryField(EntryField entryField)
         {
             SearchCriteria criteria = SearchCriteria.NoSelection;
@@ -316,6 +351,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         //Workflow Interface
         void PopulateAllSearchCriteriaFields();
+        bool VerifySearchResultByCriteria(KeyValuePair<string, string> valuePair, SearchCriteria name);
     }
 
     #endregion Search Interface class
@@ -372,6 +408,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual IList<ColumnName> SetTenantSearchGridColumnNames()
             => tenantSearchGridColumnNames;
+
+        public abstract bool VerifySearchResultByCriteria(KeyValuePair<string, string> valuePair, SearchCriteria name);
     }
 
     #endregion Search Common Implementation class

@@ -72,7 +72,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public enum ColumnName
         {
-            [StringValue("submittalNo")] SubmittalNumber,
+            [StringValue("SubmittalNo")] SubmittalNumber,
+            [StringValue("SubmittalTitle")] SubmittalTitle,
+            [StringValue("Originator.Name")] OriginatorName,
+            [StringValue("SubmittalType.Name")] SubmittalTypeName,
+            [StringValue("StatusFlowItem.Name")] StatusFlowItemName,
+            [StringValue("IsLocked")] IsLocked,
+            [StringValue("LockedDateGrid")] LockedDateGrid,
+            [StringValue("RecordLock.CreatedBy")] RecordLockCreatedBy,
             [StringValue("Number")] Number
         }
 
@@ -115,7 +122,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         #region #endregion Common Workflow Implementation class
 
-        public virtual void LogintoQASubmittal(UserType userType)
+        public virtual void LogintoSubmittal(UserType userType)
         {
             LoginAs(userType);
             PageAction.WaitForPageReady();
@@ -233,20 +240,36 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return fieldValuePair = new KeyValuePair<EntryField, string>(entryField, fieldValue);
         }
 
-        public virtual string PopulateFields(int round)
+        public virtual KeyValuePair<string, string> PopulateFields()
         {
-            var requiredFields = round.Equals(1) ? tenantRoundOneRequiredFields : tenantRoundTwoRequiredFields;
-            string submittalNumber = string.Empty;
+            var valuePair = PopulateFields(tenantRoundOneRequiredFields);
+            ClickSubmitForward();
 
-            foreach (EntryField field in requiredFields)
+            PopulateFields(tenantRoundTwoRequiredFields);
+            ClickSubmitForward();
+
+            return valuePair;
+        }
+
+        private KeyValuePair<string, string> PopulateFields(IList<EntryField> fields)
+        {
+            string submittalNumber = string.Empty;
+            string title = string.Empty;
+
+            foreach (EntryField field in fields)
             {
                 var kvpFromEntry = new KeyValuePair<EntryField, string>();
                 kvpFromEntry = PopulateFieldValue(field, string.Empty);
 
+                if (field.Equals(EntryField.SubmittalNo))
+                    submittalNumber = kvpFromEntry.Value;
+                else if (field.Equals(EntryField.SubmittalTitle))
+                    title = kvpFromEntry.Value;
+
                 log.Debug($"Added KeyValPair to expected table column values./nEntry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
             }
 
-            return PageAction.GetAttribute(By.Id("SubmittalNo"), "value"); ;
+            return new KeyValuePair<string, string>(title, submittalNumber);
         }
 
         #endregion
@@ -257,8 +280,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         IList<UploadQASubmittal.EntryField> GetTenantRoundOneRequiredFields();
         IList<UploadQASubmittal.EntryField> GetTenantRoundTwoRequiredFields();
-        void LogintoQASubmittal(UserType userType);
-        string PopulateFields(int round);
+        void LogintoSubmittal(UserType userType);
+        KeyValuePair<string, string> PopulateFields();
         bool VerifySubmittalNumberIsDisplayed(string submittalNumber, bool isSearch = false);
     }
 

@@ -4,13 +4,16 @@ using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
 using static RKCIUIAutomation.Base.Factory;
+using static RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
     public class UploadDEVSubmittal : PageBase, IUploadDEVSubmittal
     {
         public UploadDEVSubmittal()
-        {}
+        {
+
+        }
 
         public UploadDEVSubmittal(IWebDriver driver)
         {
@@ -55,14 +58,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return (T)instance;
         }
 
-        //GLX and LAX - StringValue[0] = table tab name, StringValue[1] = Table content reference id
-        public enum TableTab
-        {
-            [StringValue("Unsent Transmissions", "TransmissionGridNew")] UnsentTransmissions,
-            [StringValue("Pending Transmissions", "TransmissionGridPending")] PendingTransmissions,
-            [StringValue("Transmitted Records", "TransmissionGridForwarded")] TransmittedRecords
-        }
-
         public enum EntryField
         {
             [StringValue("SubmittalNo", TEXT)] SubmittalNo,
@@ -103,10 +98,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return tenantRoundTwoRequiredFields = new List<EntryField>()
             {
                 EntryField.SubmittalActionId,
-                EntryField.SegmentId,
-                EntryField.FeatureId,
-                EntryField.GradeId,
-                EntryField.SpecificationId,
                 EntryField.Attachments
             };
         }
@@ -129,12 +120,12 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         #region #endregion Common Workflow Implementation class
 
-        public virtual void LogintoQASubmittal(UserType userType)
+        public virtual void LogintoSubmittal(UserType userType)
         {
             LoginAs(userType);
             PageAction.WaitForPageReady();
-            NavigateToPage.RMCenter_Upload_QA_Submittal();
-            TestUtility.AddAssertionToList_VerifyPageHeader("Transmissions", "LogintoQASubmittal()");
+            NavigateToPage.RMCenter_Upload_DEV_Submittal();
+            TestUtility.AddAssertionToList_VerifyPageHeader("Submittal Details", "LogintoQASubmittal()");
         }
 
         private KeyValuePair<EntryField, string> PopulateFieldValue<T>(EntryField entryField, T indexOrText, bool useContains = false)
@@ -242,23 +233,36 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return fieldValuePair = new KeyValuePair<EntryField, string>(entryField, fieldValue);
         }
 
-        public virtual string PopulateFields(int round)
+        public virtual KeyValuePair<string, string> PopulateFields()
         {
-            var requiredFields = round.Equals(1) ? tenantRoundOneRequiredFields : tenantRoundTwoRequiredFields;
-            string submittalNumber = string.Empty;
+            var valuePair = PopulateFields(tenantRoundOneRequiredFields);
+            ClickSubmitForward();
 
-            foreach (EntryField field in requiredFields)
+            PopulateFields(tenantRoundTwoRequiredFields);
+            ClickSubmitForward();
+
+            return valuePair;
+        }
+
+        private KeyValuePair<string, string> PopulateFields(IList<EntryField> fields)
+        {
+            string submittalNumber = string.Empty;
+            string title = string.Empty;
+
+            foreach (EntryField field in fields)
             {
                 var kvpFromEntry = new KeyValuePair<EntryField, string>();
                 kvpFromEntry = PopulateFieldValue(field, string.Empty);
 
                 if (field.Equals(EntryField.SubmittalNo))
                     submittalNumber = kvpFromEntry.Value;
+                else if (field.Equals(EntryField.SubmittalTitle))
+                    title = kvpFromEntry.Value;
 
                 log.Debug($"Added KeyValPair to expected table column values./nEntry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
             }
 
-            return submittalNumber;
+            return new KeyValuePair<string, string>(title, submittalNumber);
         }
 
         #endregion
@@ -269,8 +273,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         IList<UploadDEVSubmittal.EntryField> GetTenantRoundOneRequiredFields();
         IList<UploadDEVSubmittal.EntryField> GetTenantRoundTwoRequiredFields();
-        void LogintoQASubmittal(UserType userType);
-        string PopulateFields(int round);
+        void LogintoSubmittal(UserType userType);
+        KeyValuePair<string, string> PopulateFields();
         bool VerifySubmittalNumberIsDisplayed(string submittalNumber, bool isSearch = false);
     }
 
@@ -285,23 +289,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public UploadDEVSubmittal_SH249(IWebDriver driver) : base(driver)
         {
         }
-
-        public override IList<EntryField> GetTenantRoundOneRequiredFields()
-        {
-            return tenantRoundOneRequiredFields = new List<EntryField>()
-                    {
-                        EntryField.SubmittalTitle
-                    };
-        }
-
-        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
-        {
-            return tenantRoundTwoRequiredFields = new List<EntryField>()
-                    {
-                        EntryField.SubmittalActionId,
-                        EntryField.Attachments
-                    };
-        }
     }
 
     #endregion Implementation specific to SH249
@@ -312,23 +299,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class UploadDEVSubmittal_SGWay : UploadDEVSubmittal
     {
         public UploadDEVSubmittal_SGWay(IWebDriver driver) : base(driver)
-        { }
-
-        public override IList<EntryField> GetTenantRoundOneRequiredFields()
         {
-            return tenantRoundOneRequiredFields = new List<EntryField>()
-            {
-                EntryField.SubmittalTitle
-            };
-        }
-
-        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
-        {
-            return tenantRoundTwoRequiredFields = new List<EntryField>()
-            {
-                EntryField.SubmittalActionId,
-                EntryField.Attachments
-            };
         }
     }
 
@@ -340,20 +311,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class UploadDEVSubmittal_I15South : UploadDEVSubmittal
     {
         public UploadDEVSubmittal_I15South(IWebDriver driver) : base(driver)
-        { }
-
-        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
         {
-            return tenantRoundTwoRequiredFields = new List<EntryField>()
-            {
-                EntryField.SubmittalActionId,
-                EntryField.SegmentId,
-                EntryField.FeatureId,
-                EntryField.SpecificationId,
-                EntryField.Quantity,
-                EntryField.QuantityUnitId,
-                EntryField.Attachments
-            };
         }
     }
 
@@ -365,18 +323,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     public class UploadDEVSubmittal_I15Tech : UploadDEVSubmittal
     {
         public UploadDEVSubmittal_I15Tech(IWebDriver driver) : base(driver)
-        { }
-
-        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
         {
-            return tenantRoundTwoRequiredFields = new List<EntryField>()
-            {
-                EntryField.SubmittalActionId,
-                EntryField.SegmentId,
-                EntryField.FeatureId,
-                EntryField.SpecificationId,
-                EntryField.Attachments
-            };
         }
     }
 
@@ -389,6 +336,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
     {
         public UploadDEVSubmittal_LAX(IWebDriver driver) : base(driver)
         {
+        }
+
+        public override void LogintoSubmittal(UserType userType)
+        {
+            LoginAs(userType);
+            PageAction.WaitForPageReady();
+            NavigateToPage.RMCenter_Upload_DEV_Submittal();
+            TestUtility.AddAssertionToList_VerifyPageHeader("Submittal Details", "LogintoQASubmittal()");
         }
     }
 

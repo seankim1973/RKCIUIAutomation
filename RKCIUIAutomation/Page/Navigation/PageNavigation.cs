@@ -969,6 +969,8 @@ namespace RKCIUIAutomation.Page.Navigation
         public override void QAQO_Test_Proctor_Curve_Report() => Navigate.Menu(NavMenu.QualitySearch.Menu.Test_Proctor_Curve_Report);
 
         public override void QAQO_Test_Proctor_Curve_Summary() => Navigate.Menu(NavMenu.QualitySearch.Menu.Test_Proctor_Curve_Summary);
+
+        public override void RMCenter_Upload_DEV_Submittal() => Navigate.Menu(NavMenu.RMCenter.Menu.Upload_Design_Submittal);
     }
 }
 
