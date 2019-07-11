@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using OpenQA.Selenium;
 
 namespace RKCIUIAutomation.Page
@@ -12,7 +13,7 @@ namespace RKCIUIAutomation.Page
         /// <returns></returns>
         By GetButtonByLocator(string buttonName);
         By GetDDListByLocator(Enum ddListID);
-        By GetDDListCurrentSelectionByLocator(Enum ddListID);
+        By GetDDListCurrentSelectionByLocator<T>(T ddListID);
         By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID, bool useContainsOperator = true);
 
         /// <summary>
@@ -41,5 +42,7 @@ namespace RKCIUIAutomation.Page
         By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true);
         By GetTextAreaFieldByLocator(Enum textAreaEnum);
         By GetTextInputFieldByLocator(Enum inputEnum);
+
+        IList<string> PopulateEntryFieldsAndGetValuesArray(bool requiredFieldsOnly = false, int integerInputMinValue = 1, int integerInputMaxValue = 99);
     }
 }

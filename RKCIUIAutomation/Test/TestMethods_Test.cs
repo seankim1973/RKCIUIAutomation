@@ -27,7 +27,7 @@ namespace RKCIUIAutomation.Test.TestMethods
         {
             LoginAs(UserType.TestTech);
 
-            IList<WorkflowType> collection = new List<WorkflowType>()
+            IList<WorkflowType> workflowTypeList = new List<WorkflowType>()
             {
                 WorkflowType.E1,
                 WorkflowType.E2,
@@ -38,23 +38,61 @@ namespace RKCIUIAutomation.Test.TestMethods
                 WorkflowType.A1
             };
 
-            foreach (var item in collection)
+            foreach (var workflowType in workflowTypeList)
             {
-                QATestMethod.CreateNewTestRecord(item);
+                By errorLINExists = By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(), 'LIN exists')]");
+                bool errorLINExistsIsDisplayed = false;
+                QATestMethod.CreateNewTestRecord(workflowType);
+                QATestMethod.ClickBtn_Save();
 
-                //Populate Required Fields
+                try
+                {
+                    do
+                    {
+                        GetElement(errorLINExists);
+                        
+                        By sequenceNumberLocator = By.XPath("//input[@id='SequenceNumber']");
+                        string sequenceNumber = GetText(sequenceNumberLocator);
+                        int newValue = int.Parse(sequenceNumber) + 1;
+
+                        if (newValue < 10)
+                        {
+                            sequenceNumber = $"0{newValue}";
+                        }
+                        else
+                        {
+                            sequenceNumber = newValue.ToString();
+                        }
+
+                        EnterText(sequenceNumberLocator, sequenceNumber);
+                        QATestMethod.ClickBtn_Save();
+                        GetElement(errorLINExists);
+                        errorLINExistsIsDisplayed = true;
+                    } while (errorLINExistsIsDisplayed);
+                }
+                catch (NoSuchElementException)
+                {
+                    //Populate Required Fields
+                    PgHelper.PopulateEntryFieldsAndGetValuesArray(true);
+                    QATestMethod.ClickBtn_Save();
+                }
+
                 //Click Add/Remove Test Methods
+                QATestMethod.ClickBtn_AddRemoveTestMethods();
 
                 IList<IWebElement> availTestInputs = new List<IWebElement>();
                 availTestInputs = driver.FindElements(By.XPath("//input[@class='k-checkbox TestMethodSelection']"));
 
+                Report.Info($"WorkFlow Type : {workflowType} - Available TestMethod Selections");
                 foreach (var elem in availTestInputs)
                 {
                     string label = elem.FindElement(By.XPath("./parent::span/following-sibling::span")).Text;
                     string identifier = elem.GetAttribute("identifier");
-                    Console.WriteLine($"{label}\nIdentifier Attribute : {identifier}");
+                    Report.Info($"{label}\n>>>Identifier Attribute : {identifier}");
                 }
 
+                By availableTestModal_CloseBtn = By.XPath("//span[@id='AvailableTestsWindow_wnd_title']/parent::div//a[@role='button'][@aria-label='Close']");
+                ClickElement(availableTestModal_CloseBtn);
                 QATestMethod.ClickBtn_Cancel(); 
             }
 

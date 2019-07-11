@@ -86,11 +86,11 @@ namespace RKCIUIAutomation.Page
 
         WebDriverWait GetStandardWait(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500);
 
-        string GetText(By elementByLocator, bool shouldReturnValue = true);
+        string GetText(By elementByLocator, bool shouldReturnValue = true, bool logReport = true);
 
         IList<string> GetTextForElements(By elementByLocator);
 
-        string GetTextFromDDL(Enum ddListID);
+        string GetTextFromDDL<T>(T ddListID);
 
         string GetTextFromDDListInActiveTab(Enum ddListID);
 

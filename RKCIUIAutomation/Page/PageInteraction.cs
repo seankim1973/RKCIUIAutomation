@@ -683,7 +683,7 @@ namespace RKCIUIAutomation.Page
             return wait;
         }
 
-        public override string GetText(By elementByLocator, bool shouldReturnValue = true)
+        public override string GetText(By elementByLocator, bool shouldReturnValue = true, bool logReport = true)
         {
             bool textHasValue = false;
             bool resultIsAsExpected = false;
@@ -733,7 +733,10 @@ namespace RKCIUIAutomation.Page
                         }
                     }
 
-                    Report.Info($"{logMsg} from element - {elementByLocator}", resultIsAsExpected);
+                    if (logReport)
+                    {
+                        Report.Info($"{logMsg} from element - {elementByLocator}", resultIsAsExpected);
+                    }
                 }
             }
             catch (Exception)
@@ -759,7 +762,7 @@ namespace RKCIUIAutomation.Page
             return elementTextList;
         }
 
-        public override string GetTextFromDDL(Enum ddListID)
+        public override string GetTextFromDDL<T>(T ddListID)
         {
             string textFromDDList = string.Empty;
 
@@ -1808,9 +1811,9 @@ namespace RKCIUIAutomation.Page
         public abstract string GetPageTitle(int timeOutInSeconds = 10, int pollingInterval = 500);
         public abstract string GetPageUrl(int timeOutInSeconds = 10, int pollingInterval = 500);
         public abstract WebDriverWait GetStandardWait(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500);
-        public abstract string GetText(By elementByLocator, bool shouldReturnValue = true);
+        public abstract string GetText(By elementByLocator, bool shouldReturnValue = true, bool logReport = true);
         public abstract IList<string> GetTextForElements(By elementByLocator);
-        public abstract string GetTextFromDDL(Enum ddListID);
+        public abstract string GetTextFromDDL<T>(T ddListID);
         public abstract string GetTextFromDDListInActiveTab(Enum ddListID);
         public abstract IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID);
         public abstract string GetUserDownloadFolderPath();

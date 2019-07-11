@@ -58,11 +58,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         [ThreadStatic]
         public IList<KeyValuePair<TestDetails_InputFieldType, string>> testRecordKVPairsList;
 
-        [ThreadStatic]
-        public IList<TestDetails_InputFieldType> allInputFieldTypeList;
+        //[ThreadStatic]
+        //public IList<TestDetails_InputFieldType> allInputFieldTypeList;
 
-        [ThreadStatic]
-        public IList<TestDetails_InputFieldType> requiredInputFieldTypeList;
+        //[ThreadStatic]
+        //public IList<TestDetails_InputFieldType> requiredInputFieldTypeList;
+
+        public override IList<TestDetails_InputFieldType> AllInputFieldTypeList { get; set; }
+        public override IList<TestDetails_InputFieldType> RequiredInputFieldTypeList { get; set; }
 
         public enum CreateTest_InputFieldType
         {
@@ -242,35 +245,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         //I15SB, 
         public override IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList()
-        {
-            return requiredInputFieldTypeList = new List<TestDetails_InputFieldType>()
-            {
-                TestDetails_InputFieldType.MaterialCode,
-                TestDetails_InputFieldType.GradeClassType,
-                TestDetails_InputFieldType.Supplier,
-                TestDetails_InputFieldType.Segment,
-                TestDetails_InputFieldType.Roadway,
-                TestDetails_InputFieldType.Feature,
-                TestDetails_InputFieldType.Structure,
-                TestDetails_InputFieldType.SampleType
-            };
-        }
+            => RequiredInputFieldTypeList;
 
         public override IList<TestDetails_InputFieldType> GetAllInputFieldTypeList()
-        {
-            return allInputFieldTypeList = new List<TestDetails_InputFieldType>()
-            {
-                TestDetails_InputFieldType.WorkflowType,
-                TestDetails_InputFieldType.LIN,
-                TestDetails_InputFieldType.LIN_SN,
-                TestDetails_InputFieldType.Revision,
-                TestDetails_InputFieldType.LabId,
-                TestDetails_InputFieldType.ReportType,
-                TestDetails_InputFieldType.SampleBy,
-                TestDetails_InputFieldType.SampleDate,
-                TestDetails_InputFieldType.MaterialCode,
-            };
-        }
+            => AllInputFieldTypeList;
 
         public override IList<KeyValuePair<TestDetails_InputFieldType, string>> GetTestRecordKVPairsList()
         {
@@ -371,39 +349,16 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 throw;
             }
         }
-    }
 
-    public interface IQATestAll
-    {
-        void CreateNewTestRecord(WorkflowType workflowType, TestType testType = TestType.SingleSublot);
-        void CreateRevisionTestRecord();
-        void CreateRetestTestRecord();
-        void ClickBtn_CreateNew();
-        void ClickBtn_CreateRevision();
-        void ClickBtn_CreateRetest();
-        void ClickBtn_Cancel();
-        void ClickBtn_Continue();
-        void ClickBtn_Save();
-        void ClickBtn_SaveEdit();
-
-        IList<KeyValuePair<TestDetails_InputFieldType, string>> GetTestRecordKVPairsList();
-        IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList();
-        IList<TestDetails_InputFieldType> GetAllInputFieldTypeList();
-
-        void CreateWorkflowType(CreateType createBtn, WorkflowType workflowType, TestType testType = TestType.SingleSublot);
-        void PopulateFieldAndUpdateKVPairsList();
-
-        void SelectTab_FieldRevise();
-        void SelectTab_LabRevise();
-        void SelectTab_FieldSupervisor();
-        void SelectTab_LabSupervisor();
-        void SelectTab_Authorization();
-        void SelectTab_PendingClosing();
-
+        public override void ClickBtn_AddRemoveTestMethods()
+            => PageAction.ClickElementByID(ButtonType.AddRemoveTestMethods);
     }
 
     public abstract class QATestAll : PageBase, IQATestAll
     {
+        public abstract IList<TestDetails_InputFieldType> AllInputFieldTypeList { get; set; }
+        public abstract IList<TestDetails_InputFieldType> RequiredInputFieldTypeList { get; set; }
+
         public abstract void ClickBtn_Cancel();
         public abstract void ClickBtn_CreateNew();
         public abstract void ClickBtn_CreateRetest();
@@ -425,6 +380,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void CreateNewTestRecord(WorkflowType workflowType, TestType testType = TestType.SingleSublot);
         public abstract void CreateRevisionTestRecord();
         public abstract void CreateRetestTestRecord();
+        public abstract void ClickBtn_AddRemoveTestMethods();
     }
 
 
@@ -521,7 +477,32 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
 
+        public override IList<TestDetails_InputFieldType> RequiredInputFieldTypeList
+            => new List<TestDetails_InputFieldType>()
+            {
+                TestDetails_InputFieldType.MaterialCode,
+                TestDetails_InputFieldType.GradeClassType,
+                TestDetails_InputFieldType.Supplier,
+                TestDetails_InputFieldType.Segment,
+                TestDetails_InputFieldType.Roadway,
+                TestDetails_InputFieldType.Feature,
+                TestDetails_InputFieldType.Structure,
+                TestDetails_InputFieldType.SampleType
+            };
 
+        public override IList<TestDetails_InputFieldType> AllInputFieldTypeList
+            => new List<TestDetails_InputFieldType>()
+            {
+                TestDetails_InputFieldType.WorkflowType,
+                TestDetails_InputFieldType.LIN,
+                TestDetails_InputFieldType.LIN_SN,
+                TestDetails_InputFieldType.Revision,
+                TestDetails_InputFieldType.LabId,
+                TestDetails_InputFieldType.ReportType,
+                TestDetails_InputFieldType.SampleBy,
+                TestDetails_InputFieldType.SampleDate,
+                TestDetails_InputFieldType.MaterialCode,
+            };
 
     }
 
@@ -531,7 +512,32 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
 
+        public override IList<TestDetails_InputFieldType> RequiredInputFieldTypeList
+            => new List<TestDetails_InputFieldType>()
+            {
+                TestDetails_InputFieldType.MaterialCode,
+                TestDetails_InputFieldType.GradeClassType,
+                TestDetails_InputFieldType.Supplier,
+                TestDetails_InputFieldType.Segment,
+                TestDetails_InputFieldType.Roadway,
+                TestDetails_InputFieldType.Feature,
+                TestDetails_InputFieldType.Structure,
+                TestDetails_InputFieldType.SampleType
+            };
 
+        public override IList<TestDetails_InputFieldType> AllInputFieldTypeList
+            => new List<TestDetails_InputFieldType>()
+            {
+                TestDetails_InputFieldType.WorkflowType,
+                TestDetails_InputFieldType.LIN,
+                TestDetails_InputFieldType.LIN_SN,
+                TestDetails_InputFieldType.Revision,
+                TestDetails_InputFieldType.LabId,
+                TestDetails_InputFieldType.ReportType,
+                TestDetails_InputFieldType.SampleBy,
+                TestDetails_InputFieldType.SampleDate,
+                TestDetails_InputFieldType.MaterialCode,
+            };
 
     }
 
@@ -541,7 +547,32 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
         }
 
+        public override IList<TestDetails_InputFieldType> RequiredInputFieldTypeList
+            => new List<TestDetails_InputFieldType>()
+            {
+                TestDetails_InputFieldType.MaterialCode,
+                TestDetails_InputFieldType.GradeClassType,
+                TestDetails_InputFieldType.Supplier,
+                TestDetails_InputFieldType.Segment,
+                TestDetails_InputFieldType.Roadway,
+                TestDetails_InputFieldType.Feature,
+                TestDetails_InputFieldType.Structure,
+                TestDetails_InputFieldType.SampleType
+            };
 
+        public override IList<TestDetails_InputFieldType> AllInputFieldTypeList
+            => new List<TestDetails_InputFieldType>()
+            {
+                TestDetails_InputFieldType.WorkflowType,
+                TestDetails_InputFieldType.LIN,
+                TestDetails_InputFieldType.LIN_SN,
+                TestDetails_InputFieldType.Revision,
+                TestDetails_InputFieldType.LabId,
+                TestDetails_InputFieldType.ReportType,
+                TestDetails_InputFieldType.SampleBy,
+                TestDetails_InputFieldType.SampleDate,
+                TestDetails_InputFieldType.MaterialCode,
+            };
 
     }
 }

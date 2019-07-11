@@ -3,6 +3,8 @@ using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.TableHelper;
@@ -118,11 +120,17 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListFieldXpath<T>(T ddListID, bool useContainsOperator = false)
         {
-            string _ddListID = (ddListID.GetType() == typeof(string))
-                ? BaseUtil.ConvertToType<string>(ddListID)
-                : BaseUtil.ConvertToType<Enum>(ddListID).GetString();
-
+            string _ddListID = string.Empty;
             string _ddFieldXpath = string.Empty;
+
+            if (ddListID.GetType() == typeof(string))
+            {
+                _ddListID = BaseUtil.ConvertToType<string>(ddListID);
+            }
+            else if(ddListID is Enum)
+            {
+                _ddListID = BaseUtil.ConvertToType<Enum>(ddListID).GetString();
+            }
 
             if (useContainsOperator)
             {
@@ -165,7 +173,7 @@ namespace RKCIUIAutomation.Page
             return _ddArrowXpath;
         }
 
-        private string SetDDListCurrentSelectionXpath(Enum ddListID, bool useContainsOperator = false)
+        private string SetDDListCurrentSelectionXpath<T>(T ddListID, bool useContainsOperator = false)
             => $"{SetDDListFieldXpath(ddListID, useContainsOperator)}//span[@class='k-input']";
 
         private string SetMultiSelectDDListCurrentSelectionXpath(Enum multiSelectDDListID)
@@ -327,7 +335,7 @@ namespace RKCIUIAutomation.Page
         public override By GetDDListByLocator(Enum ddListID)
             => By.XPath(SetDDListFieldXpath(ddListID));
 
-        public override By GetDDListCurrentSelectionByLocator(Enum ddListID)
+        public override By GetDDListCurrentSelectionByLocator<T>(T ddListID)
             => By.XPath(SetDDListCurrentSelectionXpath(ddListID));
 
         public override By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID, bool useContainsOperator = true)
@@ -380,13 +388,142 @@ namespace RKCIUIAutomation.Page
 
             return By.XPath(SetInputButtonXpath(buttonVal));
         }
+
+        public override IList<string> PopulateEntryFieldsAndGetValuesArray(bool requiredFieldsOnly = false, int integerInputMinValue = 1, int integerInputMaxValue = 99)
+        {
+            IList<IWebElement> inputFieldElements = null;
+            IList<string> fieldValuesList = new List<string>();
+            By inputXPath = null;
+
+            if (requiredFieldsOnly)
+            {
+                string[] requiredOffset = new string[] {"Required", "required"};
+
+                inputFieldElements = new List<IWebElement>();
+
+                for (int i = 0; i < requiredOffset.Length; i++)
+                {
+                    inputXPath = By.XPath($"//span[contains(@class, 'ValidationErrorMessage')][contains(text(), '{requiredOffset[i]}')]/following-sibling::span/input[@id]");
+                    ((List<IWebElement>)inputFieldElements).AddRange(GetElements(inputXPath));
+                }
+            }
+            else
+            {
+                inputXPath = By.XPath("//div[@id='HeaderDiv']//div[@class='row']/div[contains(@class,'col')]/div[@class='form-group']//input[@id]");
+                inputFieldElements = GetElements(inputXPath);
+            }
+
+            for (int i = 0; i < inputFieldElements.Count; i++)
+            {
+                By byIdLocator = null;
+                IWebElement currentElem = null;
+
+                string inputId = string.Empty;
+                string labelXPath = string.Empty;
+                string fieldLabel = string.Empty;
+                string inputValue = string.Empty;
+                string fieldValue = string.Empty;
+                string dataRoleType = string.Empty;
+                string inputTypeAttribute = string.Empty;
+
+                currentElem = inputFieldElements[i];
+                inputTypeAttribute = currentElem.GetAttribute("type");
+                
+                if (inputTypeAttribute.HasValue())
+                {
+                    if (inputTypeAttribute.Equals("hidden"))
+                    {
+                        fieldValue = GetText(By.Id(inputId));
+                    }
+                    else
+                    {
+                        dataRoleType = currentElem.GetAttribute("data-role");
+
+                        if (!dataRoleType.HasValue())
+                        {
+                            fieldValue = GetText(By.Id(inputId), logReport: false);
+                        }
+                    }
+                }
+                else
+                {
+                    dataRoleType = currentElem.GetAttribute("data-role");
+
+                    if (!dataRoleType.HasValue())
+                    {
+                        fieldValue = GetText(By.Id(inputId), logReport: false);
+                    }
+                }
+
+                inputId = currentElem.GetAttribute("id");
+                byIdLocator = By.Id(inputId);
+
+                string currentElemXPath = $"//input[@id='{inputId}']";
+
+                if (dataRoleType.Equals("dropdownlist"))
+                {
+                    fieldValue = GetTextFromDDL(inputId);
+
+                    if (fieldValue.Equals("Please Select"))
+                    {
+                        try
+                        {
+                            ExpandAndSelectFromDDList(inputId, 2);
+                        }
+                        catch (NoSuchElementException)
+                        {
+                            ExpandAndSelectFromDDList(inputId, 1);
+                        }
+                        fieldValue = GetTextFromDDL(inputId);
+                    }                
+                }
+                else if (dataRoleType.Equals("maskedtextbox"))
+                {
+                    fieldValue = GetText(byIdLocator);
+
+                    if (!fieldValue.HasValue())
+                    {
+                        inputValue = GetVar(inputId);
+                        EnterText(byIdLocator, inputValue);
+                        fieldValue = inputValue;
+                    }
+                }
+                else if (dataRoleType.Equals("numerictextbox"))
+                {
+                    fieldValue = GetText(byIdLocator);
+
+                    if (!fieldValue.HasValue())
+                    {
+                        inputValue = GetRandomInteger(integerInputMinValue, integerInputMaxValue).ToString();
+                        EnterText(byIdLocator, inputValue);
+                        fieldValue = inputValue;
+                    }
+                }
+
+                labelXPath = $"{currentElemXPath}/ancestor::span/preceding-sibling::label";
+
+                try
+                {
+                    fieldLabel = GetText(By.XPath(labelXPath), logReport: false);
+                }
+                catch (NoSuchElementException)
+                {
+                    fieldLabel = inputId;
+                }
+                
+                var kvPair = $"{fieldLabel}::{fieldValue}";
+                fieldValuesList.Add(kvPair);
+            }
+
+            return fieldValuesList;
+        }
     }
 
     public abstract class PageHelper_Impl : PageInteraction, IPageHelper
     {
         public abstract By GetButtonByLocator(string buttonName);
         public abstract By GetDDListByLocator(Enum ddListID);
-        public abstract By GetDDListCurrentSelectionByLocator(Enum ddListID);
+        public abstract By GetDDListCurrentSelectionByLocator<T>(T ddListID);
         public abstract By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID, bool useContainsOperator = true);
         public abstract By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContainsOperator = false);
         public abstract By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false);
@@ -398,5 +535,6 @@ namespace RKCIUIAutomation.Page
         public abstract By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true);
         public abstract By GetTextAreaFieldByLocator(Enum textAreaEnum);
         public abstract By GetTextInputFieldByLocator(Enum inputEnum);
+        public abstract IList<string> PopulateEntryFieldsAndGetValuesArray(bool requiredFieldsOnly = false, int integerInputMinValue = 1, int integerInputMaxValue = 99);
     }
 }
