@@ -90,11 +90,11 @@ namespace RKCIUIAutomation.Page
 
         IList<string> GetTextForElements(By elementByLocator);
 
-        string GetTextFromDDL<T>(T ddListID);
+        string GetTextFromDDL<T>(T ddListID, bool isMultiSelectDDList = false);
 
         string GetTextFromDDListInActiveTab(Enum ddListID);
 
-        IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID);
+        IList<string> GetTextFromMultiSelectDDL<T>(T multiSelectDDListID);
 
         string GetUserDownloadFolderPath();
 

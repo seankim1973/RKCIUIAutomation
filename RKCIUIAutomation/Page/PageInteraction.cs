@@ -594,11 +594,13 @@ namespace RKCIUIAutomation.Page
             try
             {
                 elements = driver.FindElements(elementByLocator);
+                Console.WriteLine($"@@@@@@ FOUND ELEMENT : {elementByLocator} @@@@@@");
             }
             catch (NoSuchElementException)
             {
                 WaitForElement(elementByLocator, waitForLoading: waitForLoading);
                 elements = driver.FindElements(elementByLocator);
+                Console.WriteLine($"@@@@@@ FOUND ELEMENT : {elementByLocator} @@@@@@");
             }
             catch (Exception)
             {
@@ -762,13 +764,20 @@ namespace RKCIUIAutomation.Page
             return elementTextList;
         }
 
-        public override string GetTextFromDDL<T>(T ddListID)
+        public override string GetTextFromDDL<T>(T ddListID, bool isMultiSelectDDList = false)
         {
             string textFromDDList = string.Empty;
 
             try
             {
-                textFromDDList = GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+                if (isMultiSelectDDList)
+                {
+                    textFromDDList = string.Join("::", PageAction.GetTextFromMultiSelectDDL(ddListID).ToArray());
+                }
+                else
+                {
+                    textFromDDList = GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+                }
             }
             catch (NoSuchElementException)
             {
@@ -786,7 +795,7 @@ namespace RKCIUIAutomation.Page
         public override string GetTextFromDDListInActiveTab(Enum ddListID)
             => GetText(PgHelper.GetDDListCurrentSelectionInActiveTabByLocator(ddListID));
 
-        public override IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID)
+        public override IList<string> GetTextFromMultiSelectDDL<T>(T multiSelectDDListID)
             => GetTextForElements(PgHelper.GetMultiSelectDDListCurrentSelectionByLocator(multiSelectDDListID));
 
         public override string GetUserDownloadFolderPath()
@@ -1813,9 +1822,9 @@ namespace RKCIUIAutomation.Page
         public abstract WebDriverWait GetStandardWait(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500);
         public abstract string GetText(By elementByLocator, bool shouldReturnValue = true, bool logReport = true);
         public abstract IList<string> GetTextForElements(By elementByLocator);
-        public abstract string GetTextFromDDL<T>(T ddListID);
+        public abstract string GetTextFromDDL<T>(T ddListID, bool isMultiSelectDDList = false);
         public abstract string GetTextFromDDListInActiveTab(Enum ddListID);
-        public abstract IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID);
+        public abstract IList<string> GetTextFromMultiSelectDDL<T>(T multiSelectDDListID);
         public abstract string GetUserDownloadFolderPath();
         public abstract void JsClickElement(By elementByLocator);
         public abstract string JsGetPageTitle(string windowHandle = "");

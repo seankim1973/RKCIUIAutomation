@@ -37,7 +37,7 @@ namespace RKCIUIAutomation.Page
         By GetInputButtonByLocator<T>(T buttonName);
         By GetInputFieldByLocator<T>(T inputFieldLabelOrID);
         By GetMainNavMenuByLocator(Enum navEnum);
-        By GetMultiSelectDDListCurrentSelectionByLocator(Enum multiSelectDDListID);
+        By GetMultiSelectDDListCurrentSelectionByLocator<T>(T multiSelectDDListID);
         By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null);
         By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true);
         By GetTextAreaFieldByLocator(Enum textAreaEnum);

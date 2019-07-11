@@ -74,7 +74,9 @@ namespace RKCIUIAutomation.Test.TestMethods
                 {
                     //Populate Required Fields
                     PgHelper.PopulateEntryFieldsAndGetValuesArray(true);
+                    WaitForPageReady();
                     QATestMethod.ClickBtn_Save();
+                    WaitForPageReady();
                 }
 
                 //Click Add/Remove Test Methods

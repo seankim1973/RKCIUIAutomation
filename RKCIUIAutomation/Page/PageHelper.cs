@@ -176,8 +176,23 @@ namespace RKCIUIAutomation.Page
         private string SetDDListCurrentSelectionXpath<T>(T ddListID, bool useContainsOperator = false)
             => $"{SetDDListFieldXpath(ddListID, useContainsOperator)}//span[@class='k-input']";
 
-        private string SetMultiSelectDDListCurrentSelectionXpath(Enum multiSelectDDListID)
-            => $"//ul[@id='{multiSelectDDListID.GetString()}_taglist']/li/span[1]";
+        private string SetMultiSelectDDListCurrentSelectionXpath<T>(T multiSelectDDListID)
+        {
+            string multiSelectDDListValues = string.Empty;
+            string multiSelectID = string.Empty;
+
+            if (multiSelectDDListID is Enum)
+            {
+                multiSelectID = ConvertToType<Enum>(multiSelectDDListID).GetString();
+            }
+            else if (multiSelectDDListID.GetType().Equals(typeof(string)))
+            {
+                multiSelectID = ConvertToType<string>(multiSelectDDListID);
+            }
+
+            multiSelectDDListValues = $"//ul[@id='{multiSelectID}_taglist']/li/span[1]";
+            return multiSelectDDListValues;
+        }
 
         private string SetMainNavMenuXpath(Enum navEnum)
             => $"//li[@class='dropdown']/a[contains(text(),'{navEnum.GetString()}')]";
@@ -341,7 +356,7 @@ namespace RKCIUIAutomation.Page
         public override By GetDDListCurrentSelectionInActiveTabByLocator(Enum ddListID, bool useContainsOperator = true)
             => By.XPath($"{ActiveContentXPath}{SetDDListCurrentSelectionXpath(ddListID, useContainsOperator)}");
 
-        public override By GetMultiSelectDDListCurrentSelectionByLocator(Enum multiSelectDDListID)
+        public override By GetMultiSelectDDListCurrentSelectionByLocator<T>(T multiSelectDDListID)
             => By.XPath(SetMultiSelectDDListCurrentSelectionXpath(multiSelectDDListID));
 
         public override By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
@@ -389,6 +404,24 @@ namespace RKCIUIAutomation.Page
             return By.XPath(SetInputButtonXpath(buttonVal));
         }
 
+        internal IList<IWebElement> CheckForRequiredInputFields()
+        {
+            IList<IWebElement> inputFieldElements = null;
+            By inputXPath = null;
+
+            string[] requiredInputTypeXPathOffset = new string[] { "span/input[@id]", "div/input", "div/div/input" };
+
+            inputFieldElements = new List<IWebElement>();
+
+            for (int x = 0; x < requiredInputTypeXPathOffset.Length; x++)
+            {
+                inputXPath = By.XPath($"//span[contains(@class, 'ValidationErrorMessage')][text()='Required']/following-sibling::{requiredInputTypeXPathOffset[x]}");
+                ((List<IWebElement>)inputFieldElements).AddRange(GetElements(inputXPath));
+            }
+
+            return inputFieldElements;
+        }
+
         public override IList<string> PopulateEntryFieldsAndGetValuesArray(bool requiredFieldsOnly = false, int integerInputMinValue = 1, int integerInputMaxValue = 99)
         {
             IList<IWebElement> inputFieldElements = null;
@@ -397,15 +430,7 @@ namespace RKCIUIAutomation.Page
 
             if (requiredFieldsOnly)
             {
-                string[] requiredOffset = new string[] {"Required", "required"};
-
-                inputFieldElements = new List<IWebElement>();
-
-                for (int i = 0; i < requiredOffset.Length; i++)
-                {
-                    inputXPath = By.XPath($"//span[contains(@class, 'ValidationErrorMessage')][contains(text(), '{requiredOffset[i]}')]/following-sibling::span/input[@id]");
-                    ((List<IWebElement>)inputFieldElements).AddRange(GetElements(inputXPath));
-                }
+                inputFieldElements = CheckForRequiredInputFields();
             }
             else
             {
@@ -424,16 +449,27 @@ namespace RKCIUIAutomation.Page
                 string inputValue = string.Empty;
                 string fieldValue = string.Empty;
                 string dataRoleType = string.Empty;
+                string currentElemXPath = string.Empty;
                 string inputTypeAttribute = string.Empty;
+                bool fieldIsWithoutTypeOrDataRole = false;
+                bool fieldIsMultiSelectDDL = false;
 
                 currentElem = inputFieldElements[i];
                 inputTypeAttribute = currentElem.GetAttribute("type");
-                
+
+                Console.WriteLine($"@@@@@@@@@ {currentElem} : NO {i} - {inputTypeAttribute} @@@@@@@@@");
+
+                inputId = currentElem.GetAttribute("id");
+                byIdLocator = By.Id(inputId);
+                currentElemXPath = $"//input[@id='{inputId}']";
+
                 if (inputTypeAttribute.HasValue())
                 {
+                    Console.WriteLine($"@@@@@@@@@ {currentElem} : NO {i} TYPE ATTRIB HASVALUE : {inputTypeAttribute} @@@@@@@@@");
+
                     if (inputTypeAttribute.Equals("hidden"))
                     {
-                        fieldValue = GetText(By.Id(inputId));
+                        fieldValue = GetText(byIdLocator);
                     }
                     else
                     {
@@ -441,7 +477,16 @@ namespace RKCIUIAutomation.Page
 
                         if (!dataRoleType.HasValue())
                         {
-                            fieldValue = GetText(By.Id(inputId), logReport: false);
+                            fieldIsWithoutTypeOrDataRole = true;
+
+                            fieldValue = GetText(byIdLocator, logReport: false);
+
+                            if (!fieldValue.HasValue())
+                            {
+                                inputValue = GetVar(inputId);
+                                EnterText(byIdLocator, inputValue);
+                                fieldValue = inputValue;
+                            }
                         }
                     }
                 }
@@ -452,58 +497,87 @@ namespace RKCIUIAutomation.Page
                     if (!dataRoleType.HasValue())
                     {
                         fieldValue = GetText(By.Id(inputId), logReport: false);
+
+                        if (!fieldValue.HasValue())
+                        {
+                            fieldIsWithoutTypeOrDataRole = true;
+                            fieldIsMultiSelectDDL = true;
+
+                            var ariaOwnsAttribute = currentElem.GetAttribute("aria-owns");
+
+                            if (ariaOwnsAttribute.HasValue() && ariaOwnsAttribute.Contains("MultiSelect"))
+                            {
+                                dataRoleType = "MultiSelectDDList";
+                                currentElemXPath = $"//input[@aria-owns='{ariaOwnsAttribute}']";
+                                string multiDDListInputIdXPath = $"//input[@aria-owns='{ariaOwnsAttribute}']//ancestor::div[contains(@class, 'k-multiselect k-header')]/preceding-sibling::input";
+                                inputId = driver.FindElement(By.XPath(multiDDListInputIdXPath)).GetAttribute("id");
+                            }
+                        }
                     }
                 }
 
-                inputId = currentElem.GetAttribute("id");
-                byIdLocator = By.Id(inputId);
-
-                string currentElemXPath = $"//input[@id='{inputId}']";
-
-                if (dataRoleType.Equals("dropdownlist"))
+                if (dataRoleType.HasValue())
                 {
-                    fieldValue = GetTextFromDDL(inputId);
-
-                    if (fieldValue.Equals("Please Select"))
+                    if (dataRoleType.Equals("dropdownlist") || dataRoleType.Equals("MultiSelectDDList"))
                     {
-                        try
-                        {
-                            ExpandAndSelectFromDDList(inputId, 2);
-                        }
-                        catch (NoSuchElementException)
-                        {
-                            ExpandAndSelectFromDDList(inputId, 1);
-                        }
                         fieldValue = GetTextFromDDL(inputId);
-                    }                
-                }
-                else if (dataRoleType.Equals("maskedtextbox"))
-                {
-                    fieldValue = GetText(byIdLocator);
 
-                    if (!fieldValue.HasValue())
+                        if (fieldValue.Equals("Please Select"))
+                        {
+                            try
+                            {
+                                ExpandAndSelectFromDDList(inputId, 2, isMultiSelectDDList: fieldIsMultiSelectDDL);
+                            }
+                            catch (NoSuchElementException)
+                            {
+                                ClickInMainBodyAwayFromField();
+                                ExpandAndSelectFromDDList(inputId, 1, isMultiSelectDDList: fieldIsMultiSelectDDL);
+                            }
+
+                            fieldValue = GetTextFromDDL(inputId, fieldIsMultiSelectDDL);
+                        }
+                    }
+                    else if (dataRoleType.Equals("maskedtextbox"))
                     {
-                        inputValue = GetVar(inputId);
-                        EnterText(byIdLocator, inputValue);
-                        fieldValue = inputValue;
+                        fieldValue = GetText(byIdLocator);
+
+                        if (!fieldValue.HasValue())
+                        {
+                            inputValue = GetVar(inputId);
+                            EnterText(byIdLocator, inputValue);
+                            fieldValue = inputValue;
+                        }
+                    }
+                    else if (dataRoleType.Equals("numerictextbox"))
+                    {
+                        fieldValue = GetText(byIdLocator);
+
+                        if (!fieldValue.HasValue())
+                        {
+                            inputValue = GetRandomInteger(integerInputMinValue, integerInputMaxValue).ToString();
+                            EnterText(byIdLocator, inputValue);
+                            fieldValue = inputValue;
+                        }
                     }
                 }
-                else if (dataRoleType.Equals("numerictextbox"))
-                {
-                    fieldValue = GetText(byIdLocator);
-
-                    if (!fieldValue.HasValue())
-                    {
-                        inputValue = GetRandomInteger(integerInputMinValue, integerInputMaxValue).ToString();
-                        EnterText(byIdLocator, inputValue);
-                        fieldValue = inputValue;
-                    }
-                }
-
-                labelXPath = $"{currentElemXPath}/ancestor::span/preceding-sibling::label";
 
                 try
                 {
+                    string labelParentXPath = "ancestor::span";
+
+                    if (fieldIsWithoutTypeOrDataRole)
+                    {
+                        if (fieldIsMultiSelectDDL)
+                        {
+                            labelParentXPath = "ancestor::div[contains(@class, 'k-multiselect k-header')]";
+                        }
+                        else
+                        {
+                            labelParentXPath = "parent::div";
+                        }
+                    }
+
+                    labelXPath = $"{currentElemXPath}/{labelParentXPath}/preceding-sibling::label";
                     fieldLabel = GetText(By.XPath(labelXPath), logReport: false);
                 }
                 catch (NoSuchElementException)
@@ -513,6 +587,7 @@ namespace RKCIUIAutomation.Page
                 
                 var kvPair = $"{fieldLabel}::{fieldValue}";
                 fieldValuesList.Add(kvPair);
+                Console.WriteLine($"ADDED TO KVPairList : {kvPair}");
             }
 
             return fieldValuesList;
@@ -530,7 +605,7 @@ namespace RKCIUIAutomation.Page
         public abstract By GetInputButtonByLocator<T>(T buttonName);
         public abstract By GetInputFieldByLocator<T>(T inputFieldLabelOrID);
         public abstract By GetMainNavMenuByLocator(Enum navEnum);
-        public abstract By GetMultiSelectDDListCurrentSelectionByLocator(Enum multiSelectDDListID);
+        public abstract By GetMultiSelectDDListCurrentSelectionByLocator<T>(T multiSelectDDListID);
         public abstract By GetNavMenuByLocator(Enum navEnum, Enum parentNavEnum = null);
         public abstract By GetSubmitButtonByLocator(Enum buttonValue, bool submitType = true);
         public abstract By GetTextAreaFieldByLocator(Enum textAreaEnum);
