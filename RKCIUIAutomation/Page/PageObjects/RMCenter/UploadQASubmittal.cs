@@ -2,6 +2,7 @@
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using static RKCIUIAutomation.Base.Factory;
 
@@ -67,7 +68,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("SpecificationId", DDL)] SpecificationId,
             [StringValue("Quantity", NUMBER)] Quantity,
             [StringValue("QuantityUnitId", DDL)] QuantityUnitId,
-            [StringValue("UploadFiles", UPLOAD)] Attachments
+            [StringValue("UploadFiles[0].Files", UPLOAD)] Attachments
         }
 
         public enum ColumnName
@@ -80,7 +81,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("IsLocked")] IsLocked,
             [StringValue("LockedDateGrid")] LockedDateGrid,
             [StringValue("RecordLock.CreatedBy")] RecordLockCreatedBy,
-            [StringValue("Number")] Number
+            [StringValue("Number")] Number,
+            [StringValue("StatusFlowItem.Name")] Status
         }
 
         [ThreadStatic]
@@ -88,6 +90,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         [ThreadStatic]
         internal static IList<EntryField> tenantRoundTwoRequiredFields;
+
+        [ThreadStatic]
+        internal static IList<string> reqFieldLocators;
 
         public virtual IList<EntryField> GetTenantRoundOneRequiredFields()
         {
@@ -107,17 +112,27 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 EntryField.FeatureId,
                 EntryField.GradeId,
                 EntryField.SpecificationId,
-                EntryField.Attachments
+                EntryField.Attachments,
+                EntryField.Quantity
             };
         }
 
-        public bool VerifySubmittalNumberIsDisplayed(string submittalNumber, bool isSearch = false)
+        public bool VerifySubmittalNumberIsDisplayed(string submittalNumber, bool isSearchPage = false, bool isStatusNew = false)
         {
-            return GridHelper.VerifyRecordIsDisplayed(
-                isSearch ? ColumnName.Number : ColumnName.SubmittalNumber, 
-                submittalNumber, 
-                TableHelper.TableType.Single
-            );
+            bool status = true;
+
+            if(!isSearchPage)
+                //Verify In Progress Status is displayed
+                status = GridHelper.VerifyRecordIsDisplayed(
+                    ColumnName.Status, 
+                    isStatusNew ? "New": "In Progress",
+                    TableHelper.TableType.Single);
+            
+            return status && 
+                GridHelper.VerifyRecordIsDisplayed(
+                    isSearchPage ? ColumnName.Number : ColumnName.SubmittalNumber, 
+                    submittalNumber, 
+                    TableHelper.TableType.Single);
         }
 
         #region #endregion Common Workflow Implementation class
@@ -240,18 +255,66 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return fieldValuePair = new KeyValuePair<EntryField, string>(entryField, fieldValue);
         }
 
-        public virtual KeyValuePair<string, string> PopulateFields()
+        public virtual KeyValuePair<string, string> PopulateFields(bool isSaveFlow = false)
         {
-            var valuePair = PopulateFields(tenantRoundOneRequiredFields);
-            ClickSubmitForward();
+            KeyValuePair<string, string> valuePair;
+
+            if (isSaveFlow)
+                ClickSave();
+            else
+            {
+                ClickElement(By.Id("CancelSubmittal"));
+                NavigateToPage.RMCenter_Upload_QA_Submittal();
+                ClickSubmitForward();
+            }
+
+            //Verify Required field validation is coming up for required fields
+            VerifyRequiredFields(tenantRoundOneRequiredFields, isSaveFlow);
+
+            PopulateFields(tenantRoundOneRequiredFields);
+
+            if (isSaveFlow)
+                ClickSave();
+            else
+                ClickSubmitForward();
+
+            valuePair = new KeyValuePair<string, string>(PageAction.GetText(By.Id("SubmittalTitle")), PageAction.GetText(By.Id("SubmittalNo")));
+
+            //Verify Required field validation is coming up for required fields
+            VerifyRequiredFields(tenantRoundTwoRequiredFields, isSaveFlow);
 
             PopulateFields(tenantRoundTwoRequiredFields);
-            ClickSubmitForward();
+
+            if (isSaveFlow)
+                ClickSave();
+            else
+                ClickSubmitForward();
+
+            
 
             return valuePair;
         }
 
-        private KeyValuePair<string, string> PopulateFields(IList<EntryField> fields)
+        private void VerifyRequiredFields(IList<EntryField> actualFields, bool isSaveFlow = false)
+        {
+            IList<string> actualReqFields = new List<string>();
+            foreach (EntryField field in actualFields)
+            {
+                if (isSaveFlow && !field.GetString().Equals("UploadFiles"))
+                        actualReqFields.Add(field.GetString());
+                else
+                    actualReqFields.Add(field.GetString());
+            }
+
+            var expectedReqFields = GetTenantRequiredFieldLocators()
+                                    .Where(i => !string.IsNullOrEmpty(i))
+                                    .ToList();
+
+            TestUtility.AddAssertionToList(PageAction.VerifyExpectedList(actualReqFields, expectedReqFields, 
+                "VerifyUploadQASubmittalRequiredFields"), "VerifyUploadQASubmittalRequiredFields") ;
+        }
+
+        private void PopulateFields(IList<EntryField> fields)
         {
             string submittalNumber = string.Empty;
             string title = string.Empty;
@@ -261,15 +324,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 var kvpFromEntry = new KeyValuePair<EntryField, string>();
                 kvpFromEntry = PopulateFieldValue(field, string.Empty);
 
-                if (field.Equals(EntryField.SubmittalNo))
-                    submittalNumber = kvpFromEntry.Value;
-                else if (field.Equals(EntryField.SubmittalTitle))
-                    title = kvpFromEntry.Value;
-
                 log.Debug($"Added KeyValPair to expected table column values./nEntry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
             }
+        }
 
-            return new KeyValuePair<string, string>(title, submittalNumber);
+        public virtual IList<string> GetTenantRequiredFieldLocators()
+        {
+            return reqFieldLocators = PageAction.GetAttributes(new List<By>()
+            {
+                By.XPath("//span[contains(text(),'Required')]"),
+                By.XPath("//span[contains(text(),'Required')]/parent::span"),
+                By.XPath("//span[contains(text(),'You need at least 1 submittal file')]")
+                
+            }, "data-valmsg-for");
         }
 
         #endregion
@@ -281,8 +348,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         IList<UploadQASubmittal.EntryField> GetTenantRoundOneRequiredFields();
         IList<UploadQASubmittal.EntryField> GetTenantRoundTwoRequiredFields();
         void LogintoSubmittal(UserType userType);
-        KeyValuePair<string, string> PopulateFields();
-        bool VerifySubmittalNumberIsDisplayed(string submittalNumber, bool isSearch = false);
+        KeyValuePair<string, string> PopulateFields(bool isSaveFlow = false);
+        bool VerifySubmittalNumberIsDisplayed(string submittalNumber, bool isSearchPage = false, bool isStatusNew = false);
+        IList<string> GetTenantRequiredFieldLocators();
     }
 
     /// <summary>
