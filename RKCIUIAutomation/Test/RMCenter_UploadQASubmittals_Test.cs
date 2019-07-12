@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using RKCIUIAutomation.Config;
+using System.Collections.Generic;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.PageObjects.RMCenter.Search;
 
@@ -22,7 +23,7 @@ namespace RKCIUIAutomation.Test.UploadSubmittals
             var valuePair = UploadQASubmittal.PopulateFields();
 
             //Filter record by Number
-            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair.Value), "VerifySubmittalNumberIsDisplayed - ReviseReviewSubmittal");
+            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair[Page.PageObjects.RMCenter.UploadQASubmittal.ColumnName.SubmittalNumber]), "VerifySubmittalNumberIsDisplayed - ReviseReviewSubmittal");
             //Click on Edit
             PageAction.WaitForPageReady();
             GridHelper.ClickButtonForRow(Page.TableHelper.TableButton.Edit, string.Empty, false);
@@ -31,7 +32,7 @@ namespace RKCIUIAutomation.Test.UploadSubmittals
             //Go to RMCenter > Search
             NavigateToPage.RMCenter_Search();
             //Filter record by Number
-            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair.Value, true), "VerifySubmittalNumberIsDisplayed - Search");
+            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair[Page.PageObjects.RMCenter.UploadQASubmittal.ColumnName.SubmittalNumber], true), "VerifySubmittalNumberIsDisplayed - Search");
 
             //Validate all assertions
             AssertAll();
@@ -50,7 +51,7 @@ namespace RKCIUIAutomation.Test.UploadSubmittals
             var valuePair = UploadQASubmittal.PopulateFields(true);
 
             //Filter record by Number and Validate for "New" Status
-            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair.Value, false, true), "VerifySubmittalNumberIsDisplayed - ReviseReviewSubmittal");
+            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair[Page.PageObjects.RMCenter.UploadQASubmittal.ColumnName.SubmittalNumber], false, true), "VerifySubmittalNumberIsDisplayed - ReviseReviewSubmittal");
 
             //Click on Edit in Revise Review page
             PageAction.WaitForPageReady();
@@ -58,7 +59,7 @@ namespace RKCIUIAutomation.Test.UploadSubmittals
             ClickSubmitForward();
 
             //Filter record by Number and Validate for "In Progress" Status
-            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair.Value, false, false), "VerifySubmittalNumberIsDisplayed - ReviseReviewSubmittal");
+            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair[Page.PageObjects.RMCenter.UploadQASubmittal.ColumnName.SubmittalNumber], false, false), "VerifySubmittalNumberIsDisplayed - ReviseReviewSubmittal");
 
             //Click on Edit in Revise Review page
             PageAction.WaitForPageReady();
@@ -68,7 +69,7 @@ namespace RKCIUIAutomation.Test.UploadSubmittals
             //Go to RMCenter > Search
             NavigateToPage.RMCenter_Search();
             //Filter record by Number
-            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair.Value, true), "VerifySubmittalNumberIsDisplayed - Search");
+            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair[Page.PageObjects.RMCenter.UploadQASubmittal.ColumnName.SubmittalNumber], true), "VerifySubmittalNumberIsDisplayed - Search");
 
             //Validate all assertions
             AssertAll();
@@ -82,9 +83,11 @@ namespace RKCIUIAutomation.Test.UploadSubmittals
         public void Review_Revise_Filters()
         {
             UploadQASubmittal.LogintoSubmittal(UserType.Bhoomi);
+            
+            var values = UploadQASubmittal.PopulateFields();
 
-            var valuePair = UploadQASubmittal.PopulateFields();
-            AddAssertionToList(UploadQASubmittal.VerifySubmittalNumberIsDisplayed(valuePair.Value), "VerifySubmittalNumberIsDisplayed - Search");
+            //Verify column values are filtering properly
+            UploadQASubmittal.VerifyIfRecordsAreDisplayedByFilter(values);
 
             AssertAll();
         }
@@ -103,7 +106,12 @@ namespace RKCIUIAutomation.Test.UploadSubmittals
             //Go to RMCenter > Search
             NavigateToPage.RMCenter_Search();
 
-            RMCenterSearch.VerifySearchResultByCriteria(valuePair, SearchCriteria.Title);
+            RMCenterSearch.VerifySearchResultByCriteria(
+                new KeyValuePair<string, string>(
+                    valuePair[Page.PageObjects.RMCenter.UploadQASubmittal.ColumnName.SubmittalTitle], 
+                    valuePair[Page.PageObjects.RMCenter.UploadQASubmittal.ColumnName.SubmittalNumber]), 
+                SearchCriteria.Title);
+
             AssertAll();
         }
     }

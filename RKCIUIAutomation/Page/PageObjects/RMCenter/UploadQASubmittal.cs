@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using static RKCIUIAutomation.Base.Factory;
+using System.ComponentModel;
 
 namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 {
@@ -73,16 +74,37 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public enum ColumnName
         {
-            [StringValue("SubmittalNo")] SubmittalNumber,
-            [StringValue("SubmittalTitle")] SubmittalTitle,
-            [StringValue("Originator.Name")] OriginatorName,
-            [StringValue("SubmittalType.Name")] SubmittalTypeName,
-            [StringValue("StatusFlowItem.Name")] StatusFlowItemName,
+            [StringValue("SubmittalNo")]
+            [Description("SubmittalNo")]
+            SubmittalNumber,
+
+            [StringValue("SubmittalTitle")]
+            [Description("SubmittalTitle")]
+            SubmittalTitle,
+
+            [StringValue("Originator.Name")]
+            [Description("div/OriginatorId")]
+            OriginatorName,
+
+            [StringValue("SubmittalType.Name")]
+            [Description("div/SubmittalTypeId")]
+            SubmittalTypeName,
+
+            [StringValue("StatusFlowItem.Name")]
+            [Description("div/StatusId")]
+            Status, 
+
             [StringValue("IsLocked")] IsLocked,
             [StringValue("LockedDateGrid")] LockedDateGrid,
             [StringValue("RecordLock.CreatedBy")] RecordLockCreatedBy,
-            [StringValue("Number")] Number,
-            [StringValue("StatusFlowItem.Name")] Status
+
+            //Search Column Name
+            [StringValue("Number")] Number
+        }
+
+        public enum UIFields
+        {
+
         }
 
         [ThreadStatic]
@@ -133,6 +155,30 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     isSearchPage ? ColumnName.Number : ColumnName.SubmittalNumber, 
                     submittalNumber, 
                     TableHelper.TableType.Single);
+        }
+
+        public void VerifyIfRecordsAreDisplayedByFilter(Dictionary<ColumnName, string> values)
+        {
+            bool status = true;
+
+            foreach (var valuePair in values)
+            {
+                status = status && 
+                    GridHelper.VerifyRecordIsDisplayed(
+                        valuePair.Key, valuePair.Value, TableHelper.TableType.Single);
+
+                TestUtility.AddAssertionToList(status, string.Format("Filter Validation, Key: {0}, Value: {1}", valuePair.Key, valuePair.Value));
+            }
+
+            //Open the record
+            GridHelper.ClickButtonForRow(Page.TableHelper.TableButton.View, string.Empty, false);
+
+            //Go back to Revise Review Submittal page - so the record gets locked
+            NavigateToPage.RMCenter_Upload_QA_Submittal();
+
+            //Verify if grid displays as locked by current user
+            GridHelper.VerifyRecordIsDisplayed(
+                        ColumnName.RecordLockCreatedBy, ConfigUtil.GetCurrentUserEmail(), TableHelper.TableType.Single);
         }
 
         #region #endregion Common Workflow Implementation class
@@ -255,9 +301,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return fieldValuePair = new KeyValuePair<EntryField, string>(entryField, fieldValue);
         }
 
-        public virtual KeyValuePair<string, string> PopulateFields(bool isSaveFlow = false)
+        public virtual Dictionary<UploadQASubmittal.ColumnName, string> PopulateFields(bool isSaveFlow = false)
         {
-            KeyValuePair<string, string> valuePair;
+            var values = new Dictionary<ColumnName, string>();
 
             if (isSaveFlow)
                 ClickSave();
@@ -278,12 +324,28 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             else
                 ClickSubmitForward();
 
-            valuePair = new KeyValuePair<string, string>(PageAction.GetText(By.Id("SubmittalTitle")), PageAction.GetText(By.Id("SubmittalNo")));
-
             //Verify Required field validation is coming up for required fields
             VerifyRequiredFields(tenantRoundTwoRequiredFields, isSaveFlow);
 
             PopulateFields(tenantRoundTwoRequiredFields);
+
+            foreach (ColumnName column in Enum.GetValues(typeof(ColumnName)))
+            {
+                var desc = StaticHelpers.GetDescription(column);
+                var value = string.Empty;
+                if (desc != null)
+                {
+                    if (desc.StartsWith("div"))
+                    {
+                        var valueArray = Driver.FindElement(By.XPath("//input[@id='" + desc.Split('/')[1] + "']/parent::div")).Text.Split('\n');
+                        value = (valueArray.Length > 1) ? valueArray[1] : valueArray[0];
+                    }
+                    else
+                        value = PageAction.GetText(By.Id(desc));
+
+                    values.Add(column, value);
+                }
+            }
 
             if (isSaveFlow)
                 ClickSave();
@@ -291,8 +353,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 ClickSubmitForward();
 
             
-
-            return valuePair;
+            return values;
         }
 
         private void VerifyRequiredFields(IList<EntryField> actualFields, bool isSaveFlow = false)
@@ -348,8 +409,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         IList<UploadQASubmittal.EntryField> GetTenantRoundOneRequiredFields();
         IList<UploadQASubmittal.EntryField> GetTenantRoundTwoRequiredFields();
         void LogintoSubmittal(UserType userType);
-        KeyValuePair<string, string> PopulateFields(bool isSaveFlow = false);
+        Dictionary<UploadQASubmittal.ColumnName, string> PopulateFields(bool isSaveFlow = false);
         bool VerifySubmittalNumberIsDisplayed(string submittalNumber, bool isSearchPage = false, bool isStatusNew = false);
+        void VerifyIfRecordsAreDisplayedByFilter(Dictionary<UploadQASubmittal.ColumnName, string> values);
         IList<string> GetTenantRequiredFieldLocators();
     }
 
