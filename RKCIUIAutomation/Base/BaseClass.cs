@@ -27,7 +27,7 @@ namespace RKCIUIAutomation.Base
         readonly TestPlatform defaultTestPlatform = TestPlatform.GridLocal;
         readonly BrowserType defaultBrowserType = BrowserType.Chrome;
         readonly TestEnv defaultTestEnvironment = TestEnv.Staging;         
-        readonly TenantName defaultTenantName = TenantName.I15South;
+        readonly TenantName defaultTenantName = TenantName.LAX;
         readonly Reporter defaultReporter = Reporter.Klov;
         readonly string defaultGridAddress = "";
         readonly bool enableHipTest = false;

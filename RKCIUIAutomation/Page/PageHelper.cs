@@ -160,15 +160,33 @@ namespace RKCIUIAutomation.Page
 
         private string SetDDListFieldExpandArrowXpath<T>(T ddListID, bool isMultiSelectDDList = false)
         {
-            string _ddListID = (ddListID.GetType() == typeof(string))
-                ? BaseUtil.ConvertToType<string>(ddListID)
-                : BaseUtil.ConvertToType<Enum>(ddListID).GetString();
+            string _ddListID = string.Empty;
+            string _ddArrowXpath = string.Empty;
 
-            string _ddArrowXpath = isMultiSelectDDList
-                ? $"//select[@id='{_ddListID}']/parent::div"
-                :_ddListID.Contains("Time")
-                    ? $"{SetDDListFieldXpath(_ddListID)}/parent::span/span"
-                    : $"{SetDDListFieldXpath(_ddListID)}//span[@class='k-select']/span";
+            if (ddListID is Enum)
+            {
+                _ddListID = ConvertToType<Enum>(ddListID).GetString();
+            }
+            else if (ddListID.GetType().Equals(typeof(string)))
+            {
+                _ddListID = ConvertToType<string>(ddListID);
+            }
+
+            if (isMultiSelectDDList)
+            {
+                _ddArrowXpath = $"//select[@id='{_ddListID}']/parent::div";
+            }
+            else
+            {
+                if (_ddListID.Contains("Time"))
+                {
+                    _ddArrowXpath = $"{SetDDListFieldXpath(_ddListID)}/parent::span/span";
+                }
+                else
+                {
+                    _ddArrowXpath = $"{SetDDListFieldXpath(_ddListID)}//span[@class='k-select']/span";
+                }
+            }
 
             return _ddArrowXpath;
         }
@@ -360,20 +378,7 @@ namespace RKCIUIAutomation.Page
             => By.XPath(SetMultiSelectDDListCurrentSelectionXpath(multiSelectDDListID));
 
         public override By GetExpandDDListButtonByLocator<T>(T ddListID, bool isMultiSelectDDList = false)
-        {
-            By expandDDListLocator = null;
-
-            if (isMultiSelectDDList)
-            {
-                expandDDListLocator = By.XPath($"//select[@id='{BaseUtil.ConvertToType<Enum>(ddListID).GetString()}']/parent::div");
-            }
-            else
-            {
-                expandDDListLocator = By.XPath(SetDDListFieldExpandArrowXpath(ddListID));
-            }
-
-            return expandDDListLocator;
-        }
+            => By.XPath(SetDDListFieldExpandArrowXpath(ddListID, isMultiSelectDDList));
 
         public override By GetDDListItemsByLocator<T, I>(T ddListID, I itemIndexOrName, bool useContainsOperator = false)
             => By.XPath(SetDDListItemsXpath(ddListID, itemIndexOrName, useContainsOperator));
@@ -409,16 +414,21 @@ namespace RKCIUIAutomation.Page
             IList<IWebElement> inputFieldElements = null;
             By inputXPath = null;
 
-            string[] requiredInputTypeXPathOffset = new string[] { "span/input[@id]", "div/input", "div/div/input" };
+            string[] requiredLabelErrorOffset = new string[] { "Required", "required" };
+            string[] requiredInputTypeXPathOffset = new string[] { "span/input[@id]", "div/input", "div/select" };
 
             inputFieldElements = new List<IWebElement>();
 
-            for (int x = 0; x < requiredInputTypeXPathOffset.Length; x++)
+            for (int i = 0; i < requiredLabelErrorOffset.Length; i++)
             {
-                inputXPath = By.XPath($"//span[contains(@class, 'ValidationErrorMessage')][text()='Required']/following-sibling::{requiredInputTypeXPathOffset[x]}");
-                ((List<IWebElement>)inputFieldElements).AddRange(GetElements(inputXPath));
+                for (int x = 0; x < requiredInputTypeXPathOffset.Length; x++)
+                {
+                    inputXPath = By.XPath($"//span[contains(@class, 'ValidationErrorMessage')][contains(text(), '{requiredLabelErrorOffset[i]}')]/following-sibling::{requiredInputTypeXPathOffset[x]}");
+                    ((List<IWebElement>)inputFieldElements).AddRange(GetElements(inputXPath));
+                } 
             }
 
+            Console.WriteLine($"@@@@@@ FOUND {inputFieldElements.Count} REQUIRED ELEMENTs @@@@@@");
             return inputFieldElements;
         }
 
@@ -451,7 +461,7 @@ namespace RKCIUIAutomation.Page
                 string dataRoleType = string.Empty;
                 string currentElemXPath = string.Empty;
                 string inputTypeAttribute = string.Empty;
-                bool fieldIsWithoutTypeOrDataRole = false;
+                bool fieldIsWithoutDataRole = false;
                 bool fieldIsMultiSelectDDL = false;
 
                 currentElem = inputFieldElements[i];
@@ -462,6 +472,7 @@ namespace RKCIUIAutomation.Page
                 inputId = currentElem.GetAttribute("id");
                 byIdLocator = By.Id(inputId);
                 currentElemXPath = $"//input[@id='{inputId}']";
+                dataRoleType = currentElem.GetAttribute("data-role");
 
                 if (inputTypeAttribute.HasValue())
                 {
@@ -473,56 +484,45 @@ namespace RKCIUIAutomation.Page
                     }
                     else
                     {
-                        dataRoleType = currentElem.GetAttribute("data-role");
-
                         if (!dataRoleType.HasValue())
                         {
-                            fieldIsWithoutTypeOrDataRole = true;
+                            fieldIsWithoutDataRole = true;
 
-                            fieldValue = GetText(byIdLocator, logReport: false);
-
-                            if (!fieldValue.HasValue())
+                            if (inputId.HasValue())
                             {
-                                inputValue = GetVar(inputId);
-                                EnterText(byIdLocator, inputValue);
-                                fieldValue = inputValue;
+                                fieldValue = GetText(byIdLocator, logReport: false);
+
+                                if (!fieldValue.HasValue())
+                                {
+                                    inputValue = GetVar(inputId);
+                                    EnterText(byIdLocator, inputValue);
+                                    fieldValue = inputValue;
+                                }
                             }
                         }
                     }
                 }
                 else
                 {
-                    dataRoleType = currentElem.GetAttribute("data-role");
-
                     if (!dataRoleType.HasValue())
                     {
-                        fieldValue = GetText(By.Id(inputId), logReport: false);
-
-                        if (!fieldValue.HasValue())
-                        {
-                            fieldIsWithoutTypeOrDataRole = true;
-                            fieldIsMultiSelectDDL = true;
-
-                            var ariaOwnsAttribute = currentElem.GetAttribute("aria-owns");
-
-                            if (ariaOwnsAttribute.HasValue() && ariaOwnsAttribute.Contains("MultiSelect"))
-                            {
-                                dataRoleType = "MultiSelectDDList";
-                                currentElemXPath = $"//input[@aria-owns='{ariaOwnsAttribute}']";
-                                string multiDDListInputIdXPath = $"//input[@aria-owns='{ariaOwnsAttribute}']//ancestor::div[contains(@class, 'k-multiselect k-header')]/preceding-sibling::input";
-                                inputId = driver.FindElement(By.XPath(multiDDListInputIdXPath)).GetAttribute("id");
-                            }
-                        }
+                        fieldValue = GetText(byIdLocator, logReport: false);
+                        fieldIsWithoutDataRole = true;
                     }
                 }
 
                 if (dataRoleType.HasValue())
                 {
-                    if (dataRoleType.Equals("dropdownlist") || dataRoleType.Equals("MultiSelectDDList"))
+                    if (dataRoleType.Equals("dropdownlist") || dataRoleType.Equals("multiselect"))
                     {
-                        fieldValue = GetTextFromDDL(inputId);
+                        if (dataRoleType.Equals("multiselect"))
+                        {
+                            fieldIsMultiSelectDDL = true;
+                        }
 
-                        if (fieldValue.Equals("Please Select"))
+                        fieldValue = GetTextFromDDL(inputId, fieldIsMultiSelectDDL);
+
+                        if (!fieldValue.HasValue() || fieldValue.Equals("Please Select"))
                         {
                             try
                             {
@@ -565,7 +565,7 @@ namespace RKCIUIAutomation.Page
                 {
                     string labelParentXPath = "ancestor::span";
 
-                    if (fieldIsWithoutTypeOrDataRole)
+                    if (fieldIsWithoutDataRole)
                     {
                         if (fieldIsMultiSelectDDL)
                         {

@@ -33,5 +33,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void SelectTab_Authorization();
         void SelectTab_PendingClosing();
         void ClickBtn_AddRemoveTestMethods();
+        void CheckForLINError();
     }
 }

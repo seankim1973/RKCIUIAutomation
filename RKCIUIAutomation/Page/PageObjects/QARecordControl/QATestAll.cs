@@ -1,7 +1,9 @@
 ﻿using OpenQA.Selenium;
+using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll_Common;
@@ -11,6 +13,31 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 {
     public class QATestAll_Common : QATestAll
     {
+        internal By LinLocator = By.XPath("//input[@id='Lot_LIN']");
+        internal By errorLINRequired = By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(), 'LIN required')]");
+        internal By errorLINExists = By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(), 'LIN exists')]");
+
+        internal string GenerateLIN()
+        {
+            string today = GetShortDate(formatWithZero: true);
+            string[] splitDate = Regex.Split(today, "/");
+            string mm = splitDate[0];
+            string dd = splitDate[1];
+            string yy = Regex.Split(splitDate[2], "20")[1];
+
+            if (int.Parse(mm) < 10)
+            {
+                mm = $"0{mm}";
+            }
+
+            if (int.Parse(dd) < 10)
+            {
+                dd = $"0{dd}";
+            }
+
+            return $"1109{yy}{mm}{dd}00";
+        }
+
         public QATestAll_Common()
         {
             testRecordKVPairsList = GetTestRecordKVPairsList();
@@ -352,6 +379,43 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override void ClickBtn_AddRemoveTestMethods()
             => PageAction.ClickElementByID(ButtonType.AddRemoveTestMethods);
+
+        public override void CheckForLINError()
+        {
+            By errorLINExists = By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(), 'LIN exists')]");
+            bool errorLINExistsIsDisplayed = true;
+
+            do
+            {
+                GetElement(errorLINExists);
+
+                By sequenceNumberLocator = By.XPath("//input[@id='SequenceNumber']");
+                string sequenceNumber = GetText(sequenceNumberLocator, logReport: false);
+                int newValue = int.Parse(sequenceNumber) + 1;
+
+                if (newValue < 10)
+                {
+                    sequenceNumber = $"0{newValue}";
+                }
+                else
+                {
+                    sequenceNumber = newValue.ToString();
+                }
+
+                EnterText(sequenceNumberLocator, sequenceNumber);
+                QATestMethod.ClickBtn_Save();
+                try
+                {
+                    GetElement(errorLINExists);
+                }
+                catch (NoSuchElementException)
+                {
+                    errorLINExistsIsDisplayed = false;
+                }
+            } while (errorLINExistsIsDisplayed);
+
+            throw new NoSuchElementException();
+        }
     }
 
     public abstract class QATestAll : PageBase, IQATestAll
@@ -381,6 +445,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void CreateRevisionTestRecord();
         public abstract void CreateRetestTestRecord();
         public abstract void ClickBtn_AddRemoveTestMethods();
+        public abstract void CheckForLINError();
     }
 
 
@@ -421,6 +486,46 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             ClickCreateButton(createType);
         }
+
+        public override void CheckForLINError()
+        {
+            bool errorLINExistsIsDisplayed = true;
+            string LinNumber = string.Empty;
+
+            LinNumber = GenerateLIN();
+
+            try
+            {
+                GetElement(errorLINRequired);
+                EnterText(LinLocator, LinNumber);
+                QATestMethod.ClickBtn_Save();
+            }
+            catch (NoSuchElementException)
+            {
+                LinNumber = GetText(LinLocator, logReport: false);
+            }
+
+            do
+            {
+                try
+                {
+                    GetElement(errorLINExists);
+                    LinNumber = GetText(LinLocator, logReport: false);
+                    LinNumber = (long.Parse(LinNumber) + 1).ToString();
+                    EnterText(LinLocator, LinNumber);
+                    QATestMethod.ClickBtn_Save();
+                    GetElement(errorLINExists);
+                }
+                catch (NoSuchElementException)
+                {
+                    errorLINExistsIsDisplayed = false;
+                    throw;
+                }
+
+            } while (errorLINExistsIsDisplayed);
+
+            throw new NoSuchElementException();
+        }
     }
 
     public class QATestAll_SGWay : QATestAll_Common
@@ -459,6 +564,44 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
 
             ClickCreateButton(createType);
+        }
+
+        public override void CheckForLINError()
+        {
+            bool errorLINExistsIsDisplayed = true;
+            string LinNumber = string.Empty;
+            LinNumber = GenerateLIN();
+
+            try
+            {
+                GetElement(errorLINRequired);
+                EnterText(LinLocator, LinNumber);
+                QATestMethod.ClickBtn_Save();
+            }
+            catch (NoSuchElementException)
+            {
+                LinNumber = GetText(LinLocator, logReport: false);
+            }
+
+            do
+            {
+                try
+                {
+                    GetElement(errorLINExists);
+                    LinNumber = GetText(LinLocator, logReport: false);
+                    LinNumber = (long.Parse(LinNumber) + 1).ToString();
+                    EnterText(LinLocator, LinNumber);
+                    QATestMethod.ClickBtn_Save();
+                    GetElement(errorLINExists);
+                }
+                catch (NoSuchElementException)
+                {
+                    errorLINExistsIsDisplayed = false;
+                }
+
+            } while (errorLINExistsIsDisplayed);
+
+            throw new NoSuchElementException();
         }
     }
 

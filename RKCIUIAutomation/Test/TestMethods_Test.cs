@@ -40,35 +40,12 @@ namespace RKCIUIAutomation.Test.TestMethods
 
             foreach (var workflowType in workflowTypeList)
             {
-                By errorLINExists = By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(), 'LIN exists')]");
-                bool errorLINExistsIsDisplayed = false;
                 QATestMethod.CreateNewTestRecord(workflowType);
                 QATestMethod.ClickBtn_Save();
 
                 try
                 {
-                    do
-                    {
-                        GetElement(errorLINExists);
-                        
-                        By sequenceNumberLocator = By.XPath("//input[@id='SequenceNumber']");
-                        string sequenceNumber = GetText(sequenceNumberLocator);
-                        int newValue = int.Parse(sequenceNumber) + 1;
-
-                        if (newValue < 10)
-                        {
-                            sequenceNumber = $"0{newValue}";
-                        }
-                        else
-                        {
-                            sequenceNumber = newValue.ToString();
-                        }
-
-                        EnterText(sequenceNumberLocator, sequenceNumber);
-                        QATestMethod.ClickBtn_Save();
-                        GetElement(errorLINExists);
-                        errorLINExistsIsDisplayed = true;
-                    } while (errorLINExistsIsDisplayed);
+                    QATestMethod.CheckForLINError();
                 }
                 catch (NoSuchElementException)
                 {

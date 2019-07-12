@@ -594,13 +594,11 @@ namespace RKCIUIAutomation.Page
             try
             {
                 elements = driver.FindElements(elementByLocator);
-                Console.WriteLine($"@@@@@@ FOUND ELEMENT : {elementByLocator} @@@@@@");
             }
             catch (NoSuchElementException)
             {
                 WaitForElement(elementByLocator, waitForLoading: waitForLoading);
                 elements = driver.FindElements(elementByLocator);
-                Console.WriteLine($"@@@@@@ FOUND ELEMENT : {elementByLocator} @@@@@@");
             }
             catch (Exception)
             {
@@ -809,9 +807,6 @@ namespace RKCIUIAutomation.Page
                 ExecuteJsAction(JSAction.Click, elementByLocator);
                 Report.Step($"Clicked {elementByLocator}");
             }
-            //catch (UnableToSetCookieException)
-            //{
-            //}
             finally
             {
                 WaitForPageReady(waitForLoading: false);
