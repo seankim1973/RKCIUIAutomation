@@ -118,7 +118,7 @@ namespace RKCIUIAutomation.Page
 
         IWebElement ScrollToElement<T>(T elementOrLocator);
 
-        void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true);
+        void SelectRadioBtnOrChkbox<T>(T chkbxOrRadioBtnID, bool toggleChkBoxIfAlreadyChecked = true);
 
         string UploadFile(string fileName = "");
 

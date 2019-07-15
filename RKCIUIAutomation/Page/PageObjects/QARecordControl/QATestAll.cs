@@ -1,13 +1,10 @@
 ﻿using OpenQA.Selenium;
-using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.Factory;
-using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll_Common;
-using static RKCIUIAutomation.Page.TableHelper;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 {
@@ -36,6 +33,14 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
 
             return $"1109{yy}{mm}{dd}00";
+        }
+
+        internal void ToggleTestMethodCheckbox(Enum testMethodIdentifier)
+        {
+            string testMethodInputElemId = string.Empty;
+            By chkbxLocator = By.XPath($"//input[@identifier='{testMethodIdentifier}']");
+            testMethodInputElemId = GetAttribute(chkbxLocator, "id");
+            SelectRadioBtnOrChkbox(testMethodInputElemId);
         }
 
         public QATestAll_Common()
@@ -84,12 +89,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         [ThreadStatic]
         public IList<KeyValuePair<TestDetails_InputFieldType, string>> testRecordKVPairsList;
-
-        //[ThreadStatic]
-        //public IList<TestDetails_InputFieldType> allInputFieldTypeList;
-
-        //[ThreadStatic]
-        //public IList<TestDetails_InputFieldType> requiredInputFieldTypeList;
 
         public override IList<TestDetails_InputFieldType> AllInputFieldTypeList { get; set; }
         public override IList<TestDetails_InputFieldType> RequiredInputFieldTypeList { get; set; }

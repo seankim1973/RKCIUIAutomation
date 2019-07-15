@@ -913,41 +913,56 @@ namespace RKCIUIAutomation.Page
             return elem;
         }
 
-        public override void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true)
+        public override void SelectRadioBtnOrChkbox<T>(T chkbxOrRadioBtnID, bool toggleChkBoxIfAlreadyChecked = true)
         {
-            string chkbxOrRdoBtn = chkbxOrRadioBtn.GetString();
-            string chkbxOrRdoBtnNameAndId = $"{chkbxOrRadioBtn.ToString()} (ID: {chkbxOrRdoBtn})";
-            By locator = By.Id(chkbxOrRdoBtn);
+            string chkbxOrRdoBtnIdValue = string.Empty;
+            string chkbxOrRdoBtnNameAndId = string.Empty;
+
+            if (chkbxOrRadioBtnID is Enum)
+            {
+                chkbxOrRdoBtnIdValue = ConvertToType<Enum>(chkbxOrRadioBtnID).GetString();
+                chkbxOrRdoBtnNameAndId = $"{chkbxOrRadioBtnID} (ID: {chkbxOrRdoBtnIdValue})";
+            }
+            else if (chkbxOrRadioBtnID.GetType().Equals(typeof(string)))
+            {
+                chkbxOrRdoBtnIdValue = ConvertToType<string>(chkbxOrRadioBtnID);
+                chkbxOrRdoBtnNameAndId = $"ID: {chkbxOrRdoBtnIdValue}";
+            }
+
+            By locator = By.Id(chkbxOrRdoBtnIdValue);
 
             try
             {
                 IWebElement element = GetElement(locator, false);
 
-                if (element.Enabled)
+                try
                 {
-                    if (toggleChkBoxIfAlreadyChecked)
+                    if (element.Enabled)
                     {
-                        JsClickElement(locator);
-                        Report.Step($"Selected: {chkbxOrRdoBtnNameAndId}");
-                    }
-                    else
-                    {
-                        log.Info("Specified not to toggle checkbox, if already selected");
-
-                        if (!element.Selected)
+                        if (toggleChkBoxIfAlreadyChecked)
                         {
                             JsClickElement(locator);
-                            Report.Info($"Selected: {chkbxOrRdoBtnNameAndId}");
+                            Report.Step($"Selected: {chkbxOrRdoBtnNameAndId}");
                         }
                         else
                         {
-                            Report.Info($"Did not select element, because it is already selected: {chkbxOrRdoBtnNameAndId}");
+                            log.Info("Specified not to toggle checkbox, if already selected");
+
+                            if (!element.Selected)
+                            {
+                                JsClickElement(locator);
+                                Report.Info($"Selected: {chkbxOrRdoBtnNameAndId}");
+                            }
+                            else
+                            {
+                                Report.Info($"Did not select element, because it is already selected: {chkbxOrRdoBtnNameAndId}");
+                            }
                         }
                     }
                 }
-                else
+                catch (ElementNotInteractableException)
                 {
-                    Report.Error($"Element {chkbxOrRadioBtn.ToString()}, is not selectable", true);
+                    Report.Error($"Element {chkbxOrRadioBtnID}, is not selectable", true);
                 }
             }
             catch (UnhandledAlertException e)
@@ -1831,7 +1846,7 @@ namespace RKCIUIAutomation.Page
         public abstract IWebElement ScrollToElement<T>(T elementOrLocator);
         public abstract void ScrollPageToBottom();
         public abstract void ScrollPageToTop();
-        public abstract void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true);
+        public abstract void SelectRadioBtnOrChkbox<T>(T chkbxOrRadioBtnID, bool toggleChkBoxIfAlreadyChecked = true);
         public abstract string UploadFile(string fileName = "");
         public abstract bool VerifyActiveModalTitle(string expectedModalTitle);
         public abstract bool VerifyAndAcceptAlertMessage(string expectedMessage);
