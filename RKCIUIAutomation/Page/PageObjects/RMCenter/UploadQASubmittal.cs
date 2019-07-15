@@ -170,15 +170,21 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 TestUtility.AddAssertionToList(status, string.Format("Filter Validation, Key: {0}, Value: {1}", valuePair.Key, valuePair.Value));
             }
 
+            GridHelper.VerifyRecordIsDisplayed(ColumnName.SubmittalNumber, values[ColumnName.SubmittalNumber], TableHelper.TableType.Single);
+           
             //Open the record
             GridHelper.ClickButtonForRow(Page.TableHelper.TableButton.View, string.Empty, false);
 
             //Go back to Revise Review Submittal page - so the record gets locked
-            NavigateToPage.RMCenter_Upload_QA_Submittal();
+            NavigateToPage.RMCenter_Review_Revise_Submittal();
+
+            GridHelper.VerifyRecordIsDisplayed(ColumnName.SubmittalNumber, values[ColumnName.SubmittalNumber], TableHelper.TableType.Single);
 
             //Verify if grid displays as locked by current user
-            GridHelper.VerifyRecordIsDisplayed(
+            status = status && GridHelper.VerifyRecordIsDisplayed(
                         ColumnName.RecordLockCreatedBy, ConfigUtil.GetCurrentUserEmail(), TableHelper.TableType.Single);
+
+            TestUtility.AddAssertionToList(status, string.Format("Filter Validation, Key: {0}, Value: {1}", ColumnName.RecordLockCreatedBy, ConfigUtil.GetCurrentUserEmail()));
         }
 
         #region #endregion Common Workflow Implementation class
@@ -338,7 +344,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     if (desc.StartsWith("div"))
                     {
                         var valueArray = Driver.FindElement(By.XPath("//input[@id='" + desc.Split('/')[1] + "']/parent::div")).Text.Split('\n');
-                        value = (valueArray.Length > 1) ? valueArray[1] : valueArray[0];
+                        value = (valueArray.Length > 1) ? valueArray[1] : "New";
                     }
                     else
                         value = PageAction.GetText(By.Id(desc));

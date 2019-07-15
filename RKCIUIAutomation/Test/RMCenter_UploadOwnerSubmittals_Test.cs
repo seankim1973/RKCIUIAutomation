@@ -74,7 +74,7 @@ namespace RKCIUIAutomation.Test.UploadSubmittals
             AssertAll();
         }
 
-        [Test]
+        //[Test]
         [Category(Component.Submittals)]
         [Property(TestCaseNumber, 2187525)]
         [Property(Priority, "High")]
@@ -89,7 +89,7 @@ namespace RKCIUIAutomation.Test.UploadSubmittals
             AssertAll();
         }
 
-        [Test]
+        //[Test]
         [Category(Component.Submittals)]
         [Property(TestCaseNumber, 2187523)]
         [Property(Priority, "High")]
