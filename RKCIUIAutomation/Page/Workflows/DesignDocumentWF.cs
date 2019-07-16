@@ -717,7 +717,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LogIntoDesignDocumentsPage(workflowType);
             DesignDocCommentReview.ClickTab_Requires_Response();
             FilterTableAndEditDoc();
-            EnterResponseCommentAndDisagreeResponseCode();
+            DesignDocCommentReview.EnterResponseCommentAndDisagreeResponseCode();
         }
 
         public override void EnterResolutionCommentAndResolutionCodeforDisagreeResponse(CR_Workflow workflowType = CR_Workflow.EnterResolution)
@@ -743,17 +743,18 @@ namespace RKCIUIAutomation.Page.Workflows
             DesignDocCommentReview.ClickBtn_SaveForward();
         }
 
-        public override void EnterResponseCommentAndDisagreeResponseCode()
-        {
-            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput);
-            DesignDocCommentReview.SelectDisagreeResponseCode();
-            DesignDocCommentReview.ClickBtn_SaveOnly();
-            int commentTabNumber = 2;
-            DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
-            DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput, commentTabNumber);
-            DesignDocCommentReview.SelectDisagreeResponseCode(commentTabNumber);
-            DesignDocCommentReview.ClickBtn_SaveOnly();
-        }
+        //public override void EnterResponseCommentAndDisagreeResponseCode()
+        //{
+        //    DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput);
+        //    DesignDocCommentReview.SelectDisagreeResponseCode();
+        //    DesignDocCommentReview.ClickBtn_SaveOnly();
+        //    int commentTabNumber = 2;
+        //    DesignDocCommentReview.ClickCommentTabNumber(commentTabNumber);
+        //    DesignDocCommentReview.EnterCommentResponse(CommentFieldType.CommentResponseInput, commentTabNumber);
+
+        //    DesignDocCommentReview.SelectDisagreeResponseCode(commentTabNumber);
+        //    DesignDocCommentReview.ClickBtn_SaveOnly();
+        //}
 
         public override void EnterAndForwardClosingComment(CR_Workflow workflowType = CR_Workflow.ClosingComment)
         {

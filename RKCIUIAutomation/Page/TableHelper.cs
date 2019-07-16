@@ -222,15 +222,17 @@ namespace RKCIUIAutomation.Page
         public override By GetTblRowBtn_ByLocator<T>(TableButton tblRowBtn, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}{DetermineTblRowBtnXPathExt(tblRowBtn, rowEndsWithChkbx)}");
 
-        public override By GetTblRow_ByLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
+        public override By GetTblRowElementByLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false)
             => By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumn)}");
 
         public override string GetColumnValueForRow<T, C>(T textInRowForAnyColumnOrRowIndex, C getValueFromColumnName, bool isMultiTabGrid = true)
         {
-            Type cArgType = getValueFromColumnName.GetType();
-            string columnDataTypeXPath = string.Empty;
-            string rowXPath = string.Empty;           
             object cArgObj = null;
+            string colValue = string.Empty;
+            string rowXPath = string.Empty;
+            string columnDataTypeXPath = string.Empty;
+
+            Type cArgType = getValueFromColumnName.GetType();
 
             try
             {
@@ -253,34 +255,43 @@ namespace RKCIUIAutomation.Page
                 int xPathIndex = int.Parse(dataIndex) + 1;
 
                 rowXPath = $"{gridTypeXPath}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
+                colValue = PageAction.GetText(By.XPath(rowXPath));
             }
-            catch (Exception e)
-            {
-                log.Error(e.StackTrace);
-            }
-
-            return PageAction.GetText(By.XPath(rowXPath));
-        }
-
-        public override void ClickButtonForRow<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
-        {
-            try
-            {
-                string[] logBtnType = tableButton.Equals(TableButton.CheckBox)
-                    ? new string[] { "Toggled", "checkbox" }
-                    : new string[] { "Clicked", "button" };
-                By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
-                PageAction.JsClickElement(locator);
-                Report.Step($"{logBtnType[0]} {tableButton.ToString()} {logBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
-            }
-            catch (UnableToSetCookieException)
-            { }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
-            PageAction.WaitForPageReady();
+            return colValue;
+        }
+
+        public override void ClickButtonForRow<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
+        {
+            string[] logMsgBasedOnBtnType = null;
+
+            try
+            {
+                if (tableButton.Equals(TableButton.CheckBox))
+                {
+                    logMsgBasedOnBtnType = new string[] { "Toggled", "checkbox"};
+                }
+                else
+                {
+                    logMsgBasedOnBtnType = new string[] { "Clicked", "button" };
+                }
+                
+                By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
+                PageAction.JsClickElement(locator);
+                Report.Step($"{logMsgBasedOnBtnType[0]} {tableButton} {logMsgBasedOnBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                PageAction.WaitForPageReady();
+            }
         }
 
         public override By GetTableBtnLocator<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
@@ -436,8 +447,6 @@ namespace RKCIUIAutomation.Page
                 PageAction.WaitForPageReady();
                 FilterColumn(columnName, recordNameOrNumber, tableType, filterOperator);
             }
-            catch (UnableToSetCookieException)
-            { }
             catch (Exception)
             {
                 throw;
@@ -446,13 +455,15 @@ namespace RKCIUIAutomation.Page
 
         public override bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, TableType tableType = TableType.Unknown, bool noRecordsExpected = false, FilterOperator filterOperator = FilterOperator.EqualTo)
         {
-            IList<IWebElement> tblRowElems = new List<IWebElement>();
+            IList<IWebElement> tblRowElems = null;
+            bool useContainsFilterOperator = false;
             bool isDisplayedAsExpected = false;
-            bool noRecordsMsgDisplayed = false;
+            //bool noRecordsMsgDisplayed = false;
             bool isMultiTabGrid = false;
             string currentTabName = string.Empty;
             string logMsg = string.Empty;
             string activeTblTab = "";
+            By recordRowLocator = null;
 
             By noRecordsMsgLocator = By.XPath("//div[@class='k-grid-norecords']");
             By tableRowsLocator = By.XPath("//tbody[@role='rowgroup']/tr");
@@ -460,119 +471,165 @@ namespace RKCIUIAutomation.Page
             try
             {
                 FilterTableColumnByValue(columnName, recordNameOrNumber, tableType, filterOperator);
-                //PageAction.WaitForLoading();
                 PageAction.WaitForPageReady();
-                string gridId = Kendo.GetGridID(tableType);
-                By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
-                string gridType = PageAction.GetAttribute(gridParentDivLocator, "class");
 
-                switch (tableType)
+                if (tableType == TableType.Unknown)
                 {
-                    case TableType.Single:
-                        isMultiTabGrid = false;
-                        break;
-                    case TableType.MultiTab:
+                    string gridId = Kendo.GetGridID(tableType);
+                    By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
+                    string gridType = PageAction.GetAttribute(gridParentDivLocator, "class");
+
+                    if(gridType.Contains("active"))
+                    {
                         isMultiTabGrid = true;
-                        currentTabName = GetCurrentTableTabName();//GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
-                        activeTblTab = "//div[@class='k-content k-state-active']";
-                        noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
-                        tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
-                        break;
-                    case TableType.Unknown:
-                        isMultiTabGrid = gridType.Contains("active")
-                            ? true
-                            : false;
-                        break;
-                }
-
-                By recordRowLocator = GetTblRow_ByLocator(recordNameOrNumber, isMultiTabGrid,
-                    filterOperator == FilterOperator.Contains
-                        ? true
-                        : false
-                    );
-
-                tblRowElems = PageAction.GetElements(tableRowsLocator);
-
-                if (noRecordsExpected)
-                {
-                    noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
-
-                    if (noRecordsMsgDisplayed)
-                    {
-                        logMsg = "'No Records Located' message is displayed as expected";
-                        isDisplayedAsExpected = true;
-                    }
-                    else
-                    {
-                        if (tblRowElems.Any())
-                        {
-                            var recordRowDisplayed = PageAction.ElementIsDisplayed(recordRowLocator);
-                            if (recordRowDisplayed)
-                            {
-                                logMsg = $"No Records are Expected, but found {tblRowElems.Count} record";
-                            }
-                        }
-                        else
-                        {
-                            logMsg = "No Records are Expected, No Row are found in the table, and 'No Records Located' message is not displayed";
-                        }
                     }
                 }
                 else
                 {
-                    if (tblRowElems.Any())
+                    switch (tableType)
+                    {
+                        case TableType.Single:
+                            isMultiTabGrid = false;
+                            break;
+                        case TableType.MultiTab:
+                            isMultiTabGrid = true;
+                            //currentTabName = GetCurrentTableTabName();//GetText(By.XPath("//li[contains(@class, 'k-state-active')]/span[@class='k-link']"));
+                            activeTblTab = "//div[@class='k-content k-state-active']";
+                            //noRecordsMsgLocator = By.XPath($"{activeTblTab}//div[@class='k-grid-norecords']");
+                            tableRowsLocator = By.XPath($"{activeTblTab}//tbody[@role='rowgroup']/tr");
+                            break;
+                    }
+                }
+
+                if (filterOperator == FilterOperator.Contains)
+                {
+                    useContainsFilterOperator = true;
+                }
+
+                string noRecordLocatedMsg = $"'No Records Located' message";
+
+                if (noRecordsExpected)
+                {
+                    try
+                    {
+                        Report.Step($"{noRecordLocatedMsg} is expected");
+                        VerifyNoRecordMessageIsDisplayed(tableType);
+                        //noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
+                        isDisplayedAsExpected = true;
+                        logMsg = $"{noRecordLocatedMsg} is displayed in the grid as expected";
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        logMsg = $"{noRecordLocatedMsg} is not displayed in the grid as expected";
+
+                        try
+                        {
+                            recordRowLocator = GetTblRowElementByLocator(recordNameOrNumber, isMultiTabGrid, useContainsFilterOperator);
+                            tblRowElems = PageAction.GetElements(tableRowsLocator, false);
+
+                            if (tblRowElems.Any())
+                            {
+                                logMsg = $"{noRecordLocatedMsg} is expected, but grid contains data";
+                            }
+                        }
+                        catch (NoSuchElementException)
+                        {
+                            logMsg = $"Grid failed to load : {logMsg} and no data is found in the grid";
+                        }
+
+                        Report.Error(logMsg);
+                    }
+                }
+                else
+                {
+                    try
                     {
                         Report.Step($"Searching for record: {recordNameOrNumber}");
-                        isDisplayedAsExpected = PageAction.ElementIsDisplayed(recordRowLocator);
+                        recordRowLocator = GetTblRowElementByLocator(recordNameOrNumber, isMultiTabGrid, useContainsFilterOperator);
+                        tblRowElems = PageAction.GetElements(tableRowsLocator, false);
 
-                        string contains = filterOperator == FilterOperator.Contains ? "Containing Value: " : "";
-                        logMsg = isDisplayedAsExpected
-                            ? $"Found Record {contains}{recordNameOrNumber}, as Expected"
-                            : $"Expected Record, but Unable to find Record {contains}{recordNameOrNumber}";
-                    }
-                    else
-                    {
-                        noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
-                        if (noRecordsMsgDisplayed)
+                        if (tblRowElems.Any())
                         {
-                            logMsg = "Expected Record, but 'No Record Located' message is displayed";
+                            isDisplayedAsExpected = true;
+                            logMsg = $"Found record after filtering grid by specified value: [{recordNameOrNumber}] in [{columnName}] column";
                         }
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        logMsg = $"Unable to find record after filtering grid by specified value: [{recordNameOrNumber}] in [{columnName}] column";
+
+                        try
+                        {
+                            //noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
+                            VerifyNoRecordMessageIsDisplayed(tableType);
+                            logMsg = $"Expected record, but {noRecordLocatedMsg} is displayed in the grid";
+                        }
+                        catch (NoSuchElementException)
+                        {
+                            logMsg = $"Grid failed to load : {logMsg} and {noRecordLocatedMsg} is not displayed in the grid";
+                        }
+
+                        Report.Error(logMsg);
                     }
                 }
             }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
-
-                noRecordsMsgDisplayed = PageAction.ElementIsDisplayed(noRecordsMsgLocator);
-
-                if (noRecordsExpected)
-                {
-                    if (noRecordsMsgDisplayed)
-                    {
-                        isDisplayedAsExpected = true;
-                    }
-                    else
-                    {
-                        isDisplayedAsExpected = false;
-                    }
-                }
-                else
-                {
-                    if (noRecordsMsgDisplayed)
-                    {
-                        isDisplayedAsExpected = false;
-                    }
-                    else
-                    {
-                        isDisplayedAsExpected = true;
-                    }
-                }
+                throw;
             }
 
             Report.Info(logMsg, isDisplayedAsExpected);
-
             return isDisplayedAsExpected;
+        }
+
+        public override bool VerifyNoRecordMessageIsDisplayed(TableHelper.TableType tableType = TableHelper.TableType.Unknown)
+        {
+            IWebElement elem = null;
+            By noRecordsMsgLocator = null;
+            string noRecordsXPathString = "//div[@class='k-grid-norecords']";
+
+            try
+            {
+                if (tableType == TableType.Unknown)
+                {
+                    string gridId = Kendo.GetGridID(tableType);
+                    By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
+                    string gridType = PageAction.GetAttribute(gridParentDivLocator, "class");
+
+                    if (gridType.Contains("active"))
+                    {
+                        tableType = TableType.MultiTab;
+                    }
+                    else
+                    {
+                        tableType = TableType.Single;
+                    }
+                }
+
+                switch (tableType)
+                {
+                    case TableType.Single:
+                        noRecordsMsgLocator = By.XPath(noRecordsXPathString);
+                        break;
+                    case TableType.MultiTab:
+                        string activeTblTabXPathString = "//div[@class='k-content k-state-active']";
+                        noRecordsMsgLocator = By.XPath($"{activeTblTabXPathString}{noRecordsXPathString}");
+                        break;
+                }
+
+                elem = PageAction.GetElement(noRecordsMsgLocator);
+                return true;
+            }
+            catch(NoSuchElementException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                Report.Error(e.Message);
+                throw;
+            }
         }
 
         /// <summary>
@@ -727,7 +784,7 @@ namespace RKCIUIAutomation.Page
         public abstract By GetTableBtnLocator<T>(TableHelper.TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false);
         public abstract int GetTableRowCount(bool isMultiTabGrid = true);
         public abstract By GetTblRowBtn_ByLocator<T>(TableHelper.TableButton tblRowBtn, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false);
-        public abstract By GetTblRow_ByLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false);
+        public abstract By GetTblRowElementByLocator(string textInRowForAnyColumn, bool isMultiTabGrid, bool useContainsOperator = false);
         public abstract string GetXPathForTblRowBasedOnTextInRowOrRowIndex<T>(T textInRowForAnyColumnOrRowIndex, bool useContainsOperator = false);
         public abstract void GoToFirstPage();
         public abstract void GoToLastPage();
@@ -742,6 +799,7 @@ namespace RKCIUIAutomation.Page
         public abstract void SortColumnToDefault(Enum columnName, TableHelper.TableType tableType = TableHelper.TableType.Unknown);
         public abstract void ToggleCheckBoxForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true);
         public abstract bool VerifyRecordIsDisplayed(Enum columnName, string recordNameOrNumber, TableHelper.TableType tableType = TableHelper.TableType.Unknown, bool noRecordsExpected = false, FilterOperator filterOperator = FilterOperator.EqualTo);
+        public abstract bool VerifyNoRecordMessageIsDisplayed(TableHelper.TableType tableType = TableHelper.TableType.Unknown);
         public abstract bool VerifyViewPdfReport(string textInRowForAnyColumn = "", bool isMultiViewPDF = false, bool selectNoneForMultiView = false, string expectedReportUrl = "");
     }
 
