@@ -27,7 +27,7 @@ namespace RKCIUIAutomation.Base
         readonly TestPlatform defaultTestPlatform = TestPlatform.GridLocal;
         readonly BrowserType defaultBrowserType = BrowserType.Chrome;
         readonly TestEnv defaultTestEnvironment = TestEnv.Staging;         
-        readonly TenantName defaultTenantName = TenantName.LAX;
+        readonly TenantName defaultTenantName = TenantName.SH249;
         readonly Reporter defaultReporter = Reporter.Klov;
         readonly string defaultGridAddress = "";
         readonly bool enableHipTest = false;
@@ -183,13 +183,13 @@ namespace RKCIUIAutomation.Base
                         DismissDriverInstance(driver);
                     }
                 }
-                catch (UnableToSetCookieException ce)
+                catch (UnableToSetCookieException e)
                 {
-                    log.Debug(ce.Message);
+                    log.Debug(e.Message);
                 }
-                catch (NoSuchElementException nse)
+                catch (NoSuchElementException e)
                 {
-                    log.Debug(nse.Message);
+                    log.Debug(e.Message);
                 }
                 catch (Exception e)
                 {

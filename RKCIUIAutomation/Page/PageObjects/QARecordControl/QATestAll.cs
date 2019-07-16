@@ -14,8 +14,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         internal By errorLINRequired = By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(), 'LIN required')]");
         internal By errorLINExists = By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(), 'LIN exists')]");
 
+        //SG & SH249
         internal string GenerateLIN()
         {
+            string techID = "1109";
+            string userAcct = GetCurrentUser();
+
+            if (userAcct.Contains("TestTechMgr"))
+            {
+                techID = "1110";
+            }
+
             string today = GetShortDate(formatWithZero: true);
             string[] splitDate = Regex.Split(today, "/");
             string mm = splitDate[0];
@@ -32,7 +41,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 dd = $"0{dd}";
             }
 
-            return $"1109{yy}{mm}{dd}00";
+            return $"{techID}{yy}{mm}{dd}00";
         }
 
         internal void ToggleTestMethodCheckbox(Enum testMethodIdentifier)
