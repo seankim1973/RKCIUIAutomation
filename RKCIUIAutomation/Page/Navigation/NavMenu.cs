@@ -621,7 +621,8 @@ namespace RKCIUIAutomation.Page.Navigation
             {
                 public new enum Menu
                 {
-                    [StringValue("QA Test - All")] QA_Test_All,
+                    //[StringValue("QA Test - All")] QA_Test_All,
+                    [StringValue("QA Test")] QA_Test,
                     [StringValue("QA DIR")] QA_DIR,
                     [StringValue("QA NCR")] QA_NCR,
                     [StringValue("QA Deficiency Notice")] QA_Deficiency_Notice,
@@ -633,6 +634,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 public new enum Menu
                 {
                     [StringValue("QC Test - All")] QC_Test_All,
+                    [StringValue("QC Test")] QC_Test,
                     [StringValue("QC DIR")] QC_DIR,
                     [StringValue("QC NCR")] QC_NCR,
                     [StringValue("QC Deficiency Notice")] QC_Deficiency_Notice,

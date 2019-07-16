@@ -335,6 +335,14 @@ namespace RKCIUIAutomation.Base
             Hashtable = GetHashTable();
             return Hashtable.ContainsKey(key);
         }
+
+
+        public int GetRandomInteger(int minValue = 1, int maxValue = 99)
+        {
+            Random r = new Random();
+            int randNum = r.Next(minValue, maxValue);
+            return randNum;
+        }
     }
 
 }

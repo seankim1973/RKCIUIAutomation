@@ -683,7 +683,7 @@ namespace RKCIUIAutomation.Page
             return wait;
         }
 
-        public override string GetText(By elementByLocator, bool shouldReturnValue = true)
+        public override string GetText(By elementByLocator, bool shouldReturnValue = true, bool logReport = true)
         {
             bool textHasValue = false;
             bool resultIsAsExpected = false;
@@ -733,7 +733,10 @@ namespace RKCIUIAutomation.Page
                         }
                     }
 
-                    Report.Info($"{logMsg} from element - {elementByLocator}", resultIsAsExpected);
+                    if (logReport)
+                    {
+                        Report.Info($"{logMsg} from element - {elementByLocator}", resultIsAsExpected);
+                    }
                 }
             }
             catch (Exception)
@@ -759,13 +762,20 @@ namespace RKCIUIAutomation.Page
             return elementTextList;
         }
 
-        public override string GetTextFromDDL(Enum ddListID)
+        public override string GetTextFromDDL<T>(T ddListID, bool isMultiSelectDDList = false)
         {
             string textFromDDList = string.Empty;
 
             try
             {
-                textFromDDList = GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+                if (isMultiSelectDDList)
+                {
+                    textFromDDList = string.Join("::", PageAction.GetTextFromMultiSelectDDL(ddListID).ToArray());
+                }
+                else
+                {
+                    textFromDDList = GetText(PgHelper.GetDDListCurrentSelectionByLocator(ddListID));
+                }
             }
             catch (NoSuchElementException)
             {
@@ -783,7 +793,7 @@ namespace RKCIUIAutomation.Page
         public override string GetTextFromDDListInActiveTab(Enum ddListID)
             => GetText(PgHelper.GetDDListCurrentSelectionInActiveTabByLocator(ddListID));
 
-        public override IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID)
+        public override IList<string> GetTextFromMultiSelectDDL<T>(T multiSelectDDListID)
             => GetTextForElements(PgHelper.GetMultiSelectDDListCurrentSelectionByLocator(multiSelectDDListID));
 
         public override string GetUserDownloadFolderPath()
@@ -797,9 +807,6 @@ namespace RKCIUIAutomation.Page
                 ExecuteJsAction(JSAction.Click, elementByLocator);
                 Report.Step($"Clicked {elementByLocator}");
             }
-            //catch (UnableToSetCookieException)
-            //{
-            //}
             finally
             {
                 WaitForPageReady(waitForLoading: false);
@@ -906,41 +913,56 @@ namespace RKCIUIAutomation.Page
             return elem;
         }
 
-        public override void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true)
+        public override void SelectRadioBtnOrChkbox<T>(T chkbxOrRadioBtnID, bool toggleChkBoxIfAlreadyChecked = true)
         {
-            string chkbxOrRdoBtn = chkbxOrRadioBtn.GetString();
-            string chkbxOrRdoBtnNameAndId = $"{chkbxOrRadioBtn.ToString()} (ID: {chkbxOrRdoBtn})";
-            By locator = By.Id(chkbxOrRdoBtn);
+            string chkbxOrRdoBtnIdValue = string.Empty;
+            string chkbxOrRdoBtnNameAndId = string.Empty;
+
+            if (chkbxOrRadioBtnID is Enum)
+            {
+                chkbxOrRdoBtnIdValue = ConvertToType<Enum>(chkbxOrRadioBtnID).GetString();
+                chkbxOrRdoBtnNameAndId = $"{chkbxOrRadioBtnID} (ID: {chkbxOrRdoBtnIdValue})";
+            }
+            else if (chkbxOrRadioBtnID.GetType().Equals(typeof(string)))
+            {
+                chkbxOrRdoBtnIdValue = ConvertToType<string>(chkbxOrRadioBtnID);
+                chkbxOrRdoBtnNameAndId = $"ID: {chkbxOrRdoBtnIdValue}";
+            }
+
+            By locator = By.Id(chkbxOrRdoBtnIdValue);
 
             try
             {
                 IWebElement element = GetElement(locator, false);
 
-                if (element.Enabled)
+                try
                 {
-                    if (toggleChkBoxIfAlreadyChecked)
+                    if (element.Enabled)
                     {
-                        JsClickElement(locator);
-                        Report.Step($"Selected: {chkbxOrRdoBtnNameAndId}");
-                    }
-                    else
-                    {
-                        log.Info("Specified not to toggle checkbox, if already selected");
-
-                        if (!element.Selected)
+                        if (toggleChkBoxIfAlreadyChecked)
                         {
                             JsClickElement(locator);
-                            Report.Info($"Selected: {chkbxOrRdoBtnNameAndId}");
+                            Report.Step($"Selected: {chkbxOrRdoBtnNameAndId}");
                         }
                         else
                         {
-                            Report.Info($"Did not select element, because it is already selected: {chkbxOrRdoBtnNameAndId}");
+                            log.Info("Specified not to toggle checkbox, if already selected");
+
+                            if (!element.Selected)
+                            {
+                                JsClickElement(locator);
+                                Report.Info($"Selected: {chkbxOrRdoBtnNameAndId}");
+                            }
+                            else
+                            {
+                                Report.Info($"Did not select element, because it is already selected: {chkbxOrRdoBtnNameAndId}");
+                            }
                         }
                     }
                 }
-                else
+                catch (ElementNotInteractableException)
                 {
-                    Report.Error($"Element {chkbxOrRadioBtn.ToString()}, is not selectable", true);
+                    Report.Error($"Element {chkbxOrRadioBtnID}, is not selectable", true);
                 }
             }
             catch (UnhandledAlertException e)
@@ -1808,11 +1830,11 @@ namespace RKCIUIAutomation.Page
         public abstract string GetPageTitle(int timeOutInSeconds = 10, int pollingInterval = 500);
         public abstract string GetPageUrl(int timeOutInSeconds = 10, int pollingInterval = 500);
         public abstract WebDriverWait GetStandardWait(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500);
-        public abstract string GetText(By elementByLocator, bool shouldReturnValue = true);
+        public abstract string GetText(By elementByLocator, bool shouldReturnValue = true, bool logReport = true);
         public abstract IList<string> GetTextForElements(By elementByLocator);
-        public abstract string GetTextFromDDL(Enum ddListID);
+        public abstract string GetTextFromDDL<T>(T ddListID, bool isMultiSelectDDList = false);
         public abstract string GetTextFromDDListInActiveTab(Enum ddListID);
-        public abstract IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID);
+        public abstract IList<string> GetTextFromMultiSelectDDL<T>(T multiSelectDDListID);
         public abstract string GetUserDownloadFolderPath();
         public abstract void JsClickElement(By elementByLocator);
         public abstract string JsGetPageTitle(string windowHandle = "");
@@ -1824,7 +1846,7 @@ namespace RKCIUIAutomation.Page
         public abstract IWebElement ScrollToElement<T>(T elementOrLocator);
         public abstract void ScrollPageToBottom();
         public abstract void ScrollPageToTop();
-        public abstract void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true);
+        public abstract void SelectRadioBtnOrChkbox<T>(T chkbxOrRadioBtnID, bool toggleChkBoxIfAlreadyChecked = true);
         public abstract string UploadFile(string fileName = "");
         public abstract bool VerifyActiveModalTitle(string expectedModalTitle);
         public abstract bool VerifyAndAcceptAlertMessage(string expectedMessage);

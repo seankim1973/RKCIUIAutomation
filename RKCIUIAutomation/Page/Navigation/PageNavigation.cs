@@ -230,7 +230,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
         #region Record Control Menu
 
-        public override void RecordControl_QA_QaTest_All() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Test_All);
+        public override void RecordControl_QA_QaTest() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Test);
 
         public override void RecordControl_QA_QaDIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIR);
 
@@ -501,7 +501,7 @@ namespace RKCIUIAutomation.Page.Navigation
         void ReportsNotices_General_DN();
 
         // Record Control Menu - LAX
-        void RecordControl_QA_QaTest_All();
+        void RecordControl_QA_QaTest();
 
         void RecordControl_QA_QaDIRs();
 
@@ -767,7 +767,7 @@ namespace RKCIUIAutomation.Page.Navigation
         public abstract void RecordControl_QA_QaDeficiency_Notice();
         public abstract void RecordControl_QA_QaDIRs();
         public abstract void RecordControl_QA_QaNCR();
-        public abstract void RecordControl_QA_QaTest_All();
+        public abstract void RecordControl_QA_QaTest();
         public abstract void RecordControl_QC_QcDeficiency_Notice();
         public abstract void RecordControl_QC_QcDIRs();
         public abstract void RecordControl_QC_QcNCR();
@@ -909,6 +909,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIR);
 
+        public override void QARecordControl_QA_Test_All() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Test);
 
         public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Deficiency_Notice);
 

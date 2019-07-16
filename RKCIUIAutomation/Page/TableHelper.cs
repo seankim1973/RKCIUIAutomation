@@ -256,9 +256,9 @@ namespace RKCIUIAutomation.Page
                 rowXPath = $"{gridTypeXPath}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
                 colValue = PageAction.GetText(By.XPath(rowXPath));
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
 
             return colValue;
