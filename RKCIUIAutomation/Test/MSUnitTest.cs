@@ -915,9 +915,27 @@ namespace RKCIUIAutomation.Sandbox
 
             //Console.WriteLine($"VALUES MATCH : {valuesMatch}");
 
+            /*
             string str = "Quality Management Service";
             string value = Regex.Replace(str, @" ", "_");
             Console.WriteLine(value);
+            
+
+            Random r = new Random();
+            int maxValue = 5000;
+
+            for (int i = 0; i < 101; i++)
+            {
+                int randNum = r.Next(0, maxValue);
+                Console.WriteLine(randNum);
+            }
+            */
+
+            string num = "01";
+            int number = int.Parse(num);
+            Console.WriteLine(number);
+            num = (number + 1).ToString();
+            Console.WriteLine(num);
         }
 
         enum TestEnum

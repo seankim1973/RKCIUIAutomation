@@ -130,7 +130,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("OriginatorDocumentRef")] OriginatorRef,
             [StringValue("Revision")] Revision,
             [StringValue("TransmittedTypeNames")] TransmittedTypes,
-            [StringValue("ViaId")] Via,
+            [StringValue("ViaType.DisplayName")] Via,
         }
 
         [ThreadStatic]
@@ -503,7 +503,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             result = PageAction.VerifyExpectedList(actualValuesInTableList, expectedValuesInTableList, "VerifyTableColumnValues");

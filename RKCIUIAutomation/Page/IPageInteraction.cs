@@ -86,15 +86,15 @@ namespace RKCIUIAutomation.Page
 
         WebDriverWait GetStandardWait(IWebDriver driver, int timeOutInSeconds = 10, int pollingInterval = 500);
 
-        string GetText(By elementByLocator, bool shouldReturnValue = true);
+        string GetText(By elementByLocator, bool shouldReturnValue = true, bool logReport = true);
 
         IList<string> GetTextForElements(By elementByLocator);
 
-        string GetTextFromDDL(Enum ddListID);
+        string GetTextFromDDL<T>(T ddListID, bool isMultiSelectDDList = false);
 
         string GetTextFromDDListInActiveTab(Enum ddListID);
 
-        IList<string> GetTextFromMultiSelectDDL(Enum multiSelectDDListID);
+        IList<string> GetTextFromMultiSelectDDL<T>(T multiSelectDDListID);
 
         string GetUserDownloadFolderPath();
 
@@ -118,7 +118,7 @@ namespace RKCIUIAutomation.Page
 
         IWebElement ScrollToElement<T>(T elementOrLocator);
 
-        void SelectRadioBtnOrChkbox(Enum chkbxOrRadioBtn, bool toggleChkBoxIfAlreadyChecked = true);
+        void SelectRadioBtnOrChkbox<T>(T chkbxOrRadioBtnID, bool toggleChkBoxIfAlreadyChecked = true);
 
         string UploadFile(string fileName = "");
 

@@ -66,6 +66,9 @@ namespace RKCIUIAutomation.Base
 
         public static IProjectCorrespondenceLog ProjCorrespondenceLog => new ProjectCorrespondenceLog().SetClass<IProjectCorrespondenceLog>(driver);
 
+        public static IQATestAll QATestMethod
+            => new QATestAll_Common().SetClass<IQATestAll>(driver);
+
         public static IUploadDEVSubmittal UploadDEVSubmittal => new UploadDEVSubmittal().SetClass<IUploadDEVSubmittal>(driver);
 
         public static IUploadQASubmittal UploadQASubmittal => new UploadQASubmittal().SetClass<IUploadQASubmittal>(driver);

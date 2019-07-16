@@ -68,6 +68,9 @@ namespace RKCIUIAutomation.Tools
                 case Config.TenantName.LAX:
                     projID = 9;
                     break;
+                case Config.TenantName.I15North:
+                    projID = 13;
+                    break;
             }
 
             return projID;

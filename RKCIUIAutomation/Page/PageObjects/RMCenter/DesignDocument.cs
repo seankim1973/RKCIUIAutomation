@@ -42,9 +42,9 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public DesignDocument()
         {
-            createPgEntryFieldKVPairsList = CreateDesignDocEntryFieldKVPairsList();
-            commentEntryFieldKVPairsList = CreateCommentEntryFieldKVPairsList();
-            commentEntryFieldStringKVPairsList = CreateCommentEntryFieldStringKVPairsList();
+            createPgEntryFieldKVPairsList = GetDesignDocEntryFieldKVPairsList();
+            commentEntryFieldKVPairsList = GetCommentEntryFieldKVPairsList();
+            commentEntryFieldStringKVPairsList = GetCommentEntryFieldStringKVPairsList();
         }
 
         public DesignDocument(IWebDriver driver)
@@ -684,7 +684,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public override void ClickTab_Verification() => SelectTab(TableTab.Verification);
 
-        public override IList<KeyValuePair<CommentFieldType, string>> CreateCommentEntryFieldKVPairsList()
+        public override IList<KeyValuePair<CommentFieldType, string>> GetCommentEntryFieldKVPairsList()
         {
             if (commentEntryFieldKVPairsList == null)
             {
@@ -694,7 +694,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return commentEntryFieldKVPairsList;
         }
 
-        public override IList<KeyValuePair<string, string>> CreateCommentEntryFieldStringKVPairsList()
+        public override IList<KeyValuePair<string, string>> GetCommentEntryFieldStringKVPairsList()
         {
             if (commentEntryFieldStringKVPairsList == null)
             {
@@ -704,7 +704,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return commentEntryFieldStringKVPairsList;
         }
 
-        public override IList<KeyValuePair<DesignDocEntryFieldType, string>> CreateDesignDocEntryFieldKVPairsList()
+        public override IList<KeyValuePair<DesignDocEntryFieldType, string>> GetDesignDocEntryFieldKVPairsList()
         {
             if (createPgEntryFieldKVPairsList == null)
             {
@@ -1406,11 +1406,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public abstract void ClickTab_Verification();
 
-        public abstract IList<KeyValuePair<CommentFieldType, string>> CreateCommentEntryFieldKVPairsList();
+        public abstract IList<KeyValuePair<CommentFieldType, string>> GetCommentEntryFieldKVPairsList();
 
-        public abstract IList<KeyValuePair<string, string>> CreateCommentEntryFieldStringKVPairsList();
+        public abstract IList<KeyValuePair<string, string>> GetCommentEntryFieldStringKVPairsList();
 
-        public abstract IList<KeyValuePair<DesignDocEntryFieldType, string>> CreateDesignDocEntryFieldKVPairsList();
+        public abstract IList<KeyValuePair<DesignDocEntryFieldType, string>> GetDesignDocEntryFieldKVPairsList();
 
         public abstract void CreateDocument();
 
