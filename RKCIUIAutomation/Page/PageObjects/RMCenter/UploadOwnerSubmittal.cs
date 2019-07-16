@@ -65,7 +65,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Transmitted Records", "TransmissionGridForwarded")] TransmittedRecords
         }
 
-        public enum EntryField
+        public enum EntryFieldType
         {
             [StringValue("SubmittalNo", TEXT)] SubmittalNo,
             [StringValue("SubmittalTitle", TEXT)] SubmittalTitle,
@@ -88,28 +88,28 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         }
 
         [ThreadStatic]
-        internal static IList<EntryField> tenantRoundOneRequiredFields;
+        internal static IList<EntryFieldType> tenantRoundOneRequiredFields;
 
         [ThreadStatic]
-        internal static IList<EntryField> tenantRoundTwoRequiredFields;
+        internal static IList<EntryFieldType> tenantRoundTwoRequiredFields;
 
         [ThreadStatic]
         internal static IList<string> reqFieldLocators;
 
-        public virtual IList<EntryField> GetTenantRoundOneRequiredFields()
+        public virtual IList<EntryFieldType> GetTenantRoundOneRequiredFields()
         {
-            return tenantRoundOneRequiredFields = new List<EntryField>()
+            return tenantRoundOneRequiredFields = new List<EntryFieldType>()
             {
-                EntryField.SubmittalTitle
+                EntryFieldType.SubmittalTitle
             };
         }
 
-        public virtual IList<EntryField> GetTenantRoundTwoRequiredFields()
+        public virtual IList<EntryFieldType> GetTenantRoundTwoRequiredFields()
         {
-            return tenantRoundTwoRequiredFields = new List<EntryField>()
+            return tenantRoundTwoRequiredFields = new List<EntryFieldType>()
             {
-                EntryField.SubmittalActionId,
-                EntryField.Attachments
+                EntryFieldType.SubmittalActionId,
+                EntryFieldType.Attachments
             };
         }
 
@@ -142,14 +142,14 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             TestUtility.AddAssertionToList_VerifyPageHeader("Submittal Details", "LogintoQASubmittal()");
         }
 
-        private KeyValuePair<EntryField, string> PopulateFieldValue<T>(EntryField entryField, T indexOrText, bool useContains = false)
+        private KeyValuePair<EntryFieldType, string> PopulateFieldValue<T>(EntryFieldType entryField, T indexOrText, bool useContains = false)
         {
             string fieldType = entryField.GetString(true);
             Type argType = indexOrText.GetType();
             object argValue = null;
             bool isValidArg = false;
 
-            KeyValuePair<EntryField, string> fieldValuePair;
+            KeyValuePair<EntryFieldType, string> fieldValuePair;
             string fieldValue = string.Empty;
 
             try
@@ -249,7 +249,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 log.Error(e.StackTrace);
             }
 
-            return fieldValuePair = new KeyValuePair<EntryField, string>(entryField, fieldValue);
+            return fieldValuePair = new KeyValuePair<EntryFieldType, string>(entryField, fieldValue);
         }
 
         public virtual KeyValuePair<string, string> PopulateFields(bool isSaveFlow = false)
@@ -290,10 +290,10 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return valuePair;
         }
 
-        private void VerifyRequiredFields(IList<EntryField> actualFields, bool isSaveFlow = false)
+        private void VerifyRequiredFields(IList<EntryFieldType> actualFields, bool isSaveFlow = false)
         {
             IList<string> actualReqFields = new List<string>();
-            foreach (EntryField field in actualFields)
+            foreach (EntryFieldType field in actualFields)
             {
                 if (isSaveFlow && !field.GetString().Equals("UploadFiles"))
                     actualReqFields.Add(field.GetString());
@@ -309,11 +309,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 "VerifyUploadQASubmittalRequiredFields"), "VerifyUploadQASubmittalRequiredFields");
         }
 
-        private void PopulateFields(IList<EntryField> fields)
+        private void PopulateFields(IList<EntryFieldType> fields)
         {
-            foreach (EntryField field in fields)
+            foreach (EntryFieldType field in fields)
             {
-                var kvpFromEntry = new KeyValuePair<EntryField, string>();
+                var kvpFromEntry = new KeyValuePair<EntryFieldType, string>();
                 kvpFromEntry = PopulateFieldValue(field, string.Empty);
 
                 log.Debug($"Added KeyValPair to expected table column values./nEntry Field: {kvpFromEntry.Key.ToString()} || Value: {kvpFromEntry.Value}");
@@ -337,8 +337,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
     public interface IUploadOwnerSubmittal
     {
-        IList<UploadOwnerSubmittal.EntryField> GetTenantRoundOneRequiredFields();
-        IList<UploadOwnerSubmittal.EntryField> GetTenantRoundTwoRequiredFields();
+        IList<UploadOwnerSubmittal.EntryFieldType> GetTenantRoundOneRequiredFields();
+        IList<UploadOwnerSubmittal.EntryFieldType> GetTenantRoundTwoRequiredFields();
         void LogintoSubmittal(UserType userType);
         KeyValuePair<string, string> PopulateFields(bool isSaveFlow = false);
         bool VerifySubmittalNumberIsDisplayed(string submittalNumber, bool isSearchPage = false, bool isStatusNew = false);
@@ -357,21 +357,21 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
         }
 
-        public override IList<EntryField> GetTenantRoundOneRequiredFields()
+        public override IList<EntryFieldType> GetTenantRoundOneRequiredFields()
         {
-            return tenantRoundOneRequiredFields = new List<EntryField>()
+            return tenantRoundOneRequiredFields = new List<EntryFieldType>()
             {
-                EntryField.SubmittalNo,
-                EntryField.SubmittalTitle
+                EntryFieldType.SubmittalNo,
+                EntryFieldType.SubmittalTitle
             };
         }
 
-        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
+        public override IList<EntryFieldType> GetTenantRoundTwoRequiredFields()
         {
-            return tenantRoundTwoRequiredFields = new List<EntryField>()
+            return tenantRoundTwoRequiredFields = new List<EntryFieldType>()
             {
-                EntryField.SubmittalActionId,
-                EntryField.Attachments
+                EntryFieldType.SubmittalActionId,
+                EntryFieldType.Attachments
             };
         }
     }
@@ -386,20 +386,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public UploadOwnerSubmittal_SGWay(IWebDriver driver) : base(driver)
         { }
 
-        public override IList<EntryField> GetTenantRoundOneRequiredFields()
+        public override IList<EntryFieldType> GetTenantRoundOneRequiredFields()
         {
-            return tenantRoundOneRequiredFields = new List<EntryField>()
+            return tenantRoundOneRequiredFields = new List<EntryFieldType>()
             {
-                EntryField.SubmittalTitle
+                EntryFieldType.SubmittalTitle
             };
         }
 
-        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
+        public override IList<EntryFieldType> GetTenantRoundTwoRequiredFields()
         {
-            return tenantRoundTwoRequiredFields = new List<EntryField>()
+            return tenantRoundTwoRequiredFields = new List<EntryFieldType>()
             {
-                EntryField.SubmittalActionId,
-                EntryField.Attachments
+                EntryFieldType.SubmittalActionId,
+                EntryFieldType.Attachments
             };
         }
     }
@@ -414,20 +414,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public UploadOwnerSubmittal_I15South(IWebDriver driver) : base(driver)
         { }
 
-        public override IList<EntryField> GetTenantRoundOneRequiredFields()
+        public override IList<EntryFieldType> GetTenantRoundOneRequiredFields()
         {
-            return tenantRoundOneRequiredFields = new List<EntryField>()
+            return tenantRoundOneRequiredFields = new List<EntryFieldType>()
             {
-                EntryField.SubmittalTitle
+                EntryFieldType.SubmittalTitle
             };
         }
 
-        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
+        public override IList<EntryFieldType> GetTenantRoundTwoRequiredFields()
         {
-            return tenantRoundTwoRequiredFields = new List<EntryField>()
+            return tenantRoundTwoRequiredFields = new List<EntryFieldType>()
             {
-                EntryField.SubmittalActionId,
-                EntryField.Attachments
+                EntryFieldType.SubmittalActionId,
+                EntryFieldType.Attachments
             };
         }
     }
@@ -442,20 +442,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public UploadOwnerSubmittal_I15Tech(IWebDriver driver) : base(driver)
         { }
 
-        public override IList<EntryField> GetTenantRoundOneRequiredFields()
+        public override IList<EntryFieldType> GetTenantRoundOneRequiredFields()
         {
-            return tenantRoundOneRequiredFields = new List<EntryField>()
+            return tenantRoundOneRequiredFields = new List<EntryFieldType>()
             {
-                EntryField.SubmittalTitle
+                EntryFieldType.SubmittalTitle
             };
         }
 
-        public override IList<EntryField> GetTenantRoundTwoRequiredFields()
+        public override IList<EntryFieldType> GetTenantRoundTwoRequiredFields()
         {
-            return tenantRoundTwoRequiredFields = new List<EntryField>()
+            return tenantRoundTwoRequiredFields = new List<EntryFieldType>()
             {
-                EntryField.SubmittalActionId,
-                EntryField.Attachments
+                EntryFieldType.SubmittalActionId,
+                EntryFieldType.Attachments
             };
         }
     }

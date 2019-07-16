@@ -207,7 +207,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return isDisplayed;
         }
 
-        private SearchCriteria GetMatchingSearchCriteriaForEntryField(EntryField entryField)
+        private SearchCriteria GetMatchingSearchCriteriaForEntryField(EntryFieldType entryField)
         {
             SearchCriteria criteria = SearchCriteria.NoSelection;
 

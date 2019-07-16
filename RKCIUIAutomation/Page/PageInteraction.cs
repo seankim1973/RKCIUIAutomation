@@ -288,7 +288,7 @@ namespace RKCIUIAutomation.Page
         {
             try
             {
-                (GetElement(By.XPath("//button[text()='Save & Forward']"))
+                (GetElement(By.XPath("//button[text()='Submit & Forward']"))
                     ?? GetElement(By.Id("SaveForwardSubmittal"))
                     ?? GetElement(By.Id("SaveForwardItem"))
                     ).Click();
@@ -1662,22 +1662,7 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public override void ClickSubmitForward()
-        {
-            try
-            {
-                (GetElement(By.XPath("//button[text()='Submit & Forward']"))
-                    ?? GetElement(By.Id("SaveForwardSubmittal"))
-                    ?? GetElement(By.Id("SaveForwardItem"))
-                    ).Click();
-
-                WaitForPageReady();
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-            }
-        }
+        
 
         public override void WaitForElementToClear(By elementByLocator)
         {
