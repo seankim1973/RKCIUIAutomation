@@ -69,6 +69,12 @@ namespace RKCIUIAutomation.Base
         public static IQATestAll QATestMethod
             => new QATestAll_Common().SetClass<IQATestAll>(driver);
 
+        public static IUploadDEVSubmittal UploadDEVSubmittal => new UploadDEVSubmittal().SetClass<IUploadDEVSubmittal>(driver);
+
+        public static IUploadQASubmittal UploadQASubmittal => new UploadQASubmittal().SetClass<IUploadQASubmittal>(driver);
+
+        public static IUploadOwnerSubmittal UploadOwnerSubmittal => new UploadOwnerSubmittal().SetClass<IUploadOwnerSubmittal>(driver);
+
         #region Workflow SetClass method calls
 
         public static ILinkCoverageWF WF_LinkCoverage => new LinkCoverageWF().SetClass<ILinkCoverageWF>(driver);
