@@ -14,7 +14,9 @@ namespace RKCIUIAutomation.Config
 
     public enum TenantName
     {
+        [Obsolete("Legacy client")]
         Garnet,
+        [Obsolete("Legacy client")]
         GLX,
         I15North,
         I15South,

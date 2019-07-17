@@ -110,6 +110,7 @@ namespace RKCIUIAutomation.Page
             [StringValue("Recreate", BtnCategory.Packages)] Recreate_Package,
             [StringValue("/a[contains(@onclick, 'download')]", BtnCategory.Download)] Download,
             [StringValue("/a", BtnCategory.LastOrOnlyInRow)] View,
+            [StringValue("/a", BtnCategory.LastOrOnlyInRow)] Edit,
             [StringValue("first")] First,
             [StringValue("previous")] Previous,
             [StringValue("next")] Next,

@@ -651,6 +651,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Design Documents")] Design_Documents,
                 [StringValue("Upload QA Submittal")] Upload_QA_Submittal,
                 [StringValue("Upload Owner Submittal")] Upload_Owner_Submittal,
+                [StringValue("Upload Design Submittal")] Upload_Design_Submittal,
                 [StringValue("Upload DEV Submittal")] Upload_DEV_Submittal,
                 [StringValue("DOT Project Correspondence Log")] DOT_Project_Correspondence_Log,
                 [StringValue("Review / Revise Submittal")] Review_Revise_Submittal,
