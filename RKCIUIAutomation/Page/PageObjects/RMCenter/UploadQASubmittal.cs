@@ -242,7 +242,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                     int argValueLength = ((string)argValue).Length;
 
                                     By inputLocator = GetInputFieldByLocator(entryField);
-                                    int elemMaxLength = int.Parse(PageAction.GetAttribute(inputLocator, "maxlength"));
+                                    int elemMaxLength = int.Parse(PageAction.GetAttributeForElement(inputLocator, "maxlength"));
 
                                     argValue = argValueLength > elemMaxLength
                                         ? ((string)argValue).Substring(0, elemMaxLength)
@@ -397,7 +397,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual IList<string> GetTenantRequiredFieldLocators()
         {
-            return reqFieldLocators = PageAction.GetAttributes(new List<By>()
+            return reqFieldLocators = PageAction.GetAttributeForElements(new List<By>()
             {
                 By.XPath("//span[contains(text(),'Required')]"),
                 By.XPath("//span[contains(text(),'Required')]/parent::span"),

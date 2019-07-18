@@ -251,7 +251,7 @@ namespace RKCIUIAutomation.Page
                 }
           
                 By headerLocator = By.XPath($"{gridTypeXPath}{columnDataTypeXPath}");
-                string dataIndex = PageAction.GetAttribute(headerLocator, "data-index");
+                string dataIndex = PageAction.GetAttributeForElement(headerLocator, "data-index");
                 int xPathIndex = int.Parse(dataIndex) + 1;
 
                 rowXPath = $"{gridTypeXPath}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
@@ -433,7 +433,7 @@ namespace RKCIUIAutomation.Page
         }
 
         public override string GetPdfHref<T>(T textInColumnForRowOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
-            => PageAction.GetAttribute(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInColumnForRowOrRowIndex)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}"), "href");
+            => PageAction.GetAttributeForElement(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInColumnForRowOrRowIndex)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}"), "href");
 
         public override void SelectCheckboxForRow<T>(T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true)
             => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumnOrRowIndex, isMultiTabGrid);
@@ -477,7 +477,7 @@ namespace RKCIUIAutomation.Page
                 {
                     string gridId = Kendo.GetGridID(tableType);
                     By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
-                    string gridType = PageAction.GetAttribute(gridParentDivLocator, "class");
+                    string gridType = PageAction.GetAttributeForElement(gridParentDivLocator, "class");
 
                     if(gridType.Contains("active"))
                     {
@@ -595,7 +595,7 @@ namespace RKCIUIAutomation.Page
                 {
                     string gridId = Kendo.GetGridID(tableType);
                     By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
-                    string gridType = PageAction.GetAttribute(gridParentDivLocator, "class");
+                    string gridType = PageAction.GetAttributeForElement(gridParentDivLocator, "class");
 
                     if (gridType.Contains("active"))
                     {

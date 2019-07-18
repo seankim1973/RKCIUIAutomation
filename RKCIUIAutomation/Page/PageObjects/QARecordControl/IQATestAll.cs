@@ -25,7 +25,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         void CreateWorkflowType(CreateType createBtn, WorkflowType workflowType, TestType testType = TestType.SingleSublot);
         void PopulateFieldAndUpdateKVPairsList();
-
+        void AddTestMethod<T>(T AvailableTestMethodType);
         void SelectTab_FieldRevise();
         void SelectTab_LabRevise();
         void SelectTab_FieldSupervisor();

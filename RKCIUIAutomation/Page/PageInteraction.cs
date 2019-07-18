@@ -462,10 +462,16 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public override string GetAttribute(By elementByLocator, string attributeName)
-            => GetElement(elementByLocator)?.GetAttribute(attributeName);
+        public override string GetAttributeForElement(By elementByLocator, string attributeName)
+        {
+            string attributeValue = string.Empty;
+            IWebElement elem = null;
+            elem = GetElement(elementByLocator);
+            attributeValue = elem.GetAttribute(attributeName);
+            return attributeValue;
+        }
 
-        public override IList<string> GetAttributes<T>(T elementByLocator, string attributeName)
+        public override IList<string> GetAttributeForElements<T>(T elementByLocator, string attributeName)
         {
             object argObject = null;
             Type argType = elementByLocator.GetType();
@@ -963,6 +969,7 @@ namespace RKCIUIAutomation.Page
                 catch (ElementNotInteractableException)
                 {
                     Report.Error($"Element {chkbxOrRadioBtnID}, is not selectable", true);
+                    throw;
                 }
             }
             catch (UnhandledAlertException e)
@@ -972,6 +979,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 
@@ -1231,7 +1239,7 @@ namespace RKCIUIAutomation.Page
             bool isResultExpected = false;
             try
             {
-                text = GetAttribute(By.XPath($"//input[@id='{inputField.GetString()}']"), "value");
+                text = GetAttributeForElement(By.XPath($"//input[@id='{inputField.GetString()}']"), "value");
 
                 bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
                 string logMsg = isFieldEmpty ? "Empty Field: Unable to retrieve text" : $"Retrieved '{text}'";
@@ -1823,8 +1831,8 @@ namespace RKCIUIAutomation.Page
         public abstract void ExecuteJsAction(JSAction jsAction, By elementByLocator);
         public abstract void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContainsOperator = false, bool isMultiSelectDDList = false);
         public abstract void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false);
-        public abstract string GetAttribute(By elementByLocator, string attributeName);
-        public abstract IList<string> GetAttributes<T>(T elementByLocator, string attributeName);
+        public abstract string GetAttributeForElement(By elementByLocator, string attributeName);
+        public abstract IList<string> GetAttributeForElements<T>(T elementByLocator, string attributeName);
         public abstract string GetCurrentUser(bool getFullName = false);
         public abstract IWebElement GetElement(By elementByLocator, bool waitForLoading = true);
         public abstract IList<IWebElement> GetElements(By elementByLocator, bool waitForLoading = true);

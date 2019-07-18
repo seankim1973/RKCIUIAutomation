@@ -229,7 +229,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 By tabStripLocator = By.XPath("//div[contains(@class,'k-tabstrip-top')]");
-                string tabStripId = GetAttribute(tabStripLocator, "id");
+                string tabStripId = GetAttributeForElement(tabStripLocator, "id");
                 tabStripRef = $"var tab = $('#{tabStripId}').data('kendoTabStrip');";
 
                 string logMsg = tabStripId.HasValue()

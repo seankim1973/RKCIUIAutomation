@@ -836,7 +836,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 By locator = By.Id(reviewerId.GetString());
                 PageAction.ScrollToElement(locator);
 
-                bool isFieldEmpty = PageAction.GetAttribute(locator, "value").HasValue()
+                bool isFieldEmpty = PageAction.GetAttributeForElement(locator, "value").HasValue()
                     ? false
                     : true;
                 isResultExpected = shouldFieldBeEmpty.Equals(isFieldEmpty)

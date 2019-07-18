@@ -10,6 +10,8 @@ using static RKCIUIAutomation.Page.TableHelper;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll_Common;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Page;
+using RKCIUIAutomation.Page.PageObjects.QARecordControl;
+using System.Threading;
 
 namespace RKCIUIAutomation.Test.TestMethods
 {
@@ -29,12 +31,12 @@ namespace RKCIUIAutomation.Test.TestMethods
 
             IList<WorkflowType> workflowTypeList = new List<WorkflowType>()
             {
-                WorkflowType.E1,
-                WorkflowType.E2,
-                WorkflowType.E3,
-                WorkflowType.F1,
-                WorkflowType.F2,
-                WorkflowType.F3,
+                //WorkflowType.E1,
+                //WorkflowType.E2,
+                //WorkflowType.E3,
+                //WorkflowType.F1,
+                //WorkflowType.F2,
+                //WorkflowType.F3,
                 WorkflowType.A1
             };
 
@@ -70,9 +72,18 @@ namespace RKCIUIAutomation.Test.TestMethods
                     Report.Info($"{label}\n>>>Identifier Attribute : {identifier}");
                 }
 
+                IList<Enum> testMethodsToAdd = new List<Enum>()
+                {
+                    A_TestMethodType.AASHTO_T11,
+                    A_TestMethodType.ASTM_C39
+                };
+
+                QATestMethod.AddTestMethod(testMethodsToAdd);
+                Thread.Sleep(5000);
+
                 By availableTestModal_CloseBtn = By.XPath("//span[@id='AvailableTestsWindow_wnd_title']/parent::div//a[@role='button'][@aria-label='Close']");
                 ClickElement(availableTestModal_CloseBtn);
-                QATestMethod.ClickBtn_Cancel(); 
+                //QATestMethod.ClickBtn_Cancel();
             }
 
             //Populate Required Fields

@@ -251,7 +251,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             if (fieldType.Equals(TEXT) || fieldType.Equals(DATE) || fieldType.Equals(FUTUREDATE))
             {
-                fieldValue = PageAction.GetAttribute(By.Id($"{entryField.GetString()}"), "value");
+                fieldValue = PageAction.GetAttributeForElement(By.Id($"{entryField.GetString()}"), "value");
             }
             else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
             {
@@ -338,7 +338,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                                     int argValueLength = ((string)argValue).Length;
 
                                     By inputLocator = GetInputFieldByLocator(entryField);
-                                    int elemMaxLength = int.Parse(PageAction.GetAttribute(inputLocator, "maxlength"));
+                                    int elemMaxLength = int.Parse(PageAction.GetAttributeForElement(inputLocator, "maxlength"));
 
                                     argValue = argValueLength > elemMaxLength
                                         ? ((string)argValue).Substring(0, elemMaxLength)
@@ -410,7 +410,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             reqFieldLocators = GetTenantRequiredFieldLocators();
 
             IList<string> actualReqFields = new List<string>();
-            actualReqFields = PageAction.GetAttributes(reqFieldLocators, "data-valmsg-for");
+            actualReqFields = PageAction.GetAttributeForElements(reqFieldLocators, "data-valmsg-for");
 
             tenantExpectedRequiredFields = GetTenantRequiredFieldsList();
 
