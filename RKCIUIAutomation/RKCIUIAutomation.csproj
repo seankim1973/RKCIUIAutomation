@@ -288,6 +288,7 @@
     <Compile Include="Base\BaseClass.cs" />
     <Compile Include="Base\BaseHelper.cs" />
     <Compile Include="Base\BaseHook.cs" />
+    <Compile Include="Base\ExtentService.cs" />
     <Compile Include="Base\Factory.cs" />
     <Compile Include="Base\BaseUtils.cs" />
     <Compile Include="Base\DriverOptionsFactory.cs" />

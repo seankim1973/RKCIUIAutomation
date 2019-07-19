@@ -96,6 +96,8 @@ namespace RKCIUIAutomation.Base
 
             try
             {
+                //testInstance = ExtentTestManager.GetTest();
+
                 ResultAdapter result = CurrentContext.Result;
                 List<object> testResults = result.CheckForTestStatusInjection();
                 testStatus = (TestStatus)testResults[0];
@@ -122,7 +124,7 @@ namespace RKCIUIAutomation.Base
                             //Workaround due to bug in Klov Reporter
                             var screenshotRemotePath = $"http://{GridVmIP}/errorscreenshots/{screenshotName}";
                             var detailsWithScreenshot = $"Test Failed:<br> {stacktrace}<br> <img data-featherlight=\"{screenshotRemotePath}\" class=\"step-img\" src=\"{screenshotRemotePath}\" data-src=\"{screenshotRemotePath}\" width=\"200\">";
-                            testInstance.Fail(MarkupHelper.CreateLabel(detailsWithScreenshot, ExtentColor.Red));
+                            testInstance.Fail(MarkupHelper.CreateLabel(detailsWithScreenshot, ExtentColor.Amber));
                         }
                         else
                         {
@@ -168,7 +170,8 @@ namespace RKCIUIAutomation.Base
                     if (driver != null)
                     {
                         Report.Info($"TOTAL TEST TIME: {TestStopwatch.Elapsed.ToString()}");
-                        reportInstance.Flush();
+
+                        ExtentService.Instance.Flush();
 
                         if (cookie != null)
                         {

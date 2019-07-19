@@ -1,51 +1,67 @@
 ﻿using AventStack.ExtentReports;
 using RKCIUIAutomation.Config;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
 {
     public static class ExtentTestManager
     {
-        [ThreadStatic]
-        private static ExtentTest _test;
+        private static Dictionary<string, ExtentTest> _parentTestMap = new Dictionary<string, ExtentTest>();
+        private static ThreadLocal<ExtentTest> _parentTest = new ThreadLocal<ExtentTest>();
+        private static ThreadLocal<ExtentTest> _childTest = new ThreadLocal<ExtentTest>();
 
-        [ThreadStatic]
-        private static ExtentTest _node;
+        private static readonly object _synclock = new object();
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public static ExtentTest CreateTest(this ExtentReports reportInstance, string testCaseNumber, string testName, TenantName tenantName, TestEnv testEnv)
+        public static ExtentTest CreateTest(string testName, string description = null)
         {
-            try
+            lock (_synclock)
             {
-                string tenantEnv = $" - Tenant : {tenantName.ToString()}({testEnv.ToString()})";
-                string name = $"{testCaseNumber} : {Regex.Replace(testName, "_", " ")} {tenantEnv}";
-
-                _test = reportInstance.CreateTest(name);
+                _parentTest.Value = ExtentService.Instance.CreateTest(testName, description);
+                return _parentTest.Value;
             }
-            catch (Exception e)
-            {
-                log.Debug($"##### Exception occured in CreateTest method : \n{e.Message}");
-            }
-
-            return _test;
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public static ExtentTest CreateNode(this ExtentTest parentTest, string description, string details = null)
+        public static ExtentTest CreateMethod(string parentName, string testName, string description = null)
         {
-            try
+            lock (_synclock)
             {
-                _node = parentTest.CreateNode(description, details);
+                ExtentTest parentTest = null;
+                if (!_parentTestMap.ContainsKey(parentName))
+                {
+                    parentTest = ExtentService.Instance.CreateTest(testName);
+                    _parentTestMap.Add(parentName, parentTest);
+                }
+                else
+                {
+                    parentTest = _parentTestMap[parentName];
+                }
+                _parentTest.Value = parentTest;
+                _childTest.Value = parentTest.CreateNode(testName, description);
+                return _childTest.Value;
             }
-            catch (Exception e)
-            {
-                log.Debug($"##### Exception occured in CreateNode method : \n{e.Message}");
-            }
-
-            return _node;
         }
+
+        public static ExtentTest CreateMethod(string testName)
+        {
+            lock (_synclock)
+            {
+                _childTest.Value = _parentTest.Value.CreateNode(testName);
+                return _childTest.Value;
+            }
+        }
+
+        public static ExtentTest GetTest()
+        {
+            lock (_synclock)
+            {
+                return _childTest.Value;
+            }
+        }
+
     }
 }
