@@ -61,37 +61,37 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             IDesignDocument instance = new DesignDocument(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using DesignDocument_SGWay instance ###### ");
                 instance = new DesignDocument_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using  DesignDocument_SH249 instance ###### ");
                 instance = new DesignDocument_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using  DesignDocument_Garnet instance ###### ");
                 instance = new DesignDocument_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using  DesignDocument_GLX instance ###### ");
                 instance = new DesignDocument_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using  DesignDocument_I15South instance ###### ");
                 instance = new DesignDocument_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using DesignDocument_I15Tech instance ###### ");
                 instance = new DesignDocument_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using DesignDocument_LAX instance ###### ");
                 instance = new DesignDocument_LAX(driver);

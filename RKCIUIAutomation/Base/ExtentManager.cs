@@ -32,7 +32,7 @@ namespace RKCIUIAutomation.Base
 
                 IExtentReporter reporterType = null;
 
-                if (reporter == Reporter.Klov)
+                if (reporter == ReporterType.Klov)
                 {
                     reporterType = GetKlovReporter(GridVmIP);
                 }

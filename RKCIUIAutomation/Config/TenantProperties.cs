@@ -7,12 +7,12 @@ namespace RKCIUIAutomation.Config
     public interface ITenantProperties
     {
         List<string> TenantComponents { get; set; }
-        void ConfigTenantComponents(TenantName tenantName);
+        void ConfigTenantComponents(TenantNameType tenantName);
     }
 
     public class TenantProperties : BaseUtils, ITenantProperties
     {
-        TenantName _tenantName { get; set; }
+        TenantNameType _tenantName { get; set; }
 
         public TenantProperties()
         {
@@ -20,7 +20,7 @@ namespace RKCIUIAutomation.Config
 
         public TenantProperties(IWebDriver driver) => Driver = driver;
 
-        public TenantProperties(TenantName tenantName)
+        public TenantProperties(TenantNameType tenantName)
         {
             _tenantName = tenantName;
         }
@@ -100,41 +100,41 @@ namespace RKCIUIAutomation.Config
             
         }
 
-        public void ConfigTenantComponents(TenantName tenantName)
+        public void ConfigTenantComponents(TenantNameType tenantName)
         {
             ITenantProperties instance = null;
 
             switch (tenantName)
             {
-                case TenantName.Garnet:
+                case TenantNameType.Garnet:
                     instance = new ProjectProperties_Garnet();
                     break;
 
-                case TenantName.GLX:
+                case TenantNameType.GLX:
                     instance = new ProjectProperties_GLX();
                     break;
 
-                case TenantName.I15North:
+                case TenantNameType.I15North:
                     instance = new ProjectProperties_I15NB();
                     break;
 
-                case TenantName.I15South:
+                case TenantNameType.I15South:
                     instance = new ProjectProperties_I15SB();
                     break;
 
-                case TenantName.I15Tech:
+                case TenantNameType.I15Tech:
                     instance = new ProjectProperties_I15Tech();
                     break;
 
-                case TenantName.SH249:
+                case TenantNameType.SH249:
                     instance = new ProjectProperties_SH249();
                     break;
 
-                case TenantName.SGWay:
+                case TenantNameType.SGWay:
                     instance = new ProjectProperties_SGWay();
                     break;
 
-                case TenantName.LAX:
+                case TenantNameType.LAX:
                     instance = new ProjectProperties_LAX();
                     break;
             }

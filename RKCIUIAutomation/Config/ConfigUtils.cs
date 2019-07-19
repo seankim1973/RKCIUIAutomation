@@ -26,17 +26,24 @@ namespace RKCIUIAutomation.Config
         public TestRunEnv GetTestRunEnv<TestRunEnv>(string nUnitParam)
         => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nUnitParam);
 
-        public string GetSiteUrl(TestEnv testEnv, TenantName tenant)
+        public string GetSiteUrl(TestEnvironmentType testEnv, TenantNameType tenant)
         {
             string siteUrl = string.Empty;
+            string siteKey = string.Empty;
+            string tenantName = $"{tenant}_";
 
-            if (testEnv.Equals(TestEnv.Dev))
+            if (testEnv.Equals(TestEnvironmentType.Dev))
             {
                 siteUrl = BaseClass.tmpDevEnvIP;
             }
             else
             {
-                string siteKey = $"{tenant}_{testEnv.GetString()}";
+                if(testEnv.Equals(TestEnvironmentType.PreProduction))
+                {
+                    tenantName = string.Empty;
+                }
+
+                siteKey = $"{tenantName}{testEnv.GetString()}";
                 siteUrl = GetValueFromConfigManager(siteUrlKey: siteKey);
             }
 

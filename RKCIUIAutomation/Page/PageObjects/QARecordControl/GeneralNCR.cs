@@ -23,42 +23,42 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             IGeneralNCR instance = new GeneralNCR(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using GeneralNCR_SGWay instance ###### ");
                 instance = new GeneralNCR_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using  GeneralNCR_SH249 instance ###### ");
                 instance = new GeneralNCR_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using  GeneralNCR_Garnet instance ###### ");
                 instance = new GeneralNCR_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using  GeneralNCR_GLX instance ###### ");
                 instance = new GeneralNCR_GLX(driver);
             }
-            else if (tenantName == TenantName.I15North)
+            else if (tenantName == TenantNameType.I15North)
             {
                 log.Info($"###### using  GeneralNCR_I15North instance ###### ");
                 instance = new GeneralNCR_I15North(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using  GeneralNCR_I15South instance ###### ");
                 instance = new GeneralNCR_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using GeneralNCR_I15Tech instance ###### ");
                 instance = new GeneralNCR_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using GeneralNCR_LAX instance ###### ");
                 instance = new GeneralNCR_LAX(driver);

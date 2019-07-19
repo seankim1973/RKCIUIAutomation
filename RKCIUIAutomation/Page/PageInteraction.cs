@@ -984,7 +984,7 @@ namespace RKCIUIAutomation.Page
                 fileName = "test.xlsx";
             }
 
-            if (testPlatform == TestPlatform.Local)
+            if (testPlatform == TestPlatformType.Local)
             {
                 filePath = $"{CodeBasePath}\\UploadFiles\\{fileName}";                
             }
