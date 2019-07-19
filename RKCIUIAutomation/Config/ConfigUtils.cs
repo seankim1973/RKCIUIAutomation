@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using static RKCIUIAutomation.Tools.HipTestApi;
 using static RKCIUIAutomation.Base.Factory;
+using RestSharp.Extensions;
 
 namespace RKCIUIAutomation.Config
 {
@@ -17,22 +18,32 @@ namespace RKCIUIAutomation.Config
         {
         }
 
+        [ThreadStatic]
+        static string _currentUserEmail = string.Empty;
+
         public ConfigUtils(IWebDriver driver) => this.Driver = driver;
 
-        public TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg)
-        => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nunitArg);
+        public TestRunEnv GetTestRunEnv<TestRunEnv>(string nUnitParam)
+        => (TestRunEnv)Enum.Parse(typeof(TestRunEnv), nUnitParam);
 
-        public string GetSiteUrl(TestEnv testEnv, TenantName tenant)
+        public string GetSiteUrl(TestEnvironmentType testEnv, TenantNameType tenant)
         {
             string siteUrl = string.Empty;
+            string siteKey = string.Empty;
+            string tenantName = $"{tenant}_";
 
-            if (testEnv.Equals(TestEnv.Dev))
+            if (testEnv.Equals(TestEnvironmentType.Dev))
             {
                 siteUrl = BaseClass.tmpDevEnvIP;
             }
             else
             {
-                string siteKey = $"{tenant}_{testEnv.GetString()}";
+                if(testEnv.Equals(TestEnvironmentType.PreProduction))
+                {
+                    tenantName = string.Empty;
+                }
+
+                siteKey = $"{tenantName}{testEnv.GetString()}";
                 siteUrl = GetValueFromConfigManager(siteUrlKey: siteKey);
             }
 
@@ -40,12 +51,21 @@ namespace RKCIUIAutomation.Config
         }
 
         //return string array of username[0] and password[1]
-        public string[] GetUser(UserType userType)
+        public string[] GetUserCredentials(UserType userType)
         {
             string userKey = $"{userType}";
             string[] usernamePassword = GetValueFromConfigManager(userTypeKey: userKey).Split(',');
             return usernamePassword;
         }
+
+        public void SetCurrentUserEmail(UserType userType)
+        {
+            string[] credentials = GetUserCredentials(userType);
+            _currentUserEmail = credentials[0];
+        }
+
+        public string GetCurrentUserEmail()
+            => _currentUserEmail;
 
         public string GetHipTestCreds(HipTestKey credType)
             => GetValueFromConfigManager(hiptestKey: $"{credType}");

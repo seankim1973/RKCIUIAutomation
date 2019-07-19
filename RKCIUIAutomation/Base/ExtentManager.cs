@@ -1,4 +1,5 @@
 ﻿using AventStack.ExtentReports;
+using AventStack.ExtentReports.Core;
 using AventStack.ExtentReports.Reporter;
 using RKCIUIAutomation.Config;
 using System;
@@ -25,22 +26,31 @@ namespace RKCIUIAutomation.Base
             {
                 Directory.CreateDirectory(ExtentReportPath);
                 HtmlReporter = new ExtentHtmlReporter(reportFilePath);
-                HtmlReporter = GetHtmlReporter();
+                HtmlReporter = (ExtentHtmlReporter)GetHtmlReporter();
 
                 _lazy = new Lazy<ExtentReports>(() => new ExtentReports());
 
-                if (reporter == Reporter.Klov)
+                IExtentReporter reporterType = null;
+
+                if (reporter == ReporterType.Klov)
                 {
-                    GetReportInstance().AttachReporter(GetKlovReporter(GridVmIP));
+                    reporterType = GetKlovReporter(GridVmIP);
                 }
                 else
                 {
-                    GetReportInstance().AttachReporter(HtmlReporter);
+                    reporterType = HtmlReporter;
                 }
 
-                GetReportInstance().AddSystemInfo("Tenant", tenantName.ToString());
-                GetReportInstance().AddSystemInfo("Environment", testEnv.ToString());
-                GetReportInstance().AddSystemInfo("URL", siteUrl);
+                //GetReportInstance().AddSystemInfo("Tenant", tenantName.ToString());
+                //GetReportInstance().AddSystemInfo("Environment", testEnv.ToString());
+                //GetReportInstance().AddSystemInfo("URL", siteUrl);
+
+                var reportInstance = GetReportInstance();
+                reportInstance.AttachReporter(reporterType);
+                reportInstance.AddSystemInfo("Tenant", tenantName.ToString());
+                reportInstance.AddSystemInfo("Environment", testEnv.ToString());
+                reportInstance.AddSystemInfo("URL", siteUrl);
+
             }
             catch (Exception e)
             {
@@ -49,7 +59,7 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        private static ExtentHtmlReporter GetHtmlReporter()
+        private static IExtentReporter GetHtmlReporter()
         {
             try
             {
@@ -64,7 +74,7 @@ namespace RKCIUIAutomation.Base
             return HtmlReporter;
         }
 
-        private static ExtentKlovReporter GetKlovReporter(string gridVmIP)
+        private static IExtentReporter GetKlovReporter(string gridVmIP)
         {
             try
             {

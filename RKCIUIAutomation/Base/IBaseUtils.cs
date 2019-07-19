@@ -7,7 +7,7 @@ namespace RKCIUIAutomation.Base
         string CaptureScreenshot(string fileName = "");
         OutType ConvertToType<OutType>(object objToConvert);
         void CreateVar<T>(T key, string value = "", bool withPrefix = true);
-        void DetermineReportFilePath(TenantName tenantName);
+        void DetermineReportFilePath(TenantNameType tenantName);
         string GenerateRandomGuid();
         void SetScreenshotSavePath();
         void SetExtentReportPath();
@@ -24,6 +24,6 @@ namespace RKCIUIAutomation.Base
         string GetTestPriority();
         string GetVar<T>(T key, bool keyIncludesPrefix = false);
         bool HashKeyExists(string key);
-        void ConfigGridAddress(TestPlatform platform, string gridIPv4Hostname = "");
+        void ConfigGridAddress(TestPlatformType platform, string gridIPv4Hostname = "");
     }
 }

@@ -123,6 +123,10 @@ namespace RKCIUIAutomation.Page.Navigation
                 {
                     mainNavEnum = MainNav.Menu.Control_Point;
                 }
+                else if (reflectedPageType.Equals(typeof(CheckPoint)))
+                {
+                    mainNavEnum = MainNav.Menu.Check_Point;
+                }
                 else if (reflectedPageType.Equals(typeof(RMCenter)))
                 {
                     mainNavEnum = MainNav.Menu.RM_Center;
@@ -239,6 +243,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Owner")] Owner,
                 [StringValue("Material/Mix Codes")] Material_Mix_Codes,
                 [StringValue("Control Point")] Control_Point,
+                [StringValue("Check Point")] Check_Point,
                 [StringValue("RM Center")] RM_Center,
                 [StringValue("QA Inbox")] QA_Inbox,
                 [StringValue("DOT Inbox")] DOT_Inbox,
@@ -558,9 +563,9 @@ namespace RKCIUIAutomation.Page.Navigation
             public enum Menu
             {
                 [StringValue("Mix Design - PCC")] Mix_Design_PCC,
-                [StringValue("Mix Design - HMA")] Mix_Design_HMA,
-                [StringValue("Sieve Analyses - JMF")] Sieve_Analyses_JMF,
-                [StringValue("Sieve Analyses - IOC")] Sieve_Analyses_IOC,
+                [StringValue("Mix Design - HMA")] Mix_Design_HMA, 
+                [StringValue("Sieve Analysis - JMF")] Sieve_Analyses_JMF,
+                [StringValue("Sieve Analysis - IOC")] Sieve_Analyses_IOC,
                 [StringValue("Material Code - Concrete Aggregate")] Material_Code_Concrete_Aggregate,
                 [StringValue("Material Code - Base Aggregate")] Material_Code_Base_Aggregate,
                 [StringValue("Material Code - HMA Aggregate")] Material_Code_HMA_Aggregate,
@@ -577,7 +582,17 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Control Point Log")] Control_Point_Log
             }
         }
+        
+        //Check Point Menu Navigation Enums
 
+        public class CheckPoint
+        {
+            public enum Menu
+            {
+                [StringValue("Check Point Scheduler")] Check_Point_Scheduler,
+                [StringValue("Check Point Log")] Check_Point_Log
+            }
+        }
         //Record Control Menu Navigation Enums
         public class RecordControl
         {
@@ -606,7 +621,8 @@ namespace RKCIUIAutomation.Page.Navigation
             {
                 public new enum Menu
                 {
-                    [StringValue("QA Test - All")] QA_Test_All,
+                    //[StringValue("QA Test - All")] QA_Test_All,
+                    [StringValue("QA Test")] QA_Test,
                     [StringValue("QA DIR")] QA_DIR,
                     [StringValue("QA NCR")] QA_NCR,
                     [StringValue("QA Deficiency Notice")] QA_Deficiency_Notice,
@@ -618,6 +634,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 public new enum Menu
                 {
                     [StringValue("QC Test - All")] QC_Test_All,
+                    [StringValue("QC Test")] QC_Test,
                     [StringValue("QC DIR")] QC_DIR,
                     [StringValue("QC NCR")] QC_NCR,
                     [StringValue("QC Deficiency Notice")] QC_Deficiency_Notice,
@@ -634,6 +651,7 @@ namespace RKCIUIAutomation.Page.Navigation
                 [StringValue("Design Documents")] Design_Documents,
                 [StringValue("Upload QA Submittal")] Upload_QA_Submittal,
                 [StringValue("Upload Owner Submittal")] Upload_Owner_Submittal,
+                [StringValue("Upload Design Submittal")] Upload_Design_Submittal,
                 [StringValue("Upload DEV Submittal")] Upload_DEV_Submittal,
                 [StringValue("DOT Project Correspondence Log")] DOT_Project_Correspondence_Log,
                 [StringValue("Review / Revise Submittal")] Review_Revise_Submittal,

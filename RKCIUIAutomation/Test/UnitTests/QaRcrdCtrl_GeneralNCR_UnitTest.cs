@@ -213,7 +213,7 @@ namespace RKCIUIAutomation.Test.UnitTests
         }
     }
 
-
+    [Parallelizable]
     [TestFixture]
     public class UnitTest_Verify_AssertAll : TestBase
     {
@@ -223,6 +223,108 @@ namespace RKCIUIAutomation.Test.UnitTests
         [Property(Priority, "High")]
         [Description("AssertAll")]
         public void Verify_AssertAll()
+        {
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AddAssertionToList(false);
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AssertAll();
+        }
+
+        [Test]
+        [Category(Component.NCR)]
+        [Property(TestCaseNumber, 123456)]
+        [Property(Priority, "High")]
+        [Description("ExtentReport_NCR")]
+        public void Verify_ExtentReport_NCR()
+        {
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AddAssertionToList(false);
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AssertAll();
+        }
+
+        [Test]
+        [Category(Component.CDR)]
+        [Property(TestCaseNumber, 123456)]
+        [Property(Priority, "High")]
+        [Description("ExtentReport_CDR")]
+        public void Verify_ExtentReport_CDR()
+        {
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AddAssertionToList(false);
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AssertAll();
+        }
+
+        [Test]
+        [Category(Component.CommentReview_RegularComment)]
+        [Property(TestCaseNumber, 123456)]
+        [Property(Priority, "High")]
+        [Description("ExtentReport_CR")]
+        public void Verify_ExtentReport_CR()
+        {
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AddAssertionToList(false);
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AssertAll();
+        }
+    }
+
+    [TestFixture]
+    public class UnitTest_Verify_ExtentReport_NCR : TestBase
+    {
+        [Test]
+        [Category(Component.NCR)]
+        [Property(TestCaseNumber, 123456)]
+        [Property(Priority, "High")]
+        [Description("ExtentReport_NCR")]
+        public void Verify_ExtentReport_NCR()
+        {
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AddAssertionToList(false);
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AssertAll();
+        }
+    }
+
+    [TestFixture]
+    public class UnitTest_Verify_ExtentReport_CDR : TestBase
+    {
+        [Test]
+        [Category(Component.CDR)]
+        [Property(TestCaseNumber, 123456)]
+        [Property(Priority, "High")]
+        [Description("ExtentReport_CDR")]
+        public void Verify_ExtentReport_CDR()
+        {
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AddAssertionToList(false);
+            AddAssertionToList(true);
+            AddAssertionToList(true);
+            AssertAll();
+        }
+    }
+
+    [TestFixture]
+    public class UnitTest_Verify_ExtentReport_CR : TestBase
+    {
+        [Test]
+        [Category(Component.CommentReview_RegularComment)]
+        [Property(TestCaseNumber, 123456)]
+        [Property(Priority, "High")]
+        [Description("ExtentReport_CR")]
+        public void Verify_ExtentReport_CR()
         {
             AddAssertionToList(true);
             AddAssertionToList(true);

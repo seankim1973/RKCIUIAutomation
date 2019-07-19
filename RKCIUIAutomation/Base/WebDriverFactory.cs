@@ -47,7 +47,7 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        public static IWebDriver SetWebDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
+        public static IWebDriver SetWebDriver(TestPlatformType platform, BrowserType browser, string testDetails, string gridUri = "")
             => FactoryInstance._SetDriver(platform, browser, testDetails, gridUri);
 
         public static void DismissDriverInstance(IWebDriver driver)
@@ -56,7 +56,7 @@ namespace RKCIUIAutomation.Base
         public static void DismissAllDriverInstances()
             => FactoryInstance._DismissAll();
 
-        private static ICapabilities GetCapabilities(TestPlatform platform, BrowserType browser, string testDetails)
+        private static ICapabilities GetCapabilities(TestPlatformType platform, BrowserType browser, string testDetails)
         {
             DriverOptionsFactory DriverOptions = new DriverOptionsFactory();
             return DriverOptions.DetermineDriverOptions(platform, browser, testDetails).ToCapabilities();
@@ -65,7 +65,7 @@ namespace RKCIUIAutomation.Base
         private static ThreadLocal<IWebDriver> driverThread = new ThreadLocal<IWebDriver>();
         private Dictionary<IWebDriver, string> driverToKeyMap = new Dictionary<IWebDriver, string>();
 
-        private IWebDriver _SetDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
+        private IWebDriver _SetDriver(TestPlatformType platform, BrowserType browser, string testDetails, string gridUri = "")
         {
             ICapabilities caps = GetCapabilities(platform, browser, testDetails);
             string newKey = CreateKey(caps, testDetails);
@@ -150,7 +150,7 @@ namespace RKCIUIAutomation.Base
             return key;
         }
 
-        private void CreateNewDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri = "")
+        private void CreateNewDriver(TestPlatformType platform, BrowserType browser, string testDetails, string gridUri = "")
         {
             ICapabilities caps = GetCapabilities(platform, browser, testDetails);
             string newKey = CreateKey(caps, testDetails);
@@ -160,11 +160,11 @@ namespace RKCIUIAutomation.Base
             driverThread.Value = driver;
         }
 
-        private static IWebDriver DetermineWebDriver(TestPlatform platform, BrowserType browser, string testDetails, string gridUri)
+        private static IWebDriver DetermineWebDriver(TestPlatformType platform, BrowserType browser, string testDetails, string gridUri)
         {
             ICapabilities caps = GetCapabilities(platform, browser, testDetails);
 
-            if (platform == TestPlatform.Local)
+            if (platform == TestPlatformType.Local)
             {
                 switch (browser)
                 {

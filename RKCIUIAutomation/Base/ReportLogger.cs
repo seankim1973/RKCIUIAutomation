@@ -1,15 +1,10 @@
 ﻿using AventStack.ExtentReports;
 using AventStack.ExtentReports.MarkupUtils;
-using log4net;
 using log4net.Core;
 using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Base
@@ -22,16 +17,13 @@ namespace RKCIUIAutomation.Base
 
         public ReportLogger(IWebDriver driver) => this.Driver = driver;
 
-        [ThreadStatic]
-        private static Cookie cookie;
-
         public enum ValidationType
         {
             Value,
             Selection
         }
 
-        private void LevelLogger(Level logLevel, string logDetails)
+        private void CreateStdOutLog(Level logLevel, string logDetails)
         {
             if (logLevel == Level.Debug)
             {
@@ -51,7 +43,7 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        private void CheckForLineBreaksInLogMsg(Level logLevel, string logDetails, Exception e = null)
+        private void CheckForLineBreaksInLogMsgForStdOutLogger(Level logLevel, string logDetails, Exception e = null)
         {
             if (logDetails.Contains("<br>"))
             {
@@ -59,18 +51,18 @@ namespace RKCIUIAutomation.Base
                 for (int i = 0; i < detailsBr.Length; i++)
                 {
                     string detail = detailsBr[i];
-                    LevelLogger(logLevel, detail);
+                    CreateStdOutLog(logLevel, detail);
                 }
             }
             else
             {
-                LevelLogger(logLevel, logDetails);
+                CreateStdOutLog(logLevel, logDetails);
             }
 
             if (e != null)
             {
                 testInstance.Error(CreateReportMarkupCodeBlock(e));
-                LevelLogger(Level.Error, e.StackTrace);
+                CreateStdOutLog(Level.Error, e.StackTrace);
             }
         }
 
@@ -83,13 +75,13 @@ namespace RKCIUIAutomation.Base
         public void AssertIgnore(string msg)
         {
             testInstance.Skip(CreateReportMarkupLabel(msg, ExtentColor.Orange));
-            CheckForLineBreaksInLogMsg(Level.Debug, msg);
+            CheckForLineBreaksInLogMsgForStdOutLogger(Level.Debug, msg);
         }
 
         public void Fail(string details, Exception e = null)
         {
             testInstance.Fail(CreateReportMarkupLabel(details, ExtentColor.Red));
-            CheckForLineBreaksInLogMsg(Level.Error, details, e);
+            CheckForLineBreaksInLogMsgForStdOutLogger(Level.Error, details, e);
         }
 
         public void Debug(string details, Exception exception = null)
@@ -105,7 +97,7 @@ namespace RKCIUIAutomation.Base
             else
                 testInstance.Debug(CreateReportMarkupLabel(details, ExtentColor.Grey));
 
-            CheckForLineBreaksInLogMsg(Level.Debug, details, exception);
+            CheckForLineBreaksInLogMsgForStdOutLogger(Level.Debug, details, exception);
         }
 
         public void Error(string details, bool takeScreenshot = true, Exception e = null)
@@ -117,7 +109,7 @@ namespace RKCIUIAutomation.Base
             else
             {
                 testInstance.Error(CreateReportMarkupLabel(details, ExtentColor.Red));
-                CheckForLineBreaksInLogMsg(Level.Error, details, e);
+                CheckForLineBreaksInLogMsgForStdOutLogger(Level.Error, details, e);
             }
         }
 
@@ -125,14 +117,14 @@ namespace RKCIUIAutomation.Base
         {
             string localScreenshotPath = @"C:\Automation\klov\errorscreenshots\";
             string screenshotName = CaptureScreenshot();
-            var screenshotRefPath = reporter == Reporter.Klov
-                ? testPlatform == TestPlatform.GridLocal
+            var screenshotRefPath = reporter == ReporterType.Klov
+                ? testPlatform == TestPlatformType.GridLocal
                     ? $"http://127.0.0.1/errorscreenshots/{screenshotName}"
                     : $"http://10.1.1.207/errorscreenshots/{screenshotName}"
                 : $"{localScreenshotPath}{screenshotName}";
             var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRefPath}\" class=\"step-img\" src=\"{screenshotRefPath}\" data-src=\"{screenshotRefPath}\" width=\"200\">";
 
-            testInstance = reporter == Reporter.Klov
+            testInstance = reporter == ReporterType.Klov
                 ? color.Equals(ExtentColor.Red)
                     ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
                     : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color))
@@ -140,7 +132,7 @@ namespace RKCIUIAutomation.Base
                     ? testInstance.Error($"Test Failed: <br> {details}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotRefPath, screenshotName).Build())
                     : testInstance.Warning($"Test Failed: <br> {details}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotRefPath, screenshotName).Build());
 
-            CheckForLineBreaksInLogMsg(Level.Error, details, e);
+            CheckForLineBreaksInLogMsgForStdOutLogger(Level.Error, details, e);
         }
 
         public void Info(string details)
@@ -165,12 +157,16 @@ namespace RKCIUIAutomation.Base
             {
                 testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Yellow));
             }
+            else if (details.Contains("TOTAL TEST TIME:"))
+            {
+                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+            }
             else
             {
                 testInstance.Info(details);
             }
 
-            CheckForLineBreaksInLogMsg(Level.Info, details);
+            CheckForLineBreaksInLogMsgForStdOutLogger(Level.Info, details);
         }
 
         public void Info(string[][] detailsList, bool assertion)
@@ -186,11 +182,9 @@ namespace RKCIUIAutomation.Base
             object resultObj = null;
             int resultGauge = 0;
             Type assertionType = assertion.GetType();
-            //BaseUtils baseUtils = new BaseUtils();
 
             if (assertionType == typeof(bool))
             {
-                //resultObj = baseUtils.ConvertToType<bool>(assertion);
                 resultObj = ConvertToType<bool>(assertion);
                 resultGauge = (bool)resultObj
                     ? resultGauge + 1
@@ -198,7 +192,6 @@ namespace RKCIUIAutomation.Base
             }
             else if (assertionType == typeof(bool[]))
             {
-                //resultObj = baseUtils.ConvertToType<bool[]>(assertion);
                 resultObj = ConvertToType<bool[]>(assertion);
                 resultObj = new bool[] { };
 
@@ -213,7 +206,7 @@ namespace RKCIUIAutomation.Base
             if (resultGauge >= 1)
             {
                 testInstance.Pass(CreateReportMarkupLabel(details, ExtentColor.Green));
-                CheckForLineBreaksInLogMsg(Level.Info, details);
+                CheckForLineBreaksInLogMsgForStdOutLogger(Level.Info, details);
             }
             else if (resultGauge <= -1)
             {
@@ -230,46 +223,55 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        public void Step(string testStep, bool logInfo = false, bool testResult = true)
+        public void Step(string testStep, bool createStdOutLog = false, bool testResult = true)
         {
+            string logMsg = string.Empty;
+            ExtentColor logLabelColor = ExtentColor.Grey;
+
             try
             {
-                string logMsg = $"TestStep: {testStep}";
+                logMsg = $"TestStep: {testStep}";
 
-                ExtentColor logLabelColor = testResult
-                    ? ExtentColor.Grey
-                    : ExtentColor.Red;
+                if (!testResult)
+                {
+                    logLabelColor = ExtentColor.Red;
+                }
 
-                testInstance.Info(CreateReportMarkupLabel(logMsg, logLabelColor));
-                CheckForLineBreaksInLogMsg(Level.Info, logMsg);
-                cookie = new Cookie("zaleniumMessage", testStep);
-                driver.Manage().Cookies.AddCookie(cookie);
+                if (testStep.Contains("Workflow:"))
+                {
+                    logLabelColor = ExtentColor.Purple;
+                    logMsg = testStep;
+                }
 
-                if (logInfo)
+                if (createStdOutLog)
                 {
                     if (testResult)
                     {
-                        Info(testStep);
+                        //Info(logMsg);
+                        CheckForLineBreaksInLogMsgForStdOutLogger(Level.Debug, logMsg);
                     }
                     else
                     {
-                        Info(testStep, testResult);
+                        CheckForLineBreaksInLogMsgForStdOutLogger(Level.Error, logMsg);
                     }
                 }
-                else
-                {
-                    if (testResult.Equals(false))
-                    {
-                        Info(testStep, testResult);
-                    }
-                }
+                //else
+                //{
+                //    if (!testResult)
+                //    {
+                //        Info(logMsg, testResult);
+                //    }
+                //}
+
+                testInstance.Info(CreateReportMarkupLabel(logMsg, logLabelColor));
+                AddCookieToCurrentPage("zaleniumMessage", logMsg);
             }
-            catch (UnableToSetCookieException)
+            //catch (UnableToSetCookieException)
+            //{
+            //}
+            catch (Exception)
             {
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
+                throw;
             }
         }
 

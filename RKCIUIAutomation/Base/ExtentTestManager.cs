@@ -16,7 +16,7 @@ namespace RKCIUIAutomation.Base
         private static ExtentTest _node;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public static ExtentTest CreateTest(this ExtentReports reportInstance, string testCaseNumber, string testName, TenantName tenantName, TestEnv testEnv)
+        public static ExtentTest CreateTest(this ExtentReports reportInstance, string testCaseNumber, string testName, TenantNameType tenantName, TestEnvironmentType testEnv)
         {
             try
             {

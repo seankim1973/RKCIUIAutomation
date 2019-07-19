@@ -28,37 +28,37 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             ISearch instance = new Search(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using Search_SGWay instance ###### ");
                 instance = new Search_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using Search_SH249 instance ###### ");
                 instance = new Search_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using Search_Garnet instance ###### ");
                 instance = new Search_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using Search_GLX instance ###### ");
                 instance = new Search_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using Search_I15South instance ###### ");
                 instance = new Search_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using Search_I15Tech instance ###### ");
                 instance = new Search_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using Search_LAX instance ###### ");
                 instance = new Search_LAX(driver);
@@ -124,7 +124,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public override void ClickBtn_Clear()
             => PageAction.JsClickElement(By.Id("ClearButton"));
 
-        public override bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList)
+        public override bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryFieldType, string>> entryFieldValuesList)
         {
             bool isDisplayed = false;
             string logMsg = string.Empty;
@@ -134,24 +134,29 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 SearchCriteria criteria;              
                 IList<bool> resultsList = new List<bool>();
 
-                foreach (KeyValuePair<EntryField, string> kvPair in entryFieldValuesList)
+                foreach (KeyValuePair<EntryFieldType, string> kvPair in entryFieldValuesList)
                 {
                     criteria = GetMatchingSearchCriteriaForEntryField(kvPair.Key);
 
-                    if (!criteria.Equals(SearchCriteria.NoSelection))
+                    if (tenantSearchCriteriaFields.Contains(criteria))
                     {
-                        PopulateCriteriaByType(criteria, kvPair.Value);
-                        ClickBtn_Search();
-                        PageAction.WaitForLoading();
-                        bool searchResult = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableHelper.TableType.Single);
-                        resultsList.Add(searchResult);
+                        if (!criteria.Equals(SearchCriteria.NoSelection))
+                        {
+                            PopulateCriteriaByType(criteria, kvPair.Value);
+                            ClickBtn_Search();
+                            //PageAction.WaitForLoading();
+                            PageAction.WaitForPageReady();
+                            bool searchResult = GridHelper.VerifyRecordIsDisplayed(ColumnName.TransmittalNumber, transmittalNumber, TableHelper.TableType.Single);
+                            resultsList.Add(searchResult);
 
-                        logMsg = $"Search by Criteria '{criteria}'";
-                        Report.Info($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
-                        TestUtility.AddAssertionToList(searchResult, logMsg);
+                            logMsg = $"Search by Criteria '{criteria}'";
+                            Report.Info($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
+                            TestUtility.AddAssertionToList(searchResult, logMsg);
 
-                        ClickBtn_Clear();
-                        PageAction.WaitForLoading();
+                            ClickBtn_Clear();
+                            //PageAction.WaitForLoading();
+                            PageAction.WaitForPageReady();
+                        }
                     }
                 }
 
@@ -167,46 +172,81 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             return isDisplayed;
         }
 
-        private SearchCriteria GetMatchingSearchCriteriaForEntryField(EntryField entryField)
+        public override bool VerifySearchResultByCriteria(KeyValuePair<string, string> valuePair, SearchCriteria name)
+        {
+            bool isDisplayed = false;
+            string logMsg = string.Empty;
+
+            try
+            {
+                IList<bool> resultsList = new List<bool>();
+
+                PopulateCriteriaByType(SearchCriteria.Title, valuePair.Key);
+                ClickBtn_Search();
+                //PageAction.WaitForLoading();
+                PageAction.WaitForPageReady();
+                bool searchResult = GridHelper.VerifyRecordIsDisplayed(ColumnName.Number, valuePair.Value, TableHelper.TableType.Single);
+                resultsList.Add(searchResult);
+
+                logMsg = $"Search by Criteria '{SearchCriteria.Title.ToString()}'";
+                Report.Info($"{logMsg}  was {(searchResult ? "" : "NOT ")}successful", searchResult);
+                TestUtility.AddAssertionToList(searchResult, logMsg);
+
+                ClickBtn_Clear();
+                PageAction.WaitForPageReady();
+
+                isDisplayed = resultsList.Contains(false)
+                    ? false
+                    : true;
+            }
+            catch (Exception)
+            {
+                log.Error(logMsg);
+            }
+
+            return isDisplayed;
+        }
+
+        private SearchCriteria GetMatchingSearchCriteriaForEntryField(EntryFieldType entryField)
         {
             SearchCriteria criteria = SearchCriteria.NoSelection;
 
             switch (entryField)
             {
-                case EntryField.Attention:
+                case EntryFieldType.Attention:
                     criteria = SearchCriteria.Attention;
                     break;
-                case EntryField.Date:
+                case EntryFieldType.Date:
                     criteria = SearchCriteria.TransmittalDate_From;
                     break;
-                case EntryField.DesignPackages:
+                case EntryFieldType.DesignPackages:
                     criteria = SearchCriteria.DesignPackages;
                     break;
-                case EntryField.DocumentType:
+                case EntryFieldType.DocumentType:
                     criteria = SearchCriteria.DocumentType;
                     break;
-                case EntryField.DocumentCategory:
+                case EntryFieldType.DocumentCategory:
                     criteria = SearchCriteria.Category;
                     break;
-                case EntryField.From:
+                case EntryFieldType.From:
                     criteria = SearchCriteria.From;
                     break;
-                case EntryField.MSLNumber:
+                case EntryFieldType.MSLNumber:
                     criteria = SearchCriteria.MSLNo;
                     break;
-                case EntryField.OriginatorDocumentRef:
+                case EntryFieldType.OriginatorDocumentRef:
                     criteria = SearchCriteria.OriginatorDocumentRef;
                     break;
-                case EntryField.Segment_Area:
+                case EntryFieldType.Segment_Area:
                     criteria = SearchCriteria.SegmentArea;
                     break;
-                case EntryField.SpecSection:
+                case EntryFieldType.SpecSection:
                     criteria = SearchCriteria.SpecSection;
                     break;
-                case EntryField.Title:
+                case EntryFieldType.Title:
                     criteria = SearchCriteria.Title;
                     break;
-                case EntryField.TransmittalNumber:
+                case EntryFieldType.TransmittalNumber:
                     criteria = SearchCriteria.TransmittalNumber;
                     break;
             }
@@ -241,10 +281,19 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             }
             else if (fieldType.Equals(DDL) || fieldType.Equals(MULTIDDL))
             {
-                fieldValue = criteria.Equals(SearchCriteria.DocumentType)
-                    ? $"-- {fieldValue}"
-                    : fieldValue;
-                PageAction.ExpandAndSelectFromDDList(criteria, fieldValue, true, fieldType.Equals(MULTIDDL) ? true : false);
+                if (criteria.Equals(SearchCriteria.DocumentType))
+                {
+                    fieldValue = $"-- {fieldValue}";
+                }
+
+                bool isMultiselectDDList = false;
+
+                if (fieldType.Equals(MULTIDDL))
+                {
+                    isMultiselectDDList = true;
+                }
+
+                PageAction.ExpandAndSelectFromDDList(criteria, fieldValue, true, isMultiselectDDList);
             }
         }
 
@@ -260,7 +309,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         IList<ColumnName> SetTenantSearchGridColumnNames();
 
-        bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList);
+        bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryFieldType, string>> entryFieldValuesList);
 
         void ClickBtn_Search();
 
@@ -302,6 +351,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         //Workflow Interface
         void PopulateAllSearchCriteriaFields();
+        bool VerifySearchResultByCriteria(KeyValuePair<string, string> valuePair, SearchCriteria name);
     }
 
     #endregion Search Interface class
@@ -347,7 +397,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         public virtual void EnterText_OriginatorDocumentRef(string text) => PageAction.EnterText(GetTextInputFieldByLocator(SearchCriteria.OriginatorDocumentRef), text);
 
 
-        public abstract bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryField, string>> entryFieldValuesList);
+        public abstract bool VerifySearchResultByCriteria(string transmittalNumber, IList<KeyValuePair<EntryFieldType, string>> entryFieldValuesList);
 
         public abstract void ClickBtn_Search();
 
@@ -358,6 +408,8 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
         public virtual IList<ColumnName> SetTenantSearchGridColumnNames()
             => tenantSearchGridColumnNames;
+
+        public abstract bool VerifySearchResultByCriteria(KeyValuePair<string, string> valuePair, SearchCriteria name);
     }
 
     #endregion Search Common Implementation class

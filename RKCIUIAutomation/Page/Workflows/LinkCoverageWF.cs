@@ -4,6 +4,7 @@ using RKCIUIAutomation.Page.PageObjects.LabFieldTests;
 using RKCIUIAutomation.Page.PageObjects.QAField;
 using RKCIUIAutomation.Test;
 using System;
+using System.Threading;
 using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page.Workflows
@@ -214,7 +215,8 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(TestDetailsPg.VerifyTestDetailsFormIsDisplayed());
             NavigateToPage.OV_OV_Test();
             AddAssertionToList(VerifyPageHeader("OV Tests"));
-
+            GridHelper.ClickEditBtnForRow();
+            ClickCancel();
             AssertAll();
         }
 
@@ -272,8 +274,7 @@ namespace RKCIUIAutomation.Page.Workflows
             NavigateToPage.QAField_Weekly_Environmental_Monitoring();
             AddAssertionToList(VerifyPageHeader("Week Environmental Monitoring Reports"));
             ClickNew();
-            AddAssertionToList(VerifyAlertMessage("Week Ending Date is required!"));
-            AcceptAlertMessage();
+            AddAssertionToList(VerifyAndAcceptAlertMessage("Week Ending Date is required!"));
             EnterText(WeeklyEnvMonitoring.WeekEndingDateField, DateTime.Now.ToShortDateString()); //TODO - Create method
             ClickNew();
             ClickCancel();
@@ -337,7 +338,7 @@ namespace RKCIUIAutomation.Page.Workflows
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Mix_Design_HMA();
             AddAssertionToList(VerifyPageHeader("Hma Mix Design"));
-            VerifyPageIsLoaded();
+           // VerifyPageIsLoaded();
             ClickNew();
             ClickCancel();
             NavigateToPage.MaterialMixCodes_Sieve_Analyses_JMF();
@@ -544,37 +545,37 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             ILinkCoverageWF instance = new LinkCoverageWF(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using LinkCoverage_SGWay instance ###### ");
                 instance = new LinkCoverageWF_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using LinkCoverage_SH249 instance ###### ");
                 instance = new LinkCoverageWF_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using LinkCoverage_Garnet instance ###### ");
                 instance = new LinkCoverageWF_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using LinkCoverage_GLX instance ###### ");
                 instance = new LinkCoverageWF_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using LinkCoverage_I15South instance ###### ");
                 instance = new LinkCoverageWF_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using LinkCoverage_I15Tech instance ###### ");
                 instance = new LinkCoverageWF_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using LinkCoverage_LAX instance ###### ");
                 instance = new LinkCoverageWF_LAX(driver);
@@ -846,6 +847,18 @@ namespace RKCIUIAutomation.Page.Workflows
         /// <summary>
         /// Common workflow method for Tenants:
         /// </summary>
+        /// 
+        public override void _NavigateToControlPointMenu()
+        {
+            LoginAs(UserType.Bhoomi);
+            NavigateToPage.Control_Point_Scheduler();
+            AddAssertionToList(VerifyPageHeader("Check Point Scheduler"));
+            ClickNew();
+            ClickCancel();
+            NavigateToPage.Control_Point_Log();
+            AddAssertionToList(VerifyPageHeader("Check Point Log"));
+            AssertAll();
+        }
         public override void _NavigateToVerifyQARecordControlMenu()
         {
             LoginAs(UserType.Bhoomi);

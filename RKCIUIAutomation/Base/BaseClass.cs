@@ -9,8 +9,7 @@ using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Threading;
+using System.Diagnostics;
 using static NUnit.Framework.TestContext;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.StaticHelpers;
@@ -25,11 +24,11 @@ namespace RKCIUIAutomation.Base
         {
         }
 
-        readonly TestPlatform defaultTestPlatform = TestPlatform.GridLocal;
+        readonly TestPlatformType defaultTestPlatform = TestPlatformType.GridLocal;
         readonly BrowserType defaultBrowserType = BrowserType.Chrome;
-        readonly TestEnv defaultTestEnvironment = TestEnv.Staging;         
-        readonly TenantName defaultTenantName = TenantName.LAX;
-        readonly Reporter defaultReporter = Reporter.Klov;
+        readonly TestEnvironmentType defaultTestEnvironment = TestEnvironmentType.PreProduction; //When TestEnv is set to PreProduction, TenantName value is ignored
+        readonly TenantNameType defaultTenantName = TenantNameType.SH249;
+        readonly ReporterType defaultReporter = ReporterType.Klov;
         readonly string defaultGridAddress = "";
         readonly bool enableHipTest = false;
         
@@ -45,17 +44,17 @@ namespace RKCIUIAutomation.Base
             bool _hiptest = Parameters.Get("Hiptest", enableHipTest);
 
             IConfigUtils config = ConfigUtil;
-            testPlatform = config.GetTestRunEnv<TestPlatform>(_testPlatform);
+            testPlatform = config.GetTestRunEnv<TestPlatformType>(_testPlatform);
             browserType = config.GetTestRunEnv<BrowserType>(_browserType);
-            testEnv = config.GetTestRunEnv<TestEnv>(_testEnv);
-            tenantName = config.GetTestRunEnv<TenantName>(_tenantName);
-            reporter = config.GetTestRunEnv<Reporter>(_reporter);
+            testEnv = config.GetTestRunEnv<TestEnvironmentType>(_testEnv);
+            tenantName = config.GetTestRunEnv<TenantNameType>(_tenantName);
+            reporter = config.GetTestRunEnv<ReporterType>(_reporter);
             siteUrl = config.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
             testPlatform = browserType == BrowserType.MicrosoftEdge
-                ? testPlatform == TestPlatform.Local
-                    ? TestPlatform.Windows
+                ? testPlatform == TestPlatformType.Local
+                    ? TestPlatformType.Windows
                     : testPlatform
                 : testPlatform;
 
@@ -83,11 +82,16 @@ namespace RKCIUIAutomation.Base
             InitExtentTestInstance();
 
             InitWebDriverInstance();
+
+            TestStopwatch = new Stopwatch();
+            TestStopwatch.Start();
         }
 
         [TearDown]
         public void AfterTest()
         {
+            string zaleniumTestStatusCookieValue = string.Empty;
+
             try
             {
                 ResultAdapter result = CurrentContext.Result;
@@ -105,7 +109,7 @@ namespace RKCIUIAutomation.Base
                             : $"<pre>{result.StackTrace}</pre>";
                         string screenshotName = BaseUtil.CaptureScreenshot();
 
-                        if (reporter == Reporter.Klov)
+                        if (reporter == ReporterType.Klov)
                         {
                             /*Use when Klov Reporter bug is fixed
                             //Upload screenshot to MongoDB server
@@ -125,12 +129,12 @@ namespace RKCIUIAutomation.Base
                             testInstance.Fail($"Test Failed: <br> {stacktrace}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath, screenshotName).Build());
                         }
 
-                        cookie = new Cookie("zaleniumTestPassed", "false");
+                        zaleniumTestStatusCookieValue = "false";
                         break;
 
                     case TestStatus.Passed:
                         testInstance.Pass(MarkupHelper.CreateLabel("Test Passed", ExtentColor.Green));
-                        cookie = new Cookie("zaleniumTestPassed", "true");
+                        zaleniumTestStatusCookieValue = "true";
                         break;
 
                     case TestStatus.Skipped:
@@ -141,6 +145,8 @@ namespace RKCIUIAutomation.Base
                         testInstance.Debug(MarkupHelper.CreateLabel("Inconclusive Test Result", ExtentColor.Orange));
                         break;
                 }
+
+                TestStopwatch.Stop();
 
                 if (hiptest)
                 {
@@ -155,42 +161,59 @@ namespace RKCIUIAutomation.Base
             }
             finally
             {
-                if (driver != null)
+                try
                 {
-                    reportInstance.Flush();
-
-                    if (cookie != null)
+                    if (driver != null)
                     {
-                        driver.Manage().Cookies.AddCookie(cookie);
-                    }
+                        Report.Info($"TOTAL TEST TIME: {TestStopwatch.Elapsed.ToString()}");
+                        reportInstance.Flush();
 
-                    if (!driver.Title.Equals("Home Page"))
-                    {
-                        try
+                        if (cookie != null)
+                        {
+                            AddCookieToCurrentPage("zaleniumTestPassed", zaleniumTestStatusCookieValue);
+                        }
+
+                        if (!driver.Title.Equals("Home Page"))
                         {
                             driver.FindElement(By.XPath("//a[text()=' Log out']")).Click();
                         }
-                        catch (Exception)
-                        {
-                        }
-                    }
 
-                    DismissDriverInstance(driver);
+                        DismissDriverInstance(driver);
+                    }
                 }
+                catch (UnableToSetCookieException e)
+                {
+                    log.Debug(e.Message);
+                }
+                catch (NoSuchElementException e)
+                {
+                    log.Debug(e.Message);
+                }
+                catch (Exception e)
+                {
+                    log.Error($"{e.Message}\n{e.StackTrace}");
+                }               
             }
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            if (hiptest)
+            try
             {
-                hipTestRunDetails = testRunDetails;
+                if (hiptest)
+                {
+                    hipTestRunDetails = testRunDetails;
 
-                hipTestRunId = hipTestInstance.CreateTestRun(hipTestRunTestCaseIDs, hipTestRunDetails);
-                hipTestRunData = hipTestInstance.BuildTestRunSnapshotData(hipTestRunId);
-                hipTestInstance.UpdateHipTestRunData(hipTestRunData, hipTestResults);
-                hipTestInstance.SyncTestRun(hipTestRunId);
+                    hipTestRunId = hipTestInstance.CreateTestRun(hipTestRunTestCaseIDs, hipTestRunDetails);
+                    hipTestRunData = hipTestInstance.BuildTestRunSnapshotData(hipTestRunId);
+                    hipTestInstance.UpdateHipTestRunData(hipTestRunData, hipTestResults);
+                    hipTestInstance.SyncTestRun(hipTestRunId);
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
         }
     }

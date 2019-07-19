@@ -8,6 +8,7 @@ using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,7 +20,7 @@ namespace RKCIUIAutomation.Base
     public class BaseHook : WebDriverFactory
     {
         [ThreadStatic]
-        public static string pageTitle;
+        public static string pageTitle = string.Empty;
 
         #region ExtentReports Details
 
@@ -62,19 +63,19 @@ namespace RKCIUIAutomation.Base
         #region Test Environment Details
 
         [ThreadStatic]
-        public static TestPlatform testPlatform;
+        public static TestPlatformType testPlatform;
 
         [ThreadStatic]
         public static BrowserType browserType;
 
         [ThreadStatic]
-        public static TestEnv testEnv;
+        public static TestEnvironmentType testEnv;
 
         [ThreadStatic]
-        public static TenantName tenantName;
+        public static TenantNameType tenantName;
 
         [ThreadStatic]
-        public static Reporter reporter;
+        public static ReporterType reporter;
 
         [ThreadStatic]
         public static string siteUrl;
@@ -114,10 +115,27 @@ namespace RKCIUIAutomation.Base
         internal static string[] testRunDetails;
 
         [ThreadStatic]
-        internal Cookie cookie = null;
+        internal static Cookie cookie = null;
 
         [ThreadStatic]
         internal static string testDetails;
+
+        [ThreadStatic]
+        internal Stopwatch TestStopwatch;
+
+        public static void AddCookieToCurrentPage(string zaleniumCookieName, string cookieValue)
+        {
+            try
+            {
+                cookie = new Cookie(zaleniumCookieName, cookieValue);
+                driver.Manage().Cookies.AddCookie(cookie);
+            }
+            catch (UnableToSetCookieException)
+            {
+                log.Debug(cookieValue);
+            }
+        }
+
 
         #endregion TestCase Details
 
@@ -148,42 +166,81 @@ namespace RKCIUIAutomation.Base
             };
         }
 
+        //internal void InitExtentReportInstance()
+        //{
+        //    reportInstance = ExtentManager.GetReportInstance();
+        //    testInstance = reportInstance.CreateTest($"Tenant: {tenantName}");
+        //}
+
         internal void InitExtentTestInstance()
         {
             reportInstance = ExtentManager.GetReportInstance();
             testInstance = reportInstance.CreateTest($"Suite: {testSuite} | Tenant: {tenantName} | Env: {testEnv} | Test: {testName} | Hiptest TC# {testCaseNumber}");
-            //testInstance = parentTest.CreateNode($"{testCaseNumber} {testName}");
+
+            //testInstance = testInstance.CreateNode($"Suite: {testSuite}");
+            //.CreateNode($"Env: {testEnv} | Test: {testName} | Hiptest TC# {testCaseNumber}");
         }
 
+        /// <summary>
+        /// Default wait time is set to 1 Second and only used when searching for WebElements using driver.findElement();
+        /// <para>Interaction with WebElements should use helper methods in the PageInteraction class (e.g. ClickElement(), EnterText(), GetElement(), etc)</para>
+        /// </summary>
         internal void InitWebDriverInstance()
         {
-            IProjectProperties props = Factory.ProjProperty;
-            props.ConfigTenantComponents(tenantName);
-
-            if (props.TenantComponents.Contains(testComponent1))
+            try
             {
-                if (props.TenantComponents.Contains(testComponent2) || !testComponent2.HasValue())
-                {
-                    testDetails = $"({testEnv}){tenantName} - {testName}";
-                    Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
-                    Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(90);
-                    Driver.Manage().Window.Maximize();
-                    Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+                ITenantProperties props = Factory.TenantProperty;
+                props.ConfigTenantComponents(tenantName);
 
-                    LogTestDetails(testRunDetails);
-                    testInstance.AssignReportCategories(testRunDetails);
+                if (props.TenantComponents.Contains(testComponent1))
+                {
+                    if (props.TenantComponents.Contains(testComponent2) || !testComponent2.HasValue())
+                    {
+                        testDetails = $"({testEnv}){tenantName} - {testName}";
+                        Driver = SetWebDriver(testPlatform, browserType, testDetails, GridVmIP);
+                        //1 Second default ImplicitWait time - !!!DO NOT CHANGE!!!
+                        Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(1);
+                        Driver.Manage().Window.Maximize();
+                        Driver.Navigate().GoToUrl($"{siteUrl}/Account/LogIn");
+                        LogTestDetails(testRunDetails);
+                        testInstance.AssignReportCategories(testRunDetails);
+                    }
+                    else
+                    {
+                        SkipTest(testComponent2, testRunDetails);
+                    }
                 }
                 else
                 {
-                    SkipTest(testComponent2, testRunDetails);
+                    SkipTest(testComponent1, testRunDetails);
                 }
             }
-            else
+            catch (Exception)
             {
-                SkipTest(testComponent1, testRunDetails);
+                //log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
+            finally
+            {
+                try
+                {
+                    driver = Driver;
 
-            driver = Driver;
+                    if (cookie != null)
+                    {
+                        AddCookieToCurrentPage("zaleniumMessage", testDetails);
+                    }
+                }
+                catch (UnhandledAlertException ae)
+                {
+                    log.Debug(ae.Message);
+                }
+                catch (Exception)
+                {
+                    //log.Error($"{e.Message}\n{e.StackTrace}");
+                    throw;
+                }
+            }
         }
 
         internal void SkipTest(string testComponent = "", string[] reportCategories = null)
@@ -204,9 +261,8 @@ namespace RKCIUIAutomation.Base
                 StaticHelpers.InjectTestStatus(TestStatus.Skipped, msg);
                 Assert.Ignore(msg);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                log.Debug(e.StackTrace);
                 throw;
             }
         }
@@ -241,5 +297,6 @@ namespace RKCIUIAutomation.Base
             log.Info($"#  Date & Time: {DateTime.Now.ToShortDateString()}  {DateTime.Now.ToShortTimeString()}");
             log.Info($"################################################################\n");
         }
+
     }
 }

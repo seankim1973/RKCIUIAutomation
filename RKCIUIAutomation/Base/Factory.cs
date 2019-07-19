@@ -24,12 +24,12 @@ namespace RKCIUIAutomation.Base
         public static readonly ILog log = _logger();
 
         public static IBaseUtils BaseUtil => new BaseUtils();
-        public static IBaseUtils SetReportPath(TenantName tenantName) => new BaseUtils(tenantName);
-        public static IBaseUtils SetGridAddress(TestPlatform testPlatform, string gridAddress) => new BaseUtils(testPlatform, gridAddress);
+        public static IBaseUtils SetReportPath(TenantNameType tenantName) => new BaseUtils(tenantName);
+        public static IBaseUtils SetGridAddress(TestPlatformType testPlatform, string gridAddress) => new BaseUtils(testPlatform, gridAddress);
 
         public static IConfigUtils ConfigUtil => new ConfigUtils();
 
-        public static IProjectProperties ProjProperty => new ProjectProperties();
+        public static ITenantProperties TenantProperty => new TenantProperties();
 
         public static IPageInteraction PageAction => new PageInteraction(driver);
 
@@ -42,7 +42,7 @@ namespace RKCIUIAutomation.Base
         public static ITableHelper GridHelper => new TableHelper(driver);
 
         //PageObject Classes
-        public static void LoginAs(UserType user) => LoginPage.LoginUser(user);
+        //public static void LoginAs(UserType user) => LoginPage.LoginUser(user);
 
         public static ITestDetails TestDetailsPg => new TestDetails().SetClass<ITestDetails>(driver);
 
@@ -65,6 +65,15 @@ namespace RKCIUIAutomation.Base
         public static IInspectionDeficiencyLogReport QaSearch_InspctDefncyLogRprt => new InspectionDeficiencyLogReport().SetClass<IInspectionDeficiencyLogReport>(driver);
 
         public static IProjectCorrespondenceLog ProjCorrespondenceLog => new ProjectCorrespondenceLog().SetClass<IProjectCorrespondenceLog>(driver);
+
+        public static IQATestAll QATestMethod
+            => new QATestAll_Common().SetClass<IQATestAll>(driver);
+
+        public static IUploadDEVSubmittal UploadDEVSubmittal => new UploadDEVSubmittal().SetClass<IUploadDEVSubmittal>(driver);
+
+        public static IUploadQASubmittal UploadQASubmittal => new UploadQASubmittal().SetClass<IUploadQASubmittal>(driver);
+
+        public static IUploadOwnerSubmittal UploadOwnerSubmittal => new UploadOwnerSubmittal().SetClass<IUploadOwnerSubmittal>(driver);
 
         #region Workflow SetClass method calls
 

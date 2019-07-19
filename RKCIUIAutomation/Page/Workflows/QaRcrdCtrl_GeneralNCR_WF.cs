@@ -22,37 +22,37 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             IQaRcrdCtrl_GeneralNCR_WF instance = new QaRcrdCtrl_GeneralNCR_WF(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_SGWay instance ###### ");
                 instance = new QaRcrdCtrl_GeneralNCR_WF_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_SH249 instance ###### ");
                 instance = new QaRcrdCtrl_GeneralNCR_WF_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_Garnet instance ###### ");
                 instance = new QaRcrdCtrl_GeneralNCR_WF_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_GLX instance ###### ");
                 instance = new QaRcrdCtrl_GeneralNCR_WF_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_I15South instance ###### ");
                 instance = new QaRcrdCtrl_GeneralNCR_WF_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_I15Tech instance ###### ");
                 instance = new QaRcrdCtrl_GeneralNCR_WF_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using QaRcrdCtrl_GeneralNCR_WF_LAX instance ###### ");
                 instance = new QaRcrdCtrl_GeneralNCR_WF_LAX(driver);
@@ -63,18 +63,18 @@ namespace RKCIUIAutomation.Page.Workflows
         internal void NavigateToGeneralNcrPage()
         {
             string pgTitle = GetPageTitle();
+
             if (!pgTitle.Contains("NCR List"))
             {
                 NavigateToPage.QARecordControl_General_NCR();
                 QaRcrdCtrl_GeneralNCR.ClickTab_Creating_Revise();
                 AddAssertion_VerifyNCRPageHeader("NavigateToGeneralNcrPage()");
-                //Assert.True(VerifyPageHeader("List of NCR Reports"));
             }
         }
 
         public override string Create_and_SaveForward_NCR(UserType user)
         {
-            Report.Step("------------WF Create_and_SaveForward_NCR_Document-------------");
+            Report.Step("Workflow: Create_and_SaveForward_NCR_Document");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
@@ -88,7 +88,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override string Create_and_SaveOnly_NCR(UserType user)
         {
-            Report.Step("------------WF Create_and_SaveOnly_NCR_Document-------------");
+            Report.Step("Workflow: Create_and_SaveOnly_NCR_Document");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
@@ -100,14 +100,14 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void Review_and_Approve_NCR(UserType user, string ncrDescription, bool isResolution = false)
         {
-            Report.Step("------------WF Review_and_Approve_NCR_Document-------------");
+            Report.Step("Workflow: Review_and_Approve_NCR_Document");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
             AddAssertionToList(WF_QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayedInReview(ncrDescription, isResolution), "VerifyNCRDocIsDisplayedInReview");
             GridHelper.ClickEditBtnForRow();
-
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
+            //WaitForPageReady();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyReqFieldErrorLabelForTypeOfNCR(), "VerifyReqFieldErrorLabelForTypeOfNCR");
             QaRcrdCtrl_GeneralNCR.SelectRdoBtn_TypeOfNCR_Level1();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Approve();
@@ -115,7 +115,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void Review_and_Return_NCR_ForRevise(UserType user, string ncrDescription)
         {
-            Report.Step("------------WF Return_ToRevise_FromCQMReview-------------");
+            Report.Step("Workflow: Return_ToRevise_FromCQMReview");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
@@ -126,7 +126,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void CloseNCR_CQMReview_Disapprove(UserType user, string ncrDescription)
         {
-            Report.Step("------------WF CloseNCR_CQMReview_Disapprove-------------");
+            Report.Step("Workflow: CloseNCR_CQMReview_Disapprove");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
@@ -137,7 +137,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void SaveForward_FromResolutionDisposition_ToVerificationClosure_ReturnToConformance(string ncrDescription)
         {
-            Report.Step("------------WF TraverseNCR_FromReview_ToVerificationClosure_ReturnToConformance-------------");
+            Report.Step("Workflow: TraverseNCR_FromReview_ToVerificationClosure_ReturnToConformance");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
             GridHelper.ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown for Concession Request DDList
@@ -147,7 +147,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(string ncrDescription)
         {
-            Report.Step("------------WF Return_ToRevise_FromVerificationClosure-------------");
+            Report.Step("Workflow: Return_ToRevise_FromVerificationClosure");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
@@ -171,7 +171,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 NavigateToGeneralNcrPage();
             }
 
-            Report.Step("------------WF SaveForward_FromResolutionDisposition_ToDeveloperConcurrence-------------");
+            Report.Step("Workflow: SaveForward_FromResolutionDisposition_ToDeveloperConcurrence");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Resolution_Disposition)");
             GridHelper.ClickEditBtnForRow();
 
@@ -182,37 +182,29 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void SaveForward_FromDeveloperConcurrence_ToDOTApprovalOrLAWAConcurrence(string ncrDescription, bool approveNCR = true)
         {
-            Report.Step("------------WF SaveForward_FromDeveloperConcurrence_ToDOTApproval-------------");
+            Report.Step("Workflow: SaveForward_FromDeveloperConcurrence_ToDOTApproval");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown (RecordEngineer_SignBtn, EngOfRecord, EngApprovalDate, ApprovalRadioBtn)
 
-            if (approveNCR)
-            {
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord);
-            }
-            else
-            {
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord, false);
-            }
-
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.EngineerOfRecord, approveNCR);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }
 
         public override void SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(string ncrDescription, bool approveNCR = true)
         {
-            Report.Step("------------WF SaveForward_FromDOTApproval_ToVerificationClosure-------------");
+            Report.Step("Workflow: SaveForward_FromDOTApproval_ToVerificationClosure");
             AddAssertionToList(VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence(ncrDescription), "VerifyNCRDocIsDisplayedInDOTApprovalOrLAWAConcurrence");
             GridHelper.ClickEditBtnForRow();
             //todo: click Save&Fwd button and verify required field error label is shown(Owner_SignBtn, DOTReview, OwnerApprovalDate, OwnerApprovalRdoBtn)
 
             if (approveNCR)
             {
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Owner);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.Owner);
             }
             else
             {
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Owner, false);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.Owner, false);
             }
 
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
@@ -220,7 +212,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void CheckReviseKickback_FromVerificationClosure_ForConcessionDiviation(string ncrDescription)
         {
-            Report.Step("------------WF Return_ToRevise_FromVerificationClosure_ForConcessionDiviation-------------");
+            Report.Step("Workflow: Return_ToRevise_FromVerificationClosure_ForConcessionDiviation");
 
             SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
@@ -234,12 +226,12 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void CloseNCR_in_VerificationAndClosure(string ncrDescription)
         {
-            Report.Step("------------WF CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: CloseNCR_in_VerificationAndClosure");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.IQF_Manager);
             Thread.Sleep(1000);
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.QC_Manager);
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
         }
 
@@ -247,13 +239,13 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             if (tabName.Equals(TableTab.Developer_Concurrence))
             {
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.EngineerOfRecord);
             }
             else if (tabName.Equals(TableTab.Verification_and_Closure))
             {
                 Report.Step("------  enter signature and name for IQF Mgr and QC Mgr then click SaveOnly  -------");
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.IQF_Manager);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.QC_Manager);
                 QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
             }
         }
@@ -382,7 +374,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void Review_and_Approve_NCR(UserType user, string ncrDescription, bool isResolution = false)
         {
-            Report.Step("------------WF Review_and_Approve_NCR_Document-------------");
+            Report.Step("Workflow: Review_and_Approve_NCR_Document");
 
             LoginAs(user);
             NavigateToGeneralNcrPage();
@@ -443,7 +435,7 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             LogoutToLoginPage();
 
-            Report.Step("------------WF SaveForward_FromDeveloperConcurrence_ToDOTApproval-------------");
+            Report.Step("Workflow: SaveForward_FromDeveloperConcurrence_ToDOTApproval");
 
             LoginAs(UserType.NCRDevConcur);
             NavigateToGeneralNcrPage();
@@ -451,8 +443,8 @@ namespace RKCIUIAutomation.Page.Workflows
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
 
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord, approveNCR);
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.CQC_Manager, approveNCR);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.EngineerOfRecord, approveNCR);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.CQC_Manager, approveNCR);
 
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
         }
@@ -462,7 +454,7 @@ namespace RKCIUIAutomation.Page.Workflows
             LogoutToLoginPage();
             //Review_and_Approve_NCR(UserType.NCRLawaConcur, ncrDescription);
 
-            Report.Step("------------WF SaveForward_FromDOTApproval_ToVerificationClosure-------------");
+            Report.Step("Workflow: SaveForward_FromDOTApproval_ToVerificationClosure");
             LoginAs(UserType.NCRLawaConcur);
             NavigateToGeneralNcrPage();
 
@@ -472,11 +464,11 @@ namespace RKCIUIAutomation.Page.Workflows
 
             if (approveNCR)
             {
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Owner);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.Owner);
             }
             else
             {
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Owner, false);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.Owner, false);
             }
 
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
@@ -490,40 +482,40 @@ namespace RKCIUIAutomation.Page.Workflows
         public override void CloseNCR_in_VerificationAndClosure(string ncrDescription)
         {
             LogoutToLoginPage();
-            Report.Step("------------WF QPM CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: QPM CloseNCR_in_VerificationAndClosure");
 
             //Review_and_Approve_NCR(UserType.NCRQpm, ncrDescription);
             LoginAs(UserType.NCRQpm);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR QPM - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.IQF_Manager);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             LogoutToLoginPage();
-            Report.Step("------------WF CQAM CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: CQAM CloseNCR_in_VerificationAndClosure");
 
             LoginAs(UserType.NCRCqam);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR CQAM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.QC_Manager);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             LogoutToLoginPage();
-            Report.Step("------------WF OMQM CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: OMQM CloseNCR_in_VerificationAndClosure");
 
             LoginAs(UserType.NCROmqm);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR OMQM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Operations_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.Operations_Manager);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
-            Report.Step("------------WF Final Closure CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: Final Closure CloseNCR_in_VerificationAndClosure");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR Closure - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Close();
@@ -534,7 +526,7 @@ namespace RKCIUIAutomation.Page.Workflows
             SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
 
             LogoutToLoginPage();
-            Report.Step("------------WF QPM CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: QPM CloseNCR_in_VerificationAndClosure");
             LoginAs(UserType.NCRQpm);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
@@ -542,7 +534,7 @@ namespace RKCIUIAutomation.Page.Workflows
             QaRcrdCtrl_GeneralNCR.ClickBtn_KickBack();
 
             LogoutToLoginPage();
-            Report.Step("------------WF Lawa Concur CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: Lawa Concur CloseNCR_in_VerificationAndClosure");
             LoginAs(UserType.NCRLawaConcur);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.DOT_Approval, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
@@ -550,76 +542,76 @@ namespace RKCIUIAutomation.Page.Workflows
             SaveForward_FromDOTApprovalOrLAWAConcurrence_ToVerificationClosure(ncrDescription);
 
             LogoutToLoginPage();
-            Report.Step("------------WF QPM Concur CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: QPM Concur CloseNCR_in_VerificationAndClosure");
             LoginAs(UserType.NCRQpm);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.IQF_Manager);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             LogoutToLoginPage();
-            Report.Step("------------WF CQAM Concur CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: CQAM Concur CloseNCR_in_VerificationAndClosure");
             LoginAs(UserType.NCRCqam);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR CQAM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager, false);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.QC_Manager, false);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             LogoutToLoginPage();
-            Report.Step("------------WF QPM Concur CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: QPM Concur CloseNCR_in_VerificationAndClosure");
             LoginAs(UserType.NCRQpm);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.IQF_Manager);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             LogoutToLoginPage();
-            Report.Step("------------WF CQAM Concur CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: CQAM Concur CloseNCR_in_VerificationAndClosure");
             LoginAs(UserType.NCRCqam);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR CQAM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.QC_Manager);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             LogoutToLoginPage();
-            Report.Step("------------WF OMQM CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: OMQM CloseNCR_in_VerificationAndClosure");
             LoginAs(UserType.NCROmqm);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR OMQM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Operations_Manager, false);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.Operations_Manager, false);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             LogoutToLoginPage();
-            Report.Step("------------WF CQAM Concur CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: CQAM Concur CloseNCR_in_VerificationAndClosure");
             LoginAs(UserType.NCRCqam);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR CQAM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.QC_Manager);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
             LogoutToLoginPage();
-            Report.Step("------------WF OMQM CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: OMQM CloseNCR_in_VerificationAndClosure");
             LoginAs(UserType.NCROmqm);
             NavigateToGeneralNcrPage();
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR OMQM - VerifyNCRDocIsDisplayed(TableTab.Developer_Concurrence)");
             GridHelper.ClickEditBtnForRow();
-            QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Operations_Manager);
+            QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.Operations_Manager);
             Thread.Sleep(1000);
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
-            Report.Step("------------WF Final Closure CloseNCR_in_VerificationAndClosure-------------");
+            Report.Step("Workflow: Final Closure CloseNCR_in_VerificationAndClosure");
             AddAssertionToList(QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription), "NCR Closure - VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure)");
             GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_Revise();
@@ -627,7 +619,7 @@ namespace RKCIUIAutomation.Page.Workflows
 
         public override void CheckReviseKickback_FromVerificationClosure_ForReturnToConformance(string ncrDescription)
         {
-            Report.Step("------------WF - QPM - Return_ToRevise_FromVerificationClosure-------------");
+            Report.Step("Workflow: - QPM - Return_ToRevise_FromVerificationClosure");
             LogoutToLoginPage();
             LoginAs(UserType.NCRQpm);
             NavigateToGeneralNcrPage();
@@ -656,7 +648,7 @@ namespace RKCIUIAutomation.Page.Workflows
             GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
-            Report.Step("------------WF - CQAM - Return_ToRevise_FromVerificationClosure-------------");
+            Report.Step("Workflow: - CQAM - Return_ToRevise_FromVerificationClosure");
 
             LogoutToLoginPage();
             LoginAs(UserType.NCRCqam);
@@ -686,7 +678,7 @@ namespace RKCIUIAutomation.Page.Workflows
             GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_GeneralNCR.ClickBtn_SaveForward();
 
-            Report.Step("------------WF - OMQM - Return_ToRevise_FromVerificationClosure-------------");
+            Report.Step("Workflow: - OMQM - Return_ToRevise_FromVerificationClosure");
 
             LogoutToLoginPage();
             LoginAs(UserType.NCROmqm);
@@ -722,8 +714,8 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             if (tabName.Equals(TableTab.Developer_Concurrence))
             {
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.EngineerOfRecord);
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.CQC_Manager);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.EngineerOfRecord);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.CQC_Manager);
             }
             else if (tabName.Equals(TableTab.Verification_and_Closure))
             {
@@ -733,7 +725,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 NavigateToPage.QARecordControl_General_NCR();
                 QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription);
                 GridHelper.ClickEditBtnForRow();
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.IQF_Manager);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.IQF_Manager);
                 QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
                 LogoutToLoginPage();
@@ -741,7 +733,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 NavigateToPage.QARecordControl_General_NCR();
                 QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription);
                 GridHelper.ClickEditBtnForRow();
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.QC_Manager);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.QC_Manager);
                 QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
 
                 LogoutToLoginPage();
@@ -749,7 +741,7 @@ namespace RKCIUIAutomation.Page.Workflows
                 NavigateToPage.QARecordControl_General_NCR();
                 QaRcrdCtrl_GeneralNCR.VerifyNCRDocIsDisplayed(TableTab.Verification_and_Closure, ncrDescription);
                 GridHelper.ClickEditBtnForRow();
-                QaRcrdCtrl_GeneralNCR.SignDateApproveNCR(Reviewer.Operations_Manager);
+                QaRcrdCtrl_GeneralNCR.SignDateApproveNcrByReviewer(Reviewer.Operations_Manager);
                 QaRcrdCtrl_GeneralNCR.ClickBtn_SaveOnly();
             }
         }

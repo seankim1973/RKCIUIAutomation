@@ -5,6 +5,7 @@ using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.Factory;
@@ -29,6 +30,22 @@ namespace RKCIUIAutomation.Page
                 throw;
             }
             return output;
+        }
+
+        public static string GetDescription(this Enum value, bool getValue2 = false)
+        {
+            try
+            {
+                var type = value.GetType();
+                FieldInfo fi = type.GetField(value.ToString());
+                var attrs = fi.GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false) as System.ComponentModel.DescriptionAttribute[];
+
+                return attrs.Length > 0 ? attrs[0].Description : null;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         /// <summary>

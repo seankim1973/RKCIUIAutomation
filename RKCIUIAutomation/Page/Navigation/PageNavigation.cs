@@ -18,37 +18,37 @@ namespace RKCIUIAutomation.Page.Navigation
         {
             IPageNavigation instance = new PageNavigation(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using Navigation_SGWay instance ###### ");
                 instance = new PageNavigation_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using Navigation_SH249 instance ###### ");
                 instance = new PageNavigation_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using Navigation_Garnet instance ###### ");
                 instance = new PageNavigation_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using Navigation_GLX instance ###### ");
                 instance = new PageNavigation_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using Navigation_I15South instance ###### ");
                 instance = new PageNavigation_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using Navigation_I15Tech instance ###### ");
                 instance = new PageNavigation_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using Navigation_LAX instance ###### ");
                 instance = new PageNavigation_LAX(driver);
@@ -230,7 +230,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
         #region Record Control Menu
 
-        public override void RecordControl_QA_QaTest_All() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Test_All);
+        public override void RecordControl_QA_QaTest() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Test);
 
         public override void RecordControl_QA_QaDIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIR);
 
@@ -501,7 +501,7 @@ namespace RKCIUIAutomation.Page.Navigation
         void ReportsNotices_General_DN();
 
         // Record Control Menu - LAX
-        void RecordControl_QA_QaTest_All();
+        void RecordControl_QA_QaTest();
 
         void RecordControl_QA_QaDIRs();
 
@@ -767,7 +767,7 @@ namespace RKCIUIAutomation.Page.Navigation
         public abstract void RecordControl_QA_QaDeficiency_Notice();
         public abstract void RecordControl_QA_QaDIRs();
         public abstract void RecordControl_QA_QaNCR();
-        public abstract void RecordControl_QA_QaTest_All();
+        public abstract void RecordControl_QA_QaTest();
         public abstract void RecordControl_QC_QcDeficiency_Notice();
         public abstract void RecordControl_QC_QcDIRs();
         public abstract void RecordControl_QC_QcNCR();
@@ -890,6 +890,7 @@ namespace RKCIUIAutomation.Page.Navigation
     {
         public PageNavigation_I15Tech(IWebDriver driver) : base(driver)
         {
+
         }
     }
 
@@ -908,6 +909,7 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public override void QARecordControl_QA_DIRs() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_DIR);
 
+        public override void QARecordControl_QA_Test_All() => Navigate.Menu(NavMenu.RecordControl.QA.Menu.QA_Test);
 
         public override void QCRecordControl_QC_CDR() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_Deficiency_Notice);
 
@@ -915,6 +917,9 @@ namespace RKCIUIAutomation.Page.Navigation
 
         public override void QCRecordControl_QC_DIRs() => Navigate.Menu(NavMenu.RecordControl.QC.Menu.QC_DIR);
 
+        public override void Control_Point_Log() => Navigate.Menu(NavMenu.CheckPoint.Menu.Check_Point_Log);
+
+        public override void Control_Point_Scheduler() => Navigate.Menu(NavMenu.CheckPoint.Menu.Check_Point_Scheduler);
 
         public override void QALab_Technician_Random() => Navigate.Menu(NavMenu.Lab.Menu.Technician_Random);
 
@@ -965,6 +970,8 @@ namespace RKCIUIAutomation.Page.Navigation
         public override void QAQO_Test_Proctor_Curve_Report() => Navigate.Menu(NavMenu.QualitySearch.Menu.Test_Proctor_Curve_Report);
 
         public override void QAQO_Test_Proctor_Curve_Summary() => Navigate.Menu(NavMenu.QualitySearch.Menu.Test_Proctor_Curve_Summary);
+
+        public override void RMCenter_Upload_DEV_Submittal() => Navigate.Menu(NavMenu.RMCenter.Menu.Upload_Design_Submittal);
     }
 }
 

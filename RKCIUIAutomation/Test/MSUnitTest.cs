@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using MiniGuids;
 using NUnit.Framework.Interfaces;
+using OpenQA.Selenium;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Base;
 using RKCIUIAutomation.Config;
@@ -120,7 +121,7 @@ namespace RKCIUIAutomation.Sandbox
         //[TestMethod]
         public void MSUnitTest2()
         {
-            IProjectProperties props = new ProjectProperties();
+            ITenantProperties props = new TenantProperties();
             List<string> components = props.TenantComponents;
             int componentCount = components.Count;
 
@@ -132,7 +133,7 @@ namespace RKCIUIAutomation.Sandbox
             }
 
             Assert.IsTrue(componentCount.Equals(4));
-            Assert.IsFalse(components.Contains(ProjectProperties.Component.DIR));
+            Assert.IsFalse(components.Contains(TenantProperties.Component.DIR));
         }
 
         //[TestMethod]
@@ -297,6 +298,8 @@ namespace RKCIUIAutomation.Sandbox
             Assert.AreEqual(expected, actual);
             bool nostringEnumVal =TableBtns.NoStringValueEnum.Equals("NoStringValueEnum");
             Console.WriteLine($"nostringEnumVal : {nostringEnumVal}");
+
+            Console.WriteLine(TableBtns.Report_View.ToString());
         }
 
 
@@ -912,9 +915,27 @@ namespace RKCIUIAutomation.Sandbox
 
             //Console.WriteLine($"VALUES MATCH : {valuesMatch}");
 
+            /*
             string str = "Quality Management Service";
             string value = Regex.Replace(str, @" ", "_");
             Console.WriteLine(value);
+            
+
+            Random r = new Random();
+            int maxValue = 5000;
+
+            for (int i = 0; i < 101; i++)
+            {
+                int randNum = r.Next(0, maxValue);
+                Console.WriteLine(randNum);
+            }
+            */
+
+            string num = "01";
+            int number = int.Parse(num);
+            Console.WriteLine(number);
+            num = (number + 1).ToString();
+            Console.WriteLine(num);
         }
 
         enum TestEnum
@@ -952,17 +973,37 @@ namespace RKCIUIAutomation.Sandbox
             string text1 = "";
             string text2 = "Test";
 
-            bool text1HasValue = text1.HasValue();
-            bool text2HasValue = text2.HasValue();
-
+            bool text1HasValue = text1.HasValue();           
             Console.WriteLine($"text1HasValue : {text1HasValue}");
+            Assert.IsFalse(text1HasValue);
+
+            text1HasValue = text1.HasValue();
             Console.WriteLine($"!text1HasValue : {!text1HasValue}");
+            Assert.IsTrue(!text1HasValue);
+
+            text1HasValue = text1.HasValue();
             Console.WriteLine($"text1HasValue Eq True : {text1HasValue.Equals(true)}");
+            Assert.IsFalse(text1HasValue.Equals(true));
 
+            text1HasValue = text1.HasValue();
+            Console.WriteLine($"!text1HasValue Eq True : {!text1HasValue.Equals(true)}");
+            Assert.IsFalse(text1HasValue.Equals(true));
 
+            bool text2HasValue = text2.HasValue();
             Console.WriteLine($"text2HasValue : {text2HasValue}");
+            Assert.IsTrue(text2HasValue);
+
+            text2HasValue = text2.HasValue();
             Console.WriteLine($"!text2HasValue : {!text2HasValue}");
-            Console.WriteLine($"!text2HasValue Eq True : {text2HasValue.Equals(true)}");
+            Assert.IsFalse(!text2HasValue);
+
+            text2HasValue = text2.HasValue();
+            Console.WriteLine($"text2HasValue Eq True : {text2HasValue.Equals(true)}");
+            Assert.IsTrue(text2HasValue.Equals(true));
+
+            text2HasValue = text2.HasValue();
+            Console.WriteLine($"!text2HasValue Eq True : {!text2HasValue.Equals(true)}");
+            Assert.IsTrue(text2HasValue.Equals(true));
 
         }
     }

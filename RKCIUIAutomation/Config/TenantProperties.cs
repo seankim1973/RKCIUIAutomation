@@ -1,29 +1,26 @@
 ﻿using OpenQA.Selenium;
 using RKCIUIAutomation.Base;
-using RKCIUIAutomation.Page;
-using System;
 using System.Collections.Generic;
-using static RKCIUIAutomation.Base.WebDriverFactory;
 
 namespace RKCIUIAutomation.Config
 {
-    public interface IProjectProperties
+    public interface ITenantProperties
     {
         List<string> TenantComponents { get; set; }
-        void ConfigTenantComponents(TenantName tenantName);
+        void ConfigTenantComponents(TenantNameType tenantName);
     }
 
-    public class ProjectProperties : BaseUtils, IProjectProperties
+    public class TenantProperties : BaseUtils, ITenantProperties
     {
-        TenantName _tenantName;
+        TenantNameType _tenantName { get; set; }
 
-        public ProjectProperties()
+        public TenantProperties()
         {
         }
 
-        public ProjectProperties(IWebDriver driver) => Driver = driver;
+        public TenantProperties(IWebDriver driver) => Driver = driver;
 
-        public ProjectProperties(TenantName tenantName)
+        public TenantProperties(TenantNameType tenantName)
         {
             _tenantName = tenantName;
         }
@@ -39,6 +36,7 @@ namespace RKCIUIAutomation.Config
             Component.Project_Configuration,
             Component.Search,
             Component.Submittals,
+            Component.TestMethods,
             Component.Correspondence_Log
         };
 
@@ -80,7 +78,7 @@ namespace RKCIUIAutomation.Config
             public const string RFC = "RFC";
             public const string RFI = "RFI";
             public const string Search = "Search";
-            public const string Testing_Module = "Testing_Module";
+            public const string TestMethods = "TestMethods";
             public const string User_Mgmt = "User_Mgmt";
             public const string Submittals = "Submittals";
             public const string Guide_Schedule = "Guide_Schedule";
@@ -93,6 +91,7 @@ namespace RKCIUIAutomation.Config
             //Tenant Specific Components
             public const string Garnet = "Garnet";
             public const string GLX = "GLX";
+            public const string I15North = "I15North";
             public const string I15South = "I15South";
             public const string I15Tech = "I15Tech";
             public const string LAX = "LAX";
@@ -101,37 +100,41 @@ namespace RKCIUIAutomation.Config
             
         }
 
-        public void ConfigTenantComponents(TenantName tenantName)
+        public void ConfigTenantComponents(TenantNameType tenantName)
         {
-            IProjectProperties instance = null;
+            ITenantProperties instance = null;
 
             switch (tenantName)
             {
-                case TenantName.Garnet:
+                case TenantNameType.Garnet:
                     instance = new ProjectProperties_Garnet();
                     break;
 
-                case TenantName.GLX:
+                case TenantNameType.GLX:
                     instance = new ProjectProperties_GLX();
                     break;
 
-                case TenantName.I15South:
+                case TenantNameType.I15North:
+                    instance = new ProjectProperties_I15NB();
+                    break;
+
+                case TenantNameType.I15South:
                     instance = new ProjectProperties_I15SB();
                     break;
 
-                case TenantName.I15Tech:
+                case TenantNameType.I15Tech:
                     instance = new ProjectProperties_I15Tech();
                     break;
 
-                case TenantName.SH249:
+                case TenantNameType.SH249:
                     instance = new ProjectProperties_SH249();
                     break;
 
-                case TenantName.SGWay:
+                case TenantNameType.SGWay:
                     instance = new ProjectProperties_SGWay();
                     break;
 
-                case TenantName.LAX:
+                case TenantNameType.LAX:
                     instance = new ProjectProperties_LAX();
                     break;
             }
@@ -143,7 +146,7 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_LAX : ProjectProperties, IProjectProperties
+    public class ProjectProperties_LAX : TenantProperties, ITenantProperties
     {
         public ProjectProperties_LAX()
         {
@@ -158,12 +161,13 @@ namespace RKCIUIAutomation.Config
                 Component.DIR_WF_Simple_QA,
                 Component.DIR_WF_Simple_QC,
                 Component.DesignDoc_CommentReview,
-                Component.CommentReview_RegularComment
+                Component.CommentReview_RegularComment,
+                Component.Control_Point
             };
         }
     }
 
-    public class ProjectProperties_SH249 : ProjectProperties, IProjectProperties
+    public class ProjectProperties_SH249 : TenantProperties, ITenantProperties
     {
         public ProjectProperties_SH249()
         {
@@ -184,7 +188,7 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_SGWay : ProjectProperties, IProjectProperties
+    public class ProjectProperties_SGWay : TenantProperties, ITenantProperties
     {
         public ProjectProperties_SGWay()
         {
@@ -205,7 +209,27 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_I15SB : ProjectProperties, IProjectProperties
+    public class ProjectProperties_I15NB : TenantProperties, ITenantProperties
+    {
+        public ProjectProperties_I15NB()
+        {
+            TenantComponents = new List<string>
+            {
+                Component.I15North,
+                Component.CDR,
+                Component.CDR_WF_Complex,
+                Component.OV_Test,
+                Component.QAField,
+                Component.NCR,
+                Component.NCR_WF_Complex,
+                Component.DIR,
+                Component.DIR_WF_Simple_QA,
+                Component.Control_Point
+            };
+        }
+    }
+
+    public class ProjectProperties_I15SB : TenantProperties, ITenantProperties
     {
         public ProjectProperties_I15SB()
         {
@@ -219,12 +243,13 @@ namespace RKCIUIAutomation.Config
                 Component.NCR,
                 Component.NCR_WF_Complex,
                 Component.DIR,
-                Component.DIR_WF_Simple_QA
+                Component.DIR_WF_Simple_QA,
+                Component.Control_Point
             };
         }
     }
 
-    public class ProjectProperties_I15Tech : ProjectProperties, IProjectProperties
+    public class ProjectProperties_I15Tech : TenantProperties, ITenantProperties
     {
         public ProjectProperties_I15Tech()
         {
@@ -238,12 +263,14 @@ namespace RKCIUIAutomation.Config
                 Component.NCR,
                 Component.NCR_WF_Complex,
                 Component.DIR,
-                Component.DIR_WF_Simple_QA
+                Component.DIR_WF_Simple_QA,
+                Component.Control_Point
+
             };
         }
     }
 
-    public class ProjectProperties_GLX : ProjectProperties, IProjectProperties
+    public class ProjectProperties_GLX : TenantProperties, ITenantProperties
     {
         public ProjectProperties_GLX()
         {
@@ -262,7 +289,7 @@ namespace RKCIUIAutomation.Config
         }
     }
 
-    public class ProjectProperties_Garnet : ProjectProperties, IProjectProperties
+    public class ProjectProperties_Garnet : TenantProperties, ITenantProperties
     {
         public ProjectProperties_Garnet()
         {

@@ -23,37 +23,42 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             IGeneralNCR instance = new GeneralNCR(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using GeneralNCR_SGWay instance ###### ");
                 instance = new GeneralNCR_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using  GeneralNCR_SH249 instance ###### ");
                 instance = new GeneralNCR_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using  GeneralNCR_Garnet instance ###### ");
                 instance = new GeneralNCR_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using  GeneralNCR_GLX instance ###### ");
                 instance = new GeneralNCR_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15North)
+            {
+                log.Info($"###### using  GeneralNCR_I15North instance ###### ");
+                instance = new GeneralNCR_I15North(driver);
+            }
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using  GeneralNCR_I15South instance ###### ");
                 instance = new GeneralNCR_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using GeneralNCR_I15Tech instance ###### ");
                 instance = new GeneralNCR_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using GeneralNCR_LAX instance ###### ");
                 instance = new GeneralNCR_LAX(driver);
@@ -216,15 +221,31 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 PageAction.JsClickElement(PgHelper.GetSubmitButtonByLocator(submitButton));
+            }
+            catch (UnhandledAlertException e)
+            {
+                Report.Debug($"Alert Message: {e.Message}");
 
                 if (tenantHasAlert)
                 {
-                    PageAction.ConfirmActionDialog(acceptAlert);
+                    try
+                    {
+                        PageAction.ConfirmActionDialog(acceptAlert);
+                    }
+                    catch (UnhandledAlertException ee)
+                    {
+                        PageAction.ConfirmActionDialog(acceptAlert);
+                        Report.Debug($"Second Alert Message: {ee.Message}");
+                    }
                 }
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
+            }
+            finally
+            {
+                WaitForPageReady();
             }
         }
 
@@ -375,59 +396,66 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override void ClickBtn_SignaturePanel_Clear()
             => PageAction.JsClickElement(SignaturePanelBtnXPathLocator("Clear"));
 
-        public override void SignDateApproveNCR(Reviewer reviewer, bool Approve = true)
+        public override void SignDateApproveNcrByReviewer(Reviewer reviewer, bool Approve = true)
         {
-            InputFields signBtn = InputFields.RecordEngineer_SignBtn;
-            InputFields reviewerField = InputFields.Engineer_of_Record;
-            RadioBtnsAndCheckboxes approvalField = Approve
-                ? RadioBtnsAndCheckboxes.Engineer_Approval_Yes
-                : RadioBtnsAndCheckboxes.Engineer_Approval_No;
-            bool isApprovalRequired = false;
-
-            switch (reviewer)
+            try
             {
-                case Reviewer.EngineerOfRecord:
-                    isApprovalRequired = true;
-                    break;
-                case Reviewer.Owner:
-                    signBtn = InputFields.Owner_SignBtn;
-                    reviewerField = InputFields.Owner_Review;
-                    approvalField = Approve
-                        ? RadioBtnsAndCheckboxes.Owner_Approval_Yes
-                        : RadioBtnsAndCheckboxes.Owner_Approval_No;
-                    isApprovalRequired = true;
-                    break;
-                case Reviewer.IQF_Manager:
-                    signBtn = InputFields.IQFManager_SignBtn;
-                    reviewerField = InputFields.IQF_Manager;
-                    break;
-                case Reviewer.QC_Manager:
-                    signBtn = InputFields.QCManager_SignBtn;
-                    reviewerField = InputFields.QC_Manager;
-                    break;
-                case Reviewer.CQC_Manager:
-                    signBtn = InputFields.CQCManager_SignBtn;
-                    reviewerField = InputFields.CQC_Manager;
-                    approvalField = Approve
-                        ? RadioBtnsAndCheckboxes.CQCMApproval_Yes
-                        : RadioBtnsAndCheckboxes.CQCMApproval_No;
-                    isApprovalRequired = true;
-                    break;
-                case Reviewer.Operations_Manager:
-                    signBtn = InputFields.OMQManager_SignBtn;
-                    reviewerField = InputFields.OMQ_Manager;
-                    break;
+                InputFields signBtn = InputFields.RecordEngineer_SignBtn;
+                InputFields reviewerField = InputFields.Engineer_of_Record;
+                RadioBtnsAndCheckboxes approvalField = Approve
+                    ? RadioBtnsAndCheckboxes.Engineer_Approval_Yes
+                    : RadioBtnsAndCheckboxes.Engineer_Approval_No;
+                bool isApprovalRequired = false;
+
+                switch (reviewer)
+                {
+                    case Reviewer.EngineerOfRecord:
+                        isApprovalRequired = true;
+                        break;
+                    case Reviewer.Owner:
+                        signBtn = InputFields.Owner_SignBtn;
+                        reviewerField = InputFields.Owner_Review;
+                        approvalField = Approve
+                            ? RadioBtnsAndCheckboxes.Owner_Approval_Yes
+                            : RadioBtnsAndCheckboxes.Owner_Approval_No;
+                        isApprovalRequired = true;
+                        break;
+                    case Reviewer.IQF_Manager:
+                        signBtn = InputFields.IQFManager_SignBtn;
+                        reviewerField = InputFields.IQF_Manager;
+                        break;
+                    case Reviewer.QC_Manager:
+                        signBtn = InputFields.QCManager_SignBtn;
+                        reviewerField = InputFields.QC_Manager;
+                        break;
+                    case Reviewer.CQC_Manager:
+                        signBtn = InputFields.CQCManager_SignBtn;
+                        reviewerField = InputFields.CQC_Manager;
+                        approvalField = Approve
+                            ? RadioBtnsAndCheckboxes.CQCMApproval_Yes
+                            : RadioBtnsAndCheckboxes.CQCMApproval_No;
+                        isApprovalRequired = true;
+                        break;
+                    case Reviewer.Operations_Manager:
+                        signBtn = InputFields.OMQManager_SignBtn;
+                        reviewerField = InputFields.OMQ_Manager;
+                        break;
+                }
+               
+                PageAction.EnterText(PgHelper.GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer.ToString()}");
+
+                Thread.Sleep(2000);
+                ClickBtn_Sign(signBtn);
+                PageAction.EnterSignature();
+                ClickBtn_SignaturePanel_OK();
+
+                if (isApprovalRequired)
+                    PageAction.SelectRadioBtnOrChkbox(approvalField);
             }
-
-            Thread.Sleep(5000);
-            PageAction.EnterText(PgHelper.GetTextInputFieldByLocator(reviewerField), $"RKCIUIAutomation {reviewer.ToString()}");
-
-            ClickBtn_Sign(signBtn);
-            PageAction.EnterSignature();
-            ClickBtn_SignaturePanel_OK();
-
-            if (isApprovalRequired)
-                PageAction.SelectRadioBtnOrChkbox(approvalField);
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+            }
         }
 
         public override void ClickTab_All_NCRs()
@@ -765,15 +793,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             try
             {
-
-                IWebElement NcrTypeInputElem = PageAction.GetElement(By.Id(InputFields.Type_of_NCR.GetString()));
-                errorLabelIsDisplayed = NcrTypeInputElem.FindElement(By.XPath("//preceding-sibling::span[@data-valmsg-for='NcrType']")).Displayed
-                    ? true
-                    : false;
+                errorLabelIsDisplayed = PageAction.VerifyRequiredFieldErrorLabelIsDisplayed(InputFields.Type_of_NCR);
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return errorLabelIsDisplayed;
@@ -936,7 +960,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         /// </summary>
         /// <param name="reviewer"></param>
         /// <param name="Approve"></param>
-        void SignDateApproveNCR(Reviewer reviewer, bool Approve = true);
+        void SignDateApproveNcrByReviewer(Reviewer reviewer, bool Approve = true);
 
         void ClickBtn_New();
 
@@ -1233,7 +1257,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void SelectRdoBtn_TypeOfNCR_Level1();
         public abstract void SelectRdoBtn_TypeOfNCR_Level2();
         public abstract void SelectRdoBtn_TypeOfNCR_Level3();
-        public abstract void SignDateApproveNCR(Reviewer reviewer, bool Approve = true);
+        public abstract void SignDateApproveNcrByReviewer(Reviewer reviewer, bool Approve = true);
         public abstract void SortTable_Ascending();
         public abstract void SortTable_Descending();
         public abstract void SortTable_ToDefault();
@@ -1317,6 +1341,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
     #endregion Implementation specific to GLX
 
 
+    #region Implementation specific to I15North
+
+    public class GeneralNCR_I15North : GeneralNCR
+    {
+        public GeneralNCR_I15North(IWebDriver driver) : base(driver)
+        {
+        }
+
+        public override void ClickTab_Creating_Revise()
+            => ClickTab_Revise();
+    }
+    #endregion Implementation specific to I15North
+
     #region Implementation specific to I15South
 
     public class GeneralNCR_I15South : GeneralNCR
@@ -1357,6 +1394,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             SelectDDL_Roadway();
             EnterDescription();
         }
+
+        public override void ClickTab_Creating_Revise()
+            => ClickTab_Revise();
     }
 
     #endregion Implementation specific to I15South
@@ -1369,6 +1409,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public GeneralNCR_I15Tech(IWebDriver driver) : base(driver)
         {
         }
+
+        public override void ClickTab_Creating_Revise()
+            => ClickTab_Revise();
     }
 
     #endregion Implementation specific to I15Tech
@@ -1419,6 +1462,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override void SelectDDL_Specification(int selectionIndex = 1)
             => PageAction.ExpandAndSelectFromDDList(InputFields.SpecificationId, selectionIndex);
+
+        public override void ClickTab_Creating_Revise()
+            => GridHelper.ClickTab(TableTab.Revise);
     }
 
     #endregion Implementation specific to LAX

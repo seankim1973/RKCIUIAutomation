@@ -4,18 +4,22 @@ using System;
 
 namespace RKCIUIAutomation.Config
 {
-    public enum TestEnv
+    public enum TestEnvironmentType
     {
         [StringValue("Dev")] Dev,
         [StringValue("Test")] Testing,
         [StringValue("Stage")] Staging,
-        [StringValue("Prod")] Production
+        [StringValue("Prod")] Production,
+        [StringValue("PreProd")] PreProduction
     }
 
-    public enum TenantName
+    public enum TenantNameType
     {
+        [Obsolete("Legacy client")]
         Garnet,
+        [Obsolete("Legacy client")]
         GLX,
+        I15North,
         I15South,
         I15Tech,
         LAX,
@@ -23,7 +27,7 @@ namespace RKCIUIAutomation.Config
         SGWay,
     }
 
-    public enum TestPlatform
+    public enum TestPlatformType
     {
         Grid,
         GridLocal,
@@ -73,16 +77,12 @@ namespace RKCIUIAutomation.Config
         [StringValue("AT_CR Response Admin")] CR_ResponseAdmin,
         [StringValue("AT_CR Verify")] CR_Verify,
         [StringValue("AT_CR Verify Admin")] CR_VerifyAdmin,
-        [StringValue("AT_Transmissions General")] TransmissionsGeneral
+        [StringValue("AT_Transmissions General")] TransmissionsGeneral,
+        [StringValue("AT_TestTech")] TestTech,
+        [StringValue("AT_TestTechMgr")] TestTechMgr,
     }
 
-    public enum UserGroup
-    {
-        DirQA,
-        DirQC
-    }
-
-    public enum Reporter
+    public enum ReporterType
     {
         Html,
         Klov

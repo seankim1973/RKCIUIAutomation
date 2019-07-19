@@ -22,7 +22,7 @@ namespace RKCIUIAutomation.Test.UnitTests
         {
             Report.Step("UnitTest_QaDIR_VerifyRevisionInDetailsPage");
             WF_QaRcrdCtrl_QaDIR.LoginToDirPage(UserType.DIRMgrQA);
-            QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(TableTab.Create_Revise, "RKCHAD181017");
+            QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(GridTabType.Create_Revise, "RKCHAD181017");
             GridHelper.ClickEditBtnForRow();
             QaRcrdCtrl_QaDIR.VerifyDirRevisionInDetailsPage("B");
         }
