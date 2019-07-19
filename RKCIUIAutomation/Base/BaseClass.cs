@@ -128,7 +128,8 @@ namespace RKCIUIAutomation.Base
                         {
                             //Attach screenshot to log
                             var screenshotPath = $"errorscreenshots/{screenshotName}";
-                            testInstance.Fail($"Test Failed: <br> {stacktrace}", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath, screenshotName).Build());
+                            testInstance.Fail($"Screenshot: <br>", MediaEntityBuilder.CreateScreenCaptureFromPath(screenshotPath, screenshotName).Build());
+                            testInstance.Fail(MarkupHelper.CreateCodeBlock(stacktrace));
                         }
 
                         zaleniumTestStatusCookieValue = "false";
