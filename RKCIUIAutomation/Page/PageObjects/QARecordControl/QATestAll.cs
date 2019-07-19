@@ -542,9 +542,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 {
                     testMethodList.Add(ConvertToType<Enum>(AvailableTestMethodType));
                 }
-                else if (AvailableTestMethodType.GetType().Equals(typeof(IList<Enum>)))
+                else if (AvailableTestMethodType.GetType().Equals(typeof(List<Enum>)))
                 {
-                    testMethodList = ConvertToType<IList<Enum>>(AvailableTestMethodType);
+                    testMethodList = ConvertToType<List<Enum>>(AvailableTestMethodType);
                 }
 
                 foreach (Enum testMethod in testMethodList)
