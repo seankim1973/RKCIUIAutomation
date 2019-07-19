@@ -63,19 +63,19 @@ namespace RKCIUIAutomation.Base
         #region Test Environment Details
 
         [ThreadStatic]
-        public static TestPlatform testPlatform;
+        public static TestPlatformType testPlatform;
 
         [ThreadStatic]
         public static BrowserType browserType;
 
         [ThreadStatic]
-        public static TestEnv testEnv;
+        public static TestEnvironmentType testEnv;
 
         [ThreadStatic]
-        public static TenantName tenantName;
+        public static TenantNameType tenantName;
 
         [ThreadStatic]
-        public static Reporter reporter;
+        public static ReporterType reporter;
 
         [ThreadStatic]
         public static string siteUrl;

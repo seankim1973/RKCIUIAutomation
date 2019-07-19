@@ -16,37 +16,37 @@ namespace RKCIUIAutomation.Page.PageObjects.LabFieldTests
         { 
             ITestDetails instance = new TestDetails(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using Navigation_SGWay instance ###### ");
                 instance = new TestDetails_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using Navigation_SH249 instance ###### ");
                 instance = new TestDetails_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using Navigation_Garnet instance ###### ");
                 instance = new TestDetails_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using Navigation_GLX instance ###### ");
                 instance = new TestDetails_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using Navigation_I15South instance ###### ");
                 instance = new TestDetails_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using Navigation_I15Tech instance ###### ");
                 instance = new TestDetails_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using Navigation_LAX instance ###### ");
                 instance = new TestDetails_LAX(driver);

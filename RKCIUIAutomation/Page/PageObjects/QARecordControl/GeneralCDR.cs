@@ -25,37 +25,37 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             IGeneralCDR instance = new GeneralCDR(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using GeneralCDR_SGWay instance ###### ");
                 instance = new GeneralCDR_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using  GeneralCDR_SH249 instance ###### ");
                 instance = new GeneralCDR_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using  GeneralCDR_Garnet instance ###### ");
                 instance = new GeneralCDR_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using  GeneralCDR_GLX instance ###### ");
                 instance = new GeneralCDR_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using  GeneralCDR_I15South instance ###### ");
                 instance = new GeneralCDR_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using GeneralCDR_I15Tech instance ###### ");
                 instance = new GeneralCDR_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using GeneralCDR_LAX instance ###### ");
                 instance = new GeneralCDR_LAX(driver);

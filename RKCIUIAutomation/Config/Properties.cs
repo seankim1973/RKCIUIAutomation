@@ -4,15 +4,16 @@ using System;
 
 namespace RKCIUIAutomation.Config
 {
-    public enum TestEnv
+    public enum TestEnvironmentType
     {
         [StringValue("Dev")] Dev,
         [StringValue("Test")] Testing,
         [StringValue("Stage")] Staging,
-        [StringValue("Prod")] Production
+        [StringValue("Prod")] Production,
+        [StringValue("PreProd")] PreProduction
     }
 
-    public enum TenantName
+    public enum TenantNameType
     {
         [Obsolete("Legacy client")]
         Garnet,
@@ -26,7 +27,7 @@ namespace RKCIUIAutomation.Config
         SGWay,
     }
 
-    public enum TestPlatform
+    public enum TestPlatformType
     {
         Grid,
         GridLocal,
@@ -81,13 +82,7 @@ namespace RKCIUIAutomation.Config
         [StringValue("AT_TestTechMgr")] TestTechMgr,
     }
 
-    public enum UserGroup
-    {
-        DirQA,
-        DirQC
-    }
-
-    public enum Reporter
+    public enum ReporterType
     {
         Html,
         Klov

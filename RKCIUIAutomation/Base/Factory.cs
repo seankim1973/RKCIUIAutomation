@@ -24,8 +24,8 @@ namespace RKCIUIAutomation.Base
         public static readonly ILog log = _logger();
 
         public static IBaseUtils BaseUtil => new BaseUtils();
-        public static IBaseUtils SetReportPath(TenantName tenantName) => new BaseUtils(tenantName);
-        public static IBaseUtils SetGridAddress(TestPlatform testPlatform, string gridAddress) => new BaseUtils(testPlatform, gridAddress);
+        public static IBaseUtils SetReportPath(TenantNameType tenantName) => new BaseUtils(tenantName);
+        public static IBaseUtils SetGridAddress(TestPlatformType testPlatform, string gridAddress) => new BaseUtils(testPlatform, gridAddress);
 
         public static IConfigUtils ConfigUtil => new ConfigUtils();
 

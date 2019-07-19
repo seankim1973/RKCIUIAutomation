@@ -117,14 +117,14 @@ namespace RKCIUIAutomation.Base
         {
             string localScreenshotPath = @"C:\Automation\klov\errorscreenshots\";
             string screenshotName = CaptureScreenshot();
-            var screenshotRefPath = reporter == Reporter.Klov
-                ? testPlatform == TestPlatform.GridLocal
+            var screenshotRefPath = reporter == ReporterType.Klov
+                ? testPlatform == TestPlatformType.GridLocal
                     ? $"http://127.0.0.1/errorscreenshots/{screenshotName}"
                     : $"http://10.1.1.207/errorscreenshots/{screenshotName}"
                 : $"{localScreenshotPath}{screenshotName}";
             var detailsWithScreenshot = $"Error Screenshot: {details}<br> <img data-featherlight=\"{screenshotRefPath}\" class=\"step-img\" src=\"{screenshotRefPath}\" data-src=\"{screenshotRefPath}\" width=\"200\">";
 
-            testInstance = reporter == Reporter.Klov
+            testInstance = reporter == ReporterType.Klov
                 ? color.Equals(ExtentColor.Red)
                     ? testInstance.Error(CreateReportMarkupLabel(detailsWithScreenshot, color))
                     : testInstance.Warning(CreateReportMarkupLabel(detailsWithScreenshot, color))

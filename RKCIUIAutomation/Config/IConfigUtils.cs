@@ -10,7 +10,7 @@ namespace RKCIUIAutomation.Config
         string GetEncryptedPW(string decryptedPW);
         string GetDecryptedPW(string encryptedPW);
         string GetHipTestCreds(HipTestKey credType);
-        string GetSiteUrl(TestEnv testEnv, TenantName tenant);
+        string GetSiteUrl(TestEnvironmentType testEnv, TenantNameType tenant);
         TestRunEnv GetTestRunEnv<TestRunEnv>(string nunitArg);
     }
 }
