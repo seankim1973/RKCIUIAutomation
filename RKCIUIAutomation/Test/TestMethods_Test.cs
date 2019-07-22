@@ -83,13 +83,11 @@ namespace RKCIUIAutomation.Test.TestMethods
 
                 By availableTestModal_CloseBtn = By.XPath("//span[@id='AvailableTestsWindow_wnd_title']/parent::div//a[@role='button'][@aria-label='Close']");
                 ClickElement(availableTestModal_CloseBtn);
+
+
                 //QATestMethod.ClickBtn_Cancel();
             }
 
-            //Populate Required Fields
-            //Click Add/Remove Test Methods
-            //Get List of Available Tests by attribute 'identifier'
-            //XPath to Input elem - //div[@id='AvailableTestsWindow']//input[@class='k-checkbox TestMethodSelection']
 
             AssertAll();
         }

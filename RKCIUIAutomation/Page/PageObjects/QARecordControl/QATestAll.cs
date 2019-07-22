@@ -564,6 +564,60 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 throw;
             }
         }
+
+        public override void GatherTestMethodInputFieldAttributeDetails<T>(T testMethods)
+        {
+            Type argType = testMethods.GetType();
+
+            IList<string> testMethodIdentifiersList = new List<string>();
+
+            if (testMethods is Enum)
+            {
+                testMethodIdentifiersList.Add(ConvertToType<Enum>(testMethods).GetString());
+            }
+            else if (argType.Equals(typeof(List<Enum>)))
+            {
+                var enumList = ConvertToType<List<Enum>>(testMethods);
+
+                foreach (Enum item in enumList)
+                {
+                    testMethodIdentifiersList.Add(item.GetString());
+                }
+            }
+
+            string testMethodIdentifierInputDivXPath = string.Empty;
+
+            foreach (string identifier in testMethodIdentifiersList)
+            {
+                testMethodIdentifierInputDivXPath = $"//input[contains(@id, 'TestMethod_DisplayName')][@value='{identifier}']";
+                string testMethodTestFormDivXPath = $"{testMethodIdentifierInputDivXPath}//ancestor::div[contains(@class, 'ElvisTestForm')]";
+                string headerDescriptionXPath = $"{testMethodTestFormDivXPath}//span[contains(@id, 'header-description')]";
+                string testMethodContainerFluidDivXPath = $"{testMethodTestFormDivXPath}//div[@class='container-fluid']";
+
+                string testMethodDivHeader = GetText(By.XPath(headerDescriptionXPath));
+                Console.WriteLine($"HEADER: {testMethodDivHeader}");
+
+                IList<IWebElement> inputFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//input[@data-role]"));
+                foreach (IWebElement inputFieldElem in inputFieldElementsList)
+                {
+                    string inputFieldId = inputFieldElem.GetAttribute("id");
+                    //string inputFieldName = inputFieldElem.GetAttribute("name");
+                    string inputFieldDataRole = inputFieldElem.GetAttribute("data-role");
+                    string inputFieldLabel = GetText(By.XPath($"//input[@id='{inputFieldId}']/parent::span/parent::span/preceding-sibling::label"));
+                    Console.WriteLine($"INPUT FIELD Attributes:\nLABEL : {inputFieldLabel}\nID : {inputFieldId}\nDATA-ROLE : {inputFieldDataRole}");
+                }
+
+                IList<IWebElement> textareaFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//textarea"));
+                foreach (IWebElement textareaFieldElem in textareaFieldElementsList)
+                {
+                    string textareaFieldId = textareaFieldElem.GetAttribute("id");
+                    //string textareaFieldName = textareaFieldElem.GetAttribute("name");
+                    string textareaFieldLabel = GetText(By.XPath($"//textarea[@id='{textareaFieldId}']/preceding-sibling::label"));
+                    Console.WriteLine($"TEXTAREA FIELD Attributes:\nLABEL : {textareaFieldLabel}\nID : {textareaFieldId}");
+                }
+            }
+
+        }
     }
 
     public abstract class QATestAll : PageBase, IQATestAll
@@ -595,6 +649,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void ClickBtn_AddRemoveTestMethods();
         public abstract void CheckForLINError();
         public abstract void AddTestMethod<T>(T AvailableTestMethodType);
+        public abstract void GatherTestMethodInputFieldAttributeDetails<T>(T testMethods);
     }
 
 

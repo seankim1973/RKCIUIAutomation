@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll_Common;
 
 namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
@@ -34,5 +35,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void SelectTab_PendingClosing();
         void ClickBtn_AddRemoveTestMethods();
         void CheckForLINError();
+
+        void GatherTestMethodInputFieldAttributeDetails<T>(T testMethods);
     }
 }
