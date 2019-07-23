@@ -194,7 +194,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                Report.Error(e.Message);
+                Report.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
         }

@@ -3,6 +3,7 @@ using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll_Common;
 
@@ -44,9 +45,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return $"{techID}{yy}{mm}{dd}00";
         }
 
-        internal void ToggleTestMethodCheckbox(Enum testMethodType)
+        internal void ToggleTestMethodCheckbox<T>(T testMethodType)
         {
-            string identifierAttribute = testMethodType.GetString();
+            string identifierAttribute = string.Empty;
+
+            if(testMethodType is Enum)
+            {
+                identifierAttribute = ConvertToType<Enum>(testMethodType).GetString();
+            }
+            else if(testMethodType.GetType().Equals(typeof(string)))
+            {
+                identifierAttribute = ConvertToType<string>(testMethodType);
+            }          
+
             By chkbxLocator = null;
             string testMethodInputElemId = string.Empty;
             
@@ -378,6 +389,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override void ClickBtn_SaveEdit()
             => ClickElementByID(ButtonType.SaveEdit);
+
+        private readonly string availableTestMethodModalDivXPath = "//div[@id='AvailableTestsWindow']/parent::div";
+        private By AvailableTestMethodModalSubmitBtnXPath(string buttonName)
+            => By.XPath($"{availableTestMethodModalDivXPath}//button[text()='{buttonName}']");
+
+        public override void ClickModalBtn_Save()
+        {
+            ClickElement(AvailableTestMethodModalSubmitBtnXPath("Save"));
+            WaitForAvailableTestsModalToClear();
+        }
+
+        public override void ClickModalBtn_Cancel()
+            => ClickElement(AvailableTestMethodModalSubmitBtnXPath("Cancel"));
+
+        public override void ClickModalBtn_Close()
+            => ClickElement(By.XPath($"{availableTestMethodModalDivXPath}//a[@aria-label='Close']"));
         #endregion
 
         public override void PopulateFieldAndUpdateKVPairsList()
@@ -536,18 +563,31 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         {
             try
             {
-                IList<Enum> testMethodList = new List<Enum>();
+                IList<string> testMethodList = new List<string>();
 
                 if (AvailableTestMethodType is Enum)
                 {
-                    testMethodList.Add(ConvertToType<Enum>(AvailableTestMethodType));
+                    testMethodList.Add(ConvertToType<Enum>(AvailableTestMethodType).GetString());
                 }
                 else if (AvailableTestMethodType.GetType().Equals(typeof(List<Enum>)))
                 {
-                    testMethodList = ConvertToType<List<Enum>>(AvailableTestMethodType);
+                    var testMethodEnumList = ConvertToType<List<Enum>>(AvailableTestMethodType);
+
+                    foreach (var enumItem in testMethodEnumList)
+                    {
+                        testMethodList.Add(ConvertToType<Enum>(enumItem).GetString());
+                    }
+                }
+                else if (AvailableTestMethodType.GetType().Equals(typeof(string)))
+                {
+                    testMethodList.Add(ConvertToType<string>(AvailableTestMethodType));
+                }
+                else if (AvailableTestMethodType.GetType().Equals(typeof(List<string>)))
+                {
+                    ((List<string>)testMethodList).AddRange(ConvertToType<List<string>>(AvailableTestMethodType));
                 }
 
-                foreach (Enum testMethod in testMethodList)
+                foreach (string testMethod in testMethodList)
                 {
                     try
                     {
@@ -565,24 +605,56 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             }
         }
 
-        public override void GatherTestMethodInputFieldAttributeDetails<T>(T testMethods)
+        private void WaitForAvailableTestsModalToClear()
         {
-            Type argType = testMethods.GetType();
+            bool modalIsDisplayed = true;
+
+            do
+            {
+                try
+                {
+                    IWebElement modalWindow = driver.FindElement(By.XPath(availableTestMethodModalDivXPath));
+                    modalIsDisplayed = modalWindow.Displayed;
+                    Thread.Sleep(2000);
+                }
+                catch (NoSuchElementException)
+                {
+                    modalIsDisplayed = false;
+                }
+            }
+            while (modalIsDisplayed);
+        }
+
+        public override void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier)
+        {
+            Type argType = testMethodIdentifier.GetType();
 
             IList<string> testMethodIdentifiersList = new List<string>();
 
-            if (testMethods is Enum)
+            if (testMethodIdentifier is Enum)
             {
-                testMethodIdentifiersList.Add(ConvertToType<Enum>(testMethods).GetString());
+                testMethodIdentifiersList.Add(ConvertToType<Enum>(testMethodIdentifier).GetString());
             }
             else if (argType.Equals(typeof(List<Enum>)))
             {
-                var enumList = ConvertToType<List<Enum>>(testMethods);
+                var enumList = ConvertToType<List<Enum>>(testMethodIdentifier);
 
                 foreach (Enum item in enumList)
                 {
                     testMethodIdentifiersList.Add(item.GetString());
                 }
+            }
+            else if (argType.Equals(typeof(string)))
+            {
+                testMethodIdentifiersList.Add(ConvertToType<string>(testMethodIdentifier));
+            }
+            else if (argType.Equals(typeof(List<string>)))
+            {
+                ((List<string>)testMethodIdentifiersList).AddRange(ConvertToType<List<string>>(testMethodIdentifier));
+            }
+            else
+            {
+                log.Error($"Unsupported parameter type : {argType}");
             }
 
             string testMethodIdentifierInputDivXPath = string.Empty;
@@ -615,8 +687,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     string textareaFieldLabel = GetText(By.XPath($"//textarea[@id='{textareaFieldId}']/preceding-sibling::label"));
                     Console.WriteLine($"TEXTAREA FIELD Attributes:\nLABEL : {textareaFieldLabel}\nID : {textareaFieldId}");
                 }
-            }
 
+                Console.WriteLine("#########################################");
+                Console.WriteLine("#########################################");
+            }
         }
     }
 
@@ -649,7 +723,10 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void ClickBtn_AddRemoveTestMethods();
         public abstract void CheckForLINError();
         public abstract void AddTestMethod<T>(T AvailableTestMethodType);
-        public abstract void GatherTestMethodInputFieldAttributeDetails<T>(T testMethods);
+        public abstract void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier);
+        public abstract void ClickModalBtn_Save();
+        public abstract void ClickModalBtn_Cancel();
+        public abstract void ClickModalBtn_Close();
     }
 
 

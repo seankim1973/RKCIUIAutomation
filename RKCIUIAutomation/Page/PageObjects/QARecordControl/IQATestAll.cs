@@ -19,6 +19,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_Continue();
         void ClickBtn_Save();
         void ClickBtn_SaveEdit();
+        void ClickModalBtn_Save();
+        void ClickModalBtn_Cancel();
+        void ClickModalBtn_Close();
 
         IList<KeyValuePair<TestDetails_InputFieldType, string>> GetTestRecordKVPairsList();
         IList<TestDetails_InputFieldType> GetRequiredInputFieldTypeList();
@@ -36,6 +39,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_AddRemoveTestMethods();
         void CheckForLINError();
 
-        void GatherTestMethodInputFieldAttributeDetails<T>(T testMethods);
+        void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier);
     }
 }

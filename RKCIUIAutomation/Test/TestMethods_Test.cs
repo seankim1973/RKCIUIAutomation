@@ -29,65 +29,88 @@ namespace RKCIUIAutomation.Test.TestMethods
         {
             LoginAs(UserType.TestTech);
 
+            #region Revise Existing Test Record
+            //QATestMethod.SelectTab_LabRevise();
+            //GridHelper.VerifyRecordIsDisplayed(ColumnNameType.RevisedBy, "ATTestTech@rkci.com");
+            //GridHelper.ClickEditBtnForRow();
+            #endregion
+
+            #region Create New Test Record
+
             IList<WorkflowType> workflowTypeList = new List<WorkflowType>()
             {
                 //WorkflowType.E1,
-                //WorkflowType.E2,
+                WorkflowType.E2,
                 //WorkflowType.E3,
                 //WorkflowType.F1,
                 //WorkflowType.F2,
                 //WorkflowType.F3,
-                WorkflowType.A1
+                //WorkflowType.A1
             };
-
-            foreach (var workflowType in workflowTypeList)
+            try
             {
-                QATestMethod.CreateNewTestRecord(workflowType);
-                QATestMethod.ClickBtn_Save();
-
-                try
+                foreach (var workflowType in workflowTypeList)
                 {
-                    QATestMethod.CheckForLINError();
-                }
-                catch (NoSuchElementException)
-                {
-                    //Populate Required Fields
-                    PgHelper.PopulateEntryFieldsAndGetValuesArray(true);
-                    WaitForPageReady();
+                    QATestMethod.CreateNewTestRecord(workflowType);
                     QATestMethod.ClickBtn_Save();
-                    WaitForPageReady();
+
+
+                    try
+                    {
+                        QATestMethod.CheckForLINError();
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        //Populate Required Fields
+                        PgHelper.PopulateEntryFieldsAndGetValuesArray(true);
+                        WaitForPageReady();
+                        QATestMethod.ClickBtn_Save();
+                        WaitForPageReady();
+                    }
+
+                    //Click Add/Remove Test Methods
+                    QATestMethod.ClickBtn_AddRemoveTestMethods();
+
+                    #endregion
+
+
+
+                    #region Retrieve and store identifier attribute for all available test method
+                    /*
+                    IList<IWebElement> availTestInputs = new List<IWebElement>();
+                    availTestInputs = driver.FindElements(By.XPath("//input[@class='k-checkbox TestMethodSelection']"));
+                    Report.Info($"WorkFlow Type : {workflowType} - Available TestMethod Selections");
+                    foreach (var elem in availTestInputs)
+                    {
+                        string label = elem.FindElement(By.XPath("./parent::span/following-sibling::span")).Text;
+                        string identifier = elem.GetAttribute("identifier");
+                        Report.Info($"{label}\n>>>Identifier Attribute : {identifier}");
+                    }
+                    */
+                    #endregion
+
+                    #region Select all TestMethod Checkboxes
+                    IList<string> testMethodsToAddList = new List<string>();
+                    By checkBoxLocator = By.XPath("//span[contains(@style, 'inline-flex')]/preceding-sibling::span/input[contains(@class, 'k-checkbox')]");
+                    ((List<string>)testMethodsToAddList).AddRange(GetAttributeForElements(checkBoxLocator, "identifier"));
+                    QATestMethod.AddTestMethod(testMethodsToAddList);
+                    QATestMethod.ClickModalBtn_Save();
+                    #endregion
+
+
+                    QATestMethod.GatherTestMethodInputFieldAttributeDetails(testMethodsToAddList);
+
+                    //By availableTestModal_CloseBtn = By.XPath("//span[@id='AvailableTestsWindow_wnd_title']/parent::div//a[@role='button'][@aria-label='Close']");
+                    //ClickElement(availableTestModal_CloseBtn);
+
+
                 }
-
-                //Click Add/Remove Test Methods
-                QATestMethod.ClickBtn_AddRemoveTestMethods();
-
-                IList<IWebElement> availTestInputs = new List<IWebElement>();
-                availTestInputs = driver.FindElements(By.XPath("//input[@class='k-checkbox TestMethodSelection']"));
-
-                Report.Info($"WorkFlow Type : {workflowType} - Available TestMethod Selections");
-                foreach (var elem in availTestInputs)
-                {
-                    string label = elem.FindElement(By.XPath("./parent::span/following-sibling::span")).Text;
-                    string identifier = elem.GetAttribute("identifier");
-                    Report.Info($"{label}\n>>>Identifier Attribute : {identifier}");
-                }
-
-                IList<Enum> testMethodsToAdd = new List<Enum>()
-                {
-                    A_TestMethodType.AASHTO_T11,
-                    A_TestMethodType.ASTM_C39
-                };
-
-                QATestMethod.AddTestMethod(testMethodsToAdd);
-                Thread.Sleep(5000);
-
-                By availableTestModal_CloseBtn = By.XPath("//span[@id='AvailableTestsWindow_wnd_title']/parent::div//a[@role='button'][@aria-label='Close']");
-                ClickElement(availableTestModal_CloseBtn);
-
-
-                //QATestMethod.ClickBtn_Cancel();
             }
-
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
 
             AssertAll();
         }
