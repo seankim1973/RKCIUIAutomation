@@ -563,8 +563,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override bool VerifySpecSectionDescriptionAutoPopulatedData()
         {
-            string specSectionParagraphText = PageAction.GetTextFromDDL(InputFieldType.Spec_Section_Paragraph);
-            string spectionDescriptionText = PageAction.GetText(By.Id(InputFieldType.Section_Description.GetString()));
+            string specSectionParagraphText = GetTextFromDDL(InputFieldType.Spec_Section_Paragraph);
+            string spectionDescriptionText = GetText(By.Id(InputFieldType.Section_Description.GetString()));
             bool valuesMatch = specSectionParagraphText.HasValue() && spectionDescriptionText.HasValue()
                 ? specSectionParagraphText.Contains(spectionDescriptionText)
                 : false;

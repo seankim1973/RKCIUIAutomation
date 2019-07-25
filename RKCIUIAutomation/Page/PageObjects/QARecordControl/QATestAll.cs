@@ -1,7 +1,9 @@
-﻿using OpenQA.Selenium;
+﻿using AventStack.ExtentReports.MarkupUtils;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using static RKCIUIAutomation.Base.Factory;
@@ -390,7 +392,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override void ClickBtn_SaveEdit()
             => ClickElementByID(ButtonType.SaveEdit);
 
-        private readonly string availableTestMethodModalDivXPath = "//div[@id='AvailableTestsWindow']/parent::div";
+        private readonly string availableTestMethodModalDivXPath = "//div[@id='AvailableTestsWindow']/parent::div[contains(@style, 'display: block')]";
         private By AvailableTestMethodModalSubmitBtnXPath(string buttonName)
             => By.XPath($"{availableTestMethodModalDivXPath}//button[text()='{buttonName}']");
 
@@ -522,16 +524,24 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override void ClickBtn_AddRemoveTestMethods()
             => PageAction.ClickElementByID(ButtonType.AddRemoveTestMethods);
 
+        int LastKnownSequenceNumber { get; set; }
+
         public override void CheckForLINError()
         {
+            By sequenceNumberLocator = By.XPath("//input[@id='SequenceNumber']");
             By errorLINExists = By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(), 'LIN exists')]");
             bool errorLINExistsIsDisplayed = true;
 
             do
             {
+                if (LastKnownSequenceNumber > 1)
+                {
+                    EnterText(sequenceNumberLocator, LastKnownSequenceNumber.ToString());
+                    QATestMethod.ClickBtn_Save();
+                }
+
                 GetElement(errorLINExists);
 
-                By sequenceNumberLocator = By.XPath("//input[@id='SequenceNumber']");
                 string sequenceNumber = GetText(sequenceNumberLocator, logReport: false);
                 int newValue = int.Parse(sequenceNumber) + 1;
 
@@ -544,7 +554,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     sequenceNumber = newValue.ToString();
                 }
 
-                EnterText(sequenceNumberLocator, sequenceNumber);
+                LastKnownSequenceNumber = int.Parse(sequenceNumber);
+
+                EnterText(sequenceNumberLocator, LastKnownSequenceNumber.ToString());
                 QATestMethod.ClickBtn_Save();
                 try
                 {
@@ -657,39 +669,138 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 log.Error($"Unsupported parameter type : {argType}");
             }
 
-            string testMethodIdentifierInputDivXPath = string.Empty;
-
             foreach (string identifier in testMethodIdentifiersList)
             {
+                string testMethodIdentifierInputDivXPath = string.Empty;
+                IList<IWebElement> textareaFieldElementsList = null;
+                IList<IWebElement> inputFieldElementsList = null;
+                IList<IWebElement> checkboxFieldElementsList = null;
+                IList<IWebElement> textboxFieldElementsList = null;
+
                 testMethodIdentifierInputDivXPath = $"//input[contains(@id, 'TestMethod_DisplayName')][@value='{identifier}']";
                 string testMethodTestFormDivXPath = $"{testMethodIdentifierInputDivXPath}//ancestor::div[contains(@class, 'ElvisTestForm')]";
                 string headerDescriptionXPath = $"{testMethodTestFormDivXPath}//span[contains(@id, 'header-description')]";
                 string testMethodContainerFluidDivXPath = $"{testMethodTestFormDivXPath}//div[@class='container-fluid']";
 
-                string testMethodDivHeader = GetText(By.XPath(headerDescriptionXPath));
-                Console.WriteLine($"HEADER: {testMethodDivHeader}");
+                string testMethodDivHeader = GetText(By.XPath(headerDescriptionXPath), logReport: false);
+                Console.WriteLine($"\n============ BEGINING of HEADER: {testMethodDivHeader} ============");
 
-                IList<IWebElement> inputFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//input[@data-role]"));
-                foreach (IWebElement inputFieldElem in inputFieldElementsList)
+                textboxFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//input[contains(@class, 'k-textbox')]"));
+                if (textboxFieldElementsList.Any())
                 {
-                    string inputFieldId = inputFieldElem.GetAttribute("id");
-                    //string inputFieldName = inputFieldElem.GetAttribute("name");
-                    string inputFieldDataRole = inputFieldElem.GetAttribute("data-role");
-                    string inputFieldLabel = GetText(By.XPath($"//input[@id='{inputFieldId}']/parent::span/parent::span/preceding-sibling::label"));
-                    Console.WriteLine($"INPUT FIELD Attributes:\nLABEL : {inputFieldLabel}\nID : {inputFieldId}\nDATA-ROLE : {inputFieldDataRole}");
+                    foreach (IWebElement textboxFieldElem in textboxFieldElementsList)
+                    {
+                        try
+                        {
+                            string textboxFieldId = textboxFieldElem.GetAttribute("id");
+                            Console.WriteLine($">>>> TEXTBOX ID : {textboxFieldId}");
+                            string textboxFieldLabel = string.Empty;
+
+                            try
+                            {
+                                textboxFieldLabel = GetText(By.XPath($"//input[@id='{textboxFieldId}']/preceding-sibling::label"), logReport: false);
+                            }
+                            catch (NoSuchElementException)
+                            {
+                                textboxFieldLabel = GetText(By.XPath($"//input[@id='{textboxFieldId}']/parent::div/preceding-sibling::label"), logReport: false);
+                            }
+                            Console.WriteLine($">>>> TEXTBOX LABEL : {textboxFieldLabel}");
+                            Report.Info($"TEXTBOX Attributes:<br> -- LABEL : {textboxFieldLabel}<br> -- ID : {textboxFieldId}", ExtentColor.Blue);
+                        }
+                        catch (NoSuchElementException)
+                        {
+                            log.Error($"!!!!!!!!!! NoSuchElementException FOR {textboxFieldElem} !!!!!!!!!!");
+                        }
+
+                        Console.WriteLine("#########################################\n");
+                    }
                 }
 
-                IList<IWebElement> textareaFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//textarea"));
-                foreach (IWebElement textareaFieldElem in textareaFieldElementsList)
+                checkboxFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//input[@class='k-checkbox']"));
+                if (checkboxFieldElementsList.Any())
                 {
-                    string textareaFieldId = textareaFieldElem.GetAttribute("id");
-                    //string textareaFieldName = textareaFieldElem.GetAttribute("name");
-                    string textareaFieldLabel = GetText(By.XPath($"//textarea[@id='{textareaFieldId}']/preceding-sibling::label"));
-                    Console.WriteLine($"TEXTAREA FIELD Attributes:\nLABEL : {textareaFieldLabel}\nID : {textareaFieldId}");
+                    foreach (IWebElement checkboxFieldElem in checkboxFieldElementsList)
+                    {
+                        try
+                        {
+                            string checkboxFieldId = checkboxFieldElem.GetAttribute("id");
+                            Console.WriteLine($">>>> CHECKBOX ID : {checkboxFieldId}");
+                            string checkboxFieldLabel = GetText(By.XPath($"//input[@id='{checkboxFieldId}']/following-sibling::label"), logReport: false);
+                            Console.WriteLine($">>>> CHECKBOX LABEL : {checkboxFieldLabel}");
+                            Report.Info($"CHECKBOX Attributes:<br> -- LABEL : {checkboxFieldLabel}<br> -- ID : {checkboxFieldId}", ExtentColor.Blue);
+                        }
+                        catch (NoSuchElementException)
+                        {
+                            log.Error($"!!!!!!!!!! NoSuchElementException FOR {checkboxFieldElem} !!!!!!!!!!");
+                        }
+
+                        Console.WriteLine("#########################################\n");
+                    }
                 }
 
-                Console.WriteLine("#########################################");
-                Console.WriteLine("#########################################");
+                inputFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//input[@data-role]"));
+                if (inputFieldElementsList.Any())
+                {
+                    foreach (IWebElement inputFieldElem in inputFieldElementsList)
+                    {
+                        try
+                        {
+                            string inputFieldId = inputFieldElem.GetAttribute("id");
+                            Console.WriteLine($">>>> INPUT FIELD ID : {inputFieldId}");
+                            string inputFieldDataRole = inputFieldElem.GetAttribute("data-role");
+                            Console.WriteLine($">>>> INPUT FIELD DATA-ROLE : {inputFieldDataRole}");
+
+                            string labelParentXPath = "/parent::span";
+
+                            if (inputFieldDataRole.Equals("dropdownlist"))
+                            {
+                                labelParentXPath = string.Empty;
+                            }
+
+                            string inputFieldLabel = string.Empty;
+                            try
+                            {
+                                inputFieldLabel = GetText(By.XPath($"//input[@id='{inputFieldId}']/parent::span{labelParentXPath}/preceding-sibling::label"), logReport: false);
+                            }
+                            catch (NoSuchElementException)
+                            {
+                                inputFieldLabel = GetText(By.XPath($"//input[@id='{inputFieldId}']/parent::span{labelParentXPath}/parent::div/preceding-sibling::label"), logReport: false);
+                            }
+                            Console.WriteLine($">>>> INPUT FIELD LABEL : {inputFieldLabel}");
+                            Report.Info($"INPUT FIELD Attributes:<br> -- LABEL : {inputFieldLabel}<br> -- ID : {inputFieldId}<br> -- DATA-ROLE : {inputFieldDataRole}", ExtentColor.Blue);
+                        }
+                        catch (NoSuchElementException)
+                        {
+                            log.Error($"!!!!!!!!!! NoSuchElementException FOR {inputFieldElem} !!!!!!!!!!");
+                        }
+
+                        Console.WriteLine("#########################################\n");
+                    }
+                }
+
+                textareaFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//textarea"));
+                if (textareaFieldElementsList.Any())
+                {
+                    foreach (IWebElement textareaFieldElem in textareaFieldElementsList)
+                    {
+                        try
+                        {
+                            string textareaFieldId = textareaFieldElem.GetAttribute("id");
+                            Console.WriteLine($">>>> TEXTAREA FIELD ID : {textareaFieldId}");
+                            string textareaFieldLabel = GetText(By.XPath($"//textarea[@id='{textareaFieldId}']/preceding-sibling::label"), logReport: false);
+                            Console.WriteLine($">>>> TEXTAREA FIELD LABEL : {textareaFieldLabel}");
+                            Report.Info($"TEXTAREA FIELD Attributes:<br> -- LABEL : {textareaFieldLabel}<br> -- ID : {textareaFieldId}", ExtentColor.Blue);
+                        }
+                        catch (NoSuchElementException)
+                        {
+                            log.Error($"!!!!!!!!!! NoSuchElementException FOR {textareaFieldElem} !!!!!!!!!!");
+                        }
+
+                        Console.WriteLine("#########################################\n");
+                    }
+                }
+
+                Console.WriteLine($"============ END of HEADER: {testMethodDivHeader} ============\n");
             }
         }
     }

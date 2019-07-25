@@ -135,35 +135,42 @@ namespace RKCIUIAutomation.Base
             CheckForLineBreaksInLogMsgForStdOutLogger(Level.Error, details, e);
         }
 
-        public void Info(string details)
+        public void Info(string details, ExtentColor extentColor = ExtentColor.Transparent)
         {
-            if (details.Contains("<br>"))
+            if (extentColor == ExtentColor.Transparent)
             {
-                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
-            }
-            else if (details.Contains("#####"))
-            {
-                testInstance.Info(CreateReportMarkupLabel(details));
-            }
-            else if (details.Contains(">>>"))
-            {
-                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
-            }
-            else if (details.Contains("Found"))
-            {
-                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Green));
-            }
-            else if (details.Contains("skipped"))
-            {
-                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Yellow));
-            }
-            else if (details.Contains("TOTAL TEST TIME:"))
-            {
-                testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                if (details.Contains("<br>"))
+                {
+                    testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                }
+                else if (details.Contains("#####"))
+                {
+                    testInstance.Info(CreateReportMarkupLabel(details));
+                }
+                else if (details.Contains(">>>"))
+                {
+                    testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Lime));
+                }
+                else if (details.Contains("Found"))
+                {
+                    testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Green));
+                }
+                else if (details.Contains("skipped"))
+                {
+                    testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Yellow));
+                }
+                else if (details.Contains("TOTAL TEST TIME:"))
+                {
+                    testInstance.Info(CreateReportMarkupLabel(details, ExtentColor.Orange));
+                }
+                else
+                {
+                    testInstance.Info(details);
+                }
             }
             else
             {
-                testInstance.Info(details);
+                testInstance.Info(CreateReportMarkupLabel(details, extentColor));
             }
 
             CheckForLineBreaksInLogMsgForStdOutLogger(Level.Info, details);
@@ -247,7 +254,6 @@ namespace RKCIUIAutomation.Base
                 {
                     if (testResult)
                     {
-                        //Info(logMsg);
                         CheckForLineBreaksInLogMsgForStdOutLogger(Level.Debug, logMsg);
                     }
                     else
@@ -255,20 +261,10 @@ namespace RKCIUIAutomation.Base
                         CheckForLineBreaksInLogMsgForStdOutLogger(Level.Error, logMsg);
                     }
                 }
-                //else
-                //{
-                //    if (!testResult)
-                //    {
-                //        Info(logMsg, testResult);
-                //    }
-                //}
 
                 testInstance.Info(CreateReportMarkupLabel(logMsg, logLabelColor));
                 AddCookieToCurrentPage("zaleniumMessage", logMsg);
             }
-            //catch (UnableToSetCookieException)
-            //{
-            //}
             catch (Exception)
             {
                 throw;

@@ -39,13 +39,13 @@ namespace RKCIUIAutomation.Test.TestMethods
 
             IList<WorkflowType> workflowTypeList = new List<WorkflowType>()
             {
-                //WorkflowType.E1,
+                WorkflowType.E1,
                 WorkflowType.E2,
-                //WorkflowType.E3,
-                //WorkflowType.F1,
-                //WorkflowType.F2,
-                //WorkflowType.F3,
-                //WorkflowType.A1
+                WorkflowType.E3,
+                WorkflowType.F1,
+                WorkflowType.F2,
+                WorkflowType.F3,
+                WorkflowType.A1
             };
             try
             {
@@ -54,6 +54,9 @@ namespace RKCIUIAutomation.Test.TestMethods
                     QATestMethod.CreateNewTestRecord(workflowType);
                     QATestMethod.ClickBtn_Save();
 
+                    Console.WriteLine($"****************************************************");
+                    Console.WriteLine($"        WORKFLOWTYPE : {workflowType}");
+                    Console.WriteLine($"****************************************************");
 
                     try
                     {
@@ -100,10 +103,7 @@ namespace RKCIUIAutomation.Test.TestMethods
 
                     QATestMethod.GatherTestMethodInputFieldAttributeDetails(testMethodsToAddList);
 
-                    //By availableTestModal_CloseBtn = By.XPath("//span[@id='AvailableTestsWindow_wnd_title']/parent::div//a[@role='button'][@aria-label='Close']");
-                    //ClickElement(availableTestModal_CloseBtn);
-
-
+                    QATestMethod.ClickBtn_Cancel();
                 }
             }
             catch (Exception e)
