@@ -46,10 +46,10 @@ namespace RKCIUIAutomation.Base
         {
         }
 
-        public BaseUtils(TenantName tenantName)
+        public BaseUtils(TenantNameType tenantName)
             => DetermineReportFilePath(tenantName);
 
-        public BaseUtils(TestPlatform testPlatform, string gridAddress)
+        public BaseUtils(TestPlatformType testPlatform, string gridAddress)
             => ConfigGridAddress(testPlatform, gridAddress);
 
         public BaseUtils(IWebDriver driver) => this.Driver = driver;
@@ -114,7 +114,7 @@ namespace RKCIUIAutomation.Base
             return CurrentTenantName;
         }
 
-        public void DetermineReportFilePath(TenantName tenantName)
+        public void DetermineReportFilePath(TenantNameType tenantName)
         {
             SetCodeBasePath();
             SetExtentReportPath();
@@ -135,16 +135,16 @@ namespace RKCIUIAutomation.Base
                 uniqueFileName = $"{(fileName.HasValue() ? fileName : GetTestName())}{DateTime.Now.Second}_{GetTenantName()}.png";
                 fullFilePath = $"{ScreenshotSavePath}{uniqueFileName}";
 
-                if (reporter == Reporter.Klov)
+                if (reporter == ReporterType.Klov)
                 {
-                    if (testPlatform == TestPlatform.Grid)
+                    if (testPlatform == TestPlatformType.Grid)
                     {
                         klovPath = @"\\10.1.1.207\errorscreenshots\";
 
                         ImpersonateUser impersonateUser = new ImpersonateUser(_driver);
                         impersonateUser.ScreenshotTool(ImpersonateUser.Task.SAVESCREENSHOT, $"{klovPath}{uniqueFileName}");
                     }
-                    else if (testPlatform == TestPlatform.GridLocal)
+                    else if (testPlatform == TestPlatformType.GridLocal)
                     {
                         klovPath = @"C:\Automation\klov\errorscreenshots\";
                         var screenshot = _driver.TakeScreenshot();
@@ -165,10 +165,10 @@ namespace RKCIUIAutomation.Base
             return uniqueFileName;
         }
 
-        public void ConfigGridAddress(TestPlatform platform, string gridIPv4Hostname = "")
+        public void ConfigGridAddress(TestPlatformType platform, string gridIPv4Hostname = "")
         {
             GridVmIP = gridIPv4Hostname.Equals("")
-                ? platform == TestPlatform.GridLocal || platform == TestPlatform.Local
+                ? platform == TestPlatformType.GridLocal || platform == TestPlatformType.Local
                     ? "127.0.0.1"
                     : "10.1.1.207"
                 : gridIPv4Hostname;

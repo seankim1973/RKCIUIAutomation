@@ -22,7 +22,7 @@ namespace RKCIUIAutomation.Tools
 
             try
             {
-                connectVal = BaseClass.testPlatform.Equals(TestPlatform.Grid)
+                connectVal = BaseClass.testPlatform.Equals(TestPlatformType.Grid)
                     ? ConfigurationManager.ConnectionStrings["StageDB"].ConnectionString
                     : ConfigurationManager.ConnectionStrings["StageDB_VPN"].ConnectionString;
 
@@ -47,28 +47,28 @@ namespace RKCIUIAutomation.Tools
 
             switch (tenant)
             {
-                case Config.TenantName.Garnet:
+                case Config.TenantNameType.Garnet:
                     projID = 1;
                     break;
-                case Config.TenantName.SH249:
+                case Config.TenantNameType.SH249:
                     projID = 2;
                     break;
-                case Config.TenantName.SGWay:
+                case Config.TenantNameType.SGWay:
                     projID = 3;
                     break;
-                case Config.TenantName.I15Tech:
+                case Config.TenantNameType.I15Tech:
                     projID = 4;
                     break;
-                case Config.TenantName.GLX:
+                case Config.TenantNameType.GLX:
                     projID = 5;
                     break;
-                case Config.TenantName.I15South:
+                case Config.TenantNameType.I15South:
                     projID = 7;
                     break;
-                case Config.TenantName.LAX:
+                case Config.TenantNameType.LAX:
                     projID = 9;
                     break;
-                case Config.TenantName.I15North:
+                case Config.TenantNameType.I15North:
                     projID = 13;
                     break;
             }

@@ -24,11 +24,11 @@ namespace RKCIUIAutomation.Base
         {
         }
 
-        readonly TestPlatform defaultTestPlatform = TestPlatform.GridLocal;
+        readonly TestPlatformType defaultTestPlatform = TestPlatformType.GridLocal;
         readonly BrowserType defaultBrowserType = BrowserType.Chrome;
-        readonly TestEnv defaultTestEnvironment = TestEnv.Staging;         
-        readonly TenantName defaultTenantName = TenantName.I15South;
-        readonly Reporter defaultReporter = Reporter.Klov;
+        readonly TestEnvironmentType defaultTestEnvironment = TestEnvironmentType.PreProduction; //When TestEnv is set to PreProduction, TenantName value is ignored
+        readonly TenantNameType defaultTenantName = TenantNameType.SH249;
+        readonly ReporterType defaultReporter = ReporterType.Klov;
         readonly string defaultGridAddress = "";
         readonly bool enableHipTest = false;
         
@@ -44,17 +44,17 @@ namespace RKCIUIAutomation.Base
             bool _hiptest = Parameters.Get("Hiptest", enableHipTest);
 
             IConfigUtils config = ConfigUtil;
-            testPlatform = config.GetTestRunEnv<TestPlatform>(_testPlatform);
+            testPlatform = config.GetTestRunEnv<TestPlatformType>(_testPlatform);
             browserType = config.GetTestRunEnv<BrowserType>(_browserType);
-            testEnv = config.GetTestRunEnv<TestEnv>(_testEnv);
-            tenantName = config.GetTestRunEnv<TenantName>(_tenantName);
-            reporter = config.GetTestRunEnv<Reporter>(_reporter);
+            testEnv = config.GetTestRunEnv<TestEnvironmentType>(_testEnv);
+            tenantName = config.GetTestRunEnv<TenantNameType>(_tenantName);
+            reporter = config.GetTestRunEnv<ReporterType>(_reporter);
             siteUrl = config.GetSiteUrl(testEnv, tenantName);
             hiptest = _hiptest;
 
             testPlatform = browserType == BrowserType.MicrosoftEdge
-                ? testPlatform == TestPlatform.Local
-                    ? TestPlatform.Windows
+                ? testPlatform == TestPlatformType.Local
+                    ? TestPlatformType.Windows
                     : testPlatform
                 : testPlatform;
 
@@ -67,8 +67,6 @@ namespace RKCIUIAutomation.Base
                 hipTestRunTestCaseIDs = new List<int>();
                 hipTestResults = new List<KeyValuePair<int, KeyValuePair<TestStatus, string>>>();
             }
-
-            //InitExtentReportInstance();
         }
 
         [SetUp]
@@ -111,7 +109,7 @@ namespace RKCIUIAutomation.Base
                             : $"<pre>{result.StackTrace}</pre>";
                         string screenshotName = BaseUtil.CaptureScreenshot();
 
-                        if (reporter == Reporter.Klov)
+                        if (reporter == ReporterType.Klov)
                         {
                             /*Use when Klov Reporter bug is fixed
                             //Upload screenshot to MongoDB server

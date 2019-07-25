@@ -22,37 +22,37 @@ namespace RKCIUIAutomation.Page.PageObjects
         {
             ILoginPage instance = new LoginPage(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 Report.Info($"###### using LoginPage_SGWay instance ###### ");
                 instance = new LoginPage_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 Report.Info($"###### using LoginPage_SH249 instance ###### ");
                 instance = new LoginPage_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 Report.Info($"###### using LoginPage_Garnet instance ###### ");
                 instance = new LoginPage_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 Report.Info($"###### using LoginPage_GLX instance ###### ");
                 instance = new LoginPage_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 Report.Info($"###### using LoginPage_I15South instance ###### ");
                 instance = new LoginPage_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 Report.Info($"###### using LoginPage_I15Tech instance ###### ");
                 instance = new LoginPage_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 Report.Info($"###### using LoginPage_LAX instance ###### ");
                 instance = new LoginPage_LAX(driver);

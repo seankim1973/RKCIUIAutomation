@@ -87,32 +87,32 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override T SetClass<T>(IWebDriver driver)
         {
             IQATestAll instance = new QATestAll_Common(driver);
-            if (tenantName == TenantName.LAX)
+            if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using QATestAll_LAX instance ###### ");
                 instance = new QATestAll_LAX(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using QATestAll_SH249 instance ###### ");
                 instance = new QATestAll_SH249(driver);
             }
-            else if (tenantName == TenantName.SGWay)
+            else if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using QATestAll_SGWay instance ###### ");
                 instance = new QATestAll_SGWay(driver);
             }
-            else if (tenantName == TenantName.I15North)
+            else if (tenantName == TenantNameType.I15North)
             {
                 log.Info($"###### using QATestAll_GLX instance ###### ");
                 instance = new QATestAll_I15North(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using QATestAll_I15South instance ###### ");
                 instance = new QATestAll_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using QATestAll_I15Tech instance ###### ");
                 instance = new QATestAll_I15Tech(driver);

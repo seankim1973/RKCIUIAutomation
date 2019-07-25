@@ -15,7 +15,7 @@ namespace RKCIUIAutomation.Base
         [ThreadStatic]
         private DriverOptions Options;
 
-        public DriverOptions DetermineDriverOptions(TestPlatform platform, BrowserType browser, string testDetails)
+        public DriverOptions DetermineDriverOptions(TestPlatformType platform, BrowserType browser, string testDetails)
             => DetermineBrowser(browser, testDetails).DeterminePlatform(platform);
 
         private DriverOptions DetermineBrowser(BrowserType browser, string testDetails)
@@ -89,37 +89,37 @@ namespace RKCIUIAutomation.Base
             }
         }
 
-        internal static DriverOptions DeterminePlatform(this DriverOptions options, TestPlatform platform)
+        internal static DriverOptions DeterminePlatform(this DriverOptions options, TestPlatformType platform)
         {
             PlatformType platformType = PlatformType.Linux;
 
             switch (platform)
             {
-                case TestPlatform.Grid:
+                case TestPlatformType.Grid:
                     platformType = PlatformType.Linux;
                     break;
 
-                case TestPlatform.GridLocal:
+                case TestPlatformType.GridLocal:
                     platformType = PlatformType.Linux;
                     break;
 
-                case TestPlatform.Linux:
+                case TestPlatformType.Linux:
                     platformType = PlatformType.Linux;
                     break;
 
-                case TestPlatform.Windows:
+                case TestPlatformType.Windows:
                     platformType = PlatformType.Windows;
                     break;
 
-                case TestPlatform.Mac:
+                case TestPlatformType.Mac:
                     platformType = PlatformType.Mac;
                     break;
 
-                case TestPlatform.IOS:
+                case TestPlatformType.IOS:
                     platformType = PlatformType.Mac;
                     break;
 
-                case TestPlatform.Android:
+                case TestPlatformType.Android:
                     platformType = PlatformType.Android;
                     break;
 

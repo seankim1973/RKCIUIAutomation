@@ -30,23 +30,23 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             switch (tenantName)
             {
-                case TenantName.SGWay:
+                case TenantNameType.SGWay:
                     log.Info($"###### using UploadOwnerSubmittal_SGWay instance ###### ");
                     instance = new UploadOwnerSubmittal_SGWay(driver);
                     break;
-                case TenantName.SH249:
+                case TenantNameType.SH249:
                     log.Info($"###### using UploadOwnerSubmittal_SH249 instance ###### ");
                     instance = new UploadOwnerSubmittal_SH249(driver);
                     break;
-                case TenantName.I15South:
+                case TenantNameType.I15South:
                     log.Info($"###### using UploadOwnerSubmittal_I15South instance ###### ");
                     instance = new UploadOwnerSubmittal_I15South(driver);
                     break;
-                case TenantName.I15Tech:
+                case TenantNameType.I15Tech:
                     log.Info($"###### using UploadOwnerSubmittal_I15Tech instance ###### ");
                     instance = new UploadOwnerSubmittal_I15Tech(driver);
                     break;
-                case TenantName.LAX:
+                case TenantNameType.LAX:
                     log.Info($"###### using UploadOwnerSubmittal_LAX instance ###### ");
                     instance = new UploadOwnerSubmittal_LAX(driver);
                     break;

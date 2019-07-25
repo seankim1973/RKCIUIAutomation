@@ -545,37 +545,37 @@ namespace RKCIUIAutomation.Page.Workflows
         {
             ILinkCoverageWF instance = new LinkCoverageWF(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using LinkCoverage_SGWay instance ###### ");
                 instance = new LinkCoverageWF_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using LinkCoverage_SH249 instance ###### ");
                 instance = new LinkCoverageWF_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using LinkCoverage_Garnet instance ###### ");
                 instance = new LinkCoverageWF_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using LinkCoverage_GLX instance ###### ");
                 instance = new LinkCoverageWF_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using LinkCoverage_I15South instance ###### ");
                 instance = new LinkCoverageWF_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using LinkCoverage_I15Tech instance ###### ");
                 instance = new LinkCoverageWF_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using LinkCoverage_LAX instance ###### ");
                 instance = new LinkCoverageWF_LAX(driver);

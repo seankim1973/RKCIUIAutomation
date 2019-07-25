@@ -28,37 +28,37 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             ISearch instance = new Search(driver);
 
-            if (tenantName == TenantName.SGWay)
+            if (tenantName == TenantNameType.SGWay)
             {
                 log.Info($"###### using Search_SGWay instance ###### ");
                 instance = new Search_SGWay(driver);
             }
-            else if (tenantName == TenantName.SH249)
+            else if (tenantName == TenantNameType.SH249)
             {
                 log.Info($"###### using Search_SH249 instance ###### ");
                 instance = new Search_SH249(driver);
             }
-            else if (tenantName == TenantName.Garnet)
+            else if (tenantName == TenantNameType.Garnet)
             {
                 log.Info($"###### using Search_Garnet instance ###### ");
                 instance = new Search_Garnet(driver);
             }
-            else if (tenantName == TenantName.GLX)
+            else if (tenantName == TenantNameType.GLX)
             {
                 log.Info($"###### using Search_GLX instance ###### ");
                 instance = new Search_GLX(driver);
             }
-            else if (tenantName == TenantName.I15South)
+            else if (tenantName == TenantNameType.I15South)
             {
                 log.Info($"###### using Search_I15South instance ###### ");
                 instance = new Search_I15South(driver);
             }
-            else if (tenantName == TenantName.I15Tech)
+            else if (tenantName == TenantNameType.I15Tech)
             {
                 log.Info($"###### using Search_I15Tech instance ###### ");
                 instance = new Search_I15Tech(driver);
             }
-            else if (tenantName == TenantName.LAX)
+            else if (tenantName == TenantNameType.LAX)
             {
                 log.Info($"###### using Search_LAX instance ###### ");
                 instance = new Search_LAX(driver);
