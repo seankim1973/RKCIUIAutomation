@@ -39,6 +39,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         void ClickBtn_AddRemoveTestMethods();
         void CheckForLINError();
 
-        void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier);
+        void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier, string workflowType);
     }
 }

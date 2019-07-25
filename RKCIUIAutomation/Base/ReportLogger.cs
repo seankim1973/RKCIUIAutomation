@@ -135,7 +135,7 @@ namespace RKCIUIAutomation.Base
             CheckForLineBreaksInLogMsgForStdOutLogger(Level.Error, details, e);
         }
 
-        public void Info(string details, ExtentColor extentColor = ExtentColor.Transparent)
+        public void Info(string details, ExtentColor extentColor = ExtentColor.Transparent, bool createStdOutLog = true)
         {
             if (extentColor == ExtentColor.Transparent)
             {
@@ -173,7 +173,10 @@ namespace RKCIUIAutomation.Base
                 testInstance.Info(CreateReportMarkupLabel(details, extentColor));
             }
 
-            CheckForLineBreaksInLogMsgForStdOutLogger(Level.Info, details);
+            if (createStdOutLog)
+            {
+                CheckForLineBreaksInLogMsgForStdOutLogger(Level.Info, details);
+            }
         }
 
         public void Info(string[][] detailsList, bool assertion)

@@ -12,6 +12,7 @@ using OpenQA.Selenium;
 using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.PageObjects.QARecordControl;
 using System.Threading;
+using AventStack.ExtentReports.MarkupUtils;
 
 namespace RKCIUIAutomation.Test.TestMethods
 {
@@ -39,13 +40,13 @@ namespace RKCIUIAutomation.Test.TestMethods
 
             IList<WorkflowType> workflowTypeList = new List<WorkflowType>()
             {
+                WorkflowType.A1,
                 WorkflowType.E1,
                 WorkflowType.E2,
                 WorkflowType.E3,
                 WorkflowType.F1,
                 WorkflowType.F2,
-                WorkflowType.F3,
-                WorkflowType.A1
+                WorkflowType.F3
             };
             try
             {
@@ -57,6 +58,8 @@ namespace RKCIUIAutomation.Test.TestMethods
                     Console.WriteLine($"****************************************************");
                     Console.WriteLine($"        WORKFLOWTYPE : {workflowType}");
                     Console.WriteLine($"****************************************************");
+
+                    Report.Info($"WORKFLOWTYPE : {workflowType}", ExtentColor.Yellow, false);
 
                     try
                     {
@@ -92,17 +95,20 @@ namespace RKCIUIAutomation.Test.TestMethods
                     */
                     #endregion
 
-                    #region Select all TestMethod Checkboxes
                     IList<string> testMethodsToAddList = new List<string>();
                     By checkBoxLocator = By.XPath("//span[contains(@style, 'inline-flex')]/preceding-sibling::span/input[contains(@class, 'k-checkbox')]");
                     ((List<string>)testMethodsToAddList).AddRange(GetAttributeForElements(checkBoxLocator, "identifier"));
-                    QATestMethod.AddTestMethod(testMethodsToAddList);
-                    QATestMethod.ClickModalBtn_Save();
-                    #endregion
 
 
-                    QATestMethod.GatherTestMethodInputFieldAttributeDetails(testMethodsToAddList);
+                    foreach (string testMethodsToAdd in testMethodsToAddList)
+                    {
+                        QATestMethod.AddTestMethod(testMethodsToAdd);
+                        QATestMethod.ClickModalBtn_Save();
+                        QATestMethod.GatherTestMethodInputFieldAttributeDetails(testMethodsToAdd, workflowType.GetString());
+                        QATestMethod.ClickBtn_AddRemoveTestMethods();
+                    }
 
+                    QATestMethod.ClickModalBtn_Close();
                     QATestMethod.ClickBtn_Cancel();
                 }
             }

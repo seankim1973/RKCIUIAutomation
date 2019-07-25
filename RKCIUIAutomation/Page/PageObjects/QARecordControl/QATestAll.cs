@@ -531,41 +531,55 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             By sequenceNumberLocator = By.XPath("//input[@id='SequenceNumber']");
             By errorLINExists = By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(), 'LIN exists')]");
             bool errorLINExistsIsDisplayed = true;
+            string sequenceNumber = string.Empty;
 
             do
             {
                 if (LastKnownSequenceNumber > 1)
                 {
-                    EnterText(sequenceNumberLocator, LastKnownSequenceNumber.ToString());
-                    QATestMethod.ClickBtn_Save();
-                }
+                    LastKnownSequenceNumber = LastKnownSequenceNumber + 1;
 
-                GetElement(errorLINExists);
-
-                string sequenceNumber = GetText(sequenceNumberLocator, logReport: false);
-                int newValue = int.Parse(sequenceNumber) + 1;
-
-                if (newValue < 10)
-                {
-                    sequenceNumber = $"0{newValue}";
+                    if (LastKnownSequenceNumber < 10)
+                    {
+                        sequenceNumber = $"0{LastKnownSequenceNumber}";
+                    }
+                    else
+                    {
+                        sequenceNumber = LastKnownSequenceNumber.ToString();
+                    }
                 }
                 else
                 {
-                    sequenceNumber = newValue.ToString();
+                    GetElement(errorLINExists);
+
+                    sequenceNumber = GetText(sequenceNumberLocator, logReport: false);
+                    int newValue = int.Parse(sequenceNumber) + 1;
+
+                    if (newValue < 10)
+                    {
+                        sequenceNumber = $"0{newValue}";
+                    }
+                    else
+                    {
+                        sequenceNumber = newValue.ToString();
+                    }
                 }
 
                 LastKnownSequenceNumber = int.Parse(sequenceNumber);
 
-                EnterText(sequenceNumberLocator, LastKnownSequenceNumber.ToString());
+                EnterText(sequenceNumberLocator, sequenceNumber);
                 QATestMethod.ClickBtn_Save();
+
                 try
                 {
                     GetElement(errorLINExists);
+                    LastKnownSequenceNumber = int.Parse(GetText(sequenceNumberLocator, logReport: false));
                 }
                 catch (NoSuchElementException)
                 {
                     errorLINExistsIsDisplayed = false;
                 }
+
             } while (errorLINExistsIsDisplayed);
 
             throw new NoSuchElementException();
@@ -637,7 +651,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             while (modalIsDisplayed);
         }
 
-        public override void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier)
+        public override void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier, string workflowType)
         {
             Type argType = testMethodIdentifier.GetType();
 
@@ -683,7 +697,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 string testMethodContainerFluidDivXPath = $"{testMethodTestFormDivXPath}//div[@class='container-fluid']";
 
                 string testMethodDivHeader = GetText(By.XPath(headerDescriptionXPath), logReport: false);
-                Console.WriteLine($"\n============ BEGINING of HEADER: {testMethodDivHeader} ============");
+
+                string logMsg = string.Empty;
+                logMsg = $"\n============ BEGINING of TestMethod HEADER: ({workflowType}) {testMethodDivHeader} ============";
+                Console.WriteLine(logMsg);
+                Report.Info(logMsg, ExtentColor.Yellow, false);
 
                 textboxFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//input[contains(@class, 'k-textbox')]"));
                 if (textboxFieldElementsList.Any())
@@ -705,11 +723,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                                 textboxFieldLabel = GetText(By.XPath($"//input[@id='{textboxFieldId}']/parent::div/preceding-sibling::label"), logReport: false);
                             }
                             Console.WriteLine($">>>> TEXTBOX LABEL : {textboxFieldLabel}");
-                            Report.Info($"TEXTBOX Attributes:<br> -- LABEL : {textboxFieldLabel}<br> -- ID : {textboxFieldId}", ExtentColor.Blue);
+                            Report.Info($"TEXTBOX Attributes:<br> -- LABEL : {textboxFieldLabel}<br> -- ID : {textboxFieldId}", ExtentColor.Blue, false);
                         }
-                        catch (NoSuchElementException)
+                        catch (Exception e)
                         {
-                            log.Error($"!!!!!!!!!! NoSuchElementException FOR {textboxFieldElem} !!!!!!!!!!");
+                            log.Error($"{e.Message}\n{e.StackTrace}");
                         }
 
                         Console.WriteLine("#########################################\n");
@@ -727,11 +745,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             Console.WriteLine($">>>> CHECKBOX ID : {checkboxFieldId}");
                             string checkboxFieldLabel = GetText(By.XPath($"//input[@id='{checkboxFieldId}']/following-sibling::label"), logReport: false);
                             Console.WriteLine($">>>> CHECKBOX LABEL : {checkboxFieldLabel}");
-                            Report.Info($"CHECKBOX Attributes:<br> -- LABEL : {checkboxFieldLabel}<br> -- ID : {checkboxFieldId}", ExtentColor.Blue);
+                            Report.Info($"CHECKBOX Attributes:<br> -- LABEL : {checkboxFieldLabel}<br> -- ID : {checkboxFieldId}", ExtentColor.Blue, false);
                         }
-                        catch (NoSuchElementException)
+                        catch (Exception e)
                         {
-                            log.Error($"!!!!!!!!!! NoSuchElementException FOR {checkboxFieldElem} !!!!!!!!!!");
+                            log.Error($"{e.Message}\n{e.StackTrace}");
                         }
 
                         Console.WriteLine("#########################################\n");
@@ -758,20 +776,37 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             }
 
                             string inputFieldLabel = string.Empty;
+
+                            By siblingLabelLocator = By.XPath($"//input[@id='{inputFieldId}']/parent::span{labelParentXPath}/preceding-sibling::label");
+                            By siblingLabelWithParentDivLocator = By.XPath($"//input[@id='{inputFieldId}']/parent::span{labelParentXPath}/parent::div/preceding-sibling::label");
+                            
                             try
                             {
-                                inputFieldLabel = GetText(By.XPath($"//input[@id='{inputFieldId}']/parent::span{labelParentXPath}/preceding-sibling::label"), logReport: false);
+                                IWebElement inputFieldLabelElem = driver.FindElement(siblingLabelLocator)
+                                ?? driver.FindElement(siblingLabelWithParentDivLocator);
+                                inputFieldLabel = inputFieldLabelElem.Text;
+
+                                //inputFieldLabel = GetText(By.XPath($"//input[@id='{inputFieldId}']/parent::span{labelParentXPath}/preceding-sibling::label"), logReport: false);
                             }
                             catch (NoSuchElementException)
                             {
-                                inputFieldLabel = GetText(By.XPath($"//input[@id='{inputFieldId}']/parent::span{labelParentXPath}/parent::div/preceding-sibling::label"), logReport: false);
+                                //try
+                                //{
+                                //    inputFieldLabel = GetText(By.XPath($"//input[@id='{inputFieldId}']/parent::span{labelParentXPath}/parent::div/preceding-sibling::label"), logReport: false);
+                                //}
+                                //catch (NoSuchElementException)
+                                //{
+                                //    inputFieldLabel = "No Direct Parent Label";
+                                //}
+
+                                inputFieldLabel = "No Direct Parent Label";
                             }
                             Console.WriteLine($">>>> INPUT FIELD LABEL : {inputFieldLabel}");
-                            Report.Info($"INPUT FIELD Attributes:<br> -- LABEL : {inputFieldLabel}<br> -- ID : {inputFieldId}<br> -- DATA-ROLE : {inputFieldDataRole}", ExtentColor.Blue);
+                            Report.Info($"INPUT FIELD Attributes:<br> -- LABEL : {inputFieldLabel}<br> -- ID : {inputFieldId}<br> -- DATA-ROLE : {inputFieldDataRole}", ExtentColor.Blue, false);
                         }
-                        catch (NoSuchElementException)
+                        catch (Exception e)
                         {
-                            log.Error($"!!!!!!!!!! NoSuchElementException FOR {inputFieldElem} !!!!!!!!!!");
+                            log.Error($"{e.Message}\n{e.StackTrace}");
                         }
 
                         Console.WriteLine("#########################################\n");
@@ -789,7 +824,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             Console.WriteLine($">>>> TEXTAREA FIELD ID : {textareaFieldId}");
                             string textareaFieldLabel = GetText(By.XPath($"//textarea[@id='{textareaFieldId}']/preceding-sibling::label"), logReport: false);
                             Console.WriteLine($">>>> TEXTAREA FIELD LABEL : {textareaFieldLabel}");
-                            Report.Info($"TEXTAREA FIELD Attributes:<br> -- LABEL : {textareaFieldLabel}<br> -- ID : {textareaFieldId}", ExtentColor.Blue);
+                            Report.Info($"TEXTAREA FIELD Attributes:<br> -- LABEL : {textareaFieldLabel}<br> -- ID : {textareaFieldId}", ExtentColor.Blue, false);
                         }
                         catch (NoSuchElementException)
                         {
@@ -800,7 +835,9 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                     }
                 }
 
-                Console.WriteLine($"============ END of HEADER: {testMethodDivHeader} ============\n");
+                logMsg = $"============ END of TestMethod HEADER: ({workflowType}) {testMethodDivHeader} ============\n";               
+                Console.WriteLine(logMsg);
+                Report.Info(logMsg, ExtentColor.Yellow, false);
             }
         }
     }
@@ -834,7 +871,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void ClickBtn_AddRemoveTestMethods();
         public abstract void CheckForLINError();
         public abstract void AddTestMethod<T>(T AvailableTestMethodType);
-        public abstract void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier);
+        public abstract void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier, string workflowType);
         public abstract void ClickModalBtn_Save();
         public abstract void ClickModalBtn_Cancel();
         public abstract void ClickModalBtn_Close();
