@@ -524,8 +524,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public override void ClickBtn_AddRemoveTestMethods()
             => PageAction.ClickElementByID(ButtonType.AddRemoveTestMethods);
 
-        static int LastKnownSequenceNumber { get; set; }
-
         public override void CheckForLINError()
         {
             By sequenceNumberLocator = By.XPath("//input[@id='SequenceNumber']");
@@ -535,37 +533,19 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
             do
             {
-                if (LastKnownSequenceNumber > 1)
-                {
-                    LastKnownSequenceNumber = LastKnownSequenceNumber + 1;
+                GetElement(errorLINExists);
 
-                    if (LastKnownSequenceNumber < 10)
-                    {
-                        sequenceNumber = $"0{LastKnownSequenceNumber}";
-                    }
-                    else
-                    {
-                        sequenceNumber = LastKnownSequenceNumber.ToString();
-                    }
+                sequenceNumber = GetText(sequenceNumberLocator, logReport: false);
+                int newValue = int.Parse(sequenceNumber) + 1;
+
+                if (newValue < 10)
+                {
+                    sequenceNumber = $"0{newValue}";
                 }
                 else
                 {
-                    GetElement(errorLINExists);
-
-                    sequenceNumber = GetText(sequenceNumberLocator, logReport: false);
-                    int newValue = int.Parse(sequenceNumber) + 1;
-
-                    if (newValue < 10)
-                    {
-                        sequenceNumber = $"0{newValue}";
-                    }
-                    else
-                    {
-                        sequenceNumber = newValue.ToString();
-                    }
+                    sequenceNumber = newValue.ToString();
                 }
-
-                LastKnownSequenceNumber = int.Parse(sequenceNumber);
 
                 EnterText(sequenceNumberLocator, sequenceNumber);
                 QATestMethod.ClickBtn_Save();
@@ -573,7 +553,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 try
                 {
                     GetElement(errorLINExists);
-                    LastKnownSequenceNumber = int.Parse(GetText(sequenceNumberLocator, logReport: false));
                 }
                 catch (NoSuchElementException)
                 {
@@ -690,8 +669,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 IList<IWebElement> inputFieldElementsList = null;
                 IList<IWebElement> checkboxFieldElementsList = null;
                 IList<IWebElement> textboxFieldElementsList = null;
-                IList<IWebElement> wellDivInputElementsList = null;
-                IList<string> wellDivInputLabelsList = null;
 
                 testMethodIdentifierInputDivXPath = $"//input[contains(@id, 'TestMethod_DisplayName')][@value='{identifier}']";
                 string testMethodTestFormDivXPath = $"{testMethodIdentifierInputDivXPath}//ancestor::div[contains(@class, 'ElvisTestForm')]";
@@ -701,9 +678,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 string testMethodDivHeader = GetText(By.XPath(headerDescriptionXPath), logReport: false);
 
                 string logMsg = string.Empty;
-                logMsg = $"\n============ BEGINING of TestMethod HEADER: ({workflowType}) {testMethodDivHeader} ============";
-                Console.WriteLine(logMsg);
-                Report.Info(logMsg, ExtentColor.Yellow, false);
+                logMsg = $"<br>============ BEGINING of TestMethod HEADER: ({workflowType}) {testMethodDivHeader} ============";
+                Report.Info(logMsg, ExtentColor.Yellow);
 
                 textboxFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//input[contains(@class, 'k-textbox')]"));
                 if (textboxFieldElementsList.Any())
@@ -713,7 +689,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         try
                         {
                             string textboxFieldId = textboxFieldElem.GetAttribute("id");
-                            Console.WriteLine($">>>> TEXTBOX ID : {textboxFieldId}");
                             string textboxFieldLabel = string.Empty;
 
                             try
@@ -728,44 +703,18 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                                 }
                                 catch (NoSuchElementException)
                                 {
-                                    try
-                                    {
-                                        GetElements(By.XPath($"//input[@id='{textboxFieldId}']/ancestor::div[@class='well well-lg']"));
-                                        wellDivInputLabelsList = GetTextForElements(By.XPath($"{testMethodContainerFluidDivXPath}//div[contains(@class,'col-lg-2 col-md-2 col-sm-2')]//label"));
-
-                                        string wellDivInputElementXPath = $"//{testMethodContainerFluidDivXPath}//div[@class='well well-lg']/div[contains(@class,'row')]";
-                                        wellDivInputElementsList = GetElements(By.XPath(wellDivInputElementXPath));
-
-                                        for (var i = 0; i < wellDivInputElementsList.Count; i++)
-                                        {
-                                            int wellDivRowNumber = i + 1;
-
-                                            try
-                                            {
-                                                GetElements(By.XPath($"{wellDivInputElementXPath}[{wellDivRowNumber}]//input[contains(@class, 'k-textbox')]"));
-                                                textboxFieldLabel = wellDivInputLabelsList[i];
-                                            }
-                                            catch (NoSuchElementException)
-                                            {
-                                                textboxFieldLabel = $"Label not found for Input field in Well-Div row {wellDivRowNumber}";
-                                            }
-                                        }
-                                    }
-                                    catch (NoSuchElementException)
-                                    {
-                                        textboxFieldLabel = "No Direct label found";
-                                    }
+                                    textboxFieldLabel = "NOT FOUND";
                                 }
                             }
-                            Console.WriteLine($">>>> TEXTBOX LABEL : {textboxFieldLabel}");
-                            Report.Info($"TEXTBOX Attributes:<br> -- LABEL : {textboxFieldLabel}<br> -- ID : {textboxFieldId}", ExtentColor.Blue, false);
+
+                            Report.Info($"TEXTBOX Attributes:<br> -- ID : {textboxFieldId}<br> -- LABEL : {textboxFieldLabel}", ExtentColor.Blue);
                         }
                         catch (Exception e)
                         {
                             log.Error($"{e.Message}\n{e.StackTrace}");
                         }
 
-                        Console.WriteLine("#########################################\n");
+                        Report.Info("#########################################<br>", ExtentColor.Grey);
                     }
                 }
 
@@ -777,8 +726,6 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         try
                         {
                             string checkboxFieldId = checkboxFieldElem.GetAttribute("id");
-                            Console.WriteLine($">>>> CHECKBOX ID : {checkboxFieldId}");
-
                             string checkboxFieldLabel = string.Empty;
                             try
                             {
@@ -786,43 +733,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             }
                             catch (NoSuchElementException)
                             {
-                                try
-                                {
-                                    GetElements(By.XPath($"//input[@id='{checkboxFieldId}']/ancestor::div[@class='well well-lg']"));
-                                    wellDivInputLabelsList = GetTextForElements(By.XPath($"{testMethodContainerFluidDivXPath}//div[contains(@class,'col-lg-2 col-md-2 col-sm-2')]//label"));
-
-                                    string wellDivInputElementXPath = $"//{testMethodContainerFluidDivXPath}//div[@class='well well-lg']/div[contains(@class,'row')]";
-                                    wellDivInputElementsList = GetElements(By.XPath(wellDivInputElementXPath));
-
-                                    for (var i = 0; i < wellDivInputElementsList.Count; i++)
-                                    {
-                                        int wellDivRowNumber = i + 1;
-
-                                        try
-                                        {
-                                            GetElements(By.XPath($"{wellDivInputElementXPath}[{wellDivRowNumber}]//input[@class='k-checkbox']"));
-                                            checkboxFieldLabel = wellDivInputLabelsList[i];
-                                        }
-                                        catch (NoSuchElementException)
-                                        {
-                                            checkboxFieldLabel = $"Label not found for Input field in Well-Div row {wellDivRowNumber}";
-                                        }
-                                    }
-                                }
-                                catch (NoSuchElementException)
-                                {
-                                    checkboxFieldLabel = "No Direct label found";
-                                }
+                                checkboxFieldLabel = "NOT FOUND";
                             }
-                            Console.WriteLine($">>>> CHECKBOX LABEL : {checkboxFieldLabel}");
-                            Report.Info($"CHECKBOX Attributes:<br> -- LABEL : {checkboxFieldLabel}<br> -- ID : {checkboxFieldId}", ExtentColor.Blue, false);
+
+                            Report.Info($"CHECKBOX Attributes:<br> -- ID : {checkboxFieldId}<br> -- LABEL : {checkboxFieldLabel}", ExtentColor.Blue);
                         }
                         catch (Exception e)
                         {
                             log.Error($"{e.Message}\n{e.StackTrace}");
                         }
 
-                        Console.WriteLine("#########################################\n");
+                        Report.Info("#########################################<br>", ExtentColor.Grey);
                     }
                 }
 
@@ -834,9 +755,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         try
                         {
                             string inputFieldId = inputFieldElem.GetAttribute("id");
-                            Console.WriteLine($">>>> INPUT FIELD ID : {inputFieldId}");
                             string inputFieldDataRole = inputFieldElem.GetAttribute("data-role");
-                            Console.WriteLine($">>>> INPUT FIELD DATA-ROLE : {inputFieldDataRole}");
 
                             string labelParentXPath = "/parent::span";
 
@@ -858,43 +777,17 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                             }
                             catch (NoSuchElementException)
                             {
-                                try
-                                {
-                                    GetElements(By.XPath($"//input[@id='{inputFieldId}']/ancestor::div[@class='well well-lg']"));
-                                    wellDivInputLabelsList = GetTextForElements(By.XPath($"{testMethodContainerFluidDivXPath}//div[contains(@class,'col-lg-2 col-md-2 col-sm-2')]//label"));
-
-                                    string wellDivInputElementXPath = $"//{testMethodContainerFluidDivXPath}//div[@class='well well-lg']/div[contains(@class,'row')]";
-                                    wellDivInputElementsList = GetElements(By.XPath(wellDivInputElementXPath));
-
-                                    for (var i = 0; i < wellDivInputElementsList.Count; i++)
-                                    {
-                                        int wellDivRowNumber = i + 1;
-
-                                        try
-                                        {
-                                            GetElements(By.XPath($"{wellDivInputElementXPath}[{wellDivRowNumber}]//input[@data-role]"));
-                                            inputFieldLabel = wellDivInputLabelsList[i];
-                                        }
-                                        catch (NoSuchElementException)
-                                        {
-                                            inputFieldLabel = $"Label not found for Input field in Well-Div row {wellDivRowNumber}";
-                                        }
-                                    }
-                                }
-                                catch (NoSuchElementException)
-                                {
-                                    inputFieldLabel = "No Direct label found";
-                                }
+                                inputFieldLabel = "NOT FOUND";
                             }
-                            Console.WriteLine($">>>> INPUT FIELD LABEL : {inputFieldLabel}");
-                            Report.Info($"INPUT FIELD Attributes:<br> -- LABEL : {inputFieldLabel}<br> -- ID : {inputFieldId}<br> -- DATA-ROLE : {inputFieldDataRole}", ExtentColor.Blue, false);
+
+                            Report.Info($"INPUT FIELD Attributes:<br> -- ID : {inputFieldId}<br> -- DATA-ROLE : {inputFieldDataRole}<br> -- LABEL : {inputFieldLabel}", ExtentColor.Blue);
                         }
                         catch (Exception e)
                         {
                             log.Error($"{e.Message}\n{e.StackTrace}");
                         }
 
-                        Console.WriteLine("#########################################\n");
+                        Report.Info("#########################################<br>", ExtentColor.Grey);
                     }
                 }
 
@@ -906,23 +799,31 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         try
                         {
                             string textareaFieldId = textareaFieldElem.GetAttribute("id");
-                            Console.WriteLine($">>>> TEXTAREA FIELD ID : {textareaFieldId}");
-                            string textareaFieldLabel = GetText(By.XPath($"//textarea[@id='{textareaFieldId}']/preceding-sibling::label"), logReport: false);
-                            Console.WriteLine($">>>> TEXTAREA FIELD LABEL : {textareaFieldLabel}");
-                            Report.Info($"TEXTAREA FIELD Attributes:<br> -- LABEL : {textareaFieldLabel}<br> -- ID : {textareaFieldId}", ExtentColor.Blue, false);
+                            string textareaFieldLabel = string.Empty;
+
+                            try
+                            {
+                                textareaFieldLabel = GetText(By.XPath($"//textarea[@id='{textareaFieldId}']/preceding-sibling::label"), logReport: false);
+                            }
+                            catch (NoSuchElementException)
+                            {
+                                textareaFieldLabel = "NOT FOUND";
+                            }
+
+                            Report.Info($"TEXTAREA FIELD Attributes:<br> -- ID : {textareaFieldId}<br> -- LABEL : {textareaFieldLabel}", ExtentColor.Blue);
+
                         }
-                        catch (NoSuchElementException)
+                        catch (Exception e)
                         {
-                            log.Error($"!!!!!!!!!! NoSuchElementException FOR {textareaFieldElem} !!!!!!!!!!");
+                            log.Error($"{e.Message}\n{e.StackTrace}");
                         }
 
-                        Console.WriteLine("#########################################\n");
+                        Report.Info("#########################################<br>", ExtentColor.Grey);
                     }
                 }
 
                 logMsg = $"============ END of TestMethod HEADER: ({workflowType}) {testMethodDivHeader} ============\n";               
-                Console.WriteLine(logMsg);
-                Report.Info(logMsg, ExtentColor.Yellow, false);
+                Report.Info(logMsg, ExtentColor.Yellow);
             }
         }
     }
