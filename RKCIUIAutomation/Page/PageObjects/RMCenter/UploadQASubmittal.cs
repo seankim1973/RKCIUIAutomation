@@ -102,11 +102,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             [StringValue("Number")] Number
         }
 
-        public enum UIFields
-        {
-
-        }
-
         [ThreadStatic]
         internal static IList<EntryFieldType> tenantRoundOneRequiredFields;
 
@@ -340,17 +335,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 var desc = StaticHelpers.GetDescription(column);
                 var value = string.Empty;
                 if (desc != null)
-                {
-                    if (desc.StartsWith("div"))
-                    {
-                        var valueArray = Driver.FindElement(By.XPath("//input[@id='" + desc.Split('/')[1] + "']/parent::div")).Text.Split('\n');
-                        value = (valueArray.Length > 1) ? valueArray[1] : "New";
-                    }
-                    else
-                        value = PageAction.GetText(By.Id(desc));
-
-                    values.Add(column, value);
-                }
+                    values.Add(column, Value(desc));
             }
 
             if (isSaveFlow)
@@ -360,6 +345,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             
             return values;
+        }
+
+        public virtual string Value(string desc)
+        {
+            string value = string.Empty;
+            if (desc.StartsWith("div"))
+            {
+                var valueArray = Driver.FindElement(By.XPath("//input[@id='" + desc.Split('/')[1] + "']/parent::div")).Text.Split('\n');
+                value = (valueArray.Length > 1) ? valueArray[1] : "New";
+            }
+            else
+                value = PageAction.GetText(By.Id(desc));
+
+            return value;
         }
 
         private void VerifyRequiredFields(IList<EntryFieldType> actualFields, bool isSaveFlow = false)
@@ -448,6 +447,20 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         EntryFieldType.SubmittalActionId,
                         EntryFieldType.Attachments
                     };
+        }
+
+        public override string Value(string desc)
+        {
+            string value = string.Empty;
+            if (desc.StartsWith("div"))
+            {
+                var valueArray = Driver.FindElement(By.XPath("//input[@id='" + desc.Split('/')[1] + "']/parent::div")).Text.Split('\n');
+                value = (valueArray.Length > 1) ? valueArray[1] : "In Progress";
+            }
+            else
+                value = PageAction.GetText(By.Id(desc));
+
+            return value;
         }
     }
 
