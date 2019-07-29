@@ -38,6 +38,11 @@ namespace RKCIUIAutomation.Config
         Local,
         Linux
     }
+    public enum ReporterType
+    {
+        Html,
+        Klov
+    }
 
     public enum BrowserType
     {
@@ -82,9 +87,4 @@ namespace RKCIUIAutomation.Config
         [StringValue("AT_TestTechMgr")] TestTechMgr,
     }
 
-    public enum ReporterType
-    {
-        Html,
-        Klov
-    }
 }

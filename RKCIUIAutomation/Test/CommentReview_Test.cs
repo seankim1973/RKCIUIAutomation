@@ -1,10 +1,6 @@
 ﻿using NUnit.Framework;
 using NUnit.Framework.Internal;
-using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Page;
 using RKCIUIAutomation.Page.Workflows;
-using System.Collections.Generic;
-using System.Threading;
 using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Test.CommentReview
