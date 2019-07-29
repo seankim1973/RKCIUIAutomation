@@ -95,7 +95,11 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
             Status, 
 
             [StringValue("IsLocked")] IsLocked,
+
+            [Description("")]
             [StringValue("LockedDateGrid")] LockedDateGrid,
+
+            [Description("")]
             [StringValue("RecordLock.CreatedBy")] RecordLockCreatedBy,
 
             //Search Column Name
@@ -156,30 +160,28 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         {
             bool status = true;
 
-            foreach (var valuePair in values)
-            {
-                status = status && 
-                    GridHelper.VerifyRecordIsDisplayed(
-                        valuePair.Key, valuePair.Value, TableHelper.TableType.Single);
-
-                TestUtility.AddAssertionToList(status, string.Format("Filter Validation, Key: {0}, Value: {1}", valuePair.Key, valuePair.Value));
-            }
-
+            //Filter the record
             GridHelper.VerifyRecordIsDisplayed(ColumnName.SubmittalNumber, values[ColumnName.SubmittalNumber], TableHelper.TableType.Single);
-           
+
             //Open the record
             GridHelper.ClickButtonForRow(Page.TableHelper.TableButton.View, string.Empty, false);
 
             //Go back to Revise Review Submittal page - so the record gets locked
             NavigateToPage.RMCenter_Review_Revise_Submittal();
 
-            GridHelper.VerifyRecordIsDisplayed(ColumnName.SubmittalNumber, values[ColumnName.SubmittalNumber], TableHelper.TableType.Single);
+            foreach (var valuePair in values)
+            {
+                status = status && 
+                    GridHelper.VerifyRecordIsDisplayed(
+                        valuePair.Key, 
+                        valuePair.Value, 
+                        TableHelper.TableType.Single, 
+                        false, 
+                        valuePair.Key.Equals(ColumnName.LockedDateGrid) ? FilterOperator.GreaterThanOrEqualTo : FilterOperator.Contains
+                    );
 
-            //Verify if grid displays as locked by current user
-            status = status && GridHelper.VerifyRecordIsDisplayed(
-                        ColumnName.RecordLockCreatedBy, ConfigUtil.GetCurrentUserEmail(), TableHelper.TableType.Single);
-
-            TestUtility.AddAssertionToList(status, string.Format("Filter Validation, Key: {0}, Value: {1}", ColumnName.RecordLockCreatedBy, ConfigUtil.GetCurrentUserEmail()));
+                TestUtility.AddAssertionToList(status, string.Format("Filter Validation, Key: {0}, Value: {1}", valuePair.Key, valuePair.Value));
+            }
         }
 
         #region #endregion Common Workflow Implementation class
@@ -335,8 +337,26 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                 var desc = StaticHelpers.GetDescription(column);
                 var value = string.Empty;
                 if (desc != null)
-                    values.Add(column, Value(desc));
+                {
+                    if (desc.StartsWith("div"))
+                    {
+                        var valueArray = Driver.FindElement(By.XPath("//input[@id='" + desc.Split('/')[1] + "']/parent::div")).Text.Split('\n');
+                        value = (valueArray.Length > 1) ? valueArray[1] : "In Progress";
+                    }
+                    else if (!string.IsNullOrEmpty(desc))
+                        value = PageAction.GetText(By.Id(desc));
+                    else
+                        value = string.Empty;
+
+                    //Add value to collection
+                    values.Add(column, value);
+                }
             }
+
+            //Add 'Date' to list to be filtering list
+            values[ColumnName.LockedDateGrid] = DateTime.Now.ToShortDateString();
+            //Add 'Locked by' to list to be filtering list
+            values[ColumnName.RecordLockCreatedBy] = ConfigUtil.GetCurrentUserEmail();
 
             if (isSaveFlow)
                 ClickSave();
@@ -345,20 +365,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
             
             return values;
-        }
-
-        public virtual string Value(string desc)
-        {
-            string value = string.Empty;
-            if (desc.StartsWith("div"))
-            {
-                var valueArray = Driver.FindElement(By.XPath("//input[@id='" + desc.Split('/')[1] + "']/parent::div")).Text.Split('\n');
-                value = (valueArray.Length > 1) ? valueArray[1] : "New";
-            }
-            else
-                value = PageAction.GetText(By.Id(desc));
-
-            return value;
         }
 
         private void VerifyRequiredFields(IList<EntryFieldType> actualFields, bool isSaveFlow = false)
@@ -447,20 +453,6 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                         EntryFieldType.SubmittalActionId,
                         EntryFieldType.Attachments
                     };
-        }
-
-        public override string Value(string desc)
-        {
-            string value = string.Empty;
-            if (desc.StartsWith("div"))
-            {
-                var valueArray = Driver.FindElement(By.XPath("//input[@id='" + desc.Split('/')[1] + "']/parent::div")).Text.Split('\n');
-                value = (valueArray.Length > 1) ? valueArray[1] : "In Progress";
-            }
-            else
-                value = PageAction.GetText(By.Id(desc));
-
-            return value;
         }
     }
 
