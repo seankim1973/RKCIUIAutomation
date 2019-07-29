@@ -487,6 +487,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 CreateWorkflowType(CreateType.New, workflowType, testType);
+                WaitForElement(By.XPath("//div[@id='LotDiv']//label[contains(text(),'Workflow Type')]"));
             }
             catch (Exception e)
             {
