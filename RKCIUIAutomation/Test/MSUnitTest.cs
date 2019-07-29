@@ -516,10 +516,16 @@ namespace RKCIUIAutomation.Sandbox
         [TestMethod]
         public void ShortDate()
         {
-            string shortDate = DateTime.MaxValue.Date.ToShortDateString();
-            //DateTime.Now.ToShortDateString();
-            string shortTime = DateTime.Now.ToShortTimeString();
-            Console.WriteLine($"{shortDate} {shortTime}");
+            //string shortDate = DateTime.MaxValue.Date.ToShortDateString();
+            ////DateTime.Now.ToShortDateString();
+            //string shortTime = DateTime.Now.ToShortTimeString();
+            //Console.WriteLine($"{shortDate} {shortTime}");
+
+            var today = DateTime.Now.ToShortDateString();
+            string[] splitDate = Regex.Split(today, "/");
+            string mm = splitDate[0];
+            string dd = splitDate[1];
+            string yy = Regex.Split(splitDate[2], "20")[1];
         }
 
         [TestMethod]

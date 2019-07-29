@@ -53,6 +53,7 @@ namespace RKCIUIAutomation.Test.TestMethods
                 foreach (var workflowType in workflowTypeList)
                 {
                     QATestMethod.CreateNewTestRecord(workflowType);
+                    
                     QATestMethod.ClickBtn_Save();
 
                     Console.WriteLine($"****************************************************");
