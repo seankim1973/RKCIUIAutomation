@@ -12,7 +12,7 @@ using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Tools
 {
-    extern alias newtJson;
+    //extern alias newtJson;
 
     public static class HipTest
     {
@@ -187,16 +187,16 @@ namespace RKCIUIAutomation.Tools
 
         public class Attributes
         {
-            [newtJson.Newtonsoft.Json.JsonProperty("scenario-snapshot-id")]
+            [Newtonsoft.Json.JsonProperty("scenario-snapshot-id")]
             public int scenario_snapshot_id { get; set; }
 
-            [newtJson.Newtonsoft.Json.JsonProperty("created-at")]
+            [Newtonsoft.Json.JsonProperty("created-at")]
             public DateTime created_at { get; set; }
 
-            [newtJson.Newtonsoft.Json.JsonProperty("updated-at")]
+            [Newtonsoft.Json.JsonProperty("updated-at")]
             public DateTime updated_at { get; set; }
 
-            [newtJson.Newtonsoft.Json.JsonProperty("last-author")]
+            [Newtonsoft.Json.JsonProperty("last-author")]
             public string last_author { get; set; }
 
             public string name { get; set; }
@@ -204,7 +204,7 @@ namespace RKCIUIAutomation.Tools
             public Statuses statuses { get; set; }
             public string status { get; set; }
 
-            [newtJson.Newtonsoft.Json.JsonProperty("status-author")]
+            [Newtonsoft.Json.JsonProperty("status-author")]
             public string status_author { get; set; }
 
             public bool archived { get; set; }
@@ -268,7 +268,7 @@ namespace RKCIUIAutomation.Tools
 
             public Tags tags { get; set; }
 
-            [newtJson.Newtonsoft.Json.JsonProperty("tag-snapshots")]
+            [Newtonsoft.Json.JsonProperty("tag-snapshots")]
             public TagSnapshots tagSnapshots { get; set; }
         }
 
@@ -285,10 +285,10 @@ namespace RKCIUIAutomation.Tools
 
         public class Relationships
         {
-            [newtJson.Newtonsoft.Json.JsonProperty("test-snapshot")]
+            [Newtonsoft.Json.JsonProperty("test-snapshot")]
             public TestSnapshot testSnapshot { get; set; }
 
-            [newtJson.Newtonsoft.Json.JsonProperty("last-result")]
+            [Newtonsoft.Json.JsonProperty("last-result")]
             public LastResult lastResult { get; set; }
 
             public Tags tags { get; set; }

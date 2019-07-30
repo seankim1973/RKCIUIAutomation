@@ -106,12 +106,12 @@ namespace RKCIUIAutomation.Page
 
         public override string AcceptAlertMessage()
         {
+            IAlert alert = null;
             string alertMsg = string.Empty;
 
             try
             {
-                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
-                alert = driver.SwitchTo().Alert();
+                alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 alertMsg = alert.Text;
                 alert.Accept();
                 Report.Step($"Accepted browser alert: '{alertMsg}'");
@@ -194,7 +194,7 @@ namespace RKCIUIAutomation.Page
             }
             catch (Exception e)
             {
-                Report.Error(e.Message);
+                Report.Error($"{e.Message}\n{e.StackTrace}");
                 throw;
             }
         }
@@ -309,14 +309,12 @@ namespace RKCIUIAutomation.Page
 
         public override void ConfirmActionDialog(bool confirmYes = true)
         {
+            IAlert alert = null;
             string actionMsg = string.Empty;
 
             try
             {
-                //IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
-                WebDriverWait wait = GetStandardWait(driver);
-                IAlert alert = wait.Until(ExpectedConditions.AlertIsPresent());
-
+                alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 alert = driver.SwitchTo().Alert();
 
                 if (confirmYes)
@@ -344,12 +342,12 @@ namespace RKCIUIAutomation.Page
 
         public override string DismissAlertMessage()
         {
+            IAlert alert = null;
             string alertMsg = string.Empty;
 
             try
             {
-                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
-                alert = driver.SwitchTo().Alert();
+                alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 alertMsg = alert.Text;
                 alert.Dismiss();
                 Report.Step($"Dismissed browser alert: '{alertMsg}'");
@@ -462,10 +460,16 @@ namespace RKCIUIAutomation.Page
             }
         }
 
-        public override string GetAttribute(By elementByLocator, string attributeName)
-            => GetElement(elementByLocator)?.GetAttribute(attributeName);
+        public override string GetAttributeForElement(By elementByLocator, string attributeName)
+        {
+            string attributeValue = string.Empty;
+            IWebElement elem = null;
+            elem = GetElement(elementByLocator);
+            attributeValue = elem.GetAttribute(attributeName);
+            return attributeValue;
+        }
 
-        public override IList<string> GetAttributes<T>(T elementByLocator, string attributeName)
+        public override IList<string> GetAttributeForElements<T>(T elementByLocator, string attributeName)
         {
             object argObject = null;
             Type argType = elementByLocator.GetType();
@@ -670,9 +674,9 @@ namespace RKCIUIAutomation.Page
                 wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException)
             {
-                log.Debug(ae.Message);
+                throw;
             }
             catch (Exception e)
             {
@@ -963,6 +967,7 @@ namespace RKCIUIAutomation.Page
                 catch (ElementNotInteractableException)
                 {
                     Report.Error($"Element {chkbxOrRadioBtnID}, is not selectable", true);
+                    throw;
                 }
             }
             catch (UnhandledAlertException e)
@@ -972,6 +977,7 @@ namespace RKCIUIAutomation.Page
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 
@@ -1031,15 +1037,12 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
-                string actualAlertMsg = driver.SwitchTo().Alert().Text;
+                string actualAlertMsg = AcceptAlertMessage();
                 msgMatch = (actualAlertMsg).Contains(expectedMessage)
                     ? true
                     : false;
 
                 Report.Info($"## Expected Alert Message: {expectedMessage}<br>## Actual Alert Message: {actualAlertMsg}", msgMatch);
-
-                AcceptAlertMessage();
             }
             catch (UnhandledAlertException)
             {
@@ -1231,7 +1234,7 @@ namespace RKCIUIAutomation.Page
             bool isResultExpected = false;
             try
             {
-                text = GetAttribute(By.XPath($"//input[@id='{inputField.GetString()}']"), "value");
+                text = GetAttributeForElement(By.XPath($"//input[@id='{inputField.GetString()}']"), "value");
 
                 bool isFieldEmpty = string.IsNullOrEmpty(text) ? true : false;
                 string logMsg = isFieldEmpty ? "Empty Field: Unable to retrieve text" : $"Retrieved '{text}'";
@@ -1711,26 +1714,15 @@ namespace RKCIUIAutomation.Page
 
         public override void WaitForLoading()
         {
-            try
+            IList<By> loadingElems = new List<By>()
             {
-                IList<By> loadingElems = new List<By>()
-                {
-                    By.ClassName("k-loading-image"),
-                    By.XPath("//div[@id='overlay_div'][@style='display: block;']")
-                };
+                By.ClassName("k-loading-image"),
+                By.XPath("//div[@id='overlay_div'][@style='display: block;']")
+            };
 
-                foreach (By elem in loadingElems)
-                {
-                    WaitForElementToClear(elem);
-                }
-            }
-            catch (UnhandledAlertException e)
+            foreach (By elem in loadingElems)
             {
-                Report.Debug($"Alert Message Displayed: {e.Message}");
-            }
-            catch (Exception)
-            {
-                throw;
+                WaitForElementToClear(elem);
             }
         }
 
@@ -1755,43 +1747,43 @@ namespace RKCIUIAutomation.Page
                 }
                 catch (InvalidOperationException)
                 {
-                    if((bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"))
+                    if ((bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"))
                     {
                         pageIsReady = true;
                     }
+                }
+                catch (UnhandledAlertException)
+                {
+                    throw;
                 }
 
                 if (!pageIsReady)
                 {
                     log.Debug("...waiting for page to be in Ready state");
 
-                    //try
-                    //{
+                    try
+                    {
                         WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                         wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
-                    //}
-                    //catch (UnhandledAlertException)
-                    //{
-                    //    throw;
-                    //}
+                    }
+                    catch (UnhandledAlertException)
+                    {
+                        throw;
+                    }
                 }
             }
             catch (InvalidOperationException)
             {
-                //try
-                //{
+                try
+                {
                     WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                     wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
-                //}
-                //catch (UnhandledAlertException)
-                //{
-                //    throw;
-                //}
+                }
+                catch (UnhandledAlertException)
+                {
+                    throw;
+                }
             }
-            //catch (UnhandledAlertException ae)
-            //{
-            //    log.Debug(ae.Message);
-            //}
             catch (Exception)
             {
                 throw;
@@ -1823,8 +1815,8 @@ namespace RKCIUIAutomation.Page
         public abstract void ExecuteJsAction(JSAction jsAction, By elementByLocator);
         public abstract void ExpandAndSelectFromDDList<E, T>(E ddListID, T itemIndexOrName, bool useContainsOperator = false, bool isMultiSelectDDList = false);
         public abstract void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false);
-        public abstract string GetAttribute(By elementByLocator, string attributeName);
-        public abstract IList<string> GetAttributes<T>(T elementByLocator, string attributeName);
+        public abstract string GetAttributeForElement(By elementByLocator, string attributeName);
+        public abstract IList<string> GetAttributeForElements<T>(T elementByLocator, string attributeName);
         public abstract string GetCurrentUser(bool getFullName = false);
         public abstract IWebElement GetElement(By elementByLocator, bool waitForLoading = true);
         public abstract IList<IWebElement> GetElements(By elementByLocator, bool waitForLoading = true);

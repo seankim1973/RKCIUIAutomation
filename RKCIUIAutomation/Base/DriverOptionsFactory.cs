@@ -2,6 +2,7 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Safari;
 using RKCIUIAutomation.Config;
 using RKCIUIAutomation.Page;
@@ -66,6 +67,7 @@ namespace RKCIUIAutomation.Base
             {
                 ChromeOptions chromeOptions = BaseUtil.ConvertToType<ChromeOptions>(options);
                 chromeOptions.PageLoadStrategy = PageLoadStrategy.None;
+                chromeOptions.UnhandledPromptBehavior = UnhandledPromptBehavior.Ignore;
                 chromeOptions.AddArgument("no-sandbox");
                 chromeOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
                 chromeOptions.AddAdditionalCapability("zal:name", testDetails, true);
@@ -75,6 +77,7 @@ namespace RKCIUIAutomation.Base
             {
                 FirefoxOptions firefoxOptions = BaseUtil.ConvertToType<FirefoxOptions>(options);
                 firefoxOptions.PageLoadStrategy = PageLoadStrategy.None;
+                firefoxOptions.UnhandledPromptBehavior = UnhandledPromptBehavior.Ignore;
                 firefoxOptions.AddAdditionalCapability("zal:tz", "America/Chicago", true);
                 firefoxOptions.AddAdditionalCapability("zal:name", testDetails, true);
                 firefoxOptions.AddAdditionalCapability("zal:screenResolution", "1600x900", true);
@@ -83,6 +86,7 @@ namespace RKCIUIAutomation.Base
             {
                 DriverOptions _options = BaseUtil.ConvertToType<DriverOptions>(options);
                 _options.PageLoadStrategy = PageLoadStrategy.None;
+                _options.UnhandledPromptBehavior = UnhandledPromptBehavior.Ignore;
                 _options.AddAdditionalCapability("zal:tz", "America/Chicago");
                 _options.AddAdditionalCapability("zal:name", testDetails);
                 _options.AddAdditionalCapability("zal:screenResolution", "1600x900");

@@ -26,7 +26,7 @@ namespace RKCIUIAutomation.Base
 
         readonly TestPlatformType defaultTestPlatform = TestPlatformType.GridLocal;
         readonly BrowserType defaultBrowserType = BrowserType.Chrome;
-        readonly TestEnvironmentType defaultTestEnvironment = TestEnvironmentType.PreProduction; //When TestEnv is set to PreProduction, TenantName value is ignored
+        readonly TestEnvironmentType defaultTestEnvironment = TestEnvironmentType.Staging; //When TestEnv is set to PreProduction, TenantName value is ignored
         readonly TenantNameType defaultTenantName = TenantNameType.SH249;
         readonly ReporterType defaultReporter = ReporterType.Klov;
         readonly string defaultGridAddress = "";

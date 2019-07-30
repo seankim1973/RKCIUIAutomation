@@ -197,7 +197,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override void SetDirNumber()
         {
-            dirNumber = PageAction.GetAttribute(By.Id("DIRNO"), "value");
+            dirNumber = PageAction.GetAttributeForElement(By.Id("DIRNO"), "value");
             dirNumberKey = $"DIR_varKey";
             CreateVar(dirNumberKey, dirNumber);
             log.Debug($"#####Stored DIR Number - KEY: {dirNumberKey} || VALUE: {GetVar(dirNumberKey)}");
@@ -563,8 +563,8 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override bool VerifySpecSectionDescriptionAutoPopulatedData()
         {
-            string specSectionParagraphText = PageAction.GetTextFromDDL(InputFieldType.Spec_Section_Paragraph);
-            string spectionDescriptionText = PageAction.GetText(By.Id(InputFieldType.Section_Description.GetString()));
+            string specSectionParagraphText = GetTextFromDDL(InputFieldType.Spec_Section_Paragraph);
+            string spectionDescriptionText = GetText(By.Id(InputFieldType.Section_Description.GetString()));
             bool valuesMatch = specSectionParagraphText.HasValue() && spectionDescriptionText.HasValue()
                 ? specSectionParagraphText.Contains(spectionDescriptionText)
                 : false;
@@ -1292,7 +1292,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                         break;
                 }
 
-                IList<string> trimmedActualIds = TrimInputFieldIDs(PageAction.GetAttributes(By.XPath(reqFieldIdXPath), "id"), splitPattern);
+                IList<string> trimmedActualIds = TrimInputFieldIDs(PageAction.GetAttributeForElements(By.XPath(reqFieldIdXPath), "id"), splitPattern);
 
                 bool actualMatchesExpected = VerifyExpectedRequiredFields(trimmedActualIds, expectedRequiredFieldIDs);
 
@@ -1493,7 +1493,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 PageAction.ExpandAndSelectFromDDList("TechID", dirNoDDListTech.GetString(), true);
             }
 
-            return PageAction.GetAttribute(By.Id("TechID"), "value");
+            return PageAction.GetAttributeForElement(By.Id("TechID"), "value");
         }
 
         public override void VerifyRecreateBtnIsDisplayed(string packageNumber, string newDirNumber)

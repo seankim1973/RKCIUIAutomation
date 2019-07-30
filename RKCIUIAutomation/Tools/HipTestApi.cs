@@ -16,7 +16,7 @@ using RKCIUIAutomation.Page;
 
 namespace RKCIUIAutomation.Tools
 {
-    extern alias newtJson;
+    //extern alias newtJson;
 
     public class HipTestApi :  BaseUtils
     {
@@ -270,7 +270,7 @@ namespace RKCIUIAutomation.Tools
                 content = response.Content;
 
                 //Get Test Run ID
-                RootObject root = newtJson.Newtonsoft.Json.JsonConvert.DeserializeObject<RootObject>(content);
+                RootObject root = Newtonsoft.Json.JsonConvert.DeserializeObject<RootObject>(content);
                 var testRunId = root.data.id;
                 log.Info($"Created TestRun:\nName: {testRunName}\n ID: {testRunId}");
 
@@ -318,7 +318,7 @@ namespace RKCIUIAutomation.Tools
                 var snapshotIdContent = snapshotResultTask.Result.Content;
 
                 DatumList dataList = new DatumList();
-                dataList = (DatumList)newtJson.Newtonsoft.Json.JsonConvert.DeserializeObject(snapshotIdContent, typeof(DatumList));
+                dataList = (DatumList)Newtonsoft.Json.JsonConvert.DeserializeObject(snapshotIdContent, typeof(DatumList));
 
                 int dataCount = dataList.data.Count;
                 for (int i = 0; i < dataCount; i++)
@@ -340,7 +340,7 @@ namespace RKCIUIAutomation.Tools
                     var resultIdContent = resultIdTask.Result.Content;
 
                     RootObject root = new RootObject();
-                    root = (RootObject)newtJson.Newtonsoft.Json.JsonConvert.DeserializeObject(resultIdContent, typeof(RootObject));
+                    root = (RootObject)Newtonsoft.Json.JsonConvert.DeserializeObject(resultIdContent, typeof(RootObject));
 
                     lastResultId = root.included[0].id;
                     Console.WriteLine($"\n### LastResultID: {lastResultId}\n");

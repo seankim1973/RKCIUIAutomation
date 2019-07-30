@@ -319,7 +319,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
                     => By.XPath($"//tbody/tr[{rowID}]/td[1]/a[text()='{rowButton.ToString()}']");
 
         private string GetTblColumnIndex(CommentFieldType tableHeader)
-                    => PageAction.GetAttribute(By.XPath($"//thead[@role='rowgroup']/tr/th[@data-field='{tableHeader.GetString()}']"), "data-index");
+                    => PageAction.GetAttributeForElement(By.XPath($"//thead[@role='rowgroup']/tr/th[@data-field='{tableHeader.GetString()}']"), "data-index");
 
         private KeyValuePair<DesignDocEntryFieldType, string> PopulateAndGetDesignDocEntryFieldKVPair<T>(DesignDocEntryFieldType entryField, T indexOrText, bool useContainsOperator = false)
         {
@@ -386,7 +386,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
 
                                 try
                                 {
-                                    elemMaxLength = int.Parse(PageAction.GetAttribute(inputLocator, "maxlength"));
+                                    elemMaxLength = int.Parse(PageAction.GetAttributeForElement(inputLocator, "maxlength"));
                                 }
                                 catch (Exception)
                                 {
@@ -945,7 +945,7 @@ namespace RKCIUIAutomation.Page.PageObjects.RMCenter
         //LAX & SH249 - Grid Comment Entry role data
         public override By GetCommentFieldValueXPath_ByLocator(CommentFieldType commentField)
         {
-            int columnIndex = int.Parse(GetAttribute(By.XPath($"//th[@data-field='{commentField.GetString()}']"), "data-index"));
+            int columnIndex = int.Parse(GetAttributeForElement(By.XPath($"//th[@data-field='{commentField.GetString()}']"), "data-index"));
             By locator = By.XPath($"//td[@style='vertical-align: top;'][{columnIndex - 2}]");
             return locator;
         }

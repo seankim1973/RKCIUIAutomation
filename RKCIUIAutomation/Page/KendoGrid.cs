@@ -9,7 +9,7 @@ using static RKCIUIAutomation.Base.Factory;
 
 namespace RKCIUIAutomation.Page
 {
-    extern alias newtJson;
+    //extern alias newtJson;
 
     public class KendoGrid : PageInteraction, IKendoGrid
     {
@@ -149,7 +149,7 @@ namespace RKCIUIAutomation.Page
             string jsToBeExecuted = this.GetGridReference(tableType);
             jsToBeExecuted = $"{jsToBeExecuted} return JSON.stringify(grid.dataSource.data());";
             var jsResults = ExecuteJsScriptGet(jsToBeExecuted);
-            var items = newtJson.Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(jsResults.ToString());
+            var items = Newtonsoft.Json.JsonConvert.DeserializeObject<List<T>>(jsResults.ToString());
             return items;
         }
 
@@ -229,7 +229,7 @@ namespace RKCIUIAutomation.Page
             try
             {
                 By tabStripLocator = By.XPath("//div[contains(@class,'k-tabstrip-top')]");
-                string tabStripId = GetAttribute(tabStripLocator, "id");
+                string tabStripId = GetAttributeForElement(tabStripLocator, "id");
                 tabStripRef = $"var tab = $('#{tabStripId}').data('kendoTabStrip');";
 
                 string logMsg = tabStripId.HasValue()

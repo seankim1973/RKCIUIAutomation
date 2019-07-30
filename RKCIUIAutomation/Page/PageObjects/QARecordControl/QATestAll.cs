@@ -1,8 +1,11 @@
-﻿using OpenQA.Selenium;
+﻿using AventStack.ExtentReports.MarkupUtils;
+using OpenQA.Selenium;
 using RKCIUIAutomation.Config;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QATestAll_Common;
 
@@ -44,11 +47,33 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             return $"{techID}{yy}{mm}{dd}00";
         }
 
-        internal void ToggleTestMethodCheckbox(Enum testMethodIdentifier)
+        internal void ToggleTestMethodCheckbox<T>(T testMethodType)
         {
+            string identifierAttribute = string.Empty;
+
+            if(testMethodType is Enum)
+            {
+                identifierAttribute = ConvertToType<Enum>(testMethodType).GetString();
+            }
+            else if(testMethodType.GetType().Equals(typeof(string)))
+            {
+                identifierAttribute = ConvertToType<string>(testMethodType);
+            }          
+
+            By chkbxLocator = null;
             string testMethodInputElemId = string.Empty;
-            By chkbxLocator = By.XPath($"//input[@identifier='{testMethodIdentifier}']");
-            testMethodInputElemId = GetAttribute(chkbxLocator, "id");
+            
+            try
+            {
+                chkbxLocator = By.XPath($"//input[@identifier='{identifierAttribute}']");
+                testMethodInputElemId = GetAttributeForElement(chkbxLocator, "id");
+            }
+            catch (NoSuchElementException)
+            {
+                chkbxLocator = By.XPath($"//input[contains(@identifier,'{identifierAttribute}')]");
+                testMethodInputElemId = GetAttributeForElement(chkbxLocator, "id");
+            }
+
             SelectRadioBtnOrChkbox(testMethodInputElemId);
         }
 
@@ -232,6 +257,101 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             [StringValue("F3")] F3
         }
 
+        public enum A_TestMethodType
+        {
+            [StringValue("AASHTO-T11")] AASHTO_T11,
+            [StringValue("AASHTO-T27")] AASHTO_T27,
+            [StringValue("DB000")] DB000,
+            [StringValue("ASTM-C31")] ASTM_C31,
+            [StringValue("ASTM-C39")] ASTM_C39,
+            [StringValue("AASHTO-T111")] AASHTO_T111,
+            [StringValue("ASTM-C117")] ASTM_C117,
+            [StringValue("ASTM-C136")] ASTM_C136,
+            [StringValue("ASTM-D6913")] ASTM_D6913,
+            [StringValue("T176")] T176,
+            [StringValue("Tex-0000")] Tex_0000,
+            [StringValue("Tex-203-F")] Tex_203_F,
+            [StringValue("Tex-401-A")] Tex_401_A,
+            [StringValue("Tex-402-A")] Tex_402_A,
+            [StringValue("Tex-406-A")] Tex_406_A,
+            [StringValue("Tex-408-A")] Tex_408_A,
+            [StringValue("Tex-413-A")] Tex_413_A,
+            [StringValue("Tex-418 Truck Log")] Tex_418_TruckLog,
+            [StringValue("Tex-418-A")] Tex_418_A,
+            [StringValue("Tex-423-A")] Tex_423_A,
+            [StringValue("Tex-423II-A")] Tex_423II_A,
+            [StringValue("Tex-424-A")] Tex_424_A,
+            [StringValue("Tex-436-A")] Tex_436_A,
+            [StringValue("Tex-460-A")] Tex_460_A,
+            [StringValue("Tex-418DM-A")] Tex_418DM_A
+        }
+
+        public enum E_TestMethodType
+        {
+            [StringValue("AASHTO-T11")] AASHTO_T11,
+            [StringValue("AASHTO-T11/T27")] AASHTO_T11_T27,
+            [StringValue("AASHTO-T27")] AASHTO_T27,
+            [StringValue("AASHTO-T288")] AASHTO_T288,
+            [StringValue("AASHTO-T289")] AASHTO_T289,
+            [StringValue("ASTM-C117")] ASTM_C117,
+            [StringValue("ASTM-C136")] ASTM_C136,
+            [StringValue("ASTM-D2216")] ASTM_D2216,
+            [StringValue("ASTM-D4318")] ASTM_D4318,
+            [StringValue("ASTM-D6913")] ASTM_D6913,
+            [StringValue("CT226")] CT226,
+            [StringValue("DB000")] DB000,
+            [StringValue("T255/T265")] T255_T265,
+            [StringValue("T290")] T290,
+            [StringValue("T89/T90")] T89_T90,
+            [StringValue("AASHTO-M145-N")] AASHTO_M145_N,
+            [StringValue("AASHTO-M145-S")] AASHTO_M145_S,
+            [StringValue("ASTM-C136 - Standard Test Method for Sieve Analysis of Fine and Coarse Aggregates (Split Sieve)")] ASTM_C136_SplitSieve,
+            [StringValue("CT202")] CT202,
+            [StringValue("ASTM-D2419-14")] ASTM_D2419_14,
+            [StringValue("CT217")] CT217,
+            [StringValue("T176")] T176,
+            [StringValue("AASHTO-T99/T180")] AASHTO_T99_T180,
+            [StringValue("ASTM-D1557")] ASTM_D1557,
+            [StringValue("ASTM-D4718")] ASTM_D4718,
+            [StringValue("ASTM-D6951")] ASTM_D6951,
+            [StringValue("Tex-0000")] Tex_0000,
+            [StringValue("Tex-101-E-Part-III")] Tex_101_E_Part_III,
+            [StringValue("Tex-103-E")] Tex_103_E,
+            [StringValue("Tex-104/105/106-E")] Tex_104_105_106_E,
+            [StringValue("Tex-107-E")] Tex_107_E,
+            [StringValue("Tex-110-E")] Tex_110_E,
+            [StringValue("Tex-111-E")] Tex_111_E,
+            [StringValue("Tex-115-E")] Tex_115_E,
+            [StringValue("Tex-116-E")] Tex_116_E,
+            [StringValue("Tex-117-E")] Tex_117_E,
+            [StringValue("Tex-128-E")] Tex_128_E,
+            [StringValue("Tex-129-E")] Tex_129_E,
+            [StringValue("Tex-140-E")] Tex_140_E,
+            [StringValue("Tex-145-E")] Tex_145_E,
+            [StringValue("Tex-148-E")] Tex_148_E,
+            [StringValue("Tex-124-E")] Tex_124_E,
+            [StringValue("Tex-203-F")] Tex_203_F,
+            [StringValue("Tex-113-E")] Tex_113_E,
+            [StringValue("Tex-114-E")] Tex_114_E,
+            [StringValue("Tex-120-E")] Tex_120_E,
+            [StringValue("Tex-121-E")] Tex_121_E,
+            [StringValue("AASHTO-T310")] AASHTO_T310
+
+        }
+
+        public enum F_TestMethodType
+        {
+            [StringValue("AASHTO-T329")] AASHTO_T329,
+            [StringValue("DB000")] DB000,
+            [StringValue("Tex-0000")] Tex_0000,
+            [StringValue("Tex-200/342-F")] Tex_200_342_F,
+            [StringValue("Tex-200-F")] Tex_200_F,
+            [StringValue("Tex-207-F")] Tex_207_F,
+            [StringValue("Tex-227-F")] Tex_227_F,
+            [StringValue("Tex-228-F")] Tex_228_F,
+            [StringValue("Tex-236-F")] Tex_236_F
+        }
+
         #region clickMethods
         public override void ClickBtn_CreateNew()
             => ClickElementByID(ButtonType.CreateNew);
@@ -271,6 +391,22 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override void ClickBtn_SaveEdit()
             => ClickElementByID(ButtonType.SaveEdit);
+
+        private readonly string availableTestMethodModalDivXPath = "//div[@id='AvailableTestsWindow']/parent::div[contains(@style, 'display: block')]";
+        private By AvailableTestMethodModalSubmitBtnXPath(string buttonName)
+            => By.XPath($"{availableTestMethodModalDivXPath}//button[text()='{buttonName}']");
+
+        public override void ClickModalBtn_Save()
+        {
+            ClickElement(AvailableTestMethodModalSubmitBtnXPath("Save"));
+            WaitForAvailableTestsModalToClear();
+        }
+
+        public override void ClickModalBtn_Cancel()
+            => ClickElement(AvailableTestMethodModalSubmitBtnXPath("Cancel"));
+
+        public override void ClickModalBtn_Close()
+            => ClickElement(By.XPath($"{availableTestMethodModalDivXPath}//a[@aria-label='Close']"));
         #endregion
 
         public override void PopulateFieldAndUpdateKVPairsList()
@@ -351,6 +487,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
             try
             {
                 CreateWorkflowType(CreateType.New, workflowType, testType);
+                WaitForElement(By.XPath("//div[@id='LotDiv']//label[contains(text(),'Workflow Type')]"));
             }
             catch (Exception e)
             {
@@ -390,15 +527,16 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
         public override void CheckForLINError()
         {
+            By sequenceNumberLocator = By.XPath("//input[@id='SequenceNumber']");
             By errorLINExists = By.XPath("//span[contains(@class, 'ValidationErrorMessage')][contains(text(), 'LIN exists')]");
             bool errorLINExistsIsDisplayed = true;
+            string sequenceNumber = string.Empty;
 
             do
             {
                 GetElement(errorLINExists);
 
-                By sequenceNumberLocator = By.XPath("//input[@id='SequenceNumber']");
-                string sequenceNumber = GetText(sequenceNumberLocator, logReport: false);
+                sequenceNumber = GetText(sequenceNumberLocator, logReport: false);
                 int newValue = int.Parse(sequenceNumber) + 1;
 
                 if (newValue < 10)
@@ -412,6 +550,7 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
 
                 EnterText(sequenceNumberLocator, sequenceNumber);
                 QATestMethod.ClickBtn_Save();
+
                 try
                 {
                     GetElement(errorLINExists);
@@ -420,9 +559,273 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
                 {
                     errorLINExistsIsDisplayed = false;
                 }
+
             } while (errorLINExistsIsDisplayed);
 
             throw new NoSuchElementException();
+        }
+
+        public override void AddTestMethod<T>(T AvailableTestMethodType)
+        {
+            try
+            {
+                IList<string> testMethodList = new List<string>();
+
+                if (AvailableTestMethodType is Enum)
+                {
+                    testMethodList.Add(ConvertToType<Enum>(AvailableTestMethodType).GetString());
+                }
+                else if (AvailableTestMethodType.GetType().Equals(typeof(List<Enum>)))
+                {
+                    var testMethodEnumList = ConvertToType<List<Enum>>(AvailableTestMethodType);
+
+                    foreach (var enumItem in testMethodEnumList)
+                    {
+                        testMethodList.Add(ConvertToType<Enum>(enumItem).GetString());
+                    }
+                }
+                else if (AvailableTestMethodType.GetType().Equals(typeof(string)))
+                {
+                    testMethodList.Add(ConvertToType<string>(AvailableTestMethodType));
+                }
+                else if (AvailableTestMethodType.GetType().Equals(typeof(List<string>)))
+                {
+                    ((List<string>)testMethodList).AddRange(ConvertToType<List<string>>(AvailableTestMethodType));
+                }
+
+                foreach (string testMethod in testMethodList)
+                {
+                    try
+                    {
+                        ToggleTestMethodCheckbox(testMethod);
+                    }
+                    catch (NoSuchElementException)
+                    {
+                        Report.Debug($"Unable to locator TestMethod {testMethod} in Available Test List");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        private void WaitForAvailableTestsModalToClear()
+        {
+            bool modalIsDisplayed = true;
+
+            do
+            {
+                try
+                {
+                    IWebElement modalWindow = driver.FindElement(By.XPath(availableTestMethodModalDivXPath));
+                    modalIsDisplayed = modalWindow.Displayed;
+                    Thread.Sleep(2000);
+                }
+                catch (NoSuchElementException)
+                {
+                    modalIsDisplayed = false;
+                }
+            }
+            while (modalIsDisplayed);
+        }
+
+        public override void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier, string workflowType)
+        {
+            Type argType = testMethodIdentifier.GetType();
+
+            IList<string> testMethodIdentifiersList = new List<string>();
+
+            if (testMethodIdentifier is Enum)
+            {
+                testMethodIdentifiersList.Add(ConvertToType<Enum>(testMethodIdentifier).GetString());
+            }
+            else if (argType.Equals(typeof(List<Enum>)))
+            {
+                var enumList = ConvertToType<List<Enum>>(testMethodIdentifier);
+
+                foreach (Enum item in enumList)
+                {
+                    testMethodIdentifiersList.Add(item.GetString());
+                }
+            }
+            else if (argType.Equals(typeof(string)))
+            {
+                testMethodIdentifiersList.Add(ConvertToType<string>(testMethodIdentifier));
+            }
+            else if (argType.Equals(typeof(List<string>)))
+            {
+                ((List<string>)testMethodIdentifiersList).AddRange(ConvertToType<List<string>>(testMethodIdentifier));
+            }
+            else
+            {
+                log.Error($"Unsupported parameter type : {argType}");
+            }
+
+            foreach (string identifier in testMethodIdentifiersList)
+            {
+                string testMethodIdentifierInputDivXPath = string.Empty;
+                IList<IWebElement> textareaFieldElementsList = null;
+                IList<IWebElement> inputFieldElementsList = null;
+                IList<IWebElement> checkboxFieldElementsList = null;
+                IList<IWebElement> textboxFieldElementsList = null;
+
+                testMethodIdentifierInputDivXPath = $"//input[contains(@id, 'TestMethod_DisplayName')][@value='{identifier}']";
+                string testMethodTestFormDivXPath = $"{testMethodIdentifierInputDivXPath}//ancestor::div[contains(@class, 'ElvisTestForm')]";
+                string headerDescriptionXPath = $"{testMethodTestFormDivXPath}//span[contains(@id, 'header-description')]";
+                string testMethodContainerFluidDivXPath = $"{testMethodTestFormDivXPath}//div[@class='container-fluid']";
+
+                string testMethodDivHeader = GetText(By.XPath(headerDescriptionXPath), logReport: false);
+
+                string logMsg = string.Empty;
+                logMsg = $"<br>============ BEGINING of TestMethod HEADER: ({workflowType}) {testMethodDivHeader} ============";
+                Report.Info(logMsg, ExtentColor.Yellow);
+
+                textboxFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//input[contains(@class, 'k-textbox')]"));
+                if (textboxFieldElementsList.Any())
+                {
+                    foreach (IWebElement textboxFieldElem in textboxFieldElementsList)
+                    {
+                        try
+                        {
+                            string textboxFieldId = textboxFieldElem.GetAttribute("id");
+                            string textboxFieldLabel = string.Empty;
+
+                            try
+                            {
+                                textboxFieldLabel = GetText(By.XPath($"//input[@id='{textboxFieldId}']/preceding-sibling::label"), logReport: false);
+                            }
+                            catch (NoSuchElementException)
+                            {
+                                try
+                                {
+                                    textboxFieldLabel = GetText(By.XPath($"//input[@id='{textboxFieldId}']/parent::div/preceding-sibling::label"), logReport: false);
+                                }
+                                catch (NoSuchElementException)
+                                {
+                                    textboxFieldLabel = "NOT FOUND";
+                                }
+                            }
+
+                            Report.Info($"TEXTBOX Attributes:<br> -- ID : {textboxFieldId}<br> -- LABEL : {textboxFieldLabel}", ExtentColor.Blue);
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error($"{e.Message}\n{e.StackTrace}");
+                        }
+
+                        Report.Info("#########################################<br>", ExtentColor.Grey);
+                    }
+                }
+
+                checkboxFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//input[@class='k-checkbox']"));
+                if (checkboxFieldElementsList.Any())
+                {                    
+                    foreach (IWebElement checkboxFieldElem in checkboxFieldElementsList)
+                    {
+                        try
+                        {
+                            string checkboxFieldId = checkboxFieldElem.GetAttribute("id");
+                            string checkboxFieldLabel = string.Empty;
+                            try
+                            {
+                                checkboxFieldLabel = GetText(By.XPath($"//input[@id='{checkboxFieldId}']/following-sibling::label"), logReport: false);
+                            }
+                            catch (NoSuchElementException)
+                            {
+                                checkboxFieldLabel = "NOT FOUND";
+                            }
+
+                            Report.Info($"CHECKBOX Attributes:<br> -- ID : {checkboxFieldId}<br> -- LABEL : {checkboxFieldLabel}", ExtentColor.Blue);
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error($"{e.Message}\n{e.StackTrace}");
+                        }
+
+                        Report.Info("#########################################<br>", ExtentColor.Grey);
+                    }
+                }
+
+                inputFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//input[@data-role]"));
+                if (inputFieldElementsList.Any())
+                {
+                    foreach (IWebElement inputFieldElem in inputFieldElementsList)
+                    {
+                        try
+                        {
+                            string inputFieldId = inputFieldElem.GetAttribute("id");
+                            string inputFieldDataRole = inputFieldElem.GetAttribute("data-role");
+
+                            string labelParentXPath = "/parent::span";
+
+                            if (inputFieldDataRole.Equals("dropdownlist"))
+                            {
+                                labelParentXPath = string.Empty;
+                            }
+
+                            string inputFieldLabel = string.Empty;
+
+                            By siblingLabelLocator = By.XPath($"//input[@id='{inputFieldId}']/parent::span{labelParentXPath}/preceding-sibling::label");
+                            By siblingLabelWithParentDivLocator = By.XPath($"//input[@id='{inputFieldId}']/parent::span{labelParentXPath}/parent::div/preceding-sibling::label");
+                            
+                            try
+                            {
+                                IWebElement inputFieldLabelElem = driver.FindElement(siblingLabelLocator)
+                                ?? driver.FindElement(siblingLabelWithParentDivLocator);
+                                inputFieldLabel = inputFieldLabelElem.Text;
+                            }
+                            catch (NoSuchElementException)
+                            {
+                                inputFieldLabel = "NOT FOUND";
+                            }
+
+                            Report.Info($"INPUT FIELD Attributes:<br> -- ID : {inputFieldId}<br> -- DATA-ROLE : {inputFieldDataRole}<br> -- LABEL : {inputFieldLabel}", ExtentColor.Blue);
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error($"{e.Message}\n{e.StackTrace}");
+                        }
+
+                        Report.Info("#########################################<br>", ExtentColor.Grey);
+                    }
+                }
+
+                textareaFieldElementsList = GetElements(By.XPath($"{testMethodContainerFluidDivXPath}//textarea"));
+                if (textareaFieldElementsList.Any())
+                {
+                    foreach (IWebElement textareaFieldElem in textareaFieldElementsList)
+                    {
+                        try
+                        {
+                            string textareaFieldId = textareaFieldElem.GetAttribute("id");
+                            string textareaFieldLabel = string.Empty;
+
+                            try
+                            {
+                                textareaFieldLabel = GetText(By.XPath($"//textarea[@id='{textareaFieldId}']/preceding-sibling::label"), logReport: false);
+                            }
+                            catch (NoSuchElementException)
+                            {
+                                textareaFieldLabel = "NOT FOUND";
+                            }
+
+                            Report.Info($"TEXTAREA FIELD Attributes:<br> -- ID : {textareaFieldId}<br> -- LABEL : {textareaFieldLabel}", ExtentColor.Blue);
+
+                        }
+                        catch (Exception e)
+                        {
+                            log.Error($"{e.Message}\n{e.StackTrace}");
+                        }
+
+                        Report.Info("#########################################<br>", ExtentColor.Grey);
+                    }
+                }
+
+                logMsg = $"============ END of TestMethod HEADER: ({workflowType}) {testMethodDivHeader} ============\n";               
+                Report.Info(logMsg, ExtentColor.Yellow);
+            }
         }
     }
 
@@ -454,6 +857,11 @@ namespace RKCIUIAutomation.Page.PageObjects.QARecordControl
         public abstract void CreateRetestTestRecord();
         public abstract void ClickBtn_AddRemoveTestMethods();
         public abstract void CheckForLINError();
+        public abstract void AddTestMethod<T>(T AvailableTestMethodType);
+        public abstract void GatherTestMethodInputFieldAttributeDetails<T>(T testMethodIdentifier, string workflowType);
+        public abstract void ClickModalBtn_Save();
+        public abstract void ClickModalBtn_Cancel();
+        public abstract void ClickModalBtn_Close();
     }
 
 

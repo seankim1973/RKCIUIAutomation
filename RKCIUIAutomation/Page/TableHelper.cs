@@ -251,7 +251,7 @@ namespace RKCIUIAutomation.Page
                 }
           
                 By headerLocator = By.XPath($"{gridTypeXPath}{columnDataTypeXPath}");
-                string dataIndex = PageAction.GetAttribute(headerLocator, "data-index");
+                string dataIndex = PageAction.GetAttributeForElement(headerLocator, "data-index");
                 int xPathIndex = int.Parse(dataIndex) + 1;
 
                 rowXPath = $"{gridTypeXPath}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInRowForAnyColumnOrRowIndex)}[{xPathIndex.ToString()}]";
@@ -269,29 +269,19 @@ namespace RKCIUIAutomation.Page
         {
             string[] logMsgBasedOnBtnType = null;
 
-            try
+            if (tableButton.Equals(TableButton.CheckBox))
             {
-                if (tableButton.Equals(TableButton.CheckBox))
-                {
-                    logMsgBasedOnBtnType = new string[] { "Toggled", "checkbox"};
-                }
-                else
-                {
-                    logMsgBasedOnBtnType = new string[] { "Clicked", "button" };
-                }
-                
-                By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
-                PageAction.JsClickElement(locator);
-                Report.Step($"{logMsgBasedOnBtnType[0]} {tableButton} {logMsgBasedOnBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
+                logMsgBasedOnBtnType = new string[] { "Toggled", "checkbox" };
             }
-            catch (Exception)
+            else
             {
-                throw;
+                logMsgBasedOnBtnType = new string[] { "Clicked", "button" };
             }
-            finally
-            {
-                PageAction.WaitForPageReady();
-            }
+
+            By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
+            PageAction.JsClickElement(locator);
+            Report.Step($"{logMsgBasedOnBtnType[0]} {tableButton} {logMsgBasedOnBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
+            PageAction.WaitForPageReady();
         }
 
         public override By GetTableBtnLocator<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)
@@ -309,8 +299,45 @@ namespace RKCIUIAutomation.Page
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public override void ClickDeleteBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
-            => ClickButtonForRow(TableButton.Action_Delete, textInRowForAnyColumn, isMultiTabGrid);
+        public override void ClickDeleteBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool acceptAlert = true)
+        {
+            try
+            {
+                ClickButtonForRow(TableButton.Action_Delete, textInRowForAnyColumn, isMultiTabGrid);
+            }
+            catch (UnhandledAlertException e)
+            {
+                log.Debug(e.Message);
+
+                if (acceptAlert)
+                {
+                    try
+                    {
+                        PageAction.AcceptAlertMessage();
+                    }
+                    catch (UnhandledAlertException)
+                    {
+                        PageAction.AcceptAlertMessage();
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        PageAction.DismissAlertMessage();
+                    }
+                    catch (UnhandledAlertException)
+                    {
+                        PageAction.DismissAlertMessage();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
+        }
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
@@ -327,16 +354,24 @@ namespace RKCIUIAutomation.Page
             try
             {
                 ClickButtonForRow(TableButton.Create_Package, textInRowForAnyColumn, isMultiTabGrid, true);
-                PageAction.AcceptAlertMessage();
-                PageAction.AcceptAlertMessage();
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException e)
             {
-                log.Debug(ae.Message);
+                log.Debug(e.Message);
+
+                try
+                {
+                    PageAction.AcceptAlertMessage();
+                }
+                catch (UnhandledAlertException)
+                {
+                    PageAction.AcceptAlertMessage();
+                }
             }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
 
         }
@@ -346,16 +381,24 @@ namespace RKCIUIAutomation.Page
             try
             {
                 ClickButtonForRow(TableButton.Recreate_Package, textInRowForAnyColumn, isMultiTabGrid, false);
-                PageAction.AcceptAlertMessage();
-                PageAction.AcceptAlertMessage();
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException e)
             {
-                log.Debug(ae.Message);
+                log.Debug(e.Message);
+
+                try
+                {
+                    PageAction.AcceptAlertMessage();
+                }
+                catch (UnhandledAlertException)
+                {
+                    PageAction.AcceptAlertMessage();
+                }
             }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 
@@ -370,16 +413,24 @@ namespace RKCIUIAutomation.Page
             try
             {
                 ClickButtonForRow(TableButton.Action_Close_DIR, dirNumber, isMultiTabGrid, rowEndsWithChkbox);
-                PageAction.AcceptAlertMessage();
-                PageAction.AcceptAlertMessage();
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException e)
             {
-                log.Debug(ae.Message);
+                log.Debug(e.Message);
+
+                try
+                {
+                    PageAction.AcceptAlertMessage();
+                }
+                catch (UnhandledAlertException)
+                {
+                    PageAction.AcceptAlertMessage();
+                }
             }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 
@@ -433,7 +484,7 @@ namespace RKCIUIAutomation.Page
         }
 
         public override string GetPdfHref<T>(T textInColumnForRowOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbx = false)
-            => PageAction.GetAttribute(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInColumnForRowOrRowIndex)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}"), "href");
+            => PageAction.GetAttributeForElement(By.XPath($"{GetGridTypeXPath(isMultiTabGrid)}{GetXPathForTblRowBasedOnTextInRowOrRowIndex(textInColumnForRowOrRowIndex)}{DetermineTblRowBtnXPathExt(TableButton.Report_View, rowEndsWithChkbx)}"), "href");
 
         public override void SelectCheckboxForRow<T>(T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true)
             => ClickButtonForRow(TableButton.CheckBox, textInRowForAnyColumnOrRowIndex, isMultiTabGrid);
@@ -477,7 +528,7 @@ namespace RKCIUIAutomation.Page
                 {
                     string gridId = Kendo.GetGridID(tableType);
                     By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
-                    string gridType = PageAction.GetAttribute(gridParentDivLocator, "class");
+                    string gridType = PageAction.GetAttributeForElement(gridParentDivLocator, "class");
 
                     if(gridType.Contains("active"))
                     {
@@ -595,7 +646,7 @@ namespace RKCIUIAutomation.Page
                 {
                     string gridId = Kendo.GetGridID(tableType);
                     By gridParentDivLocator = By.XPath($"//div[@id='{gridId}']/parent::div/parent::div/parent::div");
-                    string gridType = PageAction.GetAttribute(gridParentDivLocator, "class");
+                    string gridType = PageAction.GetAttributeForElement(gridParentDivLocator, "class");
 
                     if (gridType.Contains("active"))
                     {
@@ -758,7 +809,7 @@ namespace RKCIUIAutomation.Page
         public abstract void ClickCloseDirBtnForRow(string dirNumber = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = true);
         public abstract void ClickCommentTab(int commentNumber);
         public abstract void ClickCreateBtnForRow(int textInRowForAnyColumn = 1, bool isMultiTabGrid = true);
-        public abstract void ClickDeleteBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true);
+        public abstract void ClickDeleteBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool acceptAlert = true);
         public abstract void ClickDownloadBtnForRow(int rowIndex = 1, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false);
         public abstract void ClickEditBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false);
         public abstract void ClickEnterBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true);

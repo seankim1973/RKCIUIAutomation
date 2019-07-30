@@ -11,7 +11,7 @@ namespace RKCIUIAutomation.Base
         void Error(string details, bool takeScreenshot = true, Exception e = null);
         void ErrorWithScreenshot(string details = "", ExtentColor color = ExtentColor.Red, Exception e = null);
         void Fail(string details, Exception e = null);
-        void Info(string details);
+        void Info(string details, ExtentColor extentColor = ExtentColor.Transparent, bool createStdOutLog = true);
         void Info(string[][] detailsList, bool assertion);
         void Info<T>(string details, T assertion, Exception e = null);
         void Step(string testStep, bool createStdOutLog = false, bool testResult = true);

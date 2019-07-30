@@ -68,9 +68,9 @@ namespace RKCIUIAutomation.Page
 
         void ExpandDDL<E>(E ddListID, bool isMultiSelectDDList = false);
 
-        string GetAttribute(By elementByLocator, string attributeName);
+        string GetAttributeForElement(By elementByLocator, string attributeName);
 
-        IList<string> GetAttributes<T>(T elementByLocator, string attributeName);
+        IList<string> GetAttributeForElements<T>(T elementByLocator, string attributeName);
 
         string GetCurrentUser(bool getFullName = false);
 
