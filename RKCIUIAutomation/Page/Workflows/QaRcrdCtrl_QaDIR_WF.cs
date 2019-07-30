@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Page.PageObjects.QARecordControl.QADIRs;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.TableHelper;
+using System.Threading;
 
 namespace RKCIUIAutomation.Page.Workflows
 {
@@ -19,6 +20,48 @@ namespace RKCIUIAutomation.Page.Workflows
         }
 
         public QaRcrdCtrl_QaDIR_WF(IWebDriver driver) => this.Driver = driver;
+
+        public T SetClass<T>(IWebDriver driver)
+        {
+            IQaRcrdCtrl_QaDIR_WF instance = new QaRcrdCtrl_QaDIR_WF(driver);
+
+            if (tenantName == TenantNameType.SGWay)
+            {
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_SGWay instance ###### ");
+                instance = new QaRcrdCtrl_QaDIR_WF_SGWay(driver);
+            }
+            else if (tenantName == TenantNameType.SH249)
+            {
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_SH249 instance ###### ");
+                instance = new QaRcrdCtrl_QaDIR_WF_SH249(driver);
+            }
+            else if (tenantName == TenantNameType.Garnet)
+            {
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_Garnet instance ###### ");
+                instance = new QaRcrdCtrl_QaDIR_WF_Garnet(driver);
+            }
+            else if (tenantName == TenantNameType.GLX)
+            {
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_GLX instance ###### ");
+                instance = new QaRcrdCtrl_QaDIR_WF_GLX(driver);
+            }
+            else if (tenantName == TenantNameType.I15South)
+            {
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_I15South instance ###### ");
+                instance = new QaRcrdCtrl_QaDIR_WF_I15South(driver);
+            }
+            else if (tenantName == TenantNameType.I15Tech)
+            {
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_I15Tech instance ###### ");
+                instance = new QaRcrdCtrl_QaDIR_WF_I15Tech(driver);
+            }
+            else if (tenantName == TenantNameType.LAX)
+            {
+                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_LAX instance ###### ");
+                instance = new QaRcrdCtrl_QaDIR_WF_LAX(driver);
+            }
+            return (T)instance;
+        }
 
         internal void CreateNew_and_PopulateRequiredFields()
         {
@@ -740,56 +783,63 @@ namespace RKCIUIAutomation.Page.Workflows
 
                 if (isDisplayed)
                 {
-                    GridHelper.ClickDeleteBtnForRow();
-                    if (acceptAlert)
+                    try
                     {
-                        try
-                        {
-                            AcceptAlertMessage();
-                            AcceptAlertMessage();
-                        }
-                        catch (UnhandledAlertException ae)
-                        {
-                            log.Debug(ae.Message);
-                        }
-                        catch (Exception e)
-                        {
-                            log.Error($"{e.Message}\n{e.StackTrace}");
-                        }
-                        finally
+                        GridHelper.ClickDeleteBtnForRow();
+
+                        if (acceptAlert)
                         {
                             actionPerformed = "Accepted";
                             resultAfterAction = "Displayed After Accepting Delete Dialog: ";
+                            try
+                            {
+                                PageAction.AcceptAlertMessage();
+                                Thread.Sleep(3000);
+                                PageAction.AcceptAlertMessage();
+                            }
+                            catch (UnhandledAlertException ex)
+                            {
+                                log.Debug(ex.Message);
+                            }
                         }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            DismissAlertMessage();
-                            DismissAlertMessage();
-                        }
-                        catch (UnhandledAlertException ae)
-                        {
-                            log.Debug(ae.Message);
-                        }
-                        catch (Exception e)
-                        {
-                            log.Error($"{e.Message}\n{e.StackTrace}");
-                        }
-                        finally
+                        else
                         {
                             actionPerformed = "Dismissed";
                             resultAfterAction = "Displayed After Dismissing Delete Dialog: ";
+                            try
+                            {
+                                PageAction.DismissAlertMessage();
+                                Thread.Sleep(3000);
+                                PageAction.DismissAlertMessage();
+                            }
+                            catch (UnhandledAlertException ex)
+                            {
+                                log.Debug(ex.Message);
+                            }
                         }
                     }
+                    catch (UnhandledAlertException)
+                    {
+                        Thread.Sleep(3000);
+                    }
+                    finally
+                    {
+                        WaitForPageReady();
 
-                    var verifyResult = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, acceptAlert);
+                        var verifyResult = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, acceptAlert);
 
-                    result = acceptAlert ? !verifyResult : verifyResult;
+                        if (acceptAlert)
+                        {
+                            result = !verifyResult;
+                        }
+                        else
+                        {
+                            result = verifyResult;
+                        }
 
-                    AddAssertionToList(result, $"VerifyDirIsDisplayed in {tableTab.ToString()}, after {actionPerformed} delete dialog");
-                    Report.Info($"Performed Action: {actionPerformed} delete dialog<br>{resultAfterAction}{isDisplayed}", result);
+                        AddAssertionToList(result, $"VerifyDirIsDisplayed in {tableTab.ToString()}, after {actionPerformed} delete dialog");
+                        Report.Info($"Performed Action: {actionPerformed} delete dialog<br>{resultAfterAction}{isDisplayed}", result);
+                    }
                 }
                 else
                 {
@@ -798,7 +848,7 @@ namespace RKCIUIAutomation.Page.Workflows
             }
             catch (Exception e)
             {
-                log.Error(e.StackTrace);
+                log.Error($"{e.Message}\n{e.StackTrace}");
             }
 
             return result;
@@ -985,48 +1035,6 @@ namespace RKCIUIAutomation.Page.Workflows
 
     public abstract class QaRcrdCtrl_QaDIR_WF_Impl : TestBase, IQaRcrdCtrl_QaDIR_WF
     {
-        public T SetClass<T>(IWebDriver driver)
-        {
-            IQaRcrdCtrl_QaDIR_WF instance = new QaRcrdCtrl_QaDIR_WF(driver);
-
-            if (tenantName == TenantNameType.SGWay)
-            {
-                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_SGWay instance ###### ");
-                instance = new QaRcrdCtrl_QaDIR_WF_SGWay(driver);
-            }
-            else if (tenantName == TenantNameType.SH249)
-            {
-                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_SH249 instance ###### ");
-                instance = new QaRcrdCtrl_QaDIR_WF_SH249(driver);
-            }
-            else if (tenantName == TenantNameType.Garnet)
-            {
-                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_Garnet instance ###### ");
-                instance = new QaRcrdCtrl_QaDIR_WF_Garnet(driver);
-            }
-            else if (tenantName == TenantNameType.GLX)
-            {
-                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_GLX instance ###### ");
-                instance = new QaRcrdCtrl_QaDIR_WF_GLX(driver);
-            }
-            else if (tenantName == TenantNameType.I15South)
-            {
-                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_I15South instance ###### ");
-                instance = new QaRcrdCtrl_QaDIR_WF_I15South(driver);
-            }
-            else if (tenantName == TenantNameType.I15Tech)
-            {
-                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_I15Tech instance ###### ");
-                instance = new QaRcrdCtrl_QaDIR_WF_I15Tech(driver);
-            }
-            else if (tenantName == TenantNameType.LAX)
-            {
-                log.Info($"###### using QaRcrdCtrl_QaDIR_WF_LAX instance ###### ");
-                instance = new QaRcrdCtrl_QaDIR_WF_LAX(driver);
-            }
-            return (T)instance;
-        }
-
         public abstract bool VerifyDbCleanupForDIR(string dirnumber, string revision = "A", bool setAsDeleted = true);
         public abstract void VerifyDbCleanupForCreatePackages(bool isPkgCreated, string weekStartDate, string[] dirNumbers);
         public abstract string ClickViewSelectedDirPDFs(bool selectNoneForMultiView);

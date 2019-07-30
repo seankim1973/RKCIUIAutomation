@@ -5,7 +5,7 @@ using System;
 
 namespace RKCIUIAutomation.Tools
 {
-    extern alias newtJson;
+    //extern alias newtJson;
 
     public class GridUtility
     {
@@ -28,8 +28,8 @@ namespace RKCIUIAutomation.Tools
                 Uri uri = new Uri($"http://{gridHostName}:{gridPort}/grid/api/testsession?session={sessionId}");
                 RestRequest request = new RestRequest(uri, Method.POST);
                 response = client.Execute(request);
-                string json = newtJson.Newtonsoft.Json.JsonConvert.SerializeObject(response);
-                Object obj = newtJson.Newtonsoft.Json.JsonConvert.DeserializeObject<Object>(json);
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(response);
+                Object obj = Newtonsoft.Json.JsonConvert.DeserializeObject<Object>(json);
             }
             catch (Exception)
             {

@@ -269,29 +269,19 @@ namespace RKCIUIAutomation.Page
         {
             string[] logMsgBasedOnBtnType = null;
 
-            try
+            if (tableButton.Equals(TableButton.CheckBox))
             {
-                if (tableButton.Equals(TableButton.CheckBox))
-                {
-                    logMsgBasedOnBtnType = new string[] { "Toggled", "checkbox"};
-                }
-                else
-                {
-                    logMsgBasedOnBtnType = new string[] { "Clicked", "button" };
-                }
-                
-                By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
-                PageAction.JsClickElement(locator);
-                Report.Step($"{logMsgBasedOnBtnType[0]} {tableButton} {logMsgBasedOnBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
+                logMsgBasedOnBtnType = new string[] { "Toggled", "checkbox" };
             }
-            catch (Exception)
+            else
             {
-                throw;
+                logMsgBasedOnBtnType = new string[] { "Clicked", "button" };
             }
-            finally
-            {
-                PageAction.WaitForPageReady();
-            }
+
+            By locator = GetTblRowBtn_ByLocator(tableButton, textInRowForAnyColumnOrRowIndex, isMultiTabGrid, rowEndsWithChkbox);
+            PageAction.JsClickElement(locator);
+            Report.Step($"{logMsgBasedOnBtnType[0]} {tableButton} {logMsgBasedOnBtnType[1]} for row {textInRowForAnyColumnOrRowIndex}");
+            PageAction.WaitForPageReady();
         }
 
         public override By GetTableBtnLocator<T>(TableButton tableButton, T textInRowForAnyColumnOrRowIndex, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false)

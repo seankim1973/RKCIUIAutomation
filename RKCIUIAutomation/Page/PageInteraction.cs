@@ -106,12 +106,33 @@ namespace RKCIUIAutomation.Page
 
         public override string AcceptAlertMessage()
         {
+            IAlert alert = null;
+            bool alertIsNotPresent = true;
             string alertMsg = string.Empty;
 
             try
             {
-                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
-                alert = driver.SwitchTo().Alert();
+                //var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));         
+                //wait.Until(x => ExpectedConditions.AlertIsPresent());
+                //Thread.Sleep(3000);
+
+                do
+                {
+                    try
+                    {                       
+                        alert = driver.SwitchTo().Alert();
+                    }
+                    catch (NoAlertPresentException)
+                    {
+                        Thread.Sleep(3000);
+                    }
+                    catch (UnhandledAlertException)
+                    {
+                        alertIsNotPresent = false;
+                    }
+                }
+                while (alertIsNotPresent);
+
                 alertMsg = alert.Text;
                 alert.Accept();
                 Report.Step($"Accepted browser alert: '{alertMsg}'");
@@ -314,10 +335,10 @@ namespace RKCIUIAutomation.Page
             try
             {
                 //IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
-                WebDriverWait wait = GetStandardWait(driver);
-                IAlert alert = wait.Until(ExpectedConditions.AlertIsPresent());
+                WebDriverWait wait = GetStandardWait(driver, 20, 1000);
+                wait.Until(x => ExpectedConditions.AlertIsPresent());
 
-                alert = driver.SwitchTo().Alert();
+                IAlert alert = driver.SwitchTo().Alert();
 
                 if (confirmYes)
                 {
@@ -344,12 +365,34 @@ namespace RKCIUIAutomation.Page
 
         public override string DismissAlertMessage()
         {
+            IAlert alert = null;
+            bool alertIsNotPresent = true;
             string alertMsg = string.Empty;
 
             try
             {
-                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
-                alert = driver.SwitchTo().Alert();
+                //var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
+                //wait.Until(x => ExpectedConditions.AlertIsPresent());
+                //Thread.Sleep(3000);
+
+                do
+                {
+                    try
+                    {
+                        alert = driver.SwitchTo().Alert();
+                    }
+                    catch (NoAlertPresentException)
+                    {
+                        Thread.Sleep(3000);
+                    }
+                    catch (UnhandledAlertException)
+                    {
+                        alertIsNotPresent = false;
+                    }
+                }
+                while (alertIsNotPresent);
+
+                //IAlert alert = driver.SwitchTo().Alert();
                 alertMsg = alert.Text;
                 alert.Dismiss();
                 Report.Step($"Dismissed browser alert: '{alertMsg}'");
@@ -1763,7 +1806,7 @@ namespace RKCIUIAutomation.Page
                 }
                 catch (InvalidOperationException)
                 {
-                    if((bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"))
+                    if ((bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"))
                     {
                         pageIsReady = true;
                     }
@@ -1773,33 +1816,33 @@ namespace RKCIUIAutomation.Page
                 {
                     log.Debug("...waiting for page to be in Ready state");
 
-                    //try
-                    //{
+                    try
+                    {
                         WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                         wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return document.readyState == 'complete'"));
-                    //}
-                    //catch (UnhandledAlertException)
-                    //{
-                    //    throw;
-                    //}
+                    }
+                    catch (UnhandledAlertException)
+                    {
+                        throw;
+                    }
                 }
             }
             catch (InvalidOperationException)
             {
-                //try
-                //{
+                try
+                {
                     WebDriverWait wait = GetStandardWait(driver, timeOutInSeconds, pollingInterval);
                     wait.Until(x => (bool)javaScriptExecutor.ExecuteScript("return window.jQuery != undefined && jQuery.active === 0"));
-                //}
-                //catch (UnhandledAlertException)
-                //{
-                //    throw;
-                //}
+                }
+                catch (UnhandledAlertException)
+                {
+                    throw;
+                }
             }
-            //catch (UnhandledAlertException ae)
-            //{
-            //    log.Debug(ae.Message);
-            //}
+            catch (UnhandledAlertException ae)
+            {
+                log.Debug(ae.Message);
+            }
             catch (Exception)
             {
                 throw;
