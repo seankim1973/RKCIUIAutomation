@@ -231,10 +231,10 @@ namespace RKCIUIAutomation.Base
                         AddCookieToCurrentPage("zaleniumMessage", testDetails);
                     }
                 }
-                catch (UnhandledAlertException ae)
-                {
-                    log.Debug(ae.Message);
-                }
+                //catch (UnhandledAlertException ae)
+                //{
+                //    log.Debug(ae.Message);
+                //}
                 catch (Exception)
                 {
                     //log.Error($"{e.Message}\n{e.StackTrace}");

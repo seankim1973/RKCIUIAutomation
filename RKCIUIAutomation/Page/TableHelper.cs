@@ -299,8 +299,45 @@ namespace RKCIUIAutomation.Page
         /// If no argument is provided, the button on the first row will be clicked.
         /// </summary>
         /// <param name="textInRowForAnyColumn"></param>
-        public override void ClickDeleteBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true)
-            => ClickButtonForRow(TableButton.Action_Delete, textInRowForAnyColumn, isMultiTabGrid);
+        public override void ClickDeleteBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool acceptAlert = true)
+        {
+            try
+            {
+                ClickButtonForRow(TableButton.Action_Delete, textInRowForAnyColumn, isMultiTabGrid);
+            }
+            catch (UnhandledAlertException e)
+            {
+                log.Debug(e.Message);
+
+                if (acceptAlert)
+                {
+                    try
+                    {
+                        PageAction.AcceptAlertMessage();
+                    }
+                    catch (UnhandledAlertException)
+                    {
+                        PageAction.AcceptAlertMessage();
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        PageAction.DismissAlertMessage();
+                    }
+                    catch (UnhandledAlertException)
+                    {
+                        PageAction.DismissAlertMessage();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
+        }
 
         /// <summary>
         /// If no argument is provided, the button on the first row will be clicked.
@@ -317,16 +354,24 @@ namespace RKCIUIAutomation.Page
             try
             {
                 ClickButtonForRow(TableButton.Create_Package, textInRowForAnyColumn, isMultiTabGrid, true);
-                PageAction.AcceptAlertMessage();
-                PageAction.AcceptAlertMessage();
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException e)
             {
-                log.Debug(ae.Message);
+                log.Debug(e.Message);
+
+                try
+                {
+                    PageAction.AcceptAlertMessage();
+                }
+                catch (UnhandledAlertException)
+                {
+                    PageAction.AcceptAlertMessage();
+                }
             }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
 
         }
@@ -336,16 +381,24 @@ namespace RKCIUIAutomation.Page
             try
             {
                 ClickButtonForRow(TableButton.Recreate_Package, textInRowForAnyColumn, isMultiTabGrid, false);
-                PageAction.AcceptAlertMessage();
-                PageAction.AcceptAlertMessage();
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException e)
             {
-                log.Debug(ae.Message);
+                log.Debug(e.Message);
+
+                try
+                {
+                    PageAction.AcceptAlertMessage();
+                }
+                catch (UnhandledAlertException)
+                {
+                    PageAction.AcceptAlertMessage();
+                }
             }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 
@@ -360,16 +413,24 @@ namespace RKCIUIAutomation.Page
             try
             {
                 ClickButtonForRow(TableButton.Action_Close_DIR, dirNumber, isMultiTabGrid, rowEndsWithChkbox);
-                PageAction.AcceptAlertMessage();
-                PageAction.AcceptAlertMessage();
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException e)
             {
-                log.Debug(ae.Message);
+                log.Debug(e.Message);
+
+                try
+                {
+                    PageAction.AcceptAlertMessage();
+                }
+                catch (UnhandledAlertException)
+                {
+                    PageAction.AcceptAlertMessage();
+                }
             }
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
             }
         }
 
@@ -748,7 +809,7 @@ namespace RKCIUIAutomation.Page
         public abstract void ClickCloseDirBtnForRow(string dirNumber = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = true);
         public abstract void ClickCommentTab(int commentNumber);
         public abstract void ClickCreateBtnForRow(int textInRowForAnyColumn = 1, bool isMultiTabGrid = true);
-        public abstract void ClickDeleteBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true);
+        public abstract void ClickDeleteBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool acceptAlert = true);
         public abstract void ClickDownloadBtnForRow(int rowIndex = 1, bool isMultiTabGrid = true, bool rowEndsWithChkbox = false);
         public abstract void ClickEditBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true, bool rowEndsWithChkbox = false);
         public abstract void ClickEnterBtnForRow(string textInRowForAnyColumn = "", bool isMultiTabGrid = true);

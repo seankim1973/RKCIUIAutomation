@@ -107,32 +107,11 @@ namespace RKCIUIAutomation.Page
         public override string AcceptAlertMessage()
         {
             IAlert alert = null;
-            bool alertIsNotPresent = true;
             string alertMsg = string.Empty;
 
             try
             {
-                //var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));         
-                //wait.Until(x => ExpectedConditions.AlertIsPresent());
-                //Thread.Sleep(3000);
-
-                do
-                {
-                    try
-                    {                       
-                        alert = driver.SwitchTo().Alert();
-                    }
-                    catch (NoAlertPresentException)
-                    {
-                        Thread.Sleep(3000);
-                    }
-                    catch (UnhandledAlertException)
-                    {
-                        alertIsNotPresent = false;
-                    }
-                }
-                while (alertIsNotPresent);
-
+                alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 alertMsg = alert.Text;
                 alert.Accept();
                 Report.Step($"Accepted browser alert: '{alertMsg}'");
@@ -330,15 +309,13 @@ namespace RKCIUIAutomation.Page
 
         public override void ConfirmActionDialog(bool confirmYes = true)
         {
+            IAlert alert = null;
             string actionMsg = string.Empty;
 
             try
             {
-                //IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
-                WebDriverWait wait = GetStandardWait(driver, 20, 1000);
-                wait.Until(x => ExpectedConditions.AlertIsPresent());
-
-                IAlert alert = driver.SwitchTo().Alert();
+                alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
+                alert = driver.SwitchTo().Alert();
 
                 if (confirmYes)
                 {
@@ -366,33 +343,11 @@ namespace RKCIUIAutomation.Page
         public override string DismissAlertMessage()
         {
             IAlert alert = null;
-            bool alertIsNotPresent = true;
             string alertMsg = string.Empty;
 
             try
             {
-                //var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(60));
-                //wait.Until(x => ExpectedConditions.AlertIsPresent());
-                //Thread.Sleep(3000);
-
-                do
-                {
-                    try
-                    {
-                        alert = driver.SwitchTo().Alert();
-                    }
-                    catch (NoAlertPresentException)
-                    {
-                        Thread.Sleep(3000);
-                    }
-                    catch (UnhandledAlertException)
-                    {
-                        alertIsNotPresent = false;
-                    }
-                }
-                while (alertIsNotPresent);
-
-                //IAlert alert = driver.SwitchTo().Alert();
+                alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
                 alertMsg = alert.Text;
                 alert.Dismiss();
                 Report.Step($"Dismissed browser alert: '{alertMsg}'");
@@ -719,9 +674,9 @@ namespace RKCIUIAutomation.Page
                 wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
                 wait.IgnoreExceptionTypes(typeof(ElementNotSelectableException));
             }
-            catch (UnhandledAlertException ae)
+            catch (UnhandledAlertException)
             {
-                log.Debug(ae.Message);
+                throw;
             }
             catch (Exception e)
             {
@@ -1082,15 +1037,12 @@ namespace RKCIUIAutomation.Page
 
             try
             {
-                IAlert alert = new WebDriverWait(driver, TimeSpan.FromSeconds(5)).Until(ExpectedConditions.AlertIsPresent());
-                string actualAlertMsg = driver.SwitchTo().Alert().Text;
+                string actualAlertMsg = AcceptAlertMessage();
                 msgMatch = (actualAlertMsg).Contains(expectedMessage)
                     ? true
                     : false;
 
                 Report.Info($"## Expected Alert Message: {expectedMessage}<br>## Actual Alert Message: {actualAlertMsg}", msgMatch);
-
-                AcceptAlertMessage();
             }
             catch (UnhandledAlertException)
             {
@@ -1762,26 +1714,15 @@ namespace RKCIUIAutomation.Page
 
         public override void WaitForLoading()
         {
-            try
+            IList<By> loadingElems = new List<By>()
             {
-                IList<By> loadingElems = new List<By>()
-                {
-                    By.ClassName("k-loading-image"),
-                    By.XPath("//div[@id='overlay_div'][@style='display: block;']")
-                };
+                By.ClassName("k-loading-image"),
+                By.XPath("//div[@id='overlay_div'][@style='display: block;']")
+            };
 
-                foreach (By elem in loadingElems)
-                {
-                    WaitForElementToClear(elem);
-                }
-            }
-            catch (UnhandledAlertException e)
+            foreach (By elem in loadingElems)
             {
-                Report.Debug($"Alert Message Displayed: {e.Message}");
-            }
-            catch (Exception)
-            {
-                throw;
+                WaitForElementToClear(elem);
             }
         }
 
@@ -1811,6 +1752,10 @@ namespace RKCIUIAutomation.Page
                         pageIsReady = true;
                     }
                 }
+                catch (UnhandledAlertException)
+                {
+                    throw;
+                }
 
                 if (!pageIsReady)
                 {
@@ -1838,10 +1783,6 @@ namespace RKCIUIAutomation.Page
                 {
                     throw;
                 }
-            }
-            catch (UnhandledAlertException ae)
-            {
-                log.Debug(ae.Message);
             }
             catch (Exception)
             {

@@ -783,62 +783,17 @@ namespace RKCIUIAutomation.Page.Workflows
 
                 if (isDisplayed)
                 {
-                    try
-                    {
-                        GridHelper.ClickDeleteBtnForRow();
+                    GridHelper.ClickDeleteBtnForRow(acceptAlert: acceptAlert);
 
-                        if (acceptAlert)
-                        {
-                            actionPerformed = "Accepted";
-                            resultAfterAction = "Displayed After Accepting Delete Dialog: ";
-                            try
-                            {
-                                PageAction.AcceptAlertMessage();
-                                Thread.Sleep(3000);
-                                PageAction.AcceptAlertMessage();
-                            }
-                            catch (UnhandledAlertException ex)
-                            {
-                                log.Debug(ex.Message);
-                            }
-                        }
-                        else
-                        {
-                            actionPerformed = "Dismissed";
-                            resultAfterAction = "Displayed After Dismissing Delete Dialog: ";
-                            try
-                            {
-                                PageAction.DismissAlertMessage();
-                                Thread.Sleep(3000);
-                                PageAction.DismissAlertMessage();
-                            }
-                            catch (UnhandledAlertException ex)
-                            {
-                                log.Debug(ex.Message);
-                            }
-                        }
+                    if (acceptAlert)
+                    {
+                        actionPerformed = "Accepted";
+                        resultAfterAction = "Displayed After Accepting Delete Dialog: ";
                     }
-                    catch (UnhandledAlertException)
+                    else
                     {
-                        Thread.Sleep(3000);
-                    }
-                    finally
-                    {
-                        WaitForPageReady();
-
-                        var verifyResult = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, acceptAlert);
-
-                        if (acceptAlert)
-                        {
-                            result = !verifyResult;
-                        }
-                        else
-                        {
-                            result = verifyResult;
-                        }
-
-                        AddAssertionToList(result, $"VerifyDirIsDisplayed in {tableTab.ToString()}, after {actionPerformed} delete dialog");
-                        Report.Info($"Performed Action: {actionPerformed} delete dialog<br>{resultAfterAction}{isDisplayed}", result);
+                        actionPerformed = "Dismissed";
+                        resultAfterAction = "Displayed After Dismissing Delete Dialog: ";
                     }
                 }
                 else
@@ -849,6 +804,25 @@ namespace RKCIUIAutomation.Page.Workflows
             catch (Exception e)
             {
                 log.Error($"{e.Message}\n{e.StackTrace}");
+                throw;
+            }
+            finally
+            {
+                WaitForPageReady();
+
+                var verifyResult = QaRcrdCtrl_QaDIR.VerifyDirIsDisplayed(tableTab, dirNumber, acceptAlert);
+
+                if (acceptAlert)
+                {
+                    result = !verifyResult;
+                }
+                else
+                {
+                    result = verifyResult;
+                }
+
+                AddAssertionToList(result, $"VerifyDirIsDisplayed in {tableTab.ToString()}, after {actionPerformed} delete dialog");
+                Report.Info($"Performed Action: {actionPerformed} delete dialog<br>{resultAfterAction}{isDisplayed}", result);
             }
 
             return result;

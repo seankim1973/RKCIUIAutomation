@@ -238,40 +238,33 @@ namespace RKCIUIAutomation.Base
             string logMsg = string.Empty;
             ExtentColor logLabelColor = ExtentColor.Grey;
 
-            try
-            {
                 logMsg = $"TestStep: {testStep}";
 
-                if (!testResult)
-                {
-                    logLabelColor = ExtentColor.Red;
-                }
-
-                if (testStep.Contains("Workflow:"))
-                {
-                    logLabelColor = ExtentColor.Purple;
-                    logMsg = testStep;
-                }
-
-                if (createStdOutLog)
-                {
-                    if (testResult)
-                    {
-                        CheckForLineBreaksInLogMsgForStdOutLogger(Level.Debug, logMsg);
-                    }
-                    else
-                    {
-                        CheckForLineBreaksInLogMsgForStdOutLogger(Level.Error, logMsg);
-                    }
-                }
-
-                testInstance.Info(CreateReportMarkupLabel(logMsg, logLabelColor));
-                AddCookieToCurrentPage("zaleniumMessage", logMsg);
-            }
-            catch (Exception)
+            if (!testResult)
             {
-                throw;
+                logLabelColor = ExtentColor.Red;
             }
+
+            if (testStep.Contains("Workflow:"))
+            {
+                logLabelColor = ExtentColor.Purple;
+                logMsg = testStep;
+            }
+
+            if (createStdOutLog)
+            {
+                if (testResult)
+                {
+                    CheckForLineBreaksInLogMsgForStdOutLogger(Level.Debug, logMsg);
+                }
+                else
+                {
+                    CheckForLineBreaksInLogMsgForStdOutLogger(Level.Error, logMsg);
+                }
+            }
+
+            testInstance.Info(CreateReportMarkupLabel(logMsg, logLabelColor));
+            AddCookieToCurrentPage("zaleniumMessage", logMsg);
         }
 
         //TODO: Generic Result Calculator and Logger
