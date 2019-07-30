@@ -7,7 +7,7 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
 {
     [Parallelizable]
     [TestFixture]
-    public class RMCenter_CorrespondenceLog_Test : TestBase
+    public class RMCenter_CorrespondenceLog_End_To_End_Test : TestBase
     {
         [Test]
         [Category(Component.Correspondence_Log)]
@@ -26,7 +26,12 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
             ProjCorrespondenceLog.VerifyTransmissionDetailsPageValuesInRemainingTableTabs(transmittalNumber);
             AssertAll();
         }
+    }
 
+    [Parallelizable]
+    [TestFixture]
+    public class RMCenter_CorrespondenceLog_Filters_Test : TestBase
+    {
         [Test]
         [Category(Component.Correspondence_Log)]
         [Property(TestCaseNumber, 2187525)]
@@ -40,7 +45,12 @@ namespace RKCIUIAutomation.Test.CorrespondenceLog
             ProjCorrespondenceLog.VerifyTransmissionDetailsGridFilterInRemainingTableTabs(transmittalNumber);
             AssertAll();
         }
+    }
 
+    [Parallelizable]
+    [TestFixture]
+    public class RMCenter_CorrespondenceLog_Search_Test : TestBase
+    {
         [Test]
         [Category(Component.Correspondence_Log)]
         [Property(TestCaseNumber, 2187525)]

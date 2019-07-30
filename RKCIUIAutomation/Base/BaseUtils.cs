@@ -1,19 +1,13 @@
-﻿using AventStack.ExtentReports;
-using AventStack.ExtentReports.MarkupUtils;
-using log4net;
-using log4net.Core;
-using MiniGuids;
+﻿using MiniGuids;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.Extensions;
 using RestSharp.Extensions;
 using RKCIUIAutomation.Config;
-using RKCIUIAutomation.Tools;
 using System;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 using static RKCIUIAutomation.Base.Factory;
 using static RKCIUIAutomation.Page.StaticHelpers;
 
